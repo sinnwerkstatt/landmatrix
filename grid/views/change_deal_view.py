@@ -6,7 +6,6 @@ from grid.forms.change_deal_general_form import ChangeDealGeneralForm
 from grid.forms.deal_contract_form import DealContractFormSet
 from .save_deal_view import SaveDealView
 from landmatrix.models.activity import Activity
-from landmatrix.models.deal import Deal
 
 from grid.forms.add_deal_employment_form import AddDealEmploymentForm
 from grid.forms.add_deal_general_form import AddDealGeneralForm
@@ -59,22 +58,21 @@ class ChangeDealView(SaveDealView):
         return context
 
     def get_forms(self, data=None, files=None):
-        deal = Deal(self.activity.activity_identifier)
         forms = []
 
         for form_class in self.FORMS:
-            form = self.get_form(deal, form_class, data=data, files=files)
+            form = self.get_form(form_class, data=data, files=files)
             forms.append(form)
 
         for form_class in get_country_specific_form_classes(self.activity):
-            country_specific_form = self.get_form(deal, form_class,
+            country_specific_form = self.get_form(self.activity, form_class,
                                                   data=data, files=files)
             forms.append(country_specific_form)
 
         return forms
 
-    def get_form(self, deal, form_class, **kwargs):
-        kwargs['initial'] = form_class.get_data(deal)
+    def get_form(self, form_class, **kwargs):
+        kwargs['initial'] = form_class.get_data(self.activity)
         if 'prefix' not in kwargs:
             kwargs['prefix'] = self.get_form_prefix(form_class)
         form = form_class(**kwargs)

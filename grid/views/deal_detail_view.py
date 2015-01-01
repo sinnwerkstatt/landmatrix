@@ -74,7 +74,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
             'stakeholders': deal.stakeholders,
             'object': deal,
         }
-        context['forms'] = get_forms(deal)
+        context['forms'] = get_forms(deal.activity)
         context['investor'] = deal.stakeholders
         try:
             context['history'] = DealHistoryItem.get_history_for(deal)
@@ -147,19 +147,19 @@ def display_invalid_forms(forms):
             print(form.__class__.__name__, 'INVALID:', form.errors)
 
 
-def get_forms(deal):
-    forms = [get_form(deal, form) for form in FORMS]
-    if deal:
-        for form_class in get_country_specific_form_classes(deal.activity):
+def get_forms(activity):
+    forms = [get_form(activity, form) for form in FORMS]
+    if activity:
+        for form_class in get_country_specific_form_classes(activity):
             form_tuple = (form_class.Meta.name, form_class)
-            country_specific_form = get_form(deal, form_tuple)
+            country_specific_form = get_form(activity, form_tuple)
             forms.append(country_specific_form)
 
     return forms
 
 
-def get_form(deal, form_class):
-    data = form_class[1].get_data(deal)
+def get_form(activity, form_class):
+    data = form_class[1].get_data(activity)
     return form_class[1](initial=data)
 
 

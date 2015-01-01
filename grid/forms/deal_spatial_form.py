@@ -75,16 +75,10 @@ class DealSpatialBaseFormSet(BaseFormSet):
 
     @classmethod
     def get_data(cls, activity):
-        if isinstance(activity, Deal):
-            activity = activity.activity
-        if isinstance(activity, Activity):
-            taggroups = ActivityAttributeGroup.objects.\
-                filter(fk_activity=activity).filter(attributes__contains=["location"])
-        else:
-            taggroups = []
+        groups = activity.attributes.filter(fk_group__name__startswith='location').values_list('fk_group__name').distinct()
         data = []
-        for i, taggroup in enumerate(taggroups):
-            form_data = DealSpatialForm.get_data(activity, taggroup=taggroup)
+        for i, group in enumerate(groups):
+            form_data = DealSpatialForm.get_data(activity, group=group)
             data.append(form_data)
         return data
 

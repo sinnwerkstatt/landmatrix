@@ -24,9 +24,9 @@ class DealPrimaryInvestorForm(BaseForm):
         primary_investor = {
             "op": "add"
         }
-        for j, taggroup in enumerate(super(DealPrimaryInvestorForm, self).get_attributes()):
+        for j, group in enumerate(super(DealPrimaryInvestorForm, self).get_attributes()):
             # Existing primary investor?
-            for t in taggroup["tags"]:
+            for t in group["tags"]:
                 if t["key"] == "primary_investor" and t["value"]:
                     primary_investor["op"] = "select"
                     primary_investor["id"] = t["value"]
@@ -35,14 +35,14 @@ class DealPrimaryInvestorForm(BaseForm):
         return primary_investor
 
     def get_attributes(self, request=None):
-        taggroups = super(DealPrimaryInvestorForm, self).get_attributes()
-        for tg in taggroups:
+        groups = super(DealPrimaryInvestorForm, self).get_attributes()
+        for tg in groups:
             tags = []
             for t in tg["tags"]:
                 if t["key"] == "project_name":
                     tags.append(t)
             tg["tags"] = tags
-        return taggroups
+        return groups
 
     @classmethod
     def get_data(cls, activity):

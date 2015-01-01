@@ -51,18 +51,14 @@ class OperationalStakeholderForm(BaseForm):
     project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)
 
     @classmethod
-    def get_data(cls, deal, taggroup=None, prefix=""):
-        data = MultiValueDict()
-        if deal is None:
-            return data
-
-        if cls.DEBUG: print('get_data', str(deal)[:100].replace('\n', ' '), '...')
-        for (field_name, field) in cls().fields.items():
-            prefixed_name = prefix and "%s-%s"%(prefix, field_name) or field_name
-            if 'operational_stakeholder' == field_name:
-                data[prefixed_name] = deal.operational_stakeholder
-            elif 'project_name' in field_name:
-                data[prefixed_name] = deal.get_activity_attributes().get('project_name')
+    def get_data(cls, activity, group=None, prefix=""):
+        data = super().get_data(activity, group, prefix)
+        op = InvestorActivityInvolvement.objects.filter(fk_activity_id=activity.id).first()
+        if op:
+            data['operational_stakeholder'] = op
+        #elif 'project_name' in field_name:
+        #    project_name = activity.attributes.get(name='project_name')
+        #    data[prefixed_name] = activity.attributes.get(name='project_name').value
         return data
 
     class Meta:

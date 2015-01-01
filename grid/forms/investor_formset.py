@@ -22,22 +22,22 @@ class InvestorFormSet(BaseInvestorFormSet):
         stakeholders = []
         for i, form in enumerate(self.forms):
             stakeholder = {}
-            for j, taggroup in enumerate(form.get_attributes()):
-                comment = taggroup.get("comment", "")
-                for i, t in reversed(list(enumerate(taggroup["tags"]))):
+            for j, group in enumerate(form.get_attributes()):
+                comment = group.get("comment", "")
+                for i, t in reversed(list(enumerate(group["tags"]))):
                     if t["key"] == "investor":
                         # Existing investor
-                        stakeholder["investment_ratio"] = str(taggroup["investment_ratio"])
+                        stakeholder["investment_ratio"] = str(group["investment_ratio"])
                         stakeholder["id"] = t["value"]
-                        stakeholder["taggroups"] = [{
+                        stakeholder["groups"] = [{
                             "main_tag": {"key": "name", "value": "General"},
                             "comment": comment,
                         }]
                 if not stakeholder:
-                    stakeholder["investment_ratio"] = taggroup["investment_ratio"]
-                    stakeholder["taggroups"] = [{
+                    stakeholder["investment_ratio"] = group["investment_ratio"]
+                    stakeholder["groups"] = [{
                         "main_tag": {"key": "name", "value": "General"},
-                        "tags": taggroup["tags"],
+                        "tags": group["tags"],
                         "comment": comment,
                     }]
             if stakeholder:
@@ -46,9 +46,9 @@ class InvestorFormSet(BaseInvestorFormSet):
 
 
     @classmethod
-    def get_data(cls, deal):
+    def get_data(cls, activity, group=None, prefix=""):
         data = []
-        involvements = deal.involvement_set().all() #get_involvements_for_activity(activity)
+        involvements = activity.involvement_set().all() #get_involvements_for_activity(activity)
         for i, involvement in enumerate(involvements):
             if not involvement.fk_stakeholder:
                 continue
@@ -57,8 +57,6 @@ class InvestorFormSet(BaseInvestorFormSet):
                 fk_stakeholder_attribute_group__fk_stakeholder=involvement.fk_stakeholder,
                 fk_stakeholder_attribute_group__attributes__contains={"name": "General" }
             ).order_by("-id")
-            if comments:
-                print('Whoa, look, comments:', comments)
 
             comment = comments[0].comment if comments and len(comments) > 0 else ''
             investor = {

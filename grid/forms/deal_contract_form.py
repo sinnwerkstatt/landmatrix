@@ -1,7 +1,7 @@
 from pprint import pprint
 
 from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.country import Country
 from landmatrix.models.deal import Deal
 
@@ -53,17 +53,11 @@ class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1))
 
     @classmethod
     def get_data(cls, activity):
-        if isinstance(activity, Deal):
-            activity = activity.activity
-        if isinstance(activity, Activity):
-            attrs = ActivityAttribute.objects.filter(fk_activity=activity, 
-                name="location")
-        else:
-            attrs = []
+        groups = activity.attributes.filter(fk_group__name__startswith='data_source').values_list('fk_group__name').distinct()
+
         data = []
-        # FIXME: After get_data is converted
-        for key, value in attrs.items():
-            form_data = DealContractForm.get_data(activity, taggroup=tags)
+        for group in groups:
+            form_data = DealContractForm.get_data(activity, group=group)
             data.append(form_data)
         return data
 

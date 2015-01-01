@@ -70,11 +70,9 @@ class DealHistoryItem(Deal):
         return sorted(date_and_activity, key=lambda entry: entry[0])
 
     def get_change_dates(self):
-        attrs = ActivityAttribute.history.filter(fk_activity_id=self.activity.id).order_by('history_date').values_list('history_date')
-
-        if not self.use_rounded_dates:
-            from django.utils import timezone
-            attrs = list(set([datetime(aa.year, aa.month, aa.day, aa.hour, aa.minute, aa.second,
-                tzinfo=timezone.now().tzinfo) for aa in attrs]))
-
+        attrs = [a[0] for a in ActivityAttribute.history.filter(fk_activity_id=self.activity.id).order_by('history_date').values_list('history_date')]
+        #if not self.use_rounded_dates:
+        #    from django.utils import timezone
+        #    attrs = [datetime(aa.year, aa.month, aa.day, aa.hour, aa.minute, aa.second,
+        #        tzinfo=timezone.now().tzinfo) for aa in attrs]
         return attrs

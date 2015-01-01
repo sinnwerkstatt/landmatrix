@@ -40,5 +40,5 @@ class AddInvestorForm(BaseForm):
         return investor
 
     def get_attributes(self, request=None):
-        taggroups = super(AddInvestorForm, self).get_attributes()
-        return taggroups
+        groups = super(AddInvestorForm, self).get_attributes()
+        return groups
