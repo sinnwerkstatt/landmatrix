@@ -1,5 +1,4 @@
 from django.test import TestCase
-from landmatrix import models
 
 from .models import Involvement
 
@@ -18,3 +17,10 @@ class InvolvementTest(TestCase):
     def test_str(self):
         involvement = Involvement(investment_ratio=self.DUMMY_INVESTMENT_RATIO)
         self.assertTrue(str(self.DUMMY_INVESTMENT_RATIO) in str(involvement))
+
+    def test_save(self):
+        involvement = Involvement(investment_ratio=self.DUMMY_INVESTMENT_RATIO)
+        old_count = Involvement.objects.count()
+        involvement.save()
+        self.assertEqual(old_count+1, Involvement.objects.count())
+        self.assertEqual(self.DUMMY_INVESTMENT_RATIO, float(Involvement.objects.last().investment_ratio))
