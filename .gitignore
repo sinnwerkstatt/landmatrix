@@ -2,6 +2,9 @@
 dir.sh
 .idea
 
+# default sqlite db used only for basic development
+db.sqlite3
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
