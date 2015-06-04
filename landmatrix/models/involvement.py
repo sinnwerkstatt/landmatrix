@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from landmatrix.models.defaultstringrepresentation import DefaultStringRepresentation
+from landmatrix.models.default_string_representation import DefaultStringRepresentation
 
 __author__ = 'lene'
 
