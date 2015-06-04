@@ -1,8 +1,7 @@
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 from django.test import TestCase
 from landmatrix.models import PrimaryInvestor
-
-__author__ = 'lene'
-
 
 class TestPrimaryInvestor(TestCase):
 

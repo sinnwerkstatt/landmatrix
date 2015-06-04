@@ -1,8 +1,7 @@
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
-__author__ = 'lene'
-
 
 class Stakeholder(models.Model):
     stakeholder_identifier = models.IntegerField(_("Stakeholder id"), db_index=True)

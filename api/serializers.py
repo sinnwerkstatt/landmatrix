@@ -1,4 +1,4 @@
-__author__ = 'lene'
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from rest_framework import serializers
 from landmatrix.models import Involvement

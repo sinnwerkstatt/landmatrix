@@ -1,9 +1,8 @@
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 from django.test import TestCase
 from django.utils import timezone
 from landmatrix.models import Activity
-
-__author__ = 'lene'
-
 
 class TestActivity(TestCase):
 

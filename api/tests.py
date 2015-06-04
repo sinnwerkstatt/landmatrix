@@ -1,3 +1,5 @@
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from landmatrix.models import Involvement

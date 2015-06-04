@@ -1,4 +1,4 @@
-__author__ = 'lene'
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.conf.urls import include, url
 from rest_framework import routers
