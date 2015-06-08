@@ -9,7 +9,7 @@ import django_hstore.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0008_auto_20150608_1157'),
+        ('landmatrix', '0008_hstore'),
     ]
 
     operations = [

@@ -7,7 +7,7 @@ from landmatrix.models.default_string_representation import DefaultStringReprese
 
 class StakeholderAttributeGroup(DefaultStringRepresentation, models.Model):
     fk_stakeholder = models.ForeignKey("Stakeholder", verbose_name=_("Stakeholder"))
-#    fk_language = models.ForeignKey("Language", verbose_name=_("Language"))
+    fk_language = models.ForeignKey("Language", verbose_name=_("Language"))
     attributes = hstore.DictionaryField(db_index=True)
     name = models.CharField(max_length=255, blank=True, null=True)
 
