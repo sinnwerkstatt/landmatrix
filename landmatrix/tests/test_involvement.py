@@ -1,16 +1,16 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from django.test import TestCase
 from django.utils import timezone
-from landmatrix.models import Involvement, Activity, PrimaryInvestor, Stakeholder, Status
+from landmatrix.models import Involvement, Activity, PrimaryInvestor, Stakeholder
+from landmatrix.tests.with_status import WithStatus
 
 
-class TestInvolvement(TestCase):
+class TestInvolvement(WithStatus):
 
     DUMMY_INVESTMENT_RATIO = 1.23
 
     def setUp(self):
-        self.status = Status.objects.get(id=1)
+        WithStatus.setUp(self)
         Activity(
             activity_identifier=1, version=1, availability=0.5, fully_updated=timezone.now(),
             fk_status=self.status

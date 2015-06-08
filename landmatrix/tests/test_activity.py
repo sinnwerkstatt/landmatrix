@@ -1,13 +1,10 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from django.test import TestCase
 from django.utils import timezone
-from landmatrix.models import Activity, Status
+from landmatrix.models import Activity
+from landmatrix.tests.with_status import WithStatus
 
-class TestActivity(TestCase):
-
-    def setUp(self):
-        self.status = Status.objects.get(id=1)
+class TestActivity(WithStatus):
 
     def test_gets_created_with_params(self):
         activity = Activity(
