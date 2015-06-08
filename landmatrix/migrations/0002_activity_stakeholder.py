@@ -8,7 +8,7 @@ import landmatrix.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0001_initial'),
+        ('landmatrix', '0001_involvement'),
     ]
 
     operations = [

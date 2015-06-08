@@ -8,7 +8,7 @@ import landmatrix.models.default_string_representation
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0004_auto_20150604_1411'),
+        ('landmatrix', '0004_involvement_fks'),
     ]
 
     operations = [
