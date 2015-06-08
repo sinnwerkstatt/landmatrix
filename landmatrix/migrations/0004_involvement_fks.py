@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0003_auto_20150604_1323'),
+        ('landmatrix', '0003_primaryinvestor'),
     ]
 
     operations = [

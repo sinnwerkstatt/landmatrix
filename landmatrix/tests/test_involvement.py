@@ -2,7 +2,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.test import TestCase
 from django.utils import timezone
-from landmatrix.models import Involvement, Activity, PrimaryInvestor, Stakeholder
+from landmatrix.models import Involvement, Activity, PrimaryInvestor, Stakeholder, Status
 
 
 class TestInvolvement(TestCase):
@@ -10,11 +10,16 @@ class TestInvolvement(TestCase):
     DUMMY_INVESTMENT_RATIO = 1.23
 
     def setUp(self):
+        self.status = Status.objects.get(id=1)
         Activity(
-            activity_identifier=1, version=1, availability=0.5, fully_updated=timezone.now()
+            activity_identifier=1, version=1, availability=0.5, fully_updated=timezone.now(),
+            fk_status=self.status
         ).save()
-        PrimaryInvestor(primary_investor_identifier=1, name='A Silly Name', version=2).save()
-        Stakeholder(stakeholder_identifier=1, version=2).save()
+        PrimaryInvestor(
+            primary_investor_identifier=1, name='A Silly Name', version=2,
+            fk_status=self.status
+        ).save()
+        Stakeholder(stakeholder_identifier=1, version=2, fk_status=self.status).save()
 
 
     def test_gets_created(self):

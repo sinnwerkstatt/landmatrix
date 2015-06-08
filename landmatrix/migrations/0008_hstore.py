@@ -7,7 +7,7 @@ from django.contrib.postgres.operations import HStoreExtension
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0007_auto_20150608_1128'),
+        ('landmatrix', '0007_fks_status'),
     ]
 
     operations = [

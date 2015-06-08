@@ -1,12 +1,17 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.test import TestCase
-from landmatrix.models import PrimaryInvestor
+from landmatrix.models import PrimaryInvestor, Status
 
 class TestPrimaryInvestor(TestCase):
 
+    def setUp(self):
+        self.status = Status.objects.get(id=1)
+
     def test_gets_saved(self):
-        PrimaryInvestor(primary_investor_identifier=1, name='A Silly Name', version=2).save()
+        PrimaryInvestor(
+            primary_investor_identifier=1, name='A Silly Name', version=2, fk_status=self.status
+        ).save()
         investor = PrimaryInvestor.objects.last()
         self.assertIsInstance(investor, PrimaryInvestor)
         self.assertEqual(1, investor.primary_investor_identifier)
