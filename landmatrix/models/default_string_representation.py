@@ -1,7 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-
 """ Needs to be the first class inherited from when using it for multiple inheritance,
     if the other classes define a ___str___ method too the implementation of the class
     first in the list of base classes is used.
@@ -21,7 +20,8 @@ class DefaultStringRepresentation:
             for (key, value) in vars(self).items()
             if not key.startswith('_')
         }
-        ret = pprint.pformat(dict(items), indent=4*DefaultStringRepresentation.indent_depth)
+        ret = pprint.pformat(dict(items), indent=4*DefaultStringRepresentation.indent_depth)#. \
+#                    replace('{', "{\n"+" "*DefaultStringRepresentation.indent_depth)
         DefaultStringRepresentation.indent_depth -= 1
         return ret
 

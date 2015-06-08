@@ -38,3 +38,18 @@ class TestAttributeGroups(WithStatus):
         group = ActivityAttributeGroup.objects.last()
         self.assertEqual('blub', group.attributes['blah'])
         self.assertEqual(1.2345, float(group.attributes['yadda']))
+
+    def test_string(self):
+        ActivityAttributeGroup(
+            fk_activity=self.activity, fk_language=self.language,
+            attributes = { 'blah': 'blub', 'yadda': 1.2345 }
+        ).save()
+        self.assertTrue(
+            str(Language.objects.last()).replace(' ', '')
+            in str(ActivityAttributeGroup.objects.last()).replace(' ', '')
+        )
+        self.assertTrue(
+            str({ 'blah': 'blub', 'yadda': '1.2345' }).replace(' ', '')
+            in str(ActivityAttributeGroup.objects.last()).replace(' ', '')
+        )
+
