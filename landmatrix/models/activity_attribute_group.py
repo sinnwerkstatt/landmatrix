@@ -8,7 +8,7 @@ from landmatrix.models.default_string_representation import DefaultStringReprese
 class ActivityAttributeGroup(DefaultStringRepresentation, models.Model):
     fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"))
     fk_language = models.ForeignKey("Language", verbose_name=_("Language"))
-    year = models.PositiveIntegerField(_("Year"), blank=True, null=True, db_index=True)
+    date = models.DateField(_("Date"), blank=True, null=True, db_index=True)
     attributes = hstore.DictionaryField(db_index=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     # TODO: Add geometry (location point)

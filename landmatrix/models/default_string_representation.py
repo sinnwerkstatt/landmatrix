@@ -10,29 +10,34 @@ class DefaultStringRepresentation:
     indent_depth = 0
 
     def __str__(self):
+        import pprint
 
         DefaultStringRepresentation.indent_depth += 1
-
-        import pprint
 
         items = {
             key: self._iteritem_to_object_pair(key, value)
             for (key, value) in vars(self).items()
             if not key.startswith('_')
         }
-        ret = pprint.pformat(dict(items), indent=4*DefaultStringRepresentation.indent_depth)#. \
-#                    replace('{', "{\n"+" "*DefaultStringRepresentation.indent_depth)
+
+        ret = pprint.pformat(dict(items), indent=4*DefaultStringRepresentation.indent_depth)
+
         DefaultStringRepresentation.indent_depth -= 1
+
         return ret
 
     def _iteritem_to_object_pair(self, key, value):
-        if not key.startswith('fk_'): return value
+        if not self.is_database_relation(key): return value
         if value is None: return None
+
         object_class = str_to_class(fk_to_class_name(key))
         try:
             return object_class.objects.get(id=int(value))
         except Exception:
             return str(object_class)+'.get('+str(id)+') does not exist, last id is '+str(object_class.objects.last().id)
+
+    def is_database_relation(self, key):
+        return key.startswith('fk_')
 
 
 def fk_to_class_name(str):

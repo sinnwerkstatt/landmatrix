@@ -18,6 +18,11 @@ class TestAttributeGroups(WithStatus):
         self.stakeholder = Stakeholder.objects.last()
         Language(english_name='English', local_name='English', locale='en').save()
         self.language = Language.objects.last()
+        self.attributes = { 'blah': 'blub', 'yadda': 1.2345 }
+        ActivityAttributeGroup(
+            fk_activity=self.activity, fk_language=self.language,
+            attributes=self.attributes
+        ).save()
 
     def test_gets_created(self):
         group = ActivityAttributeGroup(fk_activity=self.activity)
@@ -31,25 +36,19 @@ class TestAttributeGroups(WithStatus):
         self.assertEqual(group, ActivityAttributeGroup.objects.last())
 
     def test_access_hstore_dictfield(self):
-        ActivityAttributeGroup(
-            fk_activity=self.activity, fk_language=self.language,
-            attributes = { 'blah': 'blub', 'yadda': 1.2345 }
-        ).save()
         group = ActivityAttributeGroup.objects.last()
         self.assertEqual('blub', group.attributes['blah'])
         self.assertEqual(1.2345, float(group.attributes['yadda']))
 
-    def test_string(self):
-        ActivityAttributeGroup(
-            fk_activity=self.activity, fk_language=self.language,
-            attributes = { 'blah': 'blub', 'yadda': 1.2345 }
-        ).save()
+    def test_string_contains_language(self):
         self.assertTrue(
             str(Language.objects.last()).replace(' ', '')
             in str(ActivityAttributeGroup.objects.last()).replace(' ', '')
         )
-        self.assertTrue(
-            str({ 'blah': 'blub', 'yadda': '1.2345' }).replace(' ', '')
-            in str(ActivityAttributeGroup.objects.last()).replace(' ', '')
-        )
+
+    def test_string_contains_attributes(self):
+        for k in self.attributes:
+            self.assertTrue(
+                str(k) in str(ActivityAttributeGroup.objects.last())
+            )
 
