@@ -1,3 +1,5 @@
+from cms.utils.conf import default
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.db import models
@@ -21,7 +23,7 @@ class Country(models.Model):
     corruption_perception_index = models.DecimalField(
         _("Corruption perception index"), max_digits=2, decimal_places=1, blank=True, null=True
     )
-    high_income = models.BooleanField(_("High income"))
+    high_income = models.BooleanField(_("High income"), default=False)
 
     def __str__(self):
         return self.name

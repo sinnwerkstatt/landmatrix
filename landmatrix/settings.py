@@ -37,9 +37,15 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.postgres',
+#    'django.contrib.postgres',
     'django_hstore',
     'rest_framework',
+
+    'cms',
+    'treebeard',
+    'django.contrib.sites',
+    'sekizai',
+
     'landmatrix',
     'api'
 )
@@ -52,7 +58,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
+#    'django.middleware.security.SecurityMiddleware',
 )
 
 ROOT_URLCONF = 'landmatrix.urls'
@@ -102,7 +108,7 @@ else:
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Europe/Berlin'
 
@@ -117,3 +123,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+#
+# django-cms stuff
+#
+SITE_ID = 1
+
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+
+TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+    'django.core.context_processors.request',
+#    'cms.context_processors.media',
+    'cms.context_processors.cms_settings',
+    'sekizai.context_processors.sekizai',
+)
