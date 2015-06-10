@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'rest_framework',
 
     'cms',
+    'menus',
     'treebeard',
     'django.contrib.sites',
     'sekizai',
