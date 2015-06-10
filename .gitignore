@@ -4,7 +4,10 @@ dir.sh
 
 # default sqlite db used only for basic development
 db.sqlite3
+
+# temporary files only used during development
 old_models.py
+from_v1/*.sql
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
