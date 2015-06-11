@@ -41,6 +41,8 @@ pg_dump -Uroot --column-inserts -a -t activity_attribute_groups landmatrix_1 | \
     sed s/fk_language/fk_language_id/g | \
     sed 's/ year, / date, /g' > activity_attribute_groups.sql
 
+cp activity_attribute_groups.sql activity_attribute_groups.sql.1901
+
 for i in `eval echo {1901..2016}`; do
     echo $i
     cat activity_attribute_groups.sql.$i | \
