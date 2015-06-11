@@ -13,11 +13,17 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+
+from django.conf import settings
 from django.conf.urls import include, url
+from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls.static import static
 from django.contrib import admin
+
 from api import urls as api_urls
 
-urlpatterns = [
+urlpatterns = i18n_patterns('',
     url(r'^api/', include(api_urls)),
     url(r'^admin/', include(admin.site.urls)),
-]
+    url(r'^', include('cms.urls')),
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

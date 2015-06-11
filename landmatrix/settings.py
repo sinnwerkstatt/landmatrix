@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -44,12 +43,16 @@ INSTALLED_APPS = (
 
 #   django-cms and dependencies
     'cms',
+    'mptt',
     'menus',
     'treebeard',
+    'djangocms_admin_style',  # for the admin skin. You **must** add 'djangocms_admin_style' in the list **before** 'django.contrib.admin'.
+    'django.contrib.admin',
     'django.contrib.sites',
     'sekizai',
 
     'landmatrix',
+    'global',
     'api'
 )
 
@@ -63,6 +66,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 #   added by generating the project with django 1.8, does not work in 1.7:
 #    'django.middleware.security.SecurityMiddleware',
+
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.doc.XViewMiddleware',
+    'cms.middleware.user.CurrentUserMiddleware',
+    'cms.middleware.page.CurrentPageMiddleware',
+    'cms.middleware.toolbar.ToolbarMiddleware',
+    'cms.middleware.language.LanguageCookieMiddleware',
 )
 
 ROOT_URLCONF = 'landmatrix.urls'
@@ -125,8 +135,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
 
 #
 # django-cms stuff
@@ -136,7 +149,21 @@ SITE_ID = 1
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
     'django.core.context_processors.request',
-    'cms.context_processors.cms_settings',
+    'django.contrib.messages.context_processors.messages',
     'sekizai.context_processors.sekizai',
+    'cms.context_processors.cms_settings',
 )
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, "templates"),
+)
+
+CMS_TEMPLATES = (
+    ('1-column.html', '1 column'),
+)
+
