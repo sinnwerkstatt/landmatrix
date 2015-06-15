@@ -40,6 +40,8 @@ INSTALLED_APPS = (
 #    'django.contrib.postgres',
     'django_hstore',
     'rest_framework',
+# this apparently messes up the URL lookup in collaboration with cms. maybe try including it after cms.
+#    'debug_toolbar',
 
 #   django-cms and dependencies
     'cms',
@@ -52,7 +54,7 @@ INSTALLED_APPS = (
     'sekizai',
 
     'landmatrix',
-    'global',
+    'global_app',
     'api'
 )
 
@@ -123,6 +125,9 @@ else:
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
 LANGUAGE_CODE = 'en'
+LANGUAGES = [
+    ('en', 'English'),
+]
 
 TIME_ZONE = 'Europe/Berlin'
 

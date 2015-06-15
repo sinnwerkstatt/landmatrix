@@ -21,9 +21,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 from api import urls as api_urls
+from global_app import urls as global_urls
 
 urlpatterns = i18n_patterns('',
-    url(r'^api/', include(api_urls)),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/', include(api_urls)),
+    url(r'^global_app/', include(global_urls)),
     url(r'^', include('cms.urls')),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

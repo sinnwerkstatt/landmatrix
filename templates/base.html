@@ -1,4 +1,4 @@
-{% load i18n cms_tags %}<!DOCTYPE html>
+{% load i18n cms_tags %}{% load cms_tags sekizai_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -26,6 +26,7 @@
         <script>window.jQuery || document.write('<script src="/media/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
         {% block head %}
         {% endblock %}
+        {% render_block "css" %}
     </head>
     <body class="{% if popup %}popup {% endif %}{% block body_class %}{% page_attribute "slug" %}{% endblock %}">
         <div class="wrap">
@@ -123,5 +124,6 @@
         <noscript><p><img src="http://stats.landmatrix.org/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
         <!-- End Piwik Code -->
         {% endblock %}
+        {% render_block "js" %}
     </body>
 </html>
