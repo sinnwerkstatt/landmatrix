@@ -27,6 +27,10 @@ class StatusViewSet(viewsets.ModelViewSet):
     queryset = Status.objects.all()
     serializer_class = StatusSerializer
 
+class ActivityAttributeGroupViewSet(viewsets.ModelViewSet):
+    queryset = ActivityAttributeGroup.objects.all()
+    serializer_class = ActivityAttributeGroupSerializer
+
 class StatisticsManager(models.Manager):
 
     def all(self):
@@ -119,7 +123,7 @@ class StatisticsManager(models.Manager):
         """
         cursor.execute(sql)
         result = cursor.fetchall()
-        print(connection.queries[-1]['sql'])
+        if connection.queries: print(connection.queries[-1]['sql'])
         return result
 
 class StatisticsSerializer(serializers.Serializer):

@@ -150,7 +150,7 @@ MEDIA_URL = "/media/"
 # django REAT framework stuff
 #
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+#    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
     'PAGE_SIZE': 100
 }
 
