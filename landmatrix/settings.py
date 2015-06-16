@@ -147,6 +147,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 #
+# django REAT framework stuff
+#
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'PAGE_SIZE': 100
+}
+
+
+#
 # django-cms stuff
 #
 SITE_ID = 1
