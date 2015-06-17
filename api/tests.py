@@ -2,7 +2,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from landmatrix.models import Involvement
+from landmatrix.models import *
 import json
 
 class ApiTest(TestCase):
@@ -10,8 +10,23 @@ class ApiTest(TestCase):
     def url(self, resource): return self.PREFIX + resource + self.POSTFIX
     def url_id(self, resource, id): return self.PREFIX + resource + self.INFIX + str(id) + self.POSTFIX
 
-
 class ApiTestBase:
+
+    def make_involvement(self, i_r = 0):
+        act = Activity(fk_status=Status.objects.get(id=1), activity_identifier=1, version=1)
+        act.save()
+        pi = PrimaryInvestor(fk_status=Status.objects.get(id=1), primary_investor_identifier=1, version=1)
+        pi.save()
+        sh = Stakeholder(fk_status=Status.objects.get(id=1), stakeholder_identifier=1, version=1)
+        sh.save()
+        i = Involvement(fk_activity=act, fk_stakeholder=sh, fk_primary_investor = pi, investment_ratio=i_r)
+        i.save()
+        return i
+
+    def get_content(self, resource):
+        response = self.client.get(self.url(resource))
+#        self.assertEqual(200, response.status_code)
+        return json.loads(response.content.decode('utf-8'))
 
     def test_view_gets_called(self):
         response = self.client.get(self.url('status'))
@@ -30,11 +45,10 @@ class ApiTestBase:
         self.assertEqual(404, response.status_code)
 
     def test_view_content(self):
-        Involvement().save()
-        Involvement(investment_ratio = 1.23).save()
+        self.make_involvement()
+        self.make_involvement(1.23)
 
-        response = self.client.get(self.url('involvement'))
-        content = json.loads(response.content.decode('utf-8'))
+        content = self.get_content('involvement')
         self.assertIsInstance(content, dict)
         self.assertGreaterEqual(len(content), 2)
         self.assertTrue(self.RESULTS_INDEX in content)
@@ -47,9 +61,9 @@ class ApiTestBase:
         self.assertEqual(1.23, float(content[self.RESULTS_INDEX][1]['investment_ratio']))
 
     def test_access_specific_record(self):
-        Involvement(investment_ratio = 1.23).save()
-        response = self.client.get(self.url('involvement'))
-        content = json.loads(response.content.decode('utf-8'))
+        self.make_involvement(1.23)
+
+        content = self.get_content('involvement')
         response = self.client.get(content[self.RESULTS_INDEX][0][self.URI_INDEX])
         self.assertEqual(200, response.status_code)
 
@@ -61,10 +75,17 @@ class ApiTestBase:
 
     def test_all_defined_models(self):
         for model in self.MODELS:
-            response = self.client.get(self.url(model))
-            self.assertEqual(200, response.status_code)
-            content = json.loads(response.content.decode('utf-8'))
+            content = self.get_content(model)
             self.assertIsInstance(content, dict)
+
+    def test_foreign_keys(self):
+        self.make_involvement()
+        response = self.client.get(self.url('involvement'))
+        content = json.loads(response.content.decode('utf-8'))
+        for fk in ('fk_activity', 'fk_stakeholder', 'fk_primary_investor'):
+            self.assertTrue(fk in content[self.RESULTS_INDEX][0])
+            response = self.client.get(content[self.RESULTS_INDEX][0][fk])
+            self.assertEqual(200, response.status_code)
 
 
 class DjangoRESTFrameworkTest(ApiTest, ApiTestBase):
@@ -75,7 +96,6 @@ class DjangoRESTFrameworkTest(ApiTest, ApiTestBase):
     URI_INDEX = 'url'
     RESULTS_INDEX = 'results'
     MODELS = [ 'involvement', 'activity', 'stakeholder', 'primary_investor', 'status', 'activity_attribute_group']
-
 
 class TastyPieTest(ApiTest, ApiTestBase):
 
