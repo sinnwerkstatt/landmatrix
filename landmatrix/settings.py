@@ -39,7 +39,11 @@ INSTALLED_APPS = (
 #   works with django 1.8, not in 1.7:
 #    'django.contrib.postgres',
     'django_hstore',
+
     'rest_framework',
+
+    'tastypie',
+
 # this apparently messes up the URL lookup in collaboration with cms. maybe try including it after cms.
 #    'debug_toolbar',
 
@@ -154,6 +158,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100
 }
 
+#
+# tastypie
+#
+API_LIMIT_PER_PAGE = 100
 
 #
 # django-cms stuff
