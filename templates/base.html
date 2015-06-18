@@ -34,7 +34,8 @@
                 <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
             <![endif]-->
 
-            <!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
+            {# top-level navigation #}
+            {# This code is taken from http://twitter.github.com/bootstrap/examples/hero.html #}
 
             <div class="navbar navbar-inverse navbar-fixed-top">
                 <div class="navbar-inner">
@@ -44,10 +45,10 @@
                                 <a class="brand" href="/"></a>
                                 <ul class="nav">
                                     {% block nav %}
-                                    <li><a class="get-the-idea toggle-tooltip bottom" title="{% trans "Get&nbsp;the&nbsp;idea" %}" href="/get-the-idea/">{% trans "Get the idea" %}</a></li>
-                                    <li><a class="get-the-detail toggle-tooltip bottom" title="{% trans "Get&nbsp;the&nbsp;detail" %}" href="/get-the-detail/">{% trans "Get the detail" %}</a></li>
-                                    <li{% if request.current_page.reverse_id == "get-involved" %} class="active"{% endif %}><a class="get-involved toggle-tooltip bottom" title="{% trans "Get&nbsp;involved" %}" href="/get-involved/">{% trans "Get involved" %}</a></li>
-                                    <li{% if request.current_page.reverse_id == "about" %} class="active"{% endif %}><a class="about toggle-tooltip bottom" title="{% trans "About" %}" href="/about/">{% trans "About" %}</a></li>
+                                        <li><a class="global toggle-tooltip bottom" title="{% trans "Get&nbsp;global&nbsp;data" %}" href="/global/">{% trans "Get global data" %}</a></li>
+                                        <li><a class="continent toggle-tooltip bottom" title="{% trans "Get&nbsp;continent&nbsp;data" %}" href="/continent/">{% trans "Get continent data" %}</a></li>
+                                        <li><a class="region toggle-tooltip bottom" title="{% trans "Get&nbsp;region&nbsp;data" %}" href="/region/">{% trans "Get region data" %}</a></li>
+                                        <li{% if request.current_page.reverse_id == "get-involved" %} class="active"{% endif %}><a class="get-involved toggle-tooltip bottom" title="{% trans "Get&nbsp;involved" %}" href="/get-involved/">{% trans "Get involved" %}</a></li>
                                     {% endblock %}
                                 </ul>
                                 {% block user_tools %}{% endblock %}
