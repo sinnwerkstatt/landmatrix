@@ -45,13 +45,10 @@
                                 <a class="brand" href="/"></a>
                                 <ul class="nav">
                                     {% block nav %}
-                                        {% comment "Not sure yet if this belongs here - it's in the wireframe but not the ticket" %}
-                                            <li><a class="get-the-idea toggle-tooltip bottom" title="{% trans "Get&nbsp;the&nbsp;idea" %}" href="/idea/">{% trans "Get the idea" %}</a></li>
-                                        {% endcomment %}
-                                        <li><a class="global toggle-tooltip bottom" title="{% trans "Get&nbsp;global&nbsp;data" %}" href="/global/">{% trans "Get global data" %}</a></li>
-                                        <li><a class="continent toggle-tooltip bottom" title="{% trans "Get&nbsp;continent&nbsp;data" %}" href="/continent/">{% trans "Get continent data" %}</a></li>
-                                        <li><a class="region toggle-tooltip bottom" title="{% trans "Get&nbsp;region&nbsp;data" %}" href="/region/">{% trans "Get region data" %}</a></li>
-                                        <li{% if request.current_page.reverse_id == "get-involved" %} class="active"{% endif %}><a class="get-involved toggle-tooltip bottom" title="{% trans "Get&nbsp;involved" %}" href="/get-involved/">{% trans "Get involved" %}</a></li>
+
+                                        {% load menu_tags %}
+                                        {% show_menu 1 1 0 0 "menu.html" %}
+
                                     {% endblock %}
                                 </ul>
                                 {% block user_tools %}{% endblock %}
