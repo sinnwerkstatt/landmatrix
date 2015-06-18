@@ -187,5 +187,6 @@ TEMPLATE_DIRS = (
 
 CMS_TEMPLATES = (
     ('1-column.html', '1 column'),
+    ('start.html', 'Start'),
 )
 
