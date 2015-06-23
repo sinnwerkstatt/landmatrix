@@ -1,4 +1,3 @@
-from cms.utils.conf import default
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 

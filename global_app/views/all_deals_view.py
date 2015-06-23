@@ -1,7 +1,9 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.views.generic import TemplateView
+from django.utils.datastructures import MultiValueDict
 
+from landmatrix.models import BrowseCondition
 
 DEFAULT_GROUP = "by-target-region"
 
@@ -37,8 +39,7 @@ class TableGroupView(TemplateView):
         variables_activity = ["target_country", "intention", "crops", "intended_size"]
         variables_investor = ["investor_name", "country"]
         group_columns_list = []
-        ConditionFormset = formset_factory(BrowseConditionForm, extra=0)
-        ConditionFormset.form = staticmethod(curry(BrowseConditionForm, variables_activity=FILTER_VAR_ACT, variables_investor=FILTER_VAR_INV))
+        ConditionFormset = self.create_condition_formset()
         rules = BrowseCondition.objects.filter(rule__rule_type="generic")
         if GET and GET.get("filtered") and not GET.get("reset", None):
             # set given filters
@@ -221,31 +222,33 @@ class TableGroupView(TemplateView):
             return render_to_response(self.template_name, context,
                                       context_instance=RequestContext(request))
 
+    def create_condition_formset(self):
+        from django.forms.formsets import formset_factory
+        """
+        ConditionFormset = formset_factory(BrowseConditionForm, extra=0)
+        ConditionFormset.form = staticmethod(
+            curry(BrowseConditionForm, variables_activity=FILTER_VAR_ACT, variables_investor=FILTER_VAR_INV)
+        )
+        return ConditionFormset
+        """
+        return None
+
     def _columns(self, group):
-        if group == "target_country":
-            group_columns = ["target_country", "target_region", "intention", "deal_count", "availability"]
-        elif group == "target_region":
-            group_columns = ["target_region", "intention", "deal_count", "availability"]
-        elif group == "investor_name":
-            group_columns = ["investor_name", "investor_country", "intention", "deal_count", "availability"]
-        elif group == "investor_country":
-            group_columns = ["investor_country", "investor_region", "intention", "deal_count", "availability"]
-        elif group == "investor_region":
-            group_columns = ["investor_region", "intention", "deal_count", "availability"]
-        elif group == "intention":
-            group_columns = ["intention", "deal_count", "availability"]
-        elif group == "crop":
-            group_columns = ["crop", "intention", "deal_count", "availability"]
-        elif group == "year":
-            group_columns = ["year", "intention", "deal_count", "availability"]
-        elif group == "data_source_type":
-            group_columns = ["data_source_type", "intention", "deal_count", "availability"]
-        elif group == "all":
-            # show all deals not grouped
-            group_columns = ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country",
-                             "intention", "negotiation_status", "implementation_status", "intended_size",
-                             "contract_size", ]
-        return group_columns
+        columns = {
+            "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
+            "target_region": ["target_region", "intention", "deal_count", "availability"],
+            "investor_name": ["investor_name", "investor_country", "intention", "deal_count", "availability"],
+            "investor_country": ["investor_country", "investor_region", "intention", "deal_count", "availability"],
+            "investor_region": ["investor_region", "intention", "deal_count", "availability"],
+            "intention": ["intention", "deal_count", "availability"],
+            "crop": ["crop", "intention", "deal_count", "availability"],
+            "year": ["year", "intention", "deal_count", "availability"],
+            "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
+            "all": ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country",
+                    "intention", "negotiation_status", "implementation_status", "intended_size",
+                    "contract_size", ]
+        }
+        return columns[group]
 
     def write_to_xls(self, header, data, filename):
         response = HttpResponse(mimetype="application/ms-excel")
