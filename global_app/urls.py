@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf.urls import url, patterns
-from .views import test_view
+from .views import test_view, AllDealsView
 
 urlpatterns = patterns('globalapp.views',
-    url(r'^$', test_view, name='app_main')
+    url(r'^$', test_view, name='app_main'),
+    url(r'^all(?P<type>\.csv)?/$', AllDealsView.as_view(), name='all_deal'),
+
 )
