@@ -22,7 +22,32 @@ def join_attributes(table_alias, attribute, attribute_table='landmatrix_activity
     )
     return template.substitute(alias=table_alias, attr=attribute, table=attribute_table, field=attribute_field)
 
+def get_limit_sql(limit):
+    if limit: return " LIMIT %s " % limit
+    return ''
+
+def get_order_sql(order_by):
+    order_by_sql = ''
+    if order_by:
+        for field in order_by:
+            if not order_by_sql:
+                order_by_sql = "ORDER BY "
+            else:
+                order_by_sql += ", "
+            natural_sort = ""
+            if "+0" in field:
+                natural_sort = "+0"
+                field = field.split("+0")[0]
+            if field[0] == "-":
+                field = field[1:]
+                order_by_sql += "%s %s DESC" % (field, natural_sort)
+            else:
+                order_by_sql += "%s %s ASC" % (field, natural_sort)
+
+    return order_by_sql
+
 class DummyActivityProtocol:
+
     def dispatch(self, request, action):
 
         if request.POST:
@@ -41,29 +66,30 @@ class DummyActivityProtocol:
     def _get_activities_by_filter_and_grouping(self, filters, columns):
 
         cursor = connection.cursor()
-        where_sql, name_sql, group_by_sql, inner_group_by_sql, deal_count_sql, deal_availability_sql = "", "", "", "", "", ""
+        where_sql, name_sql, inner_group_by_sql, deal_count_sql, deal_availability_sql = "", "", "", "", ""
         columns_sql, sub_columns_sql = "", ""
         group, limit, order_by, group_value = filters.get("group_by", ""), filters.get("limit"), filters.get("order_by"), filters.get("group_value", "")
 
-        order_by_sql = self.get_order_sql(order_by)
-        limit_sql = self.get_limit_sql(limit)
+        order_by_sql = get_order_sql(order_by)
+        limit_sql = get_limit_sql(limit)
         filter_sql = self._browse_filters_to_sql(filters)
-        from_sql = self.get_from_sql(filters, get_join_columns(columns, group, group_value))
+        from_sql = self.get_from_sql(filters, get_join_columns(columns, group, group_value), columns)
 
         name_sql = "'%s'" % group
         deal_count_sql = "1 AS deal_count, "
         group_by_sql = " GROUP BY a.id "
+
         if group == "all" or group_value:
             sql = self.LIST_SQL
             for c in columns:
                 if c in ("intended_size", "contract_size", "production_size"):
-                    sub_columns_sql += "GROUP_CONCAT(%(name)s.value ORDER BY %(name)s.year DESC) as %(name)s, " % {"name": c}
+                    sub_columns_sql += "            ARRAY_AGG(%(name)s.attributes->'%(name)s' ORDER BY %(name)s.date DESC) as %(name)s,\n" % {"name": c}
                 elif c == "data_source":
-                    sub_columns_sql += "sub.data_source_type as data_source_type, sub.data_source_url as data_source_url, sub.data_source_date data_source_date, sub.data_source_organisation as data_source_organisation, "
-                    columns_sql += self.SQL_COLUMN_MAP.get(c)[0]
+                    sub_columns_sql += "            sub.data_source_type as data_source_type, sub.data_source_url as data_source_url, sub.data_source_date data_source_date, sub.data_source_organisation as data_source_organisation,\n"
+                    columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
                 else:
-                    columns_sql += self.SQL_COLUMN_MAP.get(c)[0]
-                    sub_columns_sql += "sub.%(name)s as %(name)s, " % {"name": c}
+                    columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
+                    sub_columns_sql += "            sub.%(name)s as %(name)s,\n" % {"name": c}
             if group == "all":
                 # show all deals not grouped
                 name_sql = " 'all deals' "
@@ -108,9 +134,9 @@ class DummyActivityProtocol:
                 # get sql for columns
                 if c == group:
                     # use single values for column which gets grouped by
-                    columns_sql += self.SQL_COLUMN_MAP.get(c)[1]
+                    columns_sql += self.SQL_COLUMN_MAP.get(c)[1] + "\n"
                 else:
-                    columns_sql += self.SQL_COLUMN_MAP.get(c)[0]
+                    columns_sql += self.SQL_COLUMN_MAP.get(c)[0] + "\n"
 
             if filters.get("starts_with", None):
                 starts_with = filters.get("starts_with", "").lower()
@@ -141,7 +167,7 @@ class DummyActivityProtocol:
         cursor.execute(sql)
         return cursor.fetchall()
 
-    def get_from_sql(self, filters, join_columns):
+    def get_from_sql(self, filters, join_columns, columns):
 
         from_sql = ''
 
@@ -158,10 +184,10 @@ class DummyActivityProtocol:
                 continue
             elif c == "investor_country" or c == "investor_region":
                 if "investor_country" not in from_sql:
-                    from_sql += """
-                        LEFT JOIN sh_key_value_lookup skvl1 ON (s.stakeholder_identifier = skvl1.stakeholder_identifier AND skvl1.key = 'country')
-                        LEFT JOIN countries investor_country ON (investor_country.id = CAST(skvl1.value AS numeric))
-                        LEFT JOIN regions investor_region ON (investor_region.id = investor_country.fk_region)"""
+                    from_sql += join_attributes('skvl1', 'country', attribute_table='landmatrix_stakeholderattributegroup', attribute_field='fk_stakeholder_id') \
+                    + """
+                        LEFT JOIN landmatrix_country investor_country ON (investor_country.id = CAST(skvl1.attributes->'country' AS numeric))
+                        LEFT JOIN landmatrix_region investor_region ON (investor_region.id = investor_country.fk_region_id)"""
             elif c == "investor_name":
                 from_sql += join_attributes('investor_name', 'investor_name',
                                             attribute_table='landmatrix_stakeholderattributegroup',
@@ -202,31 +228,6 @@ class DummyActivityProtocol:
             else:
                 from_sql += '    ' + join_attributes(c, c)
         return from_sql
-
-    def get_limit_sql(self, limit):
-        limit_sql = ''
-        if limit:
-            limit_sql = " LIMIT %s " % limit
-        return limit_sql
-
-    def get_order_sql(self, order_by):
-        order_by_sql = ''
-        if order_by:
-            for field in order_by:
-                if not order_by_sql:
-                    order_by_sql = "ORDER BY "
-                else:
-                    order_by_sql += ", "
-                natural_sort = ""
-                if "+0" in field:
-                    natural_sort = "+0"
-                    field = field.split("+0")[0]
-                if field[0] == "-":
-                    field = field[1:]
-                    order_by_sql += "%s %s DESC" % (field, natural_sort)
-                else:
-                    order_by_sql += "%s %s ASC" % (field, natural_sort)
-        return order_by_sql
 
     def _browse_filters_to_sql(self, filters):
         sql = {
@@ -384,8 +385,7 @@ class DummyActivityProtocol:
     LIST_SQL = u"""
         SELECT
             sub.name as name,
-            %(sub_columns)s
-            'dummy' as dummy
+%(sub_columns)s            'dummy' as dummy
           FROM
             landmatrix_activity AS a""" \
             + join_attributes('size', 'pi_deal_size') \
@@ -398,54 +398,93 @@ class DummyActivityProtocol:
             SELECT DISTINCT
               a.id as id,
               %(name)s as name,
-              %(columns)s
-              'dummy' as dummy
+%(columns)s                'dummy' as dummy
             FROM
               landmatrix_activity a
             JOIN landmatrix_status ON (landmatrix_status.id = a.fk_status_id)
               %(from)s""" \
+            + join_attributes('pi_deal', 'pi_deal') \
+            + join_attributes('deal_scope', 'deal_scope') \
             + """
-            LEFT JOIN a_key_value_lookup AS pi_deal ON (a.activity_identifier = pi_deal.activity_identifier AND pi_deal.key = 'pi_deal')
-            LEFT JOIN a_key_value_lookup AS deal_scope ON (a.activity_identifier = deal_scope.activity_identifier AND deal_scope.key = 'deal_scope')
             %(from_filter_activity)s
             %(from_filter_investor)s
           WHERE
-            a.version = (SELECT max(version) FROM activities amax, status st WHERE amax.fk_status = st.id AND amax.activity_identifier = a.activity_identifier AND st.name IN ('active', 'overwritten', 'deleted'))
-            AND status.name in ('active', 'overwritten')
-            AND pi_deal.value = 'True'
-            AND (intention.value IS NULL OR intention.value != 'Mining')
+            a.version = (
+                SELECT max(version)
+                FROM landmatrix_activity amax, landmatrix_status st
+                WHERE amax.fk_status_id = st.id
+                  AND amax.activity_identifier = a.activity_identifier
+                  AND st.name IN ('active', 'overwritten', 'deleted')
+            )
+            AND landmatrix_status.name in ('active', 'overwritten')
+            AND pi_deal.attributes->'pi_deal' = 'True'
+            AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
             %(where)s
             %(where_filter_investor)s
             %(where_filter_activity)s
             GROUP BY a.id
             ) AS sub ON (sub.id = a.id)
-         %(group_by)s
+         %(group_by)s, sub.name, sub.deal_id, sub.target_country, sub.primary_investor, sub.investor_name, sub.investor_country, sub.intention, sub.negotiation_status, sub.implementation_status
          %(order_by)s
          %(limit)s;
     """
 
     SQL_COLUMN_MAP = {
-        "investor_name": ["array_to_string(array_agg(DISTINCT concat(investor_name.value, '#!#', s.stakeholder_identifier)), '##!##') as investor_name,", "CONCAT(investor_name.value, '#!#', s.stakeholder_identifier) as investor_name,"],
-        "investor_country": ["array_to_string(array_agg(DISTINCT concat(investor_country.name, '#!#', investor_country.code_alpha3)), '##!##') as investor_country,", "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) as investor_country,"],
-        "investor_region": ["GROUP_CONCAT(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id) SEPARATOR '##!##') as investor_region,", "CONCAT(investor_region.name, '#!#', investor_region.id) as investor_region,"],
-        "intention": ["array_to_string(array_agg(DISTINCT intention.value ORDER BY intention.value), '##!##') AS intention,", "intention.value AS intention,"],
-        "crop": ["GROUP_CONCAT(DISTINCT CONCAT(crop.name, '#!#', crop.code ) SEPARATOR '##!##') AS crop,", "CONCAT(crop.name, '#!#', crop.code ) AS crop,"],
+        "investor_name": ["array_to_string(array_agg(DISTINCT concat(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)), '##!##') as investor_name,",
+                          "CONCAT(investor_name.value, '#!#', s.stakeholder_identifier) as investor_name,"],
+        "investor_country": ["array_to_string(array_agg(DISTINCT concat(investor_country.name, '#!#', investor_country.code_alpha3)), '##!##') as investor_country,",
+                             "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) as investor_country,"],
+        "investor_region": ["GROUP_CONCAT(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id) SEPARATOR '##!##') as investor_region,",
+                            "CONCAT(investor_region.name, '#!#', investor_region.id) as investor_region,"],
+        "intention": ["array_to_string(array_agg(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention,",
+                      "intention.value AS intention,"],
+        "crop": ["GROUP_CONCAT(DISTINCT CONCAT(crop.name, '#!#', crop.code ) SEPARATOR '##!##') AS crop,",
+                 "CONCAT(crop.name, '#!#', crop.code ) AS crop,"],
         "deal_availability": ["a.availability AS availability, ", "a.availability AS availability, "],
-        "data_source_type": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ", " data_source_type.value AS data_source_type, "],
-        "target_country": [" array_to_string(array_agg(DISTINCT deal_country.name), '##!##') as target_country, ", " deal_country.name as target_country, "],
-        "target_region": [" GROUP_CONCAT(DISTINCT deal_region.name SEPARATOR '##!##') as target_region, ", " deal_region.name as target_region, "],
-        "deal_size": ["IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,", "IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,"],
+        "data_source_type": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
+                             " data_source_type.value AS data_source_type, "],
+        "target_country": ["array_to_string(array_agg(DISTINCT deal_country.name), '##!##') as target_country, ",
+                           "deal_country.name as target_country, "],
+        "target_region": ["GROUP_CONCAT(DISTINCT deal_region.name SEPARATOR '##!##') as target_region, ",
+                          " deal_region.name as target_region, "],
+        "deal_size": ["IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,",
+                      "IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,"],
         "year": ["pi_negotiation_status.year AS year, ", "pi_negotiation_status.year AS year, "],
-        "deal_count": ["COUNT(DISTINCT a.activity_identifier) as deal_count,", "COUNT(DISTINCT a.activity_identifier) as deal_count,"],
-        "availability": ["SUM(a.availability) / COUNT(a.activity_identifier) as availability,", "SUM(a.availability) / COUNT(a.activity_identifier) as availability,"],
-        "primary_investor": ["array_to_string(array_agg(DISTINCT p.name), '##!##') as primary_investor,", "array_to_string(array_agg(DISTINCT p.name), '##!##') as primary_investor,"],
-        "negotiation_status": ["array_to_string(array_agg(DISTINCT concat(negotiation_status.value, '#!#', COALESCE(negotiation_status.year, 0))), '##!##') as negotiation_status,"],
-        "implementation_status": ["array_to_string(array_agg(DISTINCT concat(implementation_status.value, '#!#', COALESCE(implementation_status.year, 0))), '##!##') as implementation_status,"],
+        "deal_count": ["COUNT(DISTINCT a.activity_identifier) as deal_count,",
+                       "COUNT(DISTINCT a.activity_identifier) as deal_count,"],
+        "availability": ["SUM(a.availability) / COUNT(a.activity_identifier) as availability,",
+                         "SUM(a.availability) / COUNT(a.activity_identifier) as availability,"],
+        "primary_investor": ["array_to_string(array_agg(DISTINCT p.name), '##!##') as primary_investor,",
+                             "array_to_string(array_agg(DISTINCT p.name), '##!##') as primary_investor,"],
+        "negotiation_status": [
+            """array_to_string(
+                    array_agg(
+                        DISTINCT concat(
+                            negotiation_status.attributes->'negotiation_status',
+                            '#!#',
+                            COALESCE(EXTRACT(YEAR FROM negotiation_status.date), 0)
+                        )
+                    ),
+                    '##!##'
+                ) as negotiation_status,"""
+        ],
+        "implementation_status": [
+            """array_to_string(
+                    array_agg(
+                        DISTINCT concat(
+                            implementation_status.attributes->'implementation_status',
+                            '#!#',
+                            COALESCE(EXTRACT(YEAR FROM implementation_status.date), 0)
+                        )
+                    ),
+                    '##!##'
+                ) as implementation_status,"""
+        ],
         "nature_of_the_deal": ["array_to_string(array_agg(DISTINCT nature_of_the_deal.value), '##!##') as nature_of_the_deal,"],
         "data_source": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, GROUP_CONCAT(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group) SEPARATOR '##!##') as data_source_url, GROUP_CONCAT(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group) SEPARATOR '##!##') as data_source_date, GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group) SEPARATOR '##!##') as data_source_organisation,"],
         "contract_farming": ["array_to_string(array_agg(DISTINCT contract_farming.value), '##!##') as contract_farming,"],
-        "intended_size": [" 0 AS intended_size,"],
-        "contract_size": [" 0 AS contract_size,"],
+        "intended_size": ["0 AS intended_size,"],
+        "contract_size": ["0 AS contract_size,"],
         "production_size": ["0 AS production_size,"],
         "location": ["array_to_string(array_agg(DISTINCT location.value), '##!##') AS location,"],
         "deal_id": ["a.activity_identifier as deal_id,", "a.activity_identifier as deal_id,"],
