@@ -3,9 +3,116 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
 
+import json, numbers
+
 from landmatrix.models import BrowseCondition
+from global_app.views.browse_condition_form import BrowseConditionForm
+from global_app.views.dummy_activity_protocol import DummyActivityProtocol
 
 DEFAULT_GROUP = "by-target-region"
+
+FILTER_VAR_ACT = ["target_country", "location", "intention", "intended_size", "contract_size", "production_size", "negotiation_status", "implementation_status", "crops", "nature", "contract_farming", "url", "type", "company", "type"]
+FILTER_VAR_INV = ["investor_name", "country"]
+SINGLE_SQL_QUERY_COLUMNS = ['location', 'crop']
+
+def parse_browse_filter_conditions(formset, order_by=None, limit=None):
+    data = {
+        "activity": {},
+        "deal_scope": "",
+        "investor": {},
+        "order_by": [],
+        "limit": "",
+    }
+    filters_act, filters_inv = {"tags":{}}, {"tags":{}}
+    if formset:
+        for i, form in enumerate(formset):
+            fl = {}
+            for j, (n, f) in enumerate(form.fields.items()):
+                key = "%s-%d-%s"%(formset.prefix, i, n)
+                if n == "value":
+                    # is ybd field?
+                    if formset.data.has_key("%s_0"%key):
+                        # just take the first row of the field
+                        value = formset.data.getlist("%s_0"%key)
+                        year = formset.data.get("%s_1"%key)
+                        fl.update({n:value, "year":year})
+                    else:
+                        value = formset.data.getlist(key)
+                        fl.update({n:value})
+                else:
+                    value = formset.data.get(key)
+                    fl.update({n:value})
+            variable = fl.get("variable")
+            op = fl.get("operator")
+            values = fl.get("value")
+            year = fl.get("year")
+            #skip if no variable is selected
+            if not variable:
+                continue
+            # variable is identifier
+            if variable == "-1":
+                identifier_filter = filters_act.get("identifier", [])
+                identifier_filter.append({
+                    "value": values[0] or "0",
+                    "op": op,
+                })
+                filters_act["identifier"] = identifier_filter
+            elif variable == "-2":
+                # deal scope
+                if len(values) == 2:
+                    data["deal_scope"] = "all"
+                elif len(values) == 1:
+                    data["deal_scope"] = values[0] == "10" and "domestic" or values[0] == "20" and "transnational" or ""
+            elif "inv_" in variable:
+                variable = variable[4:]
+                f = get_field_by_sh_key_id(variable)
+                values = [year and "%s##!##%s" % (get_display_value_by_field(f, value), year) or get_display_value_by_field(f, value) for value in values]
+                if f and "Region" in f.label:
+                    # region values not stored at activity/investor
+                    variable = "region"
+                elif f and "Country" in f.label:
+                    # countries are referred by keys
+                    values = fl.get("value")
+                filters_inv["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
+            else:
+                f = get_field_by_a_key_id(variable)
+                if year:
+                    values = ["%s##!##%s" % (get_display_value_by_field(f, value), year)]
+                else:
+                    values = [get_display_value_by_field(f, value) for value in values]
+                if f:
+                    if "Region" in f.label:
+                        # region values not stored at activity/investor
+                        variable = "region"
+                    elif "Country" in f.label or "Crops" in f.label:
+                        # countries and crops are referred by keys
+                        values = fl.get("value")
+                    elif "Negotiation status" in f.label:
+                        variable = "pi_negotiation_status"
+                filters_act["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
+        data["activity"] = filters_act
+        data["investor"] = filters_inv
+    if order_by:
+        for field in order_by:
+            field_pre = ""
+            field_GET = ""
+            if len(field) > 0 and field[0] == "-":
+                field_pre = "-"
+                field = field[1:]
+            try:
+                if "Investor " in field:
+                    form = get_field_by_sh_key_id(SH_Key.objects.get(key=field[9:]).id)
+                else:
+                    form = get_field_by_a_key_id(A_Key.objects.get(key=field).id)
+                if isinstance(form, IntegerField):
+                    field_GET = "+0"
+            except:
+                pass
+            data["order_by"].append("%s%s%s" % (field_pre, field, field_GET))
+    if limit:
+        data["limit"] = limit
+    return data
+
 
 class TableGroupView(TemplateView):
 
@@ -13,6 +120,7 @@ class TableGroupView(TemplateView):
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
+
 
     def dispatch(self, request, *args, **kwargs):
         is_download = False
@@ -49,16 +157,16 @@ class TableGroupView(TemplateView):
         else:
             # set default filters
             filter_dict = MultiValueDict()
-            for i, c in enumerate(rules):
+            for record, c in enumerate(rules):
                 rule_dict = MultiValueDict({
-                    "conditions_empty-%i-variable"% i: [c.variable],
-                    "conditions_empty-%i-operator"% i: [c.operator]
+                    "conditions_empty-%i-variable"% record: [c.variable],
+                    "conditions_empty-%i-operator"% record: [c.operator]
                 })
                 # pass comma separated list as multiple values for operators in/not in
                 if c.operator in ("in", "not_in"):
-                    rule_dict.setlist("conditions_empty-%i-value"%i, c.value.split(","))
+                    rule_dict.setlist("conditions_empty-%i-value"%record, c.value.split(","))
                 else:
-                    rule_dict["conditions_empty-%i-value"%i] = c.value
+                    rule_dict["conditions_empty-%i-value"%record] = c.value
                 filter_dict.update(rule_dict)
             filter_dict["conditions_empty-INITIAL_FORMS"] = len(rules)
             filter_dict["conditions_empty-TOTAL_FORMS"] = len(rules)
@@ -77,7 +185,7 @@ class TableGroupView(TemplateView):
         filters["group_by"] = group
         filters["group_value"] = group_value
         filters["starts_with"] = starts_with
-        ap = ActivityProtocol()
+        ap = DummyActivityProtocol()
         """ IMPORTANT! we are patching certain column fields out, so they don't get executed within the large SQL query.
             instead we later send a single query for each column and add the resulting data back into the large result object """
         if any(special_column in columns for special_column in SINGLE_SQL_QUERY_COLUMNS):
@@ -93,7 +201,9 @@ class TableGroupView(TemplateView):
 
         request.POST = MultiValueDict({"data": [json.dumps({"filters": filters, "columns": optimized_columns})]})
         res = ap.dispatch(request, action="list_group").content
-        query_result = json.loads(res)
+        print(res[:100])
+        query_result = json.loads(res.decode())
+        print(query_result['activities'][:10])
 
         if is_download or (not group_value and group not in self.QUERY_LIMITED_GROUPS) or starts_with:
             # dont limit query when download or group view
@@ -117,14 +227,15 @@ class TableGroupView(TemplateView):
                 cursor.execute(sql)
                 single_column_results.update({col: dict(cursor.fetchall())})
 
-        for i in limited_query_result:
+        for record in limited_query_result:
             offset = 1
             # iterate over database result
-            if not i[0]:
+            if not record[0]:
                 continue
-            name = i[0]
+            name = record[0]
             row = {}
             for j,c in enumerate(columns):
+                print(record, j, c)
                 # iterate over columns relevant for view or download
                 j = j + offset
                 # do not remove crop column if we expect a grouping in the sql string
@@ -132,12 +243,12 @@ class TableGroupView(TemplateView):
                     # artificially insert the data fetched from the smaller SQL query dataset, don't take it from the large set
                     # Assumption deal_id is second column in row!
                     offset -= 1
-                    if i[1] in single_column_results[c]:
-                        value = single_column_results[c][i[1]]
+                    if record[1] in single_column_results[c]:
+                        value = single_column_results[c][record[1]]
                     else:
                         value = None
                 else:
-                    value = i[j]
+                    value = record[j]
 
                 if not value:
                     if c == "data_source":
@@ -146,10 +257,10 @@ class TableGroupView(TemplateView):
                     continue
                 if c == "data_source":
                     data_sources = {
-                        "data_source_type": i[j],
-                        "data_source_url": i[j+1],
-                        "data_source_date": i[j+2],
-                        "data_source_organization": i[j+3],
+                        "data_source_type": record[j],
+                        "data_source_url": record[j+1],
+                        "data_source_date": record[j+2],
+                        "data_source_organization": record[j+3],
                     }
                     value = self.map_values_of_group(data_sources,  "%(data_source_date)s%(data_source_url)s%(data_source_organization)s%(data_source_type)s")
                     offset = offset + 3
@@ -224,14 +335,15 @@ class TableGroupView(TemplateView):
 
     def create_condition_formset(self):
         from django.forms.formsets import formset_factory
-        """
+        from django.utils.functional import curry
+
         ConditionFormset = formset_factory(BrowseConditionForm, extra=0)
         ConditionFormset.form = staticmethod(
             curry(BrowseConditionForm, variables_activity=FILTER_VAR_ACT, variables_investor=FILTER_VAR_INV)
         )
         return ConditionFormset
-        """
-        return None
+
+        #return None
 
     def _columns(self, group):
         columns = {
