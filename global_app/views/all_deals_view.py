@@ -148,7 +148,8 @@ def render_to_response(template_name, context,
 
 class TableGroupView(TemplateView):
 
-    template_name = "getthedetail/table/group-by.html"
+#    template_name = "getthedetail/table/group-by.html"
+    template_name = "all_deals.html"
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
