@@ -2,6 +2,8 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
+from django.http import HttpResponse
+from django.template import RequestContext, loader
 
 import json, numbers
 
@@ -112,6 +114,36 @@ def parse_browse_filter_conditions(formset, order_by=None, limit=None):
     if limit:
         data["limit"] = limit
     return data
+
+INTENTION_MAP = {
+    "Agriculture": ["Agriculture", "Biofuels", "Food crops", "Livestock", "Non-food agricultural commodities", "Agriunspecified"],
+    "Forestry": ["Forestry", "For wood and fibre", "For carbon sequestration/REDD", "Forestunspecified"],
+    "Mining": ["Mining",],
+    "Tourism": ["Tourism",],
+    "Land Speculation": ["Land Speculation",],
+    "Industry":["Industry",],
+    "Conservation": ["Conservation",],
+    "Renewable Energy": ["Renewable Energy",],
+    "Other": ["Other (please specify)",],
+}
+
+def get_intention(intention):
+    for k,v in INTENTION_MAP.items():
+        if intention in v:
+            return k
+    return intention
+
+def render_to_response(template_name, context,
+                       context_instance):
+    """
+    Returns a HttpResponse whose content is filled with the result of calling
+    django.template.loader.render_to_string() with the passed arguments.
+    """
+    # Some deprecated arguments were passed - use the legacy code path
+    content = loader.render_to_string(
+        template_name, context, context_instance)
+
+    return HttpResponse(content)
 
 
 class TableGroupView(TemplateView):
@@ -227,15 +259,21 @@ class TableGroupView(TemplateView):
                 cursor.execute(sql)
                 single_column_results.update({col: dict(cursor.fetchall())})
 
+# !!! target_country disabled because DB contains HSTORE attribute target_country sometimes in numerical form, sometimes as string (argh!)
+        columns.remove('target_country')
+        print('Columns: ', columns)
+
         for record in limited_query_result:
+            print('Record: ', record)
             offset = 1
             # iterate over database result
             if not record[0]:
                 continue
             name = record[0]
             row = {}
+
             for j,c in enumerate(columns):
-                print(record, j, c)
+                print('J: ', j, 'C: ', c)
                 # iterate over columns relevant for view or download
                 j = j + offset
                 # do not remove crop column if we expect a grouping in the sql string
@@ -249,6 +287,8 @@ class TableGroupView(TemplateView):
                         value = None
                 else:
                     value = record[j]
+
+                print('Value: ', value)
 
                 if not value:
                     if c == "data_source":
@@ -294,7 +334,8 @@ class TableGroupView(TemplateView):
                 elif c == "implementation_status":
                     value = [{"name": n.split("#!#")[0],"year": n.split("#!#")[1]} for n in value.split("##!##")]
                 elif c in ("intended_size", "production_size", "contract_size"):
-                    value = value and value.split(",")[0]
+#                    value = value and value.split(",")[0]
+                    value = value and value[0]
                 elif isinstance(value, numbers.Number):
                     value = int(value)
                 elif "##!##" in value:
@@ -304,6 +345,7 @@ class TableGroupView(TemplateView):
                     value = [value,]
                 row.update({c: value})
             items.append(row)
+
         if is_download and items:
             if download_format == "csv":
                 return self.write_to_csv(columns, self.format_items_for_download(items, columns), "%s.csv" % group)

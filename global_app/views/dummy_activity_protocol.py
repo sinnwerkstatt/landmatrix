@@ -234,7 +234,7 @@ class DummyActivityProtocol:
                 from_sql += "LEFT JOIN landmatrix_activityattributegroup AS level_of_accuracy ON (a.activity_identifier = level_of_accuracy.activity_identifier AND level_of_accuracy.key = 'level_of_accuracy') "
             else:
                 from_sql += '    ' + join_attributes(c, c)
-        print('from_sql: ', from_sql)
+
         return from_sql
 
     def _browse_filters_to_sql(self, filters):
@@ -451,6 +451,7 @@ class DummyActivityProtocol:
         "deal_availability": ["a.availability AS availability, ", "a.availability AS availability, "],
         "data_source_type": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
                              " data_source_type.value AS data_source_type, "],
+# !!! target_country disabled because DB contains HSTORE attribute target_country sometimes in numerical form, sometimes as string (argh!)
         "target_country": ["-- array_to_string(array_agg(DISTINCT deal_country.name), '##!##') as target_country, ",
                            "-- deal_country.name as target_country, "],
         "target_region": ["GROUP_CONCAT(DISTINCT deal_region.name SEPARATOR '##!##') as target_region, ",
