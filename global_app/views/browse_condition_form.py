@@ -2,8 +2,15 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.utils.html import conditional_escape
+from django.utils.encoding import force_text
+from django.utils.safestring import mark_safe
 
 from landmatrix.models import BrowseCondition
+from global_app.views.dummy_activity_protocol import DummyActivityProtocol
+
+""" Python 2/3 compatibility """
+def force_unicode(string): return force_text(string)
 
 class BaseModelForm(forms.ModelForm):
 
@@ -36,7 +43,7 @@ class BaseModelForm(forms.ModelForm):
             if bf.is_hidden:
                 if bf_errors:
                     top_errors.extend([u'(Hidden field %s) %s' % (name, force_unicode(e)) for e in bf_errors])
-                hidden_fields.append(unicode(bf))
+                hidden_fields.append(str(bf))
             else:
                 # Create a 'class="..."' atribute if the row should have any
                 # CSS classes applied.
@@ -67,7 +74,7 @@ class BaseModelForm(forms.ModelForm):
                 output.append(normal_row % {
                     'errors': force_unicode(bf_errors),
                     'label': force_unicode(label),
-                    'field': unicode(bf),
+                    'field': str(bf),
                     'help_text': help_text,
                     'html_class_attr': html_class_attr,
                     'name': name
@@ -155,7 +162,7 @@ class BrowseConditionForm(BaseModelForm):
         self.fields["variable"].choices = variables
         operators = []
         operators.append(("", "-----"))
-        operators.extend([(op, op_name[2]) for op, op_name in ActivityProtocol.OPERATION_MAP.items()])
+        operators.extend([(op, op_name[2]) for op, op_name in DummyActivityProtocol.OPERATION_MAP.items()])
         self.fields["operator"].choices = operators
 
 
