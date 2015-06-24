@@ -36,6 +36,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.humanize',
+
 #   works with django 1.8, not in 1.7:
 #    'django.contrib.postgres',
     'django_hstore',
