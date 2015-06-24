@@ -2,6 +2,9 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.http import HttpResponse
 from django.db import connection
+from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
+
 import json
 
 from landmatrix.models import Activity
@@ -166,7 +169,7 @@ class DummyActivityProtocol:
             "columns": columns_sql,
             "sub_columns": sub_columns_sql,
         }
-        print('SQL: ', sql)
+        if (settings.DEBUG): print('SQL: ', sql)
 
         cursor.execute(sql)
         return cursor.fetchall()
@@ -499,5 +502,17 @@ class DummyActivityProtocol:
         "deal_id": ["a.activity_identifier as deal_id,", "a.activity_identifier as deal_id,"],
         "latlon": ["GROUP_CONCAT(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value) SEPARATOR '##!##') as latlon,"],
     }
-
 #             AND (intention.value IS NULL OR intention.value != 'Mining')
+
+    ## operation => (numeric operand, character operand, description )
+    OPERATION_MAP = {
+        "is" :      ("= %s", "= '%s'", _("is")),
+        "in":       ("IN (%s)", "IN (%s)", _("is one of")),
+        "not_in":   ("NOT IN (%s)", "NOT IN (%s)", _("isn't any of")),
+        "gte":      (">= %s", ">= %s", _("is >=")),
+        "gt":       ("> %s", "> '%s'", _("is >")),
+        "lte":      ("<= %s", "<= '%s'", _("is <=")),
+        "lt":       ("< %s", "< '%s'", _("is <")),
+        "contains": ("LIKE '%%%%%%%%%s%%%%%%%%'", "LIKE '%%%%%%%%%s%%%%%%%%'", _("contains")),
+        "is_empty": ("IS NULL", "IS NULL", _("is empty")),
+    }

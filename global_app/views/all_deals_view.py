@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
 from django.http import HttpResponse
 from django.template import RequestContext, loader
+from django.conf import settings
 
 import json, numbers
 
@@ -234,9 +235,9 @@ class TableGroupView(TemplateView):
 
         request.POST = MultiValueDict({"data": [json.dumps({"filters": filters, "columns": optimized_columns})]})
         res = ap.dispatch(request, action="list_group").content
-        print(res[:100])
+        if (settings.DEBUG): print(res[:100], ' ...')
         query_result = json.loads(res.decode())
-        print(query_result['activities'][:10])
+        if (settings.DEBUG): print(query_result['activities'][:10], ' ...')
 
         if is_download or (not group_value and group not in self.QUERY_LIMITED_GROUPS) or starts_with:
             # dont limit query when download or group view
@@ -262,10 +263,10 @@ class TableGroupView(TemplateView):
 
 # !!! target_country disabled because DB contains HSTORE attribute target_country sometimes in numerical form, sometimes as string (argh!)
         columns.remove('target_country')
-        print('Columns: ', columns)
+        if (settings.DEBUG): print('Columns: ', columns)
 
         for record in limited_query_result:
-            print('Record: ', record)
+
             offset = 1
             # iterate over database result
             if not record[0]:
@@ -274,7 +275,6 @@ class TableGroupView(TemplateView):
             row = {}
 
             for j,c in enumerate(columns):
-                print('J: ', j, 'C: ', c)
                 # iterate over columns relevant for view or download
                 j = j + offset
                 # do not remove crop column if we expect a grouping in the sql string
@@ -288,8 +288,6 @@ class TableGroupView(TemplateView):
                         value = None
                 else:
                     value = record[j]
-
-                print('Value: ', value)
 
                 if not value:
                     if c == "data_source":
