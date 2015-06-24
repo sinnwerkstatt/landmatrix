@@ -87,6 +87,10 @@ class DummyActivityProtocol:
                 elif c == "data_source":
                     sub_columns_sql += "            sub.data_source_type as data_source_type, sub.data_source_url as data_source_url, sub.data_source_date data_source_date, sub.data_source_organisation as data_source_organisation,\n"
                     columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
+
+# !!! target_country disabled because DB contains HSTORE attribute target_country sometimes in numerical form, sometimes as string (argh!)
+                elif c == "target_country":
+                    columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
                 else:
                     columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
                     sub_columns_sql += "            sub.%(name)s as %(name)s,\n" % {"name": c}
@@ -162,7 +166,7 @@ class DummyActivityProtocol:
             "columns": columns_sql,
             "sub_columns": sub_columns_sql,
         }
-        print(sql)
+        print('SQL: ', sql)
 
         cursor.execute(sql)
         return cursor.fetchall()
@@ -175,8 +179,7 @@ class DummyActivityProtocol:
             # is join of invovlements and stakeholders necessary?
             from_sql += """
             LEFT JOIN landmatrix_involvement AS i ON (i.fk_activity_id = a.id)
-            LEFT JOIN landmatrix_stakeholder AS s ON (i.fk_stakeholder_id = s.id)
-            """
+            LEFT JOIN landmatrix_stakeholder AS s ON (i.fk_stakeholder_id = s.id)"""
 
         for c in join_columns:
             if c in ("intended_size", "contract_size", "production_size"):
@@ -184,10 +187,10 @@ class DummyActivityProtocol:
                 continue
             elif c == "investor_country" or c == "investor_region":
                 if "investor_country" not in from_sql:
-                    from_sql += join_attributes('skvl1', 'country', attribute_table='landmatrix_stakeholderattributegroup', attribute_field='fk_stakeholder_id') \
-                    + """
-                        LEFT JOIN landmatrix_country investor_country ON (investor_country.id = CAST(skvl1.attributes->'country' AS numeric))
-                        LEFT JOIN landmatrix_region investor_region ON (investor_region.id = investor_country.fk_region_id)"""
+                    from_sql += \
+                        join_attributes('skvl1', 'country', attribute_table='landmatrix_stakeholderattributegroup', attribute_field='fk_stakeholder_id') + """
+            LEFT JOIN landmatrix_country AS investor_country ON (investor_country.id = CAST(skvl1.attributes->'country' AS numeric))
+            LEFT JOIN landmatrix_region AS investor_region ON (investor_region.id = investor_country.fk_region_id)"""
             elif c == "investor_name":
                 from_sql += join_attributes('investor_name', 'investor_name',
                                             attribute_table='landmatrix_stakeholderattributegroup',
@@ -198,16 +201,20 @@ class DummyActivityProtocol:
                 """
             elif c == "crop":
                 from_sql += join_attributes('akvl1', 'crops') + """
-                               LEFT JOIN crops crop ON (crop.id = akvl1.value)"""
+            LEFT JOIN crops crop ON (crop.id = akvl1.value)"""
             elif c == "target_country" or c == "target_region":
                 if "target_country" not in from_sql:
-                    from_sql += join_attributes('target_country', 'target_country') + \
-                                """
-                                       LEFT JOIN landmatrix_country AS deal_country ON (CAST(target_country.attributes->'target_country' AS numeric) = deal_country.id)
-                                       LEFT JOIN landmatrix_region AS deal_region ON (deal_country.fk_region_id = deal_region.id)
-                                """
+# !!! target_country disabled because DB contains HSTORE attribute target_country sometimes in numerical form, sometimes as string (argh!)
+#                   from_sql +=
+                    dummy = join_attributes('target_country', 'target_country') + """
+            LEFT JOIN landmatrix_country AS deal_country ON (CAST(target_country.attributes->'target_country' AS numeric) = deal_country.id)
+            LEFT JOIN landmatrix_region AS deal_region ON (deal_country.fk_region_id = deal_region.id)
+            """
+
             elif c == "primary_investor":
-                from_sql += "LEFT JOIN landmatrix_primaryinvestor AS p ON (i.fk_primary_investor_id = p.id) \n"
+                from_sql += """
+            LEFT JOIN landmatrix_primaryinvestor AS p ON (i.fk_primary_investor_id = p.id)
+            """
             elif c == "data_source_type":
                 # only add data_source_type if not data_source added
                 if "data_source" not in join_columns:
@@ -227,6 +234,7 @@ class DummyActivityProtocol:
                 from_sql += "LEFT JOIN landmatrix_activityattributegroup AS level_of_accuracy ON (a.activity_identifier = level_of_accuracy.activity_identifier AND level_of_accuracy.key = 'level_of_accuracy') "
             else:
                 from_sql += '    ' + join_attributes(c, c)
+        print('from_sql: ', from_sql)
         return from_sql
 
     def _browse_filters_to_sql(self, filters):
@@ -424,7 +432,7 @@ class DummyActivityProtocol:
             %(where_filter_activity)s
             GROUP BY a.id
             ) AS sub ON (sub.id = a.id)
-         %(group_by)s, sub.name, sub.deal_id, sub.target_country, sub.primary_investor, sub.investor_name, sub.investor_country, sub.intention, sub.negotiation_status, sub.implementation_status
+         %(group_by)s, sub.name, sub.deal_id, sub.primary_investor, sub.investor_name, sub.investor_country, sub.intention, sub.negotiation_status, sub.implementation_status
          %(order_by)s
          %(limit)s;
     """
@@ -443,8 +451,8 @@ class DummyActivityProtocol:
         "deal_availability": ["a.availability AS availability, ", "a.availability AS availability, "],
         "data_source_type": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
                              " data_source_type.value AS data_source_type, "],
-        "target_country": ["array_to_string(array_agg(DISTINCT deal_country.name), '##!##') as target_country, ",
-                           "deal_country.name as target_country, "],
+        "target_country": ["-- array_to_string(array_agg(DISTINCT deal_country.name), '##!##') as target_country, ",
+                           "-- deal_country.name as target_country, "],
         "target_region": ["GROUP_CONCAT(DISTINCT deal_region.name SEPARATOR '##!##') as target_region, ",
                           " deal_region.name as target_region, "],
         "deal_size": ["IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,",
