@@ -4,28 +4,90 @@ from migrate import V1, V2
 
 from django.db import models
 
+"""
+    Map a model from Landmatrix V1 to Landmatrix V2.
+    Usage:
+    - Subclass MapModel
+    - set the class variables old_class and new_class to the models in V1 and V2
+    - optionally:
+      - set the class variable depends to a list of mappings that need to be run before this
+      - set the class variable attributes to a dict of mappings of old attribute names to new attribute names
+      - optionally, the second parameter of the mapping can be a pir of (new_attribute_name, processing_function)
+    - run map_all() (or map() to convert a single record)
+
+    Example:
+
+        def year_to_date(year):
+            return None if year is None else str(year)+'-01-07'
+
+        class MapActivityAttributeGroup(MapModel):
+            old_class = editor.models.ActivityAttributeGroup
+            new_class = landmatrix.models.ActivityAttributeGroup
+            attributes = {
+                'activity': 'fk_activity',
+                'language': 'fk_language',
+                'year': ('date', year_to_date)
+            }
+            depends = [ MapActivity, MapLanguage ]
+
+"""
 class MapModel:
 
     attributes = { }
+    depends = []
 
     @classmethod
-    def map(cls, id, printit=False, save=False):
-        old = cls.old_class.objects.using(V1).get(id=id)
-        new = cls.new_class()
-        cls._copy_attributes(old, new)
+    def map(cls, id, save=False):
 
-        if printit:
-            print(old, new)
+        cls._check_dependencies()
+
+        new = cls.new_class()
+        cls._copy_attributes(cls.old_class.objects.using(V1).get(id=id), new)
+
         if save:
             new.save(using=V2)
 
     @classmethod
-    def map_all(cls):
-        for index, id in enumerate(cls.old_class.objects.using(V1).values('id')):
-            print(index+1, '/', cls.old_class.objects.using(V1).count(), end="\r")
-            cls.map(id['id'])
-        print()
+    def map_all(cls, save=False):
+        cls._start_timer()
 
+        for index, id in enumerate(cls.old_class.objects.using(V1).values('id')):
+            cls.map(id['id'], save=save)
+            cls._print_status(id, index)
+
+        cls._done = True
+        cls._print_summary()
+
+
+    @classmethod
+    def _start_timer(cls):
+        from time import time
+        cls.start_time = time()
+
+    @classmethod
+    def _print_status(cls, id, index):
+        print(
+            "%-16s: %7d (%d/%d)" % (
+                cls.old_class.__name__, int(id['id']), (index + 1), cls.old_class.objects.using(V1).count()
+            ),
+            end="\r"
+        )
+
+    @classmethod
+    def _print_summary(cls):
+        from time import time
+        from datetime import timedelta
+        print(
+            "%-16s: %8d objects, %s" % (
+                cls.old_class.__name__, cls.old_class.objects.using(V1).count(), str(timedelta(seconds=time()-cls.start_time))
+            )
+        )
+
+    @classmethod
+    def _check_dependencies(cls):
+        for dependency in cls.depends:
+            if not dependency._done: raise RuntimeError("dependency " + str(dependency) + " not done")
+    _done = False
 
     @classmethod
     def _copy_attributes(cls, old, new):
@@ -63,5 +125,6 @@ class MapModel:
 
     @classmethod
     def _get_related(cls, new_attribute, old, old_attribute):
+        if getattr(old, old_attribute) is None: return None
         related_class = cls._get_field(new_attribute).rel.to
         return related_class.objects.using(V2).get(id=getattr(old, old_attribute).id)
