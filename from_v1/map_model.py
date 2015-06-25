@@ -2,7 +2,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from migrate import V1, V2
 
-from django.db import models
+from django.db import models, transaction
 
 """
     Map a model from Landmatrix V1 to Landmatrix V2.
@@ -39,8 +39,6 @@ class MapModel:
     @classmethod
     def map(cls, id, save=False):
 
-        cls._check_dependencies()
-
         new = cls.new_class()
         cls._copy_attributes(cls.old_class.objects.using(V1).get(id=id), new)
 
@@ -48,46 +46,43 @@ class MapModel:
             new.save(using=V2)
 
     @classmethod
+    @transaction.atomic
     def map_all(cls, save=False):
+
+        cls._check_dependencies()
         cls._start_timer()
 
-        for index, id in enumerate(cls.old_class.objects.using(V1).values('id')):
-            cls.map(id['id'], save=save)
-            cls._print_status(id, index)
+        if True:
+            for index, record in enumerate(cls.old_class.objects.using(V1).values()):
+                new = cls.new_class()
+                if type(new).__name__ == 'ActivityAttributeGroup':
+                    # print(record)
+                    pass
+                for attribute, value in record.items():
+                    new_attribute = cls._new_fieldname(attribute)
+                    if type(new_attribute) is tuple and callable(new_attribute[1]):
+                        setattr(new, new_attribute[0], new_attribute[1](value))
+                    else:
+                        setattr(new, new_attribute, value)
+                if (save): new.save()
+                cls._print_status(record, index)
+
+        else:
+            for index, id in enumerate(cls.old_class.objects.using(V1).values('id')):
+                cls.map(id['id'], save=save)
+                cls._print_status(id, index)
 
         cls._done = True
         cls._print_summary()
 
 
     @classmethod
-    def _start_timer(cls):
-        from time import time
-        cls.start_time = time()
-
-    @classmethod
-    def _print_status(cls, id, index):
-        print(
-            "%-16s: %7d (%d/%d)" % (
-                cls.old_class.__name__, int(id['id']), (index + 1), cls.old_class.objects.using(V1).count()
-            ),
-            end="\r"
-        )
-
-    @classmethod
-    def _print_summary(cls):
-        from time import time
-        from datetime import timedelta
-        print(
-            "%-16s: %8d objects, %s" % (
-                cls.old_class.__name__, cls.old_class.objects.using(V1).count(), str(timedelta(seconds=time()-cls.start_time))
-            )
-        )
-
-    @classmethod
-    def _check_dependencies(cls):
-        for dependency in cls.depends:
-            if not dependency._done: raise RuntimeError("dependency " + str(dependency) + " not done")
-    _done = False
+    def _new_fieldname(cls, attribute):
+        if attribute in cls._get_fieldnames().keys():
+            return cls._get_fieldnames()[attribute]
+        if attribute[:-3] in cls._get_fieldnames().keys():
+            return cls._get_fieldnames()[attribute[:-3]] + '_id'
+        raise RuntimeError('Attribute not found: ' + attribute)
 
     @classmethod
     def _copy_attributes(cls, old, new):
@@ -103,7 +98,7 @@ class MapModel:
 
     @classmethod
     def _get_attribute(cls, old, old_attribute, new_attribute):
-        return cls._get_related(new_attribute, old, old_attribute) if cls._is_relation(new_attribute) else getattr(old, old_attribute)
+        return cls._get_related(new_attribute, getattr(old, old_attribute)) if cls._is_relation(new_attribute) else getattr(old, old_attribute)
 
     @classmethod
     def _get_fieldnames(cls):
@@ -124,7 +119,42 @@ class MapModel:
         return cls.new_class._meta.get_field(fieldname)
 
     @classmethod
-    def _get_related(cls, new_attribute, old, old_attribute):
-        if getattr(old, old_attribute) is None: return None
+    def _get_related(cls, new_attribute, old_attribute):
+        if old_attribute is None: return None
         related_class = cls._get_field(new_attribute).rel.to
-        return related_class.objects.using(V2).get(id=getattr(old, old_attribute).id)
+        return related_class.objects.using(V2).get(id=old_attribute.id)
+
+    @classmethod
+    def _check_dependencies(cls):
+        for dependency in cls.depends:
+            if not dependency._done: raise RuntimeError("dependency " + str(dependency) + " not done")
+    _done = False
+
+    @classmethod
+    def _start_timer(cls):
+        from time import time
+        cls.start_time = time()
+
+    @classmethod
+    def _print_status(cls, record, index):
+        if not cls._count:
+            cls._count = cls.old_class.objects.using(V1).count()
+        if index % 10 == 0:
+            print(
+                "%-30s: %8d (%d/%d)" % (
+                    cls.old_class.__name__, int(record['id']), (index + 1), cls._count
+                ),
+                end="\r"
+            )
+    _count = 0
+
+    @classmethod
+    def _print_summary(cls):
+        from time import time
+        from datetime import timedelta
+        print(
+            "%-30s: %8d objects, %s" % (
+                cls.old_class.__name__, cls.old_class.objects.using(V1).count(), str(timedelta(seconds=time()-cls.start_time))
+            )
+        )
+

@@ -27,7 +27,11 @@ if __name__ == '__main__':
 
     from map_model_implementations import *
 
-    for map_class in [ MapLanguage, MapStatus, MapActivity, MapStakeholder, MapPrimaryInvestor, MapInvolvement,
-                       MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition, MapActivityAttributeGroup,
-                       MapStakeholderAttributeGroup ]:
+    for map_class in [
+        MapLanguage, MapStatus,
+        MapActivity, MapActivityAttributeGroup,
+        MapStakeholder, MapStakeholderAttributeGroup,
+        MapPrimaryInvestor, MapInvolvement,
+        MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
+    ]:
         map_class.map_all(save=True)
