@@ -15,8 +15,6 @@ def load_project(proj_path, app_name):
     from django.core.wsgi import get_wsgi_application
     application = get_wsgi_application()
 
-    print(os.getcwd(), application)
-
 BASE_PATH = '/home/lene/workspace'
 
 load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
@@ -28,12 +26,6 @@ import editor.models
 V1, V2 = 'v1_pg', 'v2'
 MODELS = {
     V1: {
-        editor.models.Language: [],
-        editor.models.Activity: [],
-        editor.models.ActivityAttributeGroup: [],
-        editor.models.Status: [],
-        editor.models.Stakeholder: [],
-        editor.models.StakeholderAttributeGroup: [],
         editor.models.PrimaryInvestor: [],
         editor.models.Involvement: [],
         editor.models.Country: [],
@@ -42,12 +34,6 @@ MODELS = {
         editor.models.BrowseCondition: [],
     },
     V2:    {
-        landmatrix.models.Language: [],
-        landmatrix.models.Activity: [],
-        landmatrix.models.ActivityAttributeGroup: [],
-        landmatrix.models.Status: [],
-        landmatrix.models.Stakeholder: [],
-        landmatrix.models.StakeholderAttributeGroup: [],
         landmatrix.models.PrimaryInvestor: [],
         landmatrix.models.Involvement: [],
         landmatrix.models.Country: [],
@@ -57,58 +43,62 @@ MODELS = {
     }
 }
 
-class MapModel:
+if __name__ == '__main__':
 
-    attributes = { }
+    from map_model import MapModel
 
-    @classmethod
-    def map(cls, id):
-        old = cls.old_class.objects.using(V1).get(id=id)
-        new = cls.new_class()
-        for (old_attribute, new_attribute) in cls.get_fields().items():
-            setattr(new, new_attribute, getattr(old, old_attribute))
+    class MapLanguage(MapModel):
+        old_class = editor.models.Language
+        new_class = landmatrix.models.Language
 
-        if True:
-            print(old, new)
-        else:
-            new.save(using=V2)
+    class MapStatus(MapModel):
+        old_class = editor.models.Status
+        new_class = landmatrix.models.Status
 
-    @classmethod
-    def map_all(cls):
-        for id in cls.old_class.objects.using(V1).values('id'):
-            cls.map(id['id'])
+    class MapActivity(MapModel):
+        old_class = editor.models.Activity
+        new_class = landmatrix.models.Activity
 
-    @classmethod
-    def get_fields(cls):
-        fields = { cls.field_to_str(field): cls.field_to_str(field) for field in cls.old_class._meta.fields }
-        fields.update(cls.attributes)
-        return fields
+    def year_to_date(year):
+        return None if year is None else str(year)+'-01-07'
 
-    @classmethod
-    def field_to_str(cls, field):
-        return str(field).split('.')[-1]
+    class MapActivityAttributeGroup(MapModel):
+        old_class = editor.models.ActivityAttributeGroup
+        new_class = landmatrix.models.ActivityAttributeGroup
+        attributes = {
+            'activity': 'fk_activity',
+            'language': 'fk_language',
+            'year': ('date', year_to_date)
+        }
+
+    class MapStakeholder(MapModel):
+        old_class = editor.models.Stakeholder
+        new_class = landmatrix.models.Stakeholder
+
+    class MapStakeholderAttributeGroup(MapModel):
+        old_class = editor.models.StakeholderAttributeGroup
+        new_class = landmatrix.models.StakeholderAttributeGroup
+        attributes = {
+            'stakeholder': 'fk_stakeholder',
+            'language': 'fk_language',
+        }
 
 
-class MapLanguage(MapModel):
-    old_class = editor.models.Language
-    new_class = landmatrix.models.Language
+    for version in [ V1, V2 ]:
+        for cls in MODELS[version].keys():
+            print(str(cls), cls.objects.using(version).count())
 
-class MapStatus(MapModel):
-    old_class = editor.models.Status
-    new_class = landmatrix.models.Status
+    MapLanguage.map_all()
 
-class MapActivity(MapModel):
-    old_class = editor.models.Activity
-    new_class = landmatrix.models.Activity
-    attributes = { }
+    MapStatus.map_all()
 
-for version in [ V1, V2 ]:
-    for cls in MODELS[version].keys():
-        print(str(cls), cls.objects.using(version).count())
+    MapActivity.map(editor.models.Activity.objects.using(V1).last().id)
 
-MapLanguage.map(editor.models.Language.objects.using(V1).last().id)
-MapLanguage.map_all()
+    # map a random ActivityAttributeGroup
+    MapActivityAttributeGroup.map(editor.models.ActivityAttributeGroup.objects.using(V1).last().id)
+    # map an ActivityAttributeGroup with a year
+    MapActivityAttributeGroup.map(315980)
 
-MapStatus.map(editor.models.Status.objects.using(V1).last().id)
+    MapStakeholder.map(editor.models.Stakeholder.objects.using(V1).last().id, printit=True)
 
-MapActivity.map(editor.models.Activity.objects.using(V1).last().id)
+    MapStakeholderAttributeGroup.map(editor.models.StakeholderAttributeGroup.objects.using(V1).last().id, printit=True)
