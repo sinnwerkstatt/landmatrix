@@ -117,7 +117,32 @@ if USE_PG:
             'PASSWORD': 'landmatrix',
             'HOST': '',
             'PORT': '',
-        }
+        },
+        'v1_pg': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'landmatrix_1',                   # Or path to database file if using sqlite3.
+            'USER': 'root',
+            'PASSWORD': 'moin',
+            'HOST': '',
+            'PORT': '',
+        },
+        'v1_my': {
+            'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'landmatrix_1',                   # Or path to database file if using sqlite3.
+            'USER': 'root',                      # Not used with sqlite3.
+            'PASSWORD': 'moin',                  # Not used with sqlite3.
+            'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+            'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+        },
+        'v2': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'landmatrix_2',                   # Or path to database file if using sqlite3.
+            'USER': 'landmatrix',
+            'PASSWORD': 'landmatrix',
+            'HOST': '',
+            'PORT': '',
+        },
+
     }
 else:
     DATABASES = {

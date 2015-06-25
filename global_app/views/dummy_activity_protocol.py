@@ -7,7 +7,6 @@ from django.conf import settings
 
 import json
 
-from landmatrix.models import Activity
 
 def get_join_columns(columns, group, group_value):
     if group_value and group not in columns:
