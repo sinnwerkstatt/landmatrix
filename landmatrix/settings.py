@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# whether to show SQL generated (is referenced below when configuring logging)
+LOG_DB_QUERIES = False
+
 
 # Application definition
 
@@ -107,50 +110,40 @@ WSGI_APPLICATION = 'landmatrix.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-USE_PG = 1
-if USE_PG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'landmatrix_2',                   # Or path to database file if using sqlite3.
-            'USER': 'landmatrix',
-            'PASSWORD': 'landmatrix',
-            'HOST': '',
-            'PORT': '',
-        },
-        'v1_pg': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'landmatrix_1',                   # Or path to database file if using sqlite3.
-            'USER': 'root',
-            'PASSWORD': 'moin',
-            'HOST': '',
-            'PORT': '',
-        },
-        'v1_my': {
-            'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'landmatrix_1',                   # Or path to database file if using sqlite3.
-            'USER': 'root',                      # Not used with sqlite3.
-            'PASSWORD': 'moin',                  # Not used with sqlite3.
-            'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-            'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
-        },
-        'v2': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'landmatrix_2',                   # Or path to database file if using sqlite3.
-            'USER': 'landmatrix',
-            'PASSWORD': 'landmatrix',
-            'HOST': '',
-            'PORT': '',
-        },
-
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'landmatrix_2',                   # Or path to database file if using sqlite3.
+        'USER': 'landmatrix',
+        'PASSWORD': 'landmatrix',
+        'HOST': '',
+        'PORT': '',
+    },
+    'v1_pg': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'landmatrix_1',                   # Or path to database file if using sqlite3.
+        'USER': 'root',
+        'PASSWORD': 'moin',
+        'HOST': '',
+        'PORT': '',
+    },
+    'v1_my': {
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'landmatrix_1',                   # Or path to database file if using sqlite3.
+        'USER': 'root',                      # Not used with sqlite3.
+        'PASSWORD': 'moin',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+    },
+    'v2': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'landmatrix_2',                   # Or path to database file if using sqlite3.
+        'USER': 'landmatrix',
+        'PASSWORD': 'landmatrix',
+        'HOST': '',
+        'PORT': '',
+    },
+}
 
 
 # Internationalization
@@ -218,3 +211,25 @@ CMS_TEMPLATES = (
     ('start.html', 'Start'),
 )
 
+if LOG_DB_QUERIES:
+    LOGGING = {
+        'version': 1,
+        'filters': {
+            'require_debug_true': {
+                '()': 'django.utils.log.RequireDebugTrue',
+            }
+        },
+        'handlers': {
+            'console': {
+                'level': 'DEBUG',
+                'filters': ['require_debug_true'],
+                'class': 'logging.StreamHandler',
+            }
+        },
+        'loggers': {
+            'django.db.backends': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+            }
+        }
+    }
