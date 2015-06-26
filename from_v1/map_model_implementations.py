@@ -22,15 +22,42 @@ def year_to_date(year):
     if not year: return None
     return ('0000'+str(year)+'-01-07')[-10:]
 
+def clean_target_country(attributes):
+
+    def extract_target_country(part):
+        values = part.split('=>')
+        return values[1].strip('"')
+
+    def replace_country_name_with_id(target_country):
+        from editor.models import Country
+        from migrate import V1
+        country = Country.objects.using(V1).filter(name=target_country).values('id')[0]['id']
+        return '"target_country"=>"' + str(country) + '"'
+
+    if not 'target_country' in attributes: return attributes
+
+    parts = attributes.split(', ')
+    for index, part in enumerate(parts):
+        if part.startswith('"target_country"'):
+            target_country = extract_target_country(part)
+            if target_country.isdigit():
+                return attributes
+
+            parts[index] = replace_country_name_with_id(target_country)
+            break
+
+    return ', '.join(parts)
+
 class MapActivityAttributeGroup(MapModel):
     old_class = editor.models.ActivityAttributeGroup
     new_class = landmatrix.models.ActivityAttributeGroup
     attributes = {
         'activity': 'fk_activity',
         'language': 'fk_language',
-        'year': ('date', year_to_date)
+        'year': ('date', year_to_date),
+        'attributes': ('attributes', clean_target_country)
     }
-    depends = [ MapActivity, MapLanguage ]
+#    depends = [ MapActivity, MapLanguage ]
 
 class MapStakeholder(MapModel):
     old_class = editor.models.Stakeholder

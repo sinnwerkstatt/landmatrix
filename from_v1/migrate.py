@@ -28,10 +28,13 @@ if __name__ == '__main__':
     from map_model_implementations import *
     from editor.models import ActivityAttributeGroup
 
+#    MapActivityAttributeGroup.map(ActivityAttributeGroup.objects.using(V1).last().id)
+
     for map_class in [
-        MapLanguage, MapStatus, MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
-        MapStakeholder, MapActivity, MapPrimaryInvestor, MapInvolvement,
+        MapLanguage, MapStatus,
+        MapActivity, MapActivityAttributeGroup,
+        MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
+        MapStakeholder, MapPrimaryInvestor, MapInvolvement,
         MapStakeholderAttributeGroup,
-        MapActivityAttributeGroup,
     ]:
         map_class.map_all(save=True)
