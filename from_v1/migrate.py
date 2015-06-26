@@ -26,12 +26,12 @@ load_project(BASE_PATH+'/land-matrix', 'editor')
 if __name__ == '__main__':
 
     from map_model_implementations import *
+    from editor.models import ActivityAttributeGroup
 
     for map_class in [
-        MapLanguage, MapStatus,
-        MapActivity, MapActivityAttributeGroup,
-        MapStakeholder, MapStakeholderAttributeGroup,
-        MapPrimaryInvestor, MapInvolvement,
-        MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
+        MapLanguage, MapStatus, MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
+        MapStakeholder, MapActivity, MapPrimaryInvestor, MapInvolvement,
+        MapStakeholderAttributeGroup,
+        MapActivityAttributeGroup,
     ]:
         map_class.map_all(save=True)

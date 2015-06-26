@@ -38,12 +38,8 @@ class MapModel:
 
     @classmethod
     def map(cls, id, save=False):
-
-        new = cls.new_class()
-        cls._copy_attributes(cls.old_class.objects.using(V1).get(id=id), new)
-
-        if save:
-            new.save(using=V2)
+        record = cls.old_class.objects.using(V1).filter(id=id).values()[0]
+        cls.map_record(record, save)
 
     @classmethod
     @transaction.atomic
@@ -52,29 +48,26 @@ class MapModel:
         cls._check_dependencies()
         cls._start_timer()
 
-        if True:
-            for index, record in enumerate(cls.old_class.objects.using(V1).values()):
-                new = cls.new_class()
-                if type(new).__name__ == 'ActivityAttributeGroup':
-                    # print(record)
-                    pass
-                for attribute, value in record.items():
-                    new_attribute = cls._new_fieldname(attribute)
-                    if type(new_attribute) is tuple and callable(new_attribute[1]):
-                        setattr(new, new_attribute[0], new_attribute[1](value))
-                    else:
-                        setattr(new, new_attribute, value)
-                if (save): new.save()
-                cls._print_status(record, index)
-
-        else:
-            for index, id in enumerate(cls.old_class.objects.using(V1).values('id')):
-                cls.map(id['id'], save=save)
-                cls._print_status(id, index)
+        for index, record in enumerate(cls.old_class.objects.using(V1).values()):
+            cls.map_record(record, save)
+            cls._print_status(record, index)
 
         cls._done = True
         cls._print_summary()
 
+    @classmethod
+    def map_record(cls, record, save=False):
+        new = cls.new_class()
+        for attribute, value in record.items():
+            cls.set_attribute_processed(new, cls._new_fieldname(attribute), value)
+        if (save): new.save(using=V2)
+
+    @classmethod
+    def set_attribute_processed(cls, object, attribute, value):
+        if type(attribute) is tuple and callable(attribute[1]):
+            setattr(object, attribute[0], attribute[1](value))
+        else:
+            setattr(object, attribute, value)
 
     @classmethod
     def _new_fieldname(cls, attribute):
@@ -85,44 +78,10 @@ class MapModel:
         raise RuntimeError('Attribute not found: ' + attribute)
 
     @classmethod
-    def _copy_attributes(cls, old, new):
-        for (old_attribute, new_attribute) in cls._get_fieldnames().items():
-            cls._process_and_copy_attribute(old, old_attribute, new, new_attribute)
-
-    @classmethod
-    def _process_and_copy_attribute(cls, old, old_attribute, new, new_attribute):
-        if type(new_attribute) is tuple and callable(new_attribute[1]):
-            setattr(new, new_attribute[0], new_attribute[1](getattr(old, old_attribute)))
-        else:
-            setattr(new, new_attribute, cls._get_attribute(old, old_attribute, new_attribute))
-
-    @classmethod
-    def _get_attribute(cls, old, old_attribute, new_attribute):
-        return cls._get_related(new_attribute, getattr(old, old_attribute)) if cls._is_relation(new_attribute) else getattr(old, old_attribute)
-
-    @classmethod
     def _get_fieldnames(cls):
-        fields = { cls._field_to_str(field): cls._field_to_str(field) for field in cls.old_class._meta.fields }
+        fields = { field_to_str(field): field_to_str(field) for field in cls.old_class._meta.fields }
         fields.update(cls.attributes)
         return fields
-
-    @classmethod
-    def _field_to_str(cls, field):
-        return str(field).split('.')[-1]
-
-    @classmethod
-    def _is_relation(cls, fieldname):
-        return type(cls._get_field(fieldname)) is models.ForeignKey
-
-    @classmethod
-    def _get_field(cls, fieldname):
-        return cls.new_class._meta.get_field(fieldname)
-
-    @classmethod
-    def _get_related(cls, new_attribute, old_attribute):
-        if old_attribute is None: return None
-        related_class = cls._get_field(new_attribute).rel.to
-        return related_class.objects.using(V2).get(id=old_attribute.id)
 
     @classmethod
     def _check_dependencies(cls):
@@ -158,3 +117,5 @@ class MapModel:
             )
         )
 
+def field_to_str(field):
+        return str(field).split('.')[-1]
