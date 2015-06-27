@@ -42,7 +42,7 @@ class MapModel:
         cls.map_record(record, save)
 
     @classmethod
-    @transaction.atomic
+    @transaction.atomic(using=V2)
     def map_all(cls, save=False):
 
         cls._check_dependencies()
