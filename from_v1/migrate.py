@@ -26,8 +26,8 @@ load_project(BASE_PATH+'/land-matrix', 'editor')
 if __name__ == '__main__':
 
     from map_model_implementations import *
-    from editor.models import ActivityAttributeGroup
 
+#    from editor.models import ActivityAttributeGroup
 #    MapActivityAttributeGroup.map(ActivityAttributeGroup.objects.using(V1).last().id)
 
     for map_class in [
