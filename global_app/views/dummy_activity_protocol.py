@@ -19,8 +19,7 @@ def get_join_columns(columns, group, group_value):
 def join_attributes(table_alias, attribute, attribute_table='landmatrix_activityattributegroup', attribute_field='fk_activity_id'):
     from string import Template
     template = Template("""
-          LEFT JOIN $table AS $alias
-            ON (a.id = $alias.$field AND LENGTH($alias.attributes->'$attr') > 0)"""
+          LEFT JOIN $table AS $alias ON (a.id = $alias.$field AND $alias.attributes ? '$attr')"""
     )
     return template.substitute(alias=table_alias, attr=attribute, table=attribute_table, field=attribute_field)
 
@@ -88,10 +87,6 @@ class DummyActivityProtocol:
                     sub_columns_sql += "            ARRAY_AGG(%(name)s.attributes->'%(name)s' ORDER BY %(name)s.date DESC) as %(name)s,\n" % {"name": c}
                 elif c == "data_source":
                     sub_columns_sql += "            sub.data_source_type as data_source_type, sub.data_source_url as data_source_url, sub.data_source_date data_source_date, sub.data_source_organisation as data_source_organisation,\n"
-                    columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
-
-# !!! target_country disabled because DB contains HSTORE attribute target_country sometimes in numerical form, sometimes as string (argh!)
-                elif c == "target_country":
                     columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
                 else:
                     columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
@@ -206,9 +201,8 @@ class DummyActivityProtocol:
             LEFT JOIN crops crop ON (crop.id = akvl1.value)"""
             elif c == "target_country" or c == "target_region":
                 if "target_country" not in from_sql:
-# !!! target_country disabled because DB contains HSTORE attribute target_country sometimes in numerical form, sometimes as string (argh!)
-#                   from_sql +=
-                    dummy = join_attributes('target_country', 'target_country') + """
+                    from_sql += \
+                        join_attributes('target_country', 'target_country') + """
             LEFT JOIN landmatrix_country AS deal_country ON (CAST(target_country.attributes->'target_country' AS numeric) = deal_country.id)
             LEFT JOIN landmatrix_region AS deal_region ON (deal_country.fk_region_id = deal_region.id)
             """
@@ -434,7 +428,7 @@ class DummyActivityProtocol:
             %(where_filter_activity)s
             GROUP BY a.id
             ) AS sub ON (sub.id = a.id)
-         %(group_by)s, sub.name, sub.deal_id, sub.primary_investor, sub.investor_name, sub.investor_country, sub.intention, sub.negotiation_status, sub.implementation_status
+         %(group_by)s, sub.name, sub.deal_id, sub.primary_investor, sub.investor_name, sub.investor_country, sub.intention, sub.negotiation_status, sub.implementation_status, sub.target_country
          %(order_by)s
          %(limit)s;
     """
@@ -453,9 +447,8 @@ class DummyActivityProtocol:
         "deal_availability": ["a.availability AS availability, ", "a.availability AS availability, "],
         "data_source_type": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
                              " data_source_type.value AS data_source_type, "],
-# !!! target_country disabled because DB contains HSTORE attribute target_country sometimes in numerical form, sometimes as string (argh!)
-        "target_country": ["-- array_to_string(array_agg(DISTINCT deal_country.name), '##!##') as target_country, ",
-                           "-- deal_country.name as target_country, "],
+        "target_country": [" array_to_string(array_agg(DISTINCT deal_country.id), '##!##') as target_country, ",
+                           " deal_country.id as target_country, "],
         "target_region": ["GROUP_CONCAT(DISTINCT deal_region.name SEPARATOR '##!##') as target_region, ",
                           " deal_region.name as target_region, "],
         "deal_size": ["IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,",

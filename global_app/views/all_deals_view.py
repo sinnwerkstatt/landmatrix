@@ -315,8 +315,6 @@ class TableGroupView(TemplateView):
                 cursor.execute(sql)
                 single_column_results.update({col: dict(cursor.fetchall())})
 
-# !!! target_country disabled because DB contains HSTORE attribute target_country sometimes in numerical form, sometimes as string (argh!)
-        columns.remove('target_country')
         if (settings.DEBUG): print('Columns: ', columns)
 
         for record in limited_query_result:
