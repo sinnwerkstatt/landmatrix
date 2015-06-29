@@ -8,7 +8,7 @@ from django.conf import settings
 
 import json, numbers
 
-from landmatrix.models import BrowseCondition
+from landmatrix.models import BrowseCondition, ActivityAttributeGroup
 from global_app.views.browse_condition_form import BrowseConditionForm
 from global_app.views.dummy_activity_protocol import DummyActivityProtocol
 
@@ -34,7 +34,7 @@ def parse_browse_filter_conditions(formset, order_by=None, limit=None):
                 key = "%s-%d-%s"%(formset.prefix, i, n)
                 if n == "value":
                     # is ybd field?
-                    if formset.data.has_key("%s_0"%key):
+                    if "%s_0" % key in formset.data:
                         # just take the first row of the field
                         value = formset.data.getlist("%s_0"%key)
                         year = formset.data.get("%s_1"%key)
@@ -116,6 +116,57 @@ def parse_browse_filter_conditions(formset, order_by=None, limit=None):
         data["limit"] = limit
     return data
 
+
+def get_field_by_a_key_id(key_id):
+    return None
+
+    field = None
+    try:
+        k = ActivityAttributeGroup.objects.filter(pk=int(key_id))
+    except:
+        k = ActivityAttributeGroup.objects.filter(key=key_id)
+    if k.count() > 0:
+        k = k[0].key
+    else:
+        k = key_id
+    forms = CHANGE_FORMS
+    forms.append(('primary_investor', DealPrimaryInvestorForm))
+    for i, form in forms:
+        form = hasattr(form, "form") and form.form or form
+        if form.base_fields.has_key(k):
+            field = form().fields[k]
+            break
+    return field
+
+def get_display_value_by_field(field, value):
+    return None
+    choices_dict = {}
+    if isinstance(field, forms.MultiValueField):
+        field = field.fields[0]
+    if isinstance(field, forms.ChoiceField):
+        if isinstance(field, NestedMultipleChoiceField):
+            for k, v, c in field.choices:
+                if isinstance(c, (list, tuple)):
+                    # This is an optgroup, so look inside the group for options
+                    for k2, v2 in c:
+                        choices_dict.update({k2:v2})
+                choices_dict.update({k:v})
+        else:
+            choices_dict = dict(field.choices)
+        # get displayed value/s?
+        dvalue = None
+        if isinstance(value, (list, tuple)):
+            dvalue = []
+            for v in value:
+                dvalue.append(unicode(choices_dict.get(int(value))))
+        else:
+            dvalue = value and unicode(choices_dict.get(int(value)))
+        return dvalue
+    if isinstance(field, forms.BooleanField):
+        dvalue = value == "on" and "True" or value == "off" and "False" or None
+        return dvalue or value
+    return value
+
 INTENTION_MAP = {
     "Agriculture": ["Agriculture", "Biofuels", "Food crops", "Livestock", "Non-food agricultural commodities", "Agriunspecified"],
     "Forestry": ["Forestry", "For wood and fibre", "For carbon sequestration/REDD", "Forestunspecified"],
@@ -187,6 +238,7 @@ class TableGroupView(TemplateView):
             # set given filters
             current_formset_conditions = ConditionFormset(GET, prefix="conditions_empty")
             if current_formset_conditions.is_valid():
+                print('parse_browse_filter_conditions(243): ',current_formset_conditions, order_by, limit)
                 filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
         else:
             # set default filters
@@ -207,11 +259,13 @@ class TableGroupView(TemplateView):
             filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
             current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
             if group == "database":
+                print('parse_browse_filter_conditions(265): ',None, order_by, None)
                 filters = parse_browse_filter_conditions(None, [order_by], None)
                 group = "all"
                 load_more = None
             else:
-                filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
+                print('parse_browse_filter_conditions(270): ', order_by, limit)
+#                filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
         group_columns = self._columns(group)
         # columns shown in deal list
         group_columns_list = ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size",]
