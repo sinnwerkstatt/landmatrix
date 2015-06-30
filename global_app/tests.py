@@ -96,7 +96,6 @@ class ActivityProtocolTest(TestCase):
         self.assert_contains_created_record(result['activities'])
 
     def test_list_view_executes(self):
-        settings.DEBUG = True
         return self.get_and_check_response(self.LIST_POST)
 
     def assert_contains_created_record(self, records):

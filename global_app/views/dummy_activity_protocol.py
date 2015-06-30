@@ -7,8 +7,8 @@ from django.conf import settings
 
 import json
 
-from .sql_builder import GroupSQLBuilder, ListSQLBuilder, join_attributes
-
+from .list_sql_builder import ListSQLBuilder, join_attributes
+from .group_sql_builder import GroupSQLBuilder
 
 def get_join_columns(columns, group, group_value):
     if group_value and group not in columns:
