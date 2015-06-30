@@ -66,7 +66,6 @@ class DummyActivityProtocol:
 
     def _get_activities_by_filter_and_grouping(self, filters, columns):
 
-        cursor = connection.cursor()
         where_sql, name_sql, inner_group_by_sql, deal_count_sql, deal_availability_sql = "", "", "", "", ""
         columns_sql, sub_columns_sql = "", ""
         group, limit, order_by, group_value = filters.get("group_by", ""), filters.get("limit"), filters.get("order_by"), filters.get("group_value", "")
@@ -184,6 +183,7 @@ class DummyActivityProtocol:
             print('group_sql:', group_by_sql)
             print('SQL: ', sql)
 
+        cursor = connection.cursor()
         cursor.execute(sql)
         return cursor.fetchall()
 
