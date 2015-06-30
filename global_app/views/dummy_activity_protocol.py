@@ -62,130 +62,44 @@ class DummyActivityProtocol:
 #        return HttpResponse(json.dumps(res,encoding="cp1251"), mimetype="application/json")#FIXME, utf-8 breaks for get-the-detail view
         return HttpResponse(json.dumps(res))
 
-
     def _get_activities_by_filter_and_grouping(self, filters, columns):
 
-        self.where_sql, self.inner_group_by_sql, self.columns_sql, self.sub_columns_sql = '', '', '', ''
+        self.columns_sql, self.sub_columns_sql = '', ''
         group, group_value = filters.get("group_by", ""), filters.get("group_value", "")
 
         filter_sql = self._browse_filters_to_sql(filters)
         from_sql = self.get_from_sql(filters, get_join_columns(columns, group, group_value), columns)
 
-        self.name_sql = self.get_name_sql(group)
-
         if list_view_wanted(group, group_value):
-            creator = ListSQLBuilder(columns, group, group_value)
-            self.prepare_list_sql(columns, group, group_value)
+            builder = ListSQLBuilder(columns, group, group_value)
         else:
-            creator = GroupSQLBuilder(columns, group, filters)
-            self.prepare_group_sql(columns, filters, group)
+            builder = GroupSQLBuilder(columns, group, filters)
 
-        self.group_by_sql = creator.get_group_sql()
-        sql = creator.get_base_sql()
-
-        sql = sql % {
+        group_by_sql = builder.get_group_sql()
+        sql = builder.get_base_sql() % {
             "from": from_sql,
-            "where": self.where_sql,
+            "where": builder.get_where_sql(),
             "limit": (get_limit_sql(filters.get("limit"))),
             "order_by": (get_order_sql(filters.get("order_by"))),
             "from_filter_activity": filter_sql["activity"]["from"],
             "where_filter_activity": filter_sql["activity"]["where"],
             "from_filter_investor": filter_sql["investor"]["from"],
             "where_filter_investor": filter_sql["investor"]["where"],
-            "group_by": self.group_by_sql,
-            "inner_group_by": self.inner_group_by_sql,
-            "name": self.name_sql,
-            "columns": self.columns_sql,
-            "sub_columns": self.sub_columns_sql,
+            "group_by": group_by_sql,
+            "inner_group_by": builder.get_inner_group_sql(),
+            "name": builder.get_name_sql(),
+            "columns": builder.get_columns_sql(),
+            "sub_columns": builder.get_sub_columns_sql()
         }
 
         if (settings.DEBUG):
             print('from_sql:', from_sql)
-            print('group_sql:', self.group_by_sql)
+            print('group_sql:', group_by_sql)
             print('SQL: ', sql)
 
         cursor = connection.cursor()
         cursor.execute(sql)
         return cursor.fetchall()
-
-    def prepare_group_sql(self, columns, filters, group):
-
-        if (settings.DEBUG): print('GROUP_SQL')
-
-        # query deals grouped by a key
-        self.inner_group_by_sql = ", %s" % group
-
-        for c in columns:
-            # get sql for columns
-            if c == group:
-                # use single values for column which gets grouped by
-                self.columns_sql += self.SQL_COLUMN_MAP.get(c)[1] + "\n"
-            else:
-                self.columns_sql += self.SQL_COLUMN_MAP.get(c)[0] + "\n"
-        if filters.get("starts_with", None):
-            starts_with = filters.get("starts_with", "").lower()
-            if group == "investor_country":
-                self.where_sql += " AND investor_country.slug like '%s%%%%' " % starts_with
-            elif group == "target_country":
-                self.where_sql += " AND deal_country.slug like '%s%%%%' " % starts_with
-            else:
-                self.where_sql += " AND trim(lower(%s.value)) like '%s%%%%' " % (group, starts_with)
-
-    def prepare_list_sql(self, columns, group, group_value):
-
-        if (settings.DEBUG): print('LIST_SQL')
-
-        for c in columns:
-            if c in ("intended_size", "contract_size", "production_size"):
-                self.sub_columns_sql += "            ARRAY_AGG(%(name)s.attributes->'%(name)s' ORDER BY %(name)s.date DESC) as %(name)s,\n" % {
-                "name": c}
-            elif c == "data_source":
-                self.sub_columns_sql += "            sub.data_source_type as data_source_type, sub.data_source_url as data_source_url, sub.data_source_date data_source_date, sub.data_source_organisation as data_source_organisation,\n"
-                self.columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
-            else:
-                self.columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
-                self.sub_columns_sql += "            sub.%(name)s as %(name)s,\n" % {"name": c}
-        if (settings.DEBUG): print('sub_columns:', self.sub_columns_sql)
-
-        if group == "all":
-            # show all deals not grouped
-            pass
-        elif group_value:
-            # query deals not grouped by any key
-            # parse group conditions
-            if group == "target_region":
-                self.where_sql += ' AND deal_region.slug = lower(\'%s\') ' % group_value
-            elif group == "target_country":
-                self.where_sql += ' AND deal_country.slug = lower(\'%s\') ' % group_value
-            elif group == "year":
-                self.where_sql += ' AND pi_negotiation_status.year = \'%s\' ' % group_value
-            elif group == "crop":
-                self.where_sql += ' AND crop.slug = lower(\'%s\') ' % group_value
-            elif group == "intention":
-                self.where_sql += ' AND lower(replace(intention.value, \' \', \'-\')) = lower(\'%s\') ' % group_value
-            elif group == "investor_region":
-                self.where_sql += ' AND investor_region.slug = \'%s\' ' % group_value
-            elif group == "investor_country":
-                self.where_sql += ' AND investor_country.slug = \'%s\' ' % group_value
-            elif group == "investor_name":
-                self.where_sql += ' AND s.stakeholder_identifier = \'%s\' ' % group_value
-            elif group == "data_source_type":
-                self.where_sql += ' AND lower(replace(replace(data_source_type.value, \' \', \'-\'), \'/\', \'+\')) = lower(\'%s\') ' % group_value
-
-    GROUP_TO_NAME = {
-        'all':              "'all deals'",
-        'target_region':    'deal_region.name',
-        'target_country':   'deal_country.name',
-        'year':             'pi_negotiation_status.year',
-        'crop':             'crop.name',
-        'intention':        'intention.value',
-        'investor_region':  'investor_region.name',
-        'investor_country': 'investor_country.name',
-        'investor_name':    'investor_name.value',
-        'data_source_type': 'data_source_type.value'
-    }
-    def get_name_sql(self, group):
-        return self.GROUP_TO_NAME.get(group, "'%s'" % group)
 
     def get_from_sql(self, filters, join_columns, columns):
 
@@ -372,70 +286,6 @@ class DummyActivityProtocol:
             sql["investor"]["where"] = where_inv
         return sql
 
-
-
-    SQL_COLUMN_MAP = {
-        "investor_name": ["array_to_string(array_agg(DISTINCT concat(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)), '##!##') as investor_name,",
-                          "CONCAT(investor_name.value, '#!#', s.stakeholder_identifier) as investor_name,"],
-        "investor_country": ["array_to_string(array_agg(DISTINCT concat(investor_country.name, '#!#', investor_country.code_alpha3)), '##!##') as investor_country,",
-                             "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) as investor_country,"],
-        "investor_region": ["GROUP_CONCAT(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id) SEPARATOR '##!##') as investor_region,",
-                            "CONCAT(investor_region.name, '#!#', investor_region.id) as investor_region,"],
-        "intention": ["array_to_string(array_agg(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention,",
-                      "intention.value AS intention,"],
-        "crop": ["GROUP_CONCAT(DISTINCT CONCAT(crop.name, '#!#', crop.code ) SEPARATOR '##!##') AS crop,",
-                 "CONCAT(crop.name, '#!#', crop.code ) AS crop,"],
-        "deal_availability": ["a.availability AS availability, ", "a.availability AS availability, "],
-        "data_source_type": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
-                             " data_source_type.value AS data_source_type, "],
-        "target_country": [" array_to_string(array_agg(DISTINCT deal_country.id), '##!##') as target_country, ",
-                           " deal_country.id as target_country, "],
-        "target_region": ["GROUP_CONCAT(DISTINCT deal_region.name SEPARATOR '##!##') as target_region, ",
-                          " deal_region.name as target_region, "],
-        "deal_size": ["IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,",
-                      "IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,"],
-        "year": ["pi_negotiation_status.year AS year, ", "pi_negotiation_status.year AS year, "],
-        "deal_count": ["COUNT(DISTINCT a.activity_identifier) as deal_count,",
-                       "COUNT(DISTINCT a.activity_identifier) as deal_count,"],
-        "availability": ["SUM(a.availability) / COUNT(a.activity_identifier) as availability,",
-                         "SUM(a.availability) / COUNT(a.activity_identifier) as availability,"],
-        "primary_investor": ["array_to_string(array_agg(DISTINCT p.name), '##!##') as primary_investor,",
-                             "array_to_string(array_agg(DISTINCT p.name), '##!##') as primary_investor,"],
-        "negotiation_status": [
-            """array_to_string(
-                    array_agg(
-                        DISTINCT concat(
-                            negotiation_status.attributes->'negotiation_status',
-                            '#!#',
-                            COALESCE(EXTRACT(YEAR FROM negotiation_status.date), 0)
-                        )
-                    ),
-                    '##!##'
-                ) as negotiation_status,"""
-        ],
-        "implementation_status": [
-            """array_to_string(
-                    array_agg(
-                        DISTINCT concat(
-                            implementation_status.attributes->'implementation_status',
-                            '#!#',
-                            COALESCE(EXTRACT(YEAR FROM implementation_status.date), 0)
-                        )
-                    ),
-                    '##!##'
-                ) as implementation_status,"""
-        ],
-        "nature_of_the_deal": ["array_to_string(array_agg(DISTINCT nature_of_the_deal.value), '##!##') as nature_of_the_deal,"],
-        "data_source": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, GROUP_CONCAT(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group) SEPARATOR '##!##') as data_source_url, GROUP_CONCAT(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group) SEPARATOR '##!##') as data_source_date, GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group) SEPARATOR '##!##') as data_source_organisation,"],
-        "contract_farming": ["array_to_string(array_agg(DISTINCT contract_farming.value), '##!##') as contract_farming,"],
-        "intended_size": ["0 AS intended_size,"],
-        "contract_size": ["0 AS contract_size,"],
-        "production_size": ["0 AS production_size,"],
-        "location": ["array_to_string(array_agg(DISTINCT location.value), '##!##') AS location,"],
-        "deal_id": ["a.activity_identifier as deal_id,", "a.activity_identifier as deal_id,"],
-        "latlon": ["GROUP_CONCAT(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value) SEPARATOR '##!##') as latlon,"],
-    }
-#             AND (intention.value IS NULL OR intention.value != 'Mining')
 
     ## operation => (numeric operand, character operand, description )
     OPERATION_MAP = {
