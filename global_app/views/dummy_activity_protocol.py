@@ -7,6 +7,8 @@ from django.conf import settings
 
 import json
 
+from .sql_builder import GroupSQLBuilder, ListSQLBuilder, join_attributes
+
 
 def get_join_columns(columns, group, group_value):
     if group_value and group not in columns:
@@ -15,13 +17,6 @@ def get_join_columns(columns, group, group_value):
     else:
         join_columns = columns
     return join_columns
-
-def join_attributes(table_alias, attribute, attribute_table='landmatrix_activityattributegroup', attribute_field='fk_activity_id'):
-    from string import Template
-    template = Template("""
-          LEFT JOIN $table AS $alias ON (a.id = $alias.$field AND $alias.attributes ? '$attr')"""
-    )
-    return template.substitute(alias=table_alias, attr=attribute, table=attribute_table, field=attribute_field)
 
 def get_limit_sql(limit):
     if limit: return " LIMIT %s " % limit
@@ -47,6 +42,10 @@ def get_order_sql(order_by):
 
     return order_by_sql
 
+def list_view_wanted(group, group_value):
+    return group == "all" or group_value
+
+
 class DummyActivityProtocol:
 
     def dispatch(self, request, action):
@@ -69,24 +68,26 @@ class DummyActivityProtocol:
         self.where_sql, self.inner_group_by_sql, self.columns_sql, self.sub_columns_sql = '', '', '', ''
         group, group_value = filters.get("group_by", ""), filters.get("group_value", "")
 
-        order_by_sql = get_order_sql(filters.get("order_by"))
-        limit_sql = get_limit_sql(filters.get("limit"))
         filter_sql = self._browse_filters_to_sql(filters)
         from_sql = self.get_from_sql(filters, get_join_columns(columns, group, group_value), columns)
 
         self.name_sql = self.get_name_sql(group)
-        self.group_by_sql = " GROUP BY a.id "
 
-        if group == "all" or group_value:
-            sql = self.prepare_list_sql(columns, group, group_value)
+        if list_view_wanted(group, group_value):
+            creator = ListSQLBuilder(columns, group, group_value)
+            self.prepare_list_sql(columns, group, group_value)
         else:
-            sql = self.prepare_group_sql(columns, filters, group)
+            creator = GroupSQLBuilder(columns, group, filters)
+            self.prepare_group_sql(columns, filters, group)
+
+        self.group_by_sql = creator.get_group_sql()
+        sql = creator.get_base_sql()
 
         sql = sql % {
             "from": from_sql,
             "where": self.where_sql,
-            "limit": limit_sql,
-            "order_by": order_by_sql,
+            "limit": (get_limit_sql(filters.get("limit"))),
+            "order_by": (get_order_sql(filters.get("order_by"))),
             "from_filter_activity": filter_sql["activity"]["from"],
             "where_filter_activity": filter_sql["activity"]["where"],
             "from_filter_investor": filter_sql["investor"]["from"],
@@ -113,8 +114,7 @@ class DummyActivityProtocol:
 
         # query deals grouped by a key
         self.inner_group_by_sql = ", %s" % group
-        if group: self.group_by_sql = "GROUP BY %s" % group
-        else:     self.group_by_sql = 'GROUP BY dummy'
+
         for c in columns:
             # get sql for columns
             if c == group:
@@ -131,13 +131,10 @@ class DummyActivityProtocol:
             else:
                 self.where_sql += " AND trim(lower(%s.value)) like '%s%%%%' " % (group, starts_with)
 
-        return self.GROUP_SQL
-
     def prepare_list_sql(self, columns, group, group_value):
 
         if (settings.DEBUG): print('LIST_SQL')
 
-        additional_group_by = []
         for c in columns:
             if c in ("intended_size", "contract_size", "production_size"):
                 self.sub_columns_sql += "            ARRAY_AGG(%(name)s.attributes->'%(name)s' ORDER BY %(name)s.date DESC) as %(name)s,\n" % {
@@ -148,10 +145,7 @@ class DummyActivityProtocol:
             else:
                 self.columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
                 self.sub_columns_sql += "            sub.%(name)s as %(name)s,\n" % {"name": c}
-                additional_group_by.append("sub.%(name)s" % {"name": c})
         if (settings.DEBUG): print('sub_columns:', self.sub_columns_sql)
-        if (settings.DEBUG): print('addnl group by:', additional_group_by)
-        if additional_group_by: self.group_by_sql += ', ' + ', '.join(additional_group_by)
 
         if group == "all":
             # show all deals not grouped
@@ -177,7 +171,6 @@ class DummyActivityProtocol:
                 self.where_sql += ' AND s.stakeholder_identifier = \'%s\' ' % group_value
             elif group == "data_source_type":
                 self.where_sql += ' AND lower(replace(replace(data_source_type.value, \' \', \'-\'), \'/\', \'+\')) = lower(\'%s\') ' % group_value
-        return self.LIST_SQL
 
     GROUP_TO_NAME = {
         'all':              "'all deals'",
@@ -379,86 +372,7 @@ class DummyActivityProtocol:
             sql["investor"]["where"] = where_inv
         return sql
 
-    GROUP_SQL = u"""
-        SELECT DISTINCT
-              %(name)s as name,
-              %(columns)s
-              'dummy' as dummy
-        FROM
-            landmatrix_activity AS a
-        JOIN landmatrix_status ON (landmatrix_status.id = a.fk_status_id)
-            %(from)s
-        LEFT JOIN landmatrix_activityattributegroup AS pi_deal
-            ON (a.id = pi_deal.fk_activity_id AND LENGTH(pi_deal.attributes->'pi_deal') > 0)
-        LEFT JOIN landmatrix_activityattributegroup AS deal_scope
-            ON (a.id = deal_scope.fk_activity_id AND LENGTH(deal_scope.attributes->'deal_scope') > 0)
-        %(from_filter_activity)s
-        %(from_filter_investor)s
-        WHERE
-            a.version = (
-                SELECT max(version) FROM landmatrix_activity amax, landmatrix_status st
-                WHERE amax.fk_status_id = st.id
-                  AND amax.activity_identifier = a.activity_identifier
-                  AND st.name IN ('active', 'overwritten', 'deleted')
-            )
-            AND landmatrix_status.name in ('active', 'overwritten')
-            AND pi_deal.attributes->'pi_deal' = 'True'
-            AND (pi_deal.attributes->'intention' != 'Mining')
-            %(where)s
-            %(where_filter_investor)s
-            %(where_filter_activity)s
-         %(group_by)s
-         %(order_by)s
-         %(limit)s;
-    """
 
-    LIST_SQL = u"""
-        SELECT
-            sub.name as name,
-%(sub_columns)s            'dummy' as dummy
-          FROM
-            landmatrix_activity AS a""" \
-            + join_attributes('size', 'pi_deal_size') \
-            + join_attributes('intended_size', 'intended_size') \
-            + join_attributes('contract_size', 'contract_size') \
-            + join_attributes('production_size', 'production_size') \
-            + \
-        """
-          JOIN (
-            SELECT DISTINCT
-              a.id as id,
-              %(name)s as name,
-%(columns)s                'dummy' as dummy
-            FROM
-              landmatrix_activity a
-            JOIN landmatrix_status ON (landmatrix_status.id = a.fk_status_id)
-              %(from)s""" \
-            + join_attributes('pi_deal', 'pi_deal') \
-            + join_attributes('deal_scope', 'deal_scope') \
-            + """
-            %(from_filter_activity)s
-            %(from_filter_investor)s
-          WHERE
-            a.version = (
-                SELECT max(version)
-                FROM landmatrix_activity amax, landmatrix_status st
-                WHERE amax.fk_status_id = st.id
-                  AND amax.activity_identifier = a.activity_identifier
-                  AND st.name IN ('active', 'overwritten', 'deleted')
-            )
-            AND landmatrix_status.name in ('active', 'overwritten')
-            AND pi_deal.attributes->'pi_deal' = 'True'
-            AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
-            %(where)s
-            %(where_filter_investor)s
-            %(where_filter_activity)s
-            GROUP BY a.id
-            ) AS sub ON (sub.id = a.id)
-         %(group_by)s, sub.name
-         %(order_by)s
-         %(limit)s;
-    """
-# %(group_by)s, sub.name, sub.deal_id, sub.primary_investor, sub.investor_name, sub.investor_country, sub.intention, sub.negotiation_status, sub.implementation_status, sub.target_country
 
     SQL_COLUMN_MAP = {
         "investor_name": ["array_to_string(array_agg(DISTINCT concat(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)), '##!##') as investor_name,",
@@ -535,3 +449,5 @@ class DummyActivityProtocol:
         "contains": ("LIKE '%%%%%%%%%s%%%%%%%%'", "LIKE '%%%%%%%%%s%%%%%%%%'", _("contains")),
         "is_empty": ("IS NULL", "IS NULL", _("is empty")),
     }
+
+
