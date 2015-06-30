@@ -81,7 +81,12 @@ class DummyActivityProtocol:
         group_by_sql = " GROUP BY a.id "
 
         if group == "all" or group_value:
+
+            if (settings.DEBUG): print('LIST_SQL')
+
             sql = self.LIST_SQL
+            additional_group_by = []
+
             for c in columns:
                 if c in ("intended_size", "contract_size", "production_size"):
                     sub_columns_sql += "            ARRAY_AGG(%(name)s.attributes->'%(name)s' ORDER BY %(name)s.date DESC) as %(name)s,\n" % {"name": c}
@@ -91,6 +96,13 @@ class DummyActivityProtocol:
                 else:
                     columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
                     sub_columns_sql += "            sub.%(name)s as %(name)s,\n" % {"name": c}
+                    additional_group_by.append("sub.%(name)s" % {"name": c})
+
+            if (settings.DEBUG): print('sub_columns:', sub_columns_sql)
+            if (settings.DEBUG): print('addnl group by:', additional_group_by)
+
+            if additional_group_by: group_by_sql += ', ' + ', '.join(additional_group_by)
+
             if group == "all":
                 # show all deals not grouped
                 name_sql = " 'all deals' "
@@ -125,6 +137,9 @@ class DummyActivityProtocol:
                     where_sql += ' AND lower(replace(replace(data_source_type.value, \' \', \'-\'), \'/\', \'+\')) = lower(\'%s\') '  % group_value
                     name_sql = " data_source_type.value "
         else:
+
+            if (settings.DEBUG): print('GROUP_SQL')
+
             # query deals grouped by a key
             sql = self.GROUP_SQL
             inner_group_by_sql = ", %s" % group
@@ -163,7 +178,11 @@ class DummyActivityProtocol:
             "columns": columns_sql,
             "sub_columns": sub_columns_sql,
         }
-        if (settings.DEBUG): print('SQL: ', sql)
+
+        if (settings.DEBUG):
+            print('from_sql:', from_sql)
+            print('group_sql:', group_by_sql)
+            print('SQL: ', sql)
 
         cursor.execute(sql)
         return cursor.fetchall()
@@ -172,7 +191,7 @@ class DummyActivityProtocol:
 
         from_sql = ''
 
-        if filters.get("investor", None) or any(x in ("investor_country","investor_region", "investor_name", "primary_investor_name") for x in columns):
+        if filters.get("investor", None) or any(x in ("investor_country","investor_region", "investor_name", 'primary_investor', "primary_investor_name") for x in columns):
             # is join of invovlements and stakeholders necessary?
             from_sql += """
             LEFT JOIN landmatrix_involvement AS i ON (i.fk_activity_id = a.id)
@@ -428,10 +447,11 @@ class DummyActivityProtocol:
             %(where_filter_activity)s
             GROUP BY a.id
             ) AS sub ON (sub.id = a.id)
-         %(group_by)s, sub.name, sub.deal_id, sub.primary_investor, sub.investor_name, sub.investor_country, sub.intention, sub.negotiation_status, sub.implementation_status, sub.target_country
+         %(group_by)s, sub.name
          %(order_by)s
          %(limit)s;
     """
+# %(group_by)s, sub.name, sub.deal_id, sub.primary_investor, sub.investor_name, sub.investor_country, sub.intention, sub.negotiation_status, sub.implementation_status, sub.target_country
 
     SQL_COLUMN_MAP = {
         "investor_name": ["array_to_string(array_agg(DISTINCT concat(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)), '##!##') as investor_name,",
