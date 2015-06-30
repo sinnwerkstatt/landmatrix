@@ -66,126 +66,133 @@ class DummyActivityProtocol:
 
     def _get_activities_by_filter_and_grouping(self, filters, columns):
 
-        where_sql, name_sql, inner_group_by_sql, deal_count_sql, deal_availability_sql = "", "", "", "", ""
-        columns_sql, sub_columns_sql = "", ""
-        group, limit, order_by, group_value = filters.get("group_by", ""), filters.get("limit"), filters.get("order_by"), filters.get("group_value", "")
+        self.where_sql, self.inner_group_by_sql, self.columns_sql, self.sub_columns_sql = '', '', '', ''
+        group, group_value = filters.get("group_by", ""), filters.get("group_value", "")
 
-        order_by_sql = get_order_sql(order_by)
-        limit_sql = get_limit_sql(limit)
+        order_by_sql = get_order_sql(filters.get("order_by"))
+        limit_sql = get_limit_sql(filters.get("limit"))
         filter_sql = self._browse_filters_to_sql(filters)
         from_sql = self.get_from_sql(filters, get_join_columns(columns, group, group_value), columns)
 
-        name_sql = "'%s'" % group
-        deal_count_sql = "1 AS deal_count, "
-        group_by_sql = " GROUP BY a.id "
+        self.name_sql = self.get_name_sql(group)
+        self.group_by_sql = " GROUP BY a.id "
 
         if group == "all" or group_value:
-
-            if (settings.DEBUG): print('LIST_SQL')
-
-            sql = self.LIST_SQL
-            additional_group_by = []
-
-            for c in columns:
-                if c in ("intended_size", "contract_size", "production_size"):
-                    sub_columns_sql += "            ARRAY_AGG(%(name)s.attributes->'%(name)s' ORDER BY %(name)s.date DESC) as %(name)s,\n" % {"name": c}
-                elif c == "data_source":
-                    sub_columns_sql += "            sub.data_source_type as data_source_type, sub.data_source_url as data_source_url, sub.data_source_date data_source_date, sub.data_source_organisation as data_source_organisation,\n"
-                    columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
-                else:
-                    columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
-                    sub_columns_sql += "            sub.%(name)s as %(name)s,\n" % {"name": c}
-                    additional_group_by.append("sub.%(name)s" % {"name": c})
-
-            if (settings.DEBUG): print('sub_columns:', sub_columns_sql)
-            if (settings.DEBUG): print('addnl group by:', additional_group_by)
-
-            if additional_group_by: group_by_sql += ', ' + ', '.join(additional_group_by)
-
-            if group == "all":
-                # show all deals not grouped
-                name_sql = " 'all deals' "
-            elif group_value:
-                # query deals not grouped by any key
-                # parse group conditions
-                if group == "target_region":
-                    where_sql += ' AND deal_region.slug = lower(\'%s\') ' % group_value
-                    name_sql = " deal_region.name "
-                elif group == "target_country":
-                    where_sql += ' AND deal_country.slug = lower(\'%s\') ' % group_value
-                    name_sql = " deal_country.name "
-                elif group == "year":
-                    where_sql += ' AND pi_negotiation_status.year = \'%s\' ' % group_value
-                    name_sql = " pi_negotiation_status.year "
-                elif group == "crop":
-                    where_sql += ' AND crop.slug = lower(\'%s\') ' % group_value
-                    name_sql = " crop.name "
-                elif group == "intention":
-                    where_sql += ' AND lower(replace(intention.value, \' \', \'-\')) = lower(\'%s\') ' % group_value
-                    name_sql = " intention.value "
-                elif group == "investor_region":
-                    where_sql += ' AND investor_region.slug = \'%s\' ' % group_value
-                    name_sql = " investor_region.name "
-                elif group == "investor_country":
-                    where_sql += ' AND investor_country.slug = \'%s\' ' % group_value
-                    name_sql = " investor_country.name"
-                elif group == "investor_name":
-                    where_sql += ' AND s.stakeholder_identifier = \'%s\' '  % group_value
-                    name_sql = " investor_name.value "
-                elif group == "data_source_type":
-                    where_sql += ' AND lower(replace(replace(data_source_type.value, \' \', \'-\'), \'/\', \'+\')) = lower(\'%s\') '  % group_value
-                    name_sql = " data_source_type.value "
+            sql = self.prepare_list_sql(columns, group, group_value)
         else:
-
-            if (settings.DEBUG): print('GROUP_SQL')
-
-            # query deals grouped by a key
-            sql = self.GROUP_SQL
-            inner_group_by_sql = ", %s" % group
-            group_by_sql = " GROUP BY %s " % group
-            deal_count_sql = "COUNT(distinct a.activity_identifier) AS deal_count, "
-            deal_availability_sql = "SUM(distinct a.availability)/count(a.activity_identifier) AS availability, "
-            for c in columns:
-                # get sql for columns
-                if c == group:
-                    # use single values for column which gets grouped by
-                    columns_sql += self.SQL_COLUMN_MAP.get(c)[1] + "\n"
-                else:
-                    columns_sql += self.SQL_COLUMN_MAP.get(c)[0] + "\n"
-
-            if filters.get("starts_with", None):
-                starts_with = filters.get("starts_with", "").lower()
-                if group == "investor_country":
-                    where_sql += " AND investor_country.slug like '%s%%%%' " % starts_with
-                elif group == "target_country":
-                    where_sql += " AND deal_country.slug like '%s%%%%' " % starts_with
-                else:
-                    where_sql += " AND trim(lower(%s.value)) like '%s%%%%' " % (group, starts_with)
+            sql = self.prepare_group_sql(columns, filters, group)
 
         sql = sql % {
             "from": from_sql,
-            "where": where_sql,
+            "where": self.where_sql,
             "limit": limit_sql,
             "order_by": order_by_sql,
             "from_filter_activity": filter_sql["activity"]["from"],
             "where_filter_activity": filter_sql["activity"]["where"],
             "from_filter_investor": filter_sql["investor"]["from"],
             "where_filter_investor": filter_sql["investor"]["where"],
-            "group_by": group_by_sql,
-            "inner_group_by": inner_group_by_sql,
-            "name": name_sql,
-            "columns": columns_sql,
-            "sub_columns": sub_columns_sql,
+            "group_by": self.group_by_sql,
+            "inner_group_by": self.inner_group_by_sql,
+            "name": self.name_sql,
+            "columns": self.columns_sql,
+            "sub_columns": self.sub_columns_sql,
         }
 
         if (settings.DEBUG):
             print('from_sql:', from_sql)
-            print('group_sql:', group_by_sql)
+            print('group_sql:', self.group_by_sql)
             print('SQL: ', sql)
 
         cursor = connection.cursor()
         cursor.execute(sql)
         return cursor.fetchall()
+
+    def prepare_group_sql(self, columns, filters, group):
+
+        if (settings.DEBUG): print('GROUP_SQL')
+
+        # query deals grouped by a key
+        self.inner_group_by_sql = ", %s" % group
+        if group: self.group_by_sql = "GROUP BY %s" % group
+        else:     self.group_by_sql = 'GROUP BY dummy'
+        for c in columns:
+            # get sql for columns
+            if c == group:
+                # use single values for column which gets grouped by
+                self.columns_sql += self.SQL_COLUMN_MAP.get(c)[1] + "\n"
+            else:
+                self.columns_sql += self.SQL_COLUMN_MAP.get(c)[0] + "\n"
+        if filters.get("starts_with", None):
+            starts_with = filters.get("starts_with", "").lower()
+            if group == "investor_country":
+                self.where_sql += " AND investor_country.slug like '%s%%%%' " % starts_with
+            elif group == "target_country":
+                self.where_sql += " AND deal_country.slug like '%s%%%%' " % starts_with
+            else:
+                self.where_sql += " AND trim(lower(%s.value)) like '%s%%%%' " % (group, starts_with)
+
+        return self.GROUP_SQL
+
+    def prepare_list_sql(self, columns, group, group_value):
+
+        if (settings.DEBUG): print('LIST_SQL')
+
+        additional_group_by = []
+        for c in columns:
+            if c in ("intended_size", "contract_size", "production_size"):
+                self.sub_columns_sql += "            ARRAY_AGG(%(name)s.attributes->'%(name)s' ORDER BY %(name)s.date DESC) as %(name)s,\n" % {
+                "name": c}
+            elif c == "data_source":
+                self.sub_columns_sql += "            sub.data_source_type as data_source_type, sub.data_source_url as data_source_url, sub.data_source_date data_source_date, sub.data_source_organisation as data_source_organisation,\n"
+                self.columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
+            else:
+                self.columns_sql += "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
+                self.sub_columns_sql += "            sub.%(name)s as %(name)s,\n" % {"name": c}
+                additional_group_by.append("sub.%(name)s" % {"name": c})
+        if (settings.DEBUG): print('sub_columns:', self.sub_columns_sql)
+        if (settings.DEBUG): print('addnl group by:', additional_group_by)
+        if additional_group_by: self.group_by_sql += ', ' + ', '.join(additional_group_by)
+
+        if group == "all":
+            # show all deals not grouped
+            pass
+        elif group_value:
+            # query deals not grouped by any key
+            # parse group conditions
+            if group == "target_region":
+                self.where_sql += ' AND deal_region.slug = lower(\'%s\') ' % group_value
+            elif group == "target_country":
+                self.where_sql += ' AND deal_country.slug = lower(\'%s\') ' % group_value
+            elif group == "year":
+                self.where_sql += ' AND pi_negotiation_status.year = \'%s\' ' % group_value
+            elif group == "crop":
+                self.where_sql += ' AND crop.slug = lower(\'%s\') ' % group_value
+            elif group == "intention":
+                self.where_sql += ' AND lower(replace(intention.value, \' \', \'-\')) = lower(\'%s\') ' % group_value
+            elif group == "investor_region":
+                self.where_sql += ' AND investor_region.slug = \'%s\' ' % group_value
+            elif group == "investor_country":
+                self.where_sql += ' AND investor_country.slug = \'%s\' ' % group_value
+            elif group == "investor_name":
+                self.where_sql += ' AND s.stakeholder_identifier = \'%s\' ' % group_value
+            elif group == "data_source_type":
+                self.where_sql += ' AND lower(replace(replace(data_source_type.value, \' \', \'-\'), \'/\', \'+\')) = lower(\'%s\') ' % group_value
+        return self.LIST_SQL
+
+    GROUP_TO_NAME = {
+        'all':              "'all deals'",
+        'target_region':    'deal_region.name',
+        'target_country':   'deal_country.name',
+        'year':             'pi_negotiation_status.year',
+        'crop':             'crop.name',
+        'intention':        'intention.value',
+        'investor_region':  'investor_region.name',
+        'investor_country': 'investor_country.name',
+        'investor_name':    'investor_name.value',
+        'data_source_type': 'data_source_type.value'
+    }
+    def get_name_sql(self, group):
+        return self.GROUP_TO_NAME.get(group, "'%s'" % group)
 
     def get_from_sql(self, filters, join_columns, columns):
 

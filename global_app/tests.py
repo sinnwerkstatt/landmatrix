@@ -34,6 +34,7 @@ class ActivityProtocolTest(TestCase):
     PI_NAME = 'Investor'
     INTENTION = 'Livestock'
     MINIMAL_POST = { "filters": { "group_by": "all" }, "columns": ["primary_investor", "intention"] }
+    LIST_POST = { "filters": { }, "columns": ["primary_investor", "intention"] }
     TYPICAL_POST = {
         "filters": {"starts_with": 'null', "group_value": "", "group_by": "all"},
         "columns": ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size"]
@@ -93,6 +94,10 @@ class ActivityProtocolTest(TestCase):
         result = self.test_all_deal_sql_executes()
         self.assertListEqual([], result['errors'])
         self.assert_contains_created_record(result['activities'])
+
+    def test_list_view_executes(self):
+        settings.DEBUG = True
+        return self.get_and_check_response(self.LIST_POST)
 
     def assert_contains_created_record(self, records):
         self.assertGreaterEqual(1, len(records))
