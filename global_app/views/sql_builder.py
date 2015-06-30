@@ -2,7 +2,20 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.conf import settings
 
+def list_view_wanted(group, group_value):
+    return group == "all" or group_value
+
 class SQLBuilder:
+
+    @classmethod
+    def create(cls, columns, group, group_value, filters):
+        from .list_sql_builder import ListSQLBuilder
+        from .group_sql_builder import GroupSQLBuilder
+        if list_view_wanted(group, group_value):
+            return ListSQLBuilder(columns, group, group_value)
+        else:
+            return GroupSQLBuilder(columns, group, filters)
+
     def __init__(self, columns, group):
         if (settings.DEBUG): print(type(self).__name__)
         self.columns = columns

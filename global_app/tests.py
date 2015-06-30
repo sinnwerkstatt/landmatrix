@@ -84,19 +84,23 @@ class ActivityProtocolTest(TestCase):
         self.assertIn(Activity.objects.last().id, result[-1])
 
     def test_minimal_view_returns_stuff(self):
-        self.create_data()
-        result = self.test_minimal_view_executes()
-        self.assertListEqual([], result['errors'])
-        self.assert_contains_created_record(result['activities'])
+        self.assert_view_returns_stuff(self.test_minimal_view_executes)
 
     def test_all_deals_view_returns_stuff(self):
-        self.create_data()
-        result = self.test_all_deal_sql_executes()
-        self.assertListEqual([], result['errors'])
-        self.assert_contains_created_record(result['activities'])
+        self.assert_view_returns_stuff(self.test_all_deal_sql_executes)
 
     def test_list_view_executes(self):
         return self.get_and_check_response(self.LIST_POST)
+
+    def test_list_view_returns_stuff(self):
+        self.assert_view_returns_stuff(self.test_list_view_executes)
+
+    def assert_view_returns_stuff(self, function):
+        self.create_data()
+        result = function()
+        self.assertListEqual([], result['errors'])
+        self.assert_contains_created_record(result['activities'])
+
 
     def assert_contains_created_record(self, records):
         self.assertGreaterEqual(1, len(records))

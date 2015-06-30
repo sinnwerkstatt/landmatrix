@@ -7,8 +7,8 @@ from django.conf import settings
 
 import json
 
-from .list_sql_builder import ListSQLBuilder, join_attributes
-from .group_sql_builder import GroupSQLBuilder
+from .list_sql_builder import join_attributes
+from .sql_builder import SQLBuilder
 
 def get_join_columns(columns, group, group_value):
     if group_value and group not in columns:
@@ -42,9 +42,6 @@ def get_order_sql(order_by):
 
     return order_by_sql
 
-def list_view_wanted(group, group_value):
-    return group == "all" or group_value
-
 
 class DummyActivityProtocol:
 
@@ -64,37 +61,32 @@ class DummyActivityProtocol:
 
     def _get_activities_by_filter_and_grouping(self, filters, columns):
 
-        self.columns_sql, self.sub_columns_sql = '', ''
         group, group_value = filters.get("group_by", ""), filters.get("group_value", "")
 
         filter_sql = self._browse_filters_to_sql(filters)
         from_sql = self.get_from_sql(filters, get_join_columns(columns, group, group_value), columns)
 
-        if list_view_wanted(group, group_value):
-            builder = ListSQLBuilder(columns, group, group_value)
-        else:
-            builder = GroupSQLBuilder(columns, group, filters)
+        builder = SQLBuilder.create(columns, group, group_value, filters)
 
-        group_by_sql = builder.get_group_sql()
         sql = builder.get_base_sql() % {
-            "from": from_sql,
-            "where": builder.get_where_sql(),
-            "limit": (get_limit_sql(filters.get("limit"))),
-            "order_by": (get_order_sql(filters.get("order_by"))),
-            "from_filter_activity": filter_sql["activity"]["from"],
-            "where_filter_activity": filter_sql["activity"]["where"],
-            "from_filter_investor": filter_sql["investor"]["from"],
-            "where_filter_investor": filter_sql["investor"]["where"],
-            "group_by": group_by_sql,
-            "inner_group_by": builder.get_inner_group_sql(),
-            "name": builder.get_name_sql(),
-            "columns": builder.get_columns_sql(),
-            "sub_columns": builder.get_sub_columns_sql()
+            "from":                     from_sql,
+            "where":                    builder.get_where_sql(),
+            "limit":                    get_limit_sql(filters.get("limit")),
+            "order_by":                 get_order_sql(filters.get("order_by")),
+            "from_filter_activity":     filter_sql["activity"]["from"],
+            "where_filter_activity":    filter_sql["activity"]["where"],
+            "from_filter_investor":     filter_sql["investor"]["from"],
+            "where_filter_investor":    filter_sql["investor"]["where"],
+            "group_by":                 builder.get_group_sql(),
+            "inner_group_by":           builder.get_inner_group_sql(),
+            "name":                     builder.get_name_sql(),
+            "columns":                  builder.get_columns_sql(),
+            "sub_columns":              builder.get_sub_columns_sql()
         }
 
         if (settings.DEBUG):
             print('from_sql:', from_sql)
-            print('group_sql:', group_by_sql)
+            print('group_sql:', builder.get_group_sql())
             print('SQL: ', sql)
 
         cursor = connection.cursor()
