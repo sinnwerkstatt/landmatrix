@@ -1,37 +1,10 @@
 from django.test import TestCase
 from landmatrix.models import *
 
-class AllDealsViewTest(TestCase):
 
-    ACT_ID = 1
+class DealsTestData:
 
-    def make_involvement(self, i_r = 0):
-        act = Activity(fk_status=Status.objects.get(id=1), activity_identifier=self.ACT_ID, version=1)
-        act.save()
-        pi = PrimaryInvestor(fk_status=Status.objects.get(id=1), primary_investor_identifier=1, version=1)
-        pi.save()
-        sh = Stakeholder(fk_status=Status.objects.get(id=1), stakeholder_identifier=1, version=1)
-        sh.save()
-        i = Involvement(fk_activity=act, fk_stakeholder=sh, fk_primary_investor = pi, investment_ratio=i_r)
-        i.save()
-        return i
-
-    def _test_loads(self):
-        i = self.make_involvement(1.23)
-        response = self.client.get('/en/global/all')
-        while response.status_code == 301: response = self.client.get(response.url)
-        print(response.status_code, response.content)
-        self.assertEqual(200, response.status_code)
-
-
-from global_app.views import DummyActivityProtocol
-from django.http import HttpRequest
-import json
-from django.conf import settings
-
-class ActivityProtocolTest(TestCase):
-
-    PI_NAME = 'Investor'
+    PI_NAME = 'This should be a darn unique investor name, right?'
     INTENTION = 'Livestock'
     MINIMAL_POST = { "filters": { "group_by": "all" }, "columns": ["primary_investor", "intention"] }
     LIST_POST = { "filters": { }, "columns": ["primary_investor", "intention"] }
@@ -39,11 +12,91 @@ class ActivityProtocolTest(TestCase):
         "filters": {"starts_with": 'null', "group_value": "", "group_by": "all"},
         "columns": ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size"]
     }
+    ACT_ID = 1
+
+    def make_involvement(self, i_r = 0.):
+        act = Activity(fk_status=Status.objects.get(id=2), activity_identifier=self.ACT_ID, version=1)
+        act.save()
+        pi = PrimaryInvestor(fk_status=Status.objects.get(id=2), primary_investor_identifier=1, version=1, name=self.PI_NAME)
+        pi.save()
+        sh = Stakeholder(fk_status=Status.objects.get(id=2), stakeholder_identifier=1, version=1)
+        sh.save()
+        i = Involvement(fk_activity=act, fk_stakeholder=sh, fk_primary_investor = pi, investment_ratio=i_r)
+        i.save()
+        return i
+
+    def create_data(self):
+        from datetime import date
+        self.make_involvement(1.23)
+        lang = Language(english_name='English', local_name='Dinglisch', locale='en')
+        lang.save()
+        Region(
+            name='South-East Asia', slug='south-east-asia', point_lat=0., point_lon=120.
+        ).save()
+        Country(
+            fk_region=Region.objects.last(), code_alpha2='LA', code_alpha3='LAO',
+            name="Lao People's Democratic Republic", slug='lao-peoples-democratic-republic',
+            point_lat=18.85627, point_lon=106.495496,
+            democracy_index=2.10, corruption_perception_index=2.1, high_income=False
+        ).save()
+        aag = ActivityAttributeGroup(
+            fk_activity = Activity.objects.last(),
+            fk_language=lang,
+            date=date.today(),
+            attributes={
+                'intention': self.INTENTION, 'pi_deal': 'True', 'deal_scope': 'transnational',
+                'target_country': Country.objects.last().id
+            }
+        )
+        aag.save()
+
+
+
+class AllDealsViewTest(TestCase, DealsTestData):
+
+    # we use global_app as defined in landmatrix.url here because django-cms pages are not configured in test db
+    ALL_DEALS_URL = '/en/global_app/all'
+
+    # disabled because no django-cms pages configured, but redirects are applied
+    def _test_anything_loads(self):
+        response = self.get_url_following_redirects('/')
+        print(response.content.decode('utf-8'))
+        self.assertEqual(200, response.status_code)
+
+    def test_view_loads(self):
+        self.create_data()
+        response = self.get_url_following_redirects(self.ALL_DEALS_URL)
+        self.assertEqual(200, response.status_code)
+
+    def test_view_contains_data(self):
+        self.create_data()
+        content = self.get_url_following_redirects(self.ALL_DEALS_URL).content.decode('utf-8')
+        if True or settings.DEBUG: print(content, file=open('/tmp/testresult.html', 'w'))
+        self.assertIn(self.PI_NAME, content)
+
+    def get_url_following_redirects(self, url):
+        response = self.client.get(url)
+        while response.status_code in range(300, 308):
+            print('redirect:', response.url)
+            response = self.client.get(response.url)
+        return response
+
+
+from global_app.views import DummyActivityProtocol
+from django.http import HttpRequest
+import json
+from django.conf import settings
+
+class ActivityProtocolTest(TestCase, DealsTestData):
 
     def setUp(self):
+        self.old_setting = settings.DEBUG
         settings.DEBUG = False
         self.request = HttpRequest()
         self.protocol = DummyActivityProtocol()
+
+    def tearDown(self):
+        settings.DEBUG = self.old_setting
 
     def test_minimal_view_executes(self):
         return self.get_and_check_response(self.MINIMAL_POST)
@@ -122,29 +175,3 @@ class ActivityProtocolTest(TestCase):
         cursor = connection.cursor()
         cursor.execute(sql)
         return cursor.fetchall()
-
-    def make_involvement(self, i_r = 0.):
-        act = Activity(fk_status=Status.objects.get(id=2), activity_identifier=1, version=1)
-        act.save()
-        pi = PrimaryInvestor(fk_status=Status.objects.get(id=2), primary_investor_identifier=1, version=1, name=self.PI_NAME)
-        pi.save()
-        sh = Stakeholder(fk_status=Status.objects.get(id=2), stakeholder_identifier=1, version=1)
-        sh.save()
-        i = Involvement(fk_activity=act, fk_stakeholder=sh, fk_primary_investor = pi, investment_ratio=i_r)
-        i.save()
-        return i
-
-    def create_data(self):
-        from datetime import date
-        self.make_involvement(1.23)
-        lang = Language(english_name='English', local_name='Dinglisch', locale='en')
-        lang.save()
-        aag = ActivityAttributeGroup(
-            fk_activity = Activity.objects.last(),
-            fk_language=lang,
-            date=date.today(),
-            attributes={ 'intention': self.INTENTION, 'pi_deal': 'True', 'deal_scope': 'transnational'}
-        )
-        aag.save()
-
-
