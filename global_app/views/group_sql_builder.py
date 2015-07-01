@@ -4,10 +4,6 @@ from .sql_builder import SQLBuilder
 
 class GroupSQLBuilder(SQLBuilder):
 
-    def __init__(self, columns, group, filters):
-        super(GroupSQLBuilder, self).__init__(columns, group)
-        self.filters = filters
-
     def get_where_sql(self):
         if not self.filters.get("starts_with", None): return ''
 

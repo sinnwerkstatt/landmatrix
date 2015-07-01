@@ -7,16 +7,7 @@ from django.conf import settings
 
 import json
 
-from .list_sql_builder import join_attributes
 from .sql_builder import SQLBuilder
-
-def get_join_columns(columns, group, group_value):
-    if group_value and group not in columns:
-        join_columns = columns[:]
-        join_columns.append(group)
-    else:
-        join_columns = columns
-    return join_columns
 
 def get_limit_sql(limit):
     if limit: return " LIMIT %s " % limit
@@ -61,31 +52,27 @@ class DummyActivityProtocol:
 
     def _get_activities_by_filter_and_grouping(self, filters, columns):
 
-        group, group_value = filters.get("group_by", ""), filters.get("group_value", "")
-
         filter_sql = self._browse_filters_to_sql(filters)
-        from_sql = self.get_from_sql(filters, get_join_columns(columns, group, group_value), columns)
 
-        builder = SQLBuilder.create(columns, group, group_value, filters)
-
+        builder = SQLBuilder.create(columns, filters)
         sql = builder.get_base_sql() % {
-            "from":                     from_sql,
-            "where":                    builder.get_where_sql(),
-            "limit":                    get_limit_sql(filters.get("limit")),
-            "order_by":                 get_order_sql(filters.get("order_by")),
-            "from_filter_activity":     filter_sql["activity"]["from"],
-            "where_filter_activity":    filter_sql["activity"]["where"],
-            "from_filter_investor":     filter_sql["investor"]["from"],
-            "where_filter_investor":    filter_sql["investor"]["where"],
-            "group_by":                 builder.get_group_sql(),
-            "inner_group_by":           builder.get_inner_group_sql(),
-            "name":                     builder.get_name_sql(),
-            "columns":                  builder.get_columns_sql(),
-            "sub_columns":              builder.get_sub_columns_sql()
+            "from": (builder.get_from_sql()),
+            "where": builder.get_where_sql(),
+            "limit": get_limit_sql(filters.get("limit")),
+            "order_by": get_order_sql(filters.get("order_by")),
+            "from_filter_activity": filter_sql["activity"]["from"],
+            "where_filter_activity": filter_sql["activity"]["where"],
+            "from_filter_investor": filter_sql["investor"]["from"],
+            "where_filter_investor": filter_sql["investor"]["where"],
+            "group_by": builder.get_group_sql(),
+            "inner_group_by": builder.get_inner_group_sql(),
+            "name": builder.get_name_sql(),
+            "columns": builder.get_columns_sql(),
+            "sub_columns": builder.get_sub_columns_sql()
         }
 
         if (settings.DEBUG):
-            print('from_sql:', from_sql)
+            print('from_sql:', builder.get_from_sql())
             print('group_sql:', builder.get_group_sql())
             print('SQL: ', sql)
 
@@ -93,70 +80,6 @@ class DummyActivityProtocol:
         cursor.execute(sql)
         return cursor.fetchall()
 
-    def get_from_sql(self, filters, join_columns, columns):
-
-        from_sql = ''
-
-        if filters.get("investor", None) or any(x in ("investor_country","investor_region", "investor_name", 'primary_investor', "primary_investor_name") for x in columns):
-            # is join of invovlements and stakeholders necessary?
-            from_sql += """
-            LEFT JOIN landmatrix_involvement AS i ON (i.fk_activity_id = a.id)
-            LEFT JOIN landmatrix_stakeholder AS s ON (i.fk_stakeholder_id = s.id)"""
-
-        for c in join_columns:
-            if c in ("intended_size", "contract_size", "production_size"):
-                # skip size rows
-                continue
-            elif c == "investor_country" or c == "investor_region":
-                if "investor_country" not in from_sql:
-                    from_sql += \
-                        join_attributes('skvl1', 'country', attribute_table='landmatrix_stakeholderattributegroup', attribute_field='fk_stakeholder_id') + """
-            LEFT JOIN landmatrix_country AS investor_country ON (investor_country.id = CAST(skvl1.attributes->'country' AS numeric))
-            LEFT JOIN landmatrix_region AS investor_region ON (investor_region.id = investor_country.fk_region_id)"""
-            elif c == "investor_name":
-                from_sql += join_attributes('investor_name', 'investor_name',
-                                            attribute_table='landmatrix_stakeholderattributegroup',
-                                            attribute_field='fk_stakeholder_id')
-                """
-                LEFT JOIN sh_key_value_lookup investor_name
-                    ON (s.stakeholder_identifier = investor_name.stakeholder_identifier AND investor_name.key = 'investor_name')
-                """
-            elif c == "crop":
-                from_sql += join_attributes('akvl1', 'crops') + """
-            LEFT JOIN crops crop ON (crop.id = akvl1.value)"""
-            elif c == "target_country" or c == "target_region":
-                if "target_country" not in from_sql:
-                    from_sql += \
-                        join_attributes('target_country', 'target_country') + """
-            LEFT JOIN landmatrix_country AS deal_country ON (CAST(target_country.attributes->'target_country' AS numeric) = deal_country.id)
-            LEFT JOIN landmatrix_region AS deal_region ON (deal_country.fk_region_id = deal_region.id)
-            """
-
-            elif c == "primary_investor":
-                from_sql += """
-            LEFT JOIN landmatrix_primaryinvestor AS p ON (i.fk_primary_investor_id = p.id)
-            """
-            elif c == "data_source_type":
-                # only add data_source_type if not data_source added
-                if "data_source" not in join_columns:
-                    from_sql += "LEFT JOIN landmatrix_activityattributegroup AS data_source_type ON (a.activity_identifier = data_source_type.activity_identifier AND data_source_type.key = 'type') "
-            elif c == "data_source":
-                from_sql += """ LEFT JOIN landmatrix_activityattributegroup AS data_source_type ON (a.activity_identifier = data_source_type.activity_identifier AND data_source_type.key = 'type')
-                                 LEFT JOIN landmatrix_activityattributegroup AS data_source_url ON (a.activity_identifier = data_source_url.activity_identifier AND data_source_url.key = 'url')
-                                 LEFT JOIN landmatrix_activityattributegroup AS data_source_organisation ON (a.activity_identifier = data_source_organisation.activity_identifier AND data_source_organisation.key = 'company')
-                                 LEFT JOIN landmatrix_activityattributegroup AS data_source_date ON (a.activity_identifier = data_source_date.activity_identifier AND data_source_date.key = 'date') """
-            elif c == "contract_farming":
-                from_sql += "LEFT JOIN landmatrix_activityattributegroup AS contract_farming ON (a.activity_identifier = contract_farming.activity_identifier AND contract_farming.key = 'off_the_lease') "
-            elif c == "nature_of_the_deal":
-                from_sql += "LEFT JOIN landmatrix_activityattributegroup AS nature_of_the_deal ON (a.activity_identifier = nature_of_the_deal.activity_identifier AND nature_of_the_deal.key = 'nature') "
-            elif c == "latlon":
-                from_sql += "LEFT JOIN landmatrix_activityattributegroup AS latitude ON (a.activity_identifier = latitude.activity_identifier AND latitude.key = 'point_lat') "
-                from_sql += "LEFT JOIN landmatrix_activityattributegroup AS longitude ON (a.activity_identifier = longitude.activity_identifier AND longitude.key = 'point_lon') "
-                from_sql += "LEFT JOIN landmatrix_activityattributegroup AS level_of_accuracy ON (a.activity_identifier = level_of_accuracy.activity_identifier AND level_of_accuracy.key = 'level_of_accuracy') "
-            else:
-                from_sql += '    ' + join_attributes(c, c)
-
-        return from_sql
 
     def _browse_filters_to_sql(self, filters):
         sql = {

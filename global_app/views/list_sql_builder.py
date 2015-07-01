@@ -1,19 +1,8 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .sql_builder import SQLBuilder
-
-def join_attributes(table_alias, attribute, attribute_table='landmatrix_activityattributegroup', attribute_field='fk_activity_id'):
-    from string import Template
-    template = Template("""
-          LEFT JOIN $table AS $alias ON (a.id = $alias.$field AND $alias.attributes ? '$attr')"""
-    )
-    return template.substitute(alias=table_alias, attr=attribute, table=attribute_table, field=attribute_field)
+from .sql_builder import SQLBuilder, join_attributes
 
 class ListSQLBuilder(SQLBuilder):
-
-    def __init__(self, columns, group, group_value):
-        super(ListSQLBuilder, self).__init__(columns, group)
-        self.group_value = group_value
 
     GROUP_CONDITIONS = {
         "target_region":    ' AND deal_region.slug = lower(\'%s\') ',

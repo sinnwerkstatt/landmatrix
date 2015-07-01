@@ -102,6 +102,7 @@ class ActivityProtocolTest(TestCase, DealsTestData):
         return self.get_and_check_response(self.MINIMAL_POST)
 
     def test_all_deal_sql_executes(self):
+        settings.DEBUG = False
         return self.get_and_check_response(self.TYPICAL_POST)
 
     def test_subquery_result(self):
@@ -132,45 +133,44 @@ class ActivityProtocolTest(TestCase, DealsTestData):
                 AND pi_deal.attributes->'pi_deal' = 'True'
                 AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
             GROUP BY a.id"""
-        result = self.execute_sql(sql)
-        self.assert_contains_created_record(result)
+        result = self._execute_sql(sql)
+        self._assert_contains_created_record(result)
         self.assertIn(Activity.objects.last().id, result[-1])
 
     def test_minimal_view_returns_stuff(self):
-        self.assert_view_returns_stuff(self.test_minimal_view_executes)
+        self._assert_view_returns_stuff(self.test_minimal_view_executes)
 
     def test_all_deals_view_returns_stuff(self):
-        self.assert_view_returns_stuff(self.test_all_deal_sql_executes)
+        self._assert_view_returns_stuff(self.test_all_deal_sql_executes)
 
     def test_list_view_executes(self):
         return self.get_and_check_response(self.LIST_POST)
 
     def test_list_view_returns_stuff(self):
-        self.assert_view_returns_stuff(self.test_list_view_executes)
+        self._assert_view_returns_stuff(self.test_list_view_executes)
 
-    def assert_view_returns_stuff(self, function):
+    def _assert_view_returns_stuff(self, function):
         self.create_data()
         result = function()
         self.assertListEqual([], result['errors'])
-        self.assert_contains_created_record(result['activities'])
+        self._assert_contains_created_record(result['activities'])
 
-
-    def assert_contains_created_record(self, records):
+    def _assert_contains_created_record(self, records):
         self.assertGreaterEqual(1, len(records))
         self.assertTrue(isinstance(records[-1], list) or isinstance(records[-1], tuple) and not isinstance(records[-1], str))
         self.assertIn(self.PI_NAME, records[-1])
         self.assertIn(self.INTENTION, records[-1])
 
-    def set_POST(self, options):
+    def _set_POST(self, options):
         self.request.POST = { 'data': json.dumps(options) }
 
     def get_and_check_response(self, post=None):
-        if post: self.set_POST(post)
+        if post: self._set_POST(post)
         response = self.protocol.dispatch(self.request, None)
         self.assertEqual(200, response.status_code)
         return json.loads(response.content.decode('utf-8'))
 
-    def execute_sql(self, sql):
+    def _execute_sql(self, sql):
         from django.db import connection
         cursor = connection.cursor()
         cursor.execute(sql)
