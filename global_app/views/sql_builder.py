@@ -2,13 +2,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.conf import settings
 
-
-def join_attributes(table_alias, attribute, attribute_table='landmatrix_activityattributegroup', attribute_field='fk_activity_id'):
-    from string import Template
-    template = Template("""
-          LEFT JOIN $table AS $alias ON (a.id = $alias.$field AND $alias.attributes ? '$attr')"""
-    )
-    return template.substitute(alias=table_alias, attr=attribute, table=attribute_table, field=attribute_field)
+from landmatrix.models import *
 
 def list_view_wanted(filters):
     group = filters.get("group_by", "")
@@ -22,6 +16,32 @@ def get_join_columns(columns, group, group_value):
     else:
         join_columns = columns
     return join_columns
+
+def join(foreign_table_or_model, alias, on):
+    from django.db import models
+    import inspect
+    if inspect.isclass(foreign_table_or_model) and issubclass(foreign_table_or_model, models.Model):
+        foreign_table_or_model = foreign_table_or_model._meta.db_table
+    return "LEFT JOIN %s AS %s ON %s " % (foreign_table_or_model, alias, on)
+
+def join_expression(foreign_table_or_model, alias, local_field, foreign_field='id'):
+    return join(
+        foreign_table_or_model, alias,
+        "%s = %s.%s"   % (local_field, alias, foreign_field)
+    )
+
+def join_attributes(alias, attribute='', attributes_model=ActivityAttributeGroup, attribute_field='fk_activity_id'):
+    if not attribute: attribute = alias
+    return join(
+        attributes_model, alias,
+        "(a.id = %s.%s AND %s.attributes ? '%s')" % (alias, attribute_field, alias, attribute)
+    )
+
+def join_activity_attributes(alias, attribute):
+    return join(
+        ActivityAttributeGroup, alias,
+        on="a.activity_identifier = %s.activity_identifier AND %s.attributes ? '%s'" % (alias, alias, attribute)
+    )
 
 class SQLBuilder:
 
@@ -54,7 +74,7 @@ class SQLBuilder:
         for c in get_join_columns(self.columns, self.group, self.group_value):
             self._add_join_for_column(c)
 
-        return ''.join(self.join_expressions)
+        return "\n".join(self.join_expressions)
 
     GROUP_TO_NAME = {
         'all':              "'all deals'",
@@ -81,10 +101,7 @@ class SQLBuilder:
         return ''
 
     def get_columns_sql(self):
-        columns_sql = ''
-        for c in self.columns:
-            columns_sql += self.column_sql(c)
-        return columns_sql
+        return "\n".join(map(lambda c: self.column_sql(c), self.columns))
 
     def get_sub_columns_sql(self):
         return ''
@@ -99,61 +116,69 @@ class SQLBuilder:
             for x in self.columns
         )
 
-    def join_expression(self, foreign_table_or_model, foreign_alias, local_field, foreign_field):
-        pass
-
     COLUMNS = { }
     def _setup_column_sql(self):
         if self.COLUMNS: return
         self.COLUMNS = {
+
             'intended_size': [], 'contract_size': [], 'production_size': [],
-            'investor_country': (
+
+            'investor_country':   (
                 'investor_country', [
-                    join_attributes('skvl1', 'country', attribute_table='landmatrix_stakeholderattributegroup', attribute_field='fk_stakeholder_id'),
-                    "LEFT JOIN landmatrix_country AS investor_country ON (investor_country.id = CAST(skvl1.attributes->'country' AS numeric))",
-                    "LEFT JOIN landmatrix_region AS investor_region ON (investor_region.id = investor_country.fk_region_id)"
+                    join_attributes(
+                        'skvl1', 'country',
+                        attributes_model=StakeholderAttributeGroup, attribute_field='fk_stakeholder_id'
+                    ),
+                    join(
+                        Country, 'investor_country',
+                        on="investor_country.id = CAST(skvl1.attributes->'country' AS numeric)"
+                    ),
+                    join_expression(Region, 'investor_region', 'investor_country.fk_region_id')
                 ]
             ),
-            'investor_name': [
-                join_attributes('investor_name', 'investor_name', attribute_table='landmatrix_stakeholderattributegroup', attribute_field='fk_stakeholder_id')
+
+            'investor_name':      [
+                join_attributes(
+                    'investor_name',
+                    attributes_model=StakeholderAttributeGroup, attribute_field='fk_stakeholder_id'
+                )
             ],
-#                LEFT JOIN sh_key_value_lookup investor_name
-#                    ON (s.stakeholder_identifier = investor_name.stakeholder_identifier AND investor_name.key = 'investor_name')
-            'crop': [
+
+            'crop':               [
                 join_attributes('akvl1', 'crops'),
-                "LEFT JOIN crops AS crop ON (crop.id = akvl1.value)"
+                join_expression('crops', 'crop', 'akvl1.value')
             ],
-            'target_country': (
+
+            'target_country':     (
                 'target_country', [
-                    join_attributes('target_country', 'target_country'),
-                    "LEFT JOIN landmatrix_country AS deal_country ON (CAST(target_country.attributes->'target_country' AS numeric) = deal_country.id)",
-                    "LEFT JOIN landmatrix_region AS deal_region ON (deal_country.fk_region_id = deal_region.id)"
+                    join_attributes('target_country'),
+                    join(
+                        Country, 'deal_country',
+                        on="CAST(target_country.attributes->'target_country' AS numeric) = deal_country.id"
+                    ),
+                    join_expression(Region, 'deal_region', 'deal_country.fk_region_id')
                 ]
             ),
-            'primary_investor': [
-                "LEFT JOIN landmatrix_primaryinvestor AS p ON (i.fk_primary_investor_id = p.id)"
+
+            'primary_investor':   [ join_expression(PrimaryInvestor, 'p', 'i.fk_primary_investor_id') ],
+
+            'data_source_type':   ( 'data_source', [ join_activity_attributes('data_source_type', 'type') ] ),
+
+            'data_source':        [
+                join_activity_attributes('data_source_type', 'type'),
+                join_activity_attributes('data_source_url', 'url'),
+                join_activity_attributes('data_source_organisation', 'company'),
+                join_activity_attributes('data_source_date', 'date'),
             ],
-            'data_source_type': (
-                'data_source', [
-                    "LEFT JOIN landmatrix_activityattributegroup AS data_source_type ON (a.activity_identifier = data_source_type.activity_identifier AND data_source_type.key = 'type') "
-                ]
-            ),
-            'data_source': [
-                "LEFT JOIN landmatrix_activityattributegroup AS data_source_type ON (a.activity_identifier = data_source_type.activity_identifier AND data_source_type.key = 'type')",
-                "LEFT JOIN landmatrix_activityattributegroup AS data_source_url ON (a.activity_identifier = data_source_url.activity_identifier AND data_source_url.key = 'url')",
-                "LEFT JOIN landmatrix_activityattributegroup AS data_source_organisation ON (a.activity_identifier = data_source_organisation.activity_identifier AND data_source_organisation.key = 'company')",
-                "LEFT JOIN landmatrix_activityattributegroup AS data_source_date ON (a.activity_identifier = data_source_date.activity_identifier AND data_source_date.key = 'date')"
-            ],
-            'contract_farming': [
-                "LEFT JOIN landmatrix_activityattributegroup AS contract_farming ON (a.activity_identifier = contract_farming.activity_identifier AND contract_farming.key = 'off_the_lease') "
-            ],
-            'nature_of_the_deal': [
-                "LEFT JOIN landmatrix_activityattributegroup AS nature_of_the_deal ON (a.activity_identifier = nature_of_the_deal.activity_identifier AND nature_of_the_deal.key = 'nature') "
-            ],
-            'latlon': [
-                "LEFT JOIN landmatrix_activityattributegroup AS latitude ON (a.activity_identifier = latitude.activity_identifier AND latitude.key = 'point_lat')",
-                "LEFT JOIN landmatrix_activityattributegroup AS longitude ON (a.activity_identifier = longitude.activity_identifier AND longitude.key = 'point_lon')",
-                "LEFT JOIN landmatrix_activityattributegroup AS level_of_accuracy ON (a.activity_identifier = level_of_accuracy.activity_identifier AND level_of_accuracy.key = 'level_of_accuracy')"
+
+            'contract_farming':   [ join_activity_attributes('contract_farming', 'off_the_lease'), ],
+
+            'nature_of_the_deal': [ join_activity_attributes('nature_of_the_deal', 'nature'), ],
+
+            'latlon':             [
+                join_activity_attributes('latitude', 'point_lat'),
+                join_activity_attributes('longitude', 'point_lon'),
+                join_activity_attributes('level_of_accuracy', 'level_of_accuracy'),
             ],
         }
         self.COLUMNS['investor_region'] = self.COLUMNS['investor_country']
@@ -161,7 +186,7 @@ class SQLBuilder:
 
     def _add_join_for_column(self, c):
         self._setup_column_sql()
-        spec = self.COLUMNS.get(c, [join_attributes(c, c)])
+        spec = self.COLUMNS.get(c, [join_attributes(c)])
         if isinstance(spec, tuple):
             if not any(spec[0] in string for string in self.join_expressions):
                 self.join_expressions.extend(spec[1])

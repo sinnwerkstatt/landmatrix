@@ -33,9 +33,9 @@ class ListSQLBuilder(SQLBuilder):
         if c in ("intended_size", "contract_size", "production_size"):
             return ''
         elif c == "data_source":
-            return "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
+            return "                " + self.SQL_COLUMN_MAP.get(c)[0]
 
-        return "                " + self.SQL_COLUMN_MAP.get(c)[0] + "\n"
+        return "                " + self.SQL_COLUMN_MAP.get(c)[0]
 
     def get_sub_columns_sql(self):
         sub_columns_sql = ''
@@ -55,11 +55,11 @@ class ListSQLBuilder(SQLBuilder):
             sub.name as name,
 %(sub_columns)s            'dummy' as dummy
           FROM
-            landmatrix_activity AS a""" \
+            landmatrix_activity AS a """ \
             + join_attributes('size', 'pi_deal_size') \
-            + join_attributes('intended_size', 'intended_size') \
-            + join_attributes('contract_size', 'contract_size') \
-            + join_attributes('production_size', 'production_size') \
+            + join_attributes('intended_size') \
+            + join_attributes('contract_size') \
+            + join_attributes('production_size') \
             + \
         """
           JOIN (
@@ -71,8 +71,8 @@ class ListSQLBuilder(SQLBuilder):
               landmatrix_activity a
             JOIN landmatrix_status ON (landmatrix_status.id = a.fk_status_id)
               %(from)s""" \
-            + join_attributes('pi_deal', 'pi_deal') \
-            + join_attributes('deal_scope', 'deal_scope') \
+            + join_attributes('pi_deal') \
+            + join_attributes('deal_scope') \
             + """
             %(from_filter_activity)s
             %(from_filter_investor)s

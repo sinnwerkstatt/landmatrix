@@ -51,7 +51,6 @@ class DealsTestData:
         aag.save()
 
 
-
 class AllDealsViewTest(TestCase, DealsTestData):
 
     # we use global_app as defined in landmatrix.url here because django-cms pages are not configured in test db
@@ -99,6 +98,7 @@ class ActivityProtocolTest(TestCase, DealsTestData):
         settings.DEBUG = self.old_setting
 
     def test_minimal_view_executes(self):
+        settings.DEBUG=True
         return self.get_and_check_response(self.MINIMAL_POST)
 
     def test_all_deal_sql_executes(self):
@@ -175,3 +175,13 @@ class ActivityProtocolTest(TestCase, DealsTestData):
         cursor = connection.cursor()
         cursor.execute(sql)
         return cursor.fetchall()
+
+from global_app.views.sql_builder import join_expression
+class SQLBuilderTest(TestCase):
+
+    def test_join_expression(self):
+        self.assertTrue(
+            'LEFT JOIN landmatrix_activity AS a ON local.fk_activity_id = a.id' in
+            join_expression(Activity, 'a', 'local.fk_activity_id', 'id')
+        )
+        self.assertTrue(join_expression(Activity, 'a', 'local.fk_activity_id', 'id').endswith(' '))

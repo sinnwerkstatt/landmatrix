@@ -25,8 +25,8 @@ class GroupSQLBuilder(SQLBuilder):
     def column_sql(self, c):
         if c == self.group:
             # use single values for column which gets grouped by
-            return self.SQL_COLUMN_MAP.get(c)[1] + "\n"
-        return self.SQL_COLUMN_MAP.get(c)[0] + "\n"
+            return self.SQL_COLUMN_MAP.get(c)[1]
+        return self.SQL_COLUMN_MAP.get(c)[0]
 
     @classmethod
     def get_base_sql(cls):
