@@ -1,6 +1,8 @@
 # IDE files and files from my personal environment
 dir.sh
 .idea
+\#*\#
+*~
 
 # default sqlite db used only for basic development
 db.sqlite3
