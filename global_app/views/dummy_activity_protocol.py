@@ -71,10 +71,7 @@ class DummyActivityProtocol:
             "sub_columns": builder.get_sub_columns_sql()
         }
 
-        if (settings.DEBUG):
-            print('from_sql:', builder.get_from_sql())
-            print('group_sql:', builder.get_group_sql())
-            print('SQL: ', sql)
+        if (settings.DEBUG): print('SQL: ', sql)
 
         cursor = connection.cursor()
         cursor.execute(sql)

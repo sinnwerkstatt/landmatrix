@@ -17,16 +17,14 @@ def get_join_columns(columns, group, group_value):
         join_columns = columns
     return join_columns
 
-def join(foreign_table_or_model, alias, on):
-    from django.db import models
-    import inspect
-    if inspect.isclass(foreign_table_or_model) and issubclass(foreign_table_or_model, models.Model):
-        foreign_table_or_model = foreign_table_or_model._meta.db_table
-    return "LEFT JOIN %s AS %s ON %s " % (foreign_table_or_model, alias, on)
+def join(table_or_model, alias, on):
+    if not isinstance(table_or_model, str):
+        table_or_model = table_or_model._meta.db_table
+    return "LEFT JOIN %s AS %s ON %s " % (table_or_model, alias, on)
 
-def join_expression(foreign_table_or_model, alias, local_field, foreign_field='id'):
+def join_expression(table_or_model, alias, local_field, foreign_field='id'):
     return join(
-        foreign_table_or_model, alias,
+        table_or_model, alias,
         "%s = %s.%s"   % (local_field, alias, foreign_field)
     )
 
@@ -67,8 +65,8 @@ class SQLBuilder:
 
         if self._need_involvements_and_stakeholders():
             self.join_expressions.extend([
-                'LEFT JOIN landmatrix_involvement AS i ON (i.fk_activity_id = a.id)',
-                'LEFT JOIN landmatrix_stakeholder AS s ON (i.fk_stakeholder_id = s.id)'
+                join_expression(Involvement, 'i', 'a.id', 'fk_activity_id'),
+                join_expression(Stakeholder, 's', 'i.fk_stakeholder_id')
             ])
 
         for c in get_join_columns(self.columns, self.group, self.group_value):

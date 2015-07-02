@@ -52,48 +52,50 @@ class ListSQLBuilder(SQLBuilder):
     def get_base_sql(cls):
         return u"""
         SELECT
-            sub.name as name,
-%(sub_columns)s            'dummy' as dummy
+              sub.name as name,
+%(sub_columns)s
+              'dummy' as dummy
           FROM
-            landmatrix_activity AS a """ \
-            + join_attributes('size', 'pi_deal_size') \
-            + join_attributes('intended_size') \
-            + join_attributes('contract_size') \
-            + join_attributes('production_size') \
-            + \
-        """
+              landmatrix_activity AS a """ + "\n" \
+              + join_attributes('size', 'pi_deal_size') + "\n" \
+              + join_attributes('intended_size') + "\n" \
+              + join_attributes('contract_size') + "\n" \
+              + join_attributes('production_size') + "\n" \
+              + \
+          """
           JOIN (
-            SELECT DISTINCT
-              a.id as id,
-              %(name)s as name,
-%(columns)s                'dummy' as dummy
-            FROM
-              landmatrix_activity a
-            JOIN landmatrix_status ON (landmatrix_status.id = a.fk_status_id)
-              %(from)s""" \
-            + join_attributes('pi_deal') \
-            + join_attributes('deal_scope') \
-            + """
-            %(from_filter_activity)s
-            %(from_filter_investor)s
-          WHERE
-            a.version = (
-                SELECT max(version)
-                FROM landmatrix_activity amax, landmatrix_status st
-                WHERE amax.fk_status_id = st.id
-                  AND amax.activity_identifier = a.activity_identifier
-                  AND st.name IN ('active', 'overwritten', 'deleted')
-            )
-            AND landmatrix_status.name in ('active', 'overwritten')
-            AND pi_deal.attributes->'pi_deal' = 'True'
-            AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
-            %(where)s
-            %(where_filter_investor)s
-            %(where_filter_activity)s
-            GROUP BY a.id
-            ) AS sub ON (sub.id = a.id)
-         %(group_by)s, sub.name
-         %(order_by)s
-         %(limit)s;
+              SELECT DISTINCT
+                  a.id as id,
+                  %(name)s as name,
+%(columns)s
+                  'dummy' as dummy
+              FROM
+                  landmatrix_activity AS a
+                  JOIN landmatrix_status ON (landmatrix_status.id = a.fk_status_id)
+                  %(from)s""" + "\n" \
+                  + join_attributes('pi_deal') + "\n" \
+                  + join_attributes('deal_scope') + "\n" \
+                  + """
+                  %(from_filter_activity)s
+                  %(from_filter_investor)s
+              WHERE
+                  a.version = (
+                      SELECT max(version)
+                      FROM landmatrix_activity amax, landmatrix_status st
+                      WHERE amax.fk_status_id = st.id
+                          AND amax.activity_identifier = a.activity_identifier
+                          AND st.name IN ('active', 'overwritten', 'deleted')
+                  )
+                  AND landmatrix_status.name in ('active', 'overwritten')
+                  AND pi_deal.attributes->'pi_deal' = 'True'
+                  AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
+                  %(where)s
+                  %(where_filter_investor)s
+                  %(where_filter_activity)s
+              GROUP BY a.id
+          ) AS sub ON (sub.id = a.id)
+          %(group_by)s, sub.name
+          %(order_by)s
+          %(limit)s;
     """
 

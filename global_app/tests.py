@@ -98,11 +98,10 @@ class ActivityProtocolTest(TestCase, DealsTestData):
         settings.DEBUG = self.old_setting
 
     def test_minimal_view_executes(self):
-        settings.DEBUG=True
         return self.get_and_check_response(self.MINIMAL_POST)
 
     def test_all_deal_sql_executes(self):
-        settings.DEBUG = False
+        settings.DEBUG=True
         return self.get_and_check_response(self.TYPICAL_POST)
 
     def test_subquery_result(self):
