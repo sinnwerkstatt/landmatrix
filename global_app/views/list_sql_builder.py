@@ -41,8 +41,7 @@ class ListSQLBuilder(SQLBuilder):
         sub_columns_sql = ''
         for c in self.columns:
             if c in ("intended_size", "contract_size", "production_size"):
-#                sub_columns_sql += "            ARRAY_AGG(%(name)s.attributes->'%(name)s' ORDER BY %(name)s.date DESC) as %(name)s,\n" % {"name": c}
-                sub_columns_sql += "            ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.attributes->'%(name)s'), ', ') as %(name)s,\n" % {"name": c}
+                sub_columns_sql += "            NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.attributes->'%(name)s'), ', '), '') as %(name)s,\n" % {"name": c}
             elif c == "data_source":
                 sub_columns_sql += "            sub.data_source_type as data_source_type, sub.data_source_url as data_source_url, sub.data_source_date data_source_date, sub.data_source_organisation as data_source_organisation,\n"
             else:
