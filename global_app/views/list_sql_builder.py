@@ -16,7 +16,7 @@ class ListSQLBuilder(SQLBuilder):
         "data_source_type": ' AND lower(replace(replace(data_source_type.value, \' \', \'-\'), \'/\', \'+\')) = lower(\'%s\') '
     }
     def get_where_sql(self):
-        if self.group != "all"and self.group_value:
+        if self.group != 'all' and self.group_value:
             return self.GROUP_CONDITIONS[self.group] % self.group_value
         return ''
 

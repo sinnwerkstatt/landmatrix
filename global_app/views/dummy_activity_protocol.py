@@ -39,6 +39,8 @@ class DummyActivityProtocol:
     def dispatch(self, request, action):
 
         if request.POST:
+            print(request.POST)
+            print(request.POST['data'])
             self.data = json.loads(request.POST["data"])
 
         res = {"errors": [], "activities": []}
@@ -98,7 +100,7 @@ class DummyActivityProtocol:
                 value = ",".join(filter(None, [s.strip() for s in f.get("value").split(",")]))
                 where_act += "AND a.activity_identifier %s " % DummyActivityProtocol.OPERATION_MAP[operation][0] % value
         if filters.get("deal_scope") and filters.get("deal_scope") != "all":
-            where_act += " AND deal_scope.value = '%s' " % filters.get("deal_scope")
+            where_act += " AND deal_scope.attributes->'deal_scope' = '%s' " % filters.get("deal_scope")
         if filters.get("activity", {}).get("tags"):
             tags = filters.get("activity").get("tags")
             for i, (tag, value) in enumerate(tags.items()):
@@ -122,9 +124,10 @@ class DummyActivityProtocol:
                             "op": DummyActivityProtocol.OPERATION_MAP[operation][0] % in_values,
                         }
                     else:
-                        where_act += " AND akv%(count)i.value %(op)s " % {
+                        where_act += " AND akv%(count)i.attributes->'%(variable)s' %(op)s " % {
                             "count": i,
                             "op": DummyActivityProtocol.OPERATION_MAP[operation][0] % in_values,
+                            'variable': variable
                         }
                 else:
                     for v in value:
@@ -142,13 +145,13 @@ class DummyActivityProtocol:
                 # join tag tables for each condition
                 if variable == "region":
                     tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS akv%(count)i, countries AS ac%(count)i, regions AS ar%(count)i \n" % {"count": i}
-                    tables_from_act += " ON (a.activity_identifier = akv%(count)i.activity_identifier AND akv%(count)i.key = 'target_country' AND akv%(count)i.value = ac%(count)i.name AND ar%(count)i.id = ac%(count)i.fk_region)"%{"count": i, "key": variable}
+                    tables_from_act += " ON (a.id = akv%(count)i.fk_activity_id AND akv%(count)i.attributes ? 'target_country' AND akv%(count)i.value = ac%(count)i.name AND ar%(count)i.id = ac%(count)i.fk_region)"%{"count": i, "key": variable}
                 if variable.isdigit():
                     tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS akv%(count)i\n" % {"count": i}
-                    tables_from_act += " ON (a.activity_identifier = akv%(count)i.activity_identifier AND akv%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
+                    tables_from_act += " ON (a.id = akv%(count)i.fk_activity_id AND akv%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
                 else:
                     tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS akv%(count)i\n" % {"count": i}
-                    tables_from_act += " ON (a.activity_identifier = akv%(count)i.activity_identifier AND akv%(count)i.key = '%(key)s')"%{"count": i, "key": variable}
+                    tables_from_act += " ON (a.id = akv%(count)i.fk_activity_id AND akv%(count)i.attributes ? '%(key)s')"%{"count": i, "key": variable}
         sql["activity"]["from"] = tables_from_act
         sql["activity"]["where"] = where_act
         if filters.get("investor", {}).get("tags"):

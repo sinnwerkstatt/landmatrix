@@ -53,7 +53,6 @@ class SQLBuilder:
             return GroupSQLBuilder(filters, columns)
 
     def __init__(self, filters, columns):
-        if (settings.DEBUG): print(type(self).__name__)
         self.filters = filters
         self.columns = columns
         self.group = filters.get("group_by", "")
@@ -205,8 +204,8 @@ class SQLBuilder:
         "deal_availability": ["a.availability AS availability, ", "a.availability AS availability, "],
         "data_source_type": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
                              " data_source_type.value AS data_source_type, "],
-        "target_country": [" array_to_string(array_agg(DISTINCT deal_country.id), '##!##') as target_country, ",
-                           " deal_country.id as target_country, "],
+        "target_country": [" array_to_string(array_agg(DISTINCT deal_country.name), '##!##') as target_country, ",
+                           " deal_country.name as target_country, "],
         "target_region": ["GROUP_CONCAT(DISTINCT deal_region.name SEPARATOR '##!##') as target_region, ",
                           " deal_region.name as target_region, "],
         "deal_size": ["IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,",
