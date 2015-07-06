@@ -20,7 +20,7 @@ def get_join_columns(columns, group, group_value):
 def join(table_or_model, alias, on):
     if not isinstance(table_or_model, str):
         table_or_model = table_or_model._meta.db_table
-    return "LEFT JOIN %s AS %s ON %s " % (table_or_model, alias, on)
+    return "LEFT JOIN %-36s AS %-21s ON %s " % (table_or_model, alias, on)
 
 def join_expression(table_or_model, alias, local_field, foreign_field='id'):
     return join(
@@ -28,11 +28,16 @@ def join_expression(table_or_model, alias, local_field, foreign_field='id'):
         "%s = %s.%s"   % (local_field, alias, foreign_field)
     )
 
+def local_table_alias(model):
+    if model == ActivityAttributeGroup: return 'a'
+    elif model == StakeholderAttributeGroup: return 's'
+    else: raise RuntimeError('Model not recognized: '+str(model))
+
 def join_attributes(alias, attribute='', attributes_model=ActivityAttributeGroup, attribute_field='fk_activity_id'):
     if not attribute: attribute = alias
     return join(
         attributes_model, alias,
-        "(a.id = %s.%s AND %s.attributes ? '%s')" % (alias, attribute_field, alias, attribute)
+        "%s.id = %s.%s AND %s.attributes ? '%s'" % (local_table_alias(attributes_model), alias, attribute_field, alias, attribute)
     )
 
 def join_activity_attributes(alias, attribute):
@@ -191,65 +196,57 @@ class SQLBuilder:
             self.join_expressions.extend(spec)
 
     SQL_COLUMN_MAP = {
-        "investor_name": ["array_to_string(array_agg(DISTINCT concat(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)), '##!##') as investor_name,",
-                          "CONCAT(investor_name.value, '#!#', s.stakeholder_identifier) as investor_name,"],
-        "investor_country": ["array_to_string(array_agg(DISTINCT concat(investor_country.name, '#!#', investor_country.code_alpha3)), '##!##') as investor_country,",
-                             "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) as investor_country,"],
-        "investor_region": ["GROUP_CONCAT(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id) SEPARATOR '##!##') as investor_region,",
-                            "CONCAT(investor_region.name, '#!#', investor_region.id) as investor_region,"],
-        "intention": ["array_to_string(array_agg(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention,",
+        "investor_name": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT concat(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)), '##!##') AS investor_name,",
+                          "CONCAT(investor_name.value, '#!#', s.stakeholder_identifier) AS investor_name,"],
+        "investor_country": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT concat(investor_country.name, '#!#', investor_country.code_alpha3)), '##!##') AS investor_country,",
+                             "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) AS investor_country,"],
+        "investor_region": ["GROUP_CONCAT(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id) SEPARATOR '##!##') AS investor_region,",
+                            "CONCAT(investor_region.name, '#!#', investor_region.id) AS investor_region,"],
+        "intention": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention,",
                       "intention.value AS intention,"],
         "crop": ["GROUP_CONCAT(DISTINCT CONCAT(crop.name, '#!#', crop.code ) SEPARATOR '##!##') AS crop,",
                  "CONCAT(crop.name, '#!#', crop.code ) AS crop,"],
         "deal_availability": ["a.availability AS availability, ", "a.availability AS availability, "],
         "data_source_type": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
                              " data_source_type.value AS data_source_type, "],
-        "target_country": [" array_to_string(array_agg(DISTINCT deal_country.name), '##!##') as target_country, ",
-                           " deal_country.name as target_country, "],
-        "target_region": ["GROUP_CONCAT(DISTINCT deal_region.name SEPARATOR '##!##') as target_region, ",
-                          " deal_region.name as target_region, "],
+        "target_country": [" ARRAY_TO_STRING(ARRAY_AGG(DISTINCT deal_country.name), '##!##') AS target_country, ",
+                           " deal_country.name AS target_country, "],
+        "target_region": ["GROUP_CONCAT(DISTINCT deal_region.name SEPARATOR '##!##') AS target_region, ",
+                          " deal_region.name AS target_region, "],
         "deal_size": ["IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,",
                       "IFNULL(pi_deal_size.value, 0) + 0 AS deal_size,"],
         "year": ["pi_negotiation_status.year AS year, ", "pi_negotiation_status.year AS year, "],
         "deal_count": ["COUNT(DISTINCT a.activity_identifier) as deal_count,",
                        "COUNT(DISTINCT a.activity_identifier) as deal_count,"],
-        "availability": ["SUM(a.availability) / COUNT(a.activity_identifier) as availability,",
-                         "SUM(a.availability) / COUNT(a.activity_identifier) as availability,"],
-        "primary_investor": ["array_to_string(array_agg(DISTINCT p.name), '##!##') as primary_investor,",
-                             "array_to_string(array_agg(DISTINCT p.name), '##!##') as primary_investor,"],
+        "availability": ["SUM(a.availability) / COUNT(a.activity_identifier) AS availability,",
+                         "SUM(a.availability) / COUNT(a.activity_identifier) AS availability,"],
+        "primary_investor": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT p.name), '##!##') AS primary_investor,",
+                             "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT p.name), '##!##') AS primary_investor,"],
         "negotiation_status": [
-            """array_to_string(
-                    array_agg(
-                        DISTINCT concat(
-                            negotiation_status.attributes->'negotiation_status',
-                            '#!#',
-                            COALESCE(EXTRACT(YEAR FROM negotiation_status.date), 0)
-                        )
-                    ),
-                    '##!##'
-                ) as negotiation_status,"""
+            """ARRAY_TO_STRING(ARRAY_AGG(
+                    DISTINCT CONCAT(
+                        negotiation_status.attributes->'negotiation_status',        '#!#',
+                        COALESCE(EXTRACT(YEAR FROM negotiation_status.date), 0)
+                    )), '##!##'
+                ) AS negotiation_status,"""
         ],
         "implementation_status": [
-            """array_to_string(
-                    array_agg(
-                        DISTINCT concat(
-                            implementation_status.attributes->'implementation_status',
-                            '#!#',
-                            COALESCE(EXTRACT(YEAR FROM implementation_status.date), 0)
-                        )
-                    ),
-                    '##!##'
-                ) as implementation_status,"""
+            """ARRAY_TO_STRING(ARRAY_AGG(
+                    DISTINCT CONCAT(
+                        implementation_status.attributes->'implementation_status',  '#!#',
+                        COALESCE(EXTRACT(YEAR FROM implementation_status.date), 0)
+                    )), '##!##'
+                ) AS implementation_status,"""
         ],
-        "nature_of_the_deal": ["array_to_string(array_agg(DISTINCT nature_of_the_deal.value), '##!##') as nature_of_the_deal,"],
+        "nature_of_the_deal": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nature_of_the_deal.value), '##!##') AS nature_of_the_deal,"],
         "data_source": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, GROUP_CONCAT(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group) SEPARATOR '##!##') as data_source_url, GROUP_CONCAT(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group) SEPARATOR '##!##') as data_source_date, GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group) SEPARATOR '##!##') as data_source_organisation,"],
-        "contract_farming": ["array_to_string(array_agg(DISTINCT contract_farming.value), '##!##') as contract_farming,"],
+        "contract_farming": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_farming.value), '##!##') AS contract_farming,"],
         "intended_size": ["0 AS intended_size,"],
         "contract_size": ["0 AS contract_size,"],
         "production_size": ["0 AS production_size,"],
-        "location": ["array_to_string(array_agg(DISTINCT location.value), '##!##') AS location,"],
-        "deal_id": ["a.activity_identifier as deal_id,", "a.activity_identifier as deal_id,"],
-        "latlon": ["GROUP_CONCAT(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value) SEPARATOR '##!##') as latlon,"],
+        "location": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT location.value), '##!##') AS location,"],
+        "deal_id": ["a.activity_identifier AS deal_id,", "a.activity_identifier as deal_id,"],
+        "latlon": ["GROUP_CONCAT(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value) SEPARATOR '##!##') AS latlon,"],
     }
 #             AND (intention.value IS NULL OR intention.value != 'Mining')
 

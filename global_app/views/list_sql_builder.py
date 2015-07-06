@@ -41,20 +41,20 @@ class ListSQLBuilder(SQLBuilder):
         sub_columns_sql = ''
         for c in self.columns:
             if c in ("intended_size", "contract_size", "production_size"):
-                sub_columns_sql += "            NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.attributes->'%(name)s'), ', '), '') as %(name)s,\n" % {"name": c}
+                sub_columns_sql += "            NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.attributes->'%(name)s'), ', '), '') AS %(name)s,\n" % {"name": c}
             elif c == "data_source":
-                sub_columns_sql += "            sub.data_source_type as data_source_type, sub.data_source_url as data_source_url, sub.data_source_date data_source_date, sub.data_source_organisation as data_source_organisation,\n"
+                sub_columns_sql += "            sub.data_source_type AS data_source_type, sub.data_source_url AS data_source_url, sub.data_source_date AS data_source_date, sub.data_source_organisation AS data_source_organisation,\n"
             else:
-                sub_columns_sql += "            sub.%(name)s as %(name)s,\n" % {"name": c}
+                sub_columns_sql += "            sub.%(name)s AS %(name)s,\n" % {"name": c}
         return sub_columns_sql
 
     @classmethod
     def get_base_sql(cls):
         return u"""
         SELECT
-              sub.name as name,
+              sub.name AS name,
 %(sub_columns)s
-              'dummy' as dummy
+              'dummy' AS dummy
           FROM
               landmatrix_activity AS a """ + "\n" \
               + join_attributes('size', 'pi_deal_size') + "\n" \
@@ -65,18 +65,16 @@ class ListSQLBuilder(SQLBuilder):
           """
           JOIN (
               SELECT DISTINCT
-                  a.id as id,
-                  %(name)s as name,
-%(columns)s
-                  'dummy' as dummy
+                  a.id AS id,
+                  %(name)s AS name,
+%(columns)s                  'dummy' AS dummy
               FROM
                   landmatrix_activity AS a
                   JOIN landmatrix_status ON (landmatrix_status.id = a.fk_status_id)
-                  %(from)s""" + "\n" \
+%(from)s""" + "\n" \
                   + join_attributes('pi_deal') + "\n" \
-                  + join_attributes('deal_scope') + "\n" \
-                  + """
-                  %(from_filter_activity)s
+                  + join_attributes('deal_scope') + """
+%(from_filter_activity)s
                   %(from_filter_investor)s
               WHERE
                   a.version = (
@@ -86,7 +84,7 @@ class ListSQLBuilder(SQLBuilder):
                           AND amax.activity_identifier = a.activity_identifier
                           AND st.name IN ('active', 'overwritten', 'deleted')
                   )
-                  AND landmatrix_status.name in ('active', 'overwritten')
+                  AND landmatrix_status.name IN ('active', 'overwritten')
                   AND pi_deal.attributes->'pi_deal' = 'True'
                   AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
                   %(where)s
