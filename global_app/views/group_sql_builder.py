@@ -15,6 +15,12 @@ class GroupSQLBuilder(SQLBuilder):
         return " AND trim(lower(%s.value)) like '%s%%%%' " % (self.group, starts_with)
 
     def get_group_sql(self):
+        group_by = [self.group if self.group else 'dummy', self.get_name_sql()]
+        for c in self.columns:
+            if not c in group_by:
+                if not any(f in self.column_sql(c) for f in ('ARRAY_AGG', 'COUNT')):
+                    group_by.append(c)
+        return "GROUP BY %s" % ', '.join(group_by)
         if self.group:  return "GROUP BY %s" % self.group
         else:           return 'GROUP BY dummy'
 
@@ -37,14 +43,12 @@ class GroupSQLBuilder(SQLBuilder):
               'dummy' as dummy
         FROM
             landmatrix_activity AS a
-        JOIN landmatrix_status ON (landmatrix_status.id = a.fk_status_id)
-            %(from)s
-        LEFT JOIN landmatrix_activityattributegroup AS pi_deal
-            ON (a.id = pi_deal.fk_activity_id AND LENGTH(pi_deal.attributes->'pi_deal') > 0)
-        LEFT JOIN landmatrix_activityattributegroup AS deal_scope
-            ON (a.id = deal_scope.fk_activity_id AND LENGTH(deal_scope.attributes->'deal_scope') > 0)
-        %(from_filter_activity)s
-        %(from_filter_investor)s
+JOIN landmatrix_status                                                  ON landmatrix_status.id = a.fk_status_id
+%(from)s
+LEFT JOIN landmatrix_activityattributegroup    AS pi_deal               ON a.id = pi_deal.fk_activity_id AND  pi_deal.attributes ? 'pi_deal'
+LEFT JOIN landmatrix_activityattributegroup    AS deal_scope            ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'
+%(from_filter_activity)s
+%(from_filter_investor)s
         WHERE
             a.version = (
                 SELECT max(version) FROM landmatrix_activity amax, landmatrix_status st

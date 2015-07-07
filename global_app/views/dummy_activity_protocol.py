@@ -39,8 +39,7 @@ class DummyActivityProtocol:
     def dispatch(self, request, action):
 
         if request.POST:
-            print(request.POST)
-            print(request.POST['data'])
+            if settings.DEBUG: print(request.POST['data'])
             self.data = json.loads(request.POST["data"])
 
         res = {"errors": [], "activities": []}
