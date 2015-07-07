@@ -41,7 +41,7 @@ class Compare:
 
     NUM_COMPARED_RECORDS = 10
 
-    files_to_compare = ['by_investor_region', 'by_target_country', 'by_target_region', 'all_deals', ]
+    files_to_compare = ['by_investor_country', 'by_investor_region', 'by_target_country', 'by_target_region', 'all_deals', ]
     warnings = {}
     errors = {}
     sql = {}
@@ -136,7 +136,17 @@ class Compare:
         'by_investor_region': {
             0: _throwaway_column,
             2: _actual_intention_in_expected,
-        }
+            4: _floats_pretty_equal
+        },
+        'by_investor_country': {
+            0: _throwaway_column,
+            3: _actual_intention_in_expected,
+            5: _floats_pretty_equal
+        },
+        'by_investor': {},
+        'by_intention': {},
+        'by_data_source_type': {},
+        'by_crop': {}
     }
     def similar(self, field, expected, actual):
         if field in self.similar_table[self.filename]:

@@ -200,7 +200,7 @@ class SQLBuilder:
                           "CONCAT(investor_name.value, '#!#', s.stakeholder_identifier) AS investor_name,"],
         "investor_country": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT concat(investor_country.name, '#!#', investor_country.code_alpha3)), '##!##') AS investor_country,",
                              "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) AS investor_country,"],
-        "investor_region": ["GROUP_CONCAT(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id) SEPARATOR '##!##') AS investor_region,",
+        "investor_region": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id)), '##!##') AS investor_region,",
                             "CONCAT(investor_region.name, '#!#', investor_region.id) AS investor_region,"],
         "intention": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention,",
                       "intention.value AS intention,"],
