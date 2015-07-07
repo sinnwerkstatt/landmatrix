@@ -27,21 +27,31 @@ if __name__ == '__main__':
 
     from map_model_implementations import *
     from editor.models import ActivityAttributeGroup
+    from django.db.utils import ConnectionDoesNotExist
 
-    if True:
-        MapStakeholder._done = True
-        MapLanguage._done = True
-        MapStakeholderAttributeGroup.map_all(save=True)
+    try:
 
-    if False:
-        MapActivityAttributeGroup.map(ActivityAttributeGroup.objects.using(V1).last().id)
+        MapAgriculturalProduce.map_all(save=True)
+        MapCrop.map_all(save=True)
 
-    if False:
-        for map_class in [
-            MapLanguage, MapStatus,
-            MapActivity, MapActivityAttributeGroup,
-            MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
-            MapStakeholder, MapPrimaryInvestor, MapInvolvement,
-            MapStakeholderAttributeGroup,
-        ]:
-            map_class.map_all(save=True)
+        if False:   # run to fix messed up country attributes on StakeholderAttributeGroup
+            MapStakeholder._done = True
+            MapLanguage._done = True
+            MapStakeholderAttributeGroup.map_all(save=True)
+
+        if False:   # example for migrating just one record
+            MapActivityAttributeGroup.map(ActivityAttributeGroup.objects.using(V1).last().id)
+
+        if False:   # migrate all data
+            for map_class in [
+                MapLanguage, MapStatus,
+                MapActivity, MapActivityAttributeGroup,
+                MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
+                MapStakeholder, MapPrimaryInvestor, MapInvolvement,
+                MapStakeholderAttributeGroup,
+                MapAgriculturalProduce, MapCrop,
+            ]:
+                map_class.map_all(save=True)
+
+    except ConnectionDoesNotExist:
+        print('You forgot to set CONVERT_DB to True in settings.py!')

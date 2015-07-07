@@ -110,3 +110,16 @@ class MapBrowseCondition(MapModel):
     old_class = editor.models.BrowseCondition
     new_class = landmatrix.models.BrowseCondition
     depends = [ MapBrowseRule ]
+
+
+class MapAgriculturalProduce(MapModel):
+    old_class = editor.models.AgriculturalProduce
+    new_class = landmatrix.models.AgriculturalProduce
+
+class MapCrop(MapModel):
+    old_class = editor.models.Crop
+    new_class = landmatrix.models.Crop
+    attributes = {
+        'agricultural_produce': 'fk_agricultural_produce'
+    }
+    depends = [ MapAgriculturalProduce ]
