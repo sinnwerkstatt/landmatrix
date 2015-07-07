@@ -41,7 +41,9 @@ class Compare:
 
     NUM_COMPARED_RECORDS = 10
 
-    files_to_compare = ['by_investor_country', 'by_investor_region', 'by_target_country', 'by_target_region', 'all_deals', ]
+    files_to_compare = [
+        'by_investor', 'by_investor_country', 'by_investor_region', 'by_target_country', 'by_target_region', 'all_deals',
+    ]
     warnings = {}
     errors = {}
     sql = {}
@@ -83,7 +85,7 @@ class Compare:
             for j in range(0, len(records[id])):
                 if not self.equal(j, records[id][j], query_result[id][j]):
                     func = self.add_warning if self.similar(j, records[id][j], query_result[id][j]) else self.add_error
-                    func("ID: %-16s field %2i: expected %-24s got %-24s" % (str(records[id][1]), j, str(records[id][j]), str(query_result[id][j])))
+                    func("%-20s field %2i: expected %-24s got %-24s" % (str(records[id][1]), j, str(records[id][j]), str(query_result[id][j])))
 
     def _print_messages(self, container, what, headerchar):
         if not container: return
@@ -143,7 +145,9 @@ class Compare:
             3: _actual_intention_in_expected,
             5: _floats_pretty_equal
         },
-        'by_investor': {},
+        'by_investor': {
+            5: _floats_pretty_equal
+        },
         'by_intention': {},
         'by_data_source_type': {},
         'by_crop': {}

@@ -84,10 +84,10 @@ class SQLBuilder:
         'target_country':   'deal_country.name',
         'year':             'pi_negotiation_status.year',
         'crop':             'crop.name',
-        'intention':        'intention.value',
+        'intention':        "intention.attributes->'invtention'",
         'investor_region':  'investor_region.name',
         'investor_country': 'investor_country.name',
-        'investor_name':    'investor_name.value',
+        'investor_name':    "investor_name.attributes->'investor_name'",
         'data_source_type': 'data_source_type.value'
     }
     def get_name_sql(self):
@@ -196,19 +196,29 @@ class SQLBuilder:
             self.join_expressions.extend(spec)
 
     SQL_COLUMN_MAP = {
-        "investor_name": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT concat(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)), '##!##') AS investor_name,",
-                          "CONCAT(investor_name.value, '#!#', s.stakeholder_identifier) AS investor_name,"],
-        "investor_country": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT concat(investor_country.name, '#!#', investor_country.code_alpha3)), '##!##') AS investor_country,",
-                             "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) AS investor_country,"],
-        "investor_region": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id)), '##!##') AS investor_region,",
-                            "CONCAT(investor_region.name, '#!#', investor_region.id) AS investor_region,"],
-        "intention": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention,",
-                      "intention.value AS intention,"],
+        "investor_name": [
+            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)), '##!##') AS investor_name,",
+            "CONCAT(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier) AS investor_name,"
+        ],
+        "investor_country": [
+            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(investor_country.name, '#!#', investor_country.code_alpha3)), '##!##') AS investor_country,",
+            "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) AS investor_country,"
+        ],
+        "investor_region": [
+            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id)), '##!##') AS investor_region,",
+            "CONCAT(investor_region.name, '#!#', investor_region.id) AS investor_region,"
+        ],
+        "intention": [
+            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention,",
+            "intention.attributes->'intention' AS intention,"
+        ],
         "crop": ["GROUP_CONCAT(DISTINCT CONCAT(crop.name, '#!#', crop.code ) SEPARATOR '##!##') AS crop,",
                  "CONCAT(crop.name, '#!#', crop.code ) AS crop,"],
         "deal_availability": ["a.availability AS availability, ", "a.availability AS availability, "],
-        "data_source_type": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
-                             " data_source_type.value AS data_source_type, "],
+        "data_source_type": [
+            "GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
+            "data_source_type.value AS data_source_type, "
+        ],
         "target_country": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT deal_country.name), '##!##') AS target_country, ",
                            "deal_country.name AS target_country, "],
         "target_region": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT deal_region.name), '##!##') AS target_region, ",
@@ -246,14 +256,18 @@ class SQLBuilder:
                 ) END AS implementation_status,"""
         ],
         "nature_of_the_deal": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nature_of_the_deal.value), '##!##') AS nature_of_the_deal,"],
-        "data_source": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, GROUP_CONCAT(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group) SEPARATOR '##!##') as data_source_url, GROUP_CONCAT(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group) SEPARATOR '##!##') as data_source_date, GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group) SEPARATOR '##!##') as data_source_organisation,"],
+        "data_source": [
+            "GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, GROUP_CONCAT(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group) SEPARATOR '##!##') as data_source_url, GROUP_CONCAT(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group) SEPARATOR '##!##') as data_source_date, GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group) SEPARATOR '##!##') as data_source_organisation,"
+        ],
         "contract_farming": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_farming.value), '##!##') AS contract_farming,"],
         "intended_size": ["0 AS intended_size,"],
         "contract_size": ["0 AS contract_size,"],
         "production_size": ["0 AS production_size,"],
         "location": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT location.value), '##!##') AS location,"],
         "deal_id": ["a.activity_identifier AS deal_id,", "a.activity_identifier as deal_id,"],
-        "latlon": ["GROUP_CONCAT(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value) SEPARATOR '##!##') AS latlon,"],
+        "latlon": [
+            "GROUP_CONCAT(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value) SEPARATOR '##!##') AS latlon,"
+        ],
     }
 #             AND (intention.value IS NULL OR intention.value != 'Mining')
 
