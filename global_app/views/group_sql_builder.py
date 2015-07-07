@@ -54,7 +54,7 @@ class GroupSQLBuilder(SQLBuilder):
             )
             AND landmatrix_status.name in ('active', 'overwritten')
             AND pi_deal.attributes->'pi_deal' = 'True'
-            AND (pi_deal.attributes->'intention' != 'Mining')
+            AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
             %(where)s
             %(where_filter_investor)s
             %(where_filter_activity)s
