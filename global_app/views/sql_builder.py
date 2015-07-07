@@ -226,17 +226,24 @@ class SQLBuilder:
             """ARRAY_TO_STRING(ARRAY_AGG(
                     DISTINCT CONCAT(
                         negotiation_status.attributes->'negotiation_status',        '#!#',
-                        COALESCE(EXTRACT(YEAR FROM negotiation_status.date), 0)
+                        EXTRACT(YEAR FROM negotiation_status.date)
                     )), '##!##'
                 ) AS negotiation_status,"""
         ],
         "implementation_status": [
-            """ARRAY_TO_STRING(ARRAY_AGG(
+            """CASE WHEN (
+                ARRAY_TO_STRING(ARRAY_AGG(
                     DISTINCT CONCAT(
                         implementation_status.attributes->'implementation_status',  '#!#',
-                        COALESCE(EXTRACT(YEAR FROM implementation_status.date), 0)
+                        EXTRACT(YEAR FROM implementation_status.date)
                     )), '##!##'
-                ) AS implementation_status,"""
+                ) = '#!#') THEN NULL
+                ELSE ARRAY_TO_STRING(ARRAY_AGG(
+                    DISTINCT CONCAT(
+                        implementation_status.attributes->'implementation_status',  '#!#',
+                        EXTRACT(YEAR FROM implementation_status.date)
+                    )), '##!##'
+                ) END AS implementation_status,"""
         ],
         "nature_of_the_deal": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nature_of_the_deal.value), '##!##') AS nature_of_the_deal,"],
         "data_source": ["GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, GROUP_CONCAT(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group) SEPARATOR '##!##') as data_source_url, GROUP_CONCAT(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group) SEPARATOR '##!##') as data_source_date, GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group) SEPARATOR '##!##') as data_source_organisation,"],
