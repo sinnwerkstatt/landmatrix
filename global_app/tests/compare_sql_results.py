@@ -26,7 +26,7 @@ from global_app.views import DummyActivityProtocol
 
 from django.db import connection
 from django.db.utils import ProgrammingError
-
+import time
 
 # first column is thrown away anyway
 def _throwaway_column(expected, actual): return True
@@ -42,16 +42,21 @@ class Compare:
     NUM_COMPARED_RECORDS = 10
 
     files_to_compare = [
-        'by_investor', 'by_investor_country', 'by_investor_region', 'by_target_country', 'by_target_region', 'all_deals',
+        'by_crop', 'by_data_source_type', 'by_intention', 'by_investor', 'by_investor_country',
+        'by_investor_region', 'by_target_country', 'by_target_region', 'all_deals',
     ]
     warnings = {}
     errors = {}
     sql = {}
 
     _died = False
+    _starttime = 0
 
     filename = ''
     def run(self):
+
+        self._starttime = time.time()
+
         try:
             for self.filename in self.files_to_compare:
                 self.compare_with_expected()
@@ -59,6 +64,7 @@ class Compare:
         except ProgrammingError as e:
             print(e)
             print(connection.queries[-1]['sql'])
+            self._died = True
 
     def show(self, sql=False, warnings=True):
         if self._died: return
@@ -92,6 +98,9 @@ class Compare:
         for file, messages in container.items():
             print(headerchar*80, what+': '+file, headerchar*80, sep='\n')
             print(*messages, sep="\n")
+            print(headerchar*4, ' '*2, len(messages), what)
+        print(headerchar*4, ' '*2, 'Total:', sum(len(messages) for messages in container.values()), what)
+        print(headerchar*4, ' '*2, 'Elapsed:', time.time() - self._starttime)
 
     def read_data(self, filename):
         with open(os.path.dirname(os.path.realpath(__file__)) + '/' + filename, 'r') as f:
@@ -146,11 +155,20 @@ class Compare:
             5: _floats_pretty_equal
         },
         'by_investor': {
+            0: _throwaway_column,
+            3: _actual_intention_in_expected,
             5: _floats_pretty_equal
         },
-        'by_intention': {},
-        'by_data_source_type': {},
-        'by_crop': {}
+        'by_intention': {
+            0: _throwaway_column,
+        },
+        'by_data_source_type': {
+            0: _throwaway_column,
+            2: _actual_intention_in_expected,
+        },
+        'by_crop': {
+            0: _throwaway_column,
+        }
     }
     def similar(self, field, expected, actual):
         if field in self.similar_table[self.filename]:
