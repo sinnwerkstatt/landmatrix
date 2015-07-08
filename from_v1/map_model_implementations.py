@@ -22,17 +22,17 @@ def year_to_date(year):
     if not year: return None
     return ('0000'+str(year)+'-01-07')[-10:]
 
-def replace_country_name_with_id(attributes, attribute):
+def replace_model_name_with_id(model, attributes, attribute):
 
     def extract_target_country(part):
         values = part.split('=>')
         return values[1].strip('"')
 
-    def replace_country_name_with_id(target_country):
-        from editor.models import Country
+    def replace_name_with_id(name):
         from migrate import V1
-        country = Country.objects.using(V1).filter(name=target_country).values('id')[0]['id']
-        return '"' + attribute +'"=>"' + str(country) + '"'
+        id = model.objects.using(V1).filter(name=name).values('id')[0]['id']
+        print(name, id)
+        return '"' + attribute +'"=>"' + str(id) + '"'
 
     if not attribute in attributes: return attributes
 
@@ -43,13 +43,24 @@ def replace_country_name_with_id(attributes, attribute):
             if target_country.isdigit():
                 return attributes
 
-            parts[index] = replace_country_name_with_id(target_country)
+            parts[index] = replace_name_with_id(target_country)
             break
 
     return ', '.join(parts)
 
+def replace_country_name_with_id(attributes, attribute):
+    from editor.models import Country
+    return replace_model_name_with_id(Country, attributes, attribute)
+
 def clean_target_country(attributes):
     return replace_country_name_with_id(attributes, 'target_country')
+
+def clean_crops(attributes):
+    from editor.models import Crop
+    return replace_model_name_with_id(Crop, attributes, 'crops')
+
+def clean_crops_and_target_country(attributes):
+    return clean_crops(clean_target_country(attributes))
 
 class MapActivityAttributeGroup(MapModel):
     old_class = editor.models.ActivityAttributeGroup
@@ -58,9 +69,9 @@ class MapActivityAttributeGroup(MapModel):
         'activity': 'fk_activity',
         'language': 'fk_language',
         'year': ('date', year_to_date),
-        'attributes': ('attributes', clean_target_country)
+        'attributes': ('attributes', clean_crops_and_target_country)
     }
-#    depends = [ MapActivity, MapLanguage ]
+    depends = [ MapActivity, MapLanguage ]
 
 class MapStakeholder(MapModel):
     old_class = editor.models.Stakeholder
@@ -120,6 +131,6 @@ class MapCrop(MapModel):
     old_class = editor.models.Crop
     new_class = landmatrix.models.Crop
     attributes = {
-        'agricultural_produce': 'fk_agricultural_produce'
+        'agricultural_produce': 'fk_agricultural_produce',
     }
     depends = [ MapAgriculturalProduce ]
