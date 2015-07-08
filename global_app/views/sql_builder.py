@@ -88,7 +88,7 @@ class SQLBuilder:
         'investor_region':  'investor_region.name',
         'investor_country': 'investor_country.name',
         'investor_name':    "investor_name.attributes->'investor_name'",
-        'data_source_type': 'data_source_type.value'
+        'data_source_type': "data_source_type.attributes->'type'"
     }
     def get_name_sql(self):
         return self.GROUP_TO_NAME.get(self.group, "'%s'" % self.group)
@@ -148,7 +148,7 @@ class SQLBuilder:
 
             'crop':               [
                 join_attributes('akvl1', 'crops'),
-                join_expression('crops', 'crop', 'akvl1.value')
+                join_expression(Crop, 'crop', "CAST(akvl1.attributes->'crops' AS NUMERIC)")
             ],
 
             'target_country':     (
@@ -164,7 +164,7 @@ class SQLBuilder:
 
             'primary_investor':   [ join_expression(PrimaryInvestor, 'p', 'i.fk_primary_investor_id') ],
 
-            'data_source_type':   ( 'data_source', [ join_activity_attributes('data_source_type', 'type') ] ),
+            'data_source_type':   ( 'data_source', [ join_attributes('data_source_type', 'type') ] ),
 
             'data_source':        [
                 join_activity_attributes('data_source_type', 'type'),
@@ -216,8 +216,8 @@ class SQLBuilder:
                  "CONCAT(crop.name, '#!#', crop.code ) AS crop,"],
         "deal_availability": ["a.availability AS availability, ", "a.availability AS availability, "],
         "data_source_type": [
-            "GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
-            "data_source_type.value AS data_source_type, "
+            "GROUP_CONCAT(DISTINCT CONCAT(data_source_type.attributes->'type', '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, ",
+            "data_source_type.attributes->'type' AS data_source_type, "
         ],
         "target_country": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT deal_country.name), '##!##') AS target_country, ",
                            "deal_country.name AS target_country, "],
