@@ -84,7 +84,7 @@ class SQLBuilder:
         'target_country':   'deal_country.name',
         'year':             'pi_negotiation_status.year',
         'crop':             'crop.name',
-        'intention':        "intention.attributes->'invtention'",
+        'intention':        "intention.attributes->'intention'",
         'investor_region':  'investor_region.name',
         'investor_country': 'investor_country.name',
         'investor_name':    "investor_name.attributes->'investor_name'",
@@ -140,6 +140,8 @@ class SQLBuilder:
             ),
 
             'investor_name':      [
+                join(PrimaryInvestor, 'pi', 'i.fk_primary_investor_id = pi.id'),
+                join(Status, 'pi_st', 'pi.fk_status_id = pi_st.id'),
                 join_attributes(
                     'investor_name',
                     attributes_model=StakeholderAttributeGroup, attribute_field='fk_stakeholder_id'

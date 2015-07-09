@@ -58,7 +58,7 @@ LEFT JOIN landmatrix_activityattributegroup    AS deal_scope            ON a.id 
             )
             AND landmatrix_status.name in ('active', 'overwritten')
             AND pi_deal.attributes->'pi_deal' = 'True'
-            AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
+            AND ((intention.attributes->'intention') IS NULL OR intention.attributes->'intention' != 'Mining')
             %(where)s
             %(where_filter_investor)s
             %(where_filter_activity)s
