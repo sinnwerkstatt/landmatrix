@@ -24,7 +24,6 @@ class TestActivityProtocol(TestCase, DealsTestData):
         return self.get_and_check_response(self.MINIMAL_POST)
 
     def test_all_deal_sql_executes(self):
-        settings.DEBUG=True
         return self.get_and_check_response(self.TYPICAL_POST)
 
     def test_subquery_result(self):
@@ -87,10 +86,15 @@ class TestActivityProtocol(TestCase, DealsTestData):
         self.request.POST = { 'data': json.dumps(options) }
 
     def get_and_check_response(self, post=None):
-        if post: self._set_POST(post)
-        response = self.protocol.dispatch(self.request, None)
-        self.assertEqual(200, response.status_code)
-        return json.loads(response.content.decode('utf-8'))
+        from django.db.utils import ProgrammingError
+        from django.db import connection
+        try:
+            if post: self._set_POST(post)
+            response = self.protocol.dispatch(self.request, None)
+            self.assertEqual(200, response.status_code)
+            return json.loads(response.content.decode('utf-8'))
+        except ProgrammingError as e:
+            self.fail(str(e) + str(e.__cause__) + str(connection.queries[-1]['sql']))
 
     def _execute_sql(self, sql):
         from django.db import connection
