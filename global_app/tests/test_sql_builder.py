@@ -7,8 +7,7 @@ from global_app.views.sql_builder import join_expression
 class TestSQLBuilder(TestCase):
 
     def test_join_expression(self):
-        self.assertTrue(
-            'LEFT JOIN landmatrix_activity AS a ON local.fk_activity_id = a.id' in
-            join_expression(Activity, 'a', 'local.fk_activity_id', 'id')
-        )
-        self.assertTrue(join_expression(Activity, 'a', 'local.fk_activity_id', 'id').endswith(' '))
+        join = join_expression(Activity, 'a', 'local.fk_activity_id', 'id')
+        self.assertTrue('LEFT JOIN landmatrix_activity' in join)
+        self.assertTrue('AS a' in join)
+        self.assertTrue('ON local.fk_activity_id = a.id' in join)
