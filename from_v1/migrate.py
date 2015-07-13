@@ -31,11 +31,14 @@ if __name__ == '__main__':
 
     try:
 
-        MapActivity._done = True
-        MapLanguage._done = True
-        MapActivityAttributeGroup.map_all(save=True)
-#        MapAgriculturalProduce.map_all(save=True)
-#        MapCrop.map_all(save=True)
+        # a number of possible uses listed here as examples
+
+        if False:
+            MapActivity._done = True
+            MapLanguage._done = True
+            MapActivityAttributeGroup.map_all(save=True)
+            MapAgriculturalProduce.map_all(save=True)
+            MapCrop.map_all(save=True)
 
         if False:   # run to fix messed up country attributes on StakeholderAttributeGroup
             MapStakeholder._done = True

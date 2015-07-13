@@ -31,7 +31,7 @@ def replace_model_name_with_id(model, attributes, attribute):
     def replace_name_with_id(name):
         from migrate import V1
         id = model.objects.using(V1).filter(name=name).values('id')[0]['id']
-        print(name, id)
+        if False: print(name, id)
         return '"' + attribute +'"=>"' + str(id) + '"'
 
     if not attribute in attributes: return attributes
