@@ -1,3 +1,5 @@
+from setuptools.command.setopt import setopt
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 import os
@@ -499,10 +501,18 @@ class Compare:
         return sum(len(messages) for messages in self.errors.values())
 
 def run_test(sql, warnings):
+    from django.conf import settings
     compare = Compare()
     compare.run()
     compare.show(sql=sql, warnings=warnings)
     return compare.num_errors()
 
 if __name__ == '__main__':
-    sys.exit(run_test(True, True))
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option('-e', '--show-errors', default=True)
+    parser.add_option('-w', '--show-warnings', default=False)
+    parser.add_option('-s', '--show-sql', default=False)
+    (options, args) = parser.parse_args()
+
+    sys.exit(run_test(options.show_sql, options.show_warnings))

@@ -13,7 +13,10 @@ class TestSQLBuilder(TestCase):
         self.assertTrue('ON local.fk_activity_id = a.id' in join)
 
     def test_compare_to_v1_data(self):
-        from .compare_sql_results import run_test
-        num_errors = run_test(False, False)
+        import os
+        from subprocess import call
+        dir = os.path.dirname(os.path.realpath(__file__))
+        num_errors = call(['python', dir+'/compare_sql_results.py'])
+
         print('num errors:', num_errors)
         self.assertEqual(0, num_errors)
