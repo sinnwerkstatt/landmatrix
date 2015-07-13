@@ -85,7 +85,7 @@ class Compare:
         request = HttpRequest()
         request.POST = {'data': postdata}
         res = protocol.dispatch(request, action="list_group").content
-        self.sql[self.filename] = [connection.queries[-1]['sql']]
+        self.sql[self.filename] = [connection.queries[-1]['sql'] if connection.queries else 'WHAT? NO QUERIES? ' + self.filename]
         query_result = json.loads(res.decode())['activities'][:self.NUM_COMPARED_RECORDS]
 
         if self.filename == 'by_intention':
@@ -93,7 +93,7 @@ class Compare:
             query_result = deque(query_result)
             query_result.rotate(1)
             query_result = list(query_result)
-            query_result.pop(0)
+            if query_result: query_result.pop(0)
             records.pop(0)
             query_result.sort(key=itemgetter(1))
 
@@ -495,7 +495,14 @@ class Compare:
 """,
         }
 
-if __name__ == '__main__':
+    def num_errors(self):
+        return sum(len(messages) for messages in self.errors.values())
+
+def run_test(sql, warnings):
     compare = Compare()
     compare.run()
-    compare.show(sql=True, warnings=True)
+    compare.show(sql=sql, warnings=warnings)
+    return compare.num_errors()
+
+if __name__ == '__main__':
+    sys.exit(run_test(True, True))
