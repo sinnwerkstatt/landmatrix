@@ -17,6 +17,4 @@ class TestSQLBuilder(TestCase):
         from subprocess import call
         dir = os.path.dirname(os.path.realpath(__file__))
         num_errors = call(['python', dir+'/compare_sql_results.py'])
-
-        print('num errors:', num_errors)
         self.assertEqual(0, num_errors)
