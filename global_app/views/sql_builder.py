@@ -37,7 +37,7 @@ def join_attributes(alias, attribute='', attributes_model=ActivityAttributeGroup
     if not attribute: attribute = alias
     return join(
         attributes_model, alias,
-        "%s.id = %s.%s AND %s.attributes ? '%s'" % (local_table_alias(attributes_model), alias, attribute_field, alias, attribute)
+        "%s.id = %s.%s AND %s.attributes ? '%s' AND NOT (%s.attributes->'%s') IS NULL" % (local_table_alias(attributes_model), alias, attribute_field, alias, attribute, alias, attribute)
     )
 
 def join_activity_attributes(alias, attribute):
