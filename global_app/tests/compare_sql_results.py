@@ -43,7 +43,7 @@ def _none_is_equaled(expected, actual):
 
 class Compare:
 
-    NUM_COMPARED_RECORDS = 50
+    NUM_COMPARED_RECORDS = 100
 
     files_to_compare = [
         'by_crop',
@@ -121,7 +121,6 @@ class Compare:
         print(headerchar*4, ' '*2, 'Elapsed:', time.time() - self._starttime)
 
     def read_data(self, filename):
-        print(filename)
         with open(os.path.dirname(os.path.realpath(__file__)) + '/data/' + filename, 'r') as f:
             lines = f.readlines()
         parameters = eval(lines[1])

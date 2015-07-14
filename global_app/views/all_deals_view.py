@@ -239,7 +239,6 @@ class TableGroupView(TemplateView):
             # set given filters
             current_formset_conditions = ConditionFormset(GET, prefix="conditions_empty")
             if current_formset_conditions.is_valid():
-                print('parse_browse_filter_conditions(243): ',current_formset_conditions, order_by, limit)
                 filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
         else:
             # set default filters
@@ -260,13 +259,13 @@ class TableGroupView(TemplateView):
             filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
             current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
             if group == "database":
-                print('parse_browse_filter_conditions(265): ',None, order_by, None)
                 filters = parse_browse_filter_conditions(None, [order_by], None)
                 group = "all"
                 load_more = None
             else:
-                print('parse_browse_filter_conditions(270): ', order_by, limit)
+                # TODO: make the following line work again
 #                filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
+                pass
         group_columns = self._columns(group)
         # columns shown in deal list
         group_columns_list = ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size",]
