@@ -1,5 +1,3 @@
-from setuptools.command.setopt import setopt
-
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 import os
@@ -38,10 +36,14 @@ def _floats_pretty_equal(expected, actual): return 0.99 <= expected/actual <= 1.
 # empty years are converted to zero by new SQL. who cares.
 def _null_to_zero_conversion(expected, actual):
     return expected[:-1] == actual if isinstance(expected, str) and expected.endswith('#0') else expected == actual
+def _same_string_multiple_times(expected, actual): return set(expected.split('##!##')) <= set(actual.split('##!##'))
+def _none_is_equaled(expected, actual):
+    if expected == None and '#!#' in actual and actual.startswith('#'): return True
+    return expected == actual
 
 class Compare:
 
-    NUM_COMPARED_RECORDS = 20
+    NUM_COMPARED_RECORDS = 50
 
     files_to_compare = [
         'by_crop',
@@ -79,25 +81,12 @@ class Compare:
 
 
     def compare_with_expected(self):
-        from collections import deque
-        from operator import itemgetter
 
-        postdata, records = self.read_data(self.filename+'.out')
+        postdata, records = self.read_data('landmatrix_' + self.filename+'.out')
         protocol = DummyActivityProtocol()
-        request = HttpRequest()
-        request.POST = {'data': postdata}
-        res = protocol.dispatch(request, action="list_group").content
-        self.sql[self.filename] = [connection.queries[-1]['sql'] if connection.queries else 'WHAT? NO QUERIES? ' + self.filename]
+        res = protocol.dispatch(self.prepare_request(postdata), action="list_group").content
         query_result = json.loads(res.decode())['activities'][:self.NUM_COMPARED_RECORDS]
-
-        if self.filename == 'by_intention':
-            # postprocess because postgres ORDER BY sorts differently from MySQL :-/
-            query_result = deque(query_result)
-            query_result.rotate(1)
-            query_result = list(query_result)
-            if query_result: query_result.pop(0)
-            records.pop(0)
-            query_result.sort(key=itemgetter(1))
+        self.sql[self.filename] = [connection.queries[-1]['sql'] if connection.queries else 'WHAT? NO QUERIES? ' + self.filename]
 
         if len(query_result) != len(records):
             self.add_error('NUMBER OF RECORDS NOT EQUAL: expected %d, got %d' %(len(records), len(query_result)))
@@ -105,11 +94,22 @@ class Compare:
             self.add_error(query_result)
             return
 
+        self.compare_all_items(query_result, records)
+
+    def prepare_request(self, postdata):
+        request = HttpRequest()
+        request.POST = {'data': postdata}
+        return request
+
+    def compare_all_items(self, query_result, records):
         for id in range(0, len(records)):
-            for j in range(0, len(records[id])):
-                if not self.equal(j, records[id][j], query_result[id][j]):
-                    func = self.add_warning if self.similar(j, records[id][j], query_result[id][j]) else self.add_error
-                    func("%-20s field %2i: expected %-24s got %-24s" % (str(records[id][1]), j, str(records[id][j]), str(query_result[id][j])))
+            self.compare_item(records[id], query_result[id])
+
+    def compare_item(self, expected, got):
+        for j in range(0, len(expected)):
+            if not self.equal(j, expected[j], got[j]):
+                add_message = self.add_warning if self.similar(j, expected[j], got[j]) else self.add_error
+                add_message("%-20s field %2i: expected %-24s got %-24s" % (str(expected[1]), j, str(expected[j]), str(got[j])))
 
     def _print_messages(self, container, what, headerchar):
         if not container: return
@@ -121,11 +121,12 @@ class Compare:
         print(headerchar*4, ' '*2, 'Elapsed:', time.time() - self._starttime)
 
     def read_data(self, filename):
-        with open(os.path.dirname(os.path.realpath(__file__)) + '/' + filename, 'r') as f:
+        print(filename)
+        with open(os.path.dirname(os.path.realpath(__file__)) + '/data/' + filename, 'r') as f:
             lines = f.readlines()
         parameters = eval(lines[1])
         records = eval(lines[2])
-        return (parameters['data'][0], records[:self.NUM_COMPARED_RECORDS])
+        return (parameters['data'], records[:self.NUM_COMPARED_RECORDS])
 
     def _add_message(self, container, message):
         if not self.filename in container.keys():
@@ -143,6 +144,7 @@ class Compare:
 
     similar_table = {
         'all_deals': {
+            3: _same_string_multiple_times,
             6: _actual_intention_in_expected,
             7: _null_to_zero_conversion,
             8: _null_to_zero_conversion
@@ -158,16 +160,20 @@ class Compare:
         },
         'by_investor_region': {
             0: _throwaway_column,
+            1: _none_is_equaled,
             2: _actual_intention_in_expected,
             4: _floats_pretty_equal
         },
         'by_investor_country': {
             0: _throwaway_column,
+            1: _none_is_equaled,
+            2: _none_is_equaled,
             3: _actual_intention_in_expected,
             5: _floats_pretty_equal
         },
         'by_investor': {
             0: _throwaway_column,
+            1: _none_is_equaled,
             3: _actual_intention_in_expected,
             5: _floats_pretty_equal
         },
@@ -180,6 +186,7 @@ class Compare:
         },
         'by_crop': {
             0: _throwaway_column,
+            1: _none_is_equaled,
         }
     }
     def similar(self, field, expected, actual):
@@ -508,11 +515,11 @@ def run_test(sql, warnings):
     return compare.num_errors()
 
 if __name__ == '__main__':
-    from optparse import OptionParser
-    parser = OptionParser()
-    parser.add_option('-e', '--show-errors', default=True)
-    parser.add_option('-w', '--show-warnings', default=False)
-    parser.add_option('-s', '--show-sql', default=False)
-    (options, args) = parser.parse_args()
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument('-e', '--show-errors', default=True)
+    parser.add_argument('-w', '--show-warnings', action="store_true")
+    parser.add_argument('-s', '--show-sql', action="store_true")
+    args = parser.parse_args()
 
-    sys.exit(run_test(options.show_sql, options.show_warnings))
+    sys.exit(run_test(args.show_sql, args.show_warnings))

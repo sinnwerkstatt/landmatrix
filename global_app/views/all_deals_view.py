@@ -5,6 +5,7 @@ from django.utils.datastructures import MultiValueDict
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.conf import settings
+from django.db import connection
 
 import json, numbers
 
@@ -289,9 +290,14 @@ class TableGroupView(TemplateView):
 
         request.POST = MultiValueDict({"data": [json.dumps({"filters": filters, "columns": optimized_columns})]})
         res = ap.dispatch(request, action="list_group").content
-        if (settings.DEBUG): print(res[:100], ' ...')
         query_result = json.loads(res.decode())
-        if (settings.DEBUG): print(query_result['activities'][:10], ' ...')
+        if (settings.DEBUG):
+            print(res[:100], ' ...')
+            print(query_result['activities'][:10], ' ...')
+            open('/tmp/landmatrix_debug.out', 'a+').write(str(request.path)+"\n")
+            open('/tmp/landmatrix_debug.out', 'a+').write(str(dict(request.POST))+"\n")
+            open('/tmp/landmatrix_debug.out', 'a+').write(connection.queries[-1]['sql']+"\n")
+            open('/tmp/landmatrix_debug.out', 'a+').write(str(json.loads(res.decode('utf-8'))['activities'])+"\n")
 
         if is_download or (not group_value and group not in self.QUERY_LIMITED_GROUPS) or starts_with:
             # dont limit query when download or group view
