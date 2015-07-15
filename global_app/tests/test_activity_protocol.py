@@ -94,10 +94,14 @@ class TestActivityProtocol(TestCase, DealsTestData):
             self.assertEqual(200, response.status_code)
             return json.loads(response.content.decode('utf-8'))
         except ProgrammingError as e:
-            self.fail(str(e) + str(e.__cause__) + str(connection.queries[-1]['sql']))
+            self.fail(str(e) + str(e.__cause__) + self._sql())
 
     def _execute_sql(self, sql):
         from django.db import connection
         cursor = connection.cursor()
         cursor.execute(sql)
         return cursor.fetchall()
+
+    def _sql(self):
+        from django.db import connection
+        return str(connection.queries[-1]['sql'])
