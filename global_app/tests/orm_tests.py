@@ -38,8 +38,6 @@ def x(query):
     print(connection.queries[-1]['sql'])
     print()
 
-def nop(query): pass
-
 def humungous_sql():
     return """
 SELECT
@@ -183,7 +181,7 @@ WHERE
             AND amax.activity_identifier = a.activity_identifier
             AND st.name IN ('active', 'overwritten', 'deleted')
     )
-    AND landmatrix_status.name IN ('active', 'overwritten')
+    AND a.fk_status_id IN (2, 3)
     AND pi_deal.attributes->'pi_deal' = 'True'
     AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
 GROUP BY deal_id
@@ -238,17 +236,46 @@ def test_split_inner_query():
 SELECT DISTINCT
     a.activity_identifier AS deal_id,
     ARRAY_TO_STRING(ARRAY_AGG(DISTINCT deal_country.name), '##!##') AS target_country
-
+FROM
+landmatrix_activity AS a
+JOIN landmatrix_status ON (landmatrix_status.id = a.fk_status_id)
+LEFT JOIN landmatrix_activityattributegroup    AS pi_deal               ON a.id = pi_deal.fk_activity_id AND pi_deal.attributes ? 'pi_deal'
+LEFT JOIN landmatrix_activityattributegroup    AS intention             ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
+LEFT JOIN landmatrix_activityattributegroup    AS target_country        ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'
+LEFT JOIN landmatrix_country                   AS deal_country          ON CAST(target_country.attributes->'target_country' AS numeric) = deal_country.id
+WHERE
+    a.version = (
+        SELECT max(version)
+        FROM landmatrix_activity amax, landmatrix_status st
+        WHERE amax.fk_status_id = st.id
+            AND amax.activity_identifier = a.activity_identifier
+            AND st.name IN ('active', 'overwritten', 'deleted')
+    )
+    AND a.fk_status_id IN (2, 3)
+    AND pi_deal.attributes->'pi_deal' = 'True'
+    AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
+GROUP BY deal_id
+ORDER BY deal_id
 """
-
+    tc_results = execute(target_country_query)
+    for i in range(0, len(inner_results)):
+        if not inner_results[i][1] == tc_results[i][1]:
+            print(i)
+            print(inner_results[i])
+            print(tc_results[i])
 
 def execute(sql):
+    from time import time
+    start_time = time()
     cursor = connection.cursor()
     cursor.execute(sql)
-    return cursor.fetchall()
+    result = cursor.fetchall()
+    print(time() - start_time)
+    return result
 
-test_split_humungous_query_in_two()
+# test_split_humungous_query_in_two()
 
+test_split_inner_query()
 
 exit()
 
