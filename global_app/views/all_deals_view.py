@@ -5,6 +5,7 @@ from django.utils.datastructures import MultiValueDict
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.conf import settings
+from django.db import connection
 
 import json, numbers
 
@@ -238,7 +239,6 @@ class TableGroupView(TemplateView):
             # set given filters
             current_formset_conditions = ConditionFormset(GET, prefix="conditions_empty")
             if current_formset_conditions.is_valid():
-                print('parse_browse_filter_conditions(243): ',current_formset_conditions, order_by, limit)
                 filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
         else:
             # set default filters
@@ -259,13 +259,13 @@ class TableGroupView(TemplateView):
             filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
             current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
             if group == "database":
-                print('parse_browse_filter_conditions(265): ',None, order_by, None)
                 filters = parse_browse_filter_conditions(None, [order_by], None)
                 group = "all"
                 load_more = None
             else:
-                print('parse_browse_filter_conditions(270): ', order_by, limit)
+                # TODO: make the following line work again
 #                filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
+                pass
         group_columns = self._columns(group)
         # columns shown in deal list
         group_columns_list = ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size",]
@@ -289,9 +289,14 @@ class TableGroupView(TemplateView):
 
         request.POST = MultiValueDict({"data": [json.dumps({"filters": filters, "columns": optimized_columns})]})
         res = ap.dispatch(request, action="list_group").content
-        if (settings.DEBUG): print(res[:100], ' ...')
         query_result = json.loads(res.decode())
-        if (settings.DEBUG): print(query_result['activities'][:10], ' ...')
+        if (settings.DEBUG):
+            print(res[:100], ' ...')
+            print(query_result['activities'][:10], ' ...')
+            open('/tmp/landmatrix_debug.out', 'a+').write(str(request.path)+"\n")
+            open('/tmp/landmatrix_debug.out', 'a+').write(str(dict(request.POST))+"\n")
+            open('/tmp/landmatrix_debug.out', 'a+').write(connection.queries[-1]['sql']+"\n")
+            open('/tmp/landmatrix_debug.out', 'a+').write(str(json.loads(res.decode('utf-8'))['activities'])+"\n")
 
         if is_download or (not group_value and group not in self.QUERY_LIMITED_GROUPS) or starts_with:
             # dont limit query when download or group view
