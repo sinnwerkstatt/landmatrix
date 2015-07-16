@@ -2,8 +2,6 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models import *
 
-from datetime import date
-
 class DealsTestData:
 
     PI_NAME = 'This should be a darn unique investor name, right?'
@@ -18,7 +16,6 @@ class DealsTestData:
 
     activity_version = 0
     def make_involvement(self, i_r = 0.):
-        self.make_language()
         self.activity_version += 1
         act = Activity(fk_status=Status.objects.get(id=2), activity_identifier=self.ACT_ID, version=self.activity_version)
         act.save()
@@ -31,7 +28,10 @@ class DealsTestData:
         return i
 
     def create_data(self):
+        from datetime import date
         self.make_involvement(1.23)
+        lang = Language(english_name='English', local_name='Dinglisch', locale='en')
+        lang.save()
         Region(
             name='South-East Asia', slug='south-east-asia', point_lat=0., point_lon=120.
         ).save()
@@ -43,7 +43,7 @@ class DealsTestData:
         ).save()
         aag = ActivityAttributeGroup(
             fk_activity = Activity.objects.last(),
-            fk_language=Language.objects.last(),
+            fk_language=lang,
             date=date.today(),
             attributes={
                 'intention': self.INTENTION, 'pi_deal': 'True', 'deal_scope': 'transnational',
@@ -53,13 +53,5 @@ class DealsTestData:
         aag.save()
 
     def create_activity_with_status(self, status_id, act_id = 0, version=1):
-        self.make_language()
         if not act_id: act_id = self.ACT_ID
         Activity(fk_status=Status.objects.get(id=status_id), activity_identifier=act_id, version=version).save()
-
-    def add_attributes_to_activity(self, activity, attributes):
-        ActivityAttributeGroup(fk_activity=activity, fk_language_id=1, date=date.today(),attributes=attributes).save()
-
-    def make_language(self):
-        if len(Language.objects.all()) > 0: return
-        Language(english_name='English', local_name='English', locale='en').save()
