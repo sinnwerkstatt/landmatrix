@@ -193,6 +193,7 @@ class Compare:
         'by_data_source_type': {
             0: _throwaway_column,
             2: _actual_intention_in_expected,
+            4: _floats_pretty_equal,
         },
         'by_crop': {
             0: _throwaway_column,
