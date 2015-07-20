@@ -30,6 +30,29 @@ from landmatrix.models import *
 from django.db.models import Count
 from django.db import connection
 
+def get_excluded_deals():
+    if not get_excluded_deals.deals:
+        query = """SELECT DISTINCT a.activity_identifier AS deal_id
+    FROM landmatrix_activity AS a
+        LEFT JOIN landmatrix_activityattributegroup    AS pi_deal               ON a.id = pi_deal.fk_activity_id AND pi_deal.attributes ? 'pi_deal'
+        LEFT JOIN landmatrix_activityattributegroup    AS intention             ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
+    WHERE a.version = (
+        SELECT max(version)
+        FROM landmatrix_activity amax, landmatrix_status st
+        WHERE amax.fk_status_id = st.id
+            AND amax.activity_identifier = a.activity_identifier
+            AND st.name IN ('active', 'overwritten', 'deleted')
+        )
+        AND a.fk_status_id IN (2, 3)
+        AND pi_deal.attributes->'pi_deal' = 'True'
+        AND intention.attributes->'intention' = 'Mining'
+    GROUP BY deal_id"""
+        excluded_deals = execute(query)
+        get_excluded_deals.deals = [item for sublist in excluded_deals for item in sublist]
+    return get_excluded_deals.deals
+
+get_excluded_deals.deals = []
+
 def x(query):
     from django.db import connection
     print(len(query))
@@ -183,10 +206,11 @@ WHERE
     )
     AND a.fk_status_id IN (2, 3)
     AND pi_deal.attributes->'pi_deal' = 'True'
-    AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
+--    AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
+  AND NOT a.activity_identifier IN(%s)
 GROUP BY deal_id
 ORDER BY deal_id
-"""
+""" % ', '.join(map(str, get_excluded_deals()))
 
 def outer_sql(activity_identifiers):
     return """
@@ -231,38 +255,125 @@ def test_split_humungous_query_in_two():
             print(merged[i])
 
 def test_split_inner_query():
-    inner_results = execute(inner_sql())
-    target_country_query = """
-SELECT DISTINCT
-    a.activity_identifier AS deal_id,
-    ARRAY_TO_STRING(ARRAY_AGG(DISTINCT deal_country.name), '##!##') AS target_country
-FROM
-landmatrix_activity AS a
-JOIN landmatrix_status ON (landmatrix_status.id = a.fk_status_id)
-LEFT JOIN landmatrix_activityattributegroup    AS pi_deal               ON a.id = pi_deal.fk_activity_id AND pi_deal.attributes ? 'pi_deal'
-LEFT JOIN landmatrix_activityattributegroup    AS intention             ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
-LEFT JOIN landmatrix_activityattributegroup    AS target_country        ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'
-LEFT JOIN landmatrix_country                   AS deal_country          ON CAST(target_country.attributes->'target_country' AS numeric) = deal_country.id
-WHERE
-    a.version = (
-        SELECT max(version)
-        FROM landmatrix_activity amax, landmatrix_status st
-        WHERE amax.fk_status_id = st.id
-            AND amax.activity_identifier = a.activity_identifier
-            AND st.name IN ('active', 'overwritten', 'deleted')
+
+    print(get_excluded_deals())
+
+    target_country_query = select(
+        "ARRAY_AGG(DISTINCT target_country.attributes->'target_country') AS target_country",
+        "landmatrix_activityattributegroup    AS target_country        ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'"
+    )
+    primary_investor_query = select(
+        "ARRAY_AGG(DISTINCT p.name) AS primary_investor",
+        [
+            "landmatrix_involvement               AS i                     ON a.id = i.fk_activity_id",
+            "landmatrix_primaryinvestor           AS p                     ON i.fk_primary_investor_id = p.id",
+        ]
+    )
+    investor_name_query = select(
+        "ARRAY_AGG(DISTINCT CONCAT(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)) AS investor_name",
+        [
+            "landmatrix_involvement               AS i                     ON a.id = i.fk_activity_id",
+            "landmatrix_stakeholder               AS s                     ON i.fk_stakeholder_id = s.id",
+            "landmatrix_stakeholderattributegroup AS investor_name         ON s.id = investor_name.fk_stakeholder_id AND investor_name.attributes ? 'investor_name'",
+        ]
+    )
+    investor_country_query = select(
+        "ARRAY_AGG(DISTINCT skvl1.attributes->'country') AS investor_country",
+        [
+            "landmatrix_involvement               AS i                     ON a.id = i.fk_activity_id",
+            "landmatrix_stakeholder               AS s                     ON i.fk_stakeholder_id = s.id",
+            "landmatrix_stakeholderattributegroup AS skvl1                 ON s.id = skvl1.fk_stakeholder_id AND skvl1.attributes ? 'country'"
+        ]
+    )
+    intention_query = select(
+        "ARRAY_AGG(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention') AS intention",
+        "landmatrix_activityattributegroup    AS intention             ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'"
+    )
+    negotiation_query = select(
+        """ARRAY_AGG(DISTINCT CONCAT(
+            negotiation_status.attributes->'negotiation_status',        '#!#',
+            EXTRACT(YEAR FROM negotiation_status.date)
+        )) AS negotiation_status""",
+        "landmatrix_activityattributegroup    AS negotiation_status    ON a.id = negotiation_status.fk_activity_id AND negotiation_status.attributes ? 'negotiation_status'"
+    )
+    implementation_query = select(
+        """CASE WHEN (
+        ARRAY_TO_STRING(ARRAY_AGG(
+            DISTINCT CONCAT(
+                implementation_status.attributes->'implementation_status',  '#!#',
+                EXTRACT(YEAR FROM implementation_status.date)
+            )), '##!##'
+        ) = '#!#') THEN NULL
+        ELSE ARRAY_TO_STRING(ARRAY_AGG(
+            DISTINCT CONCAT(
+                implementation_status.attributes->'implementation_status',  '#!#',
+                EXTRACT(YEAR FROM implementation_status.date)
+            )), '##!##'
+    ) END AS implementation_status""",
+        "landmatrix_activityattributegroup    AS implementation_status ON a.id = implementation_status.fk_activity_id AND implementation_status.attributes ? 'implementation_status'"
+    )
+    print(intention_query)
+
+    from time import time
+    start_time = time()
+
+    tc_results = execute(target_country_query)
+    pi_results = execute(primary_investor_query)
+    in_results = execute(investor_name_query)
+    ic_results = execute(investor_country_query)
+    i_results =  execute(intention_query)
+    ns_results = execute(negotiation_query)
+    is_results = execute(implementation_query)
+
+    print(time() - start_time)
+
+    # inner_results = execute(inner_sql())
+    # for i in range(0, len(inner_results)):
+    #     if not inner_results[i][1] == tc_results[i][1]:
+    #         print(i)
+    #         print(inner_results[i])
+    #         print(tc_results[i])
+
+def select(fields, tables, where=list()):
+    return """
+SELECT %s
+FROM %s
+WHERE %s
+GROUP BY deal_id
+ORDER BY deal_id
+""" % (
+        select_fields(fields),
+        select_tables(tables),
+        select_where(where)
+    )
+
+def select_fields(fields):
+    if isinstance(fields, str): fields = [fields]
+    return ',\n    '.join([base_fields()] + fields)
+
+def select_tables(join_tables):
+    if isinstance(join_tables, str): join_tables = [join_tables]
+    return '\n    LEFT JOIN '.join([base_tables()] + join_tables)
+
+def select_where(where=[]):
+    if isinstance(where, str): where = [where]
+    return ' AND '.join([base_where()] + where)
+
+def base_fields(): return 'DISTINCT a.activity_identifier AS deal_id'
+def base_tables():
+    return """landmatrix_activity AS a
+    LEFT JOIN landmatrix_activityattributegroup    AS pi_deal               ON a.id = pi_deal.fk_activity_id AND pi_deal.attributes ? 'pi_deal'"""
+def base_where():
+    return """a.version = (
+    SELECT max(version)
+    FROM landmatrix_activity amax, landmatrix_status st
+    WHERE amax.fk_status_id = st.id
+        AND amax.activity_identifier = a.activity_identifier
+        AND st.name IN ('active', 'overwritten', 'deleted')
     )
     AND a.fk_status_id IN (2, 3)
     AND pi_deal.attributes->'pi_deal' = 'True'
-    AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
-GROUP BY deal_id
-ORDER BY deal_id
-"""
-    tc_results = execute(target_country_query)
-    for i in range(0, len(inner_results)):
-        if not inner_results[i][1] == tc_results[i][1]:
-            print(i)
-            print(inner_results[i])
-            print(tc_results[i])
+    AND NOT a.activity_identifier IN (%s)""" % ', '.join(map(str, get_excluded_deals()))
 
 def execute(sql):
     from time import time
@@ -273,7 +384,7 @@ def execute(sql):
     print(time() - start_time)
     return result
 
-# test_split_humungous_query_in_two()
+test_split_humungous_query_in_two()
 
 test_split_inner_query()
 

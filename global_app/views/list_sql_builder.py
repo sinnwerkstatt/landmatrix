@@ -74,8 +74,7 @@ class ListSQLBuilder(SQLBuilder):
 %(from)s""" + "\n" \
                   + join_attributes('pi_deal') + "\n" \
                   + join_attributes('deal_scope') + """
-%(from_filter_activity)s
-                  %(from_filter_investor)s
+%(from_filter)s
               WHERE
                   a.version = (
                       SELECT max(version)
@@ -88,8 +87,7 @@ class ListSQLBuilder(SQLBuilder):
                   AND pi_deal.attributes->'pi_deal' = 'True'
                   AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
                   %(where)s
-                  %(where_filter_investor)s
-                  %(where_filter_activity)s
+                  %(where_filter)s
               GROUP BY a.id
           ) AS sub ON (sub.id = a.id)
           %(group_by)s, sub.name
