@@ -51,7 +51,7 @@ def join_activity_attributes(alias, attribute):
 class SQLBuilder:
 
     @classmethod
-    def create(cls, columns, filters):
+    def create(cls, filters, columns):
         from .list_sql_builder import ListSQLBuilder
         from .group_sql_builder import GroupSQLBuilder
         if list_view_wanted(filters):
@@ -64,6 +64,21 @@ class SQLBuilder:
         self.columns = columns
         self.group = filters.get("group_by", "")
         self.group_value = filters.get("group_value", "")
+
+    def get_sql(self):
+        return self.get_base_sql() % {
+            "from": self.get_from_sql(),
+            "where": self.get_where_sql(),
+            "limit": self.get_limit_sql(),
+            "order_by": self.get_order_sql(),
+            "from_filter": self.filter_from(),
+            "where_filter": self.filter_where(),
+            "group_by": self.get_group_sql(),
+            "inner_group_by": self.get_inner_group_sql(),
+            "name": self.get_name_sql(),
+            "columns": self.get_columns_sql(),
+            "sub_columns": self.get_sub_columns_sql()
+        }
 
     def get_from_sql(self):
 

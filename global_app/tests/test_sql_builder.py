@@ -32,7 +32,7 @@ class TestSQLBuilder(TestCase, DealsTestData):
     def test_limit(self):
         post = self.MINIMAL_POST
         post['filters']['limit'] = 10
-        builder = SQLBuilder.create(post['columns'], post['filters'])
+        builder = SQLBuilder.create(post['filters'], post['columns'])
         self.assertIn('LIMIT 10', builder.get_limit_sql())
 
     def test_filters(self):
@@ -45,7 +45,7 @@ class TestSQLBuilder(TestCase, DealsTestData):
 
         for test in to_test:
             post['filters'] = test
-            builder = SQLBuilder.create(post['columns'], post['filters'])
+            builder = SQLBuilder.create(post['filters'], post['columns'])
             self.assertIn(self._browse_filters_to_sql(post['filters'])['activity']['from'], builder.filter_from())
             self.assertIn(self._browse_filters_to_sql(post['filters'])['investor']['from'], builder.filter_from())
             self.assertIn(self._browse_filters_to_sql(post['filters'])['activity']['where'], builder.filter_where())
@@ -54,7 +54,7 @@ class TestSQLBuilder(TestCase, DealsTestData):
     def _check_order_by(self, column, expected):
         post = self.MINIMAL_POST
         post['filters']['order_by'] = [column]
-        builder = SQLBuilder.create(post['columns'], post['filters'])
+        builder = SQLBuilder.create(post['filters'], post['columns'])
         self.assertIn('ORDER BY', builder.get_order_sql())
         self.assertIn(expected, builder.get_order_sql())
 
