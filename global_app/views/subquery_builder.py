@@ -33,7 +33,7 @@ class SubqueryBuilder(ListSQLBuilder):
         return group_by_sql
 
     def _is_aggregate_column(self, c):
-        return 'ARRAY_AGG' in self.SQL_COLUMN_MAP[c][0]
+        return 'ARRAY_AGG' in self.SQL_COLUMN_MAP[c][0] or 'COUNT' in self.SQL_COLUMN_MAP[c][0]
 
     @classmethod
     def get_base_sql(cls):

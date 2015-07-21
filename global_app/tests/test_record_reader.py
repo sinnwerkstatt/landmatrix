@@ -48,7 +48,7 @@ class TestRecordReader(TestCase):
     ]
 
     def _test_parameters_sql(self):
-        for parameters in self.GROUP_VIEW_PARAMETERS[:1]:
+        for parameters in self.GROUP_VIEW_PARAMETERS:
             reader = RecordReader(parameters['filters'], parameters['columns'])
             for column in parameters['columns']:
                 print('--', column)
@@ -56,7 +56,7 @@ class TestRecordReader(TestCase):
 
     def test_parameters_sql_syntax(self):
         from django.db.utils import ProgrammingError
-        for parameters in self.GROUP_VIEW_PARAMETERS[:1]:
+        for parameters in self.GROUP_VIEW_PARAMETERS[:2]:
             reader = RecordReader(parameters['filters'], parameters['columns'])
             for column in parameters['columns']:
                 try:
@@ -65,11 +65,11 @@ class TestRecordReader(TestCase):
                     self.fail('SQL for column "%s" failed:\n%s' % (column, reader.get_column_sql(column)))
 
     def test_get_all_columns(self):
-        for parameters in self.GROUP_VIEW_PARAMETERS[:1]:
+        for parameters in self.GROUP_VIEW_PARAMETERS[:2]:
             reader = RecordReader(parameters['filters'], parameters['columns'])
             print(reader.get_all_columns())
 
     def test_slap_columns_together(self):
-        for parameters in self.GROUP_VIEW_PARAMETERS[:1]:
+        for parameters in self.GROUP_VIEW_PARAMETERS[:2]:
             reader = RecordReader(parameters['filters'], parameters['columns'])
             print(reader.slap_columns_together())
