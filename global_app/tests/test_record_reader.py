@@ -1,12 +1,14 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from global_app.views.record_reader import RecordReader
+from .deals_test_data import DealsTestData
+from .generate_old_sql import GenerateOldSQL
 
 from django.test import TestCase
 
 null = None
 
-class TestRecordReader(TestCase):
+class TestRecordReader(TestCase, DealsTestData, GenerateOldSQL):
 
     GROUP_VIEW_PARAMETERS = [
         {"columns": ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size"],
@@ -47,13 +49,6 @@ class TestRecordReader(TestCase):
                      "investor": {"tags": {}}, "starts_with": null}},
     ]
 
-    def _test_parameters_sql(self):
-        for parameters in self.GROUP_VIEW_PARAMETERS:
-            reader = RecordReader(parameters['filters'], parameters['columns'])
-            for column in parameters['columns']:
-                print('--', column)
-                print(reader.get_column_sql(column), ';')
-
     def test_parameters_sql_syntax(self):
         from django.db.utils import ProgrammingError
         for parameters in self.GROUP_VIEW_PARAMETERS:
@@ -67,9 +62,42 @@ class TestRecordReader(TestCase):
     def test_get_all_columns(self):
         for parameters in self.GROUP_VIEW_PARAMETERS:
             reader = RecordReader(parameters['filters'], parameters['columns'])
-            print(reader.get_all_columns())
 
     def test_slap_columns_together(self):
         for parameters in self.GROUP_VIEW_PARAMETERS:
             reader = RecordReader(parameters['filters'], parameters['columns'])
-            print(reader.get_all())
+
+    def test_order_by(self):
+        self._check_order_by('id', 'id  ASC')
+        self._check_order_by('-id', 'id  DESC')
+        self._check_order_by('id+0', 'id +0 ASC')
+        self._check_order_by('-id+0', 'id +0 DESC')
+
+    def test_limit(self):
+        post = self.MINIMAL_POST
+        post['filters']['limit'] = 10
+        reader = RecordReader(post['filters'], post['columns'])
+        self.assertIn('LIMIT 10', reader.get_all_at_once_sql())
+
+    def test_filters(self):
+        from global_app.views.dummy_activity_protocol import DummyActivityProtocol
+        post = self.MINIMAL_POST
+        to_test = [
+            { "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}} },
+            { "investor": {"tags": {"24055__is": ["0"]}} },
+        ]
+
+        for test in to_test:
+            post['filters'] = test
+            reader = RecordReader(post['filters'], post['columns'])
+            self.assertIn(self._browse_filters_to_sql(post['filters'])['activity']['from'], reader.get_all_at_once_sql())
+            self.assertIn(self._browse_filters_to_sql(post['filters'])['investor']['from'], reader.get_all_at_once_sql())
+            self.assertIn(self._browse_filters_to_sql(post['filters'])['activity']['where'], reader.get_all_at_once_sql())
+            self.assertIn(self._browse_filters_to_sql(post['filters'])['investor']['where'], reader.get_all_at_once_sql())
+
+    def _check_order_by(self, column, expected):
+        post = self.MINIMAL_POST
+        post['filters']['order_by'] = [column]
+        reader = RecordReader(post['filters'], post['columns'])
+        self.assertIn('ORDER BY', reader.get_all_at_once_sql())
+        self.assertIn(expected, reader.get_all_at_once_sql())
