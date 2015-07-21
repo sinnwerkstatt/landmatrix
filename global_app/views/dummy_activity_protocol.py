@@ -25,5 +25,6 @@ class DummyActivityProtocol:
     def _get_activities_by_filter_and_grouping(self, filters, columns):
 
         # if filters.get('group_value') == '':
-        #     return RecordReader(filters, columns).slap_columns_together()
-        return RecordReader(filters, columns).get_all()
+        reader = RecordReader(filters, columns)
+        return reader.get_all(assemble=reader._make_padded_record_from_column_data)
+        return reader.get_all_at_once()
