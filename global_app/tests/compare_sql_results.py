@@ -103,12 +103,6 @@ class Compare:
             self._add_error(query_result)
             return
 
-        # compensate for old, broken SQL
-        if self._filename == 'all_deals':
-            for id_to_drop in [64]:
-                record = next(obj for obj in query_result if obj[1] == id_to_drop)
-                query_result.remove(record)
-
         self._compare_all_items(query_result, records)
 
     def _prepare_request(self, postdata):
@@ -138,8 +132,8 @@ class Compare:
     def _read_data(self, filename):
         with open(os.path.dirname(os.path.realpath(__file__)) + '/data/' + filename, 'r') as f:
             lines = f.readlines()
-        parameters = eval(lines[1])
-        records = eval(lines[2])
+        parameters = eval(lines[0])
+        records = eval(lines[1])
         return (parameters['data'], records[:self.NUM_COMPARED_RECORDS])
 
     def _add_message(self, container, message):
