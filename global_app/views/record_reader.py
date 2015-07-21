@@ -22,8 +22,7 @@ class RecordReader:
         return self._execute_sql(self.get_column_sql(column))
 
     def get_column_sql(self, column):
-        builder = SubqueryBuilder(self.filters, [column])
-        return builder.get_sql()
+        return SubqueryBuilder(self.filters, [column]).get_sql()
 
     def get_all_at_once(self):
         return self._execute_sql(self.get_all_at_once_sql())
