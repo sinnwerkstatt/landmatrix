@@ -72,4 +72,4 @@ class TestRecordReader(TestCase):
     def test_slap_columns_together(self):
         for parameters in self.GROUP_VIEW_PARAMETERS:
             reader = RecordReader(parameters['filters'], parameters['columns'])
-            print(reader.slap_columns_together())
+            print(reader.get_all())

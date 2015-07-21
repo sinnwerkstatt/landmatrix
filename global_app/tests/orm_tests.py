@@ -407,7 +407,7 @@ GROUP_VIEW_PARAMETERS = {
 from time import time
 start_time = time()
 reader = RecordReader(GROUP_VIEW_PARAMETERS['filters'], GROUP_VIEW_PARAMETERS['columns'])
-split_results = reader.slap_columns_together(assemble=reader._make_padded_record_from_column_data)
+split_results = reader.get_all(assemble=reader._make_padded_record_from_column_data)
 print(time() - start_time)
 
 humungous_query = SQLBuilder.create(GROUP_VIEW_PARAMETERS['filters'], GROUP_VIEW_PARAMETERS['columns']).get_sql()
