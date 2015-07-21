@@ -429,7 +429,7 @@ class SQLBuilder:
             "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention,",
             "intention.attributes->'intention' AS intention,"
         ],
-        "crop": ["GROUP_CONCAT(DISTINCT CONCAT(crop.name, '#!#', crop.code ) SEPARATOR '##!##') AS crop,",
+        "crop": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(crop.name, '#!#', crop.code )), '##!##') AS crop,",
                  "CONCAT(crop.name, '#!#', crop.code ) AS crop,"],
         "deal_availability": ["a.availability AS availability, ", "a.availability AS availability, "],
         "data_source_type": [
