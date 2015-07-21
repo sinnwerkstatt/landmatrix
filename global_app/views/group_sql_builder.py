@@ -48,16 +48,7 @@ JOIN landmatrix_status                                                  ON landm
 LEFT JOIN landmatrix_activityattributegroup    AS pi_deal               ON a.id = pi_deal.fk_activity_id AND  pi_deal.attributes ? 'pi_deal'
 LEFT JOIN landmatrix_activityattributegroup    AS deal_scope            ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'
 %(from_filter)s
-        WHERE
-            a.version = (
-                SELECT max(version) FROM landmatrix_activity amax, landmatrix_status st
-                WHERE amax.fk_status_id = st.id
-                  AND amax.activity_identifier = a.activity_identifier
-                  AND st.name IN ('active', 'overwritten', 'deleted')
-            )
-            AND landmatrix_status.name in ('active', 'overwritten')
-            AND pi_deal.attributes->'pi_deal' = 'True'
-            AND ((intention.attributes->'intention') IS NULL OR intention.attributes->'intention' != 'Mining')
+WHERE """ + "\nAND ".join([ cls.max_version_condition(), cls.status_active_condition(), cls.is_deal_condition(), cls.not_mining_condition() ]) + """
             %(where)s
             %(where_filter)s
          %(group_by)s
