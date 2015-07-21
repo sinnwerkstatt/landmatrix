@@ -1,11 +1,11 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from django.http import HttpResponse
-
-import json
-
 from .record_reader import RecordReader
 
+from django.http import HttpResponse
+from django.conf import settings
+
+import json
 
 
 class DummyActivityProtocol:
@@ -17,10 +17,7 @@ class DummyActivityProtocol:
             self.data = json.loads(request.POST["data"])
 
         res = {"errors": [], "activities": []}
-        filters = self.data["filters"]
-        columns = self.data["columns"]
-
-        res["activities"] = self._get_activities_by_filter_and_grouping(filters, columns)
+        res["activities"] = self._get_activities_by_filter_and_grouping(self.data["filters"], self.data["columns"])
 
 #        return HttpResponse(json.dumps(res,encoding="cp1251"), mimetype="application/json")#FIXME, utf-8 breaks for get-the-detail view
         return HttpResponse(json.dumps(res))

@@ -29,6 +29,7 @@ from landmatrix.models import *
 
 from django.db.models import Count
 from django.db import connection
+from global_app.views.sql_builder import SQLBuilder
 
 def get_excluded_deals():
     if not get_excluded_deals.deals:
@@ -384,78 +385,41 @@ def execute(sql):
     print(time() - start_time)
     return result
 
-test_split_humungous_query_in_two()
+#test_split_humungous_query_in_two()
 
-test_split_inner_query()
+#test_split_inner_query()
 
+from global_app.views.record_reader import RecordReader
+
+
+null = None
+GROUP_VIEW_PARAMETERS = {
+    "columns": ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size"],
+    "filters": {
+        "deal_scope": "transnational", "order_by": ["deal_id"], "group_by": "all", "limit": "", "group_value": "",
+        "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}},
+        "investor": {"tags": {}},
+        "starts_with": null
+    }
+}
+
+
+reader = RecordReader(GROUP_VIEW_PARAMETERS['filters'], GROUP_VIEW_PARAMETERS['columns'])
+split_results = reader.slap_columns_together(assemble=reader._make_padded_record_from_column_data)
+
+humungous_query = SQLBuilder.create(GROUP_VIEW_PARAMETERS['filters'], GROUP_VIEW_PARAMETERS['columns']).get_sql()
+humungous_results = execute(humungous_query)
+
+print('split:', len(split_results), 'humungous:', len(humungous_results))
+
+extra_found_records = set(split_results)-set(humungous_results)
+print('\n  '.join(map(str, extra_found_records)))
+print()
+
+not_found_records = set(humungous_results)-set(split_results)
+print('\n  '.join(map(str, not_found_records)))
+
+#print(humungous_query)
+print('*'*80)
+#print(reader.get_column_sql(reader.columns[0]))
 exit()
-
-x(
-    Activity.objects.filter(fk_status__name__in=['active', 'overwritten']).
-        filter(activityattributegroup__attributes__contains=['intention']).
-        filter(activityattributegroup__attributes__contains=['deal_id']).
-        filter(activityattributegroup__attributes__contains=['target_country'])
-)
-x(
-    Activity.objects.filter(fk_status__name__in=['active', 'overwritten']).
-        filter(activityattributegroup__attributes__contains=['intention', 'deal_id', 'target_country'])
-)
-x(
-    Activity.objects.filter(fk_status__name__in=['active', 'overwritten']).
-        filter(activityattributegroup__attributes__contains=['intention']).
-        select_related('involvement').
-        filter(involvement__investment_ratio__gte=0).
-        select_related('stakeholder').
-        filter(involvement__stakeholder__fk_status__name__in=['active', 'overwritten']).
-        values()
-)
-
-
-if False:
-
-    x(
-        Involvement.objects.filter(fk_activity__fk_status__name__in=['active', 'overwritten']).
-        filter(fk_stakeholder__fk_status__name__in=['active', 'overwritten']).
-        filter(fk_activity__activityattributegroup__attributes__contains=['intention']).
-        values()
-    )
-
-    x(
-        Activity.objects.filter(fk_status__name__in=['active', 'overwritten']).
-            filter(activityattributegroup__attributes__contains=['intention']).
-            select_related('involvement').
-            select_related('stakeholder').
-    #        filter(stakeholder__stakeholderattributegroup__attributes__contains=['investor_name']).
-            values().annotate(Count('id'))
-    )
-
-    for records in [
-        Activity.objects.all(),
-        Activity.objects.filter(fk_status__name__in=['active', 'overwritten']),
-        Activity.objects.filter(fk_status__name__in=['active', 'overwritten']).
-            filter(activityattributegroup__attributes__contains=['intention']).distinct(),
-        ActivityAttributeGroup.objects.filter(attributes__contains=['intention']),
-        Activity.objects.filter(fk_status__name__in=['active', 'overwritten']).
-            filter(activityattributegroup__attributes__contains=['intention']).
-                values('id').annotate(Count('id')),
-    ]:
-        print(len(records))
-
-
-
-    a1 = list(map(lambda r: r.id, Activity.objects.filter(fk_status__name__in=['active', 'overwritten'])))
-    a2 = list(map(lambda r: r.id, Activity.objects.filter(fk_status__name__in=['active', 'overwritten']).filter(activityattributegroup__attributes__contains=['intention']).distinct()))
-    additional_ids = [ a for a in a2 if not a in a1]
-    print(len(additional_ids))
-
-    records = Activity.objects. \
-        filter(fk_status__name__in=['active', 'overwritten']). \
-        filter(activityattributegroup__attributes__contains=['intention'])[:5]
-    from django.contrib.admin.util import NestedObjects
-    collector = NestedObjects(using="default") #database name
-    for object in records:
-        collector.collect([object]) #list of objects. single one won't do
-        print(collector.data.keys())
-        print(len(collector.data[ActivityAttributeGroup]))
-        print([aag for aag in collector.data[ActivityAttributeGroup] if 'intention' in aag.attributes])
-        print('*'*80)
