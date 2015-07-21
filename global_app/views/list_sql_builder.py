@@ -35,7 +35,11 @@ class ListSQLBuilder(SQLBuilder):
         elif c == "data_source":
             return "                " + self.SQL_COLUMN_MAP.get(c)[0]
 
-        return "                " + self.SQL_COLUMN_MAP.get(c)[0]
+        try:
+            return "                " + self.SQL_COLUMN_MAP.get(c)[0]
+        except TypeError as e:
+            print('column_sql', c, self.SQL_COLUMN_MAP.get(c))
+            raise e
 
     def get_sub_columns_sql(self):
         sub_columns_sql = ''

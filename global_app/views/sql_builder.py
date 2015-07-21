@@ -336,7 +336,9 @@ class SQLBuilder:
         if self.COLUMNS: return
         self.COLUMNS = {
 
-            'intended_size': [], 'contract_size': [], 'production_size': [],
+            'intended_size': [join_attributes('intended_size')],
+            'contract_size': [join_attributes('contract_size')],
+            'production_size': [],
 
             'investor_country':   (
                 'investor_country', [
@@ -472,7 +474,10 @@ class SQLBuilder:
         ],
         "nature_of_the_deal": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nature_of_the_deal.value), '##!##') AS nature_of_the_deal,"],
         "data_source": [
-            "GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type, GROUP_CONCAT(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group) SEPARATOR '##!##') as data_source_url, GROUP_CONCAT(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group) SEPARATOR '##!##') as data_source_date, GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group) SEPARATOR '##!##') as data_source_organisation,"
+            """GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type,
+GROUP_CONCAT(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group) SEPARATOR '##!##') as data_source_url,
+GROUP_CONCAT(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group) SEPARATOR '##!##') as data_source_date,
+GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group) SEPARATOR '##!##') as data_source_organisation,"""
         ],
         "contract_farming": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_farming.value), '##!##') AS contract_farming,"],
         "intended_size": ["0 AS intended_size,"],
