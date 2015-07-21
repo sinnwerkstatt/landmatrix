@@ -16,13 +16,6 @@ class TestSQLBuilder(TestCase, DealsTestData, GenerateOldSQL):
         self.assertTrue('AS a' in join)
         self.assertTrue('ON local.fk_activity_id = a.id' in join)
 
-    def test_compare_to_v1_data(self):
-        import os
-        from subprocess import call
-        dir = os.path.dirname(os.path.realpath(__file__))
-        num_errors = call(['python', dir+'/compare_sql_results.py'])
-        self.assertEqual(0, num_errors)
-
     def test_order_by(self):
         self._check_order_by('id', 'id  ASC')
         self._check_order_by('-id', 'id  DESC')
