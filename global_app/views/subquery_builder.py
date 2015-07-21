@@ -93,8 +93,8 @@ LEFT JOIN landmatrix_activityattributegroup    AS intention             ON a.id 
         cursor = connection.cursor()
         cursor.execute(sql)
         res = cursor.fetchall()
-        print('excluded deals:', res)
-        print('excluded deals SQL:\n', sql)
+        # print('excluded deals:', res)
+        # print('excluded deals SQL:\n', sql)
         return ['0'] + [id for sublist in res for id in sublist]
 
     registeredstatusids = []
