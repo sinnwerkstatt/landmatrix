@@ -201,14 +201,16 @@ def render_to_response(template_name, context,
 
 class TableGroupView(TemplateView):
 
-#    template_name = "getthedetail/table/group-by.html"
-    template_name = "all_deals.html"
+    template_name = "getthedetail/table/group-by.html"
+
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
 
 
     def dispatch(self, request, *args, **kwargs):
+        if not kwargs["group"].startswith("all"):
+            print('TableGroupView.dispatch', request, args, kwargs)
         is_download = False
         context = {}
         GET = request.GET
@@ -266,6 +268,7 @@ class TableGroupView(TemplateView):
                 # TODO: make the following line work again
 #                filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
                 pass
+
         group_columns = self._columns(group)
         # columns shown in deal list
         group_columns_list = ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size",]
