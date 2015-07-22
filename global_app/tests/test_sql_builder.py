@@ -6,7 +6,8 @@ from landmatrix.models import Activity
 from .deals_test_data import DealsTestData
 from .generate_old_sql import GenerateOldSQL
 
-from global_app.views.sql_builder import join_expression, SQLBuilder
+from global_app.views.sql_builder import SQLBuilder
+from global_app.views.join_functions import join_expression
 
 class TestSQLBuilder(TestCase, DealsTestData, GenerateOldSQL):
 
