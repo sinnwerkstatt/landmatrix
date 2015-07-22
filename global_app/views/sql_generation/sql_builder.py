@@ -1,11 +1,9 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from django.conf import settings
-
 from landmatrix.models import *
-from .filter_to_sql import FilterToSQL
-from .join_functions import *
-from .sql_builder_data import SQLBuilderData
+from global_app.views.sql_generation.filter_to_sql import FilterToSQL
+from global_app.views.sql_generation.join_functions import *
+from global_app.views.sql_generation.sql_builder_data import SQLBuilderData
 
 def list_view_wanted(filters):
     group = filters.get("group_by", "")

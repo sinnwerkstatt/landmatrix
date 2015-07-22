@@ -1,8 +1,8 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .join_functions import join_attributes
-
 from django.utils.translation import ugettext_lazy as _
+
+from global_app.views.sql_generation.join_functions import join_attributes
 
 class FilterToSQL:
 

@@ -1,9 +1,8 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .join_functions import join_attributes
-from .list_sql_builder import ListSQLBuilder
+from global_app.views.sql_generation.join_functions import join_attributes
+from global_app.views.sql_generation.list_sql_builder import ListSQLBuilder
 
-from landmatrix.models import Status
 
 class SubqueryBuilder(ListSQLBuilder):
 

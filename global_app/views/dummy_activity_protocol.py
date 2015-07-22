@@ -1,11 +1,11 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .record_reader import RecordReader
+import json
 
 from django.http import HttpResponse
 from django.conf import settings
 
-import json
+from global_app.views.sql_generation.record_reader import RecordReader
 
 
 class DummyActivityProtocol:

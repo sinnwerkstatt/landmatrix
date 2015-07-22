@@ -5,9 +5,8 @@ from django.test import TestCase
 from landmatrix.models import Activity
 from .deals_test_data import DealsTestData
 from .generate_old_sql import GenerateOldSQL
-
-from global_app.views.sql_builder import SQLBuilder
-from global_app.views.join_functions import join_expression
+from global_app.views.sql_generation.sql_builder import SQLBuilder
+from global_app.views.sql_generation.join_functions import join_expression
 
 class TestSQLBuilder(TestCase, DealsTestData, GenerateOldSQL):
 
@@ -30,7 +29,6 @@ class TestSQLBuilder(TestCase, DealsTestData, GenerateOldSQL):
         self.assertIn('LIMIT 10', builder.get_limit_sql())
 
     def test_filters(self):
-        from global_app.views.dummy_activity_protocol import DummyActivityProtocol
         post = self.MINIMAL_POST
         to_test = [
             { "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}} },

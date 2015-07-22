@@ -1,10 +1,10 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from global_app.views.record_reader import RecordReader
+from django.test import TestCase
+
+from global_app.views.sql_generation.record_reader import RecordReader
 from .deals_test_data import DealsTestData
 from .generate_old_sql import GenerateOldSQL
-
-from django.test import TestCase
 
 null = None
 
@@ -80,7 +80,6 @@ class TestRecordReader(TestCase, DealsTestData, GenerateOldSQL):
         self.assertIn('LIMIT 10', reader.get_all_at_once_sql())
 
     def test_filters(self):
-        from global_app.views.dummy_activity_protocol import DummyActivityProtocol
         post = self.MINIMAL_POST
         to_test = [
             { "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}} },
