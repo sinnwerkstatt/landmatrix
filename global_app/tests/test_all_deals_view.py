@@ -1,35 +1,26 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+from global_app.tests.test_view_base import TestViewBase
 from django.test import TestCase
-from django.conf import settings
 
-from .deals_test_data import DealsTestData
-
-class TestAllDealsView(TestCase, DealsTestData):
+class TestAllDealsView(TestViewBase, TestCase):
 
     # we use global_app as defined in landmatrix.url here because django-cms pages are not configured in test db
-    ALL_DEALS_URL = '/en/global_app/all'
+    VIEW_URL = '/en/global_app/all'
 
-    # disabled because no django-cms pages configured, but redirects are applied
-    def _test_anything_loads(self):
-        response = self.get_url_following_redirects('/')
-        print(response.content.decode('utf-8'))
-        self.assertEqual(200, response.status_code)
+    "Sadly, every class derived from TestViewBase needs to explicitly call TestViewBase.setUp()"
+    def setUp(self):
+        TestViewBase.setUp(self)
 
-    def test_view_loads(self):
-        self.create_data()
-        response = self.get_url_following_redirects(self.ALL_DEALS_URL)
-        self.assertEqual(200, response.status_code)
 
-    def test_view_contains_data(self):
-        self.create_data()
-        content = self.get_url_following_redirects(self.ALL_DEALS_URL).content.decode('utf-8')
-        if True or settings.DEBUG: print(content, file=open('/tmp/testresult.html', 'w'))
-        self.assertIn(self.PI_NAME, content)
+if False:
 
-    def get_url_following_redirects(self, url):
-        response = self.client.get(url)
-        while response.status_code in range(300, 308):
-            response = self.client.get(response.url)
-        return response
+    class TestGroupView(TestViewBase, TestCase):
+
+        # we use global_app as defined in landmatrix.url here because django-cms pages are not configured in test db
+        VIEW_URL = '/en/global_app/group/by-target-country/'
+
+        "Sadly, every class derived from TestViewBase needs to explicitly call TestViewBase.setUp()"
+        def setUp(self):
+            TestViewBase.setUp(self)
 
