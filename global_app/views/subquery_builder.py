@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .sql_builder import join_attributes
+from .join_functions import join_attributes
 from .list_sql_builder import ListSQLBuilder
 
 from landmatrix.models import Status
@@ -9,12 +9,12 @@ class SubqueryBuilder(ListSQLBuilder):
 
     def column_sql(self, c):
         if c in ("intended_size", "contract_size", "production_size"):
-            return "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.attributes->'%(name)s'), ', '), '') AS %(name)s,\n" % {"name": c}
+            return "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.attributes->'%(name)s'), ', '), '') AS %(name)s" % {"name": c}
         elif c == "data_source":
-            return "                " + self.SQL_COLUMN_MAP.get(c)[0]
+            return self.SQL_COLUMN_MAP.get(c)[0]
 
         try:
-            return "                " + self.SQL_COLUMN_MAP.get(c)[0]
+            return self.SQL_COLUMN_MAP.get(c)[0]
         except TypeError as e:
             print('column_sql', c, self.SQL_COLUMN_MAP.get(c))
             raise e
@@ -38,14 +38,14 @@ class SubqueryBuilder(ListSQLBuilder):
     @classmethod
     def get_base_sql(cls):
         return u"""SELECT DISTINCT
-            a.activity_identifier,
-%(columns)s              a.id AS id
+a.activity_identifier,
+%(columns)s, a.id AS id
 FROM landmatrix_activity AS a
 %(from)s""" + "\n" \
 + join_attributes('pi_deal') + "\n" \
 + join_attributes('deal_scope') + """
 %(from_filter)s
 WHERE """ + "\nAND ".join([ cls.max_version_condition(), cls.status_active_condition(), cls.is_deal_condition(), cls.not_mining_condition() ]) + """
-              %(where)s
-              %(where_filter)s
+%(where)s
+%(where_filter)s
 %(group_by)s"""
