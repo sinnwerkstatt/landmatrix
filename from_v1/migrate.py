@@ -25,11 +25,12 @@ load_project(BASE_PATH+'/land-matrix', 'editor')
 
 if __name__ == '__main__':
 
-    from map_model_implementations import *
-    from editor.models import ActivityAttributeGroup
     from django.db.utils import ConnectionDoesNotExist
 
     try:
+
+        from map_model_implementations import *
+        from editor.models import ActivityAttributeGroup
 
         # a number of possible uses listed here as examples
 
@@ -60,4 +61,6 @@ if __name__ == '__main__':
                 map_class.map_all(save=True)
 
     except ConnectionDoesNotExist:
-        print('You forgot to set CONVERT_DB to True in settings.py!')
+        print('You need to set CONVERT_DB to True in settings.py!')
+    except AttributeError:
+        print('You need to check out branch "postgres" of the old land-matrix project under '+BASE_PATH+'/land-matrix!')
