@@ -4,8 +4,10 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 #
 # make script run in django context.
 #
-import os.path
 import sys
+
+import os.path
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 
@@ -25,11 +27,8 @@ application = get_wsgi_application()
 # actual script follows.
 #
 
-from landmatrix.models import *
-
-from django.db.models import Count
 from django.db import connection
-from global_app.views.sql_builder import SQLBuilder
+from global_app.views.sql_generation.sql_builder import SQLBuilder
 
 def get_excluded_deals():
     if not get_excluded_deals.deals:
@@ -389,7 +388,7 @@ def execute(sql):
 
 #test_split_inner_query()
 
-from global_app.views.record_reader import RecordReader
+from global_app.views.sql_generation.record_reader import RecordReader
 
 
 null = None

@@ -1,10 +1,11 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .subquery_builder import SubqueryBuilder
-from .sql_builder import SQLBuilder, list_view_wanted
-
 from django.db import connection
 from django.conf import settings
+
+from global_app.views.sql_generation.subquery_builder import SubqueryBuilder
+from global_app.views.sql_generation.sql_builder import SQLBuilder, list_view_wanted
+
 
 class RecordReader:
 

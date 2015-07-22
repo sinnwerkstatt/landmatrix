@@ -79,7 +79,7 @@ class GenerateOldSQL:
                     tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS akv%(count)i\n" % {"count": i}
                     tables_from_act += " ON (a.id = akv%(count)i.fk_activity_id AND akv%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
                 else:
-                    from global_app.views.join_functions import join_attributes
+                    from global_app.views.sql_generation.join_functions import join_attributes
                     tables_from_act += join_attributes("akv%(count)i" % {"count": i}, variable)
 #                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS akv%(count)i\n" % {"count": i}
 #                    tables_from_act += " ON (a.id = akv%(count)i.fk_activity_id AND akv%(count)i.attributes ? '%(key)s')"%{"count": i, "key": variable}
