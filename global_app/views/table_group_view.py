@@ -207,27 +207,31 @@ class TableGroupView(TemplateView):
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
 
+    def _set_group_value(self, **kwargs):
+        self.is_download = False
+        self.group_value = kwargs.get("list", "")
+        if self.group_value == 'none': self.group_value = ''
+        if self.group_value.endswith(".csv") or self.group.endswith(".csv"):
+            self.group_value = self.group_value.split(".")[0]
+            self.is_download = True
 
     def dispatch(self, request, *args, **kwargs):
-#        if not kwargs["group"].startswith("all"):
-#            print('TableGroupView.dispatch', kwargs)
 
-        is_download = False
         context = {}
         GET = request.GET
-        group = kwargs.get("group", DEFAULT_GROUP)
-        group_value = kwargs.get("list", "")
-        if group_value == 'none': group_value = ''
-        if group_value.endswith(".csv") or group.endswith(".csv"):
-            is_download = True
-            group = group.split(".")[0]
-            group_value = group_value.split(".")[0]
+        self.group = kwargs.get("group", DEFAULT_GROUP)
+        self._set_group_value(**kwargs)
+
+        if self.is_download:
+            self.group = self.group.split(".")[0]
             download_format = GET.get("download_format", "csv")
+
         # map url to group variable, cut possible .csv suffix
-        group = group.replace("by-", "").replace("-", "_")
+        self.group = self.group.replace("by-", "").replace("-", "_")
+
         items, query_result, filters = [], [], {}
-        name = group_value.split(".")[0]
-        order_by = GET.get("order_by", group_value and "deal_id" or group) or group_value and "deal_id" or group
+        name = self.group_value.split(".")[0]
+        order_by = GET.get("order_by", self.group_value and "deal_id" or self.group) or self.group_value and "deal_id" or self.group
         starts_with = GET.get("starts_with", None)
         limit = 0
         load_more = int(GET.get("more", 50))
@@ -258,30 +262,30 @@ class TableGroupView(TemplateView):
             filter_dict["conditions_empty-TOTAL_FORMS"] = len(rules)
             filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
             current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
-            if group == "database":
+            if self.group == "database":
                 filters = parse_browse_filter_conditions(None, [order_by], None)
-                group = "all"
+                self.group = "all"
                 load_more = None
             else:
                 # TODO: make the following line work again
 #                filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
                 pass
 
-        group_columns = self._columns(group)
+        group_columns = self._columns(self.group)
         # columns shown in deal list
         group_columns_list = ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size",]
-        self.columns = (is_download and (group_value or group == "all") and self.DOWNLOAD_COLUMNS) or (group_value and group_columns_list) or group_columns
-        filters["group_by"] = group
-        filters["group_value"] = group_value
+        self.columns = (self.is_download and (self.group_value or self.group == "all") and self.DOWNLOAD_COLUMNS) or (self.group_value and group_columns_list) or group_columns
+        filters["group_by"] = self.group
+        filters["group_value"] = self.group_value
         filters["starts_with"] = starts_with
         ap = DummyActivityProtocol()
         request.POST = MultiValueDict(
-            {"data": [json.dumps({"filters": filters, "columns": self._optimize_columns(group)})]}
+            {"data": [json.dumps({"filters": filters, "columns": self._optimize_columns()})]}
         )
         res = ap.dispatch(request, action="list_group").content
         query_result = json.loads(res.decode())
 
-        if is_download or (not group_value and group not in self.QUERY_LIMITED_GROUPS) or starts_with:
+        if self.is_download or (not self.group_value and self.group not in self.QUERY_LIMITED_GROUPS) or starts_with:
             # dont limit query when download or group view
             limited_query_result =  query_result["activities"]
             load_more = None
@@ -292,7 +296,7 @@ class TableGroupView(TemplateView):
         activity_ids = None
         for col in SINGLE_SQL_QUERY_COLUMNS:
             # do not remove crop column if we expect a grouping in the sql string
-            if col not in self.columns or (group == "crop" and col == "crop"):
+            if col not in self.columns or (self.group == "crop" and col == "crop"):
                 continue
             # get the activity ids from the large sql dataset
             # Assumption: dataset contains column deal_id in second column
@@ -316,7 +320,7 @@ class TableGroupView(TemplateView):
                 # iterate over columns relevant for view or download
                 j = j + offset
                 # do not remove crop column if we expect a grouping in the sql string
-                if c in SINGLE_SQL_QUERY_COLUMNS and not (group == "crop" and c == "crop"):
+                if c in SINGLE_SQL_QUERY_COLUMNS and not (self.group == "crop" and c == "crop"):
                     # artificially insert the data fetched from the smaller SQL query dataset, don't take it from the large set
                     # Assumption deal_id is second column in row!
                     offset -= 1
@@ -345,7 +349,7 @@ class TableGroupView(TemplateView):
                     # raise Exception, value
                     intentions = {}
                     for intention in set(value.split("##!##")):
-                        if is_download:
+                        if self.is_download:
                             if intention in INTENTION_MAP and len(INTENTION_MAP.get(intention)) > 1:
                                 # skip intention if there are subintentions
                                 continue
@@ -383,7 +387,7 @@ class TableGroupView(TemplateView):
                 row.update({c: value})
             items.append(row)
 
-        if is_download and items:
+        if self.is_download and items:
             if download_format == "csv":
                 return self.write_to_csv(self.columns, self.format_items_for_download(items, self.columns), "%s.csv" % group)
             elif download_format == "xls":
@@ -403,19 +407,19 @@ class TableGroupView(TemplateView):
                     "count": len(query_result["activities"])
                 },
                 "name": name,
-                "columns": group_value and group_columns_list or group_columns,
+                "columns": self.group_value and group_columns_list or group_columns,
                 "filters": filters,
                 "load_more": load_more and len(query_result["activities"]) > load_more and load_more + self.LOAD_MORE_AMOUNT or None,
                 "group_slug": kwargs.get("group", DEFAULT_GROUP),
                 "group_value": kwargs.get("list", None),
-                "group": group.replace("_", " "),
+                "group": self.group.replace("_", " "),
                 "empty_form_conditions": current_formset_conditions,
                 "rules": rules,
             })
             return render_to_response(self.template_name, context,
                                       context_instance=RequestContext(request))
 
-    def _optimize_columns(self, group):
+    def _optimize_columns(self):
         from copy import deepcopy
         """ IMPORTANT! we are patching certain column fields out, so they don't get executed within the large SQL query.
                 instead we later send a single query for each column and add the resulting data back into the large result object """
@@ -423,7 +427,7 @@ class TableGroupView(TemplateView):
             optimized_columns = deepcopy(self.columns)
             for col in SINGLE_SQL_QUERY_COLUMNS:
                 # do not remove crop column if we expect a grouping in the sql string
-                if group == "crop" and col == "crop":
+                if self.group == "crop" and col == "crop":
                     continue
                 if col in self.columns:
                     optimized_columns.remove(col)
