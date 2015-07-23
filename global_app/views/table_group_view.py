@@ -207,43 +207,29 @@ class TableGroupView(TemplateView):
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
 
-    def _set_group_value(self, **kwargs):
-        self.is_download = False
-        self.group_value = kwargs.get("list", "")
-        if self.group_value == 'none': self.group_value = ''
-        if self.group_value.endswith(".csv") or self.group.endswith(".csv"):
-            self.group_value = self.group_value.split(".")[0]
-            self.is_download = True
-
     def dispatch(self, request, *args, **kwargs):
 
-        context = {}
-        GET = request.GET
+        self.GET = request.GET
+
         self.group = kwargs.get("group", DEFAULT_GROUP)
         self._set_group_value(**kwargs)
 
         if self.is_download:
             self.group = self.group.split(".")[0]
-            download_format = GET.get("download_format", "csv")
+            download_format = self.GET.get("download_format", "csv")
 
         # map url to group variable, cut possible .csv suffix
         self.group = self.group.replace("by-", "").replace("-", "_")
 
-        items, query_result, filters = [], [], {}
-        name = self.group_value.split(".")[0]
-        order_by = GET.get("order_by", self.group_value and "deal_id" or self.group) or self.group_value and "deal_id" or self.group
-        starts_with = GET.get("starts_with", None)
         limit = 0
-        load_more = int(GET.get("more", 50))
-        if order_by == "all" or order_by == "database":
-            order_by = "deal_id"
+        load_more = int(self.GET.get("more", 50))
         ConditionFormset = self.create_condition_formset()
         rules = BrowseCondition.objects.filter(rule__rule_type="generic")
-        if GET and GET.get("filtered") and not GET.get("reset", None):
+        if self.GET and self.GET.get("filtered") and not self.GET.get("reset", None):
             # set given filters
-            current_formset_conditions = ConditionFormset(GET, prefix="conditions_empty")
+            current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
             if current_formset_conditions.is_valid():
-                filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
+                filters = parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], limit)
         else:
             # set default filters
             filter_dict = MultiValueDict()
@@ -263,18 +249,19 @@ class TableGroupView(TemplateView):
             filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
             current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
             if self.group == "database":
-                filters = parse_browse_filter_conditions(None, [order_by], None)
+                filters = parse_browse_filter_conditions(None, [self._order_by()], None)
                 self.group = "all"
                 load_more = None
             else:
                 # TODO: make the following line work again
-#                filters = parse_browse_filter_conditions(current_formset_conditions, [order_by], limit)
-                pass
+#                filters = parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], limit)
+                filters = {}
 
         group_columns = self._columns(self.group)
         # columns shown in deal list
         group_columns_list = ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size",]
         self.columns = (self.is_download and (self.group_value or self.group == "all") and self.DOWNLOAD_COLUMNS) or (self.group_value and group_columns_list) or group_columns
+        starts_with = self.GET.get("starts_with", None)
         filters["group_by"] = self.group
         filters["group_value"] = self.group_value
         filters["starts_with"] = starts_with
@@ -292,6 +279,126 @@ class TableGroupView(TemplateView):
         else:
             limited_query_result =  query_result["activities"][:load_more]
 
+        if (settings.DEBUG): print('Columns: ', self.columns)
+
+        items = self.get_items(limited_query_result, self._single_column_results(limited_query_result))
+
+        if self.is_download and items:
+            if download_format == "csv":
+                return self.write_to_csv(self.columns, self.format_items_for_download(items, self.columns), "%s.csv" % group)
+            elif download_format == "xls":
+                return self.write_to_xls(self.columns, self.format_items_for_download(items, self.columns), "%s.xls" % group)
+            elif download_format == "xml":
+                return self.write_to_xml(self.columns, self.format_items_for_download(items, self.columns), "%s.xml" % group)
+
+        else:
+            if not items:
+                print(limited_query_result)
+
+            context = {
+                "view": "get-the-detail",
+                "data": {
+                    "items": items,
+                    "order_by": self._order_by(),
+                    "count": len(query_result["activities"])
+                },
+                "name": self.group_value,
+                "columns": self.group_value and group_columns_list or group_columns,
+                "filters": filters,
+                "load_more": load_more and len(query_result["activities"]) > load_more and load_more + self.LOAD_MORE_AMOUNT or None,
+                "group_slug": kwargs.get("group", DEFAULT_GROUP),
+                "group_value": kwargs.get("list", None),
+                "group": self.group.replace("_", " "),
+                "empty_form_conditions": current_formset_conditions,
+                "rules": rules,
+            }
+            return render_to_response(self.template_name, context,
+                                      context_instance=RequestContext(request))
+
+    def get_items(self, limited_query_result, single_column_results):
+        return [ self.get_row(record, single_column_results) for record in limited_query_result ]
+
+    def get_row(self, record, single_column_results):
+        offset = 1
+        # iterate over database result
+        row = {}
+        for j, c in enumerate(self.columns):
+            # iterate over columns relevant for view or download
+            j = j + offset
+            # do not remove crop column if we expect a grouping in the sql string
+            if c in SINGLE_SQL_QUERY_COLUMNS and not (self.group == "crop" and c == "crop"):
+                # artificially insert the data fetched from the smaller SQL query dataset, don't take it from the large set
+                # Assumption deal_id is second column in row!
+                offset -= 1
+                if record[1] in single_column_results[c]:
+                    value = single_column_results[c][record[1]]
+                else:
+                    value = None
+            else:
+                value = record[j]
+
+            if not value:
+                if c == "data_source":
+                    offset = offset + 3
+                row.update({c: None})
+                continue
+            if c == "data_source":
+                data_sources = {
+                    "data_source_type": record[j],
+                    "data_source_url": record[j + 1],
+                    "data_source_date": record[j + 2],
+                    "data_source_organization": record[j + 3],
+                }
+                value = self.map_values_of_group(data_sources,
+                                                 "%(data_source_date)s%(data_source_url)s%(data_source_organization)s%(data_source_type)s")
+                offset = offset + 3
+            elif c == "intention":
+                # raise Exception, value
+                intentions = {}
+                for intention in set(value.split("##!##")):
+                    if self.is_download:
+                        if intention in INTENTION_MAP and len(INTENTION_MAP.get(intention)) > 1:
+                            # skip intention if there are subintentions
+                            continue
+                        else:
+                            intentions[intention] = 1
+                    else:
+                        intentions[get_intention(intention)] = 1
+                value = sorted(intentions.keys())
+            elif c == "investor_name":
+                value = [
+                    len(inv.split("#!#")) > 1 and {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} or "" for
+                    inv in value.split("##!##")]
+            elif c == 'location':
+                value = value.split("##!##")
+            elif c == "investor_country":
+                value = [inv.split("#!#")[0] for inv in value.split("##!##")]
+            elif c == "investor_region":
+                value = [inv.split("#!#")[0] for inv in value.split("##!##")]
+            elif c == 'crop':
+                value = [n.split("#!#")[0] for n in value.split("##!##")]
+            elif c == 'latlon':
+                value = ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in
+                         value.split("##!##")]
+            elif c == "negotiation_status":
+                value = [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]} for n in value.split("##!##")]
+            elif c == "implementation_status":
+                value = [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]} for n in value.split("##!##")]
+            elif c in ("intended_size", "production_size", "contract_size"):
+                #                    value = value and value.split(",")[0]
+                value = value and value[0]
+            elif isinstance(value, numbers.Number):
+                value = int(value)
+            elif "##!##" in value:
+                value = value.split("##!##")
+            else:
+                # ensure array
+                value = [value, ]
+
+            row[c] = value
+        return row
+
+    def _single_column_results(self, limited_query_result):
         single_column_results = {}
         activity_ids = None
         for col in SINGLE_SQL_QUERY_COLUMNS:
@@ -306,118 +413,14 @@ class TableGroupView(TemplateView):
                 sql = SINGLE_SQL_QUERY_DICT[col] % (','.join(activity_ids))
                 cursor.execute(sql)
                 single_column_results.update({col: dict(cursor.fetchall())})
+        return single_column_results
 
-        if (settings.DEBUG): print('Columns: ', self.columns)
-
-        for record in limited_query_result:
-
-            offset = 1
-            # iterate over database result
-            name = record[0] if record[0] else 'no name'
-            row = {}
-
-            for j,c in enumerate(self.columns):
-                # iterate over columns relevant for view or download
-                j = j + offset
-                # do not remove crop column if we expect a grouping in the sql string
-                if c in SINGLE_SQL_QUERY_COLUMNS and not (self.group == "crop" and c == "crop"):
-                    # artificially insert the data fetched from the smaller SQL query dataset, don't take it from the large set
-                    # Assumption deal_id is second column in row!
-                    offset -= 1
-                    if record[1] in single_column_results[c]:
-                        value = single_column_results[c][record[1]]
-                    else:
-                        value = None
-                else:
-                    value = record[j]
-
-                if not value:
-                    if c == "data_source":
-                        offset = offset + 3
-                    row.update({c: None})
-                    continue
-                if c == "data_source":
-                    data_sources = {
-                        "data_source_type": record[j],
-                        "data_source_url": record[j+1],
-                        "data_source_date": record[j+2],
-                        "data_source_organization": record[j+3],
-                    }
-                    value = self.map_values_of_group(data_sources,  "%(data_source_date)s%(data_source_url)s%(data_source_organization)s%(data_source_type)s")
-                    offset = offset + 3
-                elif c == "intention":
-                    # raise Exception, value
-                    intentions = {}
-                    for intention in set(value.split("##!##")):
-                        if self.is_download:
-                            if intention in INTENTION_MAP and len(INTENTION_MAP.get(intention)) > 1:
-                                # skip intention if there are subintentions
-                                continue
-                            else:
-                                intentions[intention] = 1
-                        else:
-                            intentions[get_intention(intention)] = 1
-                    value = sorted(intentions.keys())
-                elif c == "investor_name":
-                    value = [len(inv.split("#!#")) > 1 and {"name": inv.split("#!#")[0],"id": inv.split("#!#")[1]} or "" for inv in value.split("##!##")]
-                elif c == 'location':
-                    value = value.split("##!##")
-                elif c == "investor_country":
-                    value = [inv.split("#!#")[0] for inv in value.split("##!##")]
-                elif c == "investor_region":
-                    value = [inv.split("#!#")[0] for inv in value.split("##!##")]
-                elif c == 'crop':
-                    value = [n.split("#!#")[0] for n in value.split("##!##")]
-                elif c == 'latlon':
-                    value = ["%s/%s (%s)" % (n.split("#!#")[0],n.split("#!#")[1], n.split("#!#")[2])  for n in value.split("##!##")]
-                elif c == "negotiation_status":
-                    value = [{"name": n.split("#!#")[0],"year": n.split("#!#")[1]} for n in value.split("##!##")]
-                elif c == "implementation_status":
-                    value = [{"name": n.split("#!#")[0],"year": n.split("#!#")[1]} for n in value.split("##!##")]
-                elif c in ("intended_size", "production_size", "contract_size"):
-#                    value = value and value.split(",")[0]
-                    value = value and value[0]
-                elif isinstance(value, numbers.Number):
-                    value = int(value)
-                elif "##!##" in value:
-                    value = value.split("##!##")
-                else:
-                    # ensure array
-                    value = [value,]
-                row.update({c: value})
-            items.append(row)
-
-        if self.is_download and items:
-            if download_format == "csv":
-                return self.write_to_csv(self.columns, self.format_items_for_download(items, self.columns), "%s.csv" % group)
-            elif download_format == "xls":
-                return self.write_to_xls(self.columns, self.format_items_for_download(items, self.columns), "%s.xls" % group)
-            elif download_format == "xml":
-                return self.write_to_xml(self.columns, self.format_items_for_download(items, self.columns), "%s.xml" % group)
-
-        else:
-            if not items:
-                print(limited_query_result)
-
-            context.update({
-                "view": "get-the-detail",
-                "data": {
-                    "items": items,
-                    "order_by": order_by,
-                    "count": len(query_result["activities"])
-                },
-                "name": name,
-                "columns": self.group_value and group_columns_list or group_columns,
-                "filters": filters,
-                "load_more": load_more and len(query_result["activities"]) > load_more and load_more + self.LOAD_MORE_AMOUNT or None,
-                "group_slug": kwargs.get("group", DEFAULT_GROUP),
-                "group_value": kwargs.get("list", None),
-                "group": self.group.replace("_", " "),
-                "empty_form_conditions": current_formset_conditions,
-                "rules": rules,
-            })
-            return render_to_response(self.template_name, context,
-                                      context_instance=RequestContext(request))
+    def _order_by(self):
+        order_by = self.GET.get("order_by",
+                           self.group_value and "deal_id" or self.group) or self.group_value and "deal_id" or self.group
+        if order_by == "all" or order_by == "database":
+            order_by = "deal_id"
+        return order_by
 
     def _optimize_columns(self):
         from copy import deepcopy
@@ -567,4 +570,12 @@ class TableGroupView(TemplateView):
                     gv.update({k:""})
             output.append(format_string % gv)
         return output
+
+    def _set_group_value(self, **kwargs):
+        self.is_download = False
+        self.group_value = kwargs.get("list", "")
+        if self.group_value == 'none': self.group_value = ''
+        if self.group_value.endswith(".csv") or self.group.endswith(".csv"):
+            self.group_value = self.group_value.split(".")[0]
+            self.is_download = True
 
