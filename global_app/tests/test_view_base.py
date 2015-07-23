@@ -26,13 +26,13 @@ class TestViewBase(DealsTestData):
         response = self._get_url_following_redirects(self.VIEW_URL)
         self.assertEqual(200, response.status_code)
 
-    def test_content(self):
+    def test_view_contains_data(self):
         tbody = extract_tag(self.content, '<tbody>', '</tbody>')
-        if not tbody:
-            self.fail(self.__class__.__name__ + ' delivers crap')
-#            print(self.content)
-        else:
-            print(list(map(self._extract_info_from_cell, self._extract_cells(tbody))))
+        self.assertNotEqual(tbody, '', self.__class__.__name__ + ' does not find any data.')
+
+    def test_view_data_ok(self):
+        tbody = extract_tag(self.content, '<tbody>', '</tbody>')
+        print(list(map(self._extract_info_from_cell, self._extract_cells(tbody))))
 
     def _get_url_following_redirects(self, url):
         response = self.client.get(url)
