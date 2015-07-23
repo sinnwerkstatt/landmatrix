@@ -201,7 +201,7 @@ def render_to_response(template_name, context,
 
 class TableGroupView(TemplateView):
 
-    template_name = "getthedetail/table/group-by.html"
+    template_name = "group-by.html"
 
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
@@ -210,7 +210,8 @@ class TableGroupView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         if not kwargs["group"].startswith("all"):
-            print('TableGroupView.dispatch', request, args, kwargs)
+            print('TableGroupView.dispatch', request.path, request.GET, request.POST, args, kwargs)
+
         is_download = False
         context = {}
         GET = request.GET
@@ -461,6 +462,7 @@ class TableGroupView(TemplateView):
                     "intention", "negotiation_status", "implementation_status", "intended_size",
                     "contract_size", ]
         }
+        print('group:', group)
         return columns[group]
 
     def write_to_xls(self, header, data, filename):
