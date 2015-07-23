@@ -16,6 +16,7 @@ class RecordReader:
     def get_all(self, assemble=None):
         if list_view_wanted(self.filters):
             return self._slap_columns_together(assemble)
+#        print(self.get_all_at_once_sql())
         return self.get_all_at_once()
 
     def get_column(self, column):

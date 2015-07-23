@@ -25,12 +25,31 @@
 </div>
 <div class="row collapsible collapsed">
     <ul class="nav nav-pills subnav span12">
-		<li class="by-target-country {% if group_slug == "by-target-country" or group_slug == "by-target-region" %} active{% endif %}"><div class="thumbnail"><a href="/get-the-detail/by-target-country/">By target country</a><br/><a href="/get-the-detail/by-target-region/">By target region</a></div></li>
-    <li class="by-investor-country {% if group_slug == "by-investor-country" or group_slug == "by-investor-region" or group_slug == "by-investor-name" %} active{% endif %}"><div class="thumbnail"><a href="/get-the-detail/by-investor-name/">By investor</a><br/><a href="/get-the-detail/by-investor-country/">By investor country</a><br/><a href="/get-the-detail/by-investor-region/">By investor region</a></div></li>
-		<li class="by-data-source-type {% if group_slug == "by-data-source-type" %} active{% endif %}"><div class="thumbnail"><a href="/get-the-detail/by-data-source-type/">By data source type</a></div></li>
-		<li class="by-intention {% if group_slug == "by-intention" %} active{% endif %}"><div class="thumbnail"><a href="/get-the-detail/by-intention/">By intention of investment</a></div></li>
-		<li class="by-crop {% if group_slug == "by-crop" %} active{% endif %}"><div class="thumbnail"><a href="/get-the-detail/by-crop/">By crop</a></div></li>
-		<li class="all last{% if group_slug == "all" %} active{% endif %}"><div class="thumbnail"><a href="/get-the-detail/all/">All deals (ungrouped)</a></div></li>
+		<li class="by-target-country {% if group_slug == "by-target-country" or group_slug == "by-target-region" %} active{% endif %}">
+            <div class="thumbnail">
+                <a href="/get-the-detail/by-target-country/">By target country</a><br/>
+                <a href="/get-the-detail/by-target-region/">By target region</a>
+            </div>
+        </li>
+        <li class="by-investor-country {% if group_slug == "by-investor-country" or group_slug == "by-investor-region" or group_slug == "by-investor-name" %} active{% endif %}">
+            <div class="thumbnail">
+                <a href="/get-the-detail/by-investor-name/">By investor</a><br/>
+                <a href="/get-the-detail/by-investor-country/">By investor country</a><br/>
+                <a href="/get-the-detail/by-investor-region/">By investor region</a>
+            </div>
+        </li>
+		<li class="by-data-source-type {% if group_slug == "by-data-source-type" %} active{% endif %}">
+            <div class="thumbnail"><a href="/get-the-detail/by-data-source-type/">By data source type</a></div>
+        </li>
+		<li class="by-intention {% if group_slug == "by-intention" %} active{% endif %}">
+            <div class="thumbnail"><a href="/get-the-detail/by-intention/">By intention of investment</a></div>
+        </li>
+		<li class="by-crop {% if group_slug == "by-crop" %} active{% endif %}">
+            <div class="thumbnail"><a href="/get-the-detail/by-crop/">By crop</a></div>
+        </li>
+		<li class="all last{% if group_slug == "all" %} active{% endif %}">
+            <div class="thumbnail"><a href="/get-the-detail/all/">All deals (ungrouped)</a></div>
+        </li>
     </ul>
 </div>
 {% endblock %}
