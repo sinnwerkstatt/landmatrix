@@ -216,12 +216,10 @@ class TableGroupView(TemplateView):
 
         if self.is_download:
             self.group = self.group.split(".")[0]
-            download_format = self.GET.get("download_format", "csv")
 
         # map url to group variable, cut possible .csv suffix
         self.group = self.group.replace("by-", "").replace("-", "_")
 
-        limit = 0
         load_more = int(self.GET.get("more", 50))
         ConditionFormset = self.create_condition_formset()
         rules = BrowseCondition.objects.filter(rule__rule_type="generic")
@@ -229,7 +227,7 @@ class TableGroupView(TemplateView):
             # set given filters
             current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
             if current_formset_conditions.is_valid():
-                filters = parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], limit)
+                filters = parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], 0)
         else:
             # set default filters
             filter_dict = MultiValueDict()
@@ -257,7 +255,7 @@ class TableGroupView(TemplateView):
 #                filters = parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], limit)
                 filters = {}
 
-        group_columns = self._columns(self.group)
+        group_columns = self._columns()
         # columns shown in deal list
         group_columns_list = ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size",]
         self.columns = (self.is_download and (self.group_value or self.group == "all") and self.DOWNLOAD_COLUMNS) or (self.group_value and group_columns_list) or group_columns
@@ -284,17 +282,8 @@ class TableGroupView(TemplateView):
         items = self.get_items(limited_query_result, self._single_column_results(limited_query_result))
 
         if self.is_download and items:
-            if download_format == "csv":
-                return self.write_to_csv(self.columns, self.format_items_for_download(items, self.columns), "%s.csv" % group)
-            elif download_format == "xls":
-                return self.write_to_xls(self.columns, self.format_items_for_download(items, self.columns), "%s.xls" % group)
-            elif download_format == "xml":
-                return self.write_to_xml(self.columns, self.format_items_for_download(items, self.columns), "%s.xml" % group)
-
+            return self.get_download(self.GET.get("download_format", "csv"), items)
         else:
-            if not items:
-                print(limited_query_result)
-
             context = {
                 "view": "get-the-detail",
                 "data": {
@@ -314,6 +303,21 @@ class TableGroupView(TemplateView):
             }
             return render_to_response(self.template_name, context,
                                       context_instance=RequestContext(request))
+
+    def get_download(self, download_format, items):
+        if download_format == "csv":
+            return self.write_to_csv(
+                self.columns, self.format_items_for_download(items, self.columns), "%s.csv" % self.group
+            )
+        elif download_format == "xls":
+            return self.write_to_xls(
+                self.columns, self.format_items_for_download(items, self.columns), "%s.xls" % self.group
+            )
+        elif download_format == "xml":
+            return self.write_to_xml(
+                self.columns, self.format_items_for_download(items, self.columns), "%s.xml" % self.group
+            )
+        raise RuntimeError('Download format not recognized: ' + download_format)
 
     def get_items(self, limited_query_result, single_column_results):
         return [ self.get_row(record, single_column_results) for record in limited_query_result ]
@@ -422,10 +426,10 @@ class TableGroupView(TemplateView):
             order_by = "deal_id"
         return order_by
 
+    """ IMPORTANT! we are patching certain column fields out, so they don't get executed within the large SQL query.
+        instead we later send a single query for each column and add the resulting data back into the large result object"""
     def _optimize_columns(self):
         from copy import deepcopy
-        """ IMPORTANT! we are patching certain column fields out, so they don't get executed within the large SQL query.
-                instead we later send a single query for each column and add the resulting data back into the large result object """
         if any(special_column in self.columns for special_column in SINGLE_SQL_QUERY_COLUMNS):
             optimized_columns = deepcopy(self.columns)
             for col in SINGLE_SQL_QUERY_COLUMNS:
@@ -450,7 +454,7 @@ class TableGroupView(TemplateView):
 
         #return None
 
-    def _columns(self, group):
+    def _columns(self):
         columns = {
             "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
             "target_region": ["target_region", "intention", "deal_count", "availability"],
@@ -465,7 +469,7 @@ class TableGroupView(TemplateView):
                     "intention", "negotiation_status", "implementation_status", "intended_size",
                     "contract_size", ]
         }
-        return columns[group]
+        return columns[self.group]
 
     def write_to_xls(self, header, data, filename):
         response = HttpResponse(mimetype="application/ms-excel")
