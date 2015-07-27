@@ -39,14 +39,15 @@ import time
 def _throwaway_column(expected, actual): return True
 # data messed up, not all intended use got carried over in MySQL to PostgreSQL conversion
 def _actual_intention_in_expected(expected, actual):
-    return set(actual.split('##!##')) <= set(expected.split('##!##'))
+    if None in actual: actual.remove(None)
+    return set(actual) <= set(expected.split('##!##'))
 def _floats_pretty_equal(expected, actual):
     return 0.999 <= expected/actual <= 1.001
 # empty years are converted to zero by new SQL. who cares.
 def _null_to_zero_conversion(expected, actual):
     return expected[:-1] == actual if isinstance(expected, str) and expected.endswith('#0') else expected == actual
 def _same_string_multiple_times(expected, actual):
-    return set(expected.split('##!##')) <= set(actual.split('##!##'))
+    return set(expected.split('##!##')) <= set(actual)
 
 def _none_is_equaled(expected, actual):
     if expected == None and '#!#' in actual and actual.startswith('#'): return True
@@ -182,7 +183,7 @@ class Compare:
         'by_investor_country': {
             0: _throwaway_column,
             1: _none_is_equaled,
-            2: _none_is_equaled,
+            2: _array_equal_to_tinkered_string,
             3: _actual_intention_in_expected,
             5: _floats_pretty_equal
         },
@@ -205,6 +206,7 @@ class Compare:
         'by_crop': {
             0: _throwaway_column,
             1: _none_is_equaled,
+            2: _actual_intention_in_expected,
             4: _floats_pretty_equal,
         }
     }

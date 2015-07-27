@@ -105,11 +105,11 @@ class SQLBuilderData:
             "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) AS investor_country"
         ],
         "investor_region": [
-            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id)), '##!##') AS investor_region",
+            "ARRAY_AGG(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id)) AS investor_region",
             "CONCAT(investor_region.name, '#!#', investor_region.id) AS investor_region"
         ],
         "intention": [
-            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention",
+            "ARRAY_AGG(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention') AS intention",
             "intention.attributes->'intention' AS intention"
         ],
         "crop": [

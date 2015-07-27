@@ -77,7 +77,7 @@ if True:
     class TestIntentionGroupView(TestViewBase, TestCase):
 
         VIEW_URL = '/en/global_app/by-intention/none/'
-        EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+        EXPECTED_VIEW_DATA = [ 'Livestock' ]
         def setUp(self):
             TestViewBase.setUp(self)
 
