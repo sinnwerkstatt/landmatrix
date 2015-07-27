@@ -385,7 +385,7 @@ class TableGroupView(TemplateView):
                 value = int(value)
             elif "##!##" in value:
                 value = value.split("##!##")
-            else:
+            elif not isinstance(value, list):
                 # ensure array
                 value = [value, ]
 

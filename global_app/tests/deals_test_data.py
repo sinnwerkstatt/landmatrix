@@ -53,10 +53,10 @@ class DealsTestData:
         )
         self.region.save()
         self.country = Country(
-            fk_region=Region.objects.last(), code_alpha2='LA', code_alpha3='LAO',
-            name="Lao People's Democratic Republic", slug='lao-peoples-democratic-republic',
-            point_lat=18.85627, point_lon=106.495496,
-            democracy_index=2.10, corruption_perception_index=2.1, high_income=False
+            fk_region=Region.objects.last(), code_alpha2='KH', code_alpha3='KHM',
+            name="Cambodia", slug='cambodia',
+            point_lat=12.565679, point_lon=104.990963,
+            democracy_index=4.87, corruption_perception_index=2.2, high_income=False
         )
         self.country.save()
 
