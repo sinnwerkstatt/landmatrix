@@ -12,7 +12,7 @@ class SQLBuilderData:
         'all':              "'all deals'",
         'target_region':    'deal_region.name',
         'target_country':   'deal_country.name',
-        'year':             'pi_negotiation_status.year',
+        'year':             'EXTRACT(YEAR FROM pi_negotiation_status.date)',
         'crop':             'crop.name',
         'intention':        "intention.attributes->'intention'",
         'investor_region':  'investor_region.name',
@@ -52,6 +52,8 @@ class SQLBuilderData:
                     attributes_model=StakeholderAttributeGroup, attribute_field='fk_stakeholder_id'
                 )
             ],
+
+            'year': [ join_attributes('pi_negotiation_status') ],
 
             'crop':               [
                 join_attributes('akvl1', 'crops'),
@@ -126,7 +128,8 @@ class SQLBuilderData:
                           " deal_region.name AS target_region"],
         "deal_size": ["IFNULL(pi_deal_size.value, 0) + 0 AS deal_size",
                       "IFNULL(pi_deal_size.value, 0) + 0 AS deal_size"],
-        "year": ["pi_negotiation_status.year AS year", "pi_negotiation_status.year AS year"],
+        "year": ["EXTRACT(YEAR FROM pi_negotiation_status.date) AS year",
+                 "EXTRACT(YEAR FROM pi_negotiation_status.date) AS year"],
         "deal_count": ["COUNT(DISTINCT a.activity_identifier) as deal_count",
                        "COUNT(DISTINCT a.activity_identifier) as deal_count"],
         "availability": ["SUM(a.availability) / COUNT(a.activity_identifier) AS availability",

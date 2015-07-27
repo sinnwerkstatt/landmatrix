@@ -97,7 +97,7 @@ if True:
         def setUp(self):
             TestViewBase.setUp(self)
 
-if False:
+#if False:
     class TestYearGroupView(TestViewBase, TestCase):
 
         VIEW_URL = '/en/global_app/by-year/none/'
