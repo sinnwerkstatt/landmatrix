@@ -47,9 +47,13 @@ def _null_to_zero_conversion(expected, actual):
     return expected[:-1] == actual if isinstance(expected, str) and expected.endswith('#0') else expected == actual
 def _same_string_multiple_times(expected, actual):
     return set(expected.split('##!##')) <= set(actual.split('##!##'))
+
 def _none_is_equaled(expected, actual):
     if expected == None and '#!#' in actual and actual.startswith('#'): return True
     return expected == actual
+
+def _array_equal_to_tinkered_string(expected, actual):
+    return expected.split('##!##') == actual
 
 class Compare:
 
@@ -153,6 +157,8 @@ class Compare:
     similar_table = {
         'all_deals': {
             3: _same_string_multiple_times,
+            4: _array_equal_to_tinkered_string,
+            5: _array_equal_to_tinkered_string,
             6: _actual_intention_in_expected,
             7: _null_to_zero_conversion,
             8: _null_to_zero_conversion
@@ -183,6 +189,7 @@ class Compare:
         'by_investor': {
             0: _throwaway_column,
             1: _none_is_equaled,
+            2: _array_equal_to_tinkered_string,
             3: _actual_intention_in_expected,
             5: _floats_pretty_equal
         },
