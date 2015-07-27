@@ -40,69 +40,68 @@ class TestInvestorRegionGroupView(TestViewBase, TestCase):
     def setUp(self):
         TestViewBase.setUp(self)
 
-if True:
 
-    class TestTargetCountryGroupView(TestViewBase, TestCase):
+class TestTargetCountryGroupView(TestViewBase, TestCase):
 
-        VIEW_URL = '/en/global_app/by-target-country/none/'
-        EXPECTED_VIEW_DATA = [ 'Agriculture' ]
-        def setUp(self):
-            TestViewBase.setUp(self)
-
-
-    class TestTargetRegionGroupView(TestViewBase, TestCase):
-
-        VIEW_URL = '/en/global_app/by-target-region/none/'
-        EXPECTED_VIEW_DATA = [ 'Agriculture' ]
-        def setUp(self):
-            TestViewBase.setUp(self)
+    VIEW_URL = '/en/global_app/by-target-country/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
 
 
-    class TestInvestorNameGroupView(TestViewBase, TestCase):
+class TestTargetRegionGroupView(TestViewBase, TestCase):
 
-        VIEW_URL = '/en/global_app/by-investor-name/none/'
-        EXPECTED_VIEW_DATA = [ 'Agriculture' ]
-        def setUp(self):
-            TestViewBase.setUp(self)
-
-
-    class TestInvestorCountryGroupView(TestViewBase, TestCase):
-
-        VIEW_URL = '/en/global_app/by-investor-country/none/'
-        EXPECTED_VIEW_DATA = [ 'Agriculture' ]
-        def setUp(self):
-            TestViewBase.setUp(self)
+    VIEW_URL = '/en/global_app/by-target-region/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
 
 
-    class TestIntentionGroupView(TestViewBase, TestCase):
+class TestInvestorNameGroupView(TestViewBase, TestCase):
 
-        VIEW_URL = '/en/global_app/by-intention/none/'
-        EXPECTED_VIEW_DATA = [ 'Livestock' ]
-        def setUp(self):
-            TestViewBase.setUp(self)
-
-
-    class TestCropGroupView(TestViewBase, TestCase):
-
-        VIEW_URL = '/en/global_app/by-crop/none/'
-        EXPECTED_VIEW_DATA = [ 'Agriculture' ]
-        def setUp(self):
-            TestViewBase.setUp(self)
+    VIEW_URL = '/en/global_app/by-investor-name/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
 
 
-    class TestDataSourceTypeView(TestViewBase, TestCase):
+class TestInvestorCountryGroupView(TestViewBase, TestCase):
 
-        VIEW_URL = '/en/global_app/by-data-source-type/none/'
-        EXPECTED_VIEW_DATA = [ 'Agriculture' ]
-        def setUp(self):
-            TestViewBase.setUp(self)
+    VIEW_URL = '/en/global_app/by-investor-country/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
 
-#if False:
-    class TestYearGroupView(TestViewBase, TestCase):
 
-        VIEW_URL = '/en/global_app/by-year/none/'
-        EXPECTED_VIEW_DATA = [ 'Agriculture' ]
-        def setUp(self):
-            TestViewBase.setUp(self)
+class TestIntentionGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-intention/none/'
+    EXPECTED_VIEW_DATA = [ 'Livestock' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestCropGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-crop/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestDataSourceTypeView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-data-source-type/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestYearGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-year/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
 
 

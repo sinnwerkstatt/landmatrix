@@ -13,160 +13,6 @@ from landmatrix.models import BrowseCondition, ActivityAttributeGroup
 from global_app.views.browse_condition_form import BrowseConditionForm
 from global_app.views.dummy_activity_protocol import DummyActivityProtocol
 
-DEFAULT_GROUP = "by-target-region"
-
-FILTER_VAR_ACT = ["target_country", "location", "intention", "intended_size", "contract_size", "production_size", "negotiation_status", "implementation_status", "crops", "nature", "contract_farming", "url", "type", "company", "type"]
-FILTER_VAR_INV = ["investor_name", "country"]
-SINGLE_SQL_QUERY_COLUMNS = ['location', 'crop']
-
-def parse_browse_filter_conditions(formset, order_by=None, limit=None):
-    data = {
-        "activity": {},
-        "deal_scope": "",
-        "investor": {},
-        "order_by": [],
-        "limit": "",
-    }
-    filters_act, filters_inv = {"tags":{}}, {"tags":{}}
-    if formset:
-        for i, form in enumerate(formset):
-            fl = {}
-            for j, (n, f) in enumerate(form.fields.items()):
-                key = "%s-%d-%s"%(formset.prefix, i, n)
-                if n == "value":
-                    # is ybd field?
-                    if "%s_0" % key in formset.data:
-                        # just take the first row of the field
-                        value = formset.data.getlist("%s_0"%key)
-                        year = formset.data.get("%s_1"%key)
-                        fl.update({n:value, "year":year})
-                    else:
-                        value = formset.data.getlist(key)
-                        fl.update({n:value})
-                else:
-                    value = formset.data.get(key)
-                    fl.update({n:value})
-            variable = fl.get("variable")
-            op = fl.get("operator")
-            values = fl.get("value")
-            year = fl.get("year")
-            #skip if no variable is selected
-            if not variable:
-                continue
-            # variable is identifier
-            if variable == "-1":
-                identifier_filter = filters_act.get("identifier", [])
-                identifier_filter.append({
-                    "value": values[0] or "0",
-                    "op": op,
-                })
-                filters_act["identifier"] = identifier_filter
-            elif variable == "-2":
-                # deal scope
-                if len(values) == 2:
-                    data["deal_scope"] = "all"
-                elif len(values) == 1:
-                    data["deal_scope"] = values[0] == "10" and "domestic" or values[0] == "20" and "transnational" or ""
-            elif "inv_" in variable:
-                variable = variable[4:]
-                f = get_field_by_sh_key_id(variable)
-                values = [year and "%s##!##%s" % (get_display_value_by_field(f, value), year) or get_display_value_by_field(f, value) for value in values]
-                if f and "Region" in f.label:
-                    # region values not stored at activity/investor
-                    variable = "region"
-                elif f and "Country" in f.label:
-                    # countries are referred by keys
-                    values = fl.get("value")
-                filters_inv["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
-            else:
-                f = get_field_by_a_key_id(variable)
-                if year:
-                    values = ["%s##!##%s" % (get_display_value_by_field(f, value), year)]
-                else:
-                    values = [get_display_value_by_field(f, value) for value in values]
-                if f:
-                    if "Region" in f.label:
-                        # region values not stored at activity/investor
-                        variable = "region"
-                    elif "Country" in f.label or "Crops" in f.label:
-                        # countries and crops are referred by keys
-                        values = fl.get("value")
-                    elif "Negotiation status" in f.label:
-                        variable = "pi_negotiation_status"
-                filters_act["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
-        data["activity"] = filters_act
-        data["investor"] = filters_inv
-    if order_by:
-        for field in order_by:
-            field_pre = ""
-            field_GET = ""
-            if len(field) > 0 and field[0] == "-":
-                field_pre = "-"
-                field = field[1:]
-            try:
-                if "Investor " in field:
-                    form = get_field_by_sh_key_id(SH_Key.objects.get(key=field[9:]).id)
-                else:
-                    form = get_field_by_a_key_id(A_Key.objects.get(key=field).id)
-                if isinstance(form, IntegerField):
-                    field_GET = "+0"
-            except:
-                pass
-            data["order_by"].append("%s%s%s" % (field_pre, field, field_GET))
-    if limit:
-        data["limit"] = limit
-    return data
-
-
-def get_field_by_a_key_id(key_id):
-    return None
-
-    field = None
-    try:
-        k = ActivityAttributeGroup.objects.filter(pk=int(key_id))
-    except:
-        k = ActivityAttributeGroup.objects.filter(key=key_id)
-    if k.count() > 0:
-        k = k[0].key
-    else:
-        k = key_id
-    forms = CHANGE_FORMS
-    forms.append(('primary_investor', DealPrimaryInvestorForm))
-    for i, form in forms:
-        form = hasattr(form, "form") and form.form or form
-        if form.base_fields.has_key(k):
-            field = form().fields[k]
-            break
-    return field
-
-def get_display_value_by_field(field, value):
-    return None
-    choices_dict = {}
-    if isinstance(field, forms.MultiValueField):
-        field = field.fields[0]
-    if isinstance(field, forms.ChoiceField):
-        if isinstance(field, NestedMultipleChoiceField):
-            for k, v, c in field.choices:
-                if isinstance(c, (list, tuple)):
-                    # This is an optgroup, so look inside the group for options
-                    for k2, v2 in c:
-                        choices_dict.update({k2:v2})
-                choices_dict.update({k:v})
-        else:
-            choices_dict = dict(field.choices)
-        # get displayed value/s?
-        dvalue = None
-        if isinstance(value, (list, tuple)):
-            dvalue = []
-            for v in value:
-                dvalue.append(unicode(choices_dict.get(int(value))))
-        else:
-            dvalue = value and unicode(choices_dict.get(int(value)))
-        return dvalue
-    if isinstance(field, forms.BooleanField):
-        dvalue = value == "on" and "True" or value == "off" and "False" or None
-        return dvalue or value
-    return value
 
 INTENTION_MAP = {
     "Agriculture": ["Agriculture", "Biofuels", "Food crops", "Livestock", "Non-food agricultural commodities", "Agriunspecified"],
@@ -186,18 +32,20 @@ def get_intention(intention):
             return k
     return intention
 
-def render_to_response(template_name, context,
-                       context_instance):
-    """
-    Returns a HttpResponse whose content is filled with the result of calling
-    django.template.loader.render_to_string() with the passed arguments.
-    """
+""" Returns a HttpResponse whose content is filled with the result of calling
+    django.template.loader.render_to_string() with the passed arguments."""
+def render_to_response(template_name, context, context_instance):
     # Some deprecated arguments were passed - use the legacy code path
     content = loader.render_to_string(
         template_name, context, context_instance)
 
     return HttpResponse(content)
 
+
+DEFAULT_GROUP = "by-target-region"
+FILTER_VAR_ACT = ["target_country", "location", "intention", "intended_size", "contract_size", "production_size", "negotiation_status", "implementation_status", "crops", "nature", "contract_farming", "url", "type", "company", "type"]
+FILTER_VAR_INV = ["investor_name", "country"]
+SINGLE_SQL_QUERY_COLUMNS = ['location', 'crop']
 
 class TableGroupView(TemplateView):
 
@@ -211,58 +59,27 @@ class TableGroupView(TemplateView):
 
         self.GET = request.GET
 
-        self.group = kwargs.get("group", DEFAULT_GROUP)
-        self._set_group_value(**kwargs)
+        self._set_group(kwargs)
 
-        if self.is_download:
-            self.group = self.group.split(".")[0]
+        self.load_more = int(self.GET.get("more", 50))
+        filters = self.get_filters()
 
-        # map url to group variable, cut possible .csv suffix
-        self.group = self.group.replace("by-", "").replace("-", "_")
+        if not self._filter_set() and self.group == "database":
+            self.group = "all"
+            self.load_more = None
 
-        load_more = int(self.GET.get("more", 50))
-        ConditionFormset = self.create_condition_formset()
-        rules = BrowseCondition.objects.filter(rule__rule_type="generic")
-        if self.GET and self.GET.get("filtered") and not self.GET.get("reset", None):
-            # set given filters
-            current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
-            if current_formset_conditions.is_valid():
-                filters = parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], 0)
-        else:
-            # set default filters
-            filter_dict = MultiValueDict()
-            for record, c in enumerate(rules):
-                rule_dict = MultiValueDict({
-                    "conditions_empty-%i-variable"% record: [c.variable],
-                    "conditions_empty-%i-operator"% record: [c.operator]
-                })
-                # pass comma separated list as multiple values for operators in/not in
-                if c.operator in ("in", "not_in"):
-                    rule_dict.setlist("conditions_empty-%i-value"%record, c.value.split(","))
-                else:
-                    rule_dict["conditions_empty-%i-value"%record] = c.value
-                filter_dict.update(rule_dict)
-            filter_dict["conditions_empty-INITIAL_FORMS"] = len(rules)
-            filter_dict["conditions_empty-TOTAL_FORMS"] = len(rules)
-            filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
-            current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
-            if self.group == "database":
-                filters = parse_browse_filter_conditions(None, [self._order_by()], None)
-                self.group = "all"
-                load_more = None
-            else:
-                # TODO: make the following line work again
-#                filters = parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], limit)
-                filters = {}
-
-        group_columns = self._columns()
-        # columns shown in deal list
-        group_columns_list = ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size",]
-        self.columns = (self.is_download and (self.group_value or self.group == "all") and self.DOWNLOAD_COLUMNS) or (self.group_value and group_columns_list) or group_columns
         starts_with = self.GET.get("starts_with", None)
         filters["group_by"] = self.group
         filters["group_value"] = self.group_value
         filters["starts_with"] = starts_with
+
+        group_columns = self._columns()
+        # columns shown in deal list
+        group_columns_list = [
+            "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
+            "negotiation_status", "implementation_status", "intended_size", "contract_size",
+        ]
+        self.columns = (self.is_download and (self.group_value or self.group == "all") and self.DOWNLOAD_COLUMNS) or (self.group_value and group_columns_list) or group_columns
         ap = DummyActivityProtocol()
         request.POST = MultiValueDict(
             {"data": [json.dumps({"filters": filters, "columns": self._optimize_columns()})]}
@@ -273,11 +90,9 @@ class TableGroupView(TemplateView):
         if self.is_download or (not self.group_value and self.group not in self.QUERY_LIMITED_GROUPS) or starts_with:
             # dont limit query when download or group view
             limited_query_result =  query_result["activities"]
-            load_more = None
+            self.load_more = None
         else:
-            limited_query_result =  query_result["activities"][:load_more]
-
-        if (settings.DEBUG): print('Columns: ', self.columns)
+            limited_query_result =  query_result["activities"][:self.load_more]
 
         items = self.get_items(limited_query_result, self._single_column_results(limited_query_result))
 
@@ -294,15 +109,65 @@ class TableGroupView(TemplateView):
                 "name": self.group_value,
                 "columns": self.group_value and group_columns_list or group_columns,
                 "filters": filters,
-                "load_more": load_more and len(query_result["activities"]) > load_more and load_more + self.LOAD_MORE_AMOUNT or None,
+                "load_more": self.load_more and len(query_result["activities"]) > self.load_more and self.load_more + self.LOAD_MORE_AMOUNT or None,
                 "group_slug": kwargs.get("group", DEFAULT_GROUP),
                 "group_value": kwargs.get("list", None),
                 "group": self.group.replace("_", " "),
-                "empty_form_conditions": current_formset_conditions,
-                "rules": rules,
+                "empty_form_conditions": self.current_formset_conditions,
+                "rules": self.rules,
             }
             return render_to_response(self.template_name, context,
                                       context_instance=RequestContext(request))
+
+    def get_filters(self):
+        ConditionFormset = self.create_condition_formset()
+        if self._filter_set():
+            # set given filters
+            self.current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
+            if self.current_formset_conditions.is_valid():
+                filters = parse_browse_filter_conditions(self.current_formset_conditions, [self._order_by()], 0)
+        else:
+            # set default filters
+            self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
+            filter_dict = self._get_filter_dict()
+            self.current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
+            if self.group == "database":
+                filters = parse_browse_filter_conditions(None, [self._order_by()], None)
+            else:
+                # TODO: make the following line work again
+                #                filters = parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], limit)
+                filters = {}
+        return filters
+
+    def _filter_set(self):
+        return self.GET and self.GET.get("filtered") and not self.GET.get("reset", None)
+
+    def _get_filter_dict(self):
+        filter_dict = MultiValueDict()
+        for record, c in enumerate(self.rules):
+            rule_dict = MultiValueDict({
+                "conditions_empty-%i-variable" % record: [c.variable],
+                "conditions_empty-%i-operator" % record: [c.operator]
+            })
+            # pass comma separated list as multiple values for operators in/not in
+            if c.operator in ("in", "not_in"):
+                rule_dict.setlist("conditions_empty-%i-value" % record, c.value.split(","))
+            else:
+                rule_dict["conditions_empty-%i-value" % record] = c.value
+            filter_dict.update(rule_dict)
+        filter_dict["conditions_empty-INITIAL_FORMS"] = len(self.rules)
+        filter_dict["conditions_empty-TOTAL_FORMS"] = len(self.rules)
+        filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
+        return filter_dict
+
+    def _set_group(self, kwargs):
+        self.group = kwargs.get("group", DEFAULT_GROUP)
+        self._set_group_value(**kwargs)
+        if self.is_download:
+            self.group = self.group.split(".")[0]
+
+        # map url to group variable, cut possible .csv suffix
+        self.group = self.group.replace("by-", "").replace("-", "_")
 
     def get_download(self, download_format, items):
         if download_format == "csv":
@@ -319,8 +184,8 @@ class TableGroupView(TemplateView):
             )
         raise RuntimeError('Download format not recognized: ' + download_format)
 
-    def get_items(self, limited_query_result, single_column_results):
-        return [ self.get_row(record, single_column_results) for record in limited_query_result ]
+    def get_items(self, query_result, single_column_results):
+        return [ self.get_row(record, single_column_results) for record in query_result ]
 
     def get_row(self, record, single_column_results):
         offset = 1
@@ -329,6 +194,8 @@ class TableGroupView(TemplateView):
         for j, c in enumerate(self.columns):
             # iterate over columns relevant for view or download
             j = j + offset
+
+            value = record[j]
             # do not remove crop column if we expect a grouping in the sql string
             if c in SINGLE_SQL_QUERY_COLUMNS and not (self.group == "crop" and c == "crop"):
                 # artificially insert the data fetched from the smaller SQL query dataset, don't take it from the large set
@@ -338,75 +205,75 @@ class TableGroupView(TemplateView):
                     value = single_column_results[c][record[1]]
                 else:
                     value = None
-            else:
-                value = record[j]
 
-            if not value:
-                if c == "data_source":
-                    offset = offset + 3
-                row.update({c: None})
-                continue
             if c == "data_source":
-                data_sources = {
-                    "data_source_type": record[j],
-                    "data_source_url": record[j + 1],
-                    "data_source_date": record[j + 2],
-                    "data_source_organization": record[j + 3],
-                }
-                value = self.map_values_of_group(data_sources,
-                                                 "%(data_source_date)s%(data_source_url)s%(data_source_organization)s%(data_source_type)s")
+                value = self._process_data_source(j, record)
                 offset = offset + 3
-            elif c == "intention":
-                value = self._process_intention(value)
-            elif c == "investor_name":
-                value = [
-                    len(inv.split("#!#")) > 1 and {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} or ""
-                    for inv in value
-                ]
-            elif c == 'location':
-                value = value.split("##!##")
-            elif c == "investor_country":
-                value = [inv.split("#!#")[0] for inv in value]
-            elif c == "investor_region":
-                value = [inv.split("#!#")[0] for inv in value]
-            elif c == 'crop':
-                value = [n.split("#!#")[0] for n in value.split("##!##")]
-            elif c == 'latlon':
-                value = ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in
-                         value.split("##!##")]
-            elif c == "negotiation_status":
-                value = [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]} for n in value]
-            elif c == "implementation_status":
-                value = [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]} for n in value.split("##!##")]
-            elif c in ("intended_size", "production_size", "contract_size"):
-                #                    value = value and value.split(",")[0]
-                value = value and value[0]
-            elif isinstance(value, numbers.Number):
-                value = int(value)
-            elif "##!##" in value:
-                value = value.split("##!##")
-            elif not isinstance(value, list):
-                # ensure array
-                value = [value, ]
 
-            row[c] = value
+            row[c] = self._process_value(c, value)
         return row
 
+    def _process_data_source(self, j, record):
+        data_sources = {
+            "data_source_type": record[j],
+            "data_source_url": record[j + 1],
+            "data_source_date": record[j + 2],
+            "data_source_organization": record[j + 3],
+        }
+        return self._map_values_of_group(
+            data_sources, "%(data_source_date)s%(data_source_url)s%(data_source_organization)s%(data_source_type)s"
+        )
+
     def _process_intention(self, value):
-        if isinstance(value, list) and not isinstance(value, str):
-            intentions = {}
-            for intention in set(value):
-                if self.is_download:
-                    if intention in INTENTION_MAP and len(INTENTION_MAP.get(intention)) > 1:
-                        # skip intention if there are subintentions
-                        continue
-                    else:
-                        intentions[intention] = 1
+        if not isinstance(value, list): return [value]
+
+        intentions = {}
+        for intention in set(value):
+            if self.is_download:
+                if intention in INTENTION_MAP and len(INTENTION_MAP.get(intention)) > 1:
+                    # skip intention if there are subintentions
+                    continue
                 else:
-                    intentions[get_intention(intention)] = 1
-            return sorted(intentions.keys())
-        else:
-            return [value]
+                    intentions[intention] = 1
+            else:
+                intentions[get_intention(intention)] = 1
+        return sorted(intentions.keys())
+
+    def _process_investor_name(self, value):
+        return [
+            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else ""
+            for inv in value
+        ]
+
+    def _process_stitched_together_field(self, value):
+        return [field.split("#!#")[0] for field in value]
+
+    def _process_name_and_year(self, value):
+        return [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]} for n in value]
+
+    def _process_value(self, c, value):
+        if not value: return None
+
+        process_functions = {
+            'intention': self._process_intention,
+            'investor_name': self._process_investor_name,
+            'investor_country': self._process_stitched_together_field,
+            'investor_region': self._process_stitched_together_field,
+            'crop': self._process_stitched_together_field,
+            'latlon': lambda value: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in value],
+            'negotiation_status': self._process_name_and_year,
+            'implementation_status': self._process_name_and_year,
+            "intended_size": lambda value: value and value[0],
+            "production_size": lambda value: value and value[0],
+            "contract_size": lambda value: value and value[0],
+        }
+        if c in process_functions:
+            return process_functions[c](value)
+        elif isinstance(value, numbers.Number):
+            return int(value)
+        elif not isinstance(value, list):
+            return [value, ]
+        return value
 
     def _single_column_results(self, limited_query_result):
         single_column_results = {}
@@ -557,27 +424,25 @@ class TableGroupView(TemplateView):
     Map different values of one group together. Ensures that values of a group are together
     e.g. group of data sources with different urls, types and dates
     """
-    def map_values_of_group(self, value_list, format_string):
+    def _map_values_of_group(self, value_list, format_string):
         output = []
         groups = {}
         keys = value_list.keys()
         for k,v in value_list.items():
             if not v:
                 continue
-            for s in v.split("##!##"):
+            for s in v:
                 if "#!#" not in s:
                     continue
                 gv = s.split("#!#")[0]
                 g = s.split("#!#")[1]
                 group = groups.get(g, {})
-                group.update({
-                    k: gv + " "
-                })
+                group.update({k: gv + " "})
                 groups[g] = group
         for g,gv in groups.items():
             for k in keys:
                 if k not in gv:
-                    gv.update({k:""})
+                    gv.update({k: ""})
             output.append(format_string % gv)
         return output
 
