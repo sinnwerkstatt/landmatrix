@@ -124,7 +124,7 @@ class SQLBuilderData:
         ],
         "target_country": ["ARRAY_AGG(DISTINCT deal_country.name) AS target_country",
                            "deal_country.name AS target_country"],
-        "target_region": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT deal_region.name), '##!##') AS target_region",
+        "target_region": ["ARRAY_AGG(DISTINCT deal_region.name) AS target_region",
                           " deal_region.name AS target_region"],
         "deal_size": ["IFNULL(pi_deal_size.value, 0) + 0 AS deal_size",
                       "IFNULL(pi_deal_size.value, 0) + 0 AS deal_size"],
@@ -134,43 +134,41 @@ class SQLBuilderData:
                        "COUNT(DISTINCT a.activity_identifier) as deal_count"],
         "availability": ["SUM(a.availability) / COUNT(a.activity_identifier) AS availability",
                          "SUM(a.availability) / COUNT(a.activity_identifier) AS availability"],
-        "primary_investor": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT p.name), '##!##') AS primary_investor",
-                             "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT p.name), '##!##') AS primary_investor"],
+        "primary_investor": ["ARRAY_AGG(DISTINCT p.name) AS primary_investor",
+                             "ARRAY_AGG(DISTINCT p.name) AS primary_investor"],
         "negotiation_status": [
-            """ARRAY_TO_STRING(ARRAY_AGG(
-                    DISTINCT CONCAT(
+            """ARRAY_AGG(DISTINCT CONCAT(
                         negotiation_status.attributes->'negotiation_status',        '#!#',
                         EXTRACT(YEAR FROM negotiation_status.date)
-                    )), '##!##'
-                ) AS negotiation_status"""
+                )) AS negotiation_status"""
         ],
         "implementation_status": [
             """CASE WHEN (
-                ARRAY_TO_STRING(ARRAY_AGG(
+                ARRAY_AGG(
                     DISTINCT CONCAT(
                         implementation_status.attributes->'implementation_status',  '#!#',
                         EXTRACT(YEAR FROM implementation_status.date)
-                    )), '##!##'
-                ) = '#!#') THEN NULL
-                ELSE ARRAY_TO_STRING(ARRAY_AGG(
+                    )
+                ) = '{#!#}') THEN NULL
+                ELSE ARRAY_AGG(
                     DISTINCT CONCAT(
                         implementation_status.attributes->'implementation_status',  '#!#',
                         EXTRACT(YEAR FROM implementation_status.date)
-                    )), '##!##'
+                    )
                 ) END AS implementation_status"""
         ],
-        "nature_of_the_deal": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nature_of_the_deal.value), '##!##') AS nature_of_the_deal"],
+        "nature_of_the_deal": ["ARRAY_AGG(DISTINCT nature_of_the_deal.value) AS nature_of_the_deal"],
         "data_source": [
             """GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type,
 GROUP_CONCAT(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group) SEPARATOR '##!##') as data_source_url,
 GROUP_CONCAT(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group) SEPARATOR '##!##') as data_source_date,
 GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group) SEPARATOR '##!##') as data_source_organisation"""
         ],
-        "contract_farming": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_farming.value), '##!##') AS contract_farming"],
+        "contract_farming": ["ARRAY_AGG(DISTINCT contract_farming.value) AS contract_farming"],
         "intended_size": ["0 AS intended_size"],
         "contract_size": ["0 AS contract_size"],
         "production_size": ["0 AS production_size"],
-        "location": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT location.value), '##!##') AS location"],
+        "location": ["ARRAY_AGG(DISTINCT location.value) AS location"],
         "deal_id": ["a.activity_identifier AS deal_id", "a.activity_identifier as deal_id"],
         "latlon": [
             "GROUP_CONCAT(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value) SEPARATOR '##!##') AS latlon"
