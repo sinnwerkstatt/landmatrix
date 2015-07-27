@@ -371,12 +371,13 @@ class TableGroupView(TemplateView):
                 value = sorted(intentions.keys())
             elif c == "investor_name":
                 value = [
-                    len(inv.split("#!#")) > 1 and {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} or "" for
-                    inv in value.split("##!##")]
+                    len(inv.split("#!#")) > 1 and {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} or ""
+                    for inv in value
+                ]
             elif c == 'location':
                 value = value.split("##!##")
             elif c == "investor_country":
-                value = [inv.split("#!#")[0] for inv in value.split("##!##")]
+                value = [inv.split("#!#")[0] for inv in value]
             elif c == "investor_region":
                 value = [inv.split("#!#")[0] for inv in value.split("##!##")]
             elif c == 'crop':

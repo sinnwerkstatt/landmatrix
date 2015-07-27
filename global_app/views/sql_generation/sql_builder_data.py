@@ -97,11 +97,11 @@ class SQLBuilderData:
 
     SQL_COLUMN_MAP = {
         "investor_name": [
-            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)), '##!##') AS investor_name",
+            "ARRAY_AGG(DISTINCT CONCAT(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)) AS investor_name",
             "CONCAT(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier) AS investor_name"
         ],
         "investor_country": [
-            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(investor_country.name, '#!#', investor_country.code_alpha3)), '##!##') AS investor_country",
+            "ARRAY_AGG(DISTINCT CONCAT(investor_country.name, '#!#', investor_country.code_alpha3)) AS investor_country",
             "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) AS investor_country"
         ],
         "investor_region": [
