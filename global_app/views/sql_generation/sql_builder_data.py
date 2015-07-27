@@ -118,7 +118,7 @@ class SQLBuilderData:
         ],
         "deal_availability": ["a.availability AS availability", "a.availability AS availability"],
         "data_source_type": [
-#            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(data_source_type.attributes->'type', '#!#', data_source_type.group)), '##!##') AS data_source_type",
+#            "ARRAY_AGG(DISTINCT CONCAT(data_source_type.attributes->'type', '#!#', data_source_type.group))s AS data_source_type",
             "ARRAY_AGG(DISTINCT data_source_type.attributes->'type') AS data_source_type",
             "data_source_type.attributes->'type' AS data_source_type"
         ],
@@ -159,10 +159,10 @@ class SQLBuilderData:
         ],
         "nature_of_the_deal": ["ARRAY_AGG(DISTINCT nature_of_the_deal.value) AS nature_of_the_deal"],
         "data_source": [
-            """GROUP_CONCAT(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group) SEPARATOR '##!##') AS data_source_type,
-GROUP_CONCAT(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group) SEPARATOR '##!##') as data_source_url,
-GROUP_CONCAT(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group) SEPARATOR '##!##') as data_source_date,
-GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group) SEPARATOR '##!##') as data_source_organisation"""
+            """ARRAY_AGG(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group)) AS data_source_type,
+ARRAY_AGG(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group)) as data_source_url,
+ARRAY_AGG(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group)) as data_source_date,
+ARRAY_AGG(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group)) as data_source_organisation"""
         ],
         "contract_farming": ["ARRAY_AGG(DISTINCT contract_farming.value) AS contract_farming"],
         "intended_size": ["0 AS intended_size"],
@@ -171,6 +171,6 @@ GROUP_CONCAT(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_
         "location": ["ARRAY_AGG(DISTINCT location.value) AS location"],
         "deal_id": ["a.activity_identifier AS deal_id", "a.activity_identifier as deal_id"],
         "latlon": [
-            "GROUP_CONCAT(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value) SEPARATOR '##!##') AS latlon"
+            "ARRAY_AGG(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value)) AS latlon"
         ],
     }
