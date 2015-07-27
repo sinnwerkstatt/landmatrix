@@ -162,8 +162,8 @@ class Compare:
             4: _array_equal_to_tinkered_string,
             5: _array_equal_to_tinkered_string,
             6: _actual_intention_in_expected,
-            7: _null_to_zero_conversion,
-            8: _null_to_zero_conversion
+            7: _array_equal_to_tinkered_string,
+            8: _array_equal_to_tinkered_string,
         },
         'by_target_region': {
             0: _throwaway_column,
@@ -172,6 +172,7 @@ class Compare:
         },
         'by_target_country': {
             0: _throwaway_column,
+            2: _array_equal_to_tinkered_string,
             3: _actual_intention_in_expected,
             5: _floats_pretty_equal,
         },

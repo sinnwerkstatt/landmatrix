@@ -375,7 +375,7 @@ class TableGroupView(TemplateView):
                 value = ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in
                          value.split("##!##")]
             elif c == "negotiation_status":
-                value = [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]} for n in value.split("##!##")]
+                value = [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]} for n in value]
             elif c == "implementation_status":
                 value = [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]} for n in value.split("##!##")]
             elif c in ("intended_size", "production_size", "contract_size"):
