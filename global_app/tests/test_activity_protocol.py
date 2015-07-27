@@ -79,14 +79,11 @@ class TestActivityProtocol(TestCase, DealsTestData):
     def _assert_contains_created_record(self, records):
         self.assertGreaterEqual(1, len(records))
         self.assertTrue(isinstance(records[-1], list) or isinstance(records[-1], tuple) and not isinstance(records[-1], str))
-        self.assertIn(self.PI_NAME, records[-1])
-        self.assertTrue([self.INTENTION] in records[-1] or self.INTENTION in records[-1])
+        self._assert_element_present_verbatim_or_as_list(self.PI_NAME, records[-1])
+        self._assert_element_present_verbatim_or_as_list(self.INTENTION, records[-1])
 
-    def _flatten(self, nested_list):
-        result = []
-        for element in nested_list:
-            result.extend([ [item for item in element] if isinstance(element, list) else element ])
-        return result
+    def _assert_element_present_verbatim_or_as_list(self, element, record):
+        self.assertTrue([element] in record or element in record)
 
     def _set_POST(self, options):
         self.request.POST = { 'data': json.dumps(options) }
