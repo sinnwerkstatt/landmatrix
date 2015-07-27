@@ -157,6 +157,7 @@ class Compare:
 
     similar_table = {
         'all_deals': {
+            2: _array_equal_to_tinkered_string,
             3: _same_string_multiple_times,
             4: _array_equal_to_tinkered_string,
             5: _array_equal_to_tinkered_string,

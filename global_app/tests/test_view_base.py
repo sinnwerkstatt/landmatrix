@@ -31,6 +31,9 @@ class TestViewBase(DealsTestData):
         self.assertNotEqual(tbody, '', self.__class__.__name__ + ' does not find any data.')
 
     def test_view_data_ok(self):
+        if False and self.__class__.__name__ == 'TestAllDealsView':
+            print(self.EXPECTED_VIEW_DATA)
+            print(self.extract_view_data())
         self.assertTrue(all(expected in self.extract_view_data() for expected in self.EXPECTED_VIEW_DATA))
 
     def _get_url_following_redirects(self, url):

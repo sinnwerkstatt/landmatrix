@@ -113,16 +113,16 @@ class SQLBuilderData:
             "intention.attributes->'intention' AS intention"
         ],
         "crop": [
-            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(crop.name, '#!#', crop.code )), '##!##') AS crop",
+            "ARRAY_AGG(DISTINCT CONCAT(crop.name, '#!#', crop.code )) AS crop",
             "CONCAT(crop.name, '#!#', crop.code ) AS crop"
         ],
         "deal_availability": ["a.availability AS availability", "a.availability AS availability"],
         "data_source_type": [
 #            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT CONCAT(data_source_type.attributes->'type', '#!#', data_source_type.group)), '##!##') AS data_source_type",
-            "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT data_source_type.attributes->'type'), '##!##') AS data_source_type",
+            "ARRAY_AGG(DISTINCT data_source_type.attributes->'type') AS data_source_type",
             "data_source_type.attributes->'type' AS data_source_type"
         ],
-        "target_country": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT deal_country.name), '##!##') AS target_country",
+        "target_country": ["ARRAY_AGG(DISTINCT deal_country.name) AS target_country",
                            "deal_country.name AS target_country"],
         "target_region": ["ARRAY_TO_STRING(ARRAY_AGG(DISTINCT deal_region.name), '##!##') AS target_region",
                           " deal_region.name AS target_region"],

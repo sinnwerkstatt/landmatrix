@@ -379,9 +379,9 @@ $(document).ready(function () {
           {% elif column == "target_country" %}
             <td>
               {% if item.target_country %}
-              {% for target_country  in item.target_country %}
-                <a href="/get-the-detail/by-target-country/{{target_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_country }}</a><br/>
-              {% endfor %}
+                {% for target_country  in item.target_country %}
+                  <a href="/get-the-detail/by-target-country/{{target_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_country }}</a><br/>
+                {% endfor %}
               {% else %}
                 {% trans "unknown" %}
               {% endif %}
@@ -453,7 +453,7 @@ $(document).ready(function () {
           {% endif %}
         {% endfor %}
     {% if "deal_id" in columns %}
-    <td><a class="btn btn-small" href="/get-the-detail/{{ group_slug }}/{{ name|slugify }}/{{ item.deal_id }}/">Details</a></td>
+    <td><a href="/get-the-detail/{{ group_slug }}/{{ name|slugify }}/{{ item.deal_id }}/" class="btn btn-small">Details</a></td>
     {% endif %}
     </tr>
     {% endfor %}
