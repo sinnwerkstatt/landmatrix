@@ -357,18 +357,7 @@ class TableGroupView(TemplateView):
                                                  "%(data_source_date)s%(data_source_url)s%(data_source_organization)s%(data_source_type)s")
                 offset = offset + 3
             elif c == "intention":
-                # raise Exception, value
-                intentions = {}
-                for intention in set(value.split("##!##")):
-                    if self.is_download:
-                        if intention in INTENTION_MAP and len(INTENTION_MAP.get(intention)) > 1:
-                            # skip intention if there are subintentions
-                            continue
-                        else:
-                            intentions[intention] = 1
-                    else:
-                        intentions[get_intention(intention)] = 1
-                value = sorted(intentions.keys())
+                value = self._process_intention(value)
             elif c == "investor_name":
                 value = [
                     len(inv.split("#!#")) > 1 and {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} or ""
@@ -379,7 +368,7 @@ class TableGroupView(TemplateView):
             elif c == "investor_country":
                 value = [inv.split("#!#")[0] for inv in value]
             elif c == "investor_region":
-                value = [inv.split("#!#")[0] for inv in value.split("##!##")]
+                value = [inv.split("#!#")[0] for inv in value]
             elif c == 'crop':
                 value = [n.split("#!#")[0] for n in value.split("##!##")]
             elif c == 'latlon':
@@ -402,6 +391,22 @@ class TableGroupView(TemplateView):
 
             row[c] = value
         return row
+
+    def _process_intention(self, value):
+        if isinstance(value, list) and not isinstance(value, str):
+            intentions = {}
+            for intention in set(value):
+                if self.is_download:
+                    if intention in INTENTION_MAP and len(INTENTION_MAP.get(intention)) > 1:
+                        # skip intention if there are subintentions
+                        continue
+                    else:
+                        intentions[intention] = 1
+                else:
+                    intentions[get_intention(intention)] = 1
+            return sorted(intentions.keys())
+        else:
+            return [value]
 
     def _single_column_results(self, limited_query_result):
         single_column_results = {}
