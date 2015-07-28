@@ -37,18 +37,47 @@ class TestViewVariables(TestCase, DealsTestData):
         self.assertNotEqual(self.download_view.DOWNLOAD_COLUMNS, self.download_view.columns)
         self.assertIn('crop', self.download_view.columns)
 
-    def test_filters(self):
-        print('filters:', self.download_view.filters)
+    def test_filters_group(self):
+        self.assertEqual('all', self.download_view.filters['group_by'])
+        self.assertEqual('all', self.download_view.group)
         self._call_dispatch('crop')
-        print('filters:', self.download_view.filters)
+        self.assertEqual('crop', self.download_view.filters['group_by'])
+        self.assertEqual('crop', self.download_view.group)
+
+    def test_order_by(self):
         self.skipTest('not yet implemented')
 
+    def test_filters_with_filter_set(self):
+        self.skipTest('not yet implemented')
+
+    def test_filters_with_filter_unset_and_group_database(self):
+        self.skipTest('not yet implemented')
+
+    def test_filters_with_filter_unset(self):
+        self.skipTest('not yet implemented')
+
+    def test_load_more(self):
+        self.skipTest('not yet implemented')
+
+    def test_download(self):
+        import json
+        self.create_data()
+
+        view = TableGroupView()
+        view.debug_query = True
+        self.skipTest('csv export not yet functional')
+        result = view.dispatch(self._request(), group='database.csv').content.decode()
+        try:
+            print(json.loads(result))
+        except ValueError:
+            print(result[:1000], '...')
+            self.fail('result is not json')
 
     def _call_dispatch(self, group, **kwargs):
         from django.db.utils import InternalError
         self.download_view = TableGroupView()
         try:
-            self.download_view.dispatch(self._request(), group=group, **kwargs)
+            return self.download_view.dispatch(self._request(), group=group, **kwargs).content
         except InternalError:
             pass
 
