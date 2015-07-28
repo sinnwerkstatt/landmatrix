@@ -28,7 +28,7 @@ class SQLBuilderData:
 
             'intended_size': [join_attributes('intended_size')],
             'contract_size': [join_attributes('contract_size')],
-            'production_size': [],
+            'production_size': [join_attributes('production_size')],
 
             'investor_country':   (
                 'investor_country', [
@@ -76,15 +76,16 @@ class SQLBuilderData:
             'data_source_type':   ( 'data_source', [ join_attributes('data_source_type', 'type') ] ),
 
             'data_source':        [
-                join_activity_attributes('data_source_type', 'type'),
-                join_activity_attributes('data_source_url', 'url'),
-                join_activity_attributes('data_source_organisation', 'company'),
-                join_activity_attributes('data_source_date', 'date'),
+                join_attributes('data_source_type', 'type'),
+                join_attributes('data_source_url', 'url'),
+                join_attributes('data_source_organisation', 'company'),
+                join_attributes('data_source_date', 'date'),
             ],
 
-            'contract_farming':   [ join_activity_attributes('contract_farming', 'off_the_lease'), ],
+            'contract_farming':   [ join_attributes('contract_farming', 'off_the_lease'), ],
 
-            'nature_of_the_deal': [ join_activity_attributes('nature_of_the_deal', 'nature'), ],
+#            'nature_of_the_deal': [ join_activity_attributes('nature_of_the_deal', 'nature'), ],
+            'nature_of_the_deal': [join_attributes('nature_of_the_deal', 'nature')],
 
             'latlon':             [
                 join_activity_attributes('latitude', 'point_lat'),
@@ -157,14 +158,18 @@ class SQLBuilderData:
                     )
                 ) END AS implementation_status"""
         ],
-        "nature_of_the_deal": ["ARRAY_AGG(DISTINCT nature_of_the_deal.value) AS nature_of_the_deal"],
+        "nature_of_the_deal": ["ARRAY_AGG(DISTINCT nature_of_the_deal.attributes->'nature') AS nature_of_the_deal"],
         "data_source": [
-            """ARRAY_AGG(DISTINCT CONCAT(data_source_type.value, '#!#', data_source_type.group)) AS data_source_type,
-ARRAY_AGG(DISTINCT CONCAT(data_source_url.value, '#!#', data_source_url.group)) as data_source_url,
-ARRAY_AGG(DISTINCT CONCAT(data_source_date.value, '#!#', data_source_date.group)) as data_source_date,
-ARRAY_AGG(DISTINCT CONCAT(data_source_organisation.value, '#!#', data_source_organisation.group)) as data_source_organisation"""
+#             """ARRAY_AGG(DISTINCT CONCAT(data_source_type.attributes->'type', '#!#', data_source_type.group)) AS data_source_type,
+# ARRAY_AGG(DISTINCT CONCAT(data_source_url.attributes->'url', '#!#', data_source_url.group)) as data_source_url,
+# ARRAY_AGG(DISTINCT CONCAT(data_source_date.attributes->'date', '#!#', data_source_date.group)) as data_source_date,
+# ARRAY_AGG(DISTINCT CONCAT(data_source_organisation.attributes->'company', '#!#', data_source_organisation.group)) as data_source_organisation"""
+            """ARRAY_AGG(DISTINCT data_source_type.attributes->'type') AS data_source_type,
+ARRAY_AGG(DISTINCT data_source_url.attributes->'url') as data_source_url,
+ARRAY_AGG(DISTINCT data_source_date.attributes->'date') as data_source_date,
+ARRAY_AGG(DISTINCT data_source_organisation.attributes->'company') as data_source_organisation"""
         ],
-        "contract_farming": ["ARRAY_AGG(DISTINCT contract_farming.value) AS contract_farming"],
+        "contract_farming": ["ARRAY_AGG(DISTINCT contract_farming.attributes->'off_the_lease') AS contract_farming"],
         "intended_size": ["0 AS intended_size"],
         "contract_size": ["0 AS contract_size"],
         "production_size": ["0 AS production_size"],

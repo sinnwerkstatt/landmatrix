@@ -27,29 +27,41 @@ class TestViewVariables(TestCase, DealsTestData):
     def test_columns(self):
         self.assertEqual(self.download_view.DOWNLOAD_COLUMNS, self.download_view.columns)
 
-    def _test_columns_2(self):
+    def test_columns_2(self):
         self._call_dispatch('all')
         self.assertEqual(self.download_view.group_columns_list, self.download_view.columns)
 
-    def _test_columns_3(self):
+    def test_columns_3(self):
         self._call_dispatch('by-crop')
-        print(self.download_view.columns)
-#        self.assertEqual(self.download_view.group_columns_list, self.download_view.columns)
-
-
-        self.skipTest('not yet implemented')
+        self.assertNotEqual(self.download_view.group_columns_list, self.download_view.columns)
+        self.assertNotEqual(self.download_view.DOWNLOAD_COLUMNS, self.download_view.columns)
+        self.assertIn('crop', self.download_view.columns)
 
     def test_filters(self):
+        print('filters:', self.download_view.filters)
+        self._call_dispatch('crop')
         print('filters:', self.download_view.filters)
         self.skipTest('not yet implemented')
 
 
-    def _call_dispatch(self, group):
+    def _call_dispatch(self, group, **kwargs):
         from django.db.utils import InternalError
         self.download_view = TableGroupView()
-        request = HttpRequest()
         try:
-            self.download_view.dispatch(request, group=group)
+            self.download_view.dispatch(self._request(), group=group, **kwargs)
         except InternalError:
             pass
 
+
+    def _request(self):
+        class User:
+            is_authenticated = lambda x: False
+
+        from django.test.client import RequestFactory
+        rf = RequestFactory()
+
+        request = rf.get('')
+        request.current_page = 0
+        request.user = User()
+        request.session = {}
+        return request
