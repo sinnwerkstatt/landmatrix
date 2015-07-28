@@ -10,7 +10,7 @@ from django.db import connection
 import json, numbers
 
 from .view_aux_functions import parse_browse_filter_conditions
-from landmatrix.models import BrowseCondition, ActivityAttributeGroup
+from landmatrix.models import BrowseCondition, ActivityAttributeGroup, Activity, Crop
 from global_app.views.browse_condition_form import BrowseConditionForm
 from global_app.views.dummy_activity_protocol import DummyActivityProtocol
 
@@ -54,7 +54,7 @@ class TableGroupView(TemplateView):
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
-
+    debug_query = False
     def _set_group_value(self, **kwargs):
         self.group_value = kwargs.get("list", "")
         if self.group_value == 'none': self.group_value = ''
@@ -108,6 +108,8 @@ class TableGroupView(TemplateView):
         return self.render(items, kwargs)
 
     def render(self, items, kwargs):
+        if self.debug_query:
+            print('*****', int(self.is_download), '***', items, '*****')
         if self.is_download and items:
             return self.get_download(self.GET.get("download_format", "csv"), items)
 
@@ -135,8 +137,10 @@ class TableGroupView(TemplateView):
         request.POST = MultiValueDict(
             {"data": [json.dumps({"filters": self.filters, "columns": self._optimize_columns()})]}
         )
+        ap.debug = self.debug_query
         res = ap.dispatch(request, action="list_group").content
         query_result = json.loads(res.decode())
+
         if not self._limit_query():
             # dont limit query when download or group view
             limited_query_result = query_result["activities"]
@@ -253,12 +257,19 @@ class TableGroupView(TemplateView):
         return row
 
     def _process_data_source(self, j, record):
-        data_sources = {
-            "data_source_type": record[j],
-            "data_source_url": record[j + 1],
-            "data_source_date": record[j + 2],
-            "data_source_organization": record[j + 3],
-        }
+        try:
+            data_sources = {
+                "data_source_type": record[j],
+                "data_source_url": record[j + 1],
+                "data_source_date": record[j + 2],
+                "data_source_organization": record[j + 3],
+            }
+        except IndexError as e:
+            print(e.__cause__)
+            print(list(zip(self.columns, record)))
+            print(j)
+            raise e
+
         return self._map_values_of_group(
             data_sources, "%(data_source_date)s%(data_source_url)s%(data_source_organization)s%(data_source_type)s"
         )
@@ -315,6 +326,23 @@ class TableGroupView(TemplateView):
         return value
 
     def _single_column_results(self, limited_query_result):
+        """ The single columns SQL queries. """
+        SINGLE_SQL_QUERY_DICT = {
+            'location': """
+                SELECT activity_identifier, ARRAY_AGG(DISTINCT aag.attributes->'location') AS location
+                FROM """+ Activity._meta.db_table + " AS a JOIN " + ActivityAttributeGroup._meta.db_table+""" AS aag ON a.id = aag.fk_activity_id
+                WHERE aag.attributes ? 'location' AND activity_identifier IN (%s)
+                group by activity_identifier;
+             """,
+            'crop': """
+                SELECT activity_identifier, ARRAY_AGG(DISTINCT CONCAT(crops.name, '#!#', crops.code )) AS crop
+                FROM """ + Activity._meta.db_table + " AS a JOIN " + ActivityAttributeGroup._meta.db_table+""" AS aag ON a.id = aag.fk_activity_id
+                JOIN """ + Crop._meta.db_table + """ AS crops ON CAST(aag.attributes->'crops' AS NUMERIC) = crops.id
+                WHERE aag.attributes ? 'crops' and activity_identifier in (%s)
+                group by activity_identifier;
+             """
+        }
+
         single_column_results = {}
         activity_ids = None
         for col in SINGLE_SQL_QUERY_COLUMNS:
@@ -332,8 +360,9 @@ class TableGroupView(TemplateView):
         return single_column_results
 
     def _order_by(self):
-        order_by = self.GET.get("order_by",
-                           self.group_value and "deal_id" or self.group) or self.group_value and "deal_id" or self.group
+        order_by = self.GET.get("order_by", self.group_value and "deal_id" or self.group) \
+                   or self.group_value and "deal_id" \
+                   or self.group
         if order_by == "all" or order_by == "database":
             order_by = "deal_id"
         return order_by
@@ -411,7 +440,8 @@ class TableGroupView(TemplateView):
         return response
 
     def write_to_csv(self, header, data, filename):
-        response = HttpResponse(mimetype='text/csv')
+#        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse()
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         writer = csv.writer(response, delimiter=";")
         # write csv header
@@ -453,7 +483,7 @@ class TableGroupView(TemplateView):
                                 row_item.append(lv)
                         else:
                             row_item.append(lv)
-                    row.append(", ".join(row_item))
+                    row.append(", ".join(filter(None, row_item)))
                 else:
                     row.append(v)
             rows.append(row)
@@ -471,7 +501,7 @@ class TableGroupView(TemplateView):
             if not v:
                 continue
             for s in v:
-                if "#!#" not in s:
+                if s is None or "#!#" not in s:
                     continue
                 gv = s.split("#!#")[0]
                 g = s.split("#!#")[1]
