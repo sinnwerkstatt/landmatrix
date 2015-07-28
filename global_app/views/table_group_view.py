@@ -37,8 +37,7 @@ def get_intention(intention):
     django.template.loader.render_to_string() with the passed arguments."""
 def render_to_response(template_name, context, context_instance):
     # Some deprecated arguments were passed - use the legacy code path
-    content = loader.render_to_string(
-        template_name, context, context_instance)
+    content = loader.render_to_string(template_name, context, context_instance)
 
     return HttpResponse(content)
 
@@ -72,108 +71,125 @@ class TableGroupView(TemplateView):
             self.group = self.group.split(".")[0]
         # map url to group variable, cut possible .csv suffix
         self.group = self.group.replace("by-", "").replace("-", "_")
+        if not self._filter_set() and self.group == "database":
+            self.group = "all"
+
+    def _filter_set(self):
+        return self.GET and self.GET.get("filtered") and not self.GET.get("reset", None)
+
+    def load_more(self):
+        load_more = int(self.GET.get("more", 50))
+        if not self._filter_set() and self.group == "database":
+            load_more = None
+        if not self._limit_query():
+            load_more = None
+        return load_more
+
+    group_columns_list = [
+        "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
+        "negotiation_status", "implementation_status", "intended_size", "contract_size",
+    ]
 
     def dispatch(self, request, *args, **kwargs):
 
-        from django.core.handlers.wsgi import WSGIRequest
-        from django.http.request import HttpRequest
-        if not True: # isinstance(request, WSGIRequest):
-            print('request:',request)
-            print('args:', args)
-            print('kwargs:', kwargs)
-
+        self.request = request
         self.GET = request.GET
 
         self._set_group_value(**kwargs)
         self._set_download(**kwargs)
         self._set_group(**kwargs)
+        self._set_filters()
+        self._set_columns()
 
-        self.load_more = int(self.GET.get("more", 50))
-        filters = self.get_filters()
+        query_result = self.get_records(request)
 
-        if not self._filter_set() and self.group == "database":
-            self.group = "all"
-            self.load_more = None
+        items = self.get_items(query_result, self._single_column_results(query_result))
 
-        starts_with = self.GET.get("starts_with", None)
-        filters["group_by"] = self.group
-        filters["group_value"] = self.group_value
-        filters["starts_with"] = starts_with
+        return self.render(items, kwargs)
 
-        group_columns = self._columns()
-        # columns shown in deal list
-        group_columns_list = [
-            "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
-            "negotiation_status", "implementation_status", "intended_size", "contract_size",
-        ]
-        self.columns = (self.is_download and (self.group_value or self.group == "all") and self.DOWNLOAD_COLUMNS) or (self.group_value and group_columns_list) or group_columns
+    def render(self, items, kwargs):
+        if self.is_download and items:
+            return self.get_download(self.GET.get("download_format", "csv"), items)
 
+        context = {
+            "view": "get-the-detail",
+            "data": {
+                "items": items,
+                "order_by": self._order_by(),
+                "count": self.num_results
+            },
+            "name": self.group_value,
+            "columns": self.group_value and self.group_columns_list or self._columns(),
+            "filters": self.filters,
+            "load_more": self._load_more_amount(),
+            "group_slug": kwargs.get("group", DEFAULT_GROUP),
+            "group_value": kwargs.get("list", None),
+            "group": self.group.replace("_", " "),
+            "empty_form_conditions": self.current_formset_conditions,
+            "rules": self.rules,
+        }
+        return render_to_response(self.template_name, context, context_instance=RequestContext(self.request))
+
+    def get_records(self, request):
         ap = DummyActivityProtocol()
         request.POST = MultiValueDict(
-            {"data": [json.dumps({"filters": filters, "columns": self._optimize_columns()})]}
+            {"data": [json.dumps({"filters": self.filters, "columns": self._optimize_columns()})]}
         )
         res = ap.dispatch(request, action="list_group").content
         query_result = json.loads(res.decode())
-
-        if self.is_download or (not self.group_value and self.group not in self.QUERY_LIMITED_GROUPS) or starts_with:
+        if not self._limit_query():
             # dont limit query when download or group view
-            limited_query_result =  query_result["activities"]
-            self.load_more = None
+            limited_query_result = query_result["activities"]
         else:
-            limited_query_result =  query_result["activities"][:self.load_more]
+            limited_query_result = query_result["activities"][:self.load_more()]
+        self.num_results = len(query_result['activities'])
+        return limited_query_result
 
-        items = self.get_items(limited_query_result, self._single_column_results(limited_query_result))
-
-        if self.is_download and items:
-            return self.get_download(self.GET.get("download_format", "csv"), items)
+    def _set_columns(self):
+        if self.is_download and (self.group_value or self.group == "all"):
+            self.columns = self.DOWNLOAD_COLUMNS
+        elif self.group_value:
+            self.columns = self.group_columns_list
         else:
-            context = {
-                "view": "get-the-detail",
-                "data": {
-                    "items": items,
-                    "order_by": self._order_by(),
-                    "count": len(query_result["activities"])
-                },
-                "name": self.group_value,
-                "columns": self.group_value and group_columns_list or group_columns,
-                "filters": filters,
-                "load_more": self._load_more_amount(query_result),
-                "group_slug": kwargs.get("group", DEFAULT_GROUP),
-                "group_value": kwargs.get("list", None),
-                "group": self.group.replace("_", " "),
-                "empty_form_conditions": self.current_formset_conditions,
-                "rules": self.rules,
-            }
-            return render_to_response(self.template_name, context,
-                                      context_instance=RequestContext(request))
+            self.columns = self._columns()
+        print('set_columns:', self.columns)
 
-    def _load_more_amount(self, query_result):
-        if not self.load_more: return None
-        if len(query_result["activities"]) > self.load_more:
-            return self.load_more + self.LOAD_MORE_AMOUNT
+    def _limit_query(self):
+        return not (
+            self.is_download
+            or (not self.group_value and self.group not in self.QUERY_LIMITED_GROUPS)
+            or self.GET.get("starts_with", None)
+        )
+
+    def _load_more_amount(self):
+        if not self.load_more(): return None
+        if self.num_results > self.load_more():
+            return int(self.load_more()) + self.LOAD_MORE_AMOUNT
         return None
 
-    def get_filters(self):
+    def _set_filters(self):
+        self.filters = {}
         ConditionFormset = self._create_condition_formset()
         if self._filter_set():
             # set given filters
             self.current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
             if self.current_formset_conditions.is_valid():
-                return parse_browse_filter_conditions(self.current_formset_conditions, [self._order_by()], 0)
+                self.filters = parse_browse_filter_conditions(self.current_formset_conditions, [self._order_by()], 0)
         else:
             # set default filters
             self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
             filter_dict = self._get_filter_dict()
             self.current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
             if self.group == "database":
-                return parse_browse_filter_conditions(None, [self._order_by()], None)
+                self.filters = parse_browse_filter_conditions(None, [self._order_by()], None)
             else:
                 # TODO: make the following line work again
                 # return parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], limit)
-                return {}
+                self.filters = {}
 
-    def _filter_set(self):
-        return self.GET and self.GET.get("filtered") and not self.GET.get("reset", None)
+        self.filters["group_by"] = self.group
+        self.filters["group_value"] = self.group_value
+        self.filters["starts_with"] = self.GET.get("starts_with", None)
 
     def _get_filter_dict(self):
         filter_dict = MultiValueDict()
