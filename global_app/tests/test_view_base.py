@@ -67,3 +67,4 @@ class TestViewBase(DealsTestData):
     def _extract_info_from_a(self, cell):
         return extract_tag(cell, '<a href="', '</a>')
 
+
