@@ -152,7 +152,6 @@ class TableGroupView(TemplateView):
             self.columns = self.group_columns_list
         else:
             self.columns = self._columns()
-        print('set_columns:', self.columns)
 
     def _limit_query(self):
         return not (
