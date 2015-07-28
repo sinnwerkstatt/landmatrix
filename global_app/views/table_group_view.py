@@ -9,6 +9,7 @@ from django.db import connection
 
 import json, numbers
 
+from .view_aux_functions import parse_browse_filter_conditions
 from landmatrix.models import BrowseCondition, ActivityAttributeGroup
 from global_app.views.browse_condition_form import BrowseConditionForm
 from global_app.views.dummy_activity_protocol import DummyActivityProtocol
@@ -55,11 +56,37 @@ class TableGroupView(TemplateView):
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
 
+    def _set_group_value(self, **kwargs):
+        self.group_value = kwargs.get("list", "")
+        if self.group_value == 'none': self.group_value = ''
+        if self.group_value.endswith(".csv") or kwargs.get("group", DEFAULT_GROUP).endswith(".csv"):
+            self.group_value = self.group_value.split(".")[0]
+
+    def _set_download(self, **kwargs):
+        if not self.group_value: self._set_group_value(**kwargs)
+        self.is_download = self.group_value.endswith(".csv") or kwargs.get("group", DEFAULT_GROUP).endswith(".csv")
+
+    def _set_group(self, **kwargs):
+        self.group = kwargs.get("group", DEFAULT_GROUP)
+        if self.is_download:
+            self.group = self.group.split(".")[0]
+        # map url to group variable, cut possible .csv suffix
+        self.group = self.group.replace("by-", "").replace("-", "_")
+
     def dispatch(self, request, *args, **kwargs):
+
+        from django.core.handlers.wsgi import WSGIRequest
+        from django.http.request import HttpRequest
+        if not True: # isinstance(request, WSGIRequest):
+            print('request:',request)
+            print('args:', args)
+            print('kwargs:', kwargs)
 
         self.GET = request.GET
 
-        self._set_group(kwargs)
+        self._set_group_value(**kwargs)
+        self._set_download(**kwargs)
+        self._set_group(**kwargs)
 
         self.load_more = int(self.GET.get("more", 50))
         filters = self.get_filters()
@@ -80,6 +107,7 @@ class TableGroupView(TemplateView):
             "negotiation_status", "implementation_status", "intended_size", "contract_size",
         ]
         self.columns = (self.is_download and (self.group_value or self.group == "all") and self.DOWNLOAD_COLUMNS) or (self.group_value and group_columns_list) or group_columns
+
         ap = DummyActivityProtocol()
         request.POST = MultiValueDict(
             {"data": [json.dumps({"filters": filters, "columns": self._optimize_columns()})]}
@@ -109,7 +137,7 @@ class TableGroupView(TemplateView):
                 "name": self.group_value,
                 "columns": self.group_value and group_columns_list or group_columns,
                 "filters": filters,
-                "load_more": self.load_more and len(query_result["activities"]) > self.load_more and self.load_more + self.LOAD_MORE_AMOUNT or None,
+                "load_more": self._load_more_amount(query_result),
                 "group_slug": kwargs.get("group", DEFAULT_GROUP),
                 "group_value": kwargs.get("list", None),
                 "group": self.group.replace("_", " "),
@@ -119,25 +147,30 @@ class TableGroupView(TemplateView):
             return render_to_response(self.template_name, context,
                                       context_instance=RequestContext(request))
 
+    def _load_more_amount(self, query_result):
+        if not self.load_more: return None
+        if len(query_result["activities"]) > self.load_more:
+            return self.load_more + self.LOAD_MORE_AMOUNT
+        return None
+
     def get_filters(self):
-        ConditionFormset = self.create_condition_formset()
+        ConditionFormset = self._create_condition_formset()
         if self._filter_set():
             # set given filters
             self.current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
             if self.current_formset_conditions.is_valid():
-                filters = parse_browse_filter_conditions(self.current_formset_conditions, [self._order_by()], 0)
+                return parse_browse_filter_conditions(self.current_formset_conditions, [self._order_by()], 0)
         else:
             # set default filters
             self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
             filter_dict = self._get_filter_dict()
             self.current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
             if self.group == "database":
-                filters = parse_browse_filter_conditions(None, [self._order_by()], None)
+                return parse_browse_filter_conditions(None, [self._order_by()], None)
             else:
                 # TODO: make the following line work again
-                #                filters = parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], limit)
-                filters = {}
-        return filters
+                # return parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], limit)
+                return {}
 
     def _filter_set(self):
         return self.GET and self.GET.get("filtered") and not self.GET.get("reset", None)
@@ -159,15 +192,6 @@ class TableGroupView(TemplateView):
         filter_dict["conditions_empty-TOTAL_FORMS"] = len(self.rules)
         filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
         return filter_dict
-
-    def _set_group(self, kwargs):
-        self.group = kwargs.get("group", DEFAULT_GROUP)
-        self._set_group_value(**kwargs)
-        if self.is_download:
-            self.group = self.group.split(".")[0]
-
-        # map url to group variable, cut possible .csv suffix
-        self.group = self.group.replace("by-", "").replace("-", "_")
 
     def get_download(self, download_format, items):
         if download_format == "csv":
@@ -315,7 +339,7 @@ class TableGroupView(TemplateView):
             optimized_columns = self.columns
         return optimized_columns
 
-    def create_condition_formset(self):
+    def _create_condition_formset(self):
         from django.forms.formsets import formset_factory
         from django.utils.functional import curry
 
@@ -445,12 +469,4 @@ class TableGroupView(TemplateView):
                     gv.update({k: ""})
             output.append(format_string % gv)
         return output
-
-    def _set_group_value(self, **kwargs):
-        self.is_download = False
-        self.group_value = kwargs.get("list", "")
-        if self.group_value == 'none': self.group_value = ''
-        if self.group_value.endswith(".csv") or self.group.endswith(".csv"):
-            self.group_value = self.group_value.split(".")[0]
-            self.is_download = True
 
