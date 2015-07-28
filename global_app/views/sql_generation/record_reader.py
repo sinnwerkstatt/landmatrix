@@ -16,8 +16,15 @@ class RecordReader:
     def get_all(self, assemble=None):
         if list_view_wanted(self.filters):
             return self._slap_columns_together(assemble)
-#        print(self.get_all_at_once_sql())
         return self.get_all_at_once()
+
+    def get_all_sql(self):
+        if list_view_wanted(self.filters):
+            sql = ''
+            for column in self.columns:
+                sql += '\n' + self.get_column_sql(column)
+            return sql
+        return self.get_all_at_once_sql()
 
     def get_column(self, column):
         if not column in self.columns: raise KeyError('Column %s not in columns' % column)
@@ -70,8 +77,28 @@ class RecordReader:
             raise RuntimeError("Activity IDs not equal for element %i: %s" % (i, ', '.join(map(str, act_ids))))
 
     def _make_record_from_column_data(self, column_data, i):
-        return tuple(column_data[col][i][1] for col in self.columns)
+#        return tuple(column_data[col][i][1] for col in self.columns)
+        return tuple(self._record_subset(column_data[col][i]) for col in self.columns)
+#        return tuple(column_data[col][i][j] for col in self.columns for j in range(1, 1 or len(column_data[col])-2))
 
     def _make_padded_record_from_column_data(self, column_data, i):
-        padded_record = ['all deals'] + [column_data[col][i][1] for col in self.columns] + ['dummy']
+#        else: print(column_data.keys())
+#        padded_record = ['all deals'] + [column_data[col][i][j] for col in self.columns for j in range(1, 1 or len(column_data[col][i])-1)] + ['dummy']
+#        padded_record = ['all deals'] + [column_data[col][i][1] for col in self.columns] + ['dummy']
+        padded_record = ['all deals'] + self._record_core(column_data,i) + ['dummy']
+#        padded_record = ['all deals'] + [self._record_subset(column_data[col][i]) for col in self.columns] + ['dummy']
         return tuple(padded_record)
+
+    def _record_core(self, column_data, i):
+        core = []
+        for col in self.columns:
+            core.extend(self._record_subset(column_data[col][i]))
+        if 'data_source' in column_data: print(core)
+        return core
+
+    def _record_subset(self, field_data):
+        data = list(field_data)
+        data.pop()
+        data.pop(0)
+        return data
+        return [field_data[1]]
