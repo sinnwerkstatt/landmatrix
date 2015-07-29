@@ -93,7 +93,6 @@ class RecordReader:
         core = []
         for col in self.columns:
             core.extend(self._record_subset(column_data[col][i]))
-        if 'data_source' in column_data: print(core)
         return core
 
     def _record_subset(self, field_data):

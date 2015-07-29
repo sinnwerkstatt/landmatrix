@@ -440,6 +440,7 @@ class TableGroupView(TemplateView):
         return response
 
     def write_to_csv(self, header, data, filename):
+        import csv
 #        response = HttpResponse(mimetype='text/csv')
         response = HttpResponse()
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
@@ -447,7 +448,7 @@ class TableGroupView(TemplateView):
         # write csv header
         writer.writerow(header)
         for row in data:
-            writer.writerow([unicode(s).encode("utf-8") for s in row])
+            writer.writerow([str(s).encode("utf-8") for s in row])
         return response
 
     """
