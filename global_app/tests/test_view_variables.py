@@ -31,11 +31,11 @@ class TestViewVariables(TestCase, DealsTestData):
 
     def test_columns_2(self):
         self._call_dispatch('all')
-        self.assertEqual(self.view.group_columns_list, self.view.columns)
+        self.assertEqual(self.view.GROUP_COLUMNS_LIST, self.view.columns)
 
     def test_columns_3(self):
         self._call_dispatch('by-crop')
-        self.assertNotEqual(self.view.group_columns_list, self.view.columns)
+        self.assertNotEqual(self.view.GROUP_COLUMNS_LIST, self.view.columns)
         self.assertNotEqual(self.view.DOWNLOAD_COLUMNS, self.view.columns)
         self.assertIn('crop', self.view.columns)
 

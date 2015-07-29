@@ -2,119 +2,43 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
-from django.http import HttpResponse
-from django.template import RequestContext, loader
-from django.conf import settings
+from django.template import RequestContext
 from django.db import connection
 
 import json, numbers
 
-from .view_aux_functions import parse_browse_filter_conditions
+from .view_aux_functions import parse_browse_filter_conditions, create_condition_formset, render_to_response
+from .intention_map import IntentionMap
+from .download import Download
 from landmatrix.models import BrowseCondition, ActivityAttributeGroup, Activity, Crop
-from global_app.views.browse_condition_form import BrowseConditionForm
 from global_app.views.dummy_activity_protocol import DummyActivityProtocol
 
 
-INTENTION_MAP = {
-    "Agriculture": ["Agriculture", "Biofuels", "Food crops", "Livestock", "Non-food agricultural commodities", "Agriunspecified"],
-    "Forestry": ["Forestry", "For wood and fibre", "For carbon sequestration/REDD", "Forestunspecified"],
-    "Mining": ["Mining",],
-    "Tourism": ["Tourism",],
-    "Land Speculation": ["Land Speculation",],
-    "Industry":["Industry",],
-    "Conservation": ["Conservation",],
-    "Renewable Energy": ["Renewable Energy",],
-    "Other": ["Other (please specify)",],
-}
-
-def get_intention(intention):
-    for k,v in INTENTION_MAP.items():
-        if intention in v:
-            return k
-    return intention
-
-""" Returns a HttpResponse whose content is filled with the result of calling
-    django.template.loader.render_to_string() with the passed arguments."""
-def render_to_response(template_name, context, context_instance):
-    # Some deprecated arguments were passed - use the legacy code path
-    content = loader.render_to_string(template_name, context, context_instance)
-
-    return HttpResponse(content)
-
-def write_to_xls(header, data, filename):
-    import xlwt
-    response = HttpResponse(content_type="application/ms-excel")
-    response['Content-Disposition'] = 'attachment; filename=%s' % filename
-    wb = xlwt.Workbook()
-    ws = wb.add_sheet('Landmatrix')
-    for i,h in enumerate(header):
-            ws.write(0, i,h)
-    for i, row in enumerate(data):
-            for j, d in enumerate(row):
-                ws.write(i+1, j, d)
-    wb.save(response)
-    return response
-
-def write_to_xml(header, data, filename):
-    try:
-        import xml.etree.cElementTree as ET
-    except ImportError:
-        import xml.etree.ElementTree as ET
-    from xml.dom.minidom import parseString
-
-    root = ET.Element('data')
-    for r in data:
-        row = ET.SubElement(root, "item")
-        for i,h in enumerate(header):
-            field = ET.SubElement(row, "field")
-            field.text = str(r[i])
-            field.set("name", h)
-    xml = parseString(ET.tostring(root)).toprettyxml()
-    response = HttpResponse(xml, content_type='text/xml')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-    return response
-
-def write_to_csv(header, data, filename):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-
-    import csv
-    writer = csv.writer(response, delimiter=";")
-    # write csv header
-    writer.writerow(header)
-    for row in data:
-        writer.writerow([str(s).encode("utf-8") for s in row])
-    return response
-
-
-
-
-DEFAULT_GROUP = "by-target-region"
-FILTER_VAR_ACT = ["target_country", "location", "intention", "intended_size", "contract_size", "production_size", "negotiation_status", "implementation_status", "crops", "nature", "contract_farming", "url", "type", "company", "type"]
-FILTER_VAR_INV = ["investor_name", "country"]
-SINGLE_SQL_QUERY_COLUMNS = ['location', 'crop']
-
 class TableGroupView(TemplateView):
-
-    template_name = "group-by.html"
 
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
+    GROUP_COLUMNS_LIST = [
+        "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
+        "negotiation_status", "implementation_status", "intended_size", "contract_size",
+    ]
+    SINGLE_SQL_QUERY_COLUMNS = ['location', 'crop']
+    DEFAULT_GROUP = "by-target-region"
+    template_name = "group-by.html"
     debug_query = False
-    DOWNLOAD_ROUTINES = { 'csv': write_to_csv, 'xml': write_to_xml, 'xls': write_to_xls }
 
     def _set_group_value(self, **kwargs):
         self.group_value = kwargs.get("list", "")
         if self.group_value == 'none': self.group_value = ''
-        if self.group_value.endswith(".csv") or kwargs.get("group", DEFAULT_GROUP).endswith(".csv"):
+        if self.group_value.endswith(".csv") or kwargs.get("group", self.DEFAULT_GROUP).endswith(".csv"):
             self.group_value = self.group_value.split(".")[0]
 
     def _set_download(self, **kwargs):
         if not self.group_value: self._set_group_value(**kwargs)
         self.download_type = None
-        for ext in self.DOWNLOAD_ROUTINES.keys():
-            if self.group_value.endswith(ext) or kwargs.get("group", DEFAULT_GROUP).endswith('.'+ext):
+        for ext in Download.supported_formats():
+            if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
                 self.download_type = ext
                 return
 
@@ -122,7 +46,7 @@ class TableGroupView(TemplateView):
         return self.download_type is not None
 
     def _set_group(self, **kwargs):
-        self.group = kwargs.get("group", DEFAULT_GROUP)
+        self.group = kwargs.get("group", self.DEFAULT_GROUP)
         if self.is_download():
             self.group = self.group.split(".")[0]
         # map url to group variable, cut possible .csv suffix
@@ -132,11 +56,6 @@ class TableGroupView(TemplateView):
 
     def _filter_set(self):
         return self.GET and self.GET.get("filtered") and not self.GET.get("reset", None)
-
-    group_columns_list = [
-        "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
-        "negotiation_status", "implementation_status", "intended_size", "contract_size",
-    ]
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -167,10 +86,10 @@ class TableGroupView(TemplateView):
                 "count": self.num_results
             },
             "name": self.group_value,
-            "columns": self.group_value and self.group_columns_list or self._columns(),
+            "columns": self.group_value and self.GROUP_COLUMNS_LIST or self._columns(),
             "filters": self.filters,
             "load_more": self._load_more_amount(),
-            "group_slug": kwargs.get("group", DEFAULT_GROUP),
+            "group_slug": kwargs.get("group", self.DEFAULT_GROUP),
             "group_value": kwargs.get("list", None),
             "group": self.group.replace("_", " "),
             "empty_form_conditions": self.current_formset_conditions,
@@ -204,7 +123,7 @@ class TableGroupView(TemplateView):
         if self.is_download() and (self.group_value or self.group == "all"):
             self.columns = self.DOWNLOAD_COLUMNS
         elif self.group_value:
-            self.columns = self.group_columns_list
+            self.columns = self.GROUP_COLUMNS_LIST
         else:
             self.columns = self._columns()
 
@@ -231,7 +150,7 @@ class TableGroupView(TemplateView):
 
     def _set_filters(self):
         self.filters = {}
-        ConditionFormset = self._create_condition_formset()
+        ConditionFormset = create_condition_formset()
         if self._filter_set():
             # set given filters
             self.current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
@@ -272,13 +191,8 @@ class TableGroupView(TemplateView):
         return filter_dict
 
     def get_download(self, items):
-        if self.download_format() not in self.DOWNLOAD_ROUTINES:
-            raise RuntimeError('Download format not recognized: ' + self.download_format())
-
-        return self.DOWNLOAD_ROUTINES[self.download_format()](
-            self.columns, self.format_items_for_download(items, self.columns), "%s.%s" % (self.group, self.download_format())
-        )
-
+        download = Download(self.download_format(), self.columns, self.group)
+        return download.get_download(items)
 
     def get_items(self, query_result, single_column_results):
         return [ self.get_row(record, single_column_results) for record in query_result ]
@@ -293,7 +207,7 @@ class TableGroupView(TemplateView):
 
             value = record[j]
             # do not remove crop column if we expect a grouping in the sql string
-            if c in SINGLE_SQL_QUERY_COLUMNS and not (self.group == "crop" and c == "crop"):
+            if c in self.SINGLE_SQL_QUERY_COLUMNS and not (self.group == "crop" and c == "crop"):
                 # artificially insert the data fetched from the smaller SQL query dataset, don't take it from the large set
                 # Assumption deal_id is second column in row!
                 offset -= 1
@@ -328,19 +242,15 @@ class TableGroupView(TemplateView):
         )
 
     def _process_intention(self, value):
-        if not isinstance(value, list): return [value]
+        if not isinstance(value, list):
+            return [value]
 
-        intentions = {}
-        for intention in set(value):
-            if self.is_download():
-                if intention in INTENTION_MAP and len(INTENTION_MAP.get(intention)) > 1:
-                    # skip intention if there are subintentions
-                    continue
-                else:
-                    intentions[intention] = 1
-            else:
-                intentions[get_intention(intention)] = 1
-        return sorted(intentions.keys())
+        if self.is_download():
+            intentions = [intention for intention in set(value) if not IntentionMap.has_subintentions(intention)]
+        else:
+            intentions = [IntentionMap.get_parent(intention) for intention in set(value)]
+
+        return sorted(intentions)
 
     def _process_investor_name(self, value):
         return [
@@ -398,7 +308,7 @@ class TableGroupView(TemplateView):
 
         single_column_results = {}
         activity_ids = None
-        for col in SINGLE_SQL_QUERY_COLUMNS:
+        for col in self.SINGLE_SQL_QUERY_COLUMNS:
             # do not remove crop column if we expect a grouping in the sql string
             if col not in self.columns or (self.group == "crop" and col == "crop"):
                 continue
@@ -424,9 +334,9 @@ class TableGroupView(TemplateView):
         instead we later send a single query for each column and add the resulting data back into the large result object"""
     def _optimize_columns(self):
         from copy import deepcopy
-        if any(special_column in self.columns for special_column in SINGLE_SQL_QUERY_COLUMNS):
+        if any(special_column in self.columns for special_column in self.SINGLE_SQL_QUERY_COLUMNS):
             optimized_columns = deepcopy(self.columns)
-            for col in SINGLE_SQL_QUERY_COLUMNS:
+            for col in self.SINGLE_SQL_QUERY_COLUMNS:
                 # do not remove crop column if we expect a grouping in the sql string
                 if self.group == "crop" and col == "crop":
                     continue
@@ -435,16 +345,6 @@ class TableGroupView(TemplateView):
         else:
             optimized_columns = self.columns
         return optimized_columns
-
-    def _create_condition_formset(self):
-        from django.forms.formsets import formset_factory
-        from django.utils.functional import curry
-
-        ConditionFormset = formset_factory(BrowseConditionForm, extra=0)
-        ConditionFormset.form = staticmethod(
-            curry(BrowseConditionForm, variables_activity=FILTER_VAR_ACT, variables_investor=FILTER_VAR_INV)
-        )
-        return ConditionFormset
 
         #return None
 
@@ -464,45 +364,6 @@ class TableGroupView(TemplateView):
                     "contract_size", ]
         }
         return columns[self.group]
-
-    """
-    Format the data of the items to a propper download format.
-    Returns an array of arrays, each row is an an array of data
-    """
-    def format_items_for_download(self, items, columns):
-        rows = []
-        for item in items:
-            row = []
-            for c in columns:
-                v = item.get(c)
-                row_item = []
-                if isinstance(v, (tuple, list)):
-                    for lv in v:
-                        if isinstance(lv, dict):
-                            year = lv.get("year", None)
-                            name = lv.get("name", None)
-                            if year and year != "0" and name:
-                                row_item.append("[%s] %s" % (year, name))
-                            elif name:
-                                row_item.append(name)
-                        elif isinstance(lv, (list, tuple)):
-            # Some vars take additional data for the template (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
-                            if len(lv) > 0 and isinstance(lv[0], dict):
-                                year = lv.get("year", None)
-                                name = lv.get("name", None)
-                                if year and year != "0" and name:
-                                    row_item.append("[%s] %s" % (year, name))
-                                elif name:
-                                    row_item.append(name)
-                            else:
-                                row_item.append(lv)
-                        else:
-                            row_item.append(lv)
-                    row.append(", ".join(filter(None, row_item)))
-                else:
-                    row.append(v)
-            rows.append(row)
-        return rows
 
     """
     Map different values of one group together. Ensures that values of a group are together
