@@ -97,7 +97,7 @@ class Download:
         self.columns = columns
         self.group = group
 
-    def get_download(self, items):
+    def get(self, items):
         if self.format not in self.supported_formats():
             raise RuntimeError('Download format not recognized: ' + self.format)
 
