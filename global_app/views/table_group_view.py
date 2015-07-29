@@ -1,17 +1,17 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from django.views.generic import TemplateView
-from django.utils.datastructures import MultiValueDict
-from django.template import RequestContext
-from django.db import connection
-
-import json, numbers
-
 from .view_aux_functions import parse_browse_filter_conditions, create_condition_formset, render_to_response
 from .intention_map import IntentionMap
 from .download import Download
-from landmatrix.models import BrowseCondition, ActivityAttributeGroup, Activity, Crop
+from .column_monkey_patch import ColumnMonkeyPatch
+from landmatrix.models import BrowseCondition
 from global_app.views.dummy_activity_protocol import DummyActivityProtocol
+
+from django.views.generic import TemplateView
+from django.utils.datastructures import MultiValueDict
+from django.template import RequestContext
+
+import json, numbers
 
 
 class TableGroupView(TemplateView):
@@ -23,39 +23,14 @@ class TableGroupView(TemplateView):
         "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
         "negotiation_status", "implementation_status", "intended_size", "contract_size",
     ]
-    SINGLE_SQL_QUERY_COLUMNS = ['location', 'crop']
     DEFAULT_GROUP = "by-target-region"
+
     template_name = "group-by.html"
     debug_query = False
 
-    def _set_group_value(self, **kwargs):
-        self.group_value = kwargs.get("list", "")
-        if self.group_value == 'none': self.group_value = ''
-        if self.group_value.endswith(".csv") or kwargs.get("group", self.DEFAULT_GROUP).endswith(".csv"):
-            self.group_value = self.group_value.split(".")[0]
-
-    def _set_download(self, **kwargs):
-        if not self.group_value: self._set_group_value(**kwargs)
-        self.download_type = None
-        for ext in Download.supported_formats():
-            if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
-                self.download_type = ext
-                return
 
     def is_download(self):
         return self.download_type is not None
-
-    def _set_group(self, **kwargs):
-        self.group = kwargs.get("group", self.DEFAULT_GROUP)
-        if self.is_download():
-            self.group = self.group.split(".")[0]
-        # map url to group variable, cut possible .csv suffix
-        self.group = self.group.replace("by-", "").replace("-", "_")
-        if not self._filter_set() and self.group == "database":
-            self.group = "all"
-
-    def _filter_set(self):
-        return self.GET and self.GET.get("filtered") and not self.GET.get("reset", None)
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -68,15 +43,17 @@ class TableGroupView(TemplateView):
         self._set_filters()
         self._set_columns()
 
+        self.monkey_patch = ColumnMonkeyPatch(self.columns, self.group)
+
         query_result = self.get_records(request)
 
-        items = self.get_items(query_result, self._single_column_results(query_result))
+        items = self._get_items(query_result)
 
         return self.render(items, kwargs)
 
     def render(self, items, kwargs):
         if self.is_download() and items:
-            return self.get_download(items)
+            return self._get_download(items)
 
         context = {
             "view": "get-the-detail",
@@ -105,28 +82,19 @@ class TableGroupView(TemplateView):
     def get_records(self, request):
         ap = DummyActivityProtocol()
         request.POST = MultiValueDict(
-            {"data": [json.dumps({"filters": self.filters, "columns": self._optimize_columns()})]}
+            {"data": [json.dumps({"filters": self.filters, "columns": self.monkey_patch._optimize_columns()})]}
         )
         ap.debug = self.debug_query
         res = ap.dispatch(request, action="list_group").content
         query_result = json.loads(res.decode())
 
-        if not self._limit_query():
-            # dont limit query when download or group view
-            limited_query_result = query_result["activities"]
-        else:
-            limited_query_result = query_result["activities"][:self._load_more()]
         self.num_results = len(query_result['activities'])
-        return limited_query_result
-
-    def _set_columns(self):
-        if self.is_download() and (self.group_value or self.group == "all"):
-            self.columns = self.DOWNLOAD_COLUMNS
-        elif self.group_value:
-            self.columns = self.GROUP_COLUMNS_LIST
+        if self._limit_query():
+            return query_result["activities"][:self._load_more()]
         else:
-            self.columns = self._columns()
+            return query_result["activities"]
 
+    # dont limit query when download or group view
     def _limit_query(self):
         return not (
             self.is_download()
@@ -147,6 +115,40 @@ class TableGroupView(TemplateView):
         if self.num_results > self._load_more():
             return int(self._load_more()) + self.LOAD_MORE_AMOUNT
         return None
+
+    def _set_group_value(self, **kwargs):
+        self.group_value = kwargs.get("list", "")
+        if self.group_value == 'none': self.group_value = ''
+        if self.group_value.endswith(".csv") or kwargs.get("group", self.DEFAULT_GROUP).endswith(".csv"):
+            self.group_value = self.group_value.split(".")[0]
+
+    def _set_download(self, **kwargs):
+        if not self.group_value: self._set_group_value(**kwargs)
+        self.download_type = None
+        for ext in Download.supported_formats():
+            if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
+                self.download_type = ext
+                return
+
+    def _set_group(self, **kwargs):
+        self.group = kwargs.get("group", self.DEFAULT_GROUP)
+        if self.is_download():
+            self.group = self.group.split(".")[0]
+        # map url to group variable, cut possible .csv suffix
+        self.group = self.group.replace("by-", "").replace("-", "_")
+        if not self._filter_set() and self.group == "database":
+            self.group = "all"
+
+    def _filter_set(self):
+        return self.GET and self.GET.get("filtered") and not self.GET.get("reset", None)
+
+    def _set_columns(self):
+        if self.is_download() and (self.group_value or self.group == "all"):
+            self.columns = self.DOWNLOAD_COLUMNS
+        elif self.group_value:
+            self.columns = self.GROUP_COLUMNS_LIST
+        else:
+            self.columns = self._columns()
 
     def _set_filters(self):
         self.filters = {}
@@ -190,24 +192,24 @@ class TableGroupView(TemplateView):
         filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
         return filter_dict
 
-    def get_download(self, items):
+    def _get_download(self, items):
         download = Download(self.download_format(), self.columns, self.group)
-        return download.get_download(items)
+        return download.get(items)
 
-    def get_items(self, query_result, single_column_results):
-        return [ self.get_row(record, single_column_results) for record in query_result ]
+    def _get_items(self, query_result):
+        return [ self._get_row(record, query_result) for record in query_result ]
 
-    def get_row(self, record, single_column_results):
+    def _get_row(self, record, query_result):
+        single_column_results = self.monkey_patch._single_column_results(query_result)
         offset = 1
         # iterate over database result
         row = {}
         for j, c in enumerate(self.columns):
             # iterate over columns relevant for view or download
-            j = j + offset
-
+            j += offset
             value = record[j]
             # do not remove crop column if we expect a grouping in the sql string
-            if c in self.SINGLE_SQL_QUERY_COLUMNS and not (self.group == "crop" and c == "crop"):
+            if self.monkey_patch.is_patched_column(c):
                 # artificially insert the data fetched from the smaller SQL query dataset, don't take it from the large set
                 # Assumption deal_id is second column in row!
                 offset -= 1
@@ -218,7 +220,7 @@ class TableGroupView(TemplateView):
 
             if c == "data_source":
                 value = self._process_data_source(j, record)
-                offset = offset + 3
+                offset += 3
 
             row[c] = self._process_value(c, value)
         return row
@@ -288,40 +290,6 @@ class TableGroupView(TemplateView):
             return [value, ]
         return value
 
-    def _single_column_results(self, limited_query_result):
-        """ The single columns SQL queries. """
-        SINGLE_SQL_QUERY_DICT = {
-            'location': """
-                SELECT activity_identifier, ARRAY_AGG(DISTINCT aag.attributes->'location') AS location
-                FROM """+ Activity._meta.db_table + " AS a JOIN " + ActivityAttributeGroup._meta.db_table+""" AS aag ON a.id = aag.fk_activity_id
-                WHERE aag.attributes ? 'location' AND activity_identifier IN (%s)
-                group by activity_identifier;
-             """,
-            'crop': """
-                SELECT activity_identifier, ARRAY_AGG(DISTINCT CONCAT(crops.name, '#!#', crops.code )) AS crop
-                FROM """ + Activity._meta.db_table + " AS a JOIN " + ActivityAttributeGroup._meta.db_table+""" AS aag ON a.id = aag.fk_activity_id
-                JOIN """ + Crop._meta.db_table + """ AS crops ON CAST(aag.attributes->'crops' AS NUMERIC) = crops.id
-                WHERE aag.attributes ? 'crops' and activity_identifier in (%s)
-                group by activity_identifier;
-             """
-        }
-
-        single_column_results = {}
-        activity_ids = None
-        for col in self.SINGLE_SQL_QUERY_COLUMNS:
-            # do not remove crop column if we expect a grouping in the sql string
-            if col not in self.columns or (self.group == "crop" and col == "crop"):
-                continue
-            # get the activity ids from the large sql dataset
-            # Assumption: dataset contains column deal_id in second column
-            activity_ids = activity_ids or [str(row[0 + 1]) for row in limited_query_result]
-            if activity_ids:
-                cursor = connection.cursor()
-                sql = SINGLE_SQL_QUERY_DICT[col] % (','.join(activity_ids))
-                cursor.execute(sql)
-                single_column_results.update({col: dict(cursor.fetchall())})
-        return single_column_results
-
     def _order_by(self):
         order_by = self.GET.get("order_by", self.group_value and "deal_id" or self.group) \
                    or self.group_value and "deal_id" \
@@ -329,24 +297,6 @@ class TableGroupView(TemplateView):
         if order_by == "all" or order_by == "database":
             order_by = "deal_id"
         return order_by
-
-    """ IMPORTANT! we are patching certain column fields out, so they don't get executed within the large SQL query.
-        instead we later send a single query for each column and add the resulting data back into the large result object"""
-    def _optimize_columns(self):
-        from copy import deepcopy
-        if any(special_column in self.columns for special_column in self.SINGLE_SQL_QUERY_COLUMNS):
-            optimized_columns = deepcopy(self.columns)
-            for col in self.SINGLE_SQL_QUERY_COLUMNS:
-                # do not remove crop column if we expect a grouping in the sql string
-                if self.group == "crop" and col == "crop":
-                    continue
-                if col in self.columns:
-                    optimized_columns.remove(col)
-        else:
-            optimized_columns = self.columns
-        return optimized_columns
-
-        #return None
 
     def _columns(self):
         columns = {
