@@ -41,6 +41,52 @@ def render_to_response(template_name, context, context_instance):
 
     return HttpResponse(content)
 
+def write_to_xls(header, data, filename):
+        response = HttpResponse(mimetype="application/ms-excel")
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        wb = xlwt.Workbook()
+        ws = wb.add_sheet('Landmatrix')
+        for i,h in enumerate(header):
+            ws.write(0, i,h)
+        for i, row in enumerate(data):
+            for j, d in enumerate(row):
+                ws.write(i+1, j, d)
+        wb.save(response)
+        return response
+
+def write_to_xml(header, data, filename):
+    try:
+        import xml.etree.cElementTree as ET
+    except ImportError:
+        import xml.etree.ElementTree as ET
+    from xml.dom.minidom import parseString
+
+    root = ET.Element('data')
+    for r in data:
+        row = ET.SubElement(root, "item")
+        for i,h in enumerate(header):
+            field = ET.SubElement(row, "field")
+            field.text = str(r[i])
+            field.set("name", h)
+    xml = parseString(ET.tostring(root)).toprettyxml()
+    response = HttpResponse(xml, content_type='text/xml')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+    return response
+
+def write_to_csv(header, data, filename):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+
+        import csv
+        writer = csv.writer(response, delimiter=";")
+        # write csv header
+        writer.writerow(header)
+        for row in data:
+            writer.writerow([str(s).encode("utf-8") for s in row])
+        return response
+
+
+
 
 DEFAULT_GROUP = "by-target-region"
 FILTER_VAR_ACT = ["target_country", "location", "intention", "intended_size", "contract_size", "production_size", "negotiation_status", "implementation_status", "crops", "nature", "contract_farming", "url", "type", "company", "type"]
@@ -55,6 +101,8 @@ class TableGroupView(TemplateView):
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
     debug_query = False
+    DOWNLOAD_ROUTINES = { 'csv': write_to_csv, 'xml': write_to_xml, 'xsl': write_to_xls }
+
     def _set_group_value(self, **kwargs):
         self.group_value = kwargs.get("list", "")
         if self.group_value == 'none': self.group_value = ''
@@ -64,7 +112,7 @@ class TableGroupView(TemplateView):
     def _set_download(self, **kwargs):
         if not self.group_value: self._set_group_value(**kwargs)
         self.download_type = None
-        for ext in ['csv', 'xml', 'xls']:
+        for ext in self.DOWNLOAD_ROUTINES.keys():
             if self.group_value.endswith(ext) or kwargs.get("group", DEFAULT_GROUP).endswith('.'+ext):
                 self.download_type = ext
                 return
@@ -108,7 +156,7 @@ class TableGroupView(TemplateView):
 
     def render(self, items, kwargs):
         if self.is_download() and items:
-            return self.get_download(self.download_format(), items)
+            return self.get_download(items)
 
         context = {
             "view": "get-the-detail",
@@ -222,20 +270,14 @@ class TableGroupView(TemplateView):
         filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
         return filter_dict
 
-    def get_download(self, download_format, items):
-        if download_format == "csv":
-            return self.write_to_csv(
-                self.columns, self.format_items_for_download(items, self.columns), "%s.csv" % self.group
-            )
-        elif download_format == "xls":
-            return self.write_to_xls(
-                self.columns, self.format_items_for_download(items, self.columns), "%s.xls" % self.group
-            )
-        elif download_format == "xml":
-            return self.write_to_xml(
-                self.columns, self.format_items_for_download(items, self.columns), "%s.xml" % self.group
-            )
-        raise RuntimeError('Download format not recognized: ' + download_format)
+    def get_download(self, items):
+        if self.download_format() not in self.DOWNLOAD_ROUTINES:
+            raise RuntimeError('Download format not recognized: ' + self.download_format())
+
+        return self.DOWNLOAD_ROUTINES[self.download_format()](
+            self.columns, self.format_items_for_download(items, self.columns), "%s.%s" % (self.group, self.download_format())
+        )
+
 
     def get_items(self, query_result, single_column_results):
         return [ self.get_row(record, single_column_results) for record in query_result ]
@@ -421,45 +463,6 @@ class TableGroupView(TemplateView):
                     "contract_size", ]
         }
         return columns[self.group]
-
-    def write_to_xls(self, header, data, filename):
-        response = HttpResponse(mimetype="application/ms-excel")
-        response['Content-Disposition'] = 'attachment; filename=%s' % filename
-        wb = xlwt.Workbook()
-        ws = wb.add_sheet('Landmatrix')
-        for i,h in enumerate(header):
-            ws.write(0, i,h)
-        for i, row in enumerate(data):
-            for j, d in enumerate(row):
-                ws.write(i+1, j, d)
-        wb.save(response)
-        return response
-
-    def write_to_xml(self, header, data, filename):
-        root = ET.Element('data')
-        for r in data:
-            row = ET.SubElement(root, "item")
-            for i,h in enumerate(header):
-                field = ET.SubElement(row, "field")
-                field.text = unicode(r[i])
-                field.set("name", h)
-        tree = ET.ElementTree(root)
-        xml = parseString(ET.tostring(root)).toprettyxml()
-        response = HttpResponse(xml, mimetype='text/xml')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-        return response
-
-    def write_to_csv(self, header, data, filename):
-        import csv
-        response = HttpResponse(content_type='text/csv')
-#        response = HttpResponse()
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-        writer = csv.writer(response, delimiter=";")
-        # write csv header
-        writer.writerow(header)
-        for row in data:
-            writer.writerow([str(s).encode("utf-8") for s in row])
-        return response
 
     """
     Format the data of the items to a propper download format.
