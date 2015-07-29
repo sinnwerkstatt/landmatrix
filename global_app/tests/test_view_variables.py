@@ -24,7 +24,7 @@ class TestViewVariables(TestCase, DealsTestData):
 
     def test_no_download(self):
         self._call_dispatch('all')
-        self.assertFalse(self.view.is_download)
+        self.assertFalse(self.view.is_download())
 
     def test_columns(self):
         self.assertEqual(self.view.DOWNLOAD_COLUMNS, self.view.columns)
@@ -92,6 +92,13 @@ class TestViewVariables(TestCase, DealsTestData):
         self._call_dispatch_with_GET('more=10', group='all')
         self.assertEqual(10, int(self.view._load_more()))
 
+    def test_csv_download_mimetype(self):
+        self.create_data()
+        self.view = TableGroupView()
+        response = self.view.dispatch(self._request(), group='all.csv')
+        self.assertTrue(response.has_header('Content-Type'))
+        self.assertEqual('text/csv', response['Content-Type'])
+
     def test_csv_download_database(self):
         values = self._get_csv_data('database')
 
@@ -129,6 +136,16 @@ class TestViewVariables(TestCase, DealsTestData):
         self.assertEqual(values['target_country'], self.country.name)
         self.assertEqual(values['target_region'], self.region.name)
         self.assertEqual(values['intention'], self.INTENTION)
+
+    def test_xml_download_mimetype(self):
+        self.create_data()
+        self.view = TableGroupView()
+        try:
+            response = self.view.dispatch(self._request(), group='all.xml')
+            self.assertTrue(response.has_header('Content-Type'))
+            self.assertEqual('text/xml', response['Content-Type'])
+        except NameError:
+            self.skipTest('xml downloads not yet implemented')
 
     def _get_csv_data(self, group):
         self.create_data()
