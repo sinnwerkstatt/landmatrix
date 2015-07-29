@@ -63,11 +63,18 @@ class TableGroupView(TemplateView):
 
     def _set_download(self, **kwargs):
         if not self.group_value: self._set_group_value(**kwargs)
-        self.is_download = self.group_value.endswith(".csv") or kwargs.get("group", DEFAULT_GROUP).endswith(".csv")
+        self.download_type = None
+        for ext in ['csv', 'xml', 'xls']:
+            if self.group_value.endswith(ext) or kwargs.get("group", DEFAULT_GROUP).endswith('.'+ext):
+                self.download_type = ext
+                return
+
+    def is_download(self):
+        return self.download_type is not None
 
     def _set_group(self, **kwargs):
         self.group = kwargs.get("group", DEFAULT_GROUP)
-        if self.is_download:
+        if self.is_download():
             self.group = self.group.split(".")[0]
         # map url to group variable, cut possible .csv suffix
         self.group = self.group.replace("by-", "").replace("-", "_")
@@ -100,10 +107,8 @@ class TableGroupView(TemplateView):
         return self.render(items, kwargs)
 
     def render(self, items, kwargs):
-        if self.debug_query:
-            print('*****', int(self.is_download), '***', items, '*****')
-        if self.is_download and items:
-            return self.get_download(self.GET.get("download_format", "csv"), items)
+        if self.is_download() and items:
+            return self.get_download(self.download_format(), items)
 
         context = {
             "view": "get-the-detail",
@@ -124,6 +129,11 @@ class TableGroupView(TemplateView):
         }
         return render_to_response(self.template_name, context, context_instance=RequestContext(self.request))
 
+    def download_format(self):
+        return self.GET.get("download_format") if self.GET.get("download_format") \
+            else self.download_type if self.download_type \
+            else 'csv'
+
     def get_records(self, request):
         ap = DummyActivityProtocol()
         request.POST = MultiValueDict(
@@ -142,7 +152,7 @@ class TableGroupView(TemplateView):
         return limited_query_result
 
     def _set_columns(self):
-        if self.is_download and (self.group_value or self.group == "all"):
+        if self.is_download() and (self.group_value or self.group == "all"):
             self.columns = self.DOWNLOAD_COLUMNS
         elif self.group_value:
             self.columns = self.group_columns_list
@@ -151,7 +161,7 @@ class TableGroupView(TemplateView):
 
     def _limit_query(self):
         return not (
-            self.is_download
+            self.is_download()
             or (not self.group_value and self.group not in self.QUERY_LIMITED_GROUPS)
             or self.GET.get("starts_with", None)
         )
@@ -279,7 +289,7 @@ class TableGroupView(TemplateView):
 
         intentions = {}
         for intention in set(value):
-            if self.is_download:
+            if self.is_download():
                 if intention in INTENTION_MAP and len(INTENTION_MAP.get(intention)) > 1:
                     # skip intention if there are subintentions
                     continue
@@ -441,8 +451,8 @@ class TableGroupView(TemplateView):
 
     def write_to_csv(self, header, data, filename):
         import csv
-#        response = HttpResponse(mimetype='text/csv')
-        response = HttpResponse()
+        response = HttpResponse(content_type='text/csv')
+#        response = HttpResponse()
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         writer = csv.writer(response, delimiter=";")
         # write csv header
