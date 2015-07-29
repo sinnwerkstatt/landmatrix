@@ -42,17 +42,18 @@ def render_to_response(template_name, context, context_instance):
     return HttpResponse(content)
 
 def write_to_xls(header, data, filename):
-        response = HttpResponse(mimetype="application/ms-excel")
-        response['Content-Disposition'] = 'attachment; filename=%s' % filename
-        wb = xlwt.Workbook()
-        ws = wb.add_sheet('Landmatrix')
-        for i,h in enumerate(header):
+    import xlwt
+    response = HttpResponse(content_type="application/ms-excel")
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    wb = xlwt.Workbook()
+    ws = wb.add_sheet('Landmatrix')
+    for i,h in enumerate(header):
             ws.write(0, i,h)
-        for i, row in enumerate(data):
+    for i, row in enumerate(data):
             for j, d in enumerate(row):
                 ws.write(i+1, j, d)
-        wb.save(response)
-        return response
+    wb.save(response)
+    return response
 
 def write_to_xml(header, data, filename):
     try:
@@ -74,16 +75,16 @@ def write_to_xml(header, data, filename):
     return response
 
 def write_to_csv(header, data, filename):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
 
-        import csv
-        writer = csv.writer(response, delimiter=";")
-        # write csv header
-        writer.writerow(header)
-        for row in data:
-            writer.writerow([str(s).encode("utf-8") for s in row])
-        return response
+    import csv
+    writer = csv.writer(response, delimiter=";")
+    # write csv header
+    writer.writerow(header)
+    for row in data:
+        writer.writerow([str(s).encode("utf-8") for s in row])
+    return response
 
 
 
@@ -101,7 +102,7 @@ class TableGroupView(TemplateView):
     DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
     debug_query = False
-    DOWNLOAD_ROUTINES = { 'csv': write_to_csv, 'xml': write_to_xml, 'xsl': write_to_xls }
+    DOWNLOAD_ROUTINES = { 'csv': write_to_csv, 'xml': write_to_xml, 'xls': write_to_xls }
 
     def _set_group_value(self, **kwargs):
         self.group_value = kwargs.get("list", "")
