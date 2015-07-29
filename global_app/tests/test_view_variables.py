@@ -59,19 +59,24 @@ class TestViewVariables(TestCase, DealsTestData):
     def test_load_more(self):
         self.skipTest('not yet implemented')
 
-    def test_download(self):
-        import json
+    def test_csv_download(self):
         self.create_data()
 
         view = TableGroupView()
-        view.debug_query = True
-        self.skipTest('csv export not yet functional')
         result = view.dispatch(self._request(), group='database.csv').content.decode()
-        try:
-            print(json.loads(result))
-        except ValueError:
-            print(result[:1000], '...')
-            self.fail('result is not json')
+        fields = [
+            list(map(lambda s: s.strip(), line.split(';')))
+            for line in result.strip().split('\n')
+        ]
+        self.assertEqual(2, len(fields))
+        values = dict(zip(fields[0], fields[1]))
+        values = { key: eval(value).decode('utf-8') for key, value in values.items() }
+        for key in TableGroupView.DOWNLOAD_COLUMNS:
+            self.assertIn(key, values.keys())
+
+        self.assertEqual(values['target_country'], self.country.name)
+        self.assertEqual(values['intention'], self.INTENTION)
+
 
     def _call_dispatch(self, group, **kwargs):
         from django.db.utils import InternalError
