@@ -77,14 +77,6 @@ class TableGroupView(TemplateView):
     def _filter_set(self):
         return self.GET and self.GET.get("filtered") and not self.GET.get("reset", None)
 
-    def load_more(self):
-        load_more = int(self.GET.get("more", 50))
-        if not self._filter_set() and self.group == "database":
-            load_more = None
-        if not self._limit_query():
-            load_more = None
-        return load_more
-
     group_columns_list = [
         "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
         "negotiation_status", "implementation_status", "intended_size", "contract_size",
@@ -145,7 +137,7 @@ class TableGroupView(TemplateView):
             # dont limit query when download or group view
             limited_query_result = query_result["activities"]
         else:
-            limited_query_result = query_result["activities"][:self.load_more()]
+            limited_query_result = query_result["activities"][:self._load_more()]
         self.num_results = len(query_result['activities'])
         return limited_query_result
 
@@ -164,10 +156,18 @@ class TableGroupView(TemplateView):
             or self.GET.get("starts_with", None)
         )
 
+    def _load_more(self):
+        load_more = int(self.GET.get("more", 50))
+        if not self._filter_set() and self.group == "database":
+            load_more = None
+        if not self._limit_query():
+            load_more = None
+        return load_more
+
     def _load_more_amount(self):
-        if not self.load_more(): return None
-        if self.num_results > self.load_more():
-            return int(self.load_more()) + self.LOAD_MORE_AMOUNT
+        if not self._load_more(): return None
+        if self.num_results > self._load_more():
+            return int(self._load_more()) + self.LOAD_MORE_AMOUNT
         return None
 
     def _set_filters(self):
