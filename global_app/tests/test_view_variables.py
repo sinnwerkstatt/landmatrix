@@ -140,12 +140,28 @@ class TestViewVariables(TestCase, DealsTestData):
     def test_xml_download_mimetype(self):
         self.create_data()
         self.view = TableGroupView()
+        response = self.view.dispatch(self._request(), group='all.xml')
+        self.assertTrue(response.has_header('Content-Type'))
+        self.assertEqual('text/xml', response['Content-Type'])
+
+    def test_xml_download_contains_keys(self):
+        xml = self.get_xml_data('all')
+        for key in TableGroupView.DOWNLOAD_COLUMNS:
+            self.assertIn(key, xml)
+
+    def test_xml_download_is_valid(self):
+        from xml.etree import ElementTree
+
+        xml = self.get_xml_data('all')
         try:
-            response = self.view.dispatch(self._request(), group='all.xml')
-            self.assertTrue(response.has_header('Content-Type'))
-            self.assertEqual('text/xml', response['Content-Type'])
-        except NameError:
-            self.skipTest('xml downloads not yet implemented')
+            ElementTree.fromstring(xml)
+        except ElementTree.ParseError:
+            self.fail('Invalid XML:' + xml)
+
+    def get_xml_data(self, group):
+        self.create_data()
+        self.view = TableGroupView()
+        return self.view.dispatch(self._request(), group=group + '.xml').content.decode('utf-8')
 
     def _get_csv_data(self, group):
         self.create_data()
@@ -173,7 +189,6 @@ class TestViewVariables(TestCase, DealsTestData):
             return self.view.dispatch(self._request(), group=group, **kwargs).content
         except InternalError:
             pass
-
 
     def _request(self):
         class User:
