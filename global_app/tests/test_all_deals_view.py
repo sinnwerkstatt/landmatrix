@@ -104,4 +104,3 @@ class TestYearGroupView(TestViewBase, TestCase):
     def setUp(self):
         TestViewBase.setUp(self)
 
-
