@@ -145,20 +145,27 @@ class TestViewVariables(TestCase, DealsTestData):
         self.assertEqual('text/xml', response['Content-Type'])
 
     def test_xml_download_contains_keys(self):
-        xml = self.get_xml_data('all')
+        xml = self._get_xml_data('all')
         for key in TableGroupView.DOWNLOAD_COLUMNS:
             self.assertIn(key, xml)
 
     def test_xml_download_is_valid(self):
         from xml.etree import ElementTree
 
-        xml = self.get_xml_data('all')
+        xml = self._get_xml_data('all')
         try:
             ElementTree.fromstring(xml)
         except ElementTree.ParseError:
             self.fail('Invalid XML:' + xml)
 
-    def get_xml_data(self, group):
+    def test_xls_download_mimetype(self):
+        self.create_data()
+        self.view = TableGroupView()
+        response = self.view.dispatch(self._request(), group='all.xls')
+        self.assertTrue(response.has_header('Content-Type'))
+        self.assertEqual('application/ms-excel', response['Content-Type'])
+
+    def _get_xml_data(self, group):
         self.create_data()
         self.view = TableGroupView()
         return self.view.dispatch(self._request(), group=group + '.xml').content.decode('utf-8')
