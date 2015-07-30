@@ -47,6 +47,10 @@ class TestViewVariables(TestCase, DealsTestData):
         self.assertEqual('crop', self.view.group)
 
     def test_filters_with_filter_set(self):
+        self._call_dispatch_with_GET('filtered')
+        print('filters:', self.view.filters)
+        self._call_dispatch_with_GET('filtered&')
+        print('filters:', self.view.filters)
         self.skipTest('not yet implemented')
 
     def test_filters_with_filter_unset_and_group_database(self):
@@ -70,8 +74,12 @@ class TestViewVariables(TestCase, DealsTestData):
         self._call_dispatch_with_GET('', group='crop')
         self.assertEqual('crop', self.view._order_by())
 
-        self._call_dispatch_with_GET('order_by=all', group='crop')
-        self.assertEqual('deal_id', self.view._order_by())
+        self._call_dispatch_with_GET('order_by=deal_count', group='crop')
+        self.assertEqual('deal_count', self.view._order_by())
+
+        from django.db.utils import ProgrammingError
+        with self.assertRaises(ProgrammingError, msg='deal_id column should not be present in group views!'):
+            self._call_dispatch_with_GET('order_by=all', group='crop')
 
     def test_limit(self):
         self.assertFalse(self.view._limit_query())
@@ -183,8 +191,9 @@ class TestViewVariables(TestCase, DealsTestData):
         values = {key: eval(value).decode('utf-8') for key, value in values.items()}
         return values
 
-    def _call_dispatch_with_GET(self, get_string, group=None):
+    def _call_dispatch_with_GET(self, get_string, group=None, debug=False):
         self.view = TableGroupView()
+        self.view.debug_query = debug
         request = self._request()
         request.GET = QueryDict(get_string)
         self.view.dispatch(request, group=group if group else 'all')

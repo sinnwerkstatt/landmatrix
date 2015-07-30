@@ -1,42 +1,49 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from global_app.views.browse_condition_form import BrowseConditionForm
+from landmatrix.models import ActivityAttributeGroup
 
 from django.template import loader
 from django.http import HttpResponse
 
-def parse_browse_filter_conditions(formset, order_by=None, limit=None):
-    data = {
-        "activity": {},
-        "deal_scope": "",
-        "investor": {},
-        "order_by": [],
-        "limit": "",
-    }
-    filters_act, filters_inv = {"tags":{}}, {"tags":{}}
+class BrowseFilterConditions:
+
+    DEBUG = False
+
+    def __init__(self, formset, order_by=None, limit=None):
+        if self.DEBUG:
+            from pprint import pprint
+            pprint(type(formset))
+            pprint(vars(formset), width=100, compact=True)
+        self.formset = formset
+        self.order_by = order_by
+        self.limit = limit
+
+    def parse(self):
+        data = {
+            "activity": {},
+            "deal_scope": "",
+            "investor": {},
+            "order_by": [],
+            "limit": "",
+        }
+#        read_formset(data, self.formset)
+        set_order_by(data, self.order_by)
+        set_limit(data, self.limit)
+
+        return data
+
+
+def read_formset(data, formset):
+    filters_act, filters_inv = {"tags": {}}, {"tags": {}}
     if formset:
         for i, form in enumerate(formset):
-            fl = {}
-            for j, (n, f) in enumerate(form.fields.items()):
-                key = "%s-%d-%s"%(formset.prefix, i, n)
-                if n == "value":
-                    # is ybd field?
-                    if "%s_0" % key in formset.data:
-                        # just take the first row of the field
-                        value = formset.data.getlist("%s_0"%key)
-                        year = formset.data.get("%s_1"%key)
-                        fl.update({n:value, "year":year})
-                    else:
-                        value = formset.data.getlist(key)
-                        fl.update({n:value})
-                else:
-                    value = formset.data.get(key)
-                    fl.update({n:value})
+            fl, value = get_fl(form, formset, i)
             variable = fl.get("variable")
             op = fl.get("operator")
             values = fl.get("value")
             year = fl.get("year")
-            #skip if no variable is selected
+            # skip if no variable is selected
             if not variable:
                 continue
             # variable is identifier
@@ -56,7 +63,10 @@ def parse_browse_filter_conditions(formset, order_by=None, limit=None):
             elif "inv_" in variable:
                 variable = variable[4:]
                 f = get_field_by_sh_key_id(variable)
-                values = [year and "%s##!##%s" % (get_display_value_by_field(f, value), year) or get_display_value_by_field(f, value) for value in values]
+                values = [
+                    year and "%s##!##%s" % (get_display_value_by_field(f, value), year) or get_display_value_by_field(f,
+                                                                                                                      value)
+                    for value in values]
                 if f and "Region" in f.label:
                     # region values not stored at activity/investor
                     variable = "region"
@@ -82,51 +92,164 @@ def parse_browse_filter_conditions(formset, order_by=None, limit=None):
                 filters_act["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
         data["activity"] = filters_act
         data["investor"] = filters_inv
-    if order_by:
-        for field in order_by:
-            field_pre = ""
-            field_GET = ""
-            if len(field) > 0 and field[0] == "-":
-                field_pre = "-"
-                field = field[1:]
-            try:
-                if "Investor " in field:
-                    form = get_field_by_sh_key_id(SH_Key.objects.get(key=field[9:]).id)
-                else:
-                    form = get_field_by_a_key_id(A_Key.objects.get(key=field).id)
-                if isinstance(form, IntegerField):
-                    field_GET = "+0"
-            except:
-                pass
-            data["order_by"].append("%s%s%s" % (field_pre, field, field_GET))
+
+
+def get_fl(form, formset, i):
+    fl = {}
+    for j, (n, f) in enumerate(form.fields.items()):
+        key = "%s-%d-%s" % (formset.prefix, i, n)
+        if n == "value":
+            # is ybd field?
+            if "%s_0" % key in formset.data:
+                # just take the first row of the field
+                value = formset.data.getlist("%s_0" % key)
+                year = formset.data.get("%s_1" % key)
+                fl.update({n: value, "year": year})
+            else:
+                value = formset.data.getlist(key)
+                fl.update({n: value})
+        else:
+            value = formset.data.get(key)
+            fl.update({n: value})
+    return fl, value
+
+
+def set_order_by(data, order_by):
+    if not order_by: return
+    if not isinstance(order_by, list): order_by = [order_by]
+    for field in order_by:
+        field_pre = ""
+        field_GET = ""
+        if len(field) > 0 and field[0] == "-":
+            field_pre = "-"
+            field = field[1:]
+        try:
+            if "Investor " in field:
+                form = get_field_by_sh_key_id(SH_Key.objects.get(key=field[9:]).id)
+            else:
+                form = get_field_by_a_key_id(A_Key.objects.get(key=field).id)
+            if isinstance(form, IntegerField):
+                field_GET = "+0"
+        except:
+            pass
+        data["order_by"].append("%s%s%s" % (field_pre, field, field_GET))
+
+
+def set_limit(data, limit):
     if limit:
         data["limit"] = limit
-    return data
 
 
-def get_field_by_a_key_id(key_id):
-    return None
+def get_field_by_a_key_id(key):
+
+    if key.isnumeric():
+        key = get_key_from_id(int(key))
 
     field = None
-    try:
-        k = ActivityAttributeGroup.objects.filter(pk=int(key_id))
-    except:
-        k = ActivityAttributeGroup.objects.filter(key=key_id)
-    if k.count() > 0:
-        k = k[0].key
-    else:
-        k = key_id
+
     forms = CHANGE_FORMS
     forms.append(('primary_investor', DealPrimaryInvestorForm))
     for i, form in forms:
         form = hasattr(form, "form") and form.form or form
-        if form.base_fields.has_key(k):
-            field = form().fields[k]
+        if form.base_fields.has_key(key):
+            field = form().fields[key]
             break
     return field
 
+def get_key_from_id(id):
+    a_keys = {
+        5234: 'agreement_duration',
+        5261: 'animals',
+        5297: 'annual_leasing_fee',
+        5304: 'annual_leasing_fee_area',
+        5298: 'annual_leasing_fee_currency',
+        5277: 'annual_leasing_fee_type',
+        5243: 'community_benefits',
+        5265: 'community_compensation',
+        5260: 'community_consultation',
+        5279: 'community_reaction',
+        5239: 'company',
+        5283: 'contract_date',
+        5266: 'contract_farming',
+        5301: 'contract_number',
+        5264: 'contract_size',
+        5248: 'crops',
+        5259: 'date',
+        5237: 'domestic_jobs_created',
+        5270: 'domestic_jobs_current',
+        5307: 'domestic_jobs_current_daily_workers',
+        5303: 'domestic_jobs_current_employees',
+        5254: 'domestic_jobs_planned',
+        5306: 'domestic_jobs_planned_daily_workers',
+        5305: 'domestic_jobs_planned_employees',
+        5271: 'domestic_use',
+        5240: 'email',
+        5281: 'export',
+        5263: 'export_country1',
+        5299: 'export_country1_ratio',
+        5268: 'export_country2',
+        5300: 'export_country2_ratio',
+        5269: 'export_country3',
+        5278: 'file',
+        5235: 'foreign_jobs_created',
+        5272: 'foreign_jobs_current',
+        5310: 'foreign_jobs_current_employees',
+        5236: 'foreign_jobs_planned',
+        5309: 'foreign_jobs_planned_employees',
+        5249: 'has_domestic_use',
+        5262: 'has_export',
+        5258: 'implementation_status',
+        5242: 'includes_in_country_verified_information',
+        5230: 'intended_size',
+        5231: 'intention',
+        5250: 'in_country_processing',
+        5247: 'land_cover',
+        5245: 'land_owner',
+        5246: 'land_use',
+        5226: 'level_of_accuracy',
+        5227: 'location',
+        5275: 'minerals',
+        5225: 'name',
+        5232: 'nature',
+        5233: 'negotiation_status',
+        5253: 'not_public',
+        5311: 'not_public_reason',
+        5244: 'number_of_displaced_people',
+        5273: 'off_the_lease',
+        5291: 'off_the_lease_area',
+        5294: 'off_the_lease_farmers',
+        5229: 'old_reliability_ranking',
+        5267: 'on_the_lease',
+        5292: 'on_the_lease_area',
+        5293: 'on_the_lease_farmers',
+        5241: 'phone',
+        5256: 'point_lat',
+        5257: 'point_lon',
+        5282: 'production_size',
+        5280: 'project_name',
+        5289: 'purchase_price',
+        5302: 'purchase_price_area',
+        5290: 'purchase_price_currency',
+        5276: 'purchase_price_type',
+        5252: 'source_of_water_extraction',
+        5228: 'target_country',
+        5308: 'target_region',
+        5284: 'total_jobs_created',
+        5288: 'total_jobs_current',
+        5296: 'total_jobs_current_daily_workers',
+        5295: 'total_jobs_current_employees',
+        5285: 'total_jobs_planned',
+        5287: 'total_jobs_planned_daily_workers',
+        5286: 'total_jobs_planned_employees',
+        5238: 'type',
+        5255: 'url',
+        5274: 'water_extraction_amount',
+        5251: 'water_extraction_envisaged',
+    }
+    return a_keys[id]
+
 def get_display_value_by_field(field, value):
-    return None
+
     choices_dict = {}
     if isinstance(field, forms.MultiValueField):
         field = field.fields[0]
@@ -166,9 +289,9 @@ def create_condition_formset():
     )
     return ConditionFormset
 
-""" Returns a HttpResponse whose content is filled with the result of calling
-    django.template.loader.render_to_string() with the passed arguments."""
 def render_to_response(template_name, context, context_instance):
+    """ Returns a HttpResponse whose content is filled with the result of calling
+        django.template.loader.render_to_string() with the passed arguments."""
     # Some deprecated arguments were passed - use the legacy code path
     content = loader.render_to_string(template_name, context, context_instance)
 
