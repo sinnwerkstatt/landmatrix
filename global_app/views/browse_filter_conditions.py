@@ -153,7 +153,7 @@ class BrowseFilterConditions:
         forms.append(('primary_investor', DealPrimaryInvestorForm))
         for i, form in forms:
             form = hasattr(form, "form") and form.form or form
-            if form.base_fields.has_key(key):
+            if key in form.base_fields:
                 field = form().fields[key]
                 break
         return field
@@ -286,9 +286,9 @@ def get_display_value_by_field(field, value):
         if isinstance(value, (list, tuple)):
             dvalue = []
             for v in value:
-                dvalue.append(unicode(choices_dict.get(int(value))))
+                dvalue.append(str(choices_dict.get(int(value))))
         else:
-            dvalue = value and unicode(choices_dict.get(int(value)))
+            dvalue = value and str(choices_dict.get(int(value)))
         return dvalue
     if isinstance(field, forms.BooleanField):
         dvalue = value == "on" and "True" or value == "off" and "False" or None
