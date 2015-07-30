@@ -1,5 +1,8 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+from global_app.forms.changedealwizard import *
+from global_app.forms.adddealwizard import *
+from global_app.forms import DealHistoryForm
 
 class BrowseFilterConditions:
 
@@ -22,7 +25,7 @@ class BrowseFilterConditions:
             "order_by": [],
             "limit": "",
         }
-#        self.read_formset()
+        self.read_formset()
         self.set_order_by()
         self.set_limit()
 
@@ -156,19 +159,19 @@ class BrowseFilterConditions:
         return field
 
     CHANGE_FORMS = [
-        # ("spatial_data", ChangeDealSpatialFormSet),
-        # ("general_information", ChangeDealGeneralForm),
-        # ("employment", ChangeDealEmploymentForm),
-        # ("investor_info", DealSecondaryInvestorFormSet),
-        # ("data_sources", ChangeDealDataSourceFormSet),
-        # ("local_communities", DealLocalCommunitiesForm),
-        # ("former_use", DealFormerUseForm),
-        # ("produce_info", DealProduceInfoForm),
-        # ("water", DealWaterForm),
-        # ("gender-related_info", DealGenderRelatedInfoForm),
-        # ("overall_comment", ChangeDealOverallCommentForm),
-        # ("action_comment", ChangeDealActionCommentForm),
-        # ("history", DealHistoryForm)
+        ("spatial_data", ChangeDealSpatialFormSet),
+        ("general_information", ChangeDealGeneralForm),
+        ("employment", ChangeDealEmploymentForm),
+        ("investor_info", DealSecondaryInvestorFormSet),
+        ("data_sources", ChangeDealDataSourceFormSet),
+        ("local_communities", DealLocalCommunitiesForm),
+        ("former_use", DealFormerUseForm),
+        ("produce_info", DealProduceInfoForm),
+        ("water", DealWaterForm),
+        ("gender-related_info", DealGenderRelatedInfoForm),
+        ("overall_comment", ChangeDealOverallCommentForm),
+        ("action_comment", ChangeDealActionCommentForm),
+        ("history", DealHistoryForm)
     ]
 
 def get_key_from_id(id):
