@@ -1,9 +1,9 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .view_aux_functions import parse_browse_filter_conditions, create_condition_formset, render_to_response
+from .view_aux_functions import BrowseFilterConditions, create_condition_formset, render_to_response
 from .intention_map import IntentionMap
 from .download import Download
-from .column_monkey_patch import ColumnMonkeyPatch, DummyMonkeyPatch
+from .column_monkey_patch import get_monkey_patch
 from landmatrix.models import BrowseCondition
 from global_app.views.dummy_activity_protocol import DummyActivityProtocol
 
@@ -43,8 +43,7 @@ class TableGroupView(TemplateView):
         self._set_filters()
         self._set_columns()
 
-#        self.monkey_patch = ColumnMonkeyPatch(self.columns, self.group)
-        self.monkey_patch = DummyMonkeyPatch(self.columns, self.group)
+        self.monkey_patch = get_monkey_patch(self.columns, self.group)
 
         query_result = self.get_records(request)
 
@@ -158,18 +157,17 @@ class TableGroupView(TemplateView):
             # set given filters
             self.current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
             if self.current_formset_conditions.is_valid():
-                self.filters = parse_browse_filter_conditions(self.current_formset_conditions, [self._order_by()], 0)
+                self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
         else:
             # set default filters
             self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
             filter_dict = self._get_filter_dict()
             self.current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
             if self.group == "database":
-                self.filters = parse_browse_filter_conditions(None, [self._order_by()], None)
+                self.filters = BrowseFilterConditions(None, [self._order_by()], None).parse()
             else:
                 # TODO: make the following line work again
-                # return parse_browse_filter_conditions(current_formset_conditions, [self._order_by()], limit)
-                self.filters = {}
+                self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
 
         self.filters["group_by"] = self.group
         self.filters["group_value"] = self.group_value

@@ -5,6 +5,12 @@ from landmatrix.models import ActivityAttributeGroup, Activity, Crop
 from django.db import connection
 from copy import deepcopy
 
+def get_monkey_patch(columns, group):
+    if True:
+        return DummyMonkeyPatch(columns, group)
+    else:
+        return ColumnMonkeyPatch(columns, group)
+
 class DummyMonkeyPatch:
 
     def __init__(self, columns, group):
