@@ -3,7 +3,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from .view_aux_functions import parse_browse_filter_conditions, create_condition_formset, render_to_response
 from .intention_map import IntentionMap
 from .download import Download
-from .column_monkey_patch import ColumnMonkeyPatch
+from .column_monkey_patch import ColumnMonkeyPatch, DummyMonkeyPatch
 from landmatrix.models import BrowseCondition
 from global_app.views.dummy_activity_protocol import DummyActivityProtocol
 
@@ -43,7 +43,8 @@ class TableGroupView(TemplateView):
         self._set_filters()
         self._set_columns()
 
-        self.monkey_patch = ColumnMonkeyPatch(self.columns, self.group)
+#        self.monkey_patch = ColumnMonkeyPatch(self.columns, self.group)
+        self.monkey_patch = DummyMonkeyPatch(self.columns, self.group)
 
         query_result = self.get_records(request)
 
@@ -94,8 +95,8 @@ class TableGroupView(TemplateView):
         else:
             return query_result["activities"]
 
-    # dont limit query when download or group view
     def _limit_query(self):
+        """ Don't limit query when download or group view."""
         return not (
             self.is_download()
             or (not self.group_value and self.group not in self.QUERY_LIMITED_GROUPS)
@@ -315,11 +316,9 @@ class TableGroupView(TemplateView):
         }
         return columns[self.group]
 
-    """
-    Map different values of one group together. Ensures that values of a group are together
-    e.g. group of data sources with different urls, types and dates
-    """
     def _map_values_of_group(self, value_list, format_string):
+        """ Map different values of one group together. Ensures that values of a group are together.
+            e.g. group of data sources with different urls, types and dates."""
         output = []
         groups = {}
         keys = value_list.keys()
