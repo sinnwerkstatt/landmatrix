@@ -1,6 +1,7 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from global_app.views.view_aux_functions import BrowseFilterConditions, create_condition_formset
+from global_app.views.view_aux_functions import create_condition_formset
+from global_app.views.browse_filter_conditions import BrowseFilterConditions
 
 from django.test import TestCase
 from django.http import QueryDict
@@ -37,13 +38,11 @@ class TestViewAuxFunctions(TestCase):
         self.assertIn(ORDER, BrowseFilterConditions(self.Formset(), ['blah']).parse()['order_by'])
 
     def test_with_actual_data(self):
-        BrowseFilterConditions.DEBUG =True
         formset = self.Formset(self.actual_formset_args, prefix="conditions_empty")
         try:
-            filters = BrowseFilterConditions(formset, ['deal_id']).parse()
-            print(filters)
+            BrowseFilterConditions(formset, ['deal_id']).parse()
         except NameError:
-            self.skipTest('parse() not yet fully implemented')
+            self.fail('parse() not yet fully implemented')
 
     def _assert_has_required_keys(self, filter_conditions):
         self.assertEqual({'order_by', 'limit', 'investor', 'activity', 'deal_scope'}, set(filter_conditions))

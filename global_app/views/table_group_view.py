@@ -1,6 +1,7 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .view_aux_functions import BrowseFilterConditions, create_condition_formset, render_to_response
+from .view_aux_functions import create_condition_formset, render_to_response
+from .browse_filter_conditions import BrowseFilterConditions
 from .intention_map import IntentionMap
 from .download import Download
 from .column_monkey_patch import get_monkey_patch
