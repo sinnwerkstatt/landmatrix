@@ -3,6 +3,22 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from landmatrix.models import ActivityAttributeGroup, Activity, Crop
 
 from django.db import connection
+from copy import deepcopy
+
+class DummyMonkeyPatch:
+
+    def __init__(self, columns, group):
+        self.columns = columns
+        self.group = group
+
+    def is_patched_column(self, c):
+        return False
+
+    def _single_column_results(self, query_result):
+        return {}
+
+    def _optimize_columns(self):
+        return deepcopy(self.columns)
 
 class ColumnMonkeyPatch:
 
@@ -27,15 +43,8 @@ class ColumnMonkeyPatch:
         self.columns = columns
         self.group = group
 
-    @classmethod
-    def affected_columns(cls):
-        return cls.SINGLE_SQL_QUERIES.keys()
-
     def is_patched_column(self, c):
         return c in self.affected_columns() and not self.extra_special_treatment(c)
-
-    def extra_special_treatment(self, col):
-        return self.group == "crop" and col == "crop"
 
     def _single_column_results(self, query_result):
 
@@ -55,24 +64,30 @@ class ColumnMonkeyPatch:
                 single_column_results.update({col: dict(cursor.fetchall())})
         return single_column_results
 
-    def needs_patching(self):
-        return any(special_column in self.columns for special_column in self.affected_columns())
-
-    """ IMPORTANT! we are patching certain column fields out, so they don't get executed within the large SQL query.
-        instead we later send a single query for each column and add the resulting data back into the large result object"""
     def _optimize_columns(self):
+        """ IMPORTANT! we are patching certain column fields out, so they don't get executed within the large SQL query.
+            Instead we later send a single query for each column and add the resulting data back into the large result
+            object.
+        """
+
         if not self.needs_patching():
             return self.columns
-
-        from copy import deepcopy
 
         optimized_columns = deepcopy(self.columns)
         for col in self.affected_columns():
             # do not remove crop column if we expect a grouping in the sql string
-            if self.extra_special_treatment(col):
-                continue
-            if col in self.columns:
+            if col in self.columns and not self.extra_special_treatment(col):
                 optimized_columns.remove(col)
 
         return optimized_columns
+
+    @classmethod
+    def affected_columns(cls):
+        return cls.SINGLE_SQL_QUERIES.keys()
+
+    def extra_special_treatment(self, col):
+        return self.group == "crop" and col == "crop"
+
+    def needs_patching(self):
+        return any(special_column in self.columns for special_column in self.affected_columns())
 
