@@ -7,7 +7,7 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 
 from landmatrix.models import BrowseCondition
-from global_app.views.dummy_activity_protocol import DummyActivityProtocol
+from global_app.views.sql_generation.filter_to_sql import FilterToSQL
 
 """ Python 2/3 compatibility """
 def force_unicode(string): return force_text(string)
@@ -114,6 +114,7 @@ class BrowseTextInput(forms.TextInput):
         return mark_safe(output)
 
     def value_from_datadict(self, data, files, name):
+
         value = data.getlist(name)
         if not value:
             # could be ybd field, try with suffix _0 and _1 for value|year
@@ -162,7 +163,7 @@ class BrowseConditionForm(BaseModelForm):
         self.fields["variable"].choices = variables
         operators = []
         operators.append(("", "-----"))
-        operators.extend([(op, op_name[2]) for op, op_name in DummyActivityProtocol.OPERATION_MAP.items()])
+        operators.extend([(op, op_name[2]) for op, op_name in FilterToSQL.OPERATION_MAP.items()])
         self.fields["operator"].choices = operators
 
 

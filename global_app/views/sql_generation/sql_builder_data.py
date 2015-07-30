@@ -84,7 +84,6 @@ class SQLBuilderData:
 
             'contract_farming':   [ join_attributes('contract_farming', 'off_the_lease'), ],
 
-#            'nature_of_the_deal': [ join_activity_attributes('nature_of_the_deal', 'nature'), ],
             'nature_of_the_deal': [join_attributes('nature_of_the_deal', 'nature')],
 
             'latlon':             [
