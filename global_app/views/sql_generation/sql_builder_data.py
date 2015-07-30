@@ -173,7 +173,7 @@ ARRAY_AGG(DISTINCT data_source_organisation.attributes->'company') as data_sourc
         "intended_size": ["0 AS intended_size"],
         "contract_size": ["0 AS contract_size"],
         "production_size": ["0 AS production_size"],
-        "location": ["ARRAY_AGG(DISTINCT location.value) AS location"],
+        "location": ["ARRAY_AGG(DISTINCT location.attributes->'location') AS location"],
         "deal_id": ["a.activity_identifier AS deal_id", "a.activity_identifier as deal_id"],
         "latlon": [
             "ARRAY_AGG(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value)) AS latlon"
