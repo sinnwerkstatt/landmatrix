@@ -4,6 +4,8 @@ from global_app.forms.changedealwizard import *
 from global_app.forms.adddealwizard import *
 from global_app.forms import DealHistoryForm
 
+from django.db.models.fields import IntegerField
+
 class BrowseFilterConditions:
 
     DEBUG = False
@@ -126,13 +128,9 @@ class BrowseFilterConditions:
                 field_pre = "-"
                 field = field[1:]
 
-            # TODO: fix
-            # if "Investor " in field:
-            #         form = get_field_by_sh_key_id(SH_Key.objects.get(key=field[9:]).id)
-            # else:
-            #         form = self.get_field_by_a_key_id(A_Key.objects.get(key=field).id)
-            # if isinstance(form, IntegerField):
-            #         field_GET = "+0"
+            form = self.get_field_by_key(field[9:] if "Investor " in field else field)
+            if isinstance(form, IntegerField):
+                field_GET = "+0"
 
             self.data["order_by"].append("%s%s%s" % (field_pre, field, field_GET))
 
@@ -217,6 +215,9 @@ def get_key_from_id(id):
         5286: 'total_jobs_planned_employees',           5238: 'type',
         5255: 'url',                                    5274: 'water_extraction_amount',
         5251: 'water_extraction_envisaged',
+        24056: 'classification',                        24055: 'country',
+        24054: 'investor_name',                         24053: 'name',
+        24058: 'region'
     }
     return a_keys[id]
 
