@@ -40,7 +40,7 @@ class TestViewAuxFunctions(TestCase):
     def test_with_actual_data(self):
         formset = self.Formset(self.actual_formset_args, prefix="conditions_empty")
         try:
-            BrowseFilterConditions(formset, ['deal_id']).parse()
+            print(BrowseFilterConditions(formset, ['deal_id']).parse())
         except NameError:
             self.fail('parse() not yet fully implemented')
 
