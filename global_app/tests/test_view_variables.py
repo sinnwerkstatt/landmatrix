@@ -47,11 +47,11 @@ class TestViewVariables(TestCase, DealsTestData):
         self.assertEqual('crop', self.view.group)
 
     def test_filters_with_filter_set(self):
+        self.skipTest('not yet implemented')
         self._call_dispatch_with_GET('filtered')
         print('filters:', self.view.filters)
         self._call_dispatch_with_GET('filtered&')
         print('filters:', self.view.filters)
-        self.skipTest('not yet implemented')
 
     def test_filters_with_filter_unset_and_group_database(self):
         self.skipTest('not yet implemented')
