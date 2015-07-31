@@ -830,17 +830,19 @@ class DealSecondaryInvestorForm(BaseForm):
         investor = kwargs.pop("investor", None)
         super(DealSecondaryInvestorForm, self).__init__(*args, **kwargs)
         self.fields["investor"].initial = investor
-        self.investor_choices = Stakeholder.objects.raw_choices()
+        # TODO: fix
+        #self.investor_choices = Stakeholder.objects.raw_choices()
+        self.investor_choices = []
         self.fields["investor"].choices = list(self.fields["investor"].choices)[:1]
         self.fields["investor"].choices.extend([(s.id, s) for s in self.investor_choices])
         self.fields["country"].choices = [
-            ("", unicode(_("---------"))),
-            (0, unicode(_("Multinational enterprise (MNE)")))
+            ("", str(_("---------"))),
+            (0, str(_("Multinational enterprise (MNE)")))
         ]
         self.fields["country"].choices.extend([(c.id, c.name) for c in Country.objects.all().order_by("name")])
 
     def clean_investor(self):
-        investor = long(self.cleaned_data["investor"] or 0)
+        investor = int(self.cleaned_data["investor"] or 0)
         if investor and (investor not in [s.id for s in self.investor_choices]):
              raise forms.ValidationError("%s is no valid investor." % investor)
         return investor
