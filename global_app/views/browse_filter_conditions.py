@@ -6,6 +6,7 @@ from global_app.forms import DealHistoryForm
 
 from django.db.models.fields import IntegerField
 
+
 class BrowseFilterConditions:
 
     DEBUG = False
@@ -13,8 +14,8 @@ class BrowseFilterConditions:
     def __init__(self, formset, order_by=None, limit=None):
         if self.DEBUG:
             from pprint import pprint
-            pprint(type(formset))
-            pprint(vars(formset), width=100, compact=True)
+            pprint(formset.data, width=100, compact=True)
+            pprint('valid' if formset.is_valid() else 'invalid')
         self.formset = formset
         self.order_by = order_by
         self.limit = limit
@@ -28,14 +29,12 @@ class BrowseFilterConditions:
             "limit": "",
         }
 
-        if self.formset and self.formset.is_valid():
+        if self.formset:
             self.read_formset()
-
         self.set_order_by()
         self.set_limit()
 
         return self.data
-
 
     def read_formset(self):
         filters_act, filters_inv = {"tags": {}}, {"tags": {}}
@@ -82,7 +81,7 @@ class BrowseFilterConditions:
                     values = fl.get("value")
                 filters_inv["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
             else:
-                f = self.get_field_by_key(variable)
+                f = get_field_by_key(variable)
                 if year:
                     values = ["%s##!##%s" % (get_display_value_by_field(f, value), year)]
                 else:
@@ -100,7 +99,6 @@ class BrowseFilterConditions:
 
         self.data["activity"] = filters_act
         self.data["investor"] = filters_inv
-
 
     def get_fl(self, form, i):
         fl = {}
@@ -131,30 +129,30 @@ class BrowseFilterConditions:
                 field_pre = "-"
                 field = field[1:]
 
-            form = self.get_field_by_key(field[9:] if "Investor " in field else field)
+            form = get_field_by_key(field[9:] if "Investor " in field else field)
             if isinstance(form, IntegerField):
                 field_GET = "+0"
 
             self.data["order_by"].append("%s%s%s" % (field_pre, field, field_GET))
-
 
     def set_limit(self):
         if self.limit:
             self.data["limit"] = self.limit
 
 
-    def get_field_by_key(self, key):
+def get_field_by_key(key):
 
-        if key.isnumeric():
-            key = get_key_from_id(int(key))
+    if key.isnumeric():
+        key = get_key_from_id(int(key))
 
-        for i, form in self.CHANGE_FORMS:
-            form = hasattr(form, "form") and form.form or form
-            if key in form.base_fields:
-                return form().fields[key]
-        return None
+    for i, form in CHANGE_FORMS:
+        form = hasattr(form, "form") and form.form or form
+        if key in form.base_fields:
+            return form().fields[key]
 
-    CHANGE_FORMS = [
+    return None
+
+CHANGE_FORMS = [
         ("spatial_data", ChangeDealSpatialFormSet),
         ("general_information", ChangeDealGeneralForm),
         ("employment", ChangeDealEmploymentForm),
@@ -169,11 +167,11 @@ class BrowseFilterConditions:
         ("action_comment", ChangeDealActionCommentForm),
         ("history", DealHistoryForm),
         ('primary_investor', DealPrimaryInvestorForm)
-    ]
+]
 
 
-def get_key_from_id(id):
-    a_keys = {
+def a_keys():
+    return {
         5234: 'agreement_duration',                     5261: 'animals',
         5297: 'annual_leasing_fee',                     5304: 'annual_leasing_fee_area',
         5298: 'annual_leasing_fee_currency',            5277: 'annual_leasing_fee_type',
@@ -222,7 +220,9 @@ def get_key_from_id(id):
         24054: 'investor_name',                         24053: 'name',
         24058: 'region'
     }
-    return a_keys[id]
+
+def get_key_from_id(id):
+    return a_keys()[id]
 
 def get_display_value_by_field(field, value):
     from django import forms
