@@ -27,7 +27,10 @@ class BrowseFilterConditions:
             "order_by": [],
             "limit": "",
         }
-        self.read_formset()
+
+        if self.formset and self.formset.is_valid():
+            self.read_formset()
+
         self.set_order_by()
         self.set_limit()
 

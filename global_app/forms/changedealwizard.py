@@ -77,8 +77,7 @@ class ChangeDealGeneralForm(BaseForm):
     # Purchase price
     tg_purchase_price = TitleField(required=False, label="", initial=_("Purchase price"))
     purchase_price = forms.DecimalField(max_digits=19, decimal_places=2, required=False, label=_("Purchase price"))
-    # TODO: fix
-#    purchase_price_currency = forms.ModelChoiceField(required=False, label=_("Purchase price currency"), queryset=Currency.objects.all().order_by("ranking", "name"))
+    purchase_price_currency = forms.ModelChoiceField(required=False, label=_("Purchase price currency"), queryset=Currency.objects.all().order_by("ranking", "name"))
     purchase_price_type = forms.TypedChoiceField(required=False, label=_("Purchase price area type"), choices=(
         (0, _("---------")),
         (10, _("per ha")),
@@ -89,8 +88,7 @@ class ChangeDealGeneralForm(BaseForm):
     # Leasing fees
     tg_leasing_fees = TitleField(required=False, label="", initial=_("Leasing fees"))
     annual_leasing_fee = forms.DecimalField(max_digits=19, decimal_places=2, required=False, label=_("Annual leasing fee"))
-    # TODO: fix
-#    annual_leasing_fee_currency = forms.ModelChoiceField(required=False, label=_("Annual leasing fee currency"), queryset=Currency.objects.all().order_by("ranking", "name"))
+    annual_leasing_fee_currency = forms.ModelChoiceField(required=False, label=_("Annual leasing fee currency"), queryset=Currency.objects.all().order_by("ranking", "name"))
     annual_leasing_fee_type = forms.TypedChoiceField(required=False, label=_("Annual leasing fee type"), choices=(
         (0, _("---------")),
         (10, _("per ha")),
