@@ -619,8 +619,7 @@ class AddDealGeneralForm(BaseForm):
     # Purchase price
     tg_purchase_price = TitleField(required=False, label="", initial=_("Purchase price"))
     purchase_price = forms.DecimalField(max_digits=19, decimal_places=2, required=False, label=_("Purchase price"))
-    # TODO: fix
-#    purchase_price_currency = forms.ModelChoiceField(required=False, label=_("Purchase price currency"), queryset=Currency.objects.all().order_by("ranking", "name"))
+    purchase_price_currency = forms.ModelChoiceField(required=False, label=_("Purchase price currency"), queryset=Currency.objects.all().order_by("ranking", "name"))
     purchase_price_type = forms.TypedChoiceField(required=False, label=_("Purchase price area type"), choices=(
         (0, _("---------")),
         (10, _("per ha")),
@@ -631,8 +630,7 @@ class AddDealGeneralForm(BaseForm):
     # Leasing fees
     tg_leasing_fees = TitleField(required=False, label="", initial=_("Leasing fees"))
     annual_leasing_fee = forms.DecimalField(max_digits=19, decimal_places=2, required=False, label=_("Annual leasing fee"))
-    # TODO: fix
-#    annual_leasing_fee_currency = forms.ModelChoiceField(required=False, label=_("Annual leasing fee currency"), queryset=Currency.objects.all().order_by("ranking", "name"))
+    annual_leasing_fee_currency = forms.ModelChoiceField(required=False, label=_("Annual leasing fee currency"), queryset=Currency.objects.all().order_by("ranking", "name"))
     annual_leasing_fee_type = forms.TypedChoiceField(required=False, label=_("Annual leasing fee type"), choices=(
         (0, _("---------")),
         (10, _("per ha")),
@@ -1129,9 +1127,8 @@ class DealProduceInfoForm(BaseForm):
     # Detailed crop, animal and mineral information
     tg_crop_animal_mineral = TitleField(required=False, label="", initial=_("Detailed crop, animal and mineral information"))
     crops = forms.ModelMultipleChoiceField(required=False, label=_("Crops"), queryset=Crop.objects.all(), widget=forms.CheckboxSelectMultiple)
-    # TODO: fix
-#    animals = forms.ModelMultipleChoiceField(required=False, label=_("Animals"), queryset=Animal.objects.all(), widget=forms.CheckboxSelectMultiple)
-#    minerals = forms.ModelMultipleChoiceField(required=False, label=_("Minerals"), queryset=Mineral.objects.all(), widget=forms.CheckboxSelectMultiple)
+    animals = forms.ModelMultipleChoiceField(required=False, label=_("Animals"), queryset=Animal.objects.all(), widget=forms.CheckboxSelectMultiple)
+    minerals = forms.ModelMultipleChoiceField(required=False, label=_("Minerals"), queryset=Mineral.objects.all(), widget=forms.CheckboxSelectMultiple)
 
     # Use of produce
     tg_use_of_produce = TitleField(required=False, label="", initial=_("Use of produce"))
