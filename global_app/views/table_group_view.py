@@ -152,29 +152,24 @@ class TableGroupView(TemplateView):
             self.columns = self._columns()
 
     def _set_filters(self):
-        self.filters = {}
         ConditionFormset = create_condition_formset()
         if self._filter_set():
             # set given filters
             self.current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
-            if self.current_formset_conditions.is_valid():
-                self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
         else:
-            # set default filters
-            self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
-            filter_dict = self._get_filter_dict()
-            self.current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
             if self.group == "database":
-                self.filters = BrowseFilterConditions(None, [self._order_by()], None).parse()
+                self.current_formset_conditions = None
             else:
-                # TODO: make the following line work again
-                self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
+                self.current_formset_conditions = ConditionFormset(self._get_filter_dict(), prefix="conditions_empty")
+
+        self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
 
         self.filters["group_by"] = self.group
         self.filters["group_value"] = self.group_value
         self.filters["starts_with"] = self.GET.get("starts_with", None)
 
     def _get_filter_dict(self):
+        self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
         filter_dict = MultiValueDict()
         for record, c in enumerate(self.rules):
             rule_dict = MultiValueDict({
