@@ -30,7 +30,6 @@ class BaseModelForm(forms.ModelForm):
             help_text_html = '<span class="helptext add-on">%s</span>',
             errors_on_separate_row = False)
 
-
     def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
         "Helper function for outputting HTML. Used by as_table(), as_ul(), as_p()."
         top_errors = self.non_field_errors() # Errors that should be displayed above all fields.
@@ -132,7 +131,7 @@ class BrowseTextInput(forms.TextInput):
             value = ["|".join(ybd)]
         return value or []
 
-
+from global_app.views.browse_filter_conditions import BrowseFilterConditions, get_field_by_key, a_keys
 class BrowseConditionForm(BaseModelForm):
     variable = forms.ChoiceField(required=False, label=_("Variable"), initial="", choices=())
     operator = forms.ChoiceField(required=False, label=_("Operator"), initial="", choices=(), widget=forms.Select(attrs={"class": "operator"}))
@@ -149,10 +148,12 @@ class BrowseConditionForm(BaseModelForm):
         variables.append(("last_modification", "Last modification"))
         variables.append(("inv_-2", "Primary investor"))
         # TODO: fix these! This form was very tied to the old key value storage system
-        # if variables_activity:
-        #     self.a_fields = [(unicode(key.id), get_field_by_a_key_id(key.id)) for key in A_Key.objects.filter(fk_language=1, key__in=variables_activity)]#FIXME language
-        # else:
+        if variables_activity:
+        #     self.a_fields = [(str(key.id), get_field_by_key(key.id)) for key in A_Key.objects.filter(fk_language=1, key__in=variables_activity)]#FIXME language
+            self.a_fields = [(str(key), get_field_by_key(str(key))) for key in a_keys()] #FIXME language
+        else:
         #     self.a_fields = [(unicode(key.id), get_field_by_a_key_id(key.id)) for key in A_Key.objects.filter(fk_language=1)]#FIXME language
+            self.a_fields = [(str(key), get_field_by_key(str(key))) for key in a_keys()] #FIXME language
         # if variables_investor:
         #     self.sh_fields = [("inv_%s" % key.id, get_field_by_sh_key_id(key.id)) for key in SH_Key.objects.filter(fk_language=1, key__in=variables_investor).exclude(key="name")]#FIXME language
         # else:
@@ -165,6 +166,9 @@ class BrowseConditionForm(BaseModelForm):
         operators.append(("", "-----"))
         operators.extend([(op, op_name[2]) for op, op_name in FilterToSQL.OPERATION_MAP.items()])
         self.fields["operator"].choices = operators
+        if BrowseFilterConditions.DEBUG:
+            from pprint import pprint
+            pprint(self.fields["variable"].choices)
 
 
     #def save(self, *args, **kwargs):
