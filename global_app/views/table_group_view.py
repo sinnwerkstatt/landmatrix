@@ -18,7 +18,11 @@ import json, numbers
 class TableGroupView(TemplateView):
 
     LOAD_MORE_AMOUNT = 20
-    DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
+    DOWNLOAD_COLUMNS = [
+        "deal_id", "target_country", "location", "investor_name", "investor_country", "intention",
+        "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size",
+        "nature_of_the_deal", "data_source", "contract_farming", "crop"
+    ]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
         "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
@@ -129,6 +133,7 @@ class TableGroupView(TemplateView):
         for ext in Download.supported_formats():
             if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
                 self.download_type = ext
+#                self.debug_query = True
                 return
 
     def _set_group(self, **kwargs):
