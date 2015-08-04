@@ -1,7 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-""" he `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.8/topics/http/urls/
+""" For more information please see: https://docs.djangoproject.com/en/1.8/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -21,6 +20,8 @@ from .views.table_group_view import TableGroupView
 urlpatterns = patterns('globalapp.views',
     url(r'^$', AllDealsView.as_view(), name='app_main'),
     url(r'^all(?P<type>\.csv)?/$', AllDealsView.as_view(), name='all_deal'),
+    url(r'^all(?P<type>\.xml)?/$', AllDealsView.as_view(), name='all_deal'),
+    url(r'^all(?P<type>\.xls)?/$', AllDealsView.as_view(), name='all_deal'),
     url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
 
 )
