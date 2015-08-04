@@ -56,7 +56,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'sekizai',
 
-    'django-nose',
+    'coverage',
 
     'landmatrix',
     'global_app',
