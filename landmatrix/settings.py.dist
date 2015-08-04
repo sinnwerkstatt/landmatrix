@@ -5,6 +5,7 @@ LOG_DB_QUERIES = False
 
 CONVERT_DB = False
 CONVERT_FROM_MY = False
+TEST_AGAINST_LIVE_DB = False
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
