@@ -59,9 +59,6 @@ class TestViewVariables(TestCase, DealsTestData):
         print('filters:', self.view.filters)
         BrowseFilterConditions.DEBUG = False
 
-    def test_filters_with_filter_unset(self):
-        self.skipTest('not yet implemented')
-
     def test_order_by(self):
         self.assertEqual('deal_id', self.view._order_by())
 

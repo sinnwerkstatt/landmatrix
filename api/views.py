@@ -35,28 +35,17 @@ class ActivityAttributeGroupViewSet(viewsets.ModelViewSet):
 class StatisticsManager(models.Manager):
 
     def all(self):
-        BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status
-        ON status.id = a.fk_status_id
-    LEFT JOIN """ + Involvement._meta.db_table + """ AS i
-        ON i.fk_activity_id = a.id
-    LEFT JOIN """ + Stakeholder._meta.db_table + """ AS s
-        ON i.fk_stakeholder_id = s.id
-    LEFT JOIN """ + PrimaryInvestor._meta.db_table + """ AS pi
-        ON i.fk_primary_investor_id = pi.id
-    LEFT JOIN """ + Status._meta.db_table + """ AS pi_st
-        ON pi.fk_status_id = pi_st.id
-    LEFT JOIN """ + StakeholderAttributeGroup._meta.db_table + """ AS stakeholder_attrs
-        ON s.id = stakeholder_attrs.fk_stakeholder_id
-    LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs
-        ON a.id = activity_attrs.fk_activity_id
-    LEFT JOIN  """ + Country._meta.db_table + """ AS investor_country
-        ON stakeholder_attrs.attributes->'country' = investor_country.name
-    LEFT JOIN  """ + Region._meta.db_table + """ AS investor_region
-        ON investor_country.fk_region_id = investor_region.id
-    LEFT JOIN """ + Country._meta.db_table + """ AS deal_country
-        ON activity_attrs.attributes->'target_country' = deal_country.name
-    LEFT JOIN """ + Region._meta.db_table + """ AS deal_region
-        ON deal_country.fk_region_id = deal_region.id"""
+        BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status ON status.id = a.fk_status_id
+    LEFT JOIN """ + Involvement._meta.db_table + """ AS i ON i.fk_activity_id = a.id
+    LEFT JOIN """ + Stakeholder._meta.db_table + """ AS s ON i.fk_stakeholder_id = s.id
+    LEFT JOIN """ + PrimaryInvestor._meta.db_table + """ AS pi ON i.fk_primary_investor_id = pi.id
+    LEFT JOIN """ + Status._meta.db_table + """ AS pi_st ON pi.fk_status_id = pi_st.id
+    LEFT JOIN """ + StakeholderAttributeGroup._meta.db_table + """ AS stakeholder_attrs ON s.id = stakeholder_attrs.fk_stakeholder_id
+    LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON a.id = activity_attrs.fk_activity_id
+    LEFT JOIN  """ + Country._meta.db_table + """ AS investor_country ON stakeholder_attrs.attributes->'country' = investor_country.name
+    LEFT JOIN  """ + Region._meta.db_table + """ AS investor_region ON investor_country.fk_region_id = investor_region.id
+    LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON activity_attrs.attributes->'target_country' = deal_country.name
+    LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id"""
 
         HECTARES_SQL = "ROUND(COALESCE(SUM(CAST(REPLACE(activity_attrs.attributes->'pi_deal_size', ',', '.') AS numeric)), 0)) AS deal_size"
 
