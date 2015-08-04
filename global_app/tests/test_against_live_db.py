@@ -16,8 +16,11 @@ from django.test import TestCase
 class TestAgainstLiveDB(TestCase):
 
     def test_compare_to_v1_data(self):
+        from django.conf import settings
         import os
         from subprocess import call
+        if not settings.TEST_AGAINST_LIVE_DB:
+            self.skipTest('Testing against Live DB disabled in settings')
         dir = os.path.dirname(os.path.realpath(__file__))
         num_errors = call(['python', dir+'/compare_sql_results.py'])
         self.assertEqual(0, num_errors)
