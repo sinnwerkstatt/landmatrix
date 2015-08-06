@@ -1,7 +1,13 @@
-from django.shortcuts import render
+
+from global_app.views.browse_filter_conditions import get_field_by_key
+from global_app.widgets import LocationWidget, YearBasedSelect, YearBasedMultipleSelect
+from global_app.forms import DealPrimaryInvestorForm
+
 from django.http import HttpResponse
 from django.views.generic.edit import View
-from django.forms import TextInput, CheckboxSelectMultiple
+from django.forms import TextInput, CheckboxSelectMultiple, HiddenInput, SelectMultiple, RadioSelect, Select
+
+from datetimewidget.widgets import DateWidget
 
 class AjaxView(View):
     def dispatch(self, request, *args, **kwargs):
@@ -82,9 +88,9 @@ class AjaxView(View):
             form = DealSecondaryInvestorForm()
             field = form.fields["investor"]
         elif "inv_" in key_id:
-            field = get_field_by_sh_key_id(key_id[4:])
+            field = get_field_by_key(key_id[4:])
         else:
-            field = get_field_by_a_key_id(key_id)
+            field = get_field_by_key(key_id)
         if field:
             widget = field.widget
             if widget.attrs.get("readonly", ""):
