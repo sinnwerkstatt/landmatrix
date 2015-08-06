@@ -157,6 +157,7 @@ class TableGroupView(TemplateView):
             self.columns = self._columns()
 
     def _set_filters(self):
+        self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
         ConditionFormset = create_condition_formset()
         if self._filter_set():
             # set given filters
@@ -174,7 +175,6 @@ class TableGroupView(TemplateView):
         self.filters["starts_with"] = self.GET.get("starts_with", None)
 
     def _get_filter_dict(self):
-        self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
         filter_dict = MultiValueDict()
         for record, c in enumerate(self.rules):
             rule_dict = MultiValueDict({
