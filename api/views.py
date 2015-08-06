@@ -50,25 +50,19 @@ class StatisticsManager(models.Manager):
         HECTARES_SQL = "ROUND(COALESCE(SUM(CAST(REPLACE(activity_attrs.attributes->'pi_deal_size', ',', '.') AS numeric)), 0)) AS deal_size"
 
         BASE_CONDITON = """a.version = (
-            SELECT MAX(version)
-            FROM
-            """ + Activity._meta.db_table + """ AS amax,
-            """ + Status._meta.db_table + """ AS st
-            WHERE amax.fk_status_id = st.id
-            AND amax.activity_identifier = a.activity_identifier
+        SELECT MAX(version)
+        FROM """ + Activity._meta.db_table + """ AS amax, """ + Status._meta.db_table + """ AS st
+        WHERE amax.fk_status_id = st.id AND amax.activity_identifier = a.activity_identifier
             AND st.name IN ('active', 'overwritten', 'deleted')
-        )
-        AND status.name IN ('active', 'overwritten')
-        AND pi.version = (
-            SELECT MAX(version)
-            FROM """ + PrimaryInvestor._meta.db_table + """ AS pimax,
-            """ + Status._meta.db_table + """ AS st
-            WHERE pimax.fk_status_id = st.id
-            AND pimax.primary_investor_identifier = pi.primary_investor_identifier
+    )
+    AND pi.version = (
+        SELECT MAX(version)
+        FROM """ + PrimaryInvestor._meta.db_table + """ AS pimax, """ + Status._meta.db_table + """ AS st
+        WHERE pimax.fk_status_id = st.id AND pimax.primary_investor_identifier = pi.primary_investor_identifier
             AND st.name IN ('active', 'overwritten', 'deleted')
-        )
-        AND pi_st.name IN ('active', 'overwritten')
-        AND activity_attrs.attributes->'pi_deal' = 'True'"""
+    )
+    AND status.name IN ('active', 'overwritten') AND pi_st.name IN ('active', 'overwritten')
+    AND activity_attrs.attributes->'pi_deal' = 'True'"""
 
         cursor = connection.cursor()
         sql = """SELECT
@@ -85,8 +79,7 @@ LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON
         activity_attrs.date AS negotiation_status_date
     FROM """ + Activity._meta.db_table + """ AS a
     """ + BASE_JOIN + """
-    WHERE
-        """ + BASE_CONDITON + """
+    WHERE """ + BASE_CONDITON + """
 ) AS sub
 WHERE a.id = sub.id
 GROUP BY sub.negotiation_status"""
