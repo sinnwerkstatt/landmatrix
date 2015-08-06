@@ -1,7 +1,4 @@
 
-if False:
-    from django.utils.encoding import StrAndUnicode, force_unicode, smart_unicode, smart_str
-
 from itertools import chain
 import re
 
@@ -9,8 +6,11 @@ from django.utils.html import escape, conditional_escape
 from django import forms
 from django.forms.util import flatatt
 from django.utils.safestring import mark_safe
+from django.utils.encoding import force_text
 
 from landmatrix.models import Country, PrimaryInvestor
+
+def force_unicode(string): return force_text(string)
 
 class NumberInput(forms.TextInput):
     def render(self, name, value, attrs={}):
@@ -59,8 +59,8 @@ class LocationWidget(forms.TextInput):
         <input id="id_%(name)s" name="%(name)s" type="text" value="%(value)s" %(attrs)s/>
         <div class="map" style="width:470px; height:400px; margin-bottom: 30px;"></div>
         """ % {
-            "name": unicode(name or ""),
-            "value": unicode(value or ""),
+            "name": str(name or ""),
+            "value": str(value or ""),
             "attrs": flatatt(final_attrs)
         }
 
@@ -181,7 +181,7 @@ class YearBasedWidget(forms.MultiWidget):
         if value:
             self.widgets = []
             value = isinstance(value, (list, tuple)) and value or self.decompress(value)
-            for i in range(len(value)/2):
+            for i in range(int(len(value)/2)):
                 self.widgets.extend(self.get_widgets())
 
         if self.is_localized:
