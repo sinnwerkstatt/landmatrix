@@ -23,7 +23,7 @@ from django.contrib import admin
 from api import urls as api_urls
 from global_app import urls as global_urls
 
-from .views import AjaxView
+from .views.ajax_view import AjaxView
 
 urlpatterns = i18n_patterns('',
     url(r'^admin/', include(admin.site.urls)),
