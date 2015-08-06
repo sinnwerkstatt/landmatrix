@@ -1,3 +1,5 @@
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 from global_app.views.browse_filter_conditions import get_field_by_key
 from global_app.widgets import LocationWidget, YearBasedSelect, YearBasedMultipleSelect, NumberInput
