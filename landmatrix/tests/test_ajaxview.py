@@ -5,8 +5,13 @@ from landmatrix.views import AjaxView
 from landmatrix.tests.with_status import WithStatus
 
 class TestAjaxView(WithStatus):
-    """
+    """ TODO:
         - when the values are selected from a list, operator in must return checkboxes, while is must return a select or radio button
+        - is_empty should either return no form or a radio button with the choices yes/no
+        - number comparison must work (current size*)
+        - date picker in fully updated
+        - user in fully updated by
+        - check plausiblity for lt/gt/lte/gte
     """
 
     example_values = {
