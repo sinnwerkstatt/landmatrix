@@ -33,7 +33,7 @@ class TitleWidget(forms.TextInput):
         super(TitleWidget, self).__init__(*args, **kwargs)
 
     def render(self, name, value, attrs={}):
-        return "<h3>%s</h3>" % unicode(self.initial or "")
+        return "<h3>%s</h3>" % str(self.initial or "")
 
 class TitleField(forms.CharField):
     widget = forms.HiddenInput
@@ -194,7 +194,7 @@ class YearBasedWidget(forms.MultiWidget):
         output = []
         final_attrs = self.build_attrs(attrs)
         id_ = final_attrs.get('id', None)
-        helptext = self.help_text and "<span class=\"helptext add-on last\">%s</span>"%unicode(self.help_text) or ""
+        helptext = self.help_text and "<span class=\"helptext add-on last\">%s</span>" % str(self.help_text) or ""
         widgets_count = len(self.widgets)
         for i, widget in enumerate(self.widgets):
             try:
@@ -222,7 +222,7 @@ class YearBasedSelect(YearBasedWidget):
         self.choices = kwargs.pop("choices")
         self.help_text = kwargs.pop("help_text", "")
         kwargs["widgets"] = self.get_widgets()
-        return super(YearBasedSelect, self).__init__(*args, **kwargs)
+        super(YearBasedSelect, self).__init__(*args, **kwargs)
 
     def get_widgets(self):
         return [
@@ -252,7 +252,7 @@ class YearBasedMultipleSelect(YearBasedWidget):
         self.choices = filter(lambda c: c[0] != 0, self.choices)
         self.help_text = kwargs.pop("help_text", "")
         kwargs["widgets"] = self.get_widgets()
-        return super(YearBasedMultipleSelect, self).__init__(*args, **kwargs)
+        super(YearBasedMultipleSelect, self).__init__(*args, **kwargs)
 
     def get_widgets(self):
         return [
@@ -280,7 +280,7 @@ class YearBasedChoiceField(forms.MultiValueField):
         self.choices = kwargs["choices"]
         kwargs["fields"] = [forms.ChoiceField(choices=kwargs["choices"], required=False), forms.CharField(required=False)]
         kwargs["widget"] = YearBasedSelect(choices=kwargs.pop("choices"),help_text=kwargs.pop("help_text", ""))
-        return super(YearBasedChoiceField, self).__init__(*args, **kwargs)
+        super(YearBasedChoiceField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
         # update fields
@@ -295,7 +295,7 @@ class YearBasedChoiceField(forms.MultiValueField):
             yb_data = []
             for i in range(len(data_list)/2):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s" % (unicode(data_list[i]), unicode(data_list[i+1])))
+                    yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1])))
             return "|".join(yb_data)
         else:
             self.fields = [forms.ChoiceField(choices=self.choices, required=False), forms.CharField(required=False)]
@@ -307,7 +307,7 @@ class YearBasedTextInput(YearBasedWidget):
     def __init__(self, *args, **kwargs):
         self.help_text = kwargs.pop("help_text", "")
         kwargs["widgets"] = self.get_widgets()
-        return super(YearBasedTextInput, self).__init__(*args, **kwargs)
+        super(YearBasedTextInput, self).__init__(*args, **kwargs)
 
     def get_widgets(self):
         return [
@@ -341,7 +341,7 @@ class YearBasedIntegerField(forms.MultiValueField):
     def __init__(self, *args, **kwargs):
         kwargs["fields"] = [forms.IntegerField(required=False), forms.CharField(required=False)]
         kwargs["widget"] = YearBasedTextInput(help_text=kwargs.pop("help_text", ""))
-        return super(YearBasedIntegerField, self).__init__(*args, **kwargs)
+        super(YearBasedIntegerField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
         # update fields
@@ -357,7 +357,7 @@ class YearBasedIntegerField(forms.MultiValueField):
             yb_data = []
             for i in range(len(data_list)/2):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s" % (unicode(data_list[i]), unicode(data_list[i+1])))
+                    yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1])))
             return "|".join(yb_data)
         else:
             self.fields = [forms.IntegerField(required=False), forms.CharField(required=False)]
@@ -366,7 +366,7 @@ class YearBasedCheckboxInput(forms.MultiWidget):
     def __init__(self, *args, **kwargs):
         self.help_text = kwargs.pop("help_text", "")
         kwargs["widgets"] = self.get_widgets()
-        return super(YearBasedCheckboxInput, self).__init__(*args, **kwargs)
+        super(YearBasedCheckboxInput, self).__init__(*args, **kwargs)
 
     def get_widgets(self):
         return [
@@ -397,7 +397,7 @@ class YearBasedBooleanField(forms.MultiValueField):
     def __init__(self, *args, **kwargs):
         kwargs["fields"] = [forms.BooleanField(required=False), forms.CharField(required=False)]
         kwargs["widget"] = YearBasedCheckboxInput(help_text=kwargs.pop("help_text", ""))
-        return super(YearBasedBooleanField, self).__init__(*args, **kwargs)
+        super(YearBasedBooleanField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
         # update fields
@@ -412,7 +412,7 @@ class YearBasedBooleanField(forms.MultiValueField):
             yb_data = []
             for i in range(len(data_list)/2):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s" % (unicode(data_list[i]), unicode(data_list[i+1])))
+                    yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1])))
             return "|".join(yb_data)
         else:
             self.fields = [forms.IntegerField(required=False), forms.CharField(required=False)]
@@ -440,7 +440,7 @@ class CountryField(forms.ModelChoiceField):
 
     def __init__(self, *args, **kwargs):
         kwargs["queryset"] = Country.objects.all().order_by("name")
-        return super(CountryField, self).__init__(*args, **kwargs)
+        super(CountryField, self).__init__(*args, **kwargs)
 
 class BrowseTextInput(forms.TextInput):
     def render(self, name, value, attrs={}):
@@ -552,7 +552,7 @@ class PrimaryInvestorField(forms.ChoiceField):
 
     def __init__(self, *args, **kwargs):
         kwargs["choices"] = self.get_choices()
-        return super(PrimaryInvestorField, self).__init__(*args, **kwargs)
+        super(PrimaryInvestorField, self).__init__(*args, **kwargs)
 
     def validate(self, value):
         pass
