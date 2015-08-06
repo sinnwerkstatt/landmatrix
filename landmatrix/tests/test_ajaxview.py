@@ -1,7 +1,5 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from django.utils import timezone
-from landmatrix.views import AjaxView
 from landmatrix.tests.with_status import WithStatus
 
 class TestAjaxView(WithStatus):
