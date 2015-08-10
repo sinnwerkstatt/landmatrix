@@ -58,7 +58,9 @@ class AjaxView(View):
         field = None
         value = value and value.split(",") or []
         widget = TextInput().render(request.GET.get("name", ""), ",".join(value))
-        if key_id == "-1" and operation in ("in", "not_in"):
+        if operation == 'is_empty':
+            return HttpResponse('', content_type="text/plain")
+        elif key_id == "-1" and operation in ("in", "not_in"):
             widget = TextInput().render(request.GET.get("name", ""), ",".join(value))
         elif key_id == "-1" and operation not in ("in", "not_in"):
             widget = NumberInput().render(request.GET.get("name", ""), ",".join(value))
