@@ -144,10 +144,16 @@ def get_field_by_key(key):
 
     if key.isnumeric():
         key = get_key_from_id(int(key))
-
     for i, form in CHANGE_FORMS:
         form = hasattr(form, "form") and form.form or form
         if key in form.base_fields:
+            if 'crop' in key:
+                from pprint import pprint
+                pprint(key)
+                pprint(type(form()))
+                pprint(vars(form()))
+                pprint(type(form().fields[key]))
+                pprint(vars(form().fields[key]))
             return form().fields[key]
 
     return None
