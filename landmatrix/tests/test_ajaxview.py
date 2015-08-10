@@ -9,7 +9,6 @@ class TestAjaxView(WithStatus):
         - number comparison must work (current size*)
         - date picker in fully updated
         - user in fully updated by
-        - check plausiblity for lt/gt/lte/gte
     """
 
     example_values = {
@@ -31,12 +30,12 @@ class TestAjaxView(WithStatus):
         'organization': { 'key_id': '5239', 'operation': ['not_in', 'in', 'is', 'is_empty', 'contains'] },
         'primary investor': { 'key_id': 'inv_-2', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
         'target country': { 'key_id': '5228', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
+        'fully updated': { 'key_id': 'fully_updated', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
+        'current size in operation': { 'key_id': '5282', 'operation': ['not_in', 'in', 'is', 'is_empty', 'contains', 'lt', 'gt']},
     }
 
     fails_in_v1 = {
-        'current size in operation': { 'key_id': '5282', 'operation': ['lt']},
         'current size under contract': { 'key_id': '5264', 'operation': ['lt']},
-        'fully updated': { 'key_id': 'fully_updated', 'operation': ['in'] }, # date picker does not work
         'fully updated by': { 'key_id': 'fully_updated_by', 'operation': ['in'] }, # User model not present
     }
 
@@ -54,12 +53,6 @@ class TestAjaxView(WithStatus):
 
     def test_data_source_type(self):
         self._test_for_specific_attribute('data source type')
-
-    def DISABLED_test_fully_updated(self):
-        self._test_for_specific_attribute('fully updated')
-
-    def DISABLED_test_fully_updated_by(self):
-        self._test_for_specific_attribute('fully updated by')
 
     def test_implementation_status(self):
         self._test_for_specific_attribute('implementation status')
@@ -100,14 +93,22 @@ class TestAjaxView(WithStatus):
     def test_target_country(self):
         self._test_for_specific_attribute('target country')
 
+    def test_fully_updated(self):
+        self._test_for_specific_attribute('fully updated')
+
+    def test_current_size_in_operation(self):
+        self._test_for_specific_attribute('current size in operation')
+
+    def DISABLED_test_fully_updated_by(self):
+        self._test_for_specific_attribute('fully updated by')
+
     def _test_for_specific_attribute(self, attribute):
         to_test = self.example_values[attribute]
         for op in to_test['operation']:
             parameter_str = 'key_id='+ to_test['key_id']+ '&operation=' + op
             url = '/ajax/widget/values?'+parameter_str+'&name=conditions_empty-0-value'
-            response = self._get_url_following_redirects(url)
-            self._check_form_plausible(response.content.decode('utf-8'), op)
-
+            response = self._get_url_following_redirects(url).content.decode('utf-8')
+            self._check_form_plausible(response, op)
 
     def _get_url_following_redirects(self, url):
         response = self.client.get(url)
@@ -122,10 +123,13 @@ class TestAjaxView(WithStatus):
             'not_in': self._check_form_for_in,
             'contains': self._check_form_for_contains,
             'is_empty': self._check_form_for_empty,
+            'lt': self._check_form_for_comparison,
+            'le': self._check_form_for_comparison,
+            'gt': self._check_form_for_comparison,
+            'ge': self._check_form_for_comparison,
         }
         if not checks[op](form): print(checks[op], form)
         self.assertTrue(checks[op](form))
-
 
     def _check_form_for_is(self, form):
         """ TODO: disabled because of messed up forms from v1. change that. """
@@ -142,6 +146,9 @@ class TestAjaxView(WithStatus):
     def _check_form_for_empty(self, form):
         """ TODO: tests for messed up forms from v1 too. (condition 2, ...). change that. """
         return self._is_radio(form)             or '<ul>\n</ul>' in form or self._is_checkbox(form) or self._is_single_select(form) or self._is_textbox(form) or self._is_url(form)
+
+    def _check_form_for_comparison(self, form):
+        return 'type="number"' in form and 'class="year-based' not in form
 
     def _is_checkbox(self, form):
         return 'checkbox' in form
