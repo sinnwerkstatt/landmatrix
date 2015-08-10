@@ -36,7 +36,7 @@ class BrowseConditionForm(BaseModelForm):
             self.sh_fields = [(str(key), get_field_by_key(str(key))) for key in a_keys().values() if key in variables_investor]
         else:
         #     self.sh_fields = [("inv_%s" % key.id, get_field_by_sh_key_id(key.id)) for key in SH_Key.objects.filter(fk_language=1).exclude(key="name")]#FIXME language
-            self.sh_fields = [(str(key), get_field_by_key(str(key))) for key in a_keys().values()]
+            self.sh_fields = [(str(key), get_field_by_key(str(key))) for key in a_keys().values() if not key == 'name']
         variables.extend([(f[0], str(f[1].label)) for f in self.a_fields])
         variables.extend([(f[0], "Investor %s" % str(f[1].label)) for f in self.sh_fields])
         variables = sorted(variables, key=lambda x: x[1])

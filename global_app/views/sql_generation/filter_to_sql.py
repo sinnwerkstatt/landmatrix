@@ -50,8 +50,8 @@ class FilterToSQL:
                     operation = variable_operation[1]
                 # empty as operation or no value given
                 if operation == "is_empty" or not value or (value and not value[0]):
-                    where_act += " AND akv%(count)i.value IS NULL " % {
-                        "count": i,
+                    where_act += " AND akv%(count)i.attributes->'%(variable)s' IS NULL " % {
+                        "count": i, 'variable': variable
                     }
                 elif operation in ("in", "not_in"):
                     # value = value[0].split(",")
@@ -76,8 +76,19 @@ class FilterToSQL:
                         if variable == "region":
                             where_act += " AND ar%(count)i.name %(op)s " % { "count": i, "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")}
                         else:
+                            if operation in ['lt', 'lte', 'gt', 'gte']:
+                                comparator = "CAST(akv%(count)i.attributes->'%(variable)s' AS NUMERIC)" % {
+                                    "count": i, 'variable': variable
+                                }
+                            else:
+                                comparator = "akv%(count)i.attributes->'%(variable)s'" % {
+                                    "count": i, 'variable': variable
+                                }
                             where_act += "  %(value)s  %(year)s " % {
-                                "value": v and " AND akv%(count)i.value %(op)s " % { "count": i, "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")}  or "",
+                                "value": v and " AND %(comparator)s %(op)s " % {
+                                    'comparator': comparator,
+                                    "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"),
+                                }  or "",
                                 "year": year and " AND akv%i.year = '%s' " % (i, year) or ""
                             }
         return where_act
