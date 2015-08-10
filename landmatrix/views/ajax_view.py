@@ -93,6 +93,7 @@ class AjaxView(View):
             field = get_field_by_key(key_id[4:])
         else:
             field = get_field_by_key(key_id)
+
         if field:
             widget = field.widget
             if widget.attrs.get("readonly", ""):
@@ -118,7 +119,6 @@ class AjaxView(View):
                     widget = widget.render(request.GET.get("name", ""), value)
                 elif isinstance(widget, Select):
                     widget = SelectMultiple()
-                    choices = field.widget.choices
                     widget.choices = field.widget.choices
                     widget = widget.render(request.GET.get("name", ""), value)
                 else:
@@ -130,4 +130,5 @@ class AjaxView(View):
                     widget = widget.render(request.GET.get("name", ""), value)
                 else:
                     widget = widget.render(request.GET.get("name", ""),  ",".join(value), attrs={"id": "id_%s"%request.GET.get("name", "")})
+
         return HttpResponse(widget, content_type="text/plain")
