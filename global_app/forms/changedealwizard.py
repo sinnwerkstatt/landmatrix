@@ -14,7 +14,7 @@ class ChangeDealGeneralForm(BaseForm):
     tg_land_area = TitleField(required=False, label="", initial=_("Land area"))
     intended_size = forms.IntegerField(required=False, label=_("Intended size"), help_text=_("ha"), widget=NumberInput)
     contract_size = YearBasedIntegerField(required=False, label=_("Current size under contract (leased or purchased area)"), help_text=_("ha"), widget=NumberInput)
-    production_size = YearBasedIntegerField(required=False, label=_("Current size in operation (production)"), help_text=_("ha"), widget=NumberInput)
+    production_size = forms.IntegerField(required=False, label=_("Current size in operation (production)"), help_text=_("ha"), widget=NumberInput)
     tg_land_area_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
     # Intention of investment
     tg_intention = TitleField(required=False, label="", initial=_("Intention of investment"))
