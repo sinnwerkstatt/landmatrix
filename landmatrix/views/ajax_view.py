@@ -60,10 +60,13 @@ class AjaxView(View):
         widget = TextInput().render(request.GET.get("name", ""), ",".join(value))
         if operation == 'is_empty':
             return HttpResponse('', content_type="text/plain")
-        elif key_id == "-1" and operation in ("in", "not_in"):
-            widget = TextInput().render(request.GET.get("name", ""), ",".join(value))
-        elif key_id == "-1" and operation not in ("in", "not_in"):
-            widget = NumberInput().render(request.GET.get("name", ""), ",".join(value))
+        # ID
+        elif key_id == "-1":
+            if operation in ("in", "not_in"):
+                widget = TextInput().render(request.GET.get("name", ""), ",".join(value))
+            else:
+                widget = NumberInput().render(request.GET.get("name", ""), ",".join(value))
+        # deal scope
         elif key_id == "-2":
             widget = CheckboxSelectMultiple()
             widget.choices = (
@@ -71,6 +74,7 @@ class AjaxView(View):
                 (20, "Transnational")
             )
             widget = widget.render(request.GET.get("name", ""), value)
+
         elif key_id == "fully_updated" or key_id == "last_modification":
             value = len(value) > 0 and value[0] or ""
             if value:
@@ -78,13 +82,17 @@ class AjaxView(View):
                     value = datetime.strptime(value, "%Y-%m-%d")
                 except:
                     value = ""
-            widget = DateWidget(options={"format": "yyyy-mm-dd"}).render(request.GET.get("name", ""), value=value, attrs={"id": "id_%s"%request.GET.get("name", "")})
+            widget = DateWidget(options={"format": "yyyy-mm-dd"}).render(
+                request.GET.get("name", ""), value=value, attrs={"id": "id_%s"%request.GET.get("name", "")}
+            )
+
         elif key_id == "fully_updated_by":
             users = User.objects.filter(groups__name__in=("Research admins", "Research assistants")).order_by("username")
             if operation in ("in", "not_in"):
                 widget = SelectMultiple(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(request.GET.get("name", ""),  value, attrs={"id": "id_%s"%request.GET.get("name", "")})
             else:
                 widget = Select(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(request.GET.get("name", ""),  len(value) == 1 and value[0] or value, attrs={"id": "id_%s"%request.GET.get("name", "")})
+        # primary investor
         elif key_id == "inv_-2":
             form = DealPrimaryInvestorForm()
             field = form.fields["primary_investor"]
@@ -95,6 +103,7 @@ class AjaxView(View):
             field = get_field_by_key(key_id[4:])
         else:
             field = get_field_by_key(key_id)
+            if int(key_id) == 5248: print(field)
 
         if field:
             widget = field.widget
