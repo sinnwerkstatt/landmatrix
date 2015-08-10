@@ -13,7 +13,7 @@ class TestAjaxView(WithStatus):
 
     example_values = {
         'id': { 'key_id': '-1', 'operation': ['not_in', 'in', 'is', 'contains'] },
-        'deal scope': { 'key_id': '-2', 'operation': ['not_in', 'in', 'is', 'contains', 'is_empty'] },
+        'deal scope': { 'key_id': '-2', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
         'crops': { 'key_id': '5248', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
         'contract farming': { 'key_id': '5266', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
         'data source type': { 'key_id': '5238', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
@@ -140,12 +140,10 @@ class TestAjaxView(WithStatus):
         return self._is_checkbox(form) or self._is_multiselect(form) or self._is_textbox(form) or self._is_url(form)     or '<ul>\n</ul>' in form
 
     def _check_form_for_contains(self, form):
-        """ TODO: tests for messed up forms from v1 too. (condition 2). change that. """
-        return self._is_textbox(form)           or self._is_checkbox(form)
+        return self._is_textbox(form)
 
     def _check_form_for_empty(self, form):
-        """ TODO: tests for messed up forms from v1 too. (condition 2, ...). change that. """
-        return self._is_radio(form)             or '<ul>\n</ul>' in form or self._is_checkbox(form) or self._is_single_select(form) or self._is_textbox(form) or self._is_url(form)
+        return self._is_radio(form) or self._is_empty(form)
 
     def _check_form_for_comparison(self, form):
         return 'type="number"' in form and 'class="year-based' not in form
@@ -168,3 +166,5 @@ class TestAjaxView(WithStatus):
     def _is_url(self, form):
         return 'type="url"' in form
 
+    def _is_empty(self, form):
+        return not form

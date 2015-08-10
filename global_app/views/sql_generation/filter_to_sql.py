@@ -74,8 +74,12 @@ class FilterToSQL:
                             v,year =  v.split("##!##")[0], v.split("##!##")[1]
                         operation_type = not v.isdigit() and 1 or 0
                         if variable == "region":
-                            where_act += " AND ar%(count)i.name %(op)s " % { "count": i, "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")}
+                            where_act += " AND ar%(count)i.name %(op)s " % {
+                                "count": i,
+                                "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")
+                            }
                         else:
+                            # TODO: that goes for 'is' too of the field is numeric. need better condition.
                             if operation in ['lt', 'lte', 'gt', 'gte']:
                                 comparator = "CAST(akv%(count)i.attributes->'%(variable)s' AS NUMERIC)" % {
                                     "count": i, 'variable': variable
@@ -88,7 +92,7 @@ class FilterToSQL:
                                 "value": v and " AND %(comparator)s %(op)s " % {
                                     'comparator': comparator,
                                     "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"),
-                                }  or "",
+                                } or "",
                                 "year": year and " AND akv%i.year = '%s' " % (i, year) or ""
                             }
         return where_act
