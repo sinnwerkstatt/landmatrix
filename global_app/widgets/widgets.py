@@ -1,3 +1,5 @@
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 from itertools import chain
 import re
@@ -12,20 +14,7 @@ from landmatrix.models import Country, PrimaryInvestor
 
 def force_unicode(string): return force_text(string)
 
-class NumberInput(forms.TextInput):
-    def render(self, name, value, attrs={}):
-        attrs.update({'type': 'number'})
-        return super(NumberInput, self).render(name, value, attrs)
 
-class DecimalInput(forms.TextInput):
-    def render(self, name, value, attrs={}):
-        attrs.update({'type': 'number', 'step': 'any'})
-        return super(DecimalInput, self).render(name, value, attrs)
-
-class CommentInput(forms.Textarea):
-    def render(self, name, value, attrs={}):
-        attrs.update({'rows': '3'})
-        return super(CommentInput, self).render(name, value, attrs)
 
 class TitleWidget(forms.TextInput):
     def __init__(self, initial, *args, **kwargs):
@@ -303,6 +292,7 @@ class YearBasedChoiceField(forms.MultiValueField):
     # def prepare_value(self, value):
     #     raise IOError, "ok"
 
+from .number_input import NumberInput
 class YearBasedTextInput(YearBasedWidget):
     def __init__(self, *args, **kwargs):
         self.help_text = kwargs.pop("help_text", "")
