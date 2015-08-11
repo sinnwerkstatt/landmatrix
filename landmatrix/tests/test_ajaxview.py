@@ -46,7 +46,10 @@ class TestAjaxView(WithStatus):
         self._test_for_specific_attribute('deal scope')
 
     def test_crops(self):
+        from global_app.views.browse_filter_conditions import BrowseFilterConditions
+        BrowseFilterConditions.DEBUG = True
         self._test_for_specific_attribute('crops')
+        BrowseFilterConditions.DEBUG = False
 
     def test_contract_farming(self):
         self._test_for_specific_attribute('contract farming')
@@ -124,9 +127,9 @@ class TestAjaxView(WithStatus):
             'contains': self._check_form_for_contains,
             'is_empty': self._check_form_for_empty,
             'lt': self._check_form_for_comparison,
-            'le': self._check_form_for_comparison,
+            'lte': self._check_form_for_comparison,
             'gt': self._check_form_for_comparison,
-            'ge': self._check_form_for_comparison,
+            'gte': self._check_form_for_comparison,
         }
         if not checks[op](form): print(checks[op], form)
         self.assertTrue(checks[op](form))
@@ -136,8 +139,7 @@ class TestAjaxView(WithStatus):
         return True or not self._is_checkbox(form) and not self._is_multiselect(form)
 
     def _check_form_for_in(self, form):
-        """ TODO: tests for messed up forms from v1 too. (condition 5). change that. """
-        return self._is_checkbox(form) or self._is_multiselect(form) or self._is_textbox(form) or self._is_url(form)     or '<ul>\n</ul>' in form
+        return self._is_checkbox(form) or self._is_multiselect(form) or self._is_textbox(form) or self._is_url(form)
 
     def _check_form_for_contains(self, form):
         return self._is_textbox(form)
