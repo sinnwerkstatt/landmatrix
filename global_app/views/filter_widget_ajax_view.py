@@ -5,6 +5,8 @@ from global_app.views.browse_filter_conditions import get_field_by_key
 from global_app.widgets import LocationWidget, YearBasedSelect, YearBasedMultipleSelect, NumberInput
 from global_app.forms import DealPrimaryInvestorForm
 
+from cms.models.permissionmodels import User
+
 from django.http import HttpResponse
 from django.views.generic.edit import View
 from django.forms import TextInput, CheckboxSelectMultiple, HiddenInput, SelectMultiple, RadioSelect, Select
