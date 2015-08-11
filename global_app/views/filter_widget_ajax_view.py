@@ -3,7 +3,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from global_app.views.browse_filter_conditions import get_field_by_key
 from global_app.widgets import LocationWidget, YearBasedSelect, YearBasedMultipleSelect, NumberInput
-from global_app.forms import DealPrimaryInvestorForm
+from global_app.forms.deal_primary_investor_form import DealPrimaryInvestorForm
 
 from cms.models.permissionmodels import User
 

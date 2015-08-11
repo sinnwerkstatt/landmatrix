@@ -1,8 +1,12 @@
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from global_app.forms.changedealwizard import *
 from global_app.forms.adddealwizard import *
 from global_app.forms import DealHistoryForm
+from global_app.forms.deal_primary_investor_form import DealPrimaryInvestorForm
+from global_app.forms.deal_secondary_investor_formset import DealSecondaryInvestorFormSet
+
 
 from django.db.models.fields import IntegerField
 
