@@ -156,7 +156,7 @@ def get_field_by_key(key):
 
     if key.isnumeric():
         key = get_key_from_id(int(key))
-    for i, form in CHANGE_FORMS:
+    for form in CHANGE_FORMS:
         form = hasattr(form, "form") and form.form or form
         if key in form.base_fields:
             debug_found_form(form, key)
@@ -178,20 +178,20 @@ debug_found_form.printed = False
 
 
 CHANGE_FORMS = [
-    ("spatial_data", ChangeDealSpatialFormSet),
-    ("general_information", ChangeDealGeneralForm),
-    ("employment", ChangeDealEmploymentForm),
-    ("investor_info", DealSecondaryInvestorFormSet),
-    ("data_sources", ChangeDealDataSourceFormSet),
-    ("local_communities", DealLocalCommunitiesForm),
-    ("former_use", DealFormerUseForm),
-    ("produce_info", DealProduceInfoForm),
-    ("water", DealWaterForm),
-    ("gender-related_info", DealGenderRelatedInfoForm),
-    ("overall_comment", ChangeDealOverallCommentForm),
-    ("action_comment", ChangeDealActionCommentForm),
-    ("history", DealHistoryForm),
-    ('primary_investor', DealPrimaryInvestorForm)
+    ChangeDealSpatialFormSet,
+    ChangeDealGeneralForm,
+    ChangeDealEmploymentForm,
+    DealSecondaryInvestorFormSet,
+    ChangeDealDataSourceFormSet,
+    DealLocalCommunitiesForm,
+    DealFormerUseForm,
+    DealProduceInfoForm,
+    DealWaterForm,
+    DealGenderRelatedInfoForm,
+    ChangeDealOverallCommentForm,
+    ChangeDealActionCommentForm,
+    DealHistoryForm,
+    DealPrimaryInvestorForm
 ]
 
 
