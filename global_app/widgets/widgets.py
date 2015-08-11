@@ -1,7 +1,7 @@
+from global_app.widgets.year_based_text_input import YearBasedTextInput
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from global_app.widgets.nested_checkbox_select_multiple import NestedCheckboxSelectMultiple
 
 
 from itertools import chain
@@ -10,216 +10,12 @@ import re
 from django.utils.html import escape, conditional_escape
 from django import forms
 from django.utils.safestring import mark_safe
-from django.utils.encoding import force_text, smart_text
+from django.utils.encoding import force_text
 
 from landmatrix.models import Country
 
 
-
-class NestedMultipleChoiceField(forms.MultipleChoiceField):
-    widget = NestedCheckboxSelectMultiple
-    def valid_value(self, value):
-        "Check to see if the provided value is a valid choice"
-        for k, v, c in self.choices:
-            if isinstance(v, (list, tuple)):
-                # This is an optgroup, so look inside the group for options
-                for k2, v2 in v:
-                    if value == smart_text(k2):
-                        return True
-            else:
-                if value == smart_text(k):
-                    return True
-                elif c:
-                    for k2, v2 in c:
-                        if value == smart_text(k2):
-                            return True
-        return False
-
-    def get_value(self, key):
-        for k, v, c in self.choices:
-            if isinstance(v, (list, tuple)):
-                # This is an optgroup, so look inside the group for options
-                for k2, v2 in v:
-                    if key == smart_text(k2):
-                        return v2
-            else:
-                if key == smart_text(k):
-                    return v
-                elif c:
-                    for k2, v2 in c:
-                        if k == smart_text(k2):
-                            return v2
-
-class YearBasedWidget(forms.MultiWidget):
-    year_based = True
-
-    def render_for_template(self):
-        raise Exception(self.attrs)
-
-    def get_widgets(self):
-        return []
-
-    def render(self, name, value, attrs={}):
-        # update widgets
-        if value:
-            self.widgets = []
-            value = isinstance(value, (list, tuple)) and value or self.decompress(value)
-            for i in range(int(len(value)/2)):
-                self.widgets.extend(self.get_widgets())
-
-        if self.is_localized:
-            for widget in self.widgets:
-                widget.is_localized = self.is_localized
-        # value is a list of values, each corresponding to a widget
-        # in self.widgets.
-        if not isinstance(value, list):
-            value = self.decompress(value)
-        output = []
-        final_attrs = self.build_attrs(attrs)
-        id_ = final_attrs.get('id', None)
-        helptext = self.help_text and "<span class=\"helptext add-on last\">%s</span>" % str(self.help_text) or ""
-        widgets_count = len(self.widgets)
-        for i, widget in enumerate(self.widgets):
-            try:
-                widget_value = value[i]
-            except IndexError:
-                widget_value = None
-            if id_:
-                final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))
-            output.append(widget.render(name + '_%s' % i, widget_value, final_attrs))
-            # Append helptext and close reopen div every second element
-            if ((i+1) % 2 == 0):
-                output.append(helptext)
-                # Add "Add more" button to first row
-                if i == 1:
-                    output.append('<a href="javascript:;" class="btn add-ybd add-row"><i class="icon-plus"></i> Add more</a>')
-                    output.append('<a href="javascript:;" class="btn remove-ybd delete-row" style="display:none;"><i class="icon-remove"></i> Remove</a>')
-                else:
-                    output.append('<a href="javascript:;" class="btn remove-ybd delete-row"><i class="icon-remove"></i> Remove</a>')
-                if (i+1) < widgets_count:
-                    output.append('</div><div class="input-append">')
-        return mark_safe(self.format_output(output))
-
-class YearBasedSelect(YearBasedWidget):
-    def __init__(self, *args, **kwargs):
-        self.choices = kwargs.pop("choices")
-        self.help_text = kwargs.pop("help_text", "")
-        kwargs["widgets"] = self.get_widgets()
-        super(YearBasedSelect, self).__init__(*args, **kwargs)
-
-    def get_widgets(self):
-        return [
-            forms.Select(choices=self.choices, attrs={"class": "year-based"}),
-            forms.TextInput(attrs={"class": "year-based-year"})
-        ]
-
-    def decompress(self, value):
-        if value:
-            splitted = re.split("[:\|]", value)
-            return len(splitted) == 1 and splitted.append(None) or splitted
-        return [None, None]
-
-    def format_output(self, rendered_widgets):
-        return u''.join(rendered_widgets)
-
-    def value_from_datadict(self, data, files, name):
-        #return [widget.value_from_datadict(data, files, name + '_%s' % i) for i, widget in enumerate(self.widgets)]
-        value = [data[k] for k in sorted(filter(lambda o: re.match(r"%s_\d+"%name,o), data))]
-        return value
-
-
-class YearBasedMultipleSelect(YearBasedWidget):
-    def __init__(self, *args, **kwargs):
-        self.choices = kwargs.pop("choices")
-        # Remove empty option
-        self.choices = filter(lambda c: c[0] != 0, self.choices)
-        self.help_text = kwargs.pop("help_text", "")
-        kwargs["widgets"] = self.get_widgets()
-        super(YearBasedMultipleSelect, self).__init__(*args, **kwargs)
-
-    def get_widgets(self):
-        return [
-            forms.CheckboxSelectMultiple(choices=self.choices, attrs={"class": "year-based"}),
-            forms.TextInput(attrs={"class": "year-based-year"})
-        ]
-
-    def decompress(self, value):
-        if value:
-            splitted = re.split("[:\|]", value)
-            return len(splitted) == 1 and splitted.append(None) or splitted
-        return [None, None]
-
-    def format_output(self, rendered_widgets):
-        return u''.join(rendered_widgets)
-
-    def value_from_datadict(self, data, files, name):
-        #return [widget.value_from_datadict(data, files, name + '_%s' % i) for i, widget in enumerate(self.widgets)]
-        value = [data[k] for k in sorted(filter(lambda o: re.match(r"%s_\d+"%name,o), data))]
-        return value
-
-
-class YearBasedChoiceField(forms.MultiValueField):
-    def __init__(self, *args, **kwargs):
-        self.choices = kwargs["choices"]
-        kwargs["fields"] = [forms.ChoiceField(choices=kwargs["choices"], required=False), forms.CharField(required=False)]
-        kwargs["widget"] = YearBasedSelect(choices=kwargs.pop("choices"),help_text=kwargs.pop("help_text", ""))
-        super(YearBasedChoiceField, self).__init__(*args, **kwargs)
-
-    def clean(self, value):
-        # update fields
-        if value:
-            self.fields = []
-            for i in range(len(value)/2):
-                self.fields.extend([forms.ChoiceField(choices=self.choices, required=False), forms.CharField(required=False)])
-        return super(YearBasedChoiceField, self).clean(value)
-
-    def compress(self, data_list):
-        if data_list:
-            yb_data = []
-            for i in range(len(data_list)/2):
-                if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1])))
-            return "|".join(yb_data)
-        else:
-            self.fields = [forms.ChoiceField(choices=self.choices, required=False), forms.CharField(required=False)]
-
-    # def prepare_value(self, value):
-    #     raise IOError, "ok"
-
 from .number_input import NumberInput
-class YearBasedTextInput(YearBasedWidget):
-    def __init__(self, *args, **kwargs):
-        self.help_text = kwargs.pop("help_text", "")
-        kwargs["widgets"] = self.get_widgets()
-        super(YearBasedTextInput, self).__init__(*args, **kwargs)
-
-    def get_widgets(self):
-        return [
-            NumberInput(attrs={"class": "year-based"}),
-            NumberInput(attrs={"class": "year-based-year"})
-        ]
-
-    def decompress(self, value):
-        if value:
-            sorted_values = sorted(value.split("|"), key=lambda v: v.split(":")[1] and int(v.split(":")[1]) or 0)
-            splitted = []
-            for s in sorted_values:
-                splitted.extend(s.split(":"))
-            return len(splitted) == 1 and splitted.append(None) or splitted
-        return [None, None]
-
-    def format_output(self, rendered_widgets):
-        return u''.join(rendered_widgets)
-
-    def value_from_datadict(self, data, files, name):
-        #return [widget.value_from_datadict(data, files, name + '_%s' % i) for i, widget in enumerate(self.widgets)]
-        value = [data[k] for k in sorted(filter(lambda o: re.match(r"%s_\d+"%name,o), data))]
-
-        # update widgets
-        self.widgets = []
-        for i in range(len(value)/2):
-            self.widgets.extend([NumberInput(attrs={"class": "year-based"}), NumberInput(attrs={"class": "year-based-year"})])
-        return value
 
 class YearBasedIntegerField(forms.MultiValueField):
     def __init__(self, *args, **kwargs):
@@ -303,7 +99,7 @@ class YearBasedBooleanField(forms.MultiValueField):
 
 class CountrySelect(forms.Select):
     def render_option(self, selected_choices, option_value, option_label):
-        option_value = force_unicode(option_value)
+        option_value = force_text(option_value)
         if option_value in selected_choices:
             selected_html = u' selected="selected"'
             if not self.allow_multiple_selected:
@@ -317,7 +113,7 @@ class CountrySelect(forms.Select):
             code = ""
         return u'<option value="%s" title="%s" %s>%s</option>' % (
             escape(option_value), code, selected_html,
-            conditional_escape(force_unicode(option_label)))
+            conditional_escape(force_text(option_label)))
 
 class CountryField(forms.ModelChoiceField):
     widget = CountrySelect(attrs={"readonly":"readonly"})
@@ -361,10 +157,10 @@ class LivesearchSelect(forms.RadioSelect):
         has_id = attrs and 'id' in attrs
         final_attrs = self.build_attrs(attrs, name=name)
         output.append(u'<ul style="display:none">')
-        value = force_unicode(value)
+        value = force_text(value)
         for i, (option_value, option_label) in enumerate(chain(self.choices, choices)):
-            option_value = force_unicode(option_value)
-            option_label = conditional_escape(force_unicode(option_label))
+            option_value = force_text(option_value)
+            option_label = conditional_escape(force_text(option_label))
             output.append(u'<li><a href="#%s" %s>%s</a></li>' % (
                 option_value,
                 option_value == value and "class=\"active\"" or "",
@@ -381,10 +177,10 @@ class LivesearchSelectMultiple(forms.CheckboxSelectMultiple):
         final_attrs = self.build_attrs(attrs, name=name)
         output.append(u'<ul>')
         # Normalize to strings
-        str_values = set([force_unicode(v.id) for v in value])
+        str_values = set([force_text(v.id) for v in value])
         for i, (option_value, option_label) in enumerate(chain(self.choices, choices)):
-            option_value = force_unicode(option_value)
-            option_label = conditional_escape(force_unicode(option_label))
+            option_value = force_text(option_value)
+            option_label = conditional_escape(force_text(option_label))
             output.append(u'<li><a href="#%s" %s>%s</a>%s</li>' % (
                 option_value,
                 option_value in str_values and "class=\"selected-subsidiary\"" or "",
