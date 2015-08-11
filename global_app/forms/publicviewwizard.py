@@ -1,5 +1,8 @@
 from global_app.forms import *
+from global_app.forms.deal_data_source_form import DealDataSourceForm
 from global_app.forms.deal_spatial_form import DealSpatialForm
+
+from django.forms.models import formset_factory
 
 """
 Readonly and limited to the following fields:
@@ -18,6 +21,7 @@ Investor countries
 #Contract farming
 Crops
 """
+
 
 class PublicViewDealSpatialForm(DealSpatialForm):
 
