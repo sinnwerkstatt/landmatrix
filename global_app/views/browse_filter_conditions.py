@@ -1,12 +1,13 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from global_app.forms.changedealwizard import *
-from global_app.forms.adddealwizard import *
 from global_app.forms import DealHistoryForm
 from global_app.forms.deal_primary_investor_form import DealPrimaryInvestorForm
 from global_app.forms.deal_secondary_investor_formset import DealSecondaryInvestorFormSet
 from global_app.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from global_app.forms.deal_former_use_form import DealFormerUseForm
+from global_app.forms.deal_water_form import DealWaterForm
+from global_app.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
 
 from django.db.models.fields import IntegerField
 
@@ -151,35 +152,39 @@ def get_field_by_key(key):
     for i, form in CHANGE_FORMS:
         form = hasattr(form, "form") and form.form or form
         if key in form.base_fields:
-            if 'crop' in key and BrowseFilterConditions.DEBUG and not get_field_by_key.printed and False:
-                from pprint import pprint
-                get_field_by_key.printed = True
-                pprint(key)
-                pprint(type(form()))
-                pprint(vars(form()))
-                pprint(type(form().fields[key]))
-                pprint(vars(form().fields[key]))
+            debug_found_form(form, key)
             return form().fields[key]
 
     return None
 
-get_field_by_key.printed = False
+
+def debug_found_form(form, key):
+    from pprint import pprint
+    if BrowseFilterConditions.DEBUG and not debug_found_form.printed:
+        debug_found_form.printed = True
+        pprint(key)
+        pprint(type(form()))
+        pprint(vars(form()))
+        pprint(type(form().fields[key]))
+        pprint(vars(form().fields[key]))
+debug_found_form.printed = False
+
 
 CHANGE_FORMS = [
-        ("spatial_data", ChangeDealSpatialFormSet),
-        ("general_information", ChangeDealGeneralForm),
-        ("employment", ChangeDealEmploymentForm),
-        ("investor_info", DealSecondaryInvestorFormSet),
-        ("data_sources", ChangeDealDataSourceFormSet),
-        ("local_communities", DealLocalCommunitiesForm),
-        ("former_use", DealFormerUseForm),
-        ("produce_info", DealProduceInfoForm),
-        ("water", DealWaterForm),
-        ("gender-related_info", DealGenderRelatedInfoForm),
-        ("overall_comment", ChangeDealOverallCommentForm),
-        ("action_comment", ChangeDealActionCommentForm),
-        ("history", DealHistoryForm),
-        ('primary_investor', DealPrimaryInvestorForm)
+    ("spatial_data", ChangeDealSpatialFormSet),
+    ("general_information", ChangeDealGeneralForm),
+    ("employment", ChangeDealEmploymentForm),
+    ("investor_info", DealSecondaryInvestorFormSet),
+    ("data_sources", ChangeDealDataSourceFormSet),
+    ("local_communities", DealLocalCommunitiesForm),
+    ("former_use", DealFormerUseForm),
+    ("produce_info", DealProduceInfoForm),
+    ("water", DealWaterForm),
+    ("gender-related_info", DealGenderRelatedInfoForm),
+    ("overall_comment", ChangeDealOverallCommentForm),
+    ("action_comment", ChangeDealActionCommentForm),
+    ("history", DealHistoryForm),
+    ('primary_investor', DealPrimaryInvestorForm)
 ]
 
 
