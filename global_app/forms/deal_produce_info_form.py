@@ -42,3 +42,14 @@ class DealProduceInfoForm(BaseForm):
         (20, _("No")),
     ), widget=forms.RadioSelect)
     tg_in_country_processing_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+
+
+class PublicViewDealProduceInfoForm(DealProduceInfoForm):
+
+    class Meta:
+        fields = (
+            "tg_crop_animal_mineral", "crops",
+        )
+        readonly_fields = (
+            "tg_crop_animal_mineral", "crops",
+        )
