@@ -1,8 +1,12 @@
 from django.utils.translation import ugettext_lazy as _
 
 from global_app.forms import *
+from global_app.forms.add_deal_action_comment_form import AddDealActionCommentForm
 from global_app.forms.add_deal_data_source_formset import AddDealDataSourceFormSet
 from global_app.forms.add_deal_spatial_formset import AddDealSpatialFormSet
+from global_app.forms.add_investor_form import AddInvestorForm
+from global_app.widgets import NestedMultipleChoiceField, YearBasedChoiceField, YearBasedIntegerField
+from landmatrix.models.currency import Currency
 
 
 class ChangeDealSpatialFormSet(AddDealSpatialFormSet):
