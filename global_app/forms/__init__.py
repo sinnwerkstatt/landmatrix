@@ -1,5 +1,4 @@
 
-from .publicdealwizard import *
 from .publicviewwizard import *
 
 from .base_form import BaseForm
