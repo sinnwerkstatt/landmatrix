@@ -11,50 +11,24 @@ from django.forms import TextInput, CheckboxSelectMultiple, HiddenInput, SelectM
 
 from datetimewidget.widgets import DateWidget
 
-class AjaxView(View):
+
+class FilterWidgetAjaxView(View):
+
     def dispatch(self, request, *args, **kwargs):
+        """ render form to enter values for the requested field in the filter widget for the grid view
+            form to select operations is updated by the javascript function update_widget() in /media/js/main.js
+        """
         action = kwargs.get("action", "values")
         if action == "values":
             return self.render_widget_values(request)
-        elif action == "operators":
-            return self.render_widget_operators(request)
-
-    def render_widget_operators(self, request):
-        key_id = request.GET.get("key_id", "")
-        value = request.GET.get("value", "")
-        name = request.GET.get("name", "")
-        widget = None
-        if key_id == "inv_-2":
-            form = DealPrimaryInvestorForm()
-            field = form.fields["primary_investor"]
-        elif "inv_" in key_id:
-            field = get_field_by_sh_key_id(key_id[4:])
-        else:
-            field = get_field_by_a_key_id(key_id)
-        if field or key_id in("-1", "fully_updated", "fully_updated_by", "last_modification"):
-            operator = BrowseConditionForm().fields.get("operator")
-            choices = operator.choices
-            new_choices = []
-            if key_id in ("-1", "-3") or type(field.widget) == NumberInput:
-                for c in choices:
-                    if c[0] in ("", "lt", "gt", "gte", "lte", "is", "is_empty"):
-                        new_choices.append(c)
-            else:
-                for c in choices:
-                    if c[0] in ("", "not_in", "in", "is", "contains", "is_empty"):
-                        new_choices.append(c)
-            operator.choices = new_choices
-            widget = operator.widget.render(name, value)
-        return HttpResponse(widget, mimetype="text/plain")
-
-
 
     def render_widget_values(self, request):
-        """FIXME: Cleanup this method"""
+
+        # TODO: Cleanup this hog of a method
+
         value = request.GET.get("value", "")
         key_id = request.GET.get("key_id", "")
         operation = request.GET.get("operation", "")
-        widget = None
         field = None
         value = value and value.split(",") or []
         widget = TextInput().render(request.GET.get("name", ""), ",".join(value))
@@ -103,7 +77,7 @@ class AjaxView(View):
             field = get_field_by_key(key_id[4:])
         else:
             field = get_field_by_key(key_id)
-            if int(key_id) == 5248: print(field)
+#            if int(key_id) == 5248: print(field)
 
         if field:
             widget = field.widget
