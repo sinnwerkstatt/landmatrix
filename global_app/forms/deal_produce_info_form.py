@@ -3,7 +3,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from .base_form import BaseForm
 
-from global_app.widgets import TitleField, NumberInput, CommentInput
+from global_app.widgets import TitleField, CommentInput, NumberInput
 from landmatrix.models.animal import Animal
 from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
