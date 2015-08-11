@@ -1,36 +1,14 @@
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from django.utils.translation import ugettext_lazy as _
+from global_app.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
+from global_app.widgets import TitleField, CommentInput
+
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 # TODO: fix
 #from captcha.fields import ReCaptchaField
 
-from global_app.forms.add_deal_employment_form import AddDealEmploymentForm
-from global_app.forms.add_deal_general_form import AddDealGeneralForm
-from global_app.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
-from global_app.widgets import TitleField, CommentInput
-
-
-class AddDealGeneralPublicForm(AddDealGeneralForm):
-
-    class Meta:
-
-        fields = (
-            "tg_land_area", "intended_size", "tg_land_area_comment",
-            "tg_intention", "intention", "tg_intention_comment",
-            "tg_implementation_status", "implementation_status", "tg_implementation_status_comment",
-            "tg_negotiation_status", "negotiation_status", "tg_negotiation_status_comment",
-            "tg_purchase_price", "purchase_price", "purchase_price_currency", "purchase_price_type", "purchase_price_area", "tg_purchase_price_comment",
-            )
-
-class DealEmploymentPublicForm(AddDealEmploymentForm):
-
-    class Meta:
-
-        fields = (
-            "tg_foreign_jobs_created", "foreign_jobs_created", "foreign_jobs_planned", "tg_foreign_jobs_created_comment",
-            "tg_domestic_jobs_created", "domestic_jobs_created", "domestic_jobs_planned", "tg_domestic_jobs_created_comment",
-            )
 
 class PublicUserInformationForm(AddDealOverallCommentForm):
     tg_public_user = TitleField(required=False, label="", initial=_("User information"))
