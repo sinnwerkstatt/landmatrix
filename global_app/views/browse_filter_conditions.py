@@ -147,8 +147,9 @@ def get_field_by_key(key):
     for i, form in CHANGE_FORMS:
         form = hasattr(form, "form") and form.form or form
         if key in form.base_fields:
-            if 'crop' in key:
+            if 'crop' in key and BrowseFilterConditions.DEBUG and not get_field_by_key.printed:
                 from pprint import pprint
+                get_field_by_key.printed = True
                 pprint(key)
                 pprint(type(form()))
                 pprint(vars(form()))
@@ -157,6 +158,8 @@ def get_field_by_key(key):
             return form().fields[key]
 
     return None
+
+get_field_by_key.printed = False
 
 CHANGE_FORMS = [
         ("spatial_data", ChangeDealSpatialFormSet),
