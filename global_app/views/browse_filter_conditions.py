@@ -8,6 +8,12 @@ from global_app.forms.deal_local_communities_form import DealLocalCommunitiesFor
 from global_app.forms.deal_former_use_form import DealFormerUseForm
 from global_app.forms.deal_water_form import DealWaterForm
 from global_app.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
+from global_app.forms.deal_spatial_form import ChangeDealSpatialFormSet
+from global_app.forms.change_deal_general_form import ChangeDealGeneralForm
+from global_app.widgets import NestedMultipleChoiceField
+from global_app.forms.change_deal_employment_form import ChangeDealEmploymentForm
+from global_app.forms.deal_data_source_form import ChangeDealDataSourceFormSet
+from global_app.forms.change_deal_action_comment_form import ChangeDealActionCommentForm
 
 from django.db.models.fields import IntegerField
 
