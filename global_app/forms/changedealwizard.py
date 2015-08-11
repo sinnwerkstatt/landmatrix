@@ -1,7 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
-from django import forms
 
 from global_app.forms import *
+from global_app.forms.add_deal_data_source_formset import AddDealDataSourceFormSet
 from global_app.forms.add_deal_spatial_formset import AddDealSpatialFormSet
 
 
