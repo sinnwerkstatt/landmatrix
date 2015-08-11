@@ -32,10 +32,7 @@ class TestFilterWidgetAjaxView(WithStatus):
         'fully updated': { 'key_id': 'fully_updated', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
         'current size in operation': { 'key_id': '5282', 'operation': ['is', 'is_empty', 'lt', 'gt', 'lte', 'gte']},
         'current size under contract': { 'key_id': '5264', 'operation': ['is', 'is_empty', 'lt', 'gt', 'lte', 'gte']},
-    }
-
-    fails_in_v1 = {
-        'fully updated by': { 'key_id': 'fully_updated_by', 'operation': ['in'] }, # User model not present
+        'fully updated by': { 'key_id': 'fully_updated_by', 'operation': ['not_in', 'in', 'is', 'is_empty'] }, # User model not present
     }
 
     def test_id(self):
@@ -104,7 +101,7 @@ class TestFilterWidgetAjaxView(WithStatus):
     def test_current_size_under_contract(self):
         self._test_for_specific_attribute('current size under contract')
 
-    def DISABLED_test_fully_updated_by(self):
+    def test_fully_updated_by(self):
         self._test_for_specific_attribute('fully updated by')
 
     def _test_for_specific_attribute(self, attribute):
