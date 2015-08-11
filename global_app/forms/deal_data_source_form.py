@@ -133,3 +133,18 @@ class ChangeDealDataSourceFormSet(AddDealDataSourceFormSet):
 
     extra = 0
 
+
+class PublicViewDealDataSourceForm(DealDataSourceForm):
+
+    class Meta:
+        fields = (
+            "tg_data_source", "type", "url", "company", "date"
+        )
+        readonly_fields = (
+            "tg_data_source", "type", "url", "company", "date"
+        )
+
+
+PublicViewDealDataSourceFormSet = formset_factory(
+    PublicViewDealDataSourceForm, formset=AddDealDataSourceFormSet, extra=0
+)
