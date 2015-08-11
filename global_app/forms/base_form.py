@@ -1,8 +1,15 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django import forms
+from django.utils.html import conditional_escape
+from django.utils.encoding import force_text
+from django.utils.safestring import mark_safe
+
+from copy import copy, deepcopy
+import re
 
 class BaseForm(forms.Form):
+
     error_css_class = "error"
 
     def as_ul(self):
@@ -32,8 +39,8 @@ class BaseForm(forms.Form):
             bf_errors = self.error_class([conditional_escape(error) for error in bf.errors]) # Escape and cache in local variable.
             if bf.is_hidden:
                 if bf_errors:
-                    top_errors.extend([u'(Hidden field %s) %s' % (name, force_unicode(e)) for e in bf_errors])
-                hidden_fields.append(unicode(bf))
+                    top_errors.extend([u'(Hidden field %s) %s' % (name, force_text(e)) for e in bf_errors])
+                hidden_fields.append(str(bf))
             else:
                 # Create a 'class="..."' atribute if the row should have any
                 # CSS classes applied.
@@ -43,10 +50,10 @@ class BaseForm(forms.Form):
                     html_class_attr = ' class="%s"' % css_classes
 
                 if errors_on_separate_row and bf_errors:
-                    output.append(error_row % force_unicode(bf_errors))
+                    output.append(error_row % force_text(bf_errors))
 
                 if bf.label:
-                    label = conditional_escape(force_unicode(bf.label))
+                    label = conditional_escape(force_text(bf.label))
                     # Only add the suffix if the label does not end in
                     # punctuation.
                     if self.label_suffix:
@@ -57,13 +64,13 @@ class BaseForm(forms.Form):
                     label = ''
 
                 if field.help_text:
-                    help_text = help_text_html % force_unicode(field.help_text)
+                    help_text = help_text_html % force_text(field.help_text)
                 else:
                     help_text = u''
 
                 output.append(normal_row % {
-                    'errors': force_unicode(bf_errors),
-                    'label': force_unicode(label),
+                    'errors': force_text(bf_errors),
+                    'label': force_text(label),
                     'field': str(bf),
                     'help_text': help_text,
                     'html_class_attr': html_class_attr,
@@ -71,7 +78,7 @@ class BaseForm(forms.Form):
                 })
 
         if top_errors:
-            output.insert(0, error_row % force_unicode(top_errors))
+            output.insert(0, error_row % force_text(top_errors))
 
         if hidden_fields: # Insert any hidden fields in the last row.
             str_hidden = u''.join(hidden_fields)
@@ -124,7 +131,7 @@ class BaseForm(forms.Form):
                     taggroup["comment"] = ""
             else:
                 tag = {
-                    "key": unicode(n)
+                    "key": str(n)
                 }
                 if n == "investment_ratio":
                     taggroup["investment_ratio"] = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
@@ -143,13 +150,13 @@ class BaseForm(forms.Form):
                         if v:
                             v = int(v)
                             try:
-                                tag["value"] = unicode(dict([i[:2] for i in f.choices])[v])
+                                tag["value"] = str(dict([i[:2] for i in f.choices])[v])
                             except:
                                 tag["value"] = None
                             if isinstance(f, NestedMultipleChoiceField) and not tag["value"]:
                                 for choice in f.choices:
                                     try:
-                                        tag["value"] = unicode(dict([i[:2] for i in choice[2]])[v])
+                                        tag["value"] = str(dict([i[:2] for i in choice[2]])[v])
                                         if tag["value"]:
                                             break
                                     except:
@@ -173,7 +180,7 @@ class BaseForm(forms.Form):
                         else:
                             try:
                                 tag["value"] = int(value)
-                                tag["value"] = unicode(dict(f.choices).get(tag["value"]))
+                                tag["value"] = str(dict(f.choices).get(tag["value"]))
                                 if tag["value"]:
                                     taggroup["tags"].append(tag)
                             except:
@@ -192,7 +199,7 @@ class BaseForm(forms.Form):
                                     if isinstance(f.fields[0], forms.ChoiceField):
                                         try:
                                             tag["value"] = int(value)
-                                            tag["value"] = unicode(dict(f.fields[0].choices).get(tag["value"]))
+                                            tag["value"] = str(dict(f.fields[0].choices).get(tag["value"]))
                                         except:
                                             raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
                                     else:
@@ -201,7 +208,7 @@ class BaseForm(forms.Form):
                                     tag["year"] = year
                                 taggroup["tags"].append(tag)
                                 tag = {
-                                    "key": unicode(n)
+                                    "key": str(n)
                                 }
                 elif isinstance(f, forms.FileField):
                     tag["value"] = self.is_valid() and self.cleaned_data.get(n) and hasattr(self.cleaned_data.get(n), "name") and self.cleaned_data.get(n).name or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
@@ -295,9 +302,9 @@ class BaseForm(forms.Form):
                 if not taggroup:
                     continue
                 if isinstance(taggroup, SH_Tag_Group):
-                    tags = taggroup.sh_tag_set.filter(fk_sh_key__key=unicode(n))
+                    tags = taggroup.sh_tag_set.filter(fk_sh_key__key=str(n))
                 else:
-                    tags = taggroup.a_tag_set.filter(fk_a_key__key=unicode(n))
+                    tags = taggroup.a_tag_set.filter(fk_a_key__key=str(n))
                 if len(tags) > 0:
                     if isinstance(f, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
                         values = []
@@ -309,13 +316,13 @@ class BaseForm(forms.Form):
                             value = ""
                             for k, v in [i[:2] for i in f.choices]:
                                 if v == l:
-                                    value = unicode(k)
+                                    value = str(k)
                                     break
                             if isinstance(f, NestedMultipleChoiceField) and not value:
                                 for choice in f.choices:
                                     for k, v in [i[:2] for i in choice[2] or []]:
                                         if v == l:
-                                            value = unicode(k)
+                                            value = str(k)
                                             break
                             if value:
                                 values.append(value)
@@ -334,7 +341,7 @@ class BaseForm(forms.Form):
                                 if isinstance(f.fields[0], forms.ChoiceField):
                                     for k, v in f.fields[0].choices:
                                         if v == value:
-                                            value = unicode(k)
+                                            value = str(k)
                                             break
                                 if year or value:
                                     yb_data.append("%s:%s" % (value or "", year or ""))
@@ -349,7 +356,7 @@ class BaseForm(forms.Form):
                             if isinstance(f, forms.ChoiceField):
                                 for k, v in f.choices:
                                     if v == value:
-                                        value = unicode(k)
+                                        value = str(k)
                                         break
                                 data[pn] = value
                             elif isinstance(f, forms.DateField):

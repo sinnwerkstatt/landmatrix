@@ -1,4 +1,5 @@
 from global_app.forms import *
+from global_app.forms.deal_spatial_form import DealSpatialForm
 
 """
 Readonly and limited to the following fields:
