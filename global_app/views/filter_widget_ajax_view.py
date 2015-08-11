@@ -77,7 +77,6 @@ class FilterWidgetAjaxView(View):
             field = get_field_by_key(key_id[4:])
         else:
             field = get_field_by_key(key_id)
-#            if int(key_id) == 5248: print(field)
 
         if field:
             widget = field.widget
