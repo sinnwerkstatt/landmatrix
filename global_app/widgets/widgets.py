@@ -1,4 +1,7 @@
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
+from global_app.widgets.nested_checkbox_select_multiple import NestedCheckboxSelectMultiple
 
 
 from itertools import chain
@@ -6,121 +9,12 @@ import re
 
 from django.utils.html import escape, conditional_escape
 from django import forms
-from django.forms.util import flatatt
 from django.utils.safestring import mark_safe
-from django.utils.encoding import force_text
+from django.utils.encoding import force_text, smart_text
 
-from landmatrix.models import Country, PrimaryInvestor
-
-def force_unicode(string): return force_text(string)
+from landmatrix.models import Country
 
 
-
-class TitleWidget(forms.TextInput):
-    def __init__(self, initial, *args, **kwargs):
-        self.initial = initial
-        super(TitleWidget, self).__init__(*args, **kwargs)
-
-    def render(self, name, value, attrs={}):
-        return "<h3>%s</h3>" % str(self.initial or "")
-
-class TitleField(forms.CharField):
-    widget = forms.HiddenInput
-
-    def __init__(self, *args, **kwargs):
-        self.widget = TitleWidget(initial=kwargs.get("initial"))
-        super(TitleField, self).__init__(*args, **kwargs)
-
-class UserModelChoiceField(forms.ModelChoiceField):
-    """
-    Extend ModelChoiceField for users so that the choices are
-    listed as 'first_name last_name (username)' instead of just
-    'username'.
-
-    """
-    def label_from_instance(self, obj):
-        return "%s" % obj.get_full_name() or obj.username
-
-class LocationWidget(forms.TextInput):
-    def render(self, name, value, attrs={}):
-        final_attrs = self.build_attrs(attrs, name=name)
-        return """
-        <input id="id_%(name)s" name="%(name)s" type="text" value="%(value)s" %(attrs)s/>
-        <div class="map" style="width:470px; height:400px; margin-bottom: 30px;"></div>
-        """ % {
-            "name": str(name or ""),
-            "value": str(value or ""),
-            "attrs": flatatt(final_attrs)
-        }
-
-class NestedCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
-    def render(self, name, value, attrs={}, choices=()):
-        if value is None: value = []
-        has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
-        output = [u'<ul>']
-        # Normalize to strings
-        str_values = set([force_unicode(v) for v in value])
-        for i, (option_value, option_label, option_choices) in enumerate(chain(self.choices, choices)):
-            # If an ID attribute was given, add a numeric index as a suffix,
-            # so that the checkboxes don't all have the same ID attribute.
-            if has_id:
-                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
-                label_for = u' for="%s"' % final_attrs['id']
-            else:
-                label_for = ''
-
-            cb = forms.CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
-            option_value = force_unicode(option_value)
-            rendered_cb = cb.render(name, option_value)
-            option_label = conditional_escape(force_unicode(option_label))
-            option = u'<li><label%s>%s %s</label>' % (label_for, rendered_cb, option_label)
-            if option_choices:
-                option += u'<ul>'
-                for j, (option_value, option_label) in enumerate(option_choices):
-                    if has_id:
-                        final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], "%s-%s"%(i,j)))
-                        label_for = u' for="%s"' % final_attrs['id']
-                    else:
-                        label_for = ''
-
-                    cb = forms.CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
-                    option_value = force_unicode(option_value)
-                    rendered_cb = cb.render(name, option_value)
-                    option_label = conditional_escape(force_unicode(option_label))
-                    option += u'<li><label%s>%s %s</label></li>' % (label_for, rendered_cb, option_label)
-
-                option += '</ul>'
-            option += u'</li>'
-            output.append(option)
-        output.append(u'</ul>')
-        return mark_safe(u'\n'.join(output))
-
-class SelectAllCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
-    def render(self, name, value, attrs={}, choices=()):
-        output = u"""
-          <label for="select-all-%(id)s">
-          <input type="checkbox" name="select-all-%(id)s" class="select" id="select-all-%(id)s">
-           Select all
-          </label>
-          <script type="text/javascript">
-            $("#select-all-%(id)s").click(function() {
-            $(this).parents(".input-append").find("ul :checkbox").attr("checked", this.checked);
-            });
-            $(document).ready(function () {
-                var checked = $("#select-all-%(id)s").parents(".input-append").find("ul :checked").length;
-                var all = $("#select-all-%(id)s").parents(".input-append").find("ul :checkbox").length
-                if (checked == all) {
-                    $("#select-all-%(id)s").attr("checked", "checked");
-                }
-            });
-
-          </script>
-        """ % {
-            "id": attrs.get("id"),
-        }
-        output += super(SelectAllCheckboxSelectMultiple, self).render(name, value, attrs)
-        return mark_safe(output)
 
 class NestedMultipleChoiceField(forms.MultipleChoiceField):
     widget = NestedCheckboxSelectMultiple
@@ -130,14 +24,14 @@ class NestedMultipleChoiceField(forms.MultipleChoiceField):
             if isinstance(v, (list, tuple)):
                 # This is an optgroup, so look inside the group for options
                 for k2, v2 in v:
-                    if value == smart_unicode(k2):
+                    if value == smart_text(k2):
                         return True
             else:
-                if value == smart_unicode(k):
+                if value == smart_text(k):
                     return True
                 elif c:
                     for k2, v2 in c:
-                        if value == smart_unicode(k2):
+                        if value == smart_text(k2):
                             return True
         return False
 
@@ -146,14 +40,14 @@ class NestedMultipleChoiceField(forms.MultipleChoiceField):
             if isinstance(v, (list, tuple)):
                 # This is an optgroup, so look inside the group for options
                 for k2, v2 in v:
-                    if key == smart_unicode(k2):
+                    if key == smart_text(k2):
                         return v2
             else:
-                if key == smart_unicode(k):
+                if key == smart_text(k):
                     return v
                 elif c:
                     for k2, v2 in c:
-                        if k == smart_unicode(k2):
+                        if k == smart_text(k2):
                             return v2
 
 class YearBasedWidget(forms.MultiWidget):
