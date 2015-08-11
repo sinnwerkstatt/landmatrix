@@ -1,8 +1,11 @@
+from global_app.forms import *
+from global_app.forms.add_deal_employment_form import AddDealEmploymentForm
+from global_app.forms.add_deal_general_form import AddDealGeneralForm
+
 from django.utils.translation import ugettext_lazy as _
 
 # TODO: fix
 #from captcha.fields import ReCaptchaField
-from global_app.forms import *
 
 class AddDealGeneralPublicForm(AddDealGeneralForm):
 
