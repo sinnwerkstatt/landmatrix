@@ -1,5 +1,6 @@
 from global_app.forms import *
 from global_app.forms.deal_data_source_form import DealDataSourceForm, AddDealDataSourceFormSet
+from global_app.forms.deal_produce_info_form import DealProduceInfoForm
 from global_app.forms.deal_spatial_form import DealSpatialForm, AddDealSpatialFormSet
 
 from django.forms.models import formset_factory
