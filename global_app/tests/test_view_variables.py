@@ -47,8 +47,9 @@ class TestViewVariables(TestCase, DealsTestData):
         self.assertEqual('crop', self.view.group)
 
     def test_filters_with_filter_set(self):
+        # TODO: find a set of GET Variables that produce non-empty filters
         self._call_dispatch_with_GET('filtered')
-        print('\nfilters:', self.view.filters)
+        # print('\nfilters:', self.view.filters)
         from global_app.views.browse_filter_conditions import BrowseFilterConditions
         BrowseFilterConditions.DEBUG = False
         self._call_dispatch_with_GET(
@@ -56,7 +57,7 @@ class TestViewVariables(TestCase, DealsTestData):
             'conditions_empty-0-value=[30,40]&conditions_empty-0-variable=[5233]&conditions_empty-1-variable=[-2]&' +
             'conditions_empty-1-value=[20]&conditions_empty-TOTAL_FORMS=[2]&conditions_empty-INITIAL_FORMS=[2]'
         )
-        print('filters:', self.view.filters)
+        # print('filters:', self.view.filters)
         BrowseFilterConditions.DEBUG = False
 
     def test_order_by(self):

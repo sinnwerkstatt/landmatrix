@@ -2,11 +2,10 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.tests.with_status import WithStatus
 
-class TestAjaxView(WithStatus):
+class TestFilterWidgetAjaxView(WithStatus):
     """ TODO:
         - when the values are selected from a list, operator in must return checkboxes, while is must return a select or radio button
         - is_empty should either return no form or a radio button with the choices yes/no
-        - number comparison must work (current size*)
         - date picker in fully updated
         - user in fully updated by
     """
@@ -31,11 +30,11 @@ class TestAjaxView(WithStatus):
         'primary investor': { 'key_id': 'inv_-2', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
         'target country': { 'key_id': '5228', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
         'fully updated': { 'key_id': 'fully_updated', 'operation': ['not_in', 'in', 'is', 'is_empty'] },
-        'current size in operation': { 'key_id': '5282', 'operation': ['not_in', 'in', 'is', 'is_empty', 'contains', 'lt', 'gt']},
+        'current size in operation': { 'key_id': '5282', 'operation': ['is', 'is_empty', 'lt', 'gt', 'lte', 'gte']},
+        'current size under contract': { 'key_id': '5264', 'operation': ['is', 'is_empty', 'lt', 'gt', 'lte', 'gte']},
     }
 
     fails_in_v1 = {
-        'current size under contract': { 'key_id': '5264', 'operation': ['lt']},
         'fully updated by': { 'key_id': 'fully_updated_by', 'operation': ['in'] }, # User model not present
     }
 
@@ -46,10 +45,10 @@ class TestAjaxView(WithStatus):
         self._test_for_specific_attribute('deal scope')
 
     def test_crops(self):
-        from global_app.views.browse_filter_conditions import BrowseFilterConditions
-        BrowseFilterConditions.DEBUG = True
+        from landmatrix.models import AgriculturalProduce, Crop
+        AgriculturalProduce(name='Food Crop').save()
+        Crop(code='ALG', name='Algae', slug='algae', fk_agricultural_produce=AgriculturalProduce.objects.last()).save()
         self._test_for_specific_attribute('crops')
-        BrowseFilterConditions.DEBUG = False
 
     def test_contract_farming(self):
         self._test_for_specific_attribute('contract farming')
@@ -102,6 +101,9 @@ class TestAjaxView(WithStatus):
     def test_current_size_in_operation(self):
         self._test_for_specific_attribute('current size in operation')
 
+    def test_current_size_under_contract(self):
+        self._test_for_specific_attribute('current size under contract')
+
     def DISABLED_test_fully_updated_by(self):
         self._test_for_specific_attribute('fully updated by')
 
@@ -131,12 +133,12 @@ class TestAjaxView(WithStatus):
             'gt': self._check_form_for_comparison,
             'gte': self._check_form_for_comparison,
         }
-        if not checks[op](form): print(checks[op], form)
+        if not checks[op](form): print(checks[op], '"' + form + '"')
         self.assertTrue(checks[op](form))
 
     def _check_form_for_is(self, form):
-        """ TODO: disabled because of messed up forms from v1. change that. """
-        return True or not self._is_checkbox(form) and not self._is_multiselect(form)
+        # TODO: disabled because of messed up forms from v1. change that.
+        return True # not self._is_checkbox(form) and not self._is_multiselect(form)
 
     def _check_form_for_in(self, form):
         return self._is_checkbox(form) or self._is_multiselect(form) or self._is_textbox(form) or self._is_url(form)
@@ -169,4 +171,5 @@ class TestAjaxView(WithStatus):
         return 'type="url"' in form
 
     def _is_empty(self, form):
-        return not form
+        import re
+        return not form or re.match('<ul>\\s</ul>', form)
