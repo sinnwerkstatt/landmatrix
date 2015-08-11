@@ -1,12 +1,14 @@
-from global_app.forms import *
-from global_app.forms.add_deal_employment_form import AddDealEmploymentForm
-from global_app.forms.add_deal_general_form import AddDealGeneralForm
-from global_app.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
 
 from django.utils.translation import ugettext_lazy as _
+from django import forms
 
 # TODO: fix
 #from captcha.fields import ReCaptchaField
+
+from global_app.forms.add_deal_employment_form import AddDealEmploymentForm
+from global_app.forms.add_deal_general_form import AddDealGeneralForm
+from global_app.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
+from global_app.widgets import TitleField, CommentInput
 
 
 class AddDealGeneralPublicForm(AddDealGeneralForm):
@@ -32,7 +34,9 @@ class DealEmploymentPublicForm(AddDealEmploymentForm):
 
 class PublicUserInformationForm(AddDealOverallCommentForm):
     tg_public_user = TitleField(required=False, label="", initial=_("User information"))
-    tg_public_user_comment = forms.CharField(required=True, label="", help_text=_("Write something about yourself and your company. This won't be published"), widget=CommentInput)
+    tg_public_user_comment = forms.CharField(
+        required=True, label="", help_text=_("Write something about yourself and your company. This won't be published"), widget=CommentInput
+    )
     public_user_name = forms.CharField(required=False, label=_("Name"))
     public_user_email = forms.EmailField(required=False, label=_("Email"))
     public_user_phone = forms.CharField(required=False, label=_("Phone"))

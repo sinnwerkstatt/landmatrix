@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from global_app.forms.changedealwizard import *
+from global_app.forms.deal_produce_info_form import DealProduceInfoForm
 from global_app.forms import DealHistoryForm
 from global_app.forms.deal_primary_investor_form import DealPrimaryInvestorForm
 from global_app.forms.deal_secondary_investor_formset import DealSecondaryInvestorFormSet
@@ -14,6 +14,7 @@ from global_app.widgets import NestedMultipleChoiceField
 from global_app.forms.change_deal_employment_form import ChangeDealEmploymentForm
 from global_app.forms.deal_data_source_form import ChangeDealDataSourceFormSet
 from global_app.forms.change_deal_action_comment_form import ChangeDealActionCommentForm
+from global_app.forms.change_deal_overall_comment_form import ChangeDealOverallCommentForm
 
 from django.db.models.fields import IntegerField
 
