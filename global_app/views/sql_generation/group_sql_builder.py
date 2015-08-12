@@ -5,14 +5,22 @@ from global_app.views.sql_generation.sql_builder import SQLBuilder
 class GroupSQLBuilder(SQLBuilder):
 
     def get_where_sql(self):
-        if not self.filters.get("starts_with", None): return ''
+        where = []
 
-        starts_with = self.filters.get("starts_with", "").lower()
-        if self.group == "investor_country":
-            return " AND investor_country.slug like '%s%%%%' " % starts_with
-        elif self.group == "target_country":
-            return " AND deal_country.slug like '%s%%%%' " % starts_with
-        return " AND trim(lower(%s.value)) like '%s%%%%' " % (self.group, starts_with)
+#        if 'intention' in self.columns:
+#            where.append("AND (intention.attributes->'intention') IS NOT NULL")
+
+        if self.filters.get("starts_with", None):
+            starts_with = self.filters.get("starts_with", "").lower()
+            if self.group == "investor_country":
+                where.append("AND investor_country.slug like '%s%%%%' " % starts_with)
+            elif self.group == "target_country":
+                where.append("AND deal_country.slug like '%s%%%%' " % starts_with)
+            else:
+                where.append("AND trim(lower(%s.value)) like '%s%%%%' " % (self.group, starts_with))
+
+        return '\n'.join(where)
+
 
     def get_group_sql(self):
         group_by = [self.group if self.group else 'dummy', self.get_name_sql()]
