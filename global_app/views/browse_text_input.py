@@ -3,7 +3,9 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from django.utils.safestring import mark_safe
 from django import forms
 
+
 class BrowseTextInput(forms.TextInput):
+
     def render(self, name, value, attrs={}):
         output = super(BrowseTextInput, self).render(name, value, attrs)
         output = '<div class="value-wrapper">%s</div>' % output

@@ -1,6 +1,8 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+
 class IntentionMap:
+
     INTENTION_MAP = {
         "Agriculture": [
             "Agriculture", "Biofuels", "Food crops", "Livestock", "Non-food agricultural commodities", "Agriunspecified"
