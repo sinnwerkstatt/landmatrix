@@ -16,6 +16,9 @@ class DealsTestData:
     }
     ACT_ID = 1
 
+    region = None
+    country = None
+
     activity_version = 0
     def make_involvement(self, i_r = 0.):
         self.make_language()
@@ -32,25 +35,30 @@ class DealsTestData:
 
     def create_data(self):
         self.make_involvement(1.23)
-        Region(
-            name='South-East Asia', slug='south-east-asia', point_lat=0., point_lon=120.
-        ).save()
-        Country(
-            fk_region=Region.objects.last(), code_alpha2='LA', code_alpha3='LAO',
-            name="Lao People's Democratic Republic", slug='lao-peoples-democratic-republic',
-            point_lat=18.85627, point_lon=106.495496,
-            democracy_index=2.10, corruption_perception_index=2.1, high_income=False
-        ).save()
-        aag = ActivityAttributeGroup(
-            fk_activity = Activity.objects.last(),
+        self.create_country()
+        ActivityAttributeGroup(
+            fk_activity=Activity.objects.last(),
             fk_language=Language.objects.last(),
             date=date.today(),
             attributes={
                 'intention': self.INTENTION, 'pi_deal': 'True', 'deal_scope': 'transnational',
-                'target_country': Country.objects.last().id
+                'target_country': self.country.id
             }
+        ).save()
+
+    def create_country(self):
+        if self.region: return
+        self.region = Region(
+            name='South-East Asia', slug='south-east-asia', point_lat=0., point_lon=120.
         )
-        aag.save()
+        self.region.save()
+        self.country = Country(
+            fk_region=Region.objects.last(), code_alpha2='KH', code_alpha3='KHM',
+            name="Cambodia", slug='cambodia',
+            point_lat=12.565679, point_lon=104.990963,
+            democracy_index=4.87, corruption_perception_index=2.2, high_income=False
+        )
+        self.country.save()
 
     def create_activity_with_status(self, status_id, act_id = 0, version=1):
         self.make_language()
