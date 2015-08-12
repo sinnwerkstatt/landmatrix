@@ -18,11 +18,53 @@
 
   {% if deal %}
 
-    <p>{{deal.activity}}</p>
+    <h5>Activity</h5>
 
-    {% for item in deal.attributes %}
-      <p>{{item}}</p>
-    {% endfor %}
+    <p>Deal scope:     {{deal.attributes.deal_scope}}</p>
+    <p>old reliability ranking: {{deal.attributes.old_reliability_ranking}}</p>
+    {% if deal.attributes.negotiation_status %}
+        <p>Negotiation status: {{deal.attributes.negotiation_status}}</p>
+    {% elif deal.attributes.pi_negotiation_status %}
+        <p>Negotiation status: {{deal.attributes.pi_negotiation_status}}</p>
+    {% endif %}
+    {% if deal.attributes.implementation_status %}
+        <p>Implementation status: {{deal.attributes.implementation_status}}</p>
+    {% elif deal.attributes.pi_implementation_status %}
+        <p>Implementation status: {{deal.attributes.pi_implementation_status}}</p>
+    {% endif %}
+    <p>land owner: {{deal.attributes.land_owner}}</p>
+    <p>intended size: {{deal.attributes.intended_size}}</p>
+    <p>date: {{deal.attributes.date}}</p>
+
+    <p>
+        <strong>Produce info:</strong>
+        Intention:  {{deal.attributes.intention}}
+        Land use:   {{deal.attributes.land_use}}
+        Animals:    {{deal.attributes.animals}}
+        Land cover: {{deal.attributes.land_cover}}
+    </p>
+
+    <p>
+        <strong>Data sources:</strong>
+        type: {{deal.attributes.type}}
+        file: {{deal.attributes.file}}
+        url: {{deal.attributes.url}}
+    </p>
+    <p>
+        <strong>Spatial data:</strong>
+        Target country: {{deal.attributes.target_country}}
+        {{deal.attributes.location}}
+        ({{deal.attributes.point_lat}}/{{deal.attributes.point_lon}})
+        ({{deal.attributes.level_of_accuracy}})
+    </p>
+
+    <h5>Primary Investor</h5>
+    <p>{{deal.primary_investor.name}}</p>
+
+    <h5>Stakeholder</h5>
+    <p>{{deal.stakeholder.investor_name}}</p>
+    <p>{{deal.stakeholder.classification}}</p>
+    <p>{{deal.stakeholder.country}}</p>
 
   {% else %}
     <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
