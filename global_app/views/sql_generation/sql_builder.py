@@ -127,7 +127,7 @@ class SQLBuilder(SQLBuilderData):
     @classmethod
     def max_version_condition(cls):
         return """a.version = (
-            SELECT max(version) FROM landmatrix_activity amax
+            SELECT MAX(version) FROM landmatrix_activity AS amax
             WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (%s)
         )""" % ', '.join(map(str, cls.registered_status_ids()))
 
