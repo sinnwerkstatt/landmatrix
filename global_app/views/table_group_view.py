@@ -73,7 +73,7 @@ class TableGroupView(TemplateView):
             "empty_form_conditions": self.current_formset_conditions,
             "rules": self.rules,
         }
-        return render_to_response(self.template_name, context, context_instance=RequestContext(self.request))
+        return render_to_response(self.template_name, context, RequestContext(self.request))
 
     def download_format(self):
         return self.GET.get("download_format") if self.GET.get("download_format") \
