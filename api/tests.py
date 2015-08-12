@@ -5,23 +5,14 @@ from django.core.urlresolvers import reverse
 from landmatrix.models import *
 import json
 
+from .deals_test_data import DealsTestData
+
 class ApiTest(TestCase):
 
     def url(self, resource): return self.PREFIX + resource + self.POSTFIX
     def url_id(self, resource, id): return self.PREFIX + resource + self.INFIX + str(id) + self.POSTFIX
 
-class ApiTestBase:
-
-    def make_involvement(self, i_r = 0):
-        act = Activity(fk_status=Status.objects.get(id=1), activity_identifier=1, version=1)
-        act.save()
-        pi = PrimaryInvestor(fk_status=Status.objects.get(id=1), primary_investor_identifier=1, version=1)
-        pi.save()
-        sh = Stakeholder(fk_status=Status.objects.get(id=1), stakeholder_identifier=1, version=1)
-        sh.save()
-        i = Involvement(fk_activity=act, fk_stakeholder=sh, fk_primary_investor = pi, investment_ratio=i_r)
-        i.save()
-        return i
+class ApiTestBase(DealsTestData):
 
     def get_content(self, resource):
         response = self.client.get(self.url(resource))
