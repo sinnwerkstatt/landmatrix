@@ -56,6 +56,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'sekizai',
 
+    'django-nose',
+
     'landmatrix',
     'global_app',
     'api'
@@ -164,3 +166,4 @@ CMS_TEMPLATES = (
     ('1-column.html', '1 column'),
     ('start.html', 'Start'),
 )
+

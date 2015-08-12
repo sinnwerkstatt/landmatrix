@@ -1,35 +1,106 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from django.test import TestCase
+from global_app.tests.deals_test_data import DealsTestData
+from global_app.tests.test_view_base import TestViewBase
+from landmatrix.models import Country
+
 from django.conf import settings
+from django.test import TestCase
 
-from .deals_test_data import DealsTestData
 
-class TestAllDealsView(TestCase, DealsTestData):
+class TestAllDealsView(TestViewBase, TestCase):
 
     # we use global_app as defined in landmatrix.url here because django-cms pages are not configured in test db
-    ALL_DEALS_URL = '/en/global_app/all'
+    VIEW_URL = '/en/global_app/all'
 
-    # disabled because no django-cms pages configured, but redirects are applied
-    def _test_anything_loads(self):
-        response = self.get_url_following_redirects('/')
-        print(response.content.decode('utf-8'))
-        self.assertEqual(200, response.status_code)
+    "Sadly, every class derived from TestViewBase needs to explicitly call TestViewBase.setUp()"
+    def setUp(self):
+        TestViewBase.setUp(self)
+        self.create_country()
+        self.EXPECTED_VIEW_DATA = [ self.country.name, DealsTestData.PI_NAME ]
 
-    def test_view_loads(self):
-        self.create_data()
-        response = self.get_url_following_redirects(self.ALL_DEALS_URL)
-        self.assertEqual(200, response.status_code)
+    def test_view_contains_investor_name(self):
+        if True or settings.DEBUG: print(self.content, file=open('/tmp/testresult.html', 'w'))
+        self.assertIn(self.PI_NAME, self.content)
 
-    def test_view_contains_data(self):
-        self.create_data()
-        content = self.get_url_following_redirects(self.ALL_DEALS_URL).content.decode('utf-8')
-        if True or settings.DEBUG: print(content, file=open('/tmp/testresult.html', 'w'))
-        self.assertIn(self.PI_NAME, content)
+    def test_view_contains_country(self):
+        try:
+            from html import unescape
+            self.assertIn(Country.objects.last().name, unescape(self.content))
+        except ImportError:
+            self.skipTest('html.unescape needs Python >= 3.4')
 
-    def get_url_following_redirects(self, url):
-        response = self.client.get(url)
-        while response.status_code in range(300, 308):
-            response = self.client.get(response.url)
-        return response
+
+# Bit of code monkeying going on here because I couldn't get the test framework to run dynamically created test cases
+
+class TestInvestorRegionGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-investor-region/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestTargetCountryGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-target-country/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestTargetRegionGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-target-region/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestInvestorNameGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-investor-name/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestInvestorCountryGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-investor-country/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestIntentionGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-intention/none/'
+    EXPECTED_VIEW_DATA = [ 'Livestock' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestCropGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-crop/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestDataSourceTypeView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-data-source-type/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
+class TestYearGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-year/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
 

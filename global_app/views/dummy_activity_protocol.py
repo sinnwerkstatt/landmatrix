@@ -10,6 +10,7 @@ from global_app.views.sql_generation.record_reader import RecordReader
 
 class DummyActivityProtocol:
 
+    debug = False
     def dispatch(self, request, action):
 
         if request.POST:
@@ -26,5 +27,6 @@ class DummyActivityProtocol:
 
         # if filters.get('group_value') == '':
         reader = RecordReader(filters, columns)
+        if self.debug:
+            print(reader.get_all_sql())
         return reader.get_all(assemble=reader._make_padded_record_from_column_data)
-        return reader.get_all_at_once()

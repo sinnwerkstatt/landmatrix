@@ -39,17 +39,22 @@ import time
 def _throwaway_column(expected, actual): return True
 # data messed up, not all intended use got carried over in MySQL to PostgreSQL conversion
 def _actual_intention_in_expected(expected, actual):
-    return set(actual.split('##!##')) <= set(expected.split('##!##'))
+    if None in actual: actual.remove(None)
+    return set(actual) <= set(expected.split('##!##'))
 def _floats_pretty_equal(expected, actual):
     return 0.999 <= expected/actual <= 1.001
 # empty years are converted to zero by new SQL. who cares.
 def _null_to_zero_conversion(expected, actual):
     return expected[:-1] == actual if isinstance(expected, str) and expected.endswith('#0') else expected == actual
 def _same_string_multiple_times(expected, actual):
-    return set(expected.split('##!##')) <= set(actual.split('##!##'))
+    return set(expected.split('##!##')) <= set(actual)
+
 def _none_is_equaled(expected, actual):
     if expected == None and '#!#' in actual and actual.startswith('#'): return True
     return expected == actual
+
+def _array_equal_to_tinkered_string(expected, actual):
+    return expected.split('##!##') == actual
 
 class Compare:
 
@@ -152,10 +157,13 @@ class Compare:
 
     similar_table = {
         'all_deals': {
+            2: _array_equal_to_tinkered_string,
             3: _same_string_multiple_times,
+            4: _array_equal_to_tinkered_string,
+            5: _array_equal_to_tinkered_string,
             6: _actual_intention_in_expected,
-            7: _null_to_zero_conversion,
-            8: _null_to_zero_conversion
+            7: _array_equal_to_tinkered_string,
+            8: _array_equal_to_tinkered_string,
         },
         'by_target_region': {
             0: _throwaway_column,
@@ -164,6 +172,7 @@ class Compare:
         },
         'by_target_country': {
             0: _throwaway_column,
+            2: _array_equal_to_tinkered_string,
             3: _actual_intention_in_expected,
             5: _floats_pretty_equal,
         },
@@ -176,13 +185,14 @@ class Compare:
         'by_investor_country': {
             0: _throwaway_column,
             1: _none_is_equaled,
-            2: _none_is_equaled,
+            2: _array_equal_to_tinkered_string,
             3: _actual_intention_in_expected,
             5: _floats_pretty_equal
         },
         'by_investor': {
             0: _throwaway_column,
             1: _none_is_equaled,
+            2: _array_equal_to_tinkered_string,
             3: _actual_intention_in_expected,
             5: _floats_pretty_equal
         },
@@ -198,6 +208,7 @@ class Compare:
         'by_crop': {
             0: _throwaway_column,
             1: _none_is_equaled,
+            2: _actual_intention_in_expected,
             4: _floats_pretty_equal,
         }
     }
