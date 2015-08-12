@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+{% load i18n custom_tags %}
+{% load humanize %}
+
+
+{% block page_title %}{% if group == "all" %}All deals{% elif filters.group_value %}{{ name }}{% else %}By {{ group }}{% endif %}{% endblock %}
+{% block title %}{% if group == "all" %}All deals{% elif filters.group_value %}{{ name }}{% else %}By {{ group }}{% endif %}{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="/">Home</a> <span class="divider">|</span></li>
+  <li><a href="/get-the-detail/">Get the detail</a> <span class="divider">|</span></li>
+  {% if group == "all" %}
+  <li>{{ name|capfirst }}</li>
+  {% elif filters.group_value %}
+  <li><a href="/get-the-detail/{{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">By {{ group }}</a> <span class="divider">|</span></li>
+  <li>{{ name }}</li>
+  {% else %}
+  <li>By {{ group }}</li>
+  {% endif %}
+</ul>
+{% endblock %}
+
+{% block content %}
+<script type="text/javascript">
+function init_form_condition (el) {
+  // variable
+  el.change(function () {
+    var form = $(this).parents("ul.form");
+    update_widget(form.find(".field:last .value-wrapper"), $(this).find("option:selected").val(), form);
+  }).change();
+  // operator
+  el.parents("ul.form").find(".operator").change(function() {
+    el.change();
+  });
+  // delete button
+  el.parents("ul.form").find(".delete-row").click(function() {
+    var form = $(this).parents("form"),
+        conditions = form.find(".condition:visible");
+    $(this).parents("ul.form.condition").remove();
+    var count = $("#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS").val()-1;
+    $("#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS").val(count);
+    // reset row counters
+    var new_name;
+    for (var i = 0; i < count; i++) {
+      $(conditions[i]).find(":input").each(function () {
+        $(this).attr("id") && $(this).attr("id", $(this).attr("id").replace(/{{ empty_form_conditions.prefix }}-[0-9]+/, "{{ empty_form_conditions.prefix }}-" + i));
+        $(this).attr("name") && $(this).attr("name", $(this).attr("name").replace(/{{ empty_form_conditions.prefix }}-[0-9]+/, "{{ empty_form_conditions.prefix }}-" + i));
+      })
+      //el.parents("ul.form").find("li.field")
+    }
+  });
+};
+$(document).ready(function () {
+  // add sticky header to table
+  var offset = $('.navbar').height();
+  $("#summary").stickyTableHeaders({fixedOffset: offset});
+  // enable popover for intention of investment
+  $('a.intention-icon').popover({trigger: "hover", placement: "top"});
+  init_form_condition($("ul.form:not(.empty) .field:first-child select"));
+  // collapsible filters
+  $(".toggle-filter").click(function (e) {
+    e.preventDefault();
+    $(".collapsible .collapsible-form").toggle();
+    var container = $(".collapsible .collapsible-tags"),
+        tags = container.find("ul");
+    if (container.hasClass("collapsed")) {
+      tags.empty();
+      $(".form.condition:not(.empty)").each(function (index) {
+        var tag = "";
+        $(this).find(":input").each(function (index) {
+          var el = $(this),
+            name = el.attr("name");
+          if (name.indexOf("variable") > -1) {
+              // variable
+              tag += el.find(":selected").text();
+          }/* requires update_widget to be executed before
+           else if (name.indexOf("operator") > -1) {
+              // operator
+              tag += " " + el.val();
+          // value (select)
+          } else if (el.is("select")) {
+              tag += " " + el.find(":selected").text();
+          // value (radio buttons)
+          } else if (el.is("[type=checkbox]")) {
+              tag += (tag.indexOf(",") > -1) && (" " + el.parent().text()) || ", " + el.parent().text();
+          // value (other)
+          } else if (!el.is("[type=hidden]")) {
+              tag += " " + el.val();
+          }*/
+        });
+        tag = "<li><span class=\"label\">" + tag + "</span></li>";
+        $(tag).appendTo(tags);
+      });
+      container.removeClass("collapsed");
+      container.find(".toggle-filter").text("Manage filters");
+      container.find(".toggle-tooltip").show();
+    } else {
+      container.addClass("collapsed");
+      container.find(".toggle-filter").text("Hide filters");
+      container.find(".toggle-tooltip").hide();
+    }
+    return false;
+  }).click();
+});
+</script>
+<div class="row">
+    <div class="span7">
+        <div class="collapsible">
+            <div class="collapsible-form">
+                <form method="GET" class="form-inline filters">
+                    <div id="empty" class="rules row">
+                        <div class="span8">
+                            <input type="hidden" name="filtered" value="true" />
+                            <input type="hidden" name="limit" value="{{ limit }}"/>
+                            <input type="hidden" name="order_by" value="{{  data.order_by }}" />
+                            <input type="submit" class="submit" value="Apply Filters" style="display: none" />
+                            {% if empty_form_conditions %}
+                                <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
+                                {{ empty_form_conditions.management_form }}
+                                {% for empty_form in empty_form_conditions.forms %}
+                                <ul class="form clearfix condition">
+                                  {{ empty_form.as_ul }}
+                                  <li>&nbsp;<a class="delete-row" href="javascript:void(0)"><i class="icon icon-remove"></i></a></li>
+                                </ul>
+                                {% endfor %}
+                            {% endif %}
+                            <ul class="form clearfix condition empty">
+                                {{ empty_form_conditions.empty_form.as_ul }}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span8">
+                            <script type="text/javascript">
+                            $(document).ready(function () {
+                              //
+                              $(".subnav li.limit a").click(function(e){
+                                  e.preventDefault();
+                                  $("input[name=limit]").val($(this).attr("href").split("/")[1]);
+                                  $("form").submit();
+                              });
+                              //
+                              $('.reset-filter').click(function(){
+                                $('.rules').find('ul:gt(0)').remove();
+                                $('#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS').val(0);
+                              });
+                              //
+                              $('#empty ul.form.empty :input, #empty ul.form.empty label').each(function () {
+                                  var id = $(this).attr("id");
+                                  var name = $(this).attr("name");
+                                  var value = $(this).attr("value");
+                                  var for_str = $(this).attr("for");
+                                  if (id != undefined) {
+                                    $(this).attr("id", id.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                  }
+                                  if (name != undefined) {
+                                    $(this).attr("name", name.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""))  ;
+                                  }
+                                  if (value != undefined) {
+                                    $(this).attr("value", value.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""  ));
+                                  }
+                                  if (for_str != undefined) {
+                                    $(this).attr("for", for_str.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-" , ""));
+                                  }
+                              });
+                              //
+                              $("ul.form.empty").formset({
+                                  prefix: '{{ empty_form_conditions.prefix }}',
+                                  addText: '{% trans "Add filter" %}',
+                                  deleteText: '<i class="icon icon-remove"></i>',
+                                  added: function (row) {
+                                    // FIXME: Move row out of button group, this should be handled by the formset
+				                            row.remove();
+                                    row.insertBefore($(".add-row:visible").parent().parent().find(".btn-group"))
+                                    init_form_condition($("ul.form.condition:last .field:first-child select"));
+                                  }
+                              });
+                              // FIXME: Move add-row button into the button group, don't use javascript for that
+                                var b = $(".add-row").addClass("btn").hide();
+                                $(".filters .btn-group").prepend(b.show());
+                            })
+                            </script>
+                            <div class="btn-group">
+                                <button type="submit" class="btn" name="reset" value="reset">{% trans "Reset" %}</button>
+                                <button type="submit" class="btn">{% trans "Go" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+        </div>
+        <div class="collapsible-tags collapsed">
+          <h5>Active filters:</h5>
+          <ul class="unstyled"></ul>
+          <a href="javascript:;" class="toggle-filter">Manage filters</a>
+          <a href="#" class="toggle-tooltip" title="You can create custom filters here. However, please note that filters are reset when changing entry point."> <i class="icon icon-question-sign"> </i></a>
+          {% if data.count %}<p style="clear: both">Showing {% if data.items|length != data.count %}{{ data.items|length }} of {% endif %}{{ data.count }} row{{ data.count|pluralize }}.</p>{% endif %}
+        </div>
+        </div>
+    </div>
+    <div class="span5">
+        <div class="actions btn-group pull-right">
+            <button data-toggle="dropdown" class="btn dropdown-toggle">Download whole database <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a href="/get-the-detail/database.csv?download_format=csv">as Comma Separated Values (.csv)</a></li>
+              <li><a href="/get-the-detail/database.csv?download_format=xls">as Excel (.xls)</a></li>
+              <li><a href="/get-the-detail/database.csv?download_format=xml">as XML (.xml)</a></li>
+            </ul>
+        </div>
+        {% if group_value %}
+        <div class="actions btn-group pull-right">
+            <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a href="/get-the-detail/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'csv' %}">as Comma Separated Values (.csv)</a></li>
+              <li><a href="/get-the-detail/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'xls' %}">as Excel (.xls)</a></li>
+              <li><a href="/get-the-detail/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'xml' %}">as XML (.xml)</a></li>
+            </ul>
+        </div>
+        {% else %}
+        <div class="actions btn-group pull-right">
+            <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a href="/get-the-detail/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'csv' %}">as Comma Separated Values (.csv)</a></li>
+              <li><a href="/get-the-detail/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'xls' %}">as Excel (.xls)</a></li>
+              <li><a href="/get-the-detail/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'xml' %}">as XML (.xml)</a></li>
+            </ul>
+        </div>
+        {% endif %}
+          <a href="#" class="toggle-tooltip pull-right download-hint" title="Due to ongoing server optimization, we momentarily disabled download of filtered datasets. We apologize for the inconvenience."> <i class="icon icon-question-sign"> </i></a>
+    </div>
+</div>
+
+{% if data.items %}
+{% if not group_value %}
+{% if group == "investor name" or group == "investor country" or group == "target country" %}
+<div class="btn-toolbar">
+    <div class="btn-group" data-toggle="buttons-radio">
+      <a class="btn btn-mini{% if filters.starts_with == 'A' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'A' %}">A</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'B' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'B' %}">B</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'C' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'C' %}">C</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'D' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'D' %}">D</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'E' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'E' %}">E</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'F' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'F' %}">F</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'G' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'G' %}">G</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'H' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'H' %}">H</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'I' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'I' %}">I</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'J' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'J' %}">J</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'K' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'K' %}">K</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'L' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'L' %}">L</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'M' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'M' %}">M</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'N' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'N' %}">N</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'O' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'O' %}">O</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'P' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'P' %}">P</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'Q' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Q' %}">Q</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'R' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'R' %}">R</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'S' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'S' %}">S</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'T' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'T' %}">T</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'U' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'U' %}">U</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'V' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'V' %}">V</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'W' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'W' %}">W</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'X' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'X' %}">X</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'Y' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Y' %}">Y</a>
+      <a class="btn btn-mini{% if filters.starts_with == 'Z' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Z' %}">Z</a>
+    </div>
+    <div class="btn-group" data-toggle="buttons-radio">
+      <a class="btn btn-mini{% if not filters.starts_with %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' '' %}">ALL</a>
+    </div>
+    <a href="#" class="toggle-tooltip" title="You can filter by initial letter."> <i class="icon icon-question-sign"> </i></a>
+</div>
+{% endif %}
+{% endif %}
+<table id="summary" class="table table-striped">
+  <thead>
+    <tr>
+      {% for column in columns %}
+        {% if "deal_id"  == column %}
+        <th class="deal-id"><a {% if data.order_by == 'deal_id' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-deal_id' %}" {% elif data.order_by == '-deal_id' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'deal_id' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'deal_id' %}"{% endif %}>#</a></th>
+        {% elif "crop"  == column %}
+        <th><a {% if data.order_by == 'crop' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-crop' %}" {% elif data.order_by == '-crop' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'crop' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'crop' %}"{% endif %}>Crop</a></th>
+        {% elif "intention"  == column %}
+        <th><a {% if data.order_by == 'intention' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-intention' %}" {% elif data.order_by == '-intention' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'intention' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'intention' %}"{% endif %}>Intention of investment</a></th>
+        {% elif "primary_investor"  == column %}
+        <th><a {% if data.order_by == 'primary_investor' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-primary_investor' %}" {% elif data.order_by == '-primary_investor' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'primary_investor' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'primary_investor' %}"{% endif %}>Primary investor</a></th>
+        {% elif "investor_name"  == column %}
+        <th><a {% if data.order_by == 'investor_name' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-investor_name' %}" {% elif data.order_by == '-investor_name' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'investor_name' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'investor_name' %}"{% endif %}>Secondary&nbsp;investor</a></th>
+        {% elif "investor_country" == column %}
+        <th class="investor-country"><a {% if data.order_by == 'investor_country' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-investor_country' %}" {% elif data.order_by == '-investor_country' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'investor_country' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'investor_country' %}"{% endif %}>Secondary&nbsp;investor country</a></th>
+        {% elif "investor_region" == column %}
+        <th class="investor_region"><a {% if data.order_by == 'investor_region' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-investor_region' %}" {% elif data.order_by == '-investor_region' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'investor_region' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'investor_region' %}"{% endif %}>Secondary&nbsp;investor region</a></th>
+        {% elif "target_country"  == column %}
+        <th><a {% if data.order_by == 'target_country' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-target_country' %}" {% elif data.order_by == '-target_country' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'target_country' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'target_country' %}"{% endif %}>Target country</a></th>
+        {% elif "target_region"  == column %}
+        <th><a {% if data.order_by == 'target_region' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-target_region' %}" {% elif data.order_by == '-target_region' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'target_region' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'target_region' %}"{% endif %}>Target region</a></th>
+        {% elif "year"  == column %}
+        <th><a {% if data.order_by == 'year' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-year' %}" {% elif data.order_by == '-year' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'year' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'year' %}"{% endif %}>Year</a></th>
+        {% elif "deal_size" == column %}
+          <th class="number"><a {% if data.order_by == 'deal_size' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-deal_size' %}" {% elif data.order_by == '-deal_size' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'deal_size' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'deal_size' %}"{% endif %}>Investment size</a></th>
+        {% elif "deal_count" == column %}
+          <th class="deals number"><a {% if data.order_by == 'deal_count' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-deal_count' %}" {% elif data.order_by == '-deal_count' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'deal_count' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'deal_count' %}"{% endif %}>Deals</a></th>
+        {% elif "data_source_type" == column %}
+          <th class="deals"><a {% if data.order_by == 'data_source_type' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-data_source_type' %}" {% elif data.order_by == '-data_source_type' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'data_source_type' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'data_source_type' %}"{% endif %}>Deal data source type</a></th>
+        {% elif "availability" == column %}
+          <th><a {% if data.order_by == 'availability' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-availability' %}" {% elif data.order_by == '-availability' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'availability' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'availability' %}"{% endif %}>Availability</a><a href="/about/#what-does-data-availability-mean" class="toggle-tooltip" title="This column shows the percentage of information about deals we have collected.<br/>Click to read more."> <i class="icon icon-question-sign"> </i></a></th>
+        {% elif "intended_size" == column %}
+          <th class="number"><a {% if data.order_by == 'intended_size' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-intended_size' %}" {% elif data.order_by == '-intended_size' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'intended_size' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'intended_size' %}"{% endif %}>Intended size (ha)</a></th>
+        {% elif "contract_size" == column %}
+          <th class="number"><a {% if data.order_by == 'contract_size' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-contract_size' %}" {% elif data.order_by == '-contract_size' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'contract_size' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'contract_size' %}"{% endif %}>Contract size (ha)</a></th>
+        {% elif "implementation_status" == column %}
+          <th class="number"><a {% if data.order_by == 'implementation_status' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-implementation_status' %}" {% elif data.order_by == '-implementation_status' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'implementation_status' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'implementation_status' %}"{% endif %}>Implementation status</a></th>
+        {% elif "negotiation_status" == column %}
+          <th class="number"><a {% if data.order_by == 'negotiation_status' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-negotiation_status' %}" {% elif data.order_by == '-negotiation_status' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'negotiation_status' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'negotiation_status' %}"{% endif %}>Negotiation status</a></th>
+        {% endif %}
+      {% endfor %}
+        {% if "deal_id" in columns %}
+        <th></th>
+        {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in data.items  %}
+        <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+        {% for column in columns %}
+          {% if column == "deal_id" %}
+            <td class="deal-id"><a href="/get-the-detail/{{ group_slug }}/{{ name|slugify }}/{{ item.deal_id }}/">{{ item.deal_id }}</a></td>
+          {% elif column == "crop" %}
+              <td style="width:341px">
+              {% if  item.crop %}
+              {% for c in item.crop %}
+                <a href="/get-the-detail/by-crop/{{ c|slugify }}/">{{ c }}</a></br>
+              {% endfor %}
+              {% else %}{% trans "unknown" %}
+              {% endif %}
+              </td>
+          {% elif column == "intention" %}
+              <td>
+              <ul class="unstyled">
+              {% if item.intention %}
+                {% for i in item.intention %}
+                  <li><a href="/get-the-detail/by-intention/{{ i|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if group != "intention" %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a></li>
+                {% endfor %}
+              {% else %}{% trans "unknown" %}
+              {% endif %}
+              </ul>
+              </td>
+          {% elif column == "primary_investor" %}
+            <td style="width:183px">
+            {% if item.primary_investor %}
+                {% for i in item.primary_investor %}
+                  {{ i }}<br/>
+                {% endfor %}
+            {% else %}{% trans "unknown" %}
+            {% endif %}
+            </td>
+          {% elif column == "investor_name" %}
+            <td style="width:183px">
+            {% if item.investor_name %}
+                {% for i in item.investor_name %}
+                  <a href="/get-the-detail/by-investor-name/{{i.id}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ i.name }}</a><br/>
+                {% endfor %}
+            {% else %}{% trans "unknown" %}
+            {% endif %}
+            </td>
+          {% elif "investor_country" == column %}
+            <td class="investor-country">
+              {% if item.investor_country %}
+              {% for investor_country  in item.investor_country %}
+                <a href="/get-the-detail/by-investor-country/{{investor_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_country }}</a><br/>
+              {% endfor %}
+              {% else %}{% trans "unknown country" %}{% endif %}
+            </td>
+          {% elif "investor_region" == column %}
+            <td class="investor-region">
+              {% if item.investor_region %}
+              {% for investor_region  in item.investor_region %}
+                <a href="/get-the-detail/by-investor-region/{{investor_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_region }}</a><br/>
+              {% endfor %}
+              {% else %}{% trans "unknown region" %}{% endif %}
+            </td>
+          {% elif column == "target_country" %}
+            <td>
+              {% if item.target_country %}
+              {% for target_country  in item.target_country %}
+                <a href="/get-the-detail/by-target-country/{{target_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_country }}</a><br/>
+              {% endfor %}
+              {% else %}
+                {% trans "unknown" %}
+              {% endif %}
+            </td>
+          {% elif column == "target_region" %}
+            <td>
+              {% if item.target_region %}
+                {% for target_region  in item.target_region %}
+                    <a href="/get-the-detail/by-target-region/{{target_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_region }}</a><br/>
+                {% endfor %}
+              {% else %}
+                {% trans "unknown" %}
+              {% endif %}
+            </td>
+          {% elif column == "year" %}
+            <td>
+              {% if item.year %}
+                <a href="/get-the-detail/by-year/{{item.year}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ item.year }}</a>
+              {% else %}
+                {% trans "unknown" %}
+              {% endif %}
+            </td>
+          {% elif column == "data_source_type" %}
+            <td>
+              {% if item.data_source_type %}
+              {% for data_source_type in item.data_source_type %}
+                <a href="/get-the-detail/by-data-source-type/{{data_source_type|slug_and_slash_to_plus}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ data_source_type }}</a>
+              {% endfor %}
+              {% else %}
+                {% trans "unknown" %}
+              {% endif %}
+            </td>
+          {% elif column == "deal_size" %}
+            <td class="number">{{ item.deal_size|intcomma }}</td>
+          {% elif column == "intended_size" %}
+            <td class="number">{% if item.intended_size %}{{ item.intended_size|intcomma }}{% else %}{% trans "unknown" %}{% endif %}</td>
+          {% elif column == "contract_size" %}
+            <td class="number">{% if item.contract_size %}{{ item.contract_size|intcomma }}{% else %}{% trans "unknown" %}{% endif %}</td>
+          {% elif column == "deal_count" %}
+            <td class="deals number">{{ item.deal_count }}</td>
+          {% elif column == "availability" %}
+            <td>{{ item.availability }}%</td>
+          {% elif column == "implementation_status" %}
+            <td>
+              {% if item.implementation_status %}
+              {% for implementation_stati in item.implementation_status %}
+                {% if implementation_stati.year != "0" %}
+                [{{implementation_stati.year}}]
+                {% endif %}
+                {{implementation_stati.name}}
+              {% endfor %}
+              {% else %}
+                {% trans "unknown" %}
+              {% endif %}
+            </td>
+          {% elif column == "negotiation_status" %}
+            <td>
+              {% if item.negotiation_status %}
+              {% for negotiation_stati in item.negotiation_status %}
+                {% if negotiation_stati.year != "0" %}
+                [{{negotiation_stati.year}}]
+                {% endif %}
+                {{negotiation_stati.name}}
+              {% endfor %}
+              {% else %}
+                {% trans "unknown" %}
+              {% endif %}
+            </td>
+          {% endif %}
+        {% endfor %}
+    {% if "deal_id" in columns %}
+    <td><a href="/get-the-detail/{{ group_slug }}/{{ name|slugify }}/{{ item.deal_id }}/" class="btn btn-small">Details</a></td>
+    {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if load_more %}
+<a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn">{% trans "More..." %}</a>
+{% endif %}
+{% else %}
+<p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
+{% endif %}
+{% endblock %}
