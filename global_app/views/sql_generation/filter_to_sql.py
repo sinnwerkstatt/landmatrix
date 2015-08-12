@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from global_app.views.sql_generation.join_functions import join_attributes
 
+
 class FilterToSQL:
 
     def __init__(self, filters, columns):
@@ -16,7 +17,7 @@ class FilterToSQL:
     def filter_where(self):
         return self._where_activity() + "\n" + self.where_investor()
 
-    ## operation => (numeric operand, character operand, description )
+    # operation => (numeric operand, character operand, description )
     OPERATION_MAP = {
         "is" :      ("= %s", "= '%s'", _("is")),
         "in":       ("IN (%s)", "IN (%s)", _("is one of")),

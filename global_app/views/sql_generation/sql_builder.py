@@ -5,10 +5,12 @@ from global_app.views.sql_generation.filter_to_sql import FilterToSQL
 from global_app.views.sql_generation.join_functions import *
 from global_app.views.sql_generation.sql_builder_data import SQLBuilderData
 
+
 def list_view_wanted(filters):
     group = filters.get("group_by", "")
     group_value = filters.get("group_value", "")
     return group == "all" or group_value
+
 
 class SQLBuilder(SQLBuilderData):
 
@@ -108,13 +110,11 @@ class SQLBuilder(SQLBuilderData):
     def get_base_sql(cls):
         raise RuntimeError('SQLBuilder.get_base_sql() not implemented')
 
-
     def _need_involvements_and_stakeholders(self):
         return 'investor' in self.filters or any(
             x in ("investor_country","investor_region", "investor_name", 'primary_investor', "primary_investor_name")
             for x in self.columns
         )
-
 
     def _add_join_for_column(self, c):
         spec = self.COLUMNS.get(c, [join_attributes(c)])

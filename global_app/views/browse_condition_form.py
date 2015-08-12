@@ -11,65 +11,58 @@ from global_app.views.browse_filter_conditions import BrowseFilterConditions, ge
 
 
 class BrowseConditionForm(BaseModelForm):
+
     variable = forms.ChoiceField(required=False, label=_("Variable"), initial="", choices=())
-    operator = forms.ChoiceField(required=False, label=_("Operator"), initial="", choices=(), widget=forms.Select(attrs={"class": "operator"}))
+    operator = forms.ChoiceField(
+        required=False, label=_("Operator"), initial="", choices=(), widget=forms.Select(attrs={"class": "operator"})
+    )
     value = forms.CharField(required=False, label=_("Value"), initial="", widget=BrowseTextInput())
 
     def __init__(self, variables_activity=None, variables_investor=None, *args, **kwargs):
         super(BrowseConditionForm, self).__init__(*args, **kwargs)
-        variables = []
-        variables.append(("", "-----"))
-        variables.append(("-1", "ID"))
-        variables.append(("-2", "Deal scope"))
-        variables.append(("fully_updated", "Fully updated"))
-        variables.append(("fully_updated_by", "Fully updated by"))
-        variables.append(("last_modification", "Last modification"))
-        variables.append(("inv_-2", "Primary investor"))
-        # TODO: fix these! This form was very tied to the old key value storage system
+
+        self._set_a_fields(variables_activity)
+        self._set_sh_fields(variables_investor)
+
+        self.fields["variable"].choices = self._variables()
+        self.fields["operator"].choices = _operators()
+
+    def _set_a_fields(self, variables_activity):
         if variables_activity:
-            # self.a_fields = [(str(key.id), get_field_by_key(key.id)) for key in A_Key.objects.filter(fk_language=1, key__in=variables_activity)]#FIXME language
-            self.a_fields = [(str(key), get_field_by_key(str(key))) for key in a_keys().values() if key in variables_activity]
+            self.a_fields = [
+                (str(key), get_field_by_key(str(key))) for key in a_keys().values() if key in variables_activity
+            ]  # FIXME language
         else:
-            # self.a_fields = [(unicode(key.id), get_field_by_a_key_id(key.id)) for key in A_Key.objects.filter(fk_language=1)]#FIXME language
             self.a_fields = [(str(key), get_field_by_key(str(key))) for key in a_keys()]
+
+    def _set_sh_fields(self, variables_investor):
         if variables_investor:
-            # self.sh_fields = [("inv_%s" % key.id, get_field_by_sh_key_id(key.id)) for key in SH_Key.objects.filter(fk_language=1, key__in=variables_investor).exclude(key="name")]#FIXME language
-            self.sh_fields = [(str(key), get_field_by_key(str(key))) for key in a_keys().values() if key in variables_investor]
+            self.sh_fields = [
+                (str(key), get_field_by_key(str(key))) for key in a_keys().values() if key in variables_investor
+            ]
         else:
-            # self.sh_fields = [("inv_%s" % key.id, get_field_by_sh_key_id(key.id)) for key in SH_Key.objects.filter(fk_language=1).exclude(key="name")]#FIXME language
             self.sh_fields = [(str(key), get_field_by_key(str(key))) for key in a_keys().values() if not key == 'name']
+
+    def _variables(self):
+        variables = [("", "-----"),
+                     ("-1", "ID"),
+                     ("-2", "Deal scope"),
+                     ("fully_updated", "Fully updated"),
+                     ("fully_updated_by", "Fully updated by"),
+                     ("last_modification", "Last modification"),
+                     ("inv_-2", "Primary investor")]
         variables.extend([(f[0], str(f[1].label)) for f in self.a_fields])
         variables.extend([(f[0], "Investor %s" % str(f[1].label)) for f in self.sh_fields])
         variables = sorted(variables, key=lambda x: x[1])
-        self.fields["variable"].choices = variables
-        operators = [("", "-----")]
-        operators.extend([(op, op_name[2]) for op, op_name in FilterToSQL.OPERATION_MAP.items()])
-        self.fields["operator"].choices = operators
-        if BrowseFilterConditions.DEBUG:
-            from pprint import pprint
-            pprint(self.fields["variable"].choices)
-
-
-    #def save(self, *args, **kwargs):
-        #raise IOError, self.cleaned_data["value"]
-        #c = super(BrowseConditionForm, self).save(commit=False)
-        #if c.variable:
-        #    try:
-        #        f = dict(self.a_fields)[c.variable]
-        #    except:
-        #        try:
-        #            f = dict(self.sh_fields)[c.variable]
-        #        except:
-        #            f = None
-        #    # single value field?
-        #    if f and not isinstance(f.widget, forms.SelectMultiple) and not c.operator in ("in", "not_in"):
-        #        c.value = c.value[3:-2]
-        #    # multiple value field saved by admin (e.g. [u'[1,2,3]'])?
-        #    elif c.value.startswith("[u'["):
-        #        c.value = c.value[3:-2]
-        #    c.save()
-    #    return c
+        return variables
 
     class Meta:
+
         model = BrowseCondition
         exclude = ('rule',)
+
+
+def _operators():
+    operators = [("", "-----")]
+    operators.extend([(op, op_name[2]) for op, op_name in FilterToSQL.OPERATION_MAP.items()])
+    return operators
