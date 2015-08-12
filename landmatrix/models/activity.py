@@ -11,3 +11,6 @@ class Activity(DefaultStringRepresentation, models.Model):
     availability = models.FloatField(_("availability"), blank=True, null=True)
     fully_updated = models.DateTimeField(_("Fully updated"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
+
+    class Meta:
+        unique_together = (('activity_identifier', 'version'), )
