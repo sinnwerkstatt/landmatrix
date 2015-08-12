@@ -246,8 +246,10 @@ def a_keys():
         24058: 'region'
     }
 
+
 def get_key_from_id(id):
     return a_keys()[id]
+
 
 def get_display_value_by_field(field, value):
     from django import forms

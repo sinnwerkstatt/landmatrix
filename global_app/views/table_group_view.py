@@ -33,7 +33,6 @@ class TableGroupView(TemplateView):
     template_name = "group-by.html"
     debug_query = False
 
-
     def is_download(self):
         return self.download_type is not None
 
