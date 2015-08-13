@@ -321,7 +321,9 @@ $(document).ready(function () {
         <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
         {% for column in columns %}
           {% if column == "deal_id" %}
-            <td class="deal-id"><a href="/{{ cms_page }}/{{ group_slug }}/{{ name|slugify }}/{{ item.deal_id }}/">{{ item.deal_id }}</a></td>
+            <td class="deal-id">
+                <a href="/{{ cms_page }}/{{ item.deal_id }}/">{{ item.deal_id }}</a>
+            </td>
           {% elif column == "crop" %}
               <td style="width:341px">
               {% if  item.crop %}
@@ -453,7 +455,9 @@ $(document).ready(function () {
           {% endif %}
         {% endfor %}
     {% if "deal_id" in columns %}
-    <td><a href="/{{ cms_page }}/{{ group_slug }}/{{ name|slugify }}/{{ item.deal_id }}/" class="btn btn-small">Details</a></td>
+    <td>
+        <a href="/{{ cms_page }}/{{ item.deal_id }}/" class="btn btn-small">Details</a>
+    </td>
     {% endif %}
     </tr>
     {% endfor %}
