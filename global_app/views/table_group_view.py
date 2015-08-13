@@ -58,6 +58,7 @@ class TableGroupView(TemplateView):
 
         context = {
             "view": "get-the-detail",
+            "cms_page": 'global',
             "data": {
                 "items": items,
                 "order_by": self._order_by(),
