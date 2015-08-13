@@ -15,10 +15,9 @@ class Deal:
 
         primary_investor_ids, stakeholder_ids = get_pi_and_sh_id(activity)
 
+        # last() always has latest version, no need for MAX() gymnastics
         self.primary_investor = PrimaryInvestor.objects.filter(id__in=primary_investor_ids).last()
-
-        sh = Stakeholder.objects.filter(id__in=stakeholder_ids).last()
-        self.stakeholder = get_stakeholder_attributes(sh)
+        self.stakeholder = get_stakeholder(stakeholder_ids)
 
 
 def get_latest_activity(deal_id):
@@ -36,6 +35,11 @@ def get_pi_and_sh_id(activity):
     queryset = Involvement.objects.select_related().filter(fk_activity=activity)
     involvements = queryset.values('fk_primary_investor_id', 'fk_stakeholder_id')
     return [i['fk_primary_investor_id'] for i in involvements], [i['fk_stakeholder_id'] for i in involvements]
+
+
+def get_stakeholder(stakeholder_ids):
+    sh = Stakeholder.objects.filter(id__in=stakeholder_ids).last()
+    return get_stakeholder_attributes(sh)
 
 
 def aggregate_activity_attributes(attributes_list, already_set_attributes):
