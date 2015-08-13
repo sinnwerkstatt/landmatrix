@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import Activity, ActivityAttributeGroup, Involvement, PrimaryInvestor, Stakeholder, StakeholderAttributeGroup
+from landmatrix.models import Activity, ActivityAttributeGroup, Involvement, PrimaryInvestor, Stakeholder, StakeholderAttributeGroup, Country
 
 from django.db.models import Max
 
@@ -52,12 +52,16 @@ def update_attributes(attributes, key, value):
     if key in ['type', 'url', 'file']:
         attributes[key] = attributes.get(key, []) + [value]
     else:
-        attributes[key] = value
+        attributes[key] = resolve_country(key, value)
+
+
+def resolve_country(key, value):
+    return Country.objects.get(id=int(value)).name if 'country' in key else value
 
 
 def get_stakeholder_attributes(stakeholder):
     attributes = StakeholderAttributeGroup.objects.filter(fk_stakeholder=stakeholder).values('attributes')
-    return {key: value for a in attributes for key, value in a['attributes'].items()}
+    return {key: resolve_country(key, value) for a in attributes for key, value in a['attributes'].items()}
 
 
 def _get_latest_version(deal_id):
