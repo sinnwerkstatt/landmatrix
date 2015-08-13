@@ -38,10 +38,10 @@
 
     <p>
         <strong>Produce info:</strong>
-        Intention:  {{deal.attributes.intention}}
-        Land use:   {{deal.attributes.land_use}}
-        Animals:    {{deal.attributes.animals}}
-        Land cover: {{deal.attributes.land_cover}}
+        {% if deal.attributes.intention  %}Intention:  {{deal.attributes.intention}}{% endif %}
+        {% if deal.attributes.land_use   %}Land use:   {{deal.attributes.land_use}}{% endif %}
+        {% if deal.attributes.animals    %}Animals:    {{deal.attributes.animals}}{% endif %}
+        {% if deal.attributes.land_cover %}Land cover: {{deal.attributes.land_cover}}{% endif %}
     </p>
 
     <p>
@@ -61,10 +61,12 @@
     <h5>Primary Investor</h5>
     <p>{{deal.primary_investor.name}}</p>
 
-    <h5>Stakeholder</h5>
-    <p>{{deal.stakeholder.investor_name}}</p>
-    <p>{{deal.stakeholder.classification}}</p>
-    <p>{{deal.stakeholder.country}}</p>
+    {% if deal.stakeholder %}
+      <h5>Stakeholder</h5>
+      <p>{{deal.stakeholder.investor_name}}</p>
+      <p>{{deal.stakeholder.classification}}</p>
+      <p>{{deal.stakeholder.country}}</p>
+    {% endif %}
 
   {% else %}
     <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
