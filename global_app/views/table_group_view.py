@@ -223,30 +223,8 @@ class TableGroupView(TemplateView):
                 else:
                     value = None
 
-            if c == "data_source":
-                value = self._process_data_source(j, record)
-                offset += 3
-
             row[c] = self._process_value(c, value)
         return row
-
-    def _process_data_source(self, j, record):
-        try:
-            data_sources = {
-                "data_source_type": record[j],
-                "data_source_url": record[j + 1],
-                "data_source_date": record[j + 2],
-                "data_source_organization": record[j + 3],
-            }
-        except IndexError as e:
-            print(e.__cause__)
-            print(list(zip(self.columns, record)))
-            print(j)
-            raise e
-
-        return self._map_values_of_group(
-            data_sources, "%(data_source_date)s%(data_source_url)s%(data_source_organization)s%(data_source_type)s"
-        )
 
     def _process_intention(self, value):
         if not isinstance(value, list):

@@ -48,7 +48,7 @@ class TestViewVariables(TestCase, DealsTestData):
 
     def test_filters_with_filter_set(self):
         self._call_dispatch_with_GET('filtered')
-        print('filters:', self.view.filters)
+        print('\nfilters:', self.view.filters)
         self._call_dispatch_with_GET('filtered&')
         print('filters:', self.view.filters)
         self.skipTest('not yet implemented')
@@ -65,8 +65,8 @@ class TestViewVariables(TestCase, DealsTestData):
         self._call_dispatch_with_GET('order_by=crop')
         self.assertEqual('crop', self.view._order_by())
 
-        self._call_dispatch_with_GET('order_by=sddfgtrejfihrpooitgh')
-        self.assertEqual('sddfgtrejfihrpooitgh', self.view._order_by())
+        with self.assertRaises(KeyError):
+            self._call_dispatch_with_GET('order_by=sddfgtrejfihrpooitgh')
 
         self._call_dispatch_with_GET('order_by=all')
         self.assertEqual('deal_id', self.view._order_by())
@@ -76,10 +76,6 @@ class TestViewVariables(TestCase, DealsTestData):
 
         self._call_dispatch_with_GET('order_by=deal_count', group='crop')
         self.assertEqual('deal_count', self.view._order_by())
-
-        from django.db.utils import ProgrammingError
-        with self.assertRaises(ProgrammingError, msg='deal_id column should not be present in group views!'):
-            self._call_dispatch_with_GET('order_by=all', group='crop')
 
     def test_limit(self):
         self.assertFalse(self.view._limit_query())
