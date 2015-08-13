@@ -24,9 +24,12 @@ class SQLBuilder(SQLBuilderData):
     def __init__(self, filters, columns):
         self.filters = filters
         self.columns = columns
+        # for c in self.filters.get('order_by', []):
+        #     if c not in self.columns:
+        #         self.columns.append(c)
         self.group = filters.get("group_by", "")
         self.group_value = filters.get("group_value", "")
-        self.filter_to_sql = FilterToSQL(filters, columns)
+        self.filter_to_sql = FilterToSQL(filters, self.columns)
         super(SQLBuilder, self).__init__()
 
     def get_sql(self):

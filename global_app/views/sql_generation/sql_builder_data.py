@@ -122,6 +122,11 @@ class SQLBuilderData:
             "ARRAY_AGG(DISTINCT data_source_type.attributes->'type') AS data_source_type",
             "data_source_type.attributes->'type' AS data_source_type"
         ],
+        "data_source_url": ["ARRAY_AGG(DISTINCT data_source_url.attributes->'url') AS data_source_url"],
+        "data_source_date": ["ARRAY_AGG(DISTINCT data_source_date.attributes->'date') as data_source_date"],
+        "data_source_organisation": [
+            "ARRAY_AGG(DISTINCT data_source_organisation.attributes->'company') as data_source_organisation"
+        ],
         "target_country": ["ARRAY_AGG(DISTINCT deal_country.name) AS target_country",
                            "deal_country.name AS target_country"],
         "target_region": ["ARRAY_AGG(DISTINCT deal_region.name) AS target_region",
