@@ -18,7 +18,12 @@ import json, numbers
 class TableGroupView(TemplateView):
 
     LOAD_MORE_AMOUNT = 20
-    DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
+    DOWNLOAD_COLUMNS = [
+        "deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status",
+        "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal",
+        "data_source_type", "data_source_url", "data_source_date", "data_source_organisation",
+        "contract_farming", "crop"
+    ]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
         "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
@@ -275,12 +280,12 @@ class TableGroupView(TemplateView):
             'investor_country': self._process_stitched_together_field,
             'investor_region': self._process_stitched_together_field,
             'crop': self._process_stitched_together_field,
-            'latlon': lambda value: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in value],
+            'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
             'negotiation_status': self._process_name_and_year,
             'implementation_status': self._process_name_and_year,
-            "intended_size": lambda value: value and value[0],
-            "production_size": lambda value: value and value[0],
-            "contract_size": lambda value: value and value[0],
+            "intended_size": lambda v: v and v[0],
+            "production_size": lambda v: v and v[0],
+            "contract_size": lambda v: v and v[0],
         }
         if c in process_functions:
             return process_functions[c](value)
