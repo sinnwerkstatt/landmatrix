@@ -163,20 +163,19 @@ class SQLBuilderData:
                 ) END AS implementation_status"""
         ],
         "nature_of_the_deal": ["ARRAY_AGG(DISTINCT nature_of_the_deal.attributes->'nature') AS nature_of_the_deal"],
-        "data_source": [
-#             """ARRAY_AGG(DISTINCT CONCAT(data_source_type.attributes->'type', '#!#', data_source_type.group)) AS data_source_type,
-# ARRAY_AGG(DISTINCT CONCAT(data_source_url.attributes->'url', '#!#', data_source_url.group)) as data_source_url,
-# ARRAY_AGG(DISTINCT CONCAT(data_source_date.attributes->'date', '#!#', data_source_date.group)) as data_source_date,
-# ARRAY_AGG(DISTINCT CONCAT(data_source_organisation.attributes->'company', '#!#', data_source_organisation.group)) as data_source_organisation"""
-            """ARRAY_AGG(DISTINCT data_source_type.attributes->'type') AS data_source_type,
-ARRAY_AGG(DISTINCT data_source_url.attributes->'url') as data_source_url,
-ARRAY_AGG(DISTINCT data_source_date.attributes->'date') as data_source_date,
-ARRAY_AGG(DISTINCT data_source_organisation.attributes->'company') as data_source_organisation"""
-        ],
         "contract_farming": ["ARRAY_AGG(DISTINCT contract_farming.attributes->'off_the_lease') AS contract_farming"],
-        "intended_size": ["0 AS intended_size"],
-        "contract_size": ["0 AS contract_size"],
-        "production_size": ["0 AS production_size"],
+        "intended_size": [
+            "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intended_size.attributes->'intended_size'), ', '), '') AS intended_size",
+            "0 AS intended_size"
+        ],
+        "contract_size": [
+            "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_size.attributes->'contract_size'), ', '), '') AS contract_size",
+            "0 AS contract_size"
+        ],
+        "production_size": [
+            "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT production_size.attributes->'production_size'), ', '), '') AS production_size",
+            "0 AS production_size"
+        ],
         "location": ["ARRAY_AGG(DISTINCT location.attributes->'location') AS location"],
         "deal_id": ["a.activity_identifier AS deal_id", "a.activity_identifier as deal_id"],
         "latlon": [
