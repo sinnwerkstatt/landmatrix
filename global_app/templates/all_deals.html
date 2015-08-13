@@ -211,18 +211,18 @@ $(document).ready(function () {
         <div class="actions btn-group pull-right">
             <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li><a href="/get-the-detail/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'csv' %}">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/get-the-detail/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'xls' %}">as Excel (.xls)</a></li>
-              <li><a href="/get-the-detail/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'xml' %}">as XML (.xml)</a></li>
+              <li><a href="/{{cms_page}}/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'csv' %}">as Comma Separated Values (.csv)</a></li>
+              <li><a href="/{{cms_page}}/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'xls' %}">as Excel (.xls)</a></li>
+              <li><a href="/{{cms_page}}/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'xml' %}">as XML (.xml)</a></li>
             </ul>
         </div>
         {% else %}
         <div class="actions btn-group pull-right">
             <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li><a href="/get-the-detail/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'csv' %}">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/get-the-detail/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'xls' %}">as Excel (.xls)</a></li>
-              <li><a href="/get-the-detail/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'xml' %}">as XML (.xml)</a></li>
+              <li><a href="/{{cms_page}}/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'csv' %}">as Comma Separated Values (.csv)</a></li>
+              <li><a href="/{{cms_page}}/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'xls' %}">as Excel (.xls)</a></li>
+              <li><a href="/{{cms_page}}/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'xml' %}">as XML (.xml)</a></li>
             </ul>
         </div>
         {% endif %}
