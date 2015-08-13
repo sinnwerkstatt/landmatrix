@@ -56,8 +56,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'sekizai',
 
-    'django-nose',
-
     'landmatrix',
     'global_app',
     'api'
