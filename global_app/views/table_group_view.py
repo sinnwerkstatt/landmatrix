@@ -4,7 +4,6 @@ from .view_aux_functions import create_condition_formset, render_to_response
 from .browse_filter_conditions import BrowseFilterConditions
 from .intention_map import IntentionMap
 from .download import Download
-from .column_monkey_patch import get_monkey_patch
 from landmatrix.models import BrowseCondition
 from global_app.views.dummy_activity_protocol import DummyActivityProtocol
 
@@ -49,8 +48,6 @@ class TableGroupView(TemplateView):
         self._set_filters()
         self._set_columns()
 
-        self.monkey_patch = get_monkey_patch(self.columns, self.group)
-
         query_result = self.get_records(request)
 
         items = self._get_items(query_result)
@@ -88,7 +85,7 @@ class TableGroupView(TemplateView):
     def get_records(self, request):
         ap = DummyActivityProtocol()
         request.POST = MultiValueDict(
-            {"data": [json.dumps({"filters": self.filters, "columns": self.monkey_patch._optimize_columns()})]}
+            {"data": [json.dumps({"filters": self.filters, "columns": self.columns})]}
         )
         ap.debug = self.debug_query
         res = ap.dispatch(request, action="list_group").content
@@ -205,24 +202,11 @@ class TableGroupView(TemplateView):
         return [ self._get_row(record, query_result) for record in query_result ]
 
     def _get_row(self, record, query_result):
-        single_column_results = self.monkey_patch._single_column_results(query_result)
-        offset = 1
         # iterate over database result
         row = {}
         for j, c in enumerate(self.columns):
             # iterate over columns relevant for view or download
-            j += offset
-            value = record[j]
-            # do not remove crop column if we expect a grouping in the sql string
-            if self.monkey_patch.is_patched_column(c):
-                # artificially insert the data fetched from the smaller SQL query dataset, don't take it from the large set
-                # Assumption deal_id is second column in row!
-                offset -= 1
-                if record[1] in single_column_results[c]:
-                    value = single_column_results[c][record[1]]
-                else:
-                    value = None
-
+            value = record[j+1]
             row[c] = self._process_value(c, value)
         return row
 
