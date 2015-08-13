@@ -9,30 +9,20 @@ class SubqueryBuilder(ListSQLBuilder):
     def column_sql(self, c):
         if c in ("intended_size", "contract_size", "production_size"):
             return "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.attributes->'%(name)s'), ', '), '') AS %(name)s" % {"name": c}
-        elif c == "data_source":
-            return self.SQL_COLUMN_MAP.get(c)[0]
 
         try:
             return self.SQL_COLUMN_MAP.get(c)[0]
-        except TypeError as e:
-            print('column_sql', c, self.SQL_COLUMN_MAP.get(c))
-            raise e
-        # elif c == "data_source":
-        #     return "data_source_type, data_source_url, data_source_date, data_source_organisation,\n"
-        # else:
-        #     return "%(name)s,\n" % {"name": c}
+        except TypeError:
+            raise KeyError(c)
 
     def get_group_sql(self):
         group_by_sql = " GROUP BY a.id "
         additional_group_by = []
-        for c in [ col for col in self.columns if not col in ["intended_size", "contract_size", "production_size", "data_source"] and not self._is_aggregate_column(col)]:
+        for c in [ col for col in self.columns if not col in ["intended_size", "contract_size", "production_size", "data_source"] and not self.is_aggregate_column(col)]:
             additional_group_by.append("%(name)s" % {"name": c})
         if additional_group_by: group_by_sql += ', ' + ', '.join(additional_group_by)
 
         return group_by_sql
-
-    def _is_aggregate_column(self, c):
-        return any(x in self.SQL_COLUMN_MAP[c][0] for x in ['ARRAY_AGG', 'COUNT'])
 
     @classmethod
     def get_base_sql(cls):

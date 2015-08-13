@@ -96,8 +96,4 @@ class RecordReader:
         return core
 
     def _record_subset(self, field_data):
-        data = list(field_data)
-        data.pop()
-        data.pop(0)
-        return data
         return [field_data[1]]

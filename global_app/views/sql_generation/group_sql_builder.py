@@ -26,7 +26,7 @@ class GroupSQLBuilder(SQLBuilder):
         group_by = [self.group if self.group else 'dummy', self.get_name_sql()]
         for c in self.columns:
             if not c in group_by:
-                if not any(f in self.column_sql(c) for f in ('ARRAY_AGG', 'COUNT')):
+                if not self.is_aggregate_column(c):
                     group_by.append(c)
         return "GROUP BY %s" % ', '.join(group_by)
         if self.group:  return "GROUP BY %s" % self.group
@@ -40,7 +40,10 @@ class GroupSQLBuilder(SQLBuilder):
         if c == self.group:
             # use single values for column which gets grouped by
             return self.SQL_COLUMN_MAP.get(c)[1]
-        return self.SQL_COLUMN_MAP.get(c)[0]
+        try:
+            return self.SQL_COLUMN_MAP.get(c)[0]
+        except TypeError:
+            raise KeyError(c)
 
     @classmethod
     def get_base_sql(cls):
