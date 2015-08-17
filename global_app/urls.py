@@ -13,9 +13,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf.urls import url, patterns
-from .views import test_view
 from .views.all_deals_view import AllDealsView
 from .views.table_group_view import TableGroupView
+from .views.deal_detail_view import DealDetailView
 
 urlpatterns = patterns('globalapp.views',
     url(r'^$', AllDealsView.as_view(), name='app_main'),
@@ -23,5 +23,6 @@ urlpatterns = patterns('globalapp.views',
     url(r'^all(?P<type>\.xml)?/$', AllDealsView.as_view(), name='all_deal'),
     url(r'^all(?P<type>\.xls)?/$', AllDealsView.as_view(), name='all_deal'),
     url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
+    url(r'^(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
 
 )
