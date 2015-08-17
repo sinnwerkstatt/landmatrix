@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from global_app.views.sql_generation.join_functions import join_attributes
 
+
 class FilterToSQL:
 
     def __init__(self, filters, columns):
@@ -16,7 +17,7 @@ class FilterToSQL:
     def filter_where(self):
         return self._where_activity() + "\n" + self.where_investor()
 
-    ## operation => (numeric operand, character operand, description )
+    # operation => (numeric operand, character operand, description )
     OPERATION_MAP = {
         "is" :      ("= %s", "= '%s'", _("is")),
         "in":       ("IN (%s)", "IN (%s)", _("is one of")),
@@ -50,8 +51,8 @@ class FilterToSQL:
                     operation = variable_operation[1]
                 # empty as operation or no value given
                 if operation == "is_empty" or not value or (value and not value[0]):
-                    where_act += " AND akv%(count)i.value IS NULL " % {
-                        "count": i,
+                    where_act += " AND akv%(count)i.attributes->'%(variable)s' IS NULL " % {
+                        "count": i, 'variable': variable
                     }
                 elif operation in ("in", "not_in"):
                     # value = value[0].split(",")
@@ -74,10 +75,25 @@ class FilterToSQL:
                             v,year =  v.split("##!##")[0], v.split("##!##")[1]
                         operation_type = not v.isdigit() and 1 or 0
                         if variable == "region":
-                            where_act += " AND ar%(count)i.name %(op)s " % { "count": i, "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")}
+                            where_act += " AND ar%(count)i.name %(op)s " % {
+                                "count": i,
+                                "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")
+                            }
                         else:
+                            # TODO: that goes for 'is' too of the field is numeric. need better condition.
+                            if operation in ['lt', 'lte', 'gt', 'gte']:
+                                comparator = "CAST(akv%(count)i.attributes->'%(variable)s' AS NUMERIC)" % {
+                                    "count": i, 'variable': variable
+                                }
+                            else:
+                                comparator = "akv%(count)i.attributes->'%(variable)s'" % {
+                                    "count": i, 'variable': variable
+                                }
                             where_act += "  %(value)s  %(year)s " % {
-                                "value": v and " AND akv%(count)i.value %(op)s " % { "count": i, "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")}  or "",
+                                "value": v and " AND %(comparator)s %(op)s " % {
+                                    'comparator': comparator,
+                                    "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"),
+                                } or "",
                                 "year": year and " AND akv%i.year = '%s' " % (i, year) or ""
                             }
         return where_act

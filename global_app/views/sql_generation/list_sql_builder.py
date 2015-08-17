@@ -3,6 +3,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from global_app.views.sql_generation.sql_builder import SQLBuilder
 from global_app.views.sql_generation.join_functions import join_attributes
 
+
 class ListSQLBuilder(SQLBuilder):
 
     GROUP_CONDITIONS = {
@@ -16,6 +17,7 @@ class ListSQLBuilder(SQLBuilder):
         "investor_name":    ' AND s.stakeholder_identifier = \'%s\' ',
         "data_source_type": ' AND lower(replace(replace(data_source_type.value, \' \', \'-\'), \'/\', \'+\')) = lower(\'%s\') '
     }
+
     def get_where_sql(self):
         if self.group != 'all' and self.group_value:
             return self.GROUP_CONDITIONS[self.group] % self.group_value

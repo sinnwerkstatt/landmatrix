@@ -333,9 +333,13 @@ function init_google_maps(el, index, draw_circle) {
     });
   }
 };
+
 var numeric_operators = ["lt", "gt", "gte", "lte", "is", "is_empty"];
 var string_operators = ["not_in", "in", "is", "contains"];
 var list_operators = ["not_in", "in", "is", "is_empty"];
+/**
+ *  updates the filter widget for the grid view if the field to filter by is changed
+ */
 function update_widget (el, key_id, form) {
   var value = form.find("input[type='hidden']").val(),
       name = el.find(":input").attr("name"),
@@ -348,7 +352,7 @@ function update_widget (el, key_id, form) {
     var is_list = (el.find("select,ul").length > 0);
     form.find(".operator option").each(function (index) {
         if (is_number) {
-            $(this).attr("disabled", (jQuery.inArray($(this).val(), number_operators) == -1));
+            $(this).attr("disabled", (jQuery.inArray($(this).val(), numeric_operators) == -1));
         } else if (is_list) {
             $(this).attr("disabled", (jQuery.inArray($(this).val(), list_operators) == -1));
         } else {
@@ -356,13 +360,6 @@ function update_widget (el, key_id, form) {
         }
     });
   });
-  // if (key_id != "") {
-  //     op.parents(".input-append").find(":input").attr("disabled", true);
-  //     name = op.parent(":input").attr("name");
-  //     $.get("/ajax/widget/operators", {key_id:  key_id, value: op_value, name: name}, function (data) {
-  //       op.parents(".input-append").empty().html(data).find(":input").attr("disabled", false);
-  //     });
-  // }
 };
 
 $(document).ready(function () {
