@@ -62,6 +62,7 @@ INSTALLED_APPS = (
 #   apps of the actual landmatrix project
     'landmatrix',
     'global_app',
+    'chart_view',
     'api'
 )
 
