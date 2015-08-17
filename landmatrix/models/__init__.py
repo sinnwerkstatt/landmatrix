@@ -12,3 +12,6 @@ from landmatrix.models.stakeholder import *
 from landmatrix.models.stakeholder_attribute_group import *
 from landmatrix.models.browse_rule import *
 from landmatrix.models.browse_condition import *
+from landmatrix.models.currency import *
+from landmatrix.models.animal import *
+from landmatrix.models.mineral import *

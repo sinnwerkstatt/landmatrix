@@ -17,6 +17,7 @@ def write_to_xls(header, data, filename):
     wb.save(response)
     return response
 
+
 def write_to_xml(header, data, filename):
     try:
         import xml.etree.cElementTree as ET
@@ -36,6 +37,7 @@ def write_to_xml(header, data, filename):
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
     return response
 
+
 def write_to_csv(header, data, filename):
     import csv
 
@@ -49,43 +51,44 @@ def write_to_csv(header, data, filename):
         writer.writerow([str(s).encode("utf-8") for s in row])
     return response
 
-""" Format the data of the items to a propper download format.
-        Returns an array of arrays, each row is an an array of data
-"""
+
 def format_items_for_download(items, columns):
-        rows = []
-        for item in items:
-            row = []
-            for c in columns:
-                v = item.get(c)
-                row_item = []
-                if isinstance(v, (tuple, list)):
-                    for lv in v:
-                        if isinstance(lv, dict):
+    """ Format the data of the items to a proper download format.
+        Returns an array of arrays, each row is an an array of data
+    """
+    rows = []
+    for item in items:
+        row = []
+        for c in columns:
+            v = item.get(c)
+            row_item = []
+            if isinstance(v, (tuple, list)):
+                for lv in v:
+                    if isinstance(lv, dict):
+                        year = lv.get("year", None)
+                        name = lv.get("name", None)
+                        if year and year != "0" and name:
+                            row_item.append("[%s] %s" % (year, name))
+                        elif name:
+                            row_item.append(name)
+                    elif isinstance(lv, (list, tuple)):
+        # Some vars take additional data for the template (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
+                        if len(lv) > 0 and isinstance(lv[0], dict):
                             year = lv.get("year", None)
                             name = lv.get("name", None)
                             if year and year != "0" and name:
                                 row_item.append("[%s] %s" % (year, name))
                             elif name:
                                 row_item.append(name)
-                        elif isinstance(lv, (list, tuple)):
-            # Some vars take additional data for the template (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
-                            if len(lv) > 0 and isinstance(lv[0], dict):
-                                year = lv.get("year", None)
-                                name = lv.get("name", None)
-                                if year and year != "0" and name:
-                                    row_item.append("[%s] %s" % (year, name))
-                                elif name:
-                                    row_item.append(name)
-                            else:
-                                row_item.append(lv)
                         else:
                             row_item.append(lv)
-                    row.append(", ".join(filter(None, row_item)))
-                else:
-                    row.append(v)
-            rows.append(row)
-        return rows
+                    else:
+                        row_item.append(lv)
+                row.append(", ".join(filter(None, row_item)))
+            else:
+                row.append(v)
+        rows.append(row)
+    return rows
 
 
 class Download:

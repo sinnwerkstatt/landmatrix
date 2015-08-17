@@ -18,7 +18,11 @@ import json, numbers
 class TableGroupView(TemplateView):
 
     LOAD_MORE_AMOUNT = 20
-    DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
+    DOWNLOAD_COLUMNS = [
+        "deal_id", "target_country", "location", "investor_name", "investor_country", "intention",
+        "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size",
+        "nature_of_the_deal", "data_source", "contract_farming", "crop"
+    ]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
         "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
@@ -28,7 +32,6 @@ class TableGroupView(TemplateView):
 
     template_name = "group-by.html"
     debug_query = False
-
 
     def is_download(self):
         return self.download_type is not None
@@ -129,6 +132,7 @@ class TableGroupView(TemplateView):
         for ext in Download.supported_formats():
             if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
                 self.download_type = ext
+#                self.debug_query = True
                 return
 
     def _set_group(self, **kwargs):
@@ -152,23 +156,18 @@ class TableGroupView(TemplateView):
             self.columns = self._columns()
 
     def _set_filters(self):
-        self.filters = {}
+        self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
         ConditionFormset = create_condition_formset()
         if self._filter_set():
             # set given filters
             self.current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
-            if self.current_formset_conditions.is_valid():
-                self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
         else:
-            # set default filters
-            self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
-            filter_dict = self._get_filter_dict()
-            self.current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
             if self.group == "database":
-                self.filters = BrowseFilterConditions(None, [self._order_by()], None).parse()
+                self.current_formset_conditions = None
             else:
-                # TODO: make the following line work again
-                self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
+                self.current_formset_conditions = ConditionFormset(self._get_filter_dict(), prefix="conditions_empty")
+
+        self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
 
         self.filters["group_by"] = self.group
         self.filters["group_value"] = self.group_value
