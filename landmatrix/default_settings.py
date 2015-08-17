@@ -48,6 +48,7 @@ INSTALLED_APPS = (
 
 #   django-cms and dependencies
     'cms',
+#    'cms.plugins.text',
     'mptt',
     'menus',
     'treebeard',
