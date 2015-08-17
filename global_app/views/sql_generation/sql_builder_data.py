@@ -3,6 +3,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from global_app.views.sql_generation.join_functions import *
 from landmatrix.models import *
 
+
 class SQLBuilderData:
 
     def __init__(self):
