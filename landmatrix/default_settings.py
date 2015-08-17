@@ -60,6 +60,7 @@ INSTALLED_APPS = (
     'coverage',
 
 #   apps of the actual landmatrix project
+    'chart_view',
     'landmatrix',
     'global_app',
     'chart_view',
