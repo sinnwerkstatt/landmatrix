@@ -68,10 +68,10 @@ class TestRecordReader(TestCase, DealsTestData, GenerateOldSQL):
             reader = RecordReader(parameters['filters'], parameters['columns'])
 
     def test_order_by(self):
-        self._check_order_by('id', 'id  ASC')
-        self._check_order_by('-id', 'id  DESC')
-        self._check_order_by('id+0', 'id +0 ASC')
-        self._check_order_by('-id+0', 'id +0 DESC')
+        self._check_order_by('deal_id', 'deal_id  ASC')
+        self._check_order_by('-deal_id', 'deal_id  DESC')
+        self._check_order_by('deal_id+0', 'deal_id +0 ASC')
+        self._check_order_by('-deal_id+0', 'deal_id +0 DESC')
 
     def test_limit(self):
         post = self.MINIMAL_POST

@@ -4,7 +4,6 @@ from .view_aux_functions import create_condition_formset, render_to_response
 from .browse_filter_conditions import BrowseFilterConditions
 from .intention_map import IntentionMap
 from .download import Download
-from .column_monkey_patch import get_monkey_patch
 from landmatrix.models import BrowseCondition
 from global_app.views.dummy_activity_protocol import DummyActivityProtocol
 
@@ -19,9 +18,10 @@ class TableGroupView(TemplateView):
 
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = [
-        "deal_id", "target_country", "location", "investor_name", "investor_country", "intention",
-        "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size",
-        "nature_of_the_deal", "data_source", "contract_farming", "crop"
+        "deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status",
+        "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal",
+        "data_source_type", "data_source_url", "data_source_date", "data_source_organisation",
+        "contract_farming", "crop"
     ]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
@@ -46,8 +46,6 @@ class TableGroupView(TemplateView):
         self._set_group(**kwargs)
         self._set_filters()
         self._set_columns()
-
-        self.monkey_patch = get_monkey_patch(self.columns, self.group)
 
         query_result = self.get_records(request)
 
@@ -87,7 +85,7 @@ class TableGroupView(TemplateView):
     def get_records(self, request):
         ap = DummyActivityProtocol()
         request.POST = MultiValueDict(
-            {"data": [json.dumps({"filters": self.filters, "columns": self.monkey_patch._optimize_columns()})]}
+            {"data": [json.dumps({"filters": self.filters, "columns": self.columns})]}
         )
         ap.debug = self.debug_query
         res = ap.dispatch(request, action="list_group").content
@@ -200,48 +198,13 @@ class TableGroupView(TemplateView):
         return [ self._get_row(record, query_result) for record in query_result ]
 
     def _get_row(self, record, query_result):
-        single_column_results = self.monkey_patch._single_column_results(query_result)
-        offset = 1
         # iterate over database result
         row = {}
         for j, c in enumerate(self.columns):
             # iterate over columns relevant for view or download
-            j += offset
-            value = record[j]
-            # do not remove crop column if we expect a grouping in the sql string
-            if self.monkey_patch.is_patched_column(c):
-                # artificially insert the data fetched from the smaller SQL query dataset, don't take it from the large set
-                # Assumption deal_id is second column in row!
-                offset -= 1
-                if record[1] in single_column_results[c]:
-                    value = single_column_results[c][record[1]]
-                else:
-                    value = None
-
-            if c == "data_source":
-                value = self._process_data_source(j, record)
-                offset += 3
-
+            value = record[j+1]
             row[c] = self._process_value(c, value)
         return row
-
-    def _process_data_source(self, j, record):
-        try:
-            data_sources = {
-                "data_source_type": record[j],
-                "data_source_url": record[j + 1],
-                "data_source_date": record[j + 2],
-                "data_source_organization": record[j + 3],
-            }
-        except IndexError as e:
-            print(e.__cause__)
-            print(list(zip(self.columns, record)))
-            print(j)
-            raise e
-
-        return self._map_values_of_group(
-            data_sources, "%(data_source_date)s%(data_source_url)s%(data_source_organization)s%(data_source_type)s"
-        )
 
     def _process_intention(self, value):
         if not isinstance(value, list):
@@ -275,12 +238,12 @@ class TableGroupView(TemplateView):
             'investor_country': self._process_stitched_together_field,
             'investor_region': self._process_stitched_together_field,
             'crop': self._process_stitched_together_field,
-            'latlon': lambda value: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in value],
+            'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
             'negotiation_status': self._process_name_and_year,
             'implementation_status': self._process_name_and_year,
-            "intended_size": lambda value: value and value[0],
-            "production_size": lambda value: value and value[0],
-            "contract_size": lambda value: value and value[0],
+            "intended_size": lambda v: v and v[0],
+            "production_size": lambda v: v and v[0],
+            "contract_size": lambda v: v and v[0],
         }
         if c in process_functions:
             return process_functions[c](value)
