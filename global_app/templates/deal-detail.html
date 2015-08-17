@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n custom_tags %}
+{% load humanize %}
+
+
+{% block page_title %}Deal details{% endblock %}
+{% block title %}Deal details{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="/">Home</a> <span class="divider">|</span></li>
+  <li><a href="/get-the-detail/">Get the detail</a> <span class="divider">|</span></li>
+  <li>Deal details</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+
+  {% if deal %}
+
+    <h5>Activity</h5>
+
+    <p>Deal scope:     {{deal.attributes.deal_scope}}</p>
+    <p>old reliability ranking: {{deal.attributes.old_reliability_ranking}}</p>
+    {% if deal.attributes.negotiation_status %}
+        <p>Negotiation status: {{deal.attributes.negotiation_status}}</p>
+    {% elif deal.attributes.pi_negotiation_status %}
+        <p>Negotiation status: {{deal.attributes.pi_negotiation_status}}</p>
+    {% endif %}
+    {% if deal.attributes.implementation_status %}
+        <p>Implementation status: {{deal.attributes.implementation_status}}</p>
+    {% elif deal.attributes.pi_implementation_status %}
+        <p>Implementation status: {{deal.attributes.pi_implementation_status}}</p>
+    {% endif %}
+    <p>land owner: {{deal.attributes.land_owner}}</p>
+    <p>intended size: {{deal.attributes.intended_size}}</p>
+    <p>date: {{deal.attributes.date}}</p>
+
+    <p>
+        <strong>Produce info:</strong>
+        {% if deal.attributes.intention  %}Intention:  {{deal.attributes.intention}}{% endif %}
+        {% if deal.attributes.land_use   %}Land use:   {{deal.attributes.land_use}}{% endif %}
+        {% if deal.attributes.animals    %}Animals:    {{deal.attributes.animals}}{% endif %}
+        {% if deal.attributes.land_cover %}Land cover: {{deal.attributes.land_cover}}{% endif %}
+    </p>
+
+    <p>
+        <strong>Data sources:</strong>
+        type: {{deal.attributes.type}}
+        file: {{deal.attributes.file}}
+        url: {{deal.attributes.url}}
+    </p>
+    <p>
+        <strong>Spatial data:</strong>
+        Target country: {{deal.attributes.target_country}}
+        {{deal.attributes.location}}
+        ({{deal.attributes.point_lat}}/{{deal.attributes.point_lon}})
+        ({{deal.attributes.level_of_accuracy}})
+    </p>
+
+    <h5>Primary Investor</h5>
+    <p>{{deal.primary_investor.name}}</p>
+
+    {% if deal.stakeholder %}
+      <h5>Stakeholder</h5>
+      <p>{{deal.stakeholder.investor_name}}</p>
+      <p>{{deal.stakeholder.classification}}</p>
+      <p>{{deal.stakeholder.country}}</p>
+    {% endif %}
+
+  {% else %}
+    <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
+  {% endif %}
+
+{% endblock %}
