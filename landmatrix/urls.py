@@ -22,10 +22,12 @@ from django.contrib import admin
 
 from api import urls as api_urls
 from global_app import urls as global_urls
+from chart_view import urls as chart_urls
 
 urlpatterns = i18n_patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(api_urls)),
     url(r'^global_app/', include(global_urls)),
+    url(r'^chart_view/', include(chart_urls)),
     url(r'^', include('cms.urls')),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
