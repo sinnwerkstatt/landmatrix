@@ -1,4 +1,3 @@
-from django.shortcuts import render
 
 from global_app.views.view_aux_functions import render_to_response
 
