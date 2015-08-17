@@ -13,7 +13,5 @@ class ChartsView(TemplateView):
         print('BOOOOOOOOOOOOOAH ALDA!')
         context = {
             "view": "chart view",
-
-
         }
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(self.template_name, context, RequestContext(request))
