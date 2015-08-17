@@ -10,7 +10,7 @@ class ChartsView(TemplateView):
     template_name = "plugins/overview.html"
 
     def dispatch(self, request, *args, **kwargs):
-        print('BOOOOOOOOOOOOOOH!')
+        print('BOOOOOOOOOOOOOAH ALDA!')
         context = {
             "view": "chart view",
 
