@@ -77,16 +77,10 @@ class RecordReader:
             raise RuntimeError("Activity IDs not equal for element %i: %s" % (i, ', '.join(map(str, act_ids))))
 
     def _make_record_from_column_data(self, column_data, i):
-#        return tuple(column_data[col][i][1] for col in self.columns)
         return tuple(self._record_subset(column_data[col][i]) for col in self.columns)
-#        return tuple(column_data[col][i][j] for col in self.columns for j in range(1, 1 or len(column_data[col])-2))
 
     def _make_padded_record_from_column_data(self, column_data, i):
-#        else: print(column_data.keys())
-#        padded_record = ['all deals'] + [column_data[col][i][j] for col in self.columns for j in range(1, 1 or len(column_data[col][i])-1)] + ['dummy']
-#        padded_record = ['all deals'] + [column_data[col][i][1] for col in self.columns] + ['dummy']
         padded_record = ['all deals'] + self._record_core(column_data,i) + ['dummy']
-#        padded_record = ['all deals'] + [self._record_subset(column_data[col][i]) for col in self.columns] + ['dummy']
         return tuple(padded_record)
 
     def _record_core(self, column_data, i):
@@ -96,8 +90,4 @@ class RecordReader:
         return core
 
     def _record_subset(self, field_data):
-        data = list(field_data)
-        data.pop()
-        data.pop(0)
-        return data
         return [field_data[1]]

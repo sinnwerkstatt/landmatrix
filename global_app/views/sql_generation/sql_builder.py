@@ -26,10 +26,16 @@ class SQLBuilder(SQLBuilderData):
     def __init__(self, filters, columns):
         self.filters = filters
         self.columns = columns
+        self._add_order_by_columns()
         self.group = filters.get("group_by", "")
         self.group_value = filters.get("group_value", "")
-        self.filter_to_sql = FilterToSQL(filters, columns)
+        self.filter_to_sql = FilterToSQL(filters, self.columns)
         super(SQLBuilder, self).__init__()
+
+    def _add_order_by_columns(self):
+        for c in self.filters.get('order_by', []):
+            if self._strip_order_sql(c) not in self.columns:
+                self.columns.append(self._strip_order_sql(c))
 
     def get_sql(self):
         return self.get_base_sql() % {
@@ -93,6 +99,9 @@ class SQLBuilder(SQLBuilderData):
 
         return 'ORDER BY ' + ', '.join(fields)
 
+    def _strip_order_sql(self, order_by):
+        return order_by.strip('-+0')
+
     def _natural_sort(self, field):
         return (field.split("+0")[0], '+0') if "+0" in field else (field, '')
 
@@ -109,6 +118,12 @@ class SQLBuilder(SQLBuilderData):
     @classmethod
     def get_base_sql(cls):
         raise RuntimeError('SQLBuilder.get_base_sql() not implemented')
+
+    def is_aggregate_column(self, c):
+        try:
+            return any(x in self.SQL_COLUMN_MAP[c][0] for x in ['ARRAY_AGG', 'COUNT'])
+        except KeyError:
+            return False
 
     def _need_involvements_and_stakeholders(self):
         return 'investor' in self.filters or any(
