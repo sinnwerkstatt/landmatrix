@@ -1,60 +1,27 @@
-from django.utils.translation import ugettext_lazy as _
-from django.utils.text import Truncator
-from django.utils.html import strip_tags, clean_html
 from django.conf import settings
 from django import forms
-from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from cms.plugin_pool import plugin_pool
 from cms.plugin_base import CMSPluginBase
-from cms.models.pluginmodel import CMSPlugin
 from djangocms_text_ckeditor.forms import TextForm
-
-class GetTheIdea(CMSPlugin):
-#    image = FilerImageField()
-    body = models.TextField(_("body"), blank=True, null=True)
+from chart_view.models import AnimalPlugin
 
 
-    def _set_body_admin(self, text):
-        self.body = plugin_admin_html_to_tags(text)
+class CMSAnimalPlugin(CMSPluginBase):
+    model = AnimalPlugin
+    module = _("Animals")
+    name = _("Animal Plugin")  # name of the plugin in the interface
+    render_template = "plugins/animal.html"
 
-    def _get_body_admin(self):
-        return plugin_tags_to_admin_html(self.body)
+    def render(self, context, instance, placeholder):
+        context.update({'instance': instance})
+        return context
 
-    body_for_admin = property(_get_body_admin, _set_body_admin, None,
-                              """
-                              body attribute, but with transformations
-                              applied to allow editing in the
-                              admin. Read/write.
-                              """)
+plugin_pool.register_plugin(CMSAnimalPlugin)  # register the plugin
 
-    search_fields = ('body',)
 
-    def __str__(self):
-        truncator = Truncator(strip_tags(self.body))
-        return u"%s" % (truncator.words(3)[:30]+"...")
-
-    def clean(self):
-        self.body = clean_html(self.body, full=False)
-
-    def clean_plugins(self):
-        ids = plugin_tags_to_id_list(self.body)
-        plugins = CMSPlugin.objects.filter(parent=self)
-        for plugin in plugins:
-            if not plugin.pk in ids:
-                plugin.delete() #delete plugins that are not referenced in the text anymore
-
-    def post_copy(self, old_instance, ziplist):
-        """
-        Fix references to plugins
-        """
-
-        replace_ids = {}
-        for new, old in ziplist:
-            replace_ids[old.pk] = new.pk
-
-        self.body = replace_plugin_tags(old_instance.get_plugin_instance()[0].body, replace_ids)
-        self.save()
+from .models import GetTheIdea
 
 class GetTheIdeaPlugin(CMSPluginBase):
 

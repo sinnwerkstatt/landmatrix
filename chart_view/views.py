@@ -1,4 +1,3 @@
-from django.shortcuts import render
 
 from global_app.views.view_aux_functions import render_to_response
 
@@ -6,11 +5,12 @@ from django.views.generic.base import TemplateView
 from django.template import RequestContext
 
 
-class ChartsView(TemplateView):
+class ChartView(TemplateView):
     template_name = "plugins/overview.html"
 
     def dispatch(self, request, *args, **kwargs):
-        print('BOOOOOOOOOOOOOAH ALDA!')
+        from random import randint
+        print('B'+'O'*randint(1,9)+'AH ALDA!')
         context = {
             "view": "chart view",
         }
