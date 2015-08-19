@@ -105,7 +105,11 @@ function get_filter() {
     }
     return filter;
 }
+
+//draw(function() { $(this).button('reset'); });
+
 $(document).ready(function () {
+//alert('ready jetz aba echt');
     $(".filters .btn").click(function (e) {
         var c_self = $(this);
         c_self.button('loading');
