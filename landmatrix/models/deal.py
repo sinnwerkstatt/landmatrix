@@ -7,7 +7,14 @@ from django.db.models import Max
 
 class Deal:
 
+    class Manager:
+        def all(cls):
+            return [Deal(deal_id['activity_identifier']) for deal_id in Activity.objects.values('activity_identifier').distinct()[:100]]
+
+    objects = Manager()
+
     def __init__(self, id):
+        print("Deal", id)
         self.id = id
 
         activity = get_latest_activity(id)
@@ -60,7 +67,7 @@ def update_attributes(attributes, key, value):
 
 
 def resolve_country(key, value):
-    return Country.objects.get(id=int(value)).name if 'country' in key else value
+    return Country.objects.get(id=int(value)).name if 'country' in key and value.isdigit() else value
 
 
 def get_stakeholder_attributes(stakeholder):

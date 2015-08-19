@@ -24,6 +24,10 @@ from api import urls as api_urls
 from global_app import urls as global_urls
 from global_app.views.filter_widget_ajax_view import FilterWidgetAjaxView
 
+from landmatrix.models import Deal
+
+print(Deal.objects.all()[:10])
+
 urlpatterns = i18n_patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(api_urls)),

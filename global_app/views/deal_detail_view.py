@@ -14,7 +14,6 @@ class DealDetailView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
 
         deal = Deal(kwargs["deal_id"])
-
         context = {
             "deal": {
                 'attributes': deal.attributes,
