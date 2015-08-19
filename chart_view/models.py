@@ -1,10 +1,14 @@
 
-from django.db import models
-from cms.models import CMSPlugin
 from landmatrix.models import Animal
+
+from cms.models import CMSPlugin
+from djangocms_text_ckeditor.utils import plugin_tags_to_id_list
+
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import Truncator
 from django.utils.html import strip_tags, clean_html
+
 
 class AnimalPlugin(CMSPlugin):
     animal = models.ForeignKey(Animal)
@@ -38,7 +42,7 @@ class GetTheIdea(CMSPlugin):
         return u"%s" % (truncator.words(3)[:30]+"...")
 
     def clean(self):
-        self.body = clean_html(self.body, full=False)
+        self.body = clean_html(self.body)
 
     def clean_plugins(self):
         ids = plugin_tags_to_id_list(self.body)
