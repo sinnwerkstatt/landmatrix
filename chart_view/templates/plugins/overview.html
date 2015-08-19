@@ -49,6 +49,7 @@
 <script type="text/javascript" src="/media/js/vendor/RGraph.common.tooltips.js"></script>
 <script type="text/javascript">
 $(document).ready(function () {
+//    alert('ready!');
     $(".nav-tabs a").click(function (e) {
         e.preventDefault();
         var c_self = this;
@@ -73,6 +74,7 @@ $(document).ready(function () {
 var storage = {};
 function draw (callback, chart_data) {
 /* chart_data: optional */
+    alert('draw!'+chart);
     RGraph.ObjectRegistry.Clear();
     // Cached data?
     if (chart_data) {
