@@ -1,16 +1,18 @@
-from django.conf import settings
-from django import forms
-from django.utils.translation import ugettext_lazy as _
+
+from chart_view.models import AnimalPlugin
 
 from cms.plugin_pool import plugin_pool
 from cms.plugin_base import CMSPluginBase
 from djangocms_text_ckeditor.forms import TextForm
-from chart_view.models import AnimalPlugin
+from djangocms_text_ckeditor.utils import plugin_tags_to_user_html
+
+from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 
 class CMSAnimalPlugin(CMSPluginBase):
     model = AnimalPlugin
-    module = _("Animals")
+    module = _("Get the idea")
     name = _("Animal Plugin")  # name of the plugin in the interface
     render_template = "plugins/animal.html"
 
@@ -19,7 +21,6 @@ class CMSAnimalPlugin(CMSPluginBase):
         return context
 
 plugin_pool.register_plugin(CMSAnimalPlugin)  # register the plugin
-
 
 from .models import GetTheIdea
 
@@ -32,16 +33,11 @@ class GetTheIdeaPlugin(CMSPluginBase):
     render_template = "cms/plugins/text.html"
     change_form_template = "cms/plugins/text_plugin_change_form.html"
 
+
     def get_editor_widget(self, request, plugins):
-        """
-        Returns the Django form Widget to be used for
-        the text area
-        """
-        if USE_TINYMCE and "tinymce" in settings.INSTALLED_APPS:
-            from cms.plugins.text.widgets.tinymce_widget import TinyMCEEditor
-            return TinyMCEEditor(installed_plugins=plugins)
-        else:
-            return WYMEditor(installed_plugins=plugins)
+        """ Returns the Django form Widget to be used for the text area """
+        return None
+        return TextForm()
 
     def get_form_class(self, request, plugins):
         """
@@ -61,6 +57,7 @@ class GetTheIdeaPlugin(CMSPluginBase):
         return super(GetTheIdeaPlugin, self).get_form(request, obj, **kwargs)
 
     def render(self, context, instance, placeholder):
+        print('Howdy!')
         context.update({
             'body': plugin_tags_to_user_html(instance.body, context, placeholder),
             'placeholder': placeholder,
@@ -74,9 +71,13 @@ class GetTheIdeaPlugin(CMSPluginBase):
 
 
 class OverviewPlugin(GetTheIdeaPlugin):
-    module = "Get the idea"
+    module = _("Get the idea")
     name = _("Overview")
     render_template = "plugins/overview.html"
     model = GetTheIdea
+
 plugin_pool.register_plugin(OverviewPlugin)
 
+from pprint import pprint
+pprint(plugin_pool.get_all_plugins())
+pprint(plugin_pool.get_patterns())
