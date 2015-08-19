@@ -48,7 +48,6 @@ INSTALLED_APPS = (
 
 #   django-cms and dependencies
     'cms',
-#    'cms.plugins.text',
     'mptt',
     'menus',
     'treebeard',
@@ -56,6 +55,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.sites',
     'sekizai',
+    'djangocms_text_ckeditor',
 
 #   to check test coverage
     'coverage',
