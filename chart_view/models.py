@@ -1,6 +1,3 @@
-
-from landmatrix.models import Animal
-
 from cms.models import CMSPlugin
 from djangocms_text_ckeditor.utils import plugin_tags_to_id_list
 
@@ -8,13 +5,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import Truncator
 from django.utils.html import strip_tags, clean_html
-
-
-class AnimalPlugin(CMSPlugin):
-    animal = models.ForeignKey(Animal)
-
-    def __str__(self):
-        return self.animal.name
 
 
 class GetTheIdea(CMSPlugin):
