@@ -22,7 +22,6 @@ from django.contrib import admin
 
 from api import urls as api_urls
 from global_app import urls as global_urls
-from chart_view import urls as chart_urls
 from global_app.views.filter_widget_ajax_view import FilterWidgetAjaxView
 from chart_view import urls as chart_urls
 
