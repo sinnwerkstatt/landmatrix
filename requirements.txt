@@ -1,4 +1,4 @@
-Django == 1.7.8
+Django < 1.8
 djangorestframework >= 3.1.2
 django-tastypie >= 0.12.1
 
@@ -17,3 +17,4 @@ django-datetime-widget>=0.9
 coverage
 
 xlwt >= 1.0.0
+python-mimeparse >= 0.1.4

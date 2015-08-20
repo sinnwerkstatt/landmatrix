@@ -3,18 +3,41 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from landmatrix.models import Activity, ActivityAttributeGroup, Involvement, PrimaryInvestor, Stakeholder, StakeholderAttributeGroup, Country
 
 from django.db.models import Max
+import itertools
+
+
+class Indexable:
+
+    def __init__(self, it):
+        self.iterable = iter(it)
+        self.already_computed = []
+
+    def __iter__(self):
+        for element in self.iterable:
+            self.already_computed.append(element)
+            yield element
+
+    def __getitem__(self, index):
+        try:
+            max_idx = index.stop
+        except AttributeError:
+            max_idx = index
+        n = max_idx-len(self.already_computed)+1
+        if n > 0:
+            self.already_computed.extend(itertools.islice(self.iterable, n))
+        return self.already_computed[index]
 
 
 class Deal:
 
     class Manager:
-        def all(cls):
-            return [Deal(deal_id['activity_identifier']) for deal_id in Activity.objects.values('activity_identifier').distinct()[:100]]
+
+        def all(self):
+            return Indexable(Deal(deal_id['activity_identifier']) for deal_id in Activity.objects.values('activity_identifier').distinct())
 
     objects = Manager()
 
     def __init__(self, id):
-        print("Deal", id)
         self.id = id
 
         activity = get_latest_activity(id)
@@ -26,6 +49,8 @@ class Deal:
         self.primary_investor = PrimaryInvestor.objects.filter(id__in=primary_investor_ids).last()
         self.stakeholder = get_stakeholder(stakeholder_ids)
 
+    def __str__(self):
+        return str({'attributes': self.attributes, 'primary_investor': self.primary_investor, 'stakeholder': self.stakeholder})
 
 def get_latest_activity(deal_id):
     version_max = _get_latest_version(deal_id)
