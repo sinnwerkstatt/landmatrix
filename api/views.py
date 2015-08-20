@@ -1,3 +1,4 @@
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models import *
@@ -105,9 +106,46 @@ class StatisticsViewSet(viewsets.ModelViewSet):
 
 
 from django.http import HttpResponse
+from django.views.generic.base import TemplateView
+import json
+
+
+class JSONView(TemplateView):
+    template_name = "plugins/overview.html"
+
+    FAKE_VALUES = {
+        'negotiation_status': [
+            {"deals": 71, "hectares": 1814686.0, "name": "Concluded (Oral Agreement)"},
+            {"deals": 978, "hectares": 36619575.0, "name": "Concluded (Contract signed)"},
+            {"deals": 0, "hectares": 0, "name": "Intended (Expression of interest)"},
+            {"deals": 0, "hectares": 0, "name": "Intended (Under negotiation)"},
+            {"deals": 0, "hectares": 0, "name": "Failed (Negotiations failed)"},
+            {"deals": 0, "hectares": 0, "name": "Failed (Contract canceled)"},
+            {"deals": 0, "hectares": 0, "name": ""}
+        ],
+        'implementation_status': [
+            {"deals": 112, "hectares": 8867937.0, "name": "Project not started"},
+            {"deals": 145, "hectares": 3347947.0, "name": "Startup phase (no production)"},
+            {"deals": 604, "hectares": 17474652.0, "name": "In operation (production)"},
+            {"deals": 59, "hectares": 3966570.0, "name": "Project abandoned"},
+            {"deals": 500, "hectares": 28122741.0, "name": ""}
+        ],
+        'intention_of_investment': [
+            {"deals": 790, "hectares": 18192014.0, "name": "Agriculture"},
+            {"deals": 101, "hectares": 9429665.0, "name": "Forestry"},
+            {"deals": 10, "hectares": 528501.0, "name": "Tourism"},
+            {"deals": 9, "hectares": 24003.0, "name": "Industry"},
+            {"deals": 2, "hectares": 46100.0, "name": "Conservation"},
+            {"deals": 7, "hectares": 278280.0, "name": "Renewable Energy"},
+            {"deals": 7, "hectares": 33280.0, "name": "Other"},
+            {"deals": 116, "hectares": 9755468.0, "name": "Multiple intention"},
+            {"deals": 7, "hectares": 146950.0, "name": ""}
+        ],
+    }
+
+    def dispatch(self, request, *args, **kwargs):
+        if kwargs.get('type').endswith('.json'):
+            return HttpResponse(json.dumps(self.FAKE_VALUES[kwargs['type'][:-5]]))
+
 def stats(*args, **kwargs):
-    if kwargs.get('type') == 'negotiation_status.json':
-        return HttpResponse(
-            '[{"deals": 71, "hectares": 1814686.0, "name": "Concluded (Oral Agreement)"}, {"deals": 978, "hectares": 36619575.0, "name": "Concluded (Contract signed)"}, {"deals": 0, "hectares": 0, "name": "Intended (Expression of interest)"}, {"deals": 0, "hectares": 0, "name": "Intended (Under negotiation)"}, {"deals": 0, "hectares": 0, "name": "Failed (Negotiations failed)"}, {"deals": 0, "hectares": 0, "name": "Failed (Contract canceled)"}, {"deals": 0, "hectares": 0, "name": ""}]'
-        )
     return HttpResponse('woo hoo: <br/>'+str(kwargs) )
