@@ -106,13 +106,15 @@ function get_filter() {
     return filter;
 }
 
-//draw(function() { $(this).button('reset'); });
+draw();
 
 $(document).ready(function () {
-//alert('ready jetz aba echt');
+
+//    alert('ready jetz aba echt');
+
     $(".filters .btn").click(function (e) {
         var c_self = $(this);
-        c_self.button('loading');
+//        c_self.button('loading');
         // only combine concluded and intended
         if (c_self.parent().is(".negotiation_status")) {
             if (c_self.val() == "failed") {
@@ -127,6 +129,7 @@ $(document).ready(function () {
         });
         e.preventDefault();
     });
+
     $(".actions .action2 .btn.active").click();
 });
 </script>
