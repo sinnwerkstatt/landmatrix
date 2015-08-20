@@ -1,5 +1,5 @@
 from cms.models import CMSPlugin
-from djangocms_text_ckeditor.utils import plugin_tags_to_id_list
+from djangocms_text_ckeditor.utils import plugin_tags_to_id_list, replace_plugin_tags
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
