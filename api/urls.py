@@ -5,7 +5,8 @@ from api.api import *
 from tastypie.api import Api
 
 from rest_framework import routers
-from api import views
+from api.views import JSONView, InvolvementViewSet, ActivityViewSet, StakeholderViewSet, PrimaryInvestorViewSet, \
+    StatusViewSet, ActivityAttributeGroupViewSet, stats
 
 USE_TASTY = True
 USE_REST = True
@@ -19,23 +20,23 @@ if USE_TASTY:
         api.register(klass())
 
     urlpatterns.append(
-        url(r'^(?P<type>.*\.json)', views.stats, name='landmatrix_api')
+        url(r'^(?P<type>.*\.json)', JSONView.as_view(), name='landmatrix_api')
     )
     urlpatterns.append(url(r'^api', include(api.urls)))
 
 if USE_REST:
 
     router = routers.DefaultRouter()
-    router.register(r'involvement', views.InvolvementViewSet)
-    router.register(r'activity', views.ActivityViewSet)
-    router.register(r'stakeholder', views.StakeholderViewSet)
-    router.register(r'primary_investor', views.PrimaryInvestorViewSet)
-    router.register(r'status', views.StatusViewSet)
-    router.register(r'activity_attribute_group', views.ActivityAttributeGroupViewSet)
-    router.register(r'statistics', views.stats, base_name='statistics')
+    router.register(r'involvement', InvolvementViewSet)
+    router.register(r'activity', ActivityViewSet)
+    router.register(r'stakeholder', StakeholderViewSet)
+    router.register(r'primary_investor', PrimaryInvestorViewSet)
+    router.register(r'status', StatusViewSet)
+    router.register(r'activity_attribute_group', ActivityAttributeGroupViewSet)
+    router.register(r'statistics', stats, base_name='statistics')
 
     urlpatterns.append(
-        url(r'^(?P<type>.*\.json)', views.stats, name='landmatrix_api')
+        url(r'^(?P<type>.*\.json)', JSONView.as_view(), name='landmatrix_api')
     )
 
     urlpatterns.append(url(r'^', include(router.urls)))
