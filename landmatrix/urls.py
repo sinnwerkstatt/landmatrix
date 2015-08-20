@@ -26,9 +26,6 @@ from chart_view import urls as chart_urls
 from global_app.views.filter_widget_ajax_view import FilterWidgetAjaxView
 from chart_view import urls as chart_urls
 
-from landmatrix.models import Deal
-
-print(Deal.objects.all()[:10])
 
 urlpatterns = i18n_patterns('',
     url(r'^admin/', include(admin.site.urls)),

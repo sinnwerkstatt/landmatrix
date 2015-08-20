@@ -88,10 +88,12 @@ GROUP BY sub.negotiation_status"""
         if settings.DEBUG and connection.queries: print(connection.queries[-1]['sql'])
         return result
 
+
 class StatisticsSerializer(serializers.Serializer):
 
     # should be of class serializer? hmm.
     data = list(StatisticsManager().all())
+
 
 class StatisticsViewSet(viewsets.ModelViewSet):
 
@@ -101,5 +103,11 @@ class StatisticsViewSet(viewsets.ModelViewSet):
         mgr = StatisticsManager()
         return mgr.all()
 
-def stats():
-    return 'woo hoo!'
+
+from django.http import HttpResponse
+def stats(*args, **kwargs):
+    if kwargs.get('type') == 'negotiation_status.json':
+        return HttpResponse(
+            '[{"deals": 71, "hectares": 1814686.0, "name": "Concluded (Oral Agreement)"}, {"deals": 978, "hectares": 36619575.0, "name": "Concluded (Contract signed)"}, {"deals": 0, "hectares": 0, "name": "Intended (Expression of interest)"}, {"deals": 0, "hectares": 0, "name": "Intended (Under negotiation)"}, {"deals": 0, "hectares": 0, "name": "Failed (Negotiations failed)"}, {"deals": 0, "hectares": 0, "name": "Failed (Contract canceled)"}, {"deals": 0, "hectares": 0, "name": ""}]'
+        )
+    return HttpResponse('woo hoo: <br/>'+str(kwargs) )
