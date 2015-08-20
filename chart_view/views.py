@@ -13,7 +13,5 @@ class ChartView(TemplateView):
         print('B'+'O'*randint(1,9)+'AH ALDA!')
         context = {
             "view": "chart view",
-
-
         }
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(self.template_name, context, RequestContext(request))
