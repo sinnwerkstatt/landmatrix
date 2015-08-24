@@ -2,36 +2,10 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models import *
-from rest_framework import viewsets
-#from rest_framework import serializers
-from api.serializers import *
 from django.db import models
 from django.db import connection
 from django.conf import settings
 
-class InvolvementViewSet(viewsets.ModelViewSet):
-    queryset = Involvement.objects.all()
-    serializer_class = InvolvementSerializer
-
-class ActivityViewSet(viewsets.ModelViewSet):
-    queryset = Activity.objects.all()
-    serializer_class = ActivitySerializer
-
-class StakeholderViewSet(viewsets.ModelViewSet):
-    queryset = Stakeholder.objects.all()
-    serializer_class = StakeholderSerializer
-
-class PrimaryInvestorViewSet(viewsets.ModelViewSet):
-    queryset = PrimaryInvestor.objects.all()
-    serializer_class = PrimaryInvestorSerializer
-
-class StatusViewSet(viewsets.ModelViewSet):
-    queryset = Status.objects.all()
-    serializer_class = StatusSerializer
-
-class ActivityAttributeGroupViewSet(viewsets.ModelViewSet):
-    queryset = ActivityAttributeGroup.objects.all()
-    serializer_class = ActivityAttributeGroupSerializer
 
 class StatisticsManager(models.Manager):
 
@@ -88,21 +62,6 @@ GROUP BY sub.negotiation_status"""
         result = cursor.fetchall()
         if settings.DEBUG and connection.queries: print(connection.queries[-1]['sql'])
         return result
-
-
-class StatisticsSerializer(serializers.Serializer):
-
-    # should be of class serializer? hmm.
-    data = list(StatisticsManager().all())
-
-
-class StatisticsViewSet(viewsets.ModelViewSet):
-
-    serializer_class = StatisticsSerializer
-
-    def get_queryset(self):
-        mgr = StatisticsManager()
-        return mgr.all()
 
 
 from django.http import HttpResponse
