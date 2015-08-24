@@ -79,15 +79,6 @@ class ApiTestBase(DealsTestData):
             self.assertEqual(200, response.status_code)
 
 
-class DjangoRESTFrameworkTest(ApiTest, ApiTestBase):
-
-    PREFIX = '/en/api/'
-    POSTFIX = '/'
-    INFIX = '/'
-    URI_INDEX = 'url'
-    RESULTS_INDEX = 'results'
-    MODELS = [ 'involvement', 'activity', 'stakeholder', 'primary_investor', 'status', 'activity_attribute_group']
-
 class TastyPieTest(ApiTest, ApiTestBase):
 
     PREFIX = '/en/api/api/'

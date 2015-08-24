@@ -39,8 +39,6 @@ INSTALLED_APPS = (
     # 'django.contrib.postgres',
     'django_hstore',
 
-    'rest_framework',
-
     'tastypie',
 
 #   this apparently messes up the URL lookup in collaboration with cms. maybe try including it after cms.
@@ -130,14 +128,6 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
-
-#
-# django REST framework stuff
-#
-REST_FRAMEWORK = {
-#    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-    'PAGE_SIZE': 100
-}
 
 #
 # tastypie
