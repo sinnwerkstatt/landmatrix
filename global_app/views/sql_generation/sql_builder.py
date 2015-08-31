@@ -140,11 +140,11 @@ class SQLBuilder(SQLBuilderData):
             self.join_expressions.extend(spec)
 
     @classmethod
-    def max_version_condition(cls):
-        return """a.version = (
-            SELECT MAX(version) FROM landmatrix_activity AS amax
-            WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (%s)
-        )""" % ', '.join(map(str, cls.registered_status_ids()))
+    def max_version_condition(cls, model=Activity, alias='a', id_field='activity_identifier'):
+        return """%s.version = (
+            SELECT MAX(version) FROM %s AS amax
+            WHERE amax.%s = %s.%s AND amax.fk_status_id IN (%s)
+        )""" % (alias, model._meta.db_table, id_field, alias, id_field, ', '.join(map(str, cls.registered_status_ids())))
 
     @classmethod
     def status_active_condition(cls):

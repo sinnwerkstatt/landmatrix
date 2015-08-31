@@ -2,8 +2,10 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models import *
+from global_app.views.sql_generation.sql_builder import SQLBuilder
 from django.db import models
 from django.db import connection
+from django.db.models.query import QuerySet
 from django.conf import settings
 
 
@@ -67,10 +69,52 @@ GROUP BY sub.negotiation_status"""
 from django.http import HttpResponse
 from django.views.generic.base import TemplateView
 import json
+import decimal
 
 
-class JSONView(TemplateView):
-    template_name = "plugins/overview.html"
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return float(o)
+        return super(DecimalEncoder, self).default(o)
+
+
+class ProtocolAPI:
+
+    HECTARES_SQL = """ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC))) as deal_size"""
+
+    BASE_JOIN = """
+    JOIN      landmatrix_status                                        ON (landmatrix_status.id = a.fk_status_id)
+    LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
+    LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id
+    LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
+    LEFT JOIN landmatrix_status                    AS pi_st            ON pi.fk_status_id = pi_st.id
+    LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'
+    LEFT JOIN landmatrix_country                   AS investor_country ON CAST(skvf1.attributes->'country' AS NUMERIC) = investor_country.id
+    LEFT JOIN landmatrix_region                    AS investor_region  ON investor_country.fk_region_id = investor_region.id
+    LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
+    LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'
+    LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id
+    LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id
+    LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'
+    LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'
+    LEFT JOIN landmatrix_activityattributegroup    AS bf               ON a.id = bf.fk_activity_id AND bf.attributes ? 'pi_deal'
+    LEFT JOIN landmatrix_activityattributegroup    AS size             ON a.id = size.fk_activity_id AND size.attributes ? 'pi_deal_size'
+    LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'
+    """
+
+    BASE_CONDITON = ' AND '.join([
+        SQLBuilder.max_version_condition(), SQLBuilder.status_active_condition(), "bf.attributes->'pi_deal' = 'True'",
+        SQLBuilder.max_version_condition(PrimaryInvestor, 'pi', 'primary_investor_identifier')
+    ]) + """
+        AND pi_st.name IN ('active', 'overwritten')
+    """
+
+    BASE_FILTER_MAP = {
+        "concluded": ("concluded (oral agreement)", "concluded (contract signed)"),
+        "intended": ("intended (expression of interest)", "intended (under negotiation)" ),
+        "failed": ("failed (contract canceled)", "failed (negotiations failed)"),
+    }
 
     FAKE_VALUES = {
         'negotiation_status': [
@@ -102,9 +146,124 @@ class JSONView(TemplateView):
         ],
     }
 
-    def dispatch(self, request, *args, **kwargs):
-        if kwargs.get('type').endswith('.json'):
-            return HttpResponse(json.dumps(self.FAKE_VALUES[kwargs['type'][:-5]]))
 
-def stats(*args, **kwargs):
-    return HttpResponse('woo hoo: <br/>'+str(kwargs) )
+class NegotiationStatusQuerySet(QuerySet):
+
+    DEBUG = False
+
+    fields = [
+        ('negotiation_status', 'sub.negotiation_status'),
+        ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
+        ('deal_size',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
+    ]
+
+    sql_query = """
+SELECT
+    sub.negotiation_status                AS negotiation_status,
+    COUNT(DISTINCT a.activity_identifier) AS deal_count,
+    ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC))) AS deal_size
+FROM landmatrix_activity AS a
+LEFT JOIN landmatrix_activityattributegroup        AS size             ON a.id = size.fk_activity_id AND size.attributes ? 'pi_deal_size',
+(
+    SELECT DISTINCT
+        a.id,
+        negotiation.attributes->'pi_negotiation_status' AS negotiation_status,
+        implementation.attributes->'pi_implementation_status' AS implementation_status
+    FROM landmatrix_activity AS a
+    JOIN      landmatrix_status                                        ON (landmatrix_status.id = a.fk_status_id)
+    LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
+    LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id
+    LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
+    LEFT JOIN landmatrix_status                    AS pi_st            ON pi.fk_status_id = pi_st.id
+    LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'
+    LEFT JOIN landmatrix_country                   AS investor_country ON CAST(skvf1.attributes->'country' AS NUMERIC) = investor_country.id
+    LEFT JOIN landmatrix_region                    AS investor_region  ON investor_country.fk_region_id = investor_region.id
+    LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
+    LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'
+    LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id
+    LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id
+    LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'
+    LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'
+    LEFT JOIN landmatrix_activityattributegroup    AS bf               ON a.id = bf.fk_activity_id AND bf.attributes ? 'pi_deal'
+    LEFT JOIN landmatrix_activityattributegroup    AS size             ON a.id = size.fk_activity_id AND size.attributes ? 'pi_deal_size'
+    LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'
+    WHERE
+        a.version = (
+            SELECT MAX(version) FROM landmatrix_activity AS amax
+            WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
+        ) AND a.fk_status_id IN (2, 3) AND bf.attributes->'pi_deal' = 'True' AND pi.version = (
+            SELECT MAX(version) FROM landmatrix_primaryinvestor AS amax
+            WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
+        )
+        AND pi_st.name IN ('active', 'overwritten')
+        AND deal_scope.attributes->'deal_scope' = 'transnational'
+        %s
+) AS sub
+WHERE sub.id = a.id
+GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status
+"""
+
+    filter_sql = ''
+
+    def set_filter_sql(self, filter_sql):
+        self.filter_sql = filter_sql
+
+    _all_results = None
+    _result_iterator = None
+
+    def iterator(self):
+        if not self._all_results:
+            cursor = connection.cursor()
+            cursor.execute(self.sql_query % self.filter_sql)
+            self._all_results = list(cursor.fetchall())
+            self._result_iterator = iter(self._all_results)
+            if self.DEBUG:
+                print('Query:', self.sql_query % self.filter_sql)
+                print('Results:', self._all_results)
+
+        as_tuple = next(self._result_iterator)
+        as_dict = { self.fields[i][0]: as_tuple[i] for i in range(len(self.fields)) }
+        if self.DEBUG:
+            print('as tuple', as_tuple)
+            print('as dict', as_dict)
+        yield as_dict
+
+
+
+class JSONView(TemplateView, ProtocolAPI):
+    template_name = "plugins/overview.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if kwargs.get('type') == 'negotiation_status.json':
+            try:
+                with_names = list(self.get_negotiation_status(request))
+                return HttpResponse(json.dumps(with_names, cls=DecimalEncoder))
+            except Exception as e:
+                print(e)
+                raise e
+        elif kwargs.get('type').endswith('.json'):
+            return HttpResponse(json.dumps(self.FAKE_VALUES[kwargs['type'][:-5]]))
+        raise ValueError('Could not dispatch: ' + str(kwargs))
+
+    def get_negotiation_status(self, request):
+
+        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
+        another_queryset = NegotiationStatusQuerySet()
+        another_queryset.set_filter_sql(filter_sql)
+        return another_queryset.all()
+
+    def _get_filter(self, negotiation_status, deal_scope, data_source_type):
+        filter_sql = ""
+        if len(deal_scope) == 0:
+            # when no negotiation stati or deal scope given no deals should be shown at the public interface
+            return " AND 1 <> 1 "
+        if negotiation_status:
+            stati = []
+            for n in negotiation_status:
+                stati.extend(self.BASE_FILTER_MAP.get(n))
+            filter_sql += " AND lower(negotiation.attributes->'pi_negotiation_status') in ('%s') " % "', '".join(stati)
+        if len(deal_scope) == 1:
+            filter_sql += " AND deal_scope.attributes->'deal_scope' = '%s' " % deal_scope[0]
+        if data_source_type:
+            filter_sql += " AND 'Media report' <> ( SELECT GROUP_CONCAT(data_source_type.value) FROM a_key_value_lookup data_source_type WHERE a.activity_identifier = data_source_type.activity_identifier AND data_source_type.key = 'type')"
+        return filter_sql
