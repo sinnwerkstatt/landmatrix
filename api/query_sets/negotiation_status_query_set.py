@@ -1,45 +1,29 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import *
-
-from .api_test_functions import ApiTestFunctions
-from api.tests.api_test_base import ApiTestBase
-from api.tests.deals_test_data import DealsTestData
+from api.query_sets.fake_query_set import FakeQuerySet
 
 
-class TestNegotiationStatus(ApiTestFunctions, DealsTestData):
+class NegotiationStatusQuerySet(FakeQuerySet):
 
-    PREFIX = '/en/api/'
-    POSTFIX = '.json'
+    fields = [
+        ('negotiation_status', 'sub.negotiation_status'),
+        ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
+        ('deal_size',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
+    ]
 
-    def test_empty(self):
-        self.assertListEqual([], self.get_content('negotiation_status'))
-
-    def test_with_data(self):
-        self._generate_negotiation_status_data()
-        result = self.get_content('negotiation_status')
-        self.assertEqual(1, len(result))
-        self.assertEqual(1, result[0]['deal_count'])
-        self.assertEqual('Concluded (Contract signed)', result[0]['negotiation_status'])
-        self.assertEqual(12345, result[0]['deal_size'])
-
-    def test_raw_sql(self):
-        from decimal import Decimal
-
-        self._generate_negotiation_status_data()
-        result = self._execute_sql("""
+    QUERY = """
 SELECT
-    sub.negotiation_status                AS negotiation_status,
-    COUNT(DISTINCT a.activity_identifier) AS deal_count,
+    sub.negotiation_status                                                          AS negotiation_status,
+    COUNT(DISTINCT a.activity_identifier)                                           AS deal_count,
     ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC))) AS deal_size
 FROM landmatrix_activity AS a
 LEFT JOIN landmatrix_activityattributegroup        AS size             ON a.id = size.fk_activity_id AND size.attributes ? 'pi_deal_size',
 (
     SELECT DISTINCT
         a.id,
-        negotiation.attributes->'pi_negotiation_status' AS negotiation_status,
+        negotiation.attributes->'pi_negotiation_status'       AS negotiation_status,
         implementation.attributes->'pi_implementation_status' AS implementation_status
-    FROM landmatrix_activity AS a
+    FROM landmatrix_activity                       AS a
     JOIN      landmatrix_status                                        ON (landmatrix_status.id = a.fk_status_id)
     LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
     LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id
@@ -67,23 +51,17 @@ LEFT JOIN landmatrix_activityattributegroup        AS size             ON a.id =
         )
         AND pi_st.name IN ('active', 'overwritten')
         AND deal_scope.attributes->'deal_scope' = 'transnational'
-
+        %s
 ) AS sub
 WHERE sub.id = a.id
 GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status
-        """)
+"""
 
-        self.assertIn(1, result[0])
-        self.assertIn('Concluded (Contract signed)', result[0])
-        self.assertIn(Decimal(12345), result[0])
+    filter_sql = ''
 
-    def _execute_sql(self, sql):
-        from django.db import connection
-        cursor = connection.cursor()
-        cursor.execute(sql)
-        return cursor.fetchall()
+    def set_filter_sql(self, filter_sql):
+        self.filter_sql = filter_sql
 
-class TestNegotiationStatusTransnational(TestNegotiationStatus):
-
-    POSTFIX = '.json%3Fdeal_scope=transnational'
+    def sql_query(self):
+        return self.QUERY % self.filter_sql
 
