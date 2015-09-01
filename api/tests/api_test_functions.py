@@ -12,8 +12,12 @@ class ApiTestFunctions(TestCase):
 
     def get_content(self, resource):
         response = self.client.get(self.url(resource))
-#        self.assertEqual(200, response.status_code)
-        return json.loads(response.content.decode('utf-8'))
+        self.assertEqual(200, response.status_code)
+        try:
+            return json.loads(response.content.decode('utf-8'))
+        except ValueError as e:
+            print(response.content.decode('utf-8'))
+            raise e
 
 
 

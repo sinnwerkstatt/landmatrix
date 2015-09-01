@@ -3,6 +3,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from tastypie import fields
 from tastypie.resources import ModelResource
 from landmatrix.models import Involvement, Activity, Stakeholder, PrimaryInvestor, Status, ActivityAttributeGroup
+from .views import NegotiationStatusQuerySet
 
 
 class StatusResource(ModelResource):
@@ -35,4 +36,3 @@ class ActivityAttributeGroupResource(ModelResource):
     fk_activity = fields.ForeignKey(ActivityResource, attribute='fk_activity')
     class Meta:
         queryset = ActivityAttributeGroup.objects.all()
-
