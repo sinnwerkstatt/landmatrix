@@ -55,3 +55,31 @@ class DealsTestData:
     def create_activity_with_status(self, status_id, act_id = 0, version=1):
         if not act_id: act_id = self.ACT_ID
         Activity(fk_status=Status.objects.get(id=status_id), activity_identifier=act_id, version=version).save()
+
+    def _generate_negotiation_status_data(self, preset_id=123):
+        activity = Activity(activity_identifier=preset_id, fk_status_id=2, version=1)
+        activity.save()
+        p_i = PrimaryInvestor(id=preset_id, primary_investor_identifier=preset_id, fk_status_id=2, version=1)
+        p_i.save()
+        stakeholder = Stakeholder(id=preset_id, stakeholder_identifier=preset_id, fk_status_id=2, version=1)
+        stakeholder.save()
+        involvement = Involvement(fk_activity=activity, fk_primary_investor=p_i, fk_stakeholder=stakeholder)
+        involvement.save()
+        region = Region(id=123)
+        region.save()
+        country = Country(id=123, fk_region=region)
+        country.save()
+        ac_attributes = ActivityAttributeGroup(
+            fk_activity=activity, fk_language_id=1, attributes={
+                'intention': 'boring test stuff', 'target_country': '123',
+                'pi_negotiation_status': 'Concluded (Contract signed)',
+                'pi_implementation_status': 'blah', 'pi_deal': 'True', 'pi_deal_size': '12345',
+                'deal_scope': 'transnational'
+            }
+        )
+        ac_attributes.save()
+        sh_attributes = StakeholderAttributeGroup(
+            fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': '123'}
+        )
+        sh_attributes.save()
+
