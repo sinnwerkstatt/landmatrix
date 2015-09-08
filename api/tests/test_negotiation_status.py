@@ -3,32 +3,44 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from landmatrix.models import *
 
 from .api_test_functions import ApiTestFunctions
-from api.tests.api_test_base import ApiTestBase
 from api.tests.deals_test_data import DealsTestData
 
+"""
+/en/api/hectares.json?negotiation_status=intended&deal_scope=domestic
+/en/api/hectares.json?negotiation_status=intended&deal_scope=transnational
+/en/api/hectares.json?negotiation_status=intended&deal_scope=transnational&deal_scope=domestic
+/en/api/hectares.json?negotiation_status=concluded&deal_scope=domestic
+/en/api/hectares.json?negotiation_status=concluded&deal_scope=transnational
+/en/api/hectares.json?negotiation_status=concluded&deal_scope=transnational&deal_scope=domestic
+/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=domestic
+/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational
+/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational&deal_scope=domestic
+/en/api/hectares.json?negotiation_status=failed&deal_scope=domestic
+/en/api/hectares.json?negotiation_status=failed&deal_scope=transnational
+/en/api/hectares.json?negotiation_status=failed&deal_scope=transnational&deal_scope=domestic
+/en/api/hectares.json?negotiation_status=intended&deal_scope=domestic&data_source_type=1
+/en/api/hectares.json?negotiation_status=intended&deal_scope=transnational&data_source_type=1
+/en/api/hectares.json?negotiation_status=intended&deal_scope=transnational&deal_scope=domestic&data_source_type=1
+/en/api/hectares.json?negotiation_status=concluded&deal_scope=domestic&data_source_type=1
+/en/api/hectares.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1
+/en/api/hectares.json?negotiation_status=concluded&deal_scope=transnational&deal_scope=domestic&data_source_type=1
+/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=domestic&data_source_type=1
+/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational&data_source_type=1
+/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational&deal_scope=domestic&data_source_type=1
+/en/api/hectares.json?negotiation_status=failed&deal_scope=domestic&data_source_type=1
+/en/api/hectares.json?negotiation_status=failed&deal_scope=transnational&data_source_type=1
+/en/api/hectares.json?negotiation_status=failed&deal_scope=transnational&deal_scope=domestic&data_source_type=1
+"""
 
 class TestNegotiationStatus(ApiTestFunctions, DealsTestData):
 
     PREFIX = '/en/api/'
-    POSTFIX = '.json'
+    POSTFIX = '.json?deal_scope=transnational&deal_scope=domestic'
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'pi_negotiation_status': 'Concluded (Contract signed)'
+    }
 
-    def test_empty(self):
-        self.assertListEqual([], self.get_content('negotiation_status'))
-
-    def test_with_data(self):
-        self._generate_negotiation_status_data()
-        result = self.get_content('negotiation_status')
-        self.assertEqual(1, len(result))
-        self.assertEqual(1, result[0]['deal_count'])
-        self.assertEqual('Concluded (Contract signed)', result[0]['negotiation_status'])
-        self.assertEqual(12345, result[0]['deal_size'])
-
-    def test_raw_sql(self):
-        from decimal import Decimal
-
-        self._generate_negotiation_status_data()
-        result = self._execute_sql("""
-SELECT
+    RAW_SQL = """SELECT
     sub.negotiation_status                AS negotiation_status,
     COUNT(DISTINCT a.activity_identifier) AS deal_count,
     ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC))) AS deal_size
@@ -66,16 +78,44 @@ LEFT JOIN landmatrix_activityattributegroup        AS size             ON a.id =
             WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
         )
         AND pi_st.name IN ('active', 'overwritten')
-        AND deal_scope.attributes->'deal_scope' = 'transnational'
-
+--        AND deal_scope.attributes->'deal_scope' = 'transnational'
+--        AND deal_scope.attributes->'deal_scope' = 'domestic'
 ) AS sub
 WHERE sub.id = a.id
-GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status
-        """)
+GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status"""
+
+    EXPECTED_DEAL_COUNT = 2
+    EXPECTED_SIZE = 14690
+
+    def test_empty(self):
+        self.assertListEqual([], self.get_content('negotiation_status'))
+
+    def test_with_data(self):
+        self._generate_negotiation_status_data(123, self.RELEVANT_ATTRIBUTES)
+        result = self.get_content('negotiation_status')
+        self.assertEqual(1, len(result))
+        self.assertEqual(1, result[0]['deal_count'])
+        self.assertEqual(self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], result[0]['negotiation_status'])
+        self.assertEqual(12345, result[0]['deal_size'])
+
+    def test_raw_sql(self):
+        from decimal import Decimal
+
+        self._generate_negotiation_status_data(123, {'pi_deal_size': '12345', 'deal_scope': 'transnational'})
+        result = self._execute_sql(self.RAW_SQL)
 
         self.assertIn(1, result[0])
         self.assertIn('Concluded (Contract signed)', result[0])
         self.assertIn(Decimal(12345), result[0])
+
+    def test_with_domestic(self):
+        self._generate_negotiation_status_data(123, {'pi_deal_size': '12345', 'deal_scope': 'transnational', 'pi_negotiation_status': self.RELEVANT_ATTRIBUTES['pi_negotiation_status']})
+        self._generate_negotiation_status_data(124, {'pi_deal_size': '2345', 'deal_scope': 'domestic', 'pi_negotiation_status': self.RELEVANT_ATTRIBUTES['pi_negotiation_status']})
+        result = self.get_content('negotiation_status')
+        self.assertEqual(1, len(result))
+        self.assertEqual(self.EXPECTED_DEAL_COUNT, result[0]['deal_count'])
+        self.assertEqual(self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], result[0]['negotiation_status'])
+        self.assertEqual(self.EXPECTED_SIZE, result[0]['deal_size'])
 
     def _execute_sql(self, sql):
         from django.db import connection
@@ -85,5 +125,39 @@ GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status
 
 class TestNegotiationStatusTransnational(TestNegotiationStatus):
 
-    POSTFIX = '.json%3Fdeal_scope=transnational'
+    POSTFIX = '.json?deal_scope=transnational'
+    EXPECTED_DEAL_COUNT = 1
+    EXPECTED_SIZE = 12345
+
+class TestNegotiationStatusDomestic(TestNegotiationStatus):
+
+    POSTFIX = '.json?deal_scope=domestic'
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '2345', 'deal_scope': 'domestic', 'pi_negotiation_status': 'Concluded (Contract signed)'
+    }
+    EXPECTED_DEAL_COUNT = 1
+    EXPECTED_SIZE = 2345
+
+    def test_with_data(self):
+        self._generate_negotiation_status_data(124, self.RELEVANT_ATTRIBUTES)
+        result = self.get_content('negotiation_status')
+        self.assertEqual(1, len(result))
+        self.assertEqual(1, result[0]['deal_count'])
+        self.assertEqual('Concluded (Contract signed)', result[0]['negotiation_status'])
+        self.assertEqual(self.EXPECTED_SIZE, result[0]['deal_size'])
+
+class TestNegotiationStatusConcluded(TestNegotiationStatus):
+
+    POSTFIX = '.json?deal_scope=transnational&deal_scope=domestic&negotiation_status=concluded'
+    EXPECTED_DEAL_COUNT = 2
+    EXPECTED_SIZE = 14690
+
+class TestNegotiationStatusIntended(TestNegotiationStatus):
+
+    POSTFIX = '.json?deal_scope=transnational&deal_scope=domestic&negotiation_status=intended'
+    EXPECTED_DEAL_COUNT = 2
+    EXPECTED_SIZE = 14690
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'pi_negotiation_status': 'intended (expression of interest)'
+    }
 
