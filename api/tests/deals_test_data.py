@@ -30,8 +30,7 @@ class DealsTestData:
     def create_data(self):
         from datetime import date
         self.make_involvement(1.23)
-        lang = Language(english_name='English', local_name='Dinglisch', locale='en')
-        lang.save()
+        self._generate_language()
         Region(
             name='South-East Asia', slug='south-east-asia', point_lat=0., point_lon=120.
         ).save()
@@ -43,7 +42,7 @@ class DealsTestData:
         ).save()
         aag = ActivityAttributeGroup(
             fk_activity = Activity.objects.last(),
-            fk_language=lang,
+            fk_language=self.language,
             date=date.today(),
             attributes={
                 'intention': self.INTENTION, 'pi_deal': 'True', 'deal_scope': 'transnational',
@@ -52,11 +51,45 @@ class DealsTestData:
         )
         aag.save()
 
+    language = None
+    def _generate_language(self):
+        self.language = Language(english_name='English', local_name='Dinglisch', locale='en')
+        self.language.save()
+
     def create_activity_with_status(self, status_id, act_id = 0, version=1):
         if not act_id: act_id = self.ACT_ID
         Activity(fk_status=Status.objects.get(id=status_id), activity_identifier=act_id, version=version).save()
 
-    def _generate_negotiation_status_data(self, preset_id=123):
+    DEFAULT_TRANSNATIONAL_DEAL_ID = 123
+    DEFAULT_DOMESTIC_DEAL_ID = 124
+
+    def _generate_transnational_negotiation_status_data(self, preset_id=DEFAULT_TRANSNATIONAL_DEAL_ID):
+        self._generate_negotiation_status_data(preset_id, {'pi_deal_size': '12345', 'deal_scope': 'transnational'})
+
+    def _generate_domestic_negotiation_status_data(self, preset_id=DEFAULT_DOMESTIC_DEAL_ID):
+        self._generate_negotiation_status_data(preset_id, {'pi_deal_size': '2345', 'deal_scope': 'domestic'})
+
+    def _generate_negotiation_status_data(self, preset_id, deviating_attributes):
+        self._generate_language()
+        activity, stakeholder = self._generate_involvement(preset_id)
+        self._generate_deal_country()
+        attributes = {
+                'intention': 'boring test stuff', 'target_country': str(self.deal_country.id),
+                'pi_negotiation_status': 'Concluded (Contract signed)',
+                'pi_implementation_status': 'blah', 'pi_deal': 'True', 'pi_deal_size': '2345',
+                'deal_scope': 'domestic'
+            }
+        attributes.update(deviating_attributes)
+        ac_attributes = ActivityAttributeGroup(
+            fk_activity=activity, fk_language_id=1, attributes=attributes
+        )
+        ac_attributes.save()
+        sh_attributes = StakeholderAttributeGroup(
+            fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': str(self.deal_country.id)}
+        )
+        sh_attributes.save()
+
+    def _generate_involvement(self, preset_id):
         activity = Activity(activity_identifier=preset_id, fk_status_id=2, version=1)
         activity.save()
         p_i = PrimaryInvestor(id=preset_id, primary_investor_identifier=preset_id, fk_status_id=2, version=1)
@@ -65,21 +98,15 @@ class DealsTestData:
         stakeholder.save()
         involvement = Involvement(fk_activity=activity, fk_primary_investor=p_i, fk_stakeholder=stakeholder)
         involvement.save()
-        region = Region(id=123)
-        region.save()
-        country = Country(id=123, fk_region=region)
-        country.save()
-        ac_attributes = ActivityAttributeGroup(
-            fk_activity=activity, fk_language_id=1, attributes={
-                'intention': 'boring test stuff', 'target_country': '123',
-                'pi_negotiation_status': 'Concluded (Contract signed)',
-                'pi_implementation_status': 'blah', 'pi_deal': 'True', 'pi_deal_size': '12345',
-                'deal_scope': 'transnational'
-            }
-        )
-        ac_attributes.save()
-        sh_attributes = StakeholderAttributeGroup(
-            fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': '123'}
-        )
-        sh_attributes.save()
+        return activity, stakeholder
+
+    deal_country = None
+    deal_region = None
+
+    def _generate_deal_country(self):
+        if not self.deal_country:
+            self.deal_region = Region(id=123)
+            self.deal_region.save()
+            self.deal_country = Country(id=123, fk_region=self.deal_region)
+            self.deal_country.save()
 
