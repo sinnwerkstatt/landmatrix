@@ -50,7 +50,6 @@ LEFT JOIN landmatrix_activityattributegroup        AS size             ON a.id =
             WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
         )
         AND pi_st.name IN ('active', 'overwritten')
-        AND deal_scope.attributes->'deal_scope' = 'transnational'
         %s
 ) AS sub
 WHERE sub.id = a.id
@@ -59,9 +58,11 @@ GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status
 
     filter_sql = ''
 
-    def set_filter_sql(self, filter_sql):
-        self.filter_sql = filter_sql
+    @classmethod
+    def set_filter_sql(cls, filter):
+        cls.filter_sql = filter
 
     def sql_query(self):
+#        print(self.QUERY % self.filter_sql)
         return self.QUERY % self.filter_sql
 
