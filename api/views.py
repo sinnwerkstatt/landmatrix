@@ -237,6 +237,10 @@ class NegotiationStatusJSONView(JSONView):
         if len(deal_scope) == 1:
             filter_sql += " AND deal_scope.attributes->'deal_scope' = '%s' " % deal_scope[0]
         if data_source_type:
-            filter_sql += " AND 'Media report' <> ( SELECT GROUP_CONCAT(data_source_type.value) FROM a_key_value_lookup data_source_type WHERE a.activity_identifier = data_source_type.activity_identifier AND data_source_type.key = 'type')"
+            filter_sql += """ AND NOT (
+            SELECT ARRAY_AGG(data_source_type.attributes->'type')
+            FROM %s AS data_source_type
+            WHERE a.id = data_source_type.fk_activity_id AND data_source_type.attributes ? 'type'
+        ) = ARRAY['Media report']""" % ActivityAttributeGroup._meta.db_table
 
         return filter_sql
