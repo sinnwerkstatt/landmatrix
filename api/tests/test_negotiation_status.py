@@ -1,3 +1,5 @@
+from api.query_sets.negotiation_status_query_set import NegotiationStatusQuerySet
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models import *
@@ -5,32 +7,6 @@ from landmatrix.models import *
 from .api_test_functions import ApiTestFunctions
 from api.tests.deals_test_data import DealsTestData
 
-"""
-/en/api/hectares.json?negotiation_status=intended&deal_scope=domestic
-/en/api/hectares.json?negotiation_status=intended&deal_scope=transnational
-/en/api/hectares.json?negotiation_status=intended&deal_scope=transnational&deal_scope=domestic
-/en/api/hectares.json?negotiation_status=concluded&deal_scope=domestic
-/en/api/hectares.json?negotiation_status=concluded&deal_scope=transnational
-/en/api/hectares.json?negotiation_status=concluded&deal_scope=transnational&deal_scope=domestic
-/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=domestic
-/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational
-/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational&deal_scope=domestic
-/en/api/hectares.json?negotiation_status=failed&deal_scope=domestic
-/en/api/hectares.json?negotiation_status=failed&deal_scope=transnational
-/en/api/hectares.json?negotiation_status=failed&deal_scope=transnational&deal_scope=domestic
-/en/api/hectares.json?negotiation_status=intended&deal_scope=domestic&data_source_type=1
-/en/api/hectares.json?negotiation_status=intended&deal_scope=transnational&data_source_type=1
-/en/api/hectares.json?negotiation_status=intended&deal_scope=transnational&deal_scope=domestic&data_source_type=1
-/en/api/hectares.json?negotiation_status=concluded&deal_scope=domestic&data_source_type=1
-/en/api/hectares.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1
-/en/api/hectares.json?negotiation_status=concluded&deal_scope=transnational&deal_scope=domestic&data_source_type=1
-/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=domestic&data_source_type=1
-/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational&data_source_type=1
-/en/api/hectares.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational&deal_scope=domestic&data_source_type=1
-/en/api/hectares.json?negotiation_status=failed&deal_scope=domestic&data_source_type=1
-/en/api/hectares.json?negotiation_status=failed&deal_scope=transnational&data_source_type=1
-/en/api/hectares.json?negotiation_status=failed&deal_scope=transnational&deal_scope=domestic&data_source_type=1
-"""
 
 class TestNegotiationStatus(ApiTestFunctions, DealsTestData):
 
@@ -123,11 +99,13 @@ GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status"""
         cursor.execute(sql)
         return cursor.fetchall()
 
+
 class TestNegotiationStatusTransnational(TestNegotiationStatus):
 
     POSTFIX = '.json?deal_scope=transnational'
     EXPECTED_DEAL_COUNT = 1
     EXPECTED_SIZE = 12345
+
 
 class TestNegotiationStatusDomestic(TestNegotiationStatus):
 
@@ -146,11 +124,13 @@ class TestNegotiationStatusDomestic(TestNegotiationStatus):
         self.assertEqual('Concluded (Contract signed)', result[0]['negotiation_status'])
         self.assertEqual(self.EXPECTED_SIZE, result[0]['deal_size'])
 
+
 class TestNegotiationStatusConcluded(TestNegotiationStatus):
 
     POSTFIX = '.json?deal_scope=transnational&deal_scope=domestic&negotiation_status=concluded'
     EXPECTED_DEAL_COUNT = 2
     EXPECTED_SIZE = 14690
+
 
 class TestNegotiationStatusIntended(TestNegotiationStatus):
 
@@ -161,3 +141,64 @@ class TestNegotiationStatusIntended(TestNegotiationStatus):
         'pi_deal_size': '12345', 'deal_scope': 'transnational', 'pi_negotiation_status': 'intended (expression of interest)'
     }
 
+
+class TestNegotiationStatusFailed(TestNegotiationStatus):
+
+    POSTFIX = '.json?deal_scope=transnational&deal_scope=domestic&negotiation_status=failed'
+    EXPECTED_DEAL_COUNT = 2
+    EXPECTED_SIZE = 14690
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'pi_negotiation_status': 'failed (negotiations failed)'
+    }
+
+
+class TestNegotiationStatusDataSource(TestNegotiationStatus):
+
+    POSTFIX = '.json?deal_scope=transnational&deal_scope=domestic&data_source_type=1'
+    EXPECTED_DEAL_COUNT = 0
+    EXPECTED_SIZE = 0
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'pi_negotiation_status': 'Concluded (Contract signed)', 'type': 'Media report'
+    }
+
+    def test_with_data(self):
+        self._generate_negotiation_status_data(123, self.RELEVANT_ATTRIBUTES)
+        result = self.get_content('negotiation_status')
+        self.assertEqual(0, len(result))
+
+    def test_with_domestic(self):
+        self._generate_negotiation_status_data(123, {
+            'pi_deal_size': '12345', 'deal_scope': 'transnational',
+            'pi_negotiation_status': self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], 'type': 'Media report'
+        })
+        self._generate_negotiation_status_data(124, {
+            'pi_deal_size': '2345', 'deal_scope': 'domestic',
+            'pi_negotiation_status': self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], 'type': 'Media report'
+        })
+        result = self.get_content('negotiation_status')
+        self.assertEqual(0, len(result))
+
+
+class TestNegotiationStatusDataSourceNot(TestNegotiationStatus):
+
+    POSTFIX = '.json?deal_scope=transnational&deal_scope=domestic&data_source_type=1'
+    EXPECTED_DEAL_COUNT = 2
+    EXPECTED_SIZE = 14690
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'pi_negotiation_status': 'Concluded (Contract signed)', 'type': 'NOT Media report'
+    }
+
+    def test_with_domestic(self):
+        self._generate_negotiation_status_data(123, {
+            'pi_deal_size': '12345', 'deal_scope': 'transnational',
+            'pi_negotiation_status': self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], 'type': 'NOT Media report'
+        })
+        self._generate_negotiation_status_data(124, {
+            'pi_deal_size': '2345', 'deal_scope': 'domestic',
+            'pi_negotiation_status': self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], 'type': 'NOT Media report'
+        })
+        result = self.get_content('negotiation_status')
+        self.assertEqual(1, len(result))
+        self.assertEqual(self.EXPECTED_DEAL_COUNT, result[0]['deal_count'])
+        self.assertEqual(self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], result[0]['negotiation_status'])
+        self.assertEqual(self.EXPECTED_SIZE, result[0]['deal_size'])
