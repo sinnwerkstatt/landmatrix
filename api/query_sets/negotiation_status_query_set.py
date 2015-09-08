@@ -62,7 +62,8 @@ GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status
     def set_filter_sql(cls, filter):
         cls.filter_sql = filter
 
+    DEBUG_QUERY = False
     def sql_query(self):
-#        print(self.QUERY % self.filter_sql)
+        if self.DEBUG_QUERY: print(self.QUERY % self.filter_sql)
         return self.QUERY % self.filter_sql
 
