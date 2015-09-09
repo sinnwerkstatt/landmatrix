@@ -3,17 +3,17 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from api.query_sets.fake_query_set import FakeQuerySet
 
 
-class NegotiationStatusQuerySet(FakeQuerySet):
+class ImplementationStatusQuerySet(FakeQuerySet):
 
     fields = [
-        ('negotiation_status', 'sub.negotiation_status'),
+        ('implementation_status', 'sub.implementation_status'),
         ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
         ('deal_size',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
     ]
 
     QUERY = """
 SELECT
-    sub.negotiation_status                                                          AS negotiation_status,
+    sub.implementation_status                                                       AS implementation_status,
     COUNT(DISTINCT a.activity_identifier)                                           AS deal_count,
     ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC))) AS deal_size
 FROM landmatrix_activity                    AS a
@@ -56,7 +56,5 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
         %s
 )                                           AS sub
 WHERE sub.id = a.id
-GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status
+GROUP BY sub.implementation_status ORDER BY sub.implementation_status
 """
-
-
