@@ -1,8 +1,4 @@
-from api.query_sets.negotiation_status_query_set import NegotiationStatusQuerySet
-
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-from landmatrix.models import *
 
 from .api_test_functions import ApiTestFunctions
 from api.tests.deals_test_data import DealsTestData
@@ -25,8 +21,8 @@ LEFT JOIN landmatrix_activityattributegroup        AS size             ON a.id =
 (
     SELECT DISTINCT
         a.id,
-        negotiation.attributes->'pi_negotiation_status' AS negotiation_status,
-        implementation.attributes->'pi_implementation_status' AS implementation_status
+        negotiation.attributes->'pi_negotiation_status' AS negotiation_status
+--        implementation.attributes->'pi_implementation_status' AS implementation_status
     FROM landmatrix_activity AS a
     JOIN      landmatrix_status                                        ON (landmatrix_status.id = a.fk_status_id)
     LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id

@@ -8,30 +8,36 @@ class FakeModel(dict):
     pk = None
 
 
-class FakeQuerySet(QuerySet):
+class FakeQuerySet:
 
     DEBUG = False
 
-    fields = [('field name', 'sql for field'), ]
-    _all_results = None
-    _result_iterator = None
+    _filter_sql = ''
 
-    def iterator(self):
+    def __init__(self):
+        self._all_results = []
+
+    def all(self):
+        self._fetch_all()
+        return self._all_results
+
+    def _fetch_all(self):
         if not self._all_results:
             cursor = connection.cursor()
             cursor.execute(self.sql_query())
-            self._all_results = list(cursor.fetchall())
-            self._result_iterator = iter(self._all_results)
-            if self.DEBUG:
+            all_results = list(cursor.fetchall())
+            if self.DEBUG or False:
                 print('Query:', self.sql_query())
-                print('Results:', self._all_results)
+                print('Results:', all_results)
 
-        as_tuple = next(self._result_iterator)
-        as_dict = FakeModel({ self.fields[i][0]: as_tuple[i] for i in range(len(self.fields)) })
-        if self.DEBUG:
-            print('as tuple', as_tuple)
-            print('as dict', as_dict)
-        yield as_dict
+            for result in all_results:
+                as_tuple = result
+                as_dict = FakeModel({ self.fields[i][0]: as_tuple[i] for i in range(len(self.fields)) })
+                self._all_results.append(as_dict)
+
+    @classmethod
+    def set_filter_sql(cls, filter):
+        cls._filter_sql = filter
 
     def sql_query(self):
-        return self.QUERY
+        return self.QUERY % self._filter_sql

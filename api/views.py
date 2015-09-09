@@ -63,13 +63,6 @@ class ProtocolAPI:
     }
 
 list_of_urls = """
-/en/api/negotiation_status.json?deal_scope=domestic
-/en/api/negotiation_status.json?deal_scope=transnational
-/en/api/negotiation_status.json?deal_scope=transnational&deal_scope=domestic
-/en/api/negotiation_status.json?deal_scope=domestic&data_source_type=1
-/en/api/negotiation_status.json?deal_scope=transnational&data_source_type=1
-/en/api/negotiation_status.json?deal_scope=transnational&deal_scope=domestic&data_source_type=1
-
 /en/api/implementation_status.json?deal_scope=domestic
 /en/api/implementation_status.json?deal_scope=transnational
 /en/api/implementation_status.json?deal_scope=transnational&deal_scope=domestic
@@ -197,32 +190,23 @@ list_of_urls = """
 
 
 class JSONView(TemplateView, ProtocolAPI):
-    template_name = "plugins/overview.html"
 
-    def dispatch(self, request, *args, **kwargs):
-        if kwargs.get('type') == 'negotiation_status.json':
-            return NegotiationStatusJSONView().dispatch(request, args, kwargs)
-        elif kwargs.get('type').endswith('.json'):
-            return HttpResponse(json.dumps(self.FAKE_VALUES[kwargs['type'][:-5]]))
-        raise ValueError('Could not dispatch: ' + str(kwargs))
-
-
-class NegotiationStatusJSONView(JSONView):
     BASE_FILTER_MAP = {
         "concluded": ("concluded (oral agreement)", "concluded (contract signed)"),
         "intended": ("intended (expression of interest)", "intended (under negotiation)" ),
         "failed": ("failed (contract canceled)", "failed (negotiations failed)"),
     }
 
-    def dispatch(self, request, *args, **kwargs):
-        with_names = list(self.get_negotiation_status(request))
-        return HttpResponse(json.dumps(with_names, cls=DecimalEncoder))
+    template_name = "plugins/overview.html"
 
-    def get_negotiation_status(self, request):
-        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-        another_queryset = NegotiationStatusQuerySet()
-        another_queryset.set_filter_sql(filter_sql)
-        return another_queryset.all()
+    def dispatch(self, request, *args, **kwargs):
+        if kwargs.get('type') == 'negotiation_status.json':
+            return NegotiationStatusJSONView().dispatch(request, args, kwargs)
+        elif kwargs.get('type') == "implementation_status.json":
+            return ImplementationStatusJSONView().dispatch(request, args, kwargs)
+        elif kwargs.get('type').endswith('.json'):
+            return HttpResponse(json.dumps(self.FAKE_VALUES[kwargs['type'][:-5]]))
+        raise ValueError('Could not dispatch: ' + str(kwargs))
 
     def _get_filter(self, negotiation_status, deal_scope, data_source_type):
         filter_sql = ""
@@ -244,3 +228,51 @@ class NegotiationStatusJSONView(JSONView):
         ) = ARRAY['Media report']""" % ActivityAttributeGroup._meta.db_table
 
         return filter_sql
+
+
+class NegotiationStatusJSONView(JSONView):
+
+    def dispatch(self, request, *args, **kwargs):
+        with_names = list(self.get_negotiation_status(request))
+        return HttpResponse(json.dumps(with_names, cls=DecimalEncoder))
+
+    def get_negotiation_status(self, request):
+        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
+        queryset = NegotiationStatusQuerySet()
+        queryset.set_filter_sql(filter_sql)
+        return queryset.all()
+
+
+from global_app.forms.add_deal_general_form import AddDealGeneralForm
+from api.query_sets.implementation_status_query_set import ImplementationStatusQuerySet, FakeQuerySet
+
+
+class ImplementationStatusJSONView(JSONView):
+
+    IMPLEMENTATION_STATUS = list(filter(None, [c[0] and str(c[1]) or None for c in AddDealGeneralForm().fields["implementation_status"].choices]))
+
+    def dispatch(self, request, *args, **kwargs):
+        with_names = list(self.get_implementation_status(request))
+        return HttpResponse(json.dumps(with_names, cls=DecimalEncoder))
+
+    def get_implementation_status(self, request):
+        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
+
+        queryset = ImplementationStatusQuerySet()
+        queryset.set_filter_sql(filter_sql)
+        found = queryset.all()
+        output = []
+        stati = {}
+
+        for i in found:
+            name = i.get('implementation_status', '')
+            stati[name] = {
+                "name": name,
+                "deals": i['deal_count'],
+                "hectares": i['deal_size'],
+            }
+        for i in self.IMPLEMENTATION_STATUS:
+            output.append(stati.get(i, {"name": i, "deals": 0, "hectares": 0}))
+        output.append(stati.get("", {"name": "", "deals": 0, "hectares": 0}))
+
+        return output
