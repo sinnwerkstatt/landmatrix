@@ -15,6 +15,7 @@ django-classy-tags >= 0.6.1
 django-datetime-widget>=0.9
 
 coverage
+django-nose
 
 xlwt >= 1.0.0
 python-mimeparse >= 0.1.4
