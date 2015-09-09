@@ -14,6 +14,20 @@ django-mptt >= 0.7.4
 django-classy-tags >= 0.6.1
 django-datetime-widget>=0.9
 
+djangocms-admin-style
+djangocms-column 
+djangocms-file 
+djangocms-flash
+djangocms-googlemap
+djangocms-inherit 
+djangocms-installer
+djangocms-link 
+djangocms-picture
+djangocms-style 
+djangocms-teaser
+djangocms-text-ckeditor
+djangocms-video
+
 coverage
 django-nose
 
