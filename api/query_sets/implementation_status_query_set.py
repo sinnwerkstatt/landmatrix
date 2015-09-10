@@ -1,6 +1,9 @@
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from api.query_sets.fake_query_set import FakeQuerySet
+from global_app.forms.add_deal_general_form import AddDealGeneralForm
 
 
 class ImplementationStatusQuerySet(FakeQuerySet):
@@ -58,3 +61,25 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
 WHERE sub.id = a.id
 GROUP BY sub.implementation_status ORDER BY sub.implementation_status
 """
+
+    IMPLEMENTATION_STATUS = list(filter(None, [c[0] and str(c[1]) or None for c in AddDealGeneralForm().fields["implementation_status"].choices]))
+
+    def all(self):
+        found = FakeQuerySet.all(self)
+        output = []
+        stati = {}
+
+        if self.DEBUG: print('AAG', ActivityAttributeGroup.objects.all())
+
+        for i in found:
+            name = i.get('implementation_status', '')
+            stati[name] = {
+                "name": name,
+                "deals": i['deal_count'],
+                "hectares": i['deal_size'],
+            }
+        for i in self.IMPLEMENTATION_STATUS:
+            output.append(stati.get(i, {"name": i, "deals": 0, "hectares": 0}))
+        output.append(stati.get("", {"name": "", "deals": 0, "hectares": 0}))
+
+        return output

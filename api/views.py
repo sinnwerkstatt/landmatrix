@@ -63,13 +63,6 @@ class ProtocolAPI:
     }
 
 list_of_urls = """
-/en/api/implementation_status.json?deal_scope=domestic
-/en/api/implementation_status.json?deal_scope=transnational
-/en/api/implementation_status.json?deal_scope=transnational&deal_scope=domestic
-/en/api/implementation_status.json?deal_scope=domestic&data_source_type=1
-/en/api/implementation_status.json?deal_scope=transnational&data_source_type=1
-/en/api/implementation_status.json?deal_scope=transnational&deal_scope=domestic&data_source_type=1
-
 /en/api/intention_of_investment.json?negotiation_status=concluded&deal_scope=transnational
 /en/api/intention_of_investment.json?negotiation_status=intended&deal_scope=transnational
 /en/api/intention_of_investment.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational
@@ -243,13 +236,11 @@ class NegotiationStatusJSONView(JSONView):
         return queryset.all()
 
 
-from global_app.forms.add_deal_general_form import AddDealGeneralForm
-from api.query_sets.implementation_status_query_set import ImplementationStatusQuerySet, FakeQuerySet
+from api.query_sets.implementation_status_query_set import ImplementationStatusQuerySet
 
 
 class ImplementationStatusJSONView(JSONView):
 
-    IMPLEMENTATION_STATUS = list(filter(None, [c[0] and str(c[1]) or None for c in AddDealGeneralForm().fields["implementation_status"].choices]))
 
     def dispatch(self, request, *args, **kwargs):
         with_names = list(self.get_implementation_status(request))
@@ -257,22 +248,6 @@ class ImplementationStatusJSONView(JSONView):
 
     def get_implementation_status(self, request):
         filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-
         queryset = ImplementationStatusQuerySet()
         queryset.set_filter_sql(filter_sql)
-        found = queryset.all()
-        output = []
-        stati = {}
-
-        for i in found:
-            name = i.get('implementation_status', '')
-            stati[name] = {
-                "name": name,
-                "deals": i['deal_count'],
-                "hectares": i['deal_size'],
-            }
-        for i in self.IMPLEMENTATION_STATUS:
-            output.append(stati.get(i, {"name": i, "deals": 0, "hectares": 0}))
-        output.append(stati.get("", {"name": "", "deals": 0, "hectares": 0}))
-
-        return output
+        return queryset.all()
