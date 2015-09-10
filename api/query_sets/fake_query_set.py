@@ -8,7 +8,7 @@ class FakeModel(dict):
     pk = None
 
 
-class FakeQuerySet:
+class FakeQuerySet(QuerySet):
 
     DEBUG = False
 
@@ -16,6 +16,7 @@ class FakeQuerySet:
 
     def __init__(self):
         self._all_results = []
+        super().__init__()
 
     def all(self):
         self._fetch_all()

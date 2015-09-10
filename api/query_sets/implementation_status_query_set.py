@@ -69,8 +69,6 @@ GROUP BY sub.implementation_status ORDER BY sub.implementation_status
         output = []
         stati = {}
 
-        if self.DEBUG: print('AAG', ActivityAttributeGroup.objects.all())
-
         for i in found:
             name = i.get('implementation_status', '')
             stati[name] = {
