@@ -24,11 +24,12 @@ class FakeQuerySet(QuerySet):
 
     def _fetch_all(self):
         if not self._all_results:
+            if self.DEBUG:
+                print('Query:', self.sql_query())
             cursor = connection.cursor()
             cursor.execute(self.sql_query())
             all_results = list(cursor.fetchall())
-            if self.DEBUG or False:
-                print('Query:', self.sql_query())
+            if self.DEBUG:
                 print('Results:', all_results)
 
             for result in all_results:
