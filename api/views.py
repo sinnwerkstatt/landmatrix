@@ -1,3 +1,5 @@
+from api.query_sets.intention_query_set import IntentionQuerySet
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from global_app.views.sql_generation.sql_builder import SQLBuilder
@@ -197,6 +199,8 @@ class JSONView(TemplateView, ProtocolAPI):
             return NegotiationStatusJSONView().dispatch(request, args, kwargs)
         elif kwargs.get('type') == "implementation_status.json":
             return ImplementationStatusJSONView().dispatch(request, args, kwargs)
+        elif kwargs.get('type') == "intention_of_investment.json":
+            return IntentionOfInvestmentJSONView().dispatch(request, args, kwargs)
         elif kwargs.get('type').endswith('.json'):
             return HttpResponse(json.dumps(self.FAKE_VALUES[kwargs['type'][:-5]]))
         raise ValueError('Could not dispatch: ' + str(kwargs))
@@ -251,3 +255,71 @@ class ImplementationStatusJSONView(JSONView):
         queryset = ImplementationStatusQuerySet()
         queryset.set_filter_sql(filter_sql)
         return queryset.all()
+
+
+from global_app.forms.add_deal_general_form import AddDealGeneralForm
+
+
+class IntentionOfInvestmentJSONView(JSONView):
+
+    INTENTIONS = list(filter(lambda k: "Mining" not in k, [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices]))
+    INTENTIONS_AGRICULTURE = [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices[0][2]]
+
+    def dispatch(self, request, *args, **kwargs):
+        output = []
+        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
+        parent_intention = request.GET.get("intention", "")
+        filter_intentions = parent_intention.lower() == "agriculture" and self.INTENTIONS_AGRICULTURE[:] or self.INTENTIONS[:]
+        filter_intentions.append("Multiple intention")
+        intentions = {}
+        found = self.get_intention(filter_sql, filter_intentions)
+        print(found)
+        for i in found:
+             print('i:', i)
+             name = i['intention'] or ""
+             name = (name == "Agriunspecified" and "Non-specified") or (name == "Other (please specify)" and "Other") or name
+             intentions[name] = {
+                 "name": name,
+                 "deals": i['deal_count'],
+                 "hectares": i['deal_size'],
+             }
+        for i in filter_intentions:
+            i = (i == "Agriunspecified" and "Non-specified") or (i == "Other (please specify)" and "Other") or i
+            output.append(intentions.get(i, {"name": i, "deals": 0, "hectares": 0}))
+        output.append(intentions.get("", {"name": "", "deals": 0, "hectares": 0}))
+        return HttpResponse(json.dumps(output, cls=DecimalEncoder))
+
+    def get_intention(self, filter_sql, filter_intentions):
+
+        intention_filter_sql = "\nAND (intention.attributes->'intention' IN ('%s')\nOR intention.attributes->'intention' = '')" % "', '".join(filter_intentions)
+        queryset = IntentionQuerySet()
+        IntentionQuerySet.DEBUG = True
+        queryset.set_filter_sql(filter_sql + intention_filter_sql)
+        return queryset.all()
+
+        sql = """
+            SELECT
+              sub.intention,
+              count(distinct a.activity_identifier) as deals,
+              %s
+              FROM
+                 activities a
+              LEFT JOIN a_key_value_lookup size ON a.activity_identifier = size.activity_identifier AND size.key = 'pi_deal_size',
+                (SELECT DISTINCT
+                    a.id,
+                    IF(COUNT(distinct intention.value) > 1, 'Multiple intention', intention.value) as intention
+                  FROM
+                    activities a
+                    %s
+                  WHERE
+                    %s
+                    %s
+                    %s
+                GROUP BY a.id) AS sub
+              WHERE a.id = sub.id
+              GROUP BY sub.intention;
+        """ % (self.HECTARES_SQL, self.BASE_JOIN, self.BASE_CONDITON, filter_sql, intention_filter_sql)
+        cursor = connection.cursor()
+        print(sql), cursor.execute(sql)
+        return cursor.fetchall()
+
