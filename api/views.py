@@ -1,3 +1,5 @@
+from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from api.query_sets.intention_query_set import IntentionQuerySet
@@ -6,6 +8,7 @@ from landmatrix.models import *
 
 from django.http import HttpResponse
 from django.views.generic.base import TemplateView
+from django.template.defaultfilters import slugify
 import json
 import decimal
 
@@ -20,14 +23,6 @@ class DecimalEncoder(json.JSONEncoder):
 
 
 list_of_urls = """
-/en/api/transnational_deals.json?negotiation_status=concluded&deal_scope=transnational
-/en/api/transnational_deals.json?negotiation_status=intended&deal_scope=transnational
-/en/api/transnational_deals.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational
-/en/api/transnational_deals.json?negotiation_status=failed&deal_scope=transnational
-/en/api/transnational_deals.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1
-/en/api/transnational_deals.json?negotiation_status=intended&deal_scope=transnational&data_source_type=1
-/en/api/transnational_deals.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational&data_source_type=1
-/en/api/transnational_deals.json?negotiation_status=failed&deal_scope=transnational&data_source_type=1
 /en/api/top-10-countries.json?negotiation_status=concluded&deal_scope=transnational
 /en/api/top-10-countries.json?negotiation_status=intended&deal_scope=transnational
 /en/api/top-10-countries.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational
@@ -124,6 +119,8 @@ class JSONView(TemplateView):
             return ImplementationStatusJSONView().dispatch(request, args, kwargs)
         elif kwargs.get('type') == "intention_of_investment.json":
             return IntentionOfInvestmentJSONView().dispatch(request, args, kwargs)
+        elif kwargs.get('type') == "transnational_deals.json":
+            return TransnationalDealsJSONView().dispatch(request, args, kwargs)
         raise ValueError('Could not dispatch: ' + str(kwargs))
 
     def _get_filter(self, negotiation_status, deal_scope, data_source_type):
@@ -166,7 +163,6 @@ from api.query_sets.implementation_status_query_set import ImplementationStatusQ
 
 class ImplementationStatusJSONView(JSONView):
 
-
     def dispatch(self, request, *args, **kwargs):
         with_names = list(self.get_implementation_status(request))
         return HttpResponse(json.dumps(with_names, cls=DecimalEncoder))
@@ -191,3 +187,73 @@ class IntentionOfInvestmentJSONView(JSONView):
         queryset.set_intention(parent_intention)
         queryset.set_filter_sql(filter_sql)
         return queryset.all()
+
+
+class TransnationalDealsJSONView(JSONView):
+
+    def dispatch(self, request, *args, **kwargs):
+        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
+
+        countries = {}
+        regions = request.GET.getlist("region", [])
+        t_deals = self.get_transnational_deals(filter_sql, regions)
+        def shorten_country(country):
+                country_parts = country.split(".")
+                country_region = country_parts[0]
+                if country_region in regions:
+                    country_region = -1
+                return "%s.%s" % (country_region, LONG_COUNTRIES.get(country_parts[1], country_parts[1]))
+        for d in t_deals:
+            dcountries = [{
+                "name": shorten_country(dcountry.split("#!#")[0]),
+                "id": dcountry.split("#!#")[1],
+                "slug": slugify(dcountry.split("#!#")[0].split(".")[1])
+                } for dcountry in d[1].split("##!##")]
+            country = shorten_country(d[0].split("#!#")[0])
+            countries[country] = {
+                "name": country,
+                "id": d[0].split("#!#")[1] ,
+                "size": 1,
+                "imports": [dcountry["name"] for dcountry in dcountries],
+                "slug": slugify(d[0].split("#!#")[0].split(".")[1])
+            }
+
+            for dcountry in dcountries:
+                if not dcountry["name"] in countries:
+                    countries[dcountry["name"]] = {
+                        "name": dcountry["name"],
+                        "id": dcountry["id"],
+                        "size": 1,
+                        "imports": [],
+                        "slug": dcountry["slug"]
+                    }
+        return HttpResponse(json.dumps(countries.values(), ensure_ascii=False), mimetype="text/plain")
+
+    def get_transnational_deals(self, filter_sql, regions=None):
+        queryset = TransnationalDealsQuerySet()
+        queryset.set_regions(regions)
+        queryset.set_filter_sql(filter_sql)
+        return queryset.all()
+
+        """Used by Get the idea: Transnational deals (radial chart)"""
+        region_sql = ""
+        if regions:
+            region_sql = "AND deal_region.id in (%s) " % ", ".join(regions)
+        cursor = connection.cursor()
+        sql = """
+        SELECT
+            DISTINCT
+            CONCAT(deal_region.id, '.', deal_country.name, '#!#', deal_country.id) AS 'target_country',
+            GROUP_CONCAT(DISTINCT CONCAT(investor_region.id, '.', investor_country.name,  '#!#', investor_country.id) SEPARATOR '##!##') AS 'investor_country'
+          FROM
+            activities a
+            %s
+          WHERE
+            %s
+            %s
+            %s
+            AND investor_country.id <> deal_country.id
+          GROUP BY `target_country`
+        """ % (self.BASE_JOIN, self.BASE_CONDITON, filter_sql, region_sql)
+        print(sql), cursor.execute(sql)
+        return list(cursor.fetchall())
