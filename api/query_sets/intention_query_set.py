@@ -62,3 +62,36 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
 WHERE sub.id = a.id
 GROUP BY sub.intention ORDER BY sub.intention
 """
+
+    def set_intention(self, intention):
+        self.intention = intention
+
+    INTENTIONS = list(filter(lambda k: "Mining" not in k, [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices]))
+    INTENTIONS_AGRICULTURE = [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices[0][2]]
+
+    def all(self):
+        parent_intention = self.intention
+        filter_intentions = parent_intention.lower() == "agriculture" and self.INTENTIONS_AGRICULTURE[:] or self.INTENTIONS[:]
+        filter_intentions.append("Multiple intention")
+
+        intention_filter_sql = "\nAND (intention.attributes->'intention' IN ('%s')\nOR intention.attributes->'intention' = '')" % "', '".join(filter_intentions)
+        self._filter_sql += intention_filter_sql
+
+        found = FakeQuerySet.all(self)
+
+        intentions = {}
+
+        for i in found:
+             name = i['intention'] or ""
+             name = (name == "Agriunspecified" and "Non-specified") or (name == "Other (please specify)" and "Other") or name
+             intentions[name] = {
+                 "name": name,
+                 "deals": i['deal_count'],
+                 "hectares": i['deal_size'],
+             }
+        output = []
+        for i in filter_intentions:
+            i = (i == "Agriunspecified" and "Non-specified") or (i == "Other (please specify)" and "Other") or i
+            output.append(intentions.get(i, {"name": i, "deals": 0, "hectares": 0}))
+        output.append(intentions.get("", {"name": "", "deals": 0, "hectares": 0}))
+        return output
