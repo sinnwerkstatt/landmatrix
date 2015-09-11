@@ -1,11 +1,8 @@
-from api.query_sets.implementation_status_query_set import ImplementationStatusQuerySet
-from api.views import ImplementationStatusJSONView
-
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+from api.query_sets.implementation_status_query_set import ImplementationStatusQuerySet
 from .api_test_functions import ApiTestFunctions
 from api.tests.deals_test_data import DealsTestData
-from landmatrix.models import ActivityAttributeGroup
 
 
 """
