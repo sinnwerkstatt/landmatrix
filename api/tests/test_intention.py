@@ -61,7 +61,7 @@ class TestIntention(ApiTestFunctions, DealsTestData):
 
     def test_empty(self):
         result = self.get_content('intention_of_investment')
-        self.assertEqual(len(IntentionQuerySet.INTENTIONS)+2, len(result))
+        self.assertEqual(self.num_results(), len(result))
         for record in result:
             self.assertEqual(0, record['deals'])
             self.assertEqual(0, record['hectares'])
@@ -70,15 +70,21 @@ class TestIntention(ApiTestFunctions, DealsTestData):
         self._generate_negotiation_status_data(123, self.RELEVANT_ATTRIBUTES)
         IntentionQuerySet.DEBUG = False
         result = self.get_content('intention_of_investment')
-        if self.__class__.__name__ == 'TestIntentionConcludedIntended3...':
+        if self.__class__.__name__ == 'TestIntentionAgriculture...':
             print(self.RELEVANT_ATTRIBUTES, ActivityAttributeGroup.objects.all(), result)
 
-        self.assertEqual(len(IntentionQuerySet.INTENTIONS)+2, len(result))
+        self.assertEqual(self.num_results(), len(result))
+
+        if self.NUM_RELEVANT_DEALS == 0: return
+
         relevant_line = list(filter(lambda line: line['name'] == self.RELEVANT_ATTRIBUTES['intention'], result))
 
         self.assertEqual(1 if self.NUM_RELEVANT_DEALS > 0 else 0, relevant_line[0]['deals'])
         self.assertEqual(self.RELEVANT_ATTRIBUTES['intention'], relevant_line[0]['name'])
         self.assertEqual(float(self.RELEVANT_ATTRIBUTES['pi_deal_size']) if self.NUM_RELEVANT_DEALS > 0 else 0, relevant_line[0]['hectares'])
+
+    def num_results(self):
+        return len(IntentionQuerySet.INTENTIONS)+2
 
     def test_with_both_transnational_and_domestic(self):
         attributes = self.RELEVANT_ATTRIBUTES
@@ -87,7 +93,10 @@ class TestIntention(ApiTestFunctions, DealsTestData):
             self._generate_negotiation_status_data(123+index, attributes)
 
         result = self.get_content('intention_of_investment')
-        self.assertEqual(len(IntentionQuerySet.INTENTIONS)+2, len(result))
+        self.assertEqual(self.num_results(), len(result))
+
+        if self.NUM_RELEVANT_DEALS == 0: return
+
         relevant_line = list(filter(lambda line: line['name'] == self.RELEVANT_ATTRIBUTES['intention'], result))
         self.assertEqual(self.NUM_RELEVANT_DEALS, relevant_line[0]['deals'])
         self.assertEqual(self.RELEVANT_ATTRIBUTES['intention'], relevant_line[0]['name'])
@@ -188,6 +197,7 @@ class TestIntentionConcludedIntendedDomestic2(TestIntentionConcludedDomestic):
     }
     NUM_RELEVANT_DEALS = 1
 
+
 class TestIntentionConcludedIntendedDomestic3(TestIntentionConcludedDomestic):
 
     POSTFIX = '.json?negotiation_status=intended&negotiation_status=concluded&deal_scope=domestic'
@@ -200,9 +210,7 @@ class TestIntentionConcludedIntendedDomestic3(TestIntentionConcludedDomestic):
 
 class TestIntentionDataSource(TestIntention):
 
-    PREFIX = '/en/api/'
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
-    DEAL_SCOPE = 'transnational'
     RELEVANT_ATTRIBUTES = {
         'pi_deal_size': '12345', 'deal_scope': 'transnational', 'intention': 'Forestry', 'pi_negotiation_status': 'Concluded (Contract signed)',
         'type': 'Media report'
@@ -212,11 +220,57 @@ class TestIntentionDataSource(TestIntention):
 
 class TestIntentionDataSourceNot(TestIntention):
 
-    PREFIX = '/en/api/'
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
-    DEAL_SCOPE = 'transnational'
     RELEVANT_ATTRIBUTES = {
         'pi_deal_size': '12345', 'deal_scope': 'transnational', 'intention': 'Forestry', 'pi_negotiation_status': 'Concluded (Contract signed)',
         'type': 'NOT Media report'
+    }
+    NUM_RELEVANT_DEALS = 1
+
+
+class TestIntentionAgriculture(TestIntention):
+
+    POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&intention=agriculture'
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'intention': 'Forestry', 'pi_negotiation_status': 'Concluded (Contract signed)',
+        'type': 'Media report'
+    }
+    NUM_RELEVANT_DEALS = 0
+
+    def num_results(self):
+        return len(IntentionQuerySet.INTENTIONS_AGRICULTURE)+2
+
+
+class TestIntentionBiofuels(TestIntentionAgriculture):
+
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'intention': 'Biofuels', 'pi_negotiation_status': 'Concluded (Contract signed)',
+        'type': 'Media report'
+    }
+    NUM_RELEVANT_DEALS = 1
+
+
+class TestIntentionFoodCrops(TestIntentionAgriculture):
+
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'intention': 'Food crops', 'pi_negotiation_status': 'Concluded (Contract signed)',
+        'type': 'Media report'
+    }
+    NUM_RELEVANT_DEALS = 1
+
+
+class TestIntentionLivestock(TestIntentionAgriculture):
+
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'intention': 'Livestock', 'pi_negotiation_status': 'Concluded (Contract signed)',
+        'type': 'Media report'
+    }
+    NUM_RELEVANT_DEALS = 1
+
+class TestIntentionNonfood(TestIntentionAgriculture):
+
+    RELEVANT_ATTRIBUTES = {
+        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'intention': 'Non-food agricultural commodities', 'pi_negotiation_status': 'Concluded (Contract signed)',
+        'type': 'Media report'
     }
     NUM_RELEVANT_DEALS = 1
