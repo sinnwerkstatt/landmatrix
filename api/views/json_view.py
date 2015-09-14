@@ -1,22 +1,11 @@
-from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
+from api.views.transnational_deals_json_view import TransnationalDealsJSONView
+from api.views.implementation_status_json_view import ImplementationStatusJSONView
+from api.views.intention_of_investment_json_view import IntentionOfInvestmentJSONView
+from api.views.negotiation_status_json_view import NegotiationStatusJSONView
+
+from django.views.generic.base import TemplateView
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-from api.query_sets.intention_query_set import IntentionQuerySet
-from api.query_sets.negotiation_status_query_set import NegotiationStatusQuerySet
-from landmatrix.models import *
-
-from django.http import HttpResponse
-from django.views.generic.base import TemplateView
-import json
-import decimal
-
-
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, decimal.Decimal):
-            return float(o)
-        return super(DecimalEncoder, self).default(o)
 
 
 list_of_urls = """
@@ -101,12 +90,6 @@ list_of_urls = """
 
 class JSONView(TemplateView):
 
-    BASE_FILTER_MAP = {
-        "concluded": ("concluded (oral agreement)", "concluded (contract signed)"),
-        "intended": ("intended (expression of interest)", "intended (under negotiation)" ),
-        "failed": ("failed (contract canceled)", "failed (negotiations failed)"),
-    }
-
     template_name = "plugins/overview.html"
 
     def dispatch(self, request, *args, **kwargs):
@@ -119,82 +102,4 @@ class JSONView(TemplateView):
         elif kwargs.get('type') == "transnational_deals.json":
             return TransnationalDealsJSONView().dispatch(request, args, kwargs)
         raise ValueError('Could not dispatch: ' + str(kwargs))
-
-    def _get_filter(self, negotiation_status, deal_scope, data_source_type):
-        filter_sql = ""
-        if len(deal_scope) == 0:
-            # when no negotiation stati or deal scope given no deals should be shown at the public interface
-            return " AND 1 <> 1 "
-        if negotiation_status:
-            stati = []
-            for n in negotiation_status:
-                stati.extend(self.BASE_FILTER_MAP.get(n))
-            filter_sql += " AND LOWER(negotiation.attributes->'pi_negotiation_status') IN ('%s') " % "', '".join(stati)
-        if len(deal_scope) == 1:
-            filter_sql += " AND deal_scope.attributes->'deal_scope' = '%s' " % deal_scope[0]
-        if data_source_type:
-            filter_sql += """ AND NOT (
-            SELECT ARRAY_AGG(data_source_type.attributes->'type')
-            FROM %s AS data_source_type
-            WHERE a.id = data_source_type.fk_activity_id AND data_source_type.attributes ? 'type'
-        ) = ARRAY['Media report']""" % ActivityAttributeGroup._meta.db_table
-
-        return filter_sql
-
-
-class NegotiationStatusJSONView(JSONView):
-
-    def dispatch(self, request, *args, **kwargs):
-        with_names = list(self.get_negotiation_status(request))
-        return HttpResponse(json.dumps(with_names, cls=DecimalEncoder))
-
-    def get_negotiation_status(self, request):
-        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-        queryset = NegotiationStatusQuerySet()
-        queryset.set_filter_sql(filter_sql)
-        return queryset.all()
-
-
-from api.query_sets.implementation_status_query_set import ImplementationStatusQuerySet
-
-
-class ImplementationStatusJSONView(JSONView):
-
-    def dispatch(self, request, *args, **kwargs):
-        with_names = list(self.get_implementation_status(request))
-        return HttpResponse(json.dumps(with_names, cls=DecimalEncoder))
-
-    def get_implementation_status(self, request):
-        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-        queryset = ImplementationStatusQuerySet()
-        queryset.set_filter_sql(filter_sql)
-        return queryset.all()
-
-
-class IntentionOfInvestmentJSONView(JSONView):
-
-    def dispatch(self, request, *args, **kwargs):
-        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-        found = self.get_intention(filter_sql, request.GET.get("intention", ""))
-        return HttpResponse(json.dumps(found, cls=DecimalEncoder))
-
-    def get_intention(self, filter_sql, parent_intention):
-        queryset = IntentionQuerySet()
-        queryset.set_intention(parent_intention)
-        queryset.set_filter_sql(filter_sql)
-        return queryset.all()
-
-
-class TransnationalDealsJSONView(JSONView):
-
-    def dispatch(self, request, *args, **kwargs):
-        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-        countries = self.get_transnational_deals(filter_sql, request.GET.getlist("region", []))
-        return HttpResponse(json.dumps(list(countries.values()), ensure_ascii=False))
-
-    def get_transnational_deals(self, filter_sql, regions=None):
-        queryset = TransnationalDealsQuerySet()
-        queryset.set_regions(regions)
-        queryset.set_filter_sql(filter_sql)
-        return queryset.all()
 
