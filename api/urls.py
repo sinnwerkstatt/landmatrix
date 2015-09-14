@@ -1,13 +1,12 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+from api.views.json_view import JSONView
+from api.api import *
 
 from django.conf.urls import include, url, patterns
-from api.api import *
 from tastypie.api import Api
 
-from api.views import JSONView
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 urlpatterns = patterns('')
-
 
 api = Api(api_name='')
 for klass in filter(lambda c: c.__module__.startswith('api.'), ModelResource.__subclasses__()):
