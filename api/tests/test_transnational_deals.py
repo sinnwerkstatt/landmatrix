@@ -35,14 +35,14 @@ class TestTransnationalDeals(ApiTestFunctions, DealsTestData):
     def tearDown(self):
         IntentionQuerySet.DEBUG = False
 
-    def test_empty(self):
+    def _test_empty(self):
         result = self.get_content('transnational_deals')
         self.assertEqual(self.num_results(), len(result))
         for record in result:
             self.assertEqual(0, record['deals'])
             self.assertEqual(0, record['hectares'])
 
-    def test_with_data(self):
+    def _test_with_data(self):
         self._generate_negotiation_status_data(123, self.RELEVANT_ATTRIBUTES)
         IntentionQuerySet.DEBUG = False
         result = self.get_content('transnational_deals')
@@ -62,7 +62,7 @@ class TestTransnationalDeals(ApiTestFunctions, DealsTestData):
     def num_results(self):
         return len(IntentionQuerySet.INTENTIONS)+2
 
-    def test_with_both_transnational_and_domestic(self):
+    def _test_with_both_transnational_and_domestic(self):
         attributes = self.RELEVANT_ATTRIBUTES
         for index, scope in enumerate(['transnational', 'domestic']):
             attributes['deal_scope'] = scope
