@@ -191,32 +191,67 @@ class IntentionOfInvestmentJSONView(JSONView):
 
 class TransnationalDealsJSONView(JSONView):
 
+    LONG_COUNTRIES = {
+        'United States of America' : 'Usa*',
+        'United Kingdom of Great Britain and Northern Ireland' : 'Uk*',
+        'China, Hong Kong Special Administrative Region' : 'China, Hong Kong*',
+        'China, Macao Special Administrative Region': 'China, Macao*',
+        'Lao People\'s Democratic Republic' : 'Laos*',
+        'United Republic of Tanzania' : 'Tanzania*',
+        'Democratic Republic of the Congo' : 'DRC*',
+        'Bolivia (Plurinational State of)' : 'Bolivia*',
+        'The Former Yugoslav Republic of Macedonia': 'Macedonia*',
+        'Venezuela (Bolivarian Republic of)': 'Venezuela*',
+        'Republic of Moldova': 'Moldova*',
+        'United Arab Emirates': 'Arab Emirates*',
+        'Solomon Islands': 'Solomon Iss*',
+        'Russian Federation': 'Russian Fed*',
+        'Dominican Republic': 'Dominican Rep*',
+        'Papua New Guinea': 'Papua New*',
+        'Democratic People\'s Republic of Korea': 'North Korea*',
+        'United States Virgin Islands': 'Virgin Iss*',
+        'Iran (Islamic Republic of)': 'Iran*',
+        'Syrian Arab Republic': 'Syria*',
+        'Republic of Korea': 'South Korea*',
+        'C\xf4te d\'Ivoire': 'Cote d\'Ivoire',
+        'British Virgin Islands': 'British Virgin Iss*',
+    }
+
     def dispatch(self, request, *args, **kwargs):
         filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
 
         countries = {}
         regions = request.GET.getlist("region", [])
         t_deals = self.get_transnational_deals(filter_sql, regions)
+
         def shorten_country(country):
                 country_parts = country.split(".")
                 country_region = country_parts[0]
+                print(country, country_parts, country_region)
                 if country_region in regions:
                     country_region = -1
-                return "%s.%s" % (country_region, LONG_COUNTRIES.get(country_parts[1], country_parts[1]))
+                return "%s.%s" % (country_region, TransnationalDealsJSONView.LONG_COUNTRIES.get(country_parts[1], country_parts[1]))
+
         for d in t_deals:
-            dcountries = [{
+            print('d:', d)
+            dcountries = []
+            dcountry = d['target_country']
+            dcountries.append({
                 "name": shorten_country(dcountry.split("#!#")[0]),
                 "id": dcountry.split("#!#")[1],
                 "slug": slugify(dcountry.split("#!#")[0].split(".")[1])
-                } for dcountry in d[1].split("##!##")]
-            country = shorten_country(d[0].split("#!#")[0])
-            countries[country] = {
-                "name": country,
-                "id": d[0].split("#!#")[1] ,
-                "size": 1,
-                "imports": [dcountry["name"] for dcountry in dcountries],
-                "slug": slugify(d[0].split("#!#")[0].split(".")[1])
-            }
+            })
+
+            print('investor country:', d['investor_country'])
+            for c in d['investor_country']:
+                country = shorten_country(c.split("#!#")[0])
+                countries[country] = {
+                    "name": country,
+                    "id": c.split("#!#")[1] ,
+                    "size": 1,
+                    "imports": [dcountry["name"] for dcountry in dcountries],
+                    "slug": slugify(c.split("#!#")[0].split(".")[1])
+                }
 
             for dcountry in dcountries:
                 if not dcountry["name"] in countries:
@@ -227,33 +262,10 @@ class TransnationalDealsJSONView(JSONView):
                         "imports": [],
                         "slug": dcountry["slug"]
                     }
-        return HttpResponse(json.dumps(countries.values(), ensure_ascii=False), mimetype="text/plain")
+        return HttpResponse(json.dumps(list(countries.values()), ensure_ascii=False))
 
     def get_transnational_deals(self, filter_sql, regions=None):
         queryset = TransnationalDealsQuerySet()
         queryset.set_regions(regions)
         queryset.set_filter_sql(filter_sql)
         return queryset.all()
-
-        """Used by Get the idea: Transnational deals (radial chart)"""
-        region_sql = ""
-        if regions:
-            region_sql = "AND deal_region.id in (%s) " % ", ".join(regions)
-        cursor = connection.cursor()
-        sql = """
-        SELECT
-            DISTINCT
-            CONCAT(deal_region.id, '.', deal_country.name, '#!#', deal_country.id) AS 'target_country',
-            GROUP_CONCAT(DISTINCT CONCAT(investor_region.id, '.', investor_country.name,  '#!#', investor_country.id) SEPARATOR '##!##') AS 'investor_country'
-          FROM
-            activities a
-            %s
-          WHERE
-            %s
-            %s
-            %s
-            AND investor_country.id <> deal_country.id
-          GROUP BY `target_country`
-        """ % (self.BASE_JOIN, self.BASE_CONDITON, filter_sql, region_sql)
-        print(sql), cursor.execute(sql)
-        return list(cursor.fetchall())
