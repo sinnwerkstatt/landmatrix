@@ -7,9 +7,8 @@ from global_app.forms.add_deal_general_form import AddDealGeneralForm
 class TransnationalDealsQuerySet(FakeQuerySet):
 
     fields = [
-        ('intention', 'sub.intention'),
-        ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
-        ('deal_size',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
+        ('target_country',   'target_country'),
+        ('investor_country', 'investor_country'),
     ]
 
     QUERY = """
