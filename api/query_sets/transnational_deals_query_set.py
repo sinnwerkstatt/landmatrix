@@ -2,9 +2,36 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from api.query_sets.fake_query_set import FakeQuerySet
 from global_app.forms.add_deal_general_form import AddDealGeneralForm
+from django.template.defaultfilters import slugify
 
 
 class TransnationalDealsQuerySet(FakeQuerySet):
+
+    LONG_COUNTRIES = {
+        'United States of America' : 'Usa*',
+        'United Kingdom of Great Britain and Northern Ireland' : 'Uk*',
+        'China, Hong Kong Special Administrative Region' : 'China, Hong Kong*',
+        'China, Macao Special Administrative Region': 'China, Macao*',
+        'Lao People\'s Democratic Republic' : 'Laos*',
+        'United Republic of Tanzania' : 'Tanzania*',
+        'Democratic Republic of the Congo' : 'DRC*',
+        'Bolivia (Plurinational State of)' : 'Bolivia*',
+        'The Former Yugoslav Republic of Macedonia': 'Macedonia*',
+        'Venezuela (Bolivarian Republic of)': 'Venezuela*',
+        'Republic of Moldova': 'Moldova*',
+        'United Arab Emirates': 'Arab Emirates*',
+        'Solomon Islands': 'Solomon Iss*',
+        'Russian Federation': 'Russian Fed*',
+        'Dominican Republic': 'Dominican Rep*',
+        'Papua New Guinea': 'Papua New*',
+        'Democratic People\'s Republic of Korea': 'North Korea*',
+        'United States Virgin Islands': 'Virgin Iss*',
+        'Iran (Islamic Republic of)': 'Iran*',
+        'Syrian Arab Republic': 'Syria*',
+        'Republic of Korea': 'South Korea*',
+        'C\xf4te d\'Ivoire': 'Cote d\'Ivoire',
+        'British Virgin Islands': 'British Virgin Iss*',
+    }
 
     fields = [
         ('target_country',   'target_country'),
@@ -45,7 +72,7 @@ WHERE
         WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
     )
     AND pi_st.name IN ('active', 'overwritten')
-            %s
+    %s
     AND investor_country.id <> deal_country.id
 GROUP BY target_country
 """
@@ -54,11 +81,47 @@ GROUP BY target_country
         self.regions = regions
 
     def all(self):
-        region_sql = ""
-        if self.regions:
-            region_sql = "AND deal_region.id in (%s) " % ", ".join(self.regions)
+        def shorten_country(country):
+                country_parts = country.split(".")
+                country_region = country_parts[0]
+                if country_region in self.regions:
+                    country_region = -1
+                return "%s.%s" % (country_region, self.LONG_COUNTRIES.get(country_parts[1], country_parts[1]))
+
+        region_sql = "AND deal_region.id in (%s) " % ", ".join(self.regions) if self.regions else ''
         self._filter_sql += region_sql
 
-        found = FakeQuerySet.all(self)
+        t_deals = FakeQuerySet.all(self)
 
-        return found
+        countries = {}
+
+        for d in t_deals:
+            dcountries = []
+            dcountry = d['target_country']
+            dcountries.append({
+                "name": shorten_country(dcountry.split("#!#")[0]),
+                "id": dcountry.split("#!#")[1],
+                "slug": slugify(dcountry.split("#!#")[0].split(".")[1])
+            })
+
+            for c in d['investor_country']:
+                country = shorten_country(c.split("#!#")[0])
+                countries[country] = {
+                    "name": country,
+                    "id": c.split("#!#")[1] ,
+                    "size": 1,
+                    "imports": [dcountry["name"] for dcountry in dcountries],
+                    "slug": slugify(c.split("#!#")[0].split(".")[1])
+                }
+
+            for dcountry in dcountries:
+                if not dcountry["name"] in countries:
+                    countries[dcountry["name"]] = {
+                        "name": dcountry["name"],
+                        "id": dcountry["id"],
+                        "size": 1,
+                        "imports": [],
+                        "slug": dcountry["slug"]
+                    }
+
+        return countries
