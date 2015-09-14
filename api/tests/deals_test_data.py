@@ -73,19 +73,21 @@ class DealsTestData:
         self._generate_language()
         activity, stakeholder = self._generate_involvement(preset_id)
         self._generate_deal_country()
+        self._generate_investor_country()
         attributes = {
-                'intention': 'boring test stuff', 'target_country': str(self.deal_country.id),
-                'pi_negotiation_status': 'Concluded (Contract signed)',
-                'pi_implementation_status': 'blah', 'pi_deal': 'True', 'pi_deal_size': '2345',
-                'deal_scope': 'domestic'
-            }
+            'intention': 'boring test stuff', 'target_country': str(self.deal_country.id),
+            'investor_country': str(self.investor_country.id),
+            'pi_negotiation_status': 'Concluded (Contract signed)',
+            'pi_implementation_status': 'blah', 'pi_deal': 'True', 'pi_deal_size': '2345',
+            'deal_scope': 'domestic'
+        }
         attributes.update(deviating_attributes)
         ac_attributes = ActivityAttributeGroup(
             fk_activity=activity, fk_language_id=1, attributes=attributes
         )
         ac_attributes.save()
         sh_attributes = StakeholderAttributeGroup(
-            fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': str(self.deal_country.id)}
+            fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': str(self.investor_country.id)}
         )
         sh_attributes.save()
 
@@ -107,6 +109,15 @@ class DealsTestData:
         if not self.deal_country:
             self.deal_region = Region(id=123)
             self.deal_region.save()
-            self.deal_country = Country(id=123, fk_region=self.deal_region)
+            self.deal_country = Country(id=123, name='Targetstan', fk_region=self.deal_region)
             self.deal_country.save()
 
+    investor_country = None
+    investor_region = None
+
+    def _generate_investor_country(self):
+        if not self.investor_country:
+            self.investor_region = Region(id=124)
+            self.investor_region.save()
+            self.investor_country = Country(id=124, name='Investoria', fk_region=self.investor_region)
+            self.investor_country.save()
