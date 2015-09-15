@@ -6,9 +6,9 @@ from api.query_sets.fake_query_set import FakeQuerySet
 class NegotiationStatusQuerySet(FakeQuerySet):
 
     fields = [
-        ('negotiation_status', 'sub.negotiation_status'),
-        ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
-        ('deal_size',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
+        ('name', 'sub.negotiation_status'),
+        ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
+        ('hectares',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
     ]
 
     QUERY = """
