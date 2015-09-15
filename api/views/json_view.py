@@ -8,7 +8,7 @@ from django.views.generic.base import TemplateView
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-list_of_urls = """
+todo_list_of_urls = """
 /en/api/top-10-countries.json?negotiation_status=concluded&deal_scope=transnational
 /en/api/top-10-countries.json?negotiation_status=intended&deal_scope=transnational
 /en/api/top-10-countries.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational
@@ -17,6 +17,9 @@ list_of_urls = """
 /en/api/top-10-countries.json?negotiation_status=intended&deal_scope=transnational&data_source_type=1
 /en/api/top-10-countries.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational&data_source_type=1
 /en/api/top-10-countries.json?negotiation_status=failed&deal_scope=transnational&data_source_type=1
+
+/en/api/transnational_deals_by_country.json?negotiation_status=concluded&deal_scope=transnational&country=384
+...
 
 /en/api/investor_country_summaries.json?negotiation_status=intended&deal_scope=transnational&deal_scope=domestic
 /en/api/investor_country_summaries.json?negotiation_status=concluded&deal_scope=transnational&deal_scope=domestic
