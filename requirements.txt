@@ -12,7 +12,6 @@ django-treebeard >= 3.0
 django-mptt >= 0.7.4
 django-classy-tags >= 0.6.1
 django-datetime-widget>=0.9
-djangocms_text_ckeditor >= 2.6
 
 djangocms-admin-style
 djangocms-column 
@@ -25,7 +24,7 @@ djangocms-link
 djangocms-picture
 djangocms-style 
 djangocms-teaser
-djangocms-text-ckeditor
+djangocms_text_ckeditor >= 2.6
 djangocms-video
 
 coverage >= 3.7
