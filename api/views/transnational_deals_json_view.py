@@ -12,7 +12,7 @@ class TransnationalDealsJSONView(JSONViewBase):
     def dispatch(self, request, *args, **kwargs):
         filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
         countries = self.get_transnational_deals(filter_sql, request.GET.getlist("region", []))
-        return HttpResponse(json.dumps(list(countries.values()), ensure_ascii=False))
+        return HttpResponse(json.dumps(list(countries.values()), ensure_ascii=False), content_type='text/plain')
 
     def get_transnational_deals(self, filter_sql, regions=None):
         queryset = TransnationalDealsQuerySet()
