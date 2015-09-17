@@ -1,0 +1,367 @@
+{
+	"activities": [
+		{
+			"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde1",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					46.5203535156019970, -19.3713548608639990
+				]
+			},
+			"taggroups": [
+				{
+					"main_tag": {
+						"value": 1000.0,
+						"key": "Contract area (ha)"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": 1000.0,
+							"key": "Contract area (ha)",
+							"op": "add"
+						},
+						{
+							"value": 500.0,
+							"key": "Current area in operation (ha)",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Agriculture",
+						"key": "Intention of Investment"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Agriculture",
+							"key": "Intention of Investment",
+							"op": "add"
+						},
+						{
+							"value": "Jatropha",
+							"key": "Crop",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": 2001,
+						"key": "Year of agreement"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": 2001,
+							"key": "Year of agreement",
+							"op": "add"
+						},
+						{
+							"value": 30,
+							"key": "Duration of Agreement (years)",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Contract signed",
+						"key": "Negotiation Status"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Contract signed",
+							"key": "Negotiation Status",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Madagascar",
+						"key": "Country"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Madagascar",
+							"key": "Country",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Government sources",
+						"key": "Data source"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Government sources",
+							"key": "Data source",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "better than 100m",
+						"key": "Spatial Accuracy"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "better than 100m",
+							"key": "Spatial Accuracy",
+							"op": "add"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde2",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					46.3775312499779990, -19.6199093755599990
+				]
+			},
+			"taggroups": [
+				{
+					"main_tag": {
+						"value": 1500.0,
+						"key": "Contract area (ha)"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": 1500.0,
+							"key": "Contract area (ha)",
+							"op": "add"
+						},
+						{
+							"value": 500.0,
+							"key": "Current area in operation (ha)",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Forestry",
+						"key": "Intention of Investment"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Forestry",
+							"key": "Intention of Investment",
+							"op": "add"
+						},
+						{
+							"value": "wood and fibre",
+							"key": "Forestry",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": 2002,
+						"key": "Year of agreement"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": 2002,
+							"key": "Year of agreement",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Contract signed",
+						"key": "Negotiation Status"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Contract signed",
+							"key": "Negotiation Status",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Madagascar",
+						"key": "Country"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Madagascar",
+							"key": "Country",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Government sources",
+						"key": "Data source"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Government sources",
+							"key": "Data source",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "better than 100m",
+						"key": "Spatial Accuracy"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "better than 100m",
+							"key": "Spatial Accuracy",
+							"op": "add"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde3",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					46.7181074218510020, -19.6095605714140010
+				]
+			},
+			"taggroups": [
+				{
+					"main_tag": {
+						"value": 2000.0,
+						"key": "Contract area (ha)"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": 2000.0,
+							"key": "Contract area (ha)",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Agriculture",
+						"key": "Intention of Investment"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Agriculture",
+							"key": "Intention of Investment",
+							"op": "add"
+						},
+						{
+							"value": "Jatropha",
+							"key": "Crop",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": 2003,
+						"key": "Year of agreement"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": 2003,
+							"key": "Year of agreement",
+							"op": "add"
+						},
+						{
+							"value": 25,
+							"key": "Duration of Agreement (years)",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Under negotiation",
+						"key": "Negotiation Status"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Under negotiation",
+							"key": "Negotiation Status",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Madagascar",
+						"key": "Country"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "Madagascar",
+							"key": "Country",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "Government sources",
+						"key": "Data source"
+					},
+					"op":
+					"add",
+					"tags": [
+						{
+							"value": "Government sources",
+							"key": "Data source",
+							"op": "add"
+						}
+					]
+				},
+				{
+					"main_tag": {
+						"value": "better than 100m",
+						"key": "Spatial Accuracy"
+					},
+					"op": "add",
+					"tags": [
+						{
+							"value": "better than 100m",
+							"key": "Spatial Accuracy",
+							"op": "add"
+						}
+					]
+				}
+			]
+		}
+	]
+}

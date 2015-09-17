@@ -1,0 +1,418 @@
+{
+	"stakeholders": [
+		{
+			"id": "a1234567-1234-1234-1234-12345678912a",
+			"taggroups": [
+				{
+					"main_tag": {
+						"value": "(Demo) Jatropha Company M1",
+						"key": "Name"
+					},
+					"tags": [
+						{
+							"value": "(Demo) Jatropha Company M1",
+							"key": "Name",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "Madagascar",
+						"key": "Country"
+					},
+					"tags": [
+						{
+							"value": "Madagascar",
+							"key": "Country",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "Agroindustry",
+						"key": "Economic Sector"
+					},
+					"tags": [
+						{
+							"value": "Agroindustry",
+							"key": "Economic Sector",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "+261 (0)00 000 00 00",
+						"key": "Phone"
+					},
+					"tags": [
+						{
+							"value": "+261 (0)00 000 00 00",
+							"key": "Phone",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				}
+			],
+			"activities": [
+				{
+					"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde1",
+					"role": 6,
+					"version": 1,
+					"op": "add"
+				}
+			]
+		},
+		{
+			"id": "a1234567-1234-1234-1234-12345678912b",
+			"taggroups": [
+				{
+					"main_tag": {
+						"value": "(Demo) Jatropha Company M2",
+						"key": "Name"
+					},
+					"tags": [
+						{
+							"value": "(Demo) Jatropha Company M2",
+							"key": "Name",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "China",
+						"key": "Country"
+					},
+					"tags": [
+						{
+							"value": "China",
+							"key": "Country",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "Agroindustry",
+						"key": "Economic Sector"
+					},
+					"tags": [
+						{
+							"value": "Agroindustry",
+							"key": "Economic Sector",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "+86 (0)00 000 00 00",
+						"key": "Phone"
+					},
+					"tags": [
+						{
+							"value": "+86 (0)00 000 00 00",
+							"key": "Phone",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				}
+			],
+			"activities": [
+				{
+					"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde1",
+					"role": 3,
+					"version": 2,
+					"op": "add"
+				},
+				{
+					"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde3",
+					"role": 6,
+					"version": 1,
+					"op": "add"
+				}
+			]
+		},
+		{
+			"id": "a1234567-1234-1234-1234-12345678912c",
+			"taggroups": [
+				{
+					"main_tag": {
+						"value": "(Demo) Wood Company Madagascar M",
+						"key": "Name"
+					},
+					"tags": [
+						{
+							"value": "(Demo) Wood Company Madagascar M",
+							"key": "Name",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "Madagascar",
+						"key": "Country"
+					},
+					"tags": [
+						{
+							"value": "Madagascar",
+							"key": "Country",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "Agroindustry",
+						"key": "Economic Sector"
+					},
+					"tags": [
+						{
+							"value": "Agroindustry",
+							"key": "Economic Sector",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "+261 (0)00 000 00 00",
+						"key": "Phone"
+					},
+					"tags": [
+						{
+							"value": "+261 (0)00 000 00 00",
+							"key": "Phone",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				}
+			],
+			"activities": [
+				{
+					"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde2",
+					"role": 6,
+					"version": 1,
+					"op": "add"
+				}
+			]
+		},
+		{
+			"id": "a1234567-1234-1234-1234-12345678912d",
+			"taggroups": [
+				{
+					"main_tag": {
+						"value": "(Demo) Pension Fund M",
+						"key": "Name"
+					},
+					"tags": [
+						{
+							"value": "(Demo) Pension Fund M",
+							"key": "Name",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "Switzerland",
+						"key": "Country"
+					},
+					"tags": [
+						{
+							"value": "Switzerland",
+							"key": "Country",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "Other",
+						"key": "Type of Insitution"
+					},
+					"tags": [
+						{
+							"value": "Other",
+							"key": "Type of Insitution",
+							"op": "add"
+						},
+						{
+							"value": "Financial Investment",
+							"key": "Economic Sector",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "http://www.asip.ch/",
+						"key": "Website"
+					},
+					"tags": [
+						{
+							"value": "http://www.asip.ch/",
+							"key": "Website",
+							"op": "add"
+						},
+						{
+							"value": "+41 (0)00 000 00 00",
+							"key": "Phone",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				}
+			],
+			"activities": [
+				{
+					"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde2",
+					"role": 6,
+					"version": 2,
+					"op": "add"
+				}
+			]
+		},
+		{
+			"id": "a1234567-1234-1234-1234-12345678912e",
+			"taggroups": [
+				{
+					"main_tag": {
+						"value": "(Demo) Governmental Agency Madagascar",
+						"key": "Name"
+					},
+					"tags": [
+						{
+							"value": "(Demo) Governmental Agency Madagascar",
+							"key": "Name",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "Madagascar",
+						"key": "Country"
+					},
+					"tags": [
+						{
+							"value": "Madagascar",
+							"key": "Country",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "Public",
+						"key": "Type of Insitution"
+					},
+					"tags": [
+						{
+							"value": "Public",
+							"key": "Type of Insitution",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "+261 (0)00 000 00 00",
+						"key": "Phone"
+					},
+					"tags": [
+						{
+							"value": "+261 (0)00 000 00 00",
+							"key": "Phone",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				}
+			],
+			"activities": [
+				{
+					"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde2",
+					"role": 3,
+					"version": 3,
+					"op": "add"
+				},
+				{
+					"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde3",
+					"role": 3,
+					"version": 2,
+					"op": "add"
+				}
+			]
+		},
+		{
+			"id": "a1234567-1234-1234-1234-12345678912f",
+			"taggroups": [
+				{
+					"main_tag": {
+						"value": "(Demo) Furniture Company M",
+						"key": "Name"
+					},
+					"tags": [
+						{
+							"value": "(Demo) Furniture Company M",
+							"key": "Name",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				},
+				{
+					"main_tag": {
+						"value": "South Africa",
+						"key": "Country"
+					},
+					"tags": [
+						{
+							"value": "South Africa",
+							"key": "Country",
+							"op": "add"
+						}
+					],
+					"op": "add"
+				}
+			],
+			"activities": [
+				{
+					"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde2",
+					"role": 4,
+					"version": 4,
+					"op": "add"
+				},
+				{
+					"id": "1abcdef1-abcd-abcd-abcd-abcdefabcde3",
+					"role": 6,
+					"version": 3,
+					"op": "add"
+				}
+			]
+		}
+	]
+}
