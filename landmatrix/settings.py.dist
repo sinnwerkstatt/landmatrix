@@ -14,7 +14,8 @@ DEBUG = False
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'landmatrix_2',                         # CORRECT DB FOR V2 GOES HERE
         'USER': '<USER GOES HERE>',
         'PASSWORD': '********',
