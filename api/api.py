@@ -1,28 +1,33 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+from landmatrix.models import Involvement, Activity, Stakeholder, PrimaryInvestor, Status, ActivityAttributeGroup
 
 from tastypie import fields
 from tastypie.resources import ModelResource
-from landmatrix.models import Involvement, Activity, Stakeholder, PrimaryInvestor, Status, ActivityAttributeGroup
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class StatusResource(ModelResource):
     class Meta:
         queryset = Status.objects.all()
 
+
 class ActivityResource(ModelResource):
     fk_status = fields.ForeignKey(StatusResource, attribute='fk_status')
     class Meta:
         queryset = Activity.objects.all()
 
+
 class StakeholderResource(ModelResource):
     fk_status = fields.ForeignKey(StatusResource, attribute='fk_status')
     class Meta:
+
         queryset = Stakeholder.objects.all()
 
 class PrimaryInvestorResource(ModelResource):
     fk_status = fields.ForeignKey(StatusResource, attribute='fk_status')
     class Meta:
         queryset = PrimaryInvestor.objects.all()
+
 
 class InvolvementResource(ModelResource):
     fk_activity = fields.ForeignKey(ActivityResource, attribute='fk_activity')
@@ -31,8 +36,8 @@ class InvolvementResource(ModelResource):
     class Meta:
         queryset = Involvement.objects.all()
 
+
 class ActivityAttributeGroupResource(ModelResource):
     fk_activity = fields.ForeignKey(ActivityResource, attribute='fk_activity')
     class Meta:
         queryset = ActivityAttributeGroup.objects.all()
-

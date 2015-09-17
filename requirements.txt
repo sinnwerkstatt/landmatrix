@@ -1,5 +1,4 @@
 Django < 1.8
-djangorestframework >= 3.1.2
 django-tastypie >= 0.12.1
 
 pip >= 7.0.3
@@ -13,6 +12,7 @@ django-treebeard >= 3.0
 django-mptt >= 0.7.4
 django-classy-tags >= 0.6.1
 django-datetime-widget>=0.9
+djangocms_text_ckeditor >= 2.6
 
 djangocms-admin-style
 djangocms-column 
@@ -28,8 +28,7 @@ djangocms-teaser
 djangocms-text-ckeditor
 djangocms-video
 
-coverage
-django-nose
+coverage >= 3.7
 
 xlwt >= 1.0.0
 python-mimeparse >= 0.1.4

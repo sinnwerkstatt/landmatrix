@@ -52,6 +52,7 @@ class Deal:
     def __str__(self):
         return str({'attributes': self.attributes, 'primary_investor': self.primary_investor, 'stakeholder': self.stakeholder})
 
+
 def get_latest_activity(deal_id):
     version_max = _get_latest_version(deal_id)
     return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
