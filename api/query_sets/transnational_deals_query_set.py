@@ -1,9 +1,9 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from api.query_sets.fake_query_set import FakeQuerySet
-from global_app.forms.add_deal_general_form import AddDealGeneralForm
-from django.template.defaultfilters import slugify
 
+from django.template.defaultfilters import slugify
+from itertools import islice
 
 class TransnationalDealsQuerySet(FakeQuerySet):
 
@@ -80,13 +80,16 @@ GROUP BY target_country
     def set_regions(self, regions):
         self.regions = regions
 
+    def shorten_country(self, country):
+            country_parts = country.split(".")
+            country_region = country_parts[0]
+            if country_region in self.regions:
+                country_region = -1
+            return "%s.%s" % (country_region, self.LONG_COUNTRIES.get(country_parts[1], country_parts[1]))
+
     def all(self):
-        def shorten_country(country):
-                country_parts = country.split(".")
-                country_region = country_parts[0]
-                if country_region in self.regions:
-                    country_region = -1
-                return "%s.%s" % (country_region, self.LONG_COUNTRIES.get(country_parts[1], country_parts[1]))
+        from collections import OrderedDict
+
 
         region_sql = "AND deal_region.id in (%s) " % ", ".join(self.regions) if self.regions else ''
         self._filter_sql += region_sql
@@ -94,34 +97,58 @@ GROUP BY target_country
         t_deals = FakeQuerySet.all(self)
 
         countries = {}
-
         for d in t_deals:
-            dcountries = []
-            dcountry = d['target_country']
-            dcountries.append({
-                "name": shorten_country(dcountry.split("#!#")[0]),
-                "id": dcountry.split("#!#")[1],
-                "slug": slugify(dcountry.split("#!#")[0].split(".")[1])
+            target_country = d['target_country']
+#            print(d)
+            target_countries = []
+#            print('target_country', target_country)
+            target_countries.append({
+                "name": self.shorten_country(target_country.split("#!#")[0]),
+                "id": target_country.split("#!#")[1],
+                "slug": slugify(target_country.split("#!#")[0].split(".")[1])
             })
 
             for c in d['investor_country']:
-                country = shorten_country(c.split("#!#")[0])
+                country = self.shorten_country(c.split("#!#")[0])
                 countries[country] = {
                     "name": country,
                     "id": c.split("#!#")[1] ,
                     "size": 1,
-                    "imports": [dcountry["name"] for dcountry in dcountries],
+                    "imports": [dcountry["name"] for dcountry in target_countries],
                     "slug": slugify(c.split("#!#")[0].split(".")[1])
                 }
 
-            for dcountry in dcountries:
-                if not dcountry["name"] in countries:
-                    countries[dcountry["name"]] = {
-                        "name": dcountry["name"],
-                        "id": dcountry["id"],
+            for target_country in target_countries:
+                if not target_country["name"] in countries:
+                    countries[target_country["name"]] = {
+                        "name": target_country["name"],
+                        "id": target_country["id"],
                         "size": 1,
-                        "imports": [],
-                        "slug": dcountry["slug"]
+                        "imports": [] if not target_country["name"] in countries or not 'imports' in countries[target_country["name"]] else countries[target_country["name"]]['imports'],
+                        "slug": target_country["slug"]
                     }
 
-        return countries
+        my_countries = {}
+        for d in t_deals:
+            my_target_country = d['target_country']
+            country = {
+                'name': self.shorten_country(my_target_country.split("#!#")[0]),
+                'id':   my_target_country.split("#!#")[1],
+                'slug': slugify(my_target_country.split("#!#")[0].split(".")[1]),
+                'size': 1,
+                'imports': [ self.shorten_country(dcountry.split("#!#")[0]) for dcountry in d['investor_country'] ]
+            }
+            my_countries[self.shorten_country(my_target_country.split("#!#")[0])] = OrderedDict(sorted(country.items()))
+
+        countries = OrderedDict(sorted(countries.items(), key=lambda t: t[1]['id']))
+        my_countries = OrderedDict(sorted(my_countries.items(), key=lambda t: t[1]['id']))
+
+        print(list(islice(countries.items(), 0, 4)))
+        print(list(islice(my_countries.items(), 0, 4)))
+
+        #return countries # list(islice(countries.items(), 0, 4)) # countries
+        return my_countries
+
+def original_sorting_order(index):
+    order = { 'imports': 1, 'slug': 2, 'name': 3, 'size': 4, 'id': 5}
+    return order[index]
