@@ -130,7 +130,11 @@ function clusteredMarkers (longitude, latitude, intention) {
 	    }
 	    return style;
 	  }
-	});
+	});			#exclude(attributes__icontains="°").\
+			#exclude(attributes__icontains="04.738 N").\
+			#exclude(attributes__icontains="-3.0001328124999426666666cro").\
+			#exclude(attributes__icontains="4.134665")
+
 	map.addLayer(clusters);
 
 	var popup = new ol.Overlay({
