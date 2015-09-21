@@ -1,4 +1,5 @@
 from api.views.top_10_countries_json_view import Top10CountriesJSONView
+from api.views.transnational_deals_by_country_json_view import TransnationalDealsByCountryJSONView
 from api.views.transnational_deals_json_view import TransnationalDealsJSONView
 from api.views.implementation_status_json_view import ImplementationStatusJSONView
 from api.views.intention_of_investment_json_view import IntentionOfInvestmentJSONView
@@ -10,15 +11,6 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 todo_list_of_urls = """
-/en/api/top-10-countries.json?negotiation_status=concluded&deal_scope=transnational
-/en/api/top-10-countries.json?negotiation_status=intended&deal_scope=transnational
-/en/api/top-10-countries.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational
-/en/api/top-10-countries.json?negotiation_status=failed&deal_scope=transnational
-/en/api/top-10-countries.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1
-/en/api/top-10-countries.json?negotiation_status=intended&deal_scope=transnational&data_source_type=1
-/en/api/top-10-countries.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational&data_source_type=1
-/en/api/top-10-countries.json?negotiation_status=failed&deal_scope=transnational&data_source_type=1
-
 /en/api/transnational_deals_by_country.json?negotiation_status=concluded&deal_scope=transnational&country=384
 ...
 
@@ -107,5 +99,7 @@ class JSONView(TemplateView):
             return TransnationalDealsJSONView().dispatch(request, args, kwargs)
         elif kwargs.get('type') == "top-10-countries.json":
             return Top10CountriesJSONView().dispatch(request, args, kwargs)
+        elif kwargs.get('type') == "transnational_deals_by_country.json":
+            return TransnationalDealsByCountryJSONView().dispatch(request, args, kwargs)
         raise ValueError('Could not dispatch: ' + str(kwargs))
 
