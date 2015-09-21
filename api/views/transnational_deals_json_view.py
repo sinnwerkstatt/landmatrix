@@ -20,3 +20,4 @@ class TransnationalDealsJSONView(JSONViewBase):
         queryset.set_filter_sql(filter_sql)
         return queryset.all()
 
+
