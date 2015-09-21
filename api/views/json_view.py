@@ -1,3 +1,4 @@
+from api.views.top_10_countries_json_view import Top10CountriesJSONView
 from api.views.transnational_deals_json_view import TransnationalDealsJSONView
 from api.views.implementation_status_json_view import ImplementationStatusJSONView
 from api.views.intention_of_investment_json_view import IntentionOfInvestmentJSONView
@@ -104,5 +105,7 @@ class JSONView(TemplateView):
             return IntentionOfInvestmentJSONView().dispatch(request, args, kwargs)
         elif kwargs.get('type') == "transnational_deals.json":
             return TransnationalDealsJSONView().dispatch(request, args, kwargs)
+        elif kwargs.get('type') == "top-10-countries.json":
+            return Top10CountriesJSONView().dispatch(request, args, kwargs)
         raise ValueError('Could not dispatch: ' + str(kwargs))
 
