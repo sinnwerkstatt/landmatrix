@@ -11,8 +11,6 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 todo_list_of_urls = """
-/en/api/transnational_deals_by_country.json?negotiation_status=concluded&deal_scope=transnational&country=384
-...
 
 /en/api/investor_country_summaries.json?negotiation_status=intended&deal_scope=transnational&deal_scope=domestic
 /en/api/investor_country_summaries.json?negotiation_status=concluded&deal_scope=transnational&deal_scope=domestic
