@@ -5,7 +5,6 @@ from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGr
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from api.query_sets.intention_query_set import IntentionQuerySet
 from .api_test_functions import ApiTestFunctions
 from api.tests.deals_test_data import DealsTestData
 
@@ -64,11 +63,12 @@ class TestTransnationalDeals(ApiTestFunctions, DealsTestData):
             self.assertIn('size', entry)
 
         target_country = list(filter(lambda entry: entry['id'] == str(self.deal_country.id), result))[0]
-        self.assertEqual([], target_country['imports'])
+        investor_country = list(filter(lambda entry: entry['id'] == str(self.investor_country.id), result))[0]
+
+        self.assertEqual([investor_country['name']], target_country['imports'])
         self.assertEqual(str(self.deal_region.id)+'.'+self.deal_country.name, target_country['name'])
 
-        investor_country = list(filter(lambda entry: entry['id'] == str(self.investor_country.id), result))[0]
-        self.assertEqual([str(self.deal_region.id)+'.'+self.deal_country.name], investor_country['imports'])
+        self.assertEqual([], investor_country['imports'])
         self.assertEqual(str(self.investor_region.id)+'.'+self.investor_country.name, investor_country['name'])
 
 

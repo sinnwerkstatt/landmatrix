@@ -90,64 +90,35 @@ GROUP BY target_country
     def all(self):
         from collections import OrderedDict
 
-
         region_sql = "AND deal_region.id in (%s) " % ", ".join(self.regions) if self.regions else ''
         self._filter_sql += region_sql
 
         t_deals = FakeQuerySet.all(self)
 
-        countries = {}
-        for d in t_deals:
-            target_country = d['target_country']
-#            print(d)
-            target_countries = []
-#            print('target_country', target_country)
-            target_countries.append({
-                "name": self.shorten_country(target_country.split("#!#")[0]),
-                "id": target_country.split("#!#")[1],
-                "slug": slugify(target_country.split("#!#")[0].split(".")[1])
-            })
-
-            for c in d['investor_country']:
-                country = self.shorten_country(c.split("#!#")[0])
-                countries[country] = {
-                    "name": country,
-                    "id": c.split("#!#")[1] ,
-                    "size": 1,
-                    "imports": [dcountry["name"] for dcountry in target_countries],
-                    "slug": slugify(c.split("#!#")[0].split(".")[1])
-                }
-
-            for target_country in target_countries:
-                if not target_country["name"] in countries:
-                    countries[target_country["name"]] = {
-                        "name": target_country["name"],
-                        "id": target_country["id"],
-                        "size": 1,
-                        "imports": [] if not target_country["name"] in countries or not 'imports' in countries[target_country["name"]] else countries[target_country["name"]]['imports'],
-                        "slug": target_country["slug"]
-                    }
-
         my_countries = {}
         for d in t_deals:
-            my_target_country = d['target_country']
-            country = {
-                'name': self.shorten_country(my_target_country.split("#!#")[0]),
-                'id':   my_target_country.split("#!#")[1],
-                'slug': slugify(my_target_country.split("#!#")[0].split(".")[1]),
-                'size': 1,
-                'imports': [ self.shorten_country(dcountry.split("#!#")[0]) for dcountry in d['investor_country'] ]
-            }
-            my_countries[self.shorten_country(my_target_country.split("#!#")[0])] = OrderedDict(sorted(country.items()))
+            target_country = d['target_country']
+            country = self.country_dict(target_country, [self.shorten_country(dcountry.split("#!#")[0]) for dcountry in d['investor_country']])
+            my_countries[self.shorten_country(target_country.split("#!#")[0])] = OrderedDict(sorted(country.items()))
+            for investor_country in d['investor_country']:
+                if investor_country.split("#!#")[0] not in my_countries:
+                    country = self.country_dict(investor_country, [])
+                    my_countries[self.shorten_country(investor_country.split("#!#")[0])] = OrderedDict(sorted(country.items()))
 
-        countries = OrderedDict(sorted(countries.items(), key=lambda t: t[1]['id']))
         my_countries = OrderedDict(sorted(my_countries.items(), key=lambda t: t[1]['id']))
 
-        print(list(islice(countries.items(), 0, 4)))
-        print(list(islice(my_countries.items(), 0, 4)))
+        return list(my_countries.values())
 
-        #return countries # list(islice(countries.items(), 0, 4)) # countries
-        return my_countries
+    def country_dict(self, my_target_country, imports):
+        country = {
+            'name': self.shorten_country(my_target_country.split("#!#")[0]),
+            'id': my_target_country.split("#!#")[1],
+            'slug': slugify(my_target_country.split("#!#")[0].split(".")[1]),
+            'size': 1,
+            'imports': imports
+        }
+        return country
+
 
 def original_sorting_order(index):
     order = { 'imports': 1, 'slug': 2, 'name': 3, 'size': 4, 'id': 5}
