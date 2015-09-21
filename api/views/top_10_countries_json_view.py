@@ -1,4 +1,3 @@
-from pprint import pprint
 from django.template.defaultfilters import slugify
 from api.query_sets.top_10_countries_query_set import Top10InvestorCountriesQuerySet, Top10TargetCountriesQuerySet
 from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
