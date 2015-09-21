@@ -66,9 +66,9 @@ GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status"""
         self._generate_negotiation_status_data(123, self.RELEVANT_ATTRIBUTES)
         result = self.get_content('negotiation_status')
         self.assertEqual(1, len(result))
-        self.assertEqual(1, result[0]['deal_count'])
-        self.assertEqual(self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], result[0]['negotiation_status'])
-        self.assertEqual(12345, result[0]['deal_size'])
+        self.assertEqual(1, result[0]['deals'])
+        self.assertEqual(self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], result[0]['name'])
+        self.assertEqual(12345, result[0]['hectares'])
 
     def test_raw_sql(self):
         from decimal import Decimal
@@ -85,9 +85,9 @@ GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status"""
         self._generate_negotiation_status_data(124, {'pi_deal_size': '2345', 'deal_scope': 'domestic', 'pi_negotiation_status': self.RELEVANT_ATTRIBUTES['pi_negotiation_status']})
         result = self.get_content('negotiation_status')
         self.assertEqual(1, len(result))
-        self.assertEqual(self.EXPECTED_DEAL_COUNT, result[0]['deal_count'])
-        self.assertEqual(self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], result[0]['negotiation_status'])
-        self.assertEqual(self.EXPECTED_SIZE, result[0]['deal_size'])
+        self.assertEqual(self.EXPECTED_DEAL_COUNT, result[0]['deals'])
+        self.assertEqual(self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], result[0]['name'])
+        self.assertEqual(self.EXPECTED_SIZE, result[0]['hectares'])
 
     def _execute_sql(self, sql):
         from django.db import connection
@@ -116,9 +116,9 @@ class TestNegotiationStatusDomestic(TestNegotiationStatus):
         self._generate_negotiation_status_data(124, self.RELEVANT_ATTRIBUTES)
         result = self.get_content('negotiation_status')
         self.assertEqual(1, len(result))
-        self.assertEqual(1, result[0]['deal_count'])
-        self.assertEqual('Concluded (Contract signed)', result[0]['negotiation_status'])
-        self.assertEqual(self.EXPECTED_SIZE, result[0]['deal_size'])
+        self.assertEqual(1, result[0]['deals'])
+        self.assertEqual('Concluded (Contract signed)', result[0]['name'])
+        self.assertEqual(self.EXPECTED_SIZE, result[0]['hectares'])
 
 
 class TestNegotiationStatusConcluded(TestNegotiationStatus):
@@ -195,6 +195,6 @@ class TestNegotiationStatusDataSourceNot(TestNegotiationStatus):
         })
         result = self.get_content('negotiation_status')
         self.assertEqual(1, len(result))
-        self.assertEqual(self.EXPECTED_DEAL_COUNT, result[0]['deal_count'])
-        self.assertEqual(self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], result[0]['negotiation_status'])
-        self.assertEqual(self.EXPECTED_SIZE, result[0]['deal_size'])
+        self.assertEqual(self.EXPECTED_DEAL_COUNT, result[0]['deals'])
+        self.assertEqual(self.RELEVANT_ATTRIBUTES['pi_negotiation_status'], result[0]['name'])
+        self.assertEqual(self.EXPECTED_SIZE, result[0]['hectares'])
