@@ -1,5 +1,4 @@
 from api.query_sets.agricultural_produce_query_set import AgriculturalProduceQuerySet
-from api.query_sets.negotiation_status_query_set import NegotiationStatusQuerySet
 from api.views.decimal_encoder import DecimalEncoder
 from api.views.json_view_base import JSONViewBase
 
