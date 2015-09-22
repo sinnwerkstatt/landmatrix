@@ -1,4 +1,5 @@
 from django.core.urlresolvers import reverse
+from api.query_sets.investor_country_summaries_query_set import InvestorCountrySummariesQuerySet
 from api.views.decimal_encoder import DecimalEncoder
 from api.views.json_view_base import JSONViewBase
 
@@ -17,63 +18,37 @@ class InvestorCountrySummariesJSONView(JSONViewBase):
 
         countries_summary = self.get_by_investor_country(filter_sql)
 
-        # process regions
-        for r in regions:
-            if not r[0]:
-                continue
-            output.append({
-                "region_id": r[0],
-                "region": r[1],
-                "name": r[1],
-                "lat": r[2],
-                "lon": r[3],
-                "deals": r[4],
-                "region_slug": r[1].lower().replace(" ", "-"),
-                "hectares": r[5],
-                "availability": int(r[7]),
-            })
-        # process countries
-        for c in countries:
-            if not c[0]:
-                continue
-            output.append({
-                "country_id":c[0],
-                "country":c[1],
-                "region":c[2],
-                "lat":c[3],
-                "lon":c[4],
-                "deals":c[5],
-                "name":c[1],
-                "country_slug":c[1].lower().replace(" ", "-"),
-                "region_slug":c[2].lower().replace(" ", "-"),
-                "hectares": c[6],
-                "availability": int(c[7]),
-            })
+        print(countries_summary)
+
         countries = {}
         for c in countries_summary:
-            if not c[0]:
-                continue
-            country = countries.get(c[0], {"domestic": 0, "transnational": 0})
-            country.update({
-                "country_id":c[0],
-                "country":c[1],
-                "region":c[2],
-                "lat":c[3],
-                "lon":c[4],
-                "deals":c[5] + country.get("deals", 0),
-                c[6]: c[5] + country.get(c[6], 0),
-                "name":c[1],
-                "country_slug":c[1].lower().replace(" ", "-"),
-                "region_slug":c[2].lower().replace(" ", "-"),
-                "url": reverse("table_list", kwargs={"group": "by-target-country", "list": c[1].lower().replace(" ", "-")}),
-            })
-            countries.update({c[0]: country})
-        for k,v in countries.items():
-            output.append(v)
+            if not c['country_id']: continue
+            country = countries.get(c['country_id'], {"domestic": 0, "transnational": 0})
+            country.update(self.to_json_record(c, country))
+            countries.update({c['country_id']: country})
+
+        output = [v for k,v in countries.items()]
 
         return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="text/plain")
 
+    def to_json_record(self, c, country):
+        c['name'] = c['country']
+        c["country_slug"] =c['country'].lower().replace(" ", "-")
+        c["region_slug"] =c['region'].lower().replace(" ", "-")
+        c['url'] = reverse("table_list", kwargs={"group": "by-target-country", "list": c['country'].lower().replace(" ", "-")})
+        c[c['deal_scope']] = c['deals'] + country.get(c['deal_scope'], 0)
+        print('c',c)
+        print('deals',c['deals'], 'country', country.get("deals", 0))
+        c['deals'] = c['deals'] + country.get("deals", 0)
+
+        return c
+
     def get_by_investor_country(self, filter_sql):
+
+        queryset = InvestorCountrySummariesQuerySet()
+        queryset.set_filter_sql(filter_sql)
+        return queryset.all()
+
         base_filter_sql = ""
         cursor = connection.cursor()
         sql = """
