@@ -1,3 +1,5 @@
+from api.views.target_country_summaries_json_view import TargetCountrySummariesJSONView
+from api.views.investor_country_summaries_json_view import InvestorCountrySummariesJSONView
 from api.views.top_10_countries_json_view import Top10CountriesJSONView
 from api.views.transnational_deals_by_country_json_view import TransnationalDealsByCountryJSONView
 from api.views.transnational_deals_json_view import TransnationalDealsJSONView
@@ -84,20 +86,21 @@ todo_list_of_urls = """
 
 class JSONView(TemplateView):
 
-    template_name = "plugins/overview.html"
+    template_name = 'plugins/overview.html'
+
+    targets = {
+        'negotiation_status.json': NegotiationStatusJSONView,
+        'implementation_status.json': ImplementationStatusJSONView,
+        'intention_of_investment.json': IntentionOfInvestmentJSONView,
+        'transnational_deals.json': TransnationalDealsJSONView,
+        'top-10-countries.json': Top10CountriesJSONView,
+        'transnational_deals_by_country.json': TransnationalDealsByCountryJSONView,
+        'investor_country_summaries.json': InvestorCountrySummariesJSONView,
+        'target_country_summaries.json': TargetCountrySummariesJSONView
+    }
 
     def dispatch(self, request, *args, **kwargs):
-        if kwargs.get('type') == 'negotiation_status.json':
-            return NegotiationStatusJSONView().dispatch(request, args, kwargs)
-        elif kwargs.get('type') == "implementation_status.json":
-            return ImplementationStatusJSONView().dispatch(request, args, kwargs)
-        elif kwargs.get('type') == "intention_of_investment.json":
-            return IntentionOfInvestmentJSONView().dispatch(request, args, kwargs)
-        elif kwargs.get('type') == "transnational_deals.json":
-            return TransnationalDealsJSONView().dispatch(request, args, kwargs)
-        elif kwargs.get('type') == "top-10-countries.json":
-            return Top10CountriesJSONView().dispatch(request, args, kwargs)
-        elif kwargs.get('type') == "transnational_deals_by_country.json":
-            return TransnationalDealsByCountryJSONView().dispatch(request, args, kwargs)
-        raise ValueError('Could not dispatch: ' + str(kwargs))
+        if kwargs.get('type') in self.targets:
+            return self.targets[kwargs.get('type')]().dispatch(request, args, kwargs)
+        raise ValueError(str(kwargs) + ' could not be resolved to any of ' + str(self.targets.keys()))
 
