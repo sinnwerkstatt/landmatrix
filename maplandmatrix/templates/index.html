@@ -4,15 +4,19 @@
 <html>
 
 <head>
-	<title>Base Layer OSM</title>
+	<meta charset="utf-8" />
+	<title>Landmatrix Map</title>
 	<script src={% static "js/lib/jquery-2.1.4.js" %}></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.css" type="text/css">
-	<script src='http://ol3js.org/en/master/build/ol.js'></script>
+	<link rel="stylesheet" href="http://openlayers.org/en/v3.3.0/css/ol.css" />
+	<script src="http://openlayers.org/en/v3.3.0/build/ol.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.js"></script>
 	<script type="text/javascript" src={% static "js/map.js" %}> </script>
-	<script type="text/css" src={% static "css/style.css" %}> </script>
+	<script src="{% static "js/ol3-layerswitcher.js" %}"></script>
+	<link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}" />
+	<link rel="stylesheet" href="{% static "css/style.css" %}" />
+
 	<style>
 		.popover-content {
 			min-width: 180px;
@@ -26,8 +30,6 @@
 	<div id="popup" class="popup" title="Deal"></div>
 	<div id="marker" class="marker" title='marker'></div>
 
-
-	
 	<script>
 	//define Features for the MARKERS
 	$(document).ready(function() {

@@ -1,3 +1,16 @@
-.ol-mouse-position {
-	position : bottom-left; 
+.ol-full-screen {
+    left: 0.5em;
+    top: 4.5em;
+    right:auto;
 }
+
+.ol-mouse-position {
+    position: absolute;
+    float: right;
+    top: 8px;
+    text-align: center;
+    background-color: #fff;
+    width: 10em;
+    background-opacity: 0.5;
+}
+
