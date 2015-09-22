@@ -7,13 +7,13 @@ class TargetCountrySummariesQuerySet(FakeQuerySet):
 
     fields = [
         ('country_id', 'sub.country_id'),
-        ('country', 'sub.country'),
-        ('region', 'sub.name'),
-        ('lat', 'cast(sub.point_lat as char)'),
-        ('lon', 'cast(sub.point_lon as char)'),
-        ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
-        ('hectares',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))"),
-        ('intentions', 'GROUP_CONCAT(sub.intention)')
+        ('country',    'sub.country'),
+        ('region',     'sub.name'),
+        ('lat',        'sub.point_lat'),
+        ('lon',        'sub.point_lon'),
+        ('deals',      'COUNT(DISTINCT a.activity_identifier)'),
+        ('hectares',   "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))"),
+        ('intentions', 'ARRAY_AGG(sub.intention)')
     ]
 
     QUERY = """
@@ -21,8 +21,8 @@ SELECT
                 sub.country_id,
                 sub.country AS country,
                 sub.name as region,
-                cast(sub.point_lat as char),
-                cast(sub.point_lon as char),
+                sub.point_lat,
+                sub.point_lon,
     COUNT(DISTINCT a.activity_identifier)                                           AS deal_count,
     ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC))) AS deal_size,
                 ARRAY_AGG(sub.intention)                                            AS intentions
@@ -34,8 +34,8 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
                 deal_country.id as country_id,
                 deal_country.name AS country,
                 deal_region.name,
-                cast(deal_country.point_lat as char) as point_lat,
-                cast(deal_country.point_lon as char) as point_lon,
+                deal_country.point_lat as point_lat,
+                deal_country.point_lon as point_lon,
                 STRING_AGG(DISTINCT intention.attributes->'intention', ',') AS intention
     FROM landmatrix_activity                       AS a
     JOIN      landmatrix_status                                        ON landmatrix_status.id = a.fk_status_id
