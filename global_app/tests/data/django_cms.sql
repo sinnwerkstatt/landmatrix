@@ -527,12 +527,18 @@ COPY cms_aliaspluginmodel (cmsplugin_ptr_id, plugin_id, alias_placeholder_id) FR
 --
 
 COPY cms_cmsplugin (id, "position", language, plugin_type, creation_date, changed_date, parent_id, placeholder_id, depth, numchild, path) FROM stdin;
-5	0	en	OverviewPlugin	2015-08-18 17:05:57.758647+02	2015-08-19 16:41:35.948396+02	\N	62	1	0	0003
-84	0	en	OverviewPlugin	2015-09-15 11:55:35.462984+02	2015-09-15 11:55:41.891693+02	\N	96	1	0	0005
-85	0	en	OverviewPlugin	2015-09-15 11:55:35.462984+02	2015-09-15 11:55:49.158522+02	\N	100	1	0	0006
-86	0	en	TransnationalDealsPlugin	2015-09-15 11:56:25.398319+02	2015-09-15 11:56:32.898422+02	\N	97	1	0	0007
-87	0	en	TransnationalDealsPlugin	2015-09-15 11:56:25.398319+02	2015-09-15 11:56:36.893558+02	\N	101	1	0	0008
-88	0	en	OverviewPlugin	2015-08-18 17:05:57.758647+02	2015-09-15 12:58:01.699727+02	\N	80	1	0	0009
+1	0	en	MapPlugin	2015-09-17 14:14:13.705436+02	2015-09-17 14:14:20.591781+02	\N	65	1	0	0001
+2	0	en	MapPlugin	2015-09-17 14:14:13.705436+02	2015-09-17 14:26:38.578165+02	\N	66	1	0	0002
+3	0	en	OverviewPlugin	2015-09-21 12:38:23.732494+02	2015-09-21 12:38:27.835234+02	\N	82	1	0	0003
+4	0	en	TransnationalDealsPlugin	2015-09-21 12:38:42.395653+02	2015-09-21 12:38:45.250843+02	\N	83	1	0	0004
+10	0	en	OverviewPlugin	2015-09-21 12:38:23.732494+02	2015-09-21 13:01:13.95497+02	\N	84	1	0	0007
+11	0	en	InvestorTargetCountriesPlugin	2015-09-22 14:38:01.367684+02	2015-09-22 14:38:04.984403+02	\N	98	1	0	0008
+13	0	en	TransnationalDealsPlugin	2015-09-21 12:38:42.395653+02	2015-09-22 14:38:22.180331+02	\N	90	1	0	000A
+14	0	en	InvestorTargetCountriesPlugin	2015-09-22 14:38:01.367684+02	2015-09-22 15:59:09.280462+02	\N	99	1	0	000B
+15	0	en	AgriculturalProducePlugin	2015-09-22 15:59:18.641198+02	2015-09-22 15:59:21.246044+02	\N	100	1	0	000C
+17	0	en	AgriculturalProducePlugin	2015-09-22 15:59:18.641198+02	2015-09-22 16:01:53.869259+02	\N	101	1	0	000D
+18	0	en	PerspectivePlugin	2015-09-22 16:23:56.398426+02	2015-09-22 16:23:59.401861+02	\N	102	1	0	000E
+19	0	en	PerspectivePlugin	2015-09-22 16:23:56.398426+02	2015-09-22 16:24:45.451941+02	\N	103	1	0	000F
 \.
 
 
@@ -540,7 +546,7 @@ COPY cms_cmsplugin (id, "position", language, plugin_type, creation_date, change
 -- Name: cms_cmsplugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('cms_cmsplugin_id_seq', 88, true);
+SELECT pg_catalog.setval('cms_cmsplugin_id_seq', 19, true);
 
 
 --
@@ -578,23 +584,30 @@ SELECT pg_catalog.setval('cms_globalpagepermission_sites_id_seq', 1, false);
 --
 
 COPY cms_page (id, created_by, changed_by, creation_date, changed_date, publication_date, publication_end_date, in_navigation, soft_root, reverse_id, navigation_extenders, template, login_required, limit_visibility_in_menu, is_home, application_urls, application_namespace, publisher_is_draft, languages, revision_id, xframe_options, parent_id, publisher_public_id, site_id, depth, numchild, path) FROM stdin;
-8	landmatrix	landmatrix	2015-06-11 15:35:20.553448+02	2015-08-20 15:24:03.63868+02	2015-06-15 15:57:17.568023+02	\N	t	f	\N		INHERIT	f	\N	t	ChartViewApphook	\N	t	en	0	0	\N	9	1	1	6	000A
-15	landmatrix	landmatrix	2015-09-14 16:14:13.365249+02	2015-09-14 16:14:13.450283+02	\N	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	t	en	0	0	8	\N	1	2	0	000A0006
-9	landmatrix	landmatrix	2015-06-15 15:57:17.579306+02	2015-08-20 15:24:03.596276+02	2015-06-15 15:57:17.568023+02	\N	t	f	\N		INHERIT	f	\N	t	ChartViewApphook	\N	f	en	0	0	\N	8	1	1	5	000B
-10	landmatrix	landmatrix	2015-06-15 15:57:18.136968+02	2015-08-20 15:24:03.879996+02	2015-06-15 15:56:59.780278+02	\N	t	f	\N		1-column.html	f	\N	f	GlobalApphook	\N	f	en	0	0	9	3	1	2	0	000B0002
-3	script	landmatrix	2015-06-10 16:06:04.9222+02	2015-08-20 15:24:03.901243+02	2015-06-15 15:56:59.780278+02	\N	t	f	\N		1-column.html	f	\N	f	GlobalApphook	\N	t	en	0	0	8	10	1	2	0	000A0002
-18	landmatrix	landmatrix	2015-09-15 11:55:49.055423+02	2015-09-15 11:55:49.162422+02	2015-09-15 11:55:49.046684+02	\N	t	f	\N		INHERIT	f	\N	f		\N	f	en	0	0	2	16	1	3	0	000B00010001
-11	landmatrix	landmatrix	2015-06-18 13:10:50.3667+02	2015-08-20 15:24:04.012683+02	2015-06-18 13:10:50.308796+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	f	en	0	0	9	4	1	2	0	000B0003
-4	script	landmatrix	2015-06-10 16:06:19.697265+02	2015-08-20 15:24:04.033813+02	2015-06-18 13:10:50.308796+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	t	en	0	0	8	11	1	2	0	000A0003
-16	landmatrix	landmatrix	2015-09-15 11:54:40.264533+02	2015-09-15 11:55:49.171155+02	2015-09-15 11:55:49.046684+02	\N	t	f	\N		INHERIT	f	\N	f		\N	t	en	0	0	1	18	1	3	0	000A00010001
-12	landmatrix	landmatrix	2015-06-18 13:10:55.955338+02	2015-08-20 15:24:04.132389+02	2015-06-18 13:10:55.935268+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	f	en	0	0	9	5	1	2	0	000B0004
-5	script	landmatrix	2015-06-10 16:06:29.594661+02	2015-08-20 15:24:04.155604+02	2015-06-18 13:10:55.935268+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	t	en	0	0	8	12	1	2	0	000A0004
-13	landmatrix	landmatrix	2015-06-18 13:11:00.335296+02	2015-08-20 15:24:04.290914+02	2015-06-18 13:11:00.318646+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	f	en	0	0	9	6	1	2	0	000B0005
-6	script	landmatrix	2015-06-10 16:06:44.11944+02	2015-08-20 15:24:04.310837+02	2015-06-18 13:11:00.318646+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	t	en	0	0	8	13	1	2	0	000A0005
-19	landmatrix	landmatrix	2015-09-15 11:56:36.84619+02	2015-09-15 11:56:36.897357+02	2015-09-15 11:56:36.833194+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	f	en	0	0	2	17	1	3	0	000B00010002
-17	landmatrix	landmatrix	2015-09-15 11:55:21.804648+02	2015-09-15 11:56:36.906264+02	2015-09-15 11:56:36.833194+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	t	en	0	0	1	19	1	3	0	000A00010002
-2	script	landmatrix	2015-06-10 16:05:47.428875+02	2015-09-15 12:58:01.703136+02	2015-06-10 16:05:47.420797+02	\N	t	f	\N		base-gettheidea.html	f	\N	f		\N	f	en	0	0	9	1	1	2	2	000B0001
-1	script	landmatrix	2015-06-10 16:05:46.591449+02	2015-09-15 12:58:01.711837+02	2015-06-10 16:05:47.420797+02	\N	t	f	\N		base-gettheidea.html	f	\N	f		\N	t	en	0	0	8	2	1	2	2	000A0001
+11	landmatrix	landmatrix	2015-06-18 13:10:50.3667+02	2015-06-18 13:10:50.54436+02	2015-06-18 13:10:50.308796+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	f	en	0	0	9	4	1	2	0	000B0003
+10	landmatrix	landmatrix	2015-06-15 15:57:18.136968+02	2015-06-15 15:57:18.21346+02	2015-06-15 15:56:59.780278+02	\N	t	f	\N		1-column.html	f	\N	f	GlobalApphook	\N	f	en	0	0	9	3	1	2	0	000B0002
+12	landmatrix	landmatrix	2015-06-18 13:10:55.955338+02	2015-06-18 13:10:56.043118+02	2015-06-18 13:10:55.935268+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	f	en	0	0	9	5	1	2	0	000B0004
+13	landmatrix	landmatrix	2015-06-18 13:11:00.335296+02	2015-06-18 13:11:00.421223+02	2015-06-18 13:11:00.318646+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	f	en	0	0	9	6	1	2	0	000B0005
+23	landmatrix	landmatrix	2015-09-22 15:59:35.484157+02	2015-09-22 16:01:53.872616+02	2015-09-22 15:59:35.472031+02	\N	t	f	\N		base-gettheidea.html	f	\N	f		\N	f	en	0	0	2	22	1	3	0	000B00010004
+22	landmatrix	landmatrix	2015-09-22 15:58:43.865228+02	2015-09-22 16:01:53.880986+02	2015-09-22 15:59:35.472031+02	\N	t	f	\N		base-gettheidea.html	f	\N	f		\N	t	en	0	0	1	23	1	3	0	000A00010004
+9	landmatrix	landmatrix	2015-06-15 15:57:17.579306+02	2015-06-18 13:26:02.924202+02	2015-06-15 15:57:17.568023+02	\N	t	f	\N		start.html	f	\N	t		\N	f	en	0	0	\N	8	1	1	6	000B
+15	landmatrix	landmatrix	2015-09-17 14:26:38.511564+02	2015-09-17 14:26:38.583063+02	2015-09-17 14:26:38.500749+02	\N	t	f	\N		fullwidth.html	f	\N	f		\N	f	en	0	0	9	14	1	2	0	000B0006
+19	landmatrix	landmatrix	2015-09-21 12:47:23.2717+02	2015-09-22 14:38:22.18397+02	2015-09-21 12:47:23.259719+02	\N	t	f	\N		INHERIT	f	\N	f		\N	f	en	0	0	2	17	1	3	0	000B00010002
+17	landmatrix	landmatrix	2015-09-21 12:37:39.123252+02	2015-09-22 14:38:22.195639+02	2015-09-21 12:47:23.259719+02	\N	t	f	\N		INHERIT	f	\N	f		\N	t	en	0	0	1	19	1	3	0	000A00010002
+14	landmatrix	landmatrix	2015-09-17 14:11:53.992269+02	2015-09-17 14:26:38.590446+02	2015-09-17 14:26:38.500749+02	\N	t	f	\N		fullwidth.html	f	\N	f		\N	t	en	0	0	8	15	1	2	0	000A0007
+6	script	landmatrix	2015-06-10 16:06:44.11944+02	2015-06-18 13:11:00.446074+02	2015-06-18 13:11:00.318646+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	t	en	0	0	8	13	1	2	0	000A0006
+5	script	landmatrix	2015-06-10 16:06:29.594661+02	2015-06-18 13:10:56.066277+02	2015-06-18 13:10:55.935268+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	t	en	0	0	8	12	1	2	0	000A0005
+4	script	landmatrix	2015-06-10 16:06:19.697265+02	2015-06-18 13:10:50.56914+02	2015-06-18 13:10:50.308796+02	\N	t	f	\N	\N	INHERIT	f	\N	f	\N	\N	t	en	0	0	8	11	1	2	0	000A0004
+3	script	landmatrix	2015-06-10 16:06:04.9222+02	2015-06-15 15:57:18.23633+02	2015-06-15 15:56:59.780278+02	\N	t	f	\N		1-column.html	f	\N	f	GlobalApphook	\N	t	en	0	0	8	10	1	2	0	000A0003
+8	landmatrix	landmatrix	2015-06-11 15:35:20.553448+02	2015-06-18 13:26:02.974494+02	2015-06-15 15:57:17.568023+02	\N	t	f	\N		start.html	f	\N	t		\N	t	en	0	0	\N	9	1	1	6	000A
+1	script	landmatrix	2015-06-10 16:05:46.591449+02	2015-09-21 13:01:09.609213+02	2015-06-10 16:05:47.420797+02	\N	t	f	\N		base-gettheidea.html	f	\N	f		\N	t	en	0	0	8	2	1	2	5	000A0001
+18	landmatrix	landmatrix	2015-09-21 12:47:18.167384+02	2015-09-21 13:01:13.958387+02	2015-09-21 12:47:18.157742+02	\N	t	f	\N		INHERIT	f	\N	f		\N	f	en	0	0	2	16	1	3	0	000B00010001
+16	landmatrix	landmatrix	2015-09-21 12:36:43.027007+02	2015-09-21 13:01:13.967866+02	2015-09-21 12:47:18.157742+02	\N	t	f	\N		INHERIT	f	\N	f		\N	t	en	0	0	1	18	1	3	0	000A00010001
+21	landmatrix	landmatrix	2015-09-22 14:38:10.132622+02	2015-09-22 15:59:09.283746+02	2015-09-22 14:38:10.118792+02	\N	t	f	\N		INHERIT	f	\N	f		\N	f	en	0	0	2	20	1	3	0	000B00010003
+20	landmatrix	landmatrix	2015-09-22 14:37:12.608246+02	2015-09-22 15:59:09.292624+02	2015-09-22 14:38:10.118792+02	\N	t	f	\N		INHERIT	f	\N	f		\N	t	en	0	0	1	21	1	3	0	000A00010003
+2	script	landmatrix	2015-06-10 16:05:47.428875+02	2015-09-21 13:01:09.600302+02	2015-06-10 16:05:47.420797+02	\N	t	f	\N		base-gettheidea.html	f	\N	f		\N	f	en	0	0	9	1	1	2	5	000B0001
+25	landmatrix	landmatrix	2015-09-22 16:24:45.398739+02	2015-09-22 16:24:45.455611+02	2015-09-22 16:24:45.386334+02	\N	t	f	\N		base-gettheidea.html	f	\N	f		\N	f	en	0	0	2	24	1	3	0	000B00010005
+24	landmatrix	landmatrix	2015-09-22 16:23:39.713702+02	2015-09-22 16:24:45.464179+02	2015-09-22 16:24:45.386334+02	\N	t	f	\N		base-gettheidea.html	f	\N	f		\N	t	en	0	0	1	25	1	3	0	000A00010005
 \.
 
 
@@ -602,7 +615,7 @@ COPY cms_page (id, created_by, changed_by, creation_date, changed_date, publicat
 -- Name: cms_page_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('cms_page_id_seq', 19, true);
+SELECT pg_catalog.setval('cms_page_id_seq', 25, true);
 
 
 --
@@ -667,35 +680,50 @@ COPY cms_page_placeholders (id, page_id, placeholder_id) FROM stdin;
 56	11	57
 57	11	58
 58	11	59
-60	1	61
-61	1	62
-64	2	67
-74	9	77
-75	8	78
-77	2	80
-78	10	81
-79	3	82
-80	11	83
-81	4	84
-82	12	85
-83	5	86
-84	13	87
-85	13	88
-86	13	89
-87	13	90
-88	13	91
-89	13	92
-90	6	93
-91	15	94
-92	15	95
-93	16	96
-94	17	97
-95	18	98
-96	18	99
-97	18	100
-98	19	101
-99	16	102
-100	16	103
+59	14	60
+60	14	61
+61	14	62
+62	14	63
+63	14	64
+64	14	65
+65	15	66
+66	15	67
+67	15	68
+68	15	69
+69	15	70
+70	15	71
+71	16	72
+72	16	73
+73	16	74
+74	16	75
+75	16	76
+76	17	77
+77	17	78
+78	17	79
+79	17	80
+80	17	81
+81	16	82
+82	17	83
+83	18	84
+84	18	88
+85	18	89
+86	18	85
+87	18	86
+88	18	87
+89	19	90
+90	19	91
+91	19	92
+92	19	93
+93	19	94
+94	19	95
+95	1	96
+96	2	97
+97	20	98
+98	21	99
+99	22	100
+100	23	101
+101	24	102
+102	25	103
 \.
 
 
@@ -703,7 +731,7 @@ COPY cms_page_placeholders (id, page_id, placeholder_id) FROM stdin;
 -- Name: cms_page_placeholders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('cms_page_placeholders_id_seq', 100, true);
+SELECT pg_catalog.setval('cms_page_placeholders_id_seq', 102, true);
 
 
 --
@@ -800,35 +828,50 @@ COPY cms_placeholder (id, slot, default_width) FROM stdin;
 57	Both columns	\N
 58	Middle left	\N
 59	Bottom left	\N
-61	sidebar	\N
-62	content	\N
-67	sidebar	\N
-77	sidebar	\N
-78	sidebar	\N
-80	content	\N
-81	sidebar	\N
-82	sidebar	\N
-83	sidebar	\N
-84	sidebar	\N
-85	sidebar	\N
-86	sidebar	\N
-87	sidebar	\N
-88	Left column1	\N
-89	Right column	\N
-90	Both columns	\N
-91	Middle left	\N
-92	Bottom left	\N
-93	sidebar	\N
-94	Content	\N
-95	sidebar	\N
+60	Left column1	\N
+61	Right column	\N
+62	Both columns	\N
+63	Middle left	\N
+64	Bottom left	\N
+65	content	\N
+66	content	\N
+67	Left column1	\N
+68	Right column	\N
+69	Both columns	\N
+70	Middle left	\N
+71	Bottom left	\N
+72	Left column1	\N
+73	Right column	\N
+74	Both columns	\N
+75	Middle left	\N
+76	Bottom left	\N
+77	Left column1	\N
+78	Right column	\N
+79	Both columns	\N
+80	Middle left	\N
+81	Bottom left	\N
+82	content	\N
+83	content	\N
+84	content	\N
+85	Left column1	\N
+86	Right column	\N
+87	Both columns	\N
+88	Middle left	\N
+89	Bottom left	\N
+90	content	\N
+91	Left column1	\N
+92	Right column	\N
+93	Both columns	\N
+94	Middle left	\N
+95	Bottom left	\N
 96	content	\N
 97	content	\N
-98	Content	\N
-99	sidebar	\N
+98	content	\N
+99	content	\N
 100	content	\N
 101	content	\N
-102	Content	\N
-103	sidebar	\N
+102	content	\N
+103	content	\N
 \.
 
 
@@ -867,8 +910,6 @@ SELECT pg_catalog.setval('cms_staticplaceholder_id_seq', 1, false);
 --
 
 COPY cms_title (id, language, title, page_title, menu_title, meta_description, slug, path, has_url_overwrite, redirect, creation_date, published, publisher_is_draft, publisher_state, page_id, publisher_public_id) FROM stdin;
-9	en	Home				home		f		2015-06-11 15:35:20.655715+02	t	f	0	9	8
-8	en	Home				home		f		2015-06-11 15:35:20.655715+02	t	t	0	8	9
 10	en	Global				global	global	f		2015-06-10 16:06:04.948261+02	t	f	0	10	3
 3	en	Global				global	global	f		2015-06-10 16:06:04.948261+02	t	t	0	3	10
 11	en	Continent				continent	continent	f	\N	2015-06-10 16:06:19.723709+02	t	f	0	11	4
@@ -877,13 +918,22 @@ COPY cms_title (id, language, title, page_title, menu_title, meta_description, s
 5	en	Region				region	region	f	\N	2015-06-10 16:06:29.623414+02	t	t	0	5	12
 13	en	Get Involved				get-involved	get-involved	f	\N	2015-06-10 16:06:44.150871+02	t	f	0	13	6
 6	en	Get Involved				get-involved	get-involved	f	\N	2015-06-10 16:06:44.150871+02	t	t	0	6	13
-15	en	Map				map	map	f	\N	2015-09-14 16:14:13.447804+02	f	t	1	15	\N
-18	en	Overview				overview	idea/overview	f		2015-09-15 11:54:40.315661+02	t	f	0	18	16
-16	en	Overview				overview	idea/overview	f		2015-09-15 11:54:40.315661+02	t	t	0	16	18
-19	en	Transnational				transnational	idea/transnational	f	\N	2015-09-15 11:55:21.840905+02	t	f	0	19	17
-17	en	Transnational				transnational	idea/transnational	f	\N	2015-09-15 11:55:21.840905+02	t	t	0	17	19
+9	en	Home				home		f		2015-06-11 15:35:20.655715+02	t	f	0	9	8
+8	en	Home				home		f		2015-06-11 15:35:20.655715+02	t	t	0	8	9
+15	en	Map				map	map	f		2015-09-17 14:11:54.05232+02	t	f	0	15	14
+14	en	Map				map	map	f		2015-09-17 14:11:54.05232+02	t	t	0	14	15
+19	en	Web of Transnational Deals				transnational	idea/transnational	f		2015-09-21 12:37:39.168423+02	t	f	0	19	17
+17	en	Web of Transnational Deals				transnational	idea/transnational	f		2015-09-21 12:37:39.168423+02	t	t	0	17	19
+21	en	Global Map of Investments				investments	idea/investments	f		2015-09-22 14:37:12.715071+02	t	f	0	21	20
+20	en	Global Map of Investments				investments	idea/investments	f		2015-09-22 14:37:12.715071+02	t	t	0	20	21
+23	en	Agricultural Drivers				agricultural	idea/agricultural	f		2015-09-22 15:58:43.904011+02	t	f	0	23	22
+22	en	Agricultural Drivers				agricultural	idea/agricultural	f		2015-09-22 15:58:43.904011+02	t	t	0	22	23
+25	en	It's a big deal				area	idea/area	f		2015-09-22 16:23:39.749391+02	t	f	0	25	24
+24	en	It's a big deal				area	idea/area	f		2015-09-22 16:23:39.749391+02	t	t	0	24	25
 2	en	Idea		Get the idea		idea	idea	f		2015-06-10 16:05:47.363732+02	t	f	0	2	1
 1	en	Idea		Get the idea		idea	idea	f		2015-06-10 16:05:47.363732+02	t	t	0	1	2
+18	en	Overview				overview	idea/overview	f		2015-09-21 12:36:43.160795+02	t	f	0	18	16
+16	en	Overview				overview	idea/overview	f		2015-09-21 12:36:43.160795+02	t	t	0	16	18
 \.
 
 
@@ -891,7 +941,7 @@ COPY cms_title (id, language, title, page_title, menu_title, meta_description, s
 -- Name: cms_title_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('cms_title_id_seq', 19, true);
+SELECT pg_catalog.setval('cms_title_id_seq', 25, true);
 
 
 --
@@ -1769,11 +1819,11 @@ ALTER TABLE ONLY cms_usersettings
 
 
 --
--- Name: djangocms_cmsplugin_ptr_id_2ecef03cdf00f8e1_fk_cms_cmsplugin_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: djangocms_cmsplugin_ptr_id_1895cc8f336e8cde_fk_cms_cmsplugin_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY djangocms_text_ckeditor_text
-    ADD CONSTRAINT djangocms_cmsplugin_ptr_id_2ecef03cdf00f8e1_fk_cms_cmsplugin_id FOREIGN KEY (cmsplugin_ptr_id) REFERENCES cms_cmsplugin(id) DEFERRABLE INITIALLY DEFERRED;
+    ADD CONSTRAINT djangocms_cmsplugin_ptr_id_1895cc8f336e8cde_fk_cms_cmsplugin_id FOREIGN KEY (cmsplugin_ptr_id) REFERENCES cms_cmsplugin(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
