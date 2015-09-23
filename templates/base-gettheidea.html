@@ -1,4 +1,4 @@
-{% load i18n cms_tags %}{% load cms_tags sekizai_tags %}<!DOCTYPE html>
+{% load i18n menu_tags menu_tags_addons cms_tags %}{% load cms_tags sekizai_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -169,13 +169,23 @@ function draw (callback, chart_data) {
                 </ul>
                 {% endblock %}
 
-                {% block subnav %}{% endblock %}
+                <!-- subnav -->
+                {% block subnav %}
+                <div class="row collapsible{% if request.session.subnav_collapsed %} collapsed{% endif %}">
+                    <ul class="nav nav-pills subnav">
+                        {% show_gettheidea_menu "Idea" "subnav.html" %}
+                    </ul>
+                    <a href="javascript:;" class="toggle"><span class="icon">^</span></a>
+                </div>
+                {% endblock %}
+
                 {% block breadcrumb %}
                 <ul class="breadcrumb">
                     <li><a href="/">Home</a> <span class="divider">|</span></li>
                     <li>{% page_attribute "title" %}</li>
                 </ul>
                 {% endblock %}
+
                 {% block title_section %}
                 <div class="row title">
                     <div class="span12">
@@ -183,6 +193,7 @@ function draw (callback, chart_data) {
                     </div>
                 </div>
                 {% endblock %}
+
                 {% block content %}
                 	{% placeholder "content" %}
                 {% endblock %}
