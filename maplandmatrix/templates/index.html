@@ -29,12 +29,17 @@
 	<div id="map" class="map" title='map'></div>
 	<div id="popup" class="popup" title="Deal"></div>
 	<div id="marker" class="marker" title='marker'></div>
-
+	
 	<script>
 	//define Features for the MARKERS
 	$(document).ready(function() {
+		//$.get("/api/activity-attribute-list", function (data) {
+		//	for (var marker in data) {
+		//		addClusteredMarker(marker.point_lon, marker.point_lat, marker.intention);
+		//	}
+		//});  
 		{% for ActivityAttribute in ActivityAttribute_list %}
-			clusteredMarkers({{ ActivityAttribute.point_lon }}, {{ ActivityAttribute.point_lat }}, "{{ ActivityAttribute.intention}}");
+			addClusteredMarker({{ ActivityAttribute.point_lon }}, {{ ActivityAttribute.point_lat }}, "{{ ActivityAttribute.intention}}");
 			//console.log({{ ActivityAttribute.intention }});
 		{% endfor %}  
 	});
