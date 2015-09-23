@@ -22,3 +22,8 @@ class JSONView(TemplateView):
         'transnational_deals.json':            TransnationalDealsJSONView,
         'deals.json':                          DealsJSONView,
     }
+
+    def dispatch(self, request, *args, **kwargs):
+        if kwargs.get('type') in self.targets:
+            return self.targets[kwargs.get('type')]().dispatch(request, args, kwargs)
+        raise ValueError(str(kwargs) + ' could not be resolved to any of ' + str(list(self.targets.keys())))
