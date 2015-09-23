@@ -1,117 +1,155 @@
+//Coordinates : need to CONVERT the projections from ... to ... :
+	//EPSG:4326: is the WGS84 projection, commun use for the World (ex: GPS)
+	//EPSG:3857:Spherical Mercator projection used by Google and OpenStreetMap
+
+// Globale Variablen 
 var map;
-var cluster = new Array();
+var clusters = new Array();
 
+//Map, Layers and Map Controls
 $(document).ready(function() {
-		// ALL Layers 
-		map = new ol.Map({
-			target: 'map',
-			// Base Maps Layers
-			layers: [
-				new ol.layer.Group({
-					'title':'Base Maps',
-					layers: [
-						new ol.layer.Tile({
-							title:'OSM',
-							type:'base',
-							visible:false,
-							source: new ol.source.OSM()
-						}),
-						new ol.layer.Tile({
-							title:'Satellite',
-							type:'base',
-							visible:false,
-							source: new ol.source.MapQuest({layer:'sat'})
-						}),
-						new ol.layer.Tile({
-							title:'Toner',
-							type:'base',
-							visible:true,
-							source: new ol.source.Stamen({
-								layer:'toner'
-							})
-						}),
-					]
-				}),
-				// Context Layers from the Landobservatory Geoserver
-				new ol.layer.Group({
-					title:'Context Layers',
-					layers:[
-						new ol.layer.Tile({
-							title:'Global Cropland',
-							source: new ol.source.TileWMS({
-								url:'',
-								params:{'LAYERS':''},
-								serverType:'geoserver'
-							})
-						}),
-						new ol.layer.Tile({
-							title:'Global Landcover',
-							source: new ol.source.TileWMS({
-								url:'',
-								params:{'LAYERS':''},
-								serverType:'geoserver'
-							})
-						}),
-					]
-				})
-			],
-			controls:[
-								new ol.control.Zoom (),
-								new ol.control.ScaleLine(),
-								new ol.control.MousePosition({
-    								projection: 'EPSG:4326',
-  			  						coordinateFormat: function(coordinate) {
-      									return ol.coordinate.format(coordinate, '{y}, {x}', 4);
-    								}
-    							}),
-								new ol.control.FullScreen(),
-								new ol.control.Attribution,
-			],
-			interactions : [
-								new ol.interaction.Select(),
-								new ol.interaction.MouseWheelZoom(),
-								new ol.interaction.PinchZoom(),
-								new ol.interaction.DragZoom (),
-								new ol.interaction.DoubleClickZoom(),
-								new ol.interaction.DragPan(), 
-			],
-			view: new ol.View({
-				center: [0,0],
-				zoom: 2
+	// ALL Layers 
+	map = new ol.Map({
+		target: 'map',
+		// Base Maps Layers. To change the default Layer : "visible: true or false". 
+		// ol.layer.Group defines the LayerSwitcher organisation
+		layers: [
+			new ol.layer.Group({
+				'title':'Base Maps',
+				layers: [
+					new ol.layer.Tile({
+						title:'OSM',
+						type:'base',
+						visible:false,
+						source: new ol.source.OSM()
+					}),
+					new ol.layer.Tile({
+						title:'Satellite',
+						type:'base',
+						visible:false,
+						source: new ol.source.MapQuest({layer:'sat'})
+					}),
+					new ol.layer.Tile({
+						title:'Toner',
+						type:'base',
+						visible:true,
+						source: new ol.source.Stamen({
+							layer:'toner'
+						})
+					}),
+				]
 			}),
-		});
+			// Context Layers from the Landobservatory Geoserver. 
+			new ol.layer.Group({
+				title:'Context Layers',
+				layers:[
+					new ol.layer.Tile({
+						title:'Global Cropland',
+						visible:false,
+						source: new ol.source.TileWMS({
+							url:'',
+							params:{'LAYERS':''},
+							serverType:'geoserver'
+						})
+					}),
+					new ol.layer.Tile({
+						title:'Global Landcover',
+						visible:false,
+						source: new ol.source.TileWMS({
+							url:'',
+							params:{'LAYERS':''},
+							serverType:'geoserver'
+						})
+					}),
+				]
+			})
+		],
+		controls:[
+							new ol.control.Zoom (),
+							new ol.control.ScaleLine(),
+							new ol.control.MousePosition({
+    							projection: 'EPSG:4326',
+  		  						coordinateFormat: function(coordinate) {
+    								return ol.coordinate.format(coordinate, '{y}, {x}', 4);
+    							}
+    						}),
+							new ol.control.FullScreen(),
+							new ol.control.Attribution,
+		],
+		interactions : [
+							new ol.interaction.Select(),
+							new ol.interaction.MouseWheelZoom(),
+							new ol.interaction.PinchZoom(),
+							new ol.interaction.DragZoom (),
+							new ol.interaction.DoubleClickZoom(),
+							new ol.interaction.DragPan(), 
+		],
+		// Set the map view : here it's set to see the all world. 
+		view: new ol.View({
+			center: [0,0],
+			zoom: 2
+		}),
+	});
 
-// LayerSwitcher Control by https://github.com/walkermatt/ol3-layerswitcher
-		var layerSwitcher = new ol.control.LayerSwitcher({
-			tipLabel:'Legende'
-		});
-		map.addControl(layerSwitcher);
+	// LayerSwitcher Control by https://github.com/walkermatt/ol3-layerswitcher
+	var layerSwitcher = new ol.control.LayerSwitcher({
+		tipLabel:'Legende'
+	});
+	map.addControl(layerSwitcher);
 
- // var selectedFeatures = new ol.interaction.Select().getFeatures();
+	map.on('click', function(evt){
+	 	map.forEachFeatureAtPixel(evt.pixel, function(feature, layer){
+	 		// do something
+	 		console.log("feature clicked: " + evt.feature);
+//debugger;
+			var element = document.getElementById('popup');
+		
+			var popup = new ol.Overlay({
+				element: element,
+				position:'center',
+				stopEvent: false
+			});
+			map.addOverlay(popup);
+			if (feature){
+	 		popup.setPosition(evt.coordinate);
+	 		$(element).popover({
+			    'placement': 'top',
+			    'html': true,
+			    'content': '<p>Latitude:</p><code>' + feature.get('latitude') + '</code>'+ '<p>Longitude:</p><code>' + feature.get('longitude') + '</code>'+ '<p>Intention of investment:</p><code>' + feature.get('intention') + '</code>'
+	   		});
+	   		$(element).popover('show');
+	   		} else {
+	   		$(element).popover('destroy');
+	   		}
+	 		return feature;
+	 	});
+	});
+	
 }); //gesamte document.ready.function Klammer
 
-//longitude, Latitude, Intention im Index.html definieren
-function clusteredMarkers (longitude, latitude, intention) {
+// MARKERS in clusters. ONE MARKER = ONE DEAL
+//longitude, latitude, intention im Index.html definiert
+function addClusteredMarker (longitude, latitude, intention) {
+	var styleCache = {};
 	var feature = new ol.Feature({
 		geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857')),
 	});
-	cluster.push(feature);
+	clusters.push(feature);
 
-	var source = new ol.source.Vector({
-		features: cluster
-	});
+	// var source = new ol.source.Vector({
+	// 	features: cluster
+	// });
 	var clusterSource = new ol.source.Cluster({
 	  distance: 100,
-	  source: source
+	  source: new ol.source.Vector({
+		features: clusters
+		})
 	});
-
-	var styleCache = {};
-
-	var clusters = new ol.layer.Vector({
+	var cluster = new ol.layer.Vector({
 	  source: clusterSource,
+	  //element: document.getElementById('popup'),
 	  style: function(feature, resolution) {
 	    var size = feature.get('features').length;
-
 	//Give a color to each Intention of Investment, only for single points
 	// PROBLEM : how to clustered the points by color? 	
 		var color = "";
@@ -161,8 +199,8 @@ function clusteredMarkers (longitude, latitude, intention) {
 	        image: new ol.style.Circle({
 	        	radius: radius,
 	        	stroke: new ol.style.Stroke({
-	            color: '#fff'
-	          	}),
+	            	color: '#fff'
+	          		}),
 		        fill: new ol.style.Fill({
 		        color: color, 
 		        })
@@ -178,29 +216,8 @@ function clusteredMarkers (longitude, latitude, intention) {
 	    }
 	    return style;
 	  }
-	});	
-	map.addLayer(clusters);
-
-	var popup = new ol.Overlay({
-		element: document.getElementById('popup')
 	});
-	map.addOverlay(popup);
-
-	map.on('click', function(evt){
-		var element = popup.getElement(); 
-		var coordinate = evt.coordinate; 
-	
-		$(element).popover('destroy');
-		popup.setPosition(coordinate);
-	  	$(element).popover({
-		    'placement': 'top',
-		    'animation': false,
-		    'html': true,
-		    'content': '<p>Latitude:</p><code>' + latitude + '</code>'+ '<p>Longitude:</p><code>' + longitude + '</code>'+ '<p>Intention of investment:</p><code>' + intention + '</code>'
-	  	});
-	 	 $(element).popover('show');	
-		}); 
+	map.addLayer(cluster);	
 };
-
 
 
