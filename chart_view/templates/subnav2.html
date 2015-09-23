@@ -1,0 +1,35 @@
+{% load i18n %}
+<ul class="subnav">
+  {% if data.img == "agricultural-produce" %}
+  <li class="select">
+    <a href="#" class="current">
+      {% if data.filter == "all" %}{% trans "All" %}{% endif %}
+      {% if data.filter == "domestic" %}{% trans "Transnational" %}{% endif %}
+      {% if data.filter == "transnational" %}{% trans "Domestic" %}{% endif %}
+    </a>
+    <ul>
+      <li class="first{% if data.img == "all" %} current{% endif %}"><a href="?filter=all">{% trans "All" %}</a></li>
+      <li class="{% if data.img == "domestic" %} current{% endif %}"><a href="?filter=domestic">{% trans "Domestic" %}</a></li>
+      <li class="last{% if data.img == "transnational" %} current{% endif %}"><a href="?filter=transnational">{% trans "Transnational" %}</a></li>
+    </ul>
+  </li>
+  {% endif %}
+  <li class="select">
+    <a href="#" class="current">
+      {% if data.img == "transnational-deals" %}Dynamics&nbsp;of&nbsp;transnational&nbsp;deals{% endif %}
+      {% if data.img == "data-availability" %}Data&nbsp;Availability:&nbsp;TOP/FLOP&nbsp;5{% endif %}
+      {% if data.img == "agricultural-produce" %}Agricultural&nbsp;Produce{% endif %}
+      {% if data.img == "investor-target-countries" %}Investor/Target&nbsp;Countries{% endif %}
+      {% if data.img == "perspective-1" %}Perspective&nbsp;1{% endif %}
+      {% if data.img == "perspective-2" %}Perspective&nbsp;2{% endif %}
+    </a>
+    <ul>
+      <li class="first{% if data.img == "transnational-deals" %} current{% endif %}"><a href="/get-the-idea/transnational-deals">Dynamics&nbsp;of&nbsp;transnational&nbsp;deals</a></li>
+      <li class="{% if data.img == "data-availability" %} current{% endif %}"><a href="/get-the-idea/data-availability">Data&nbsp;Availability:&nbsp;TOP/FLOP&nbsp;5</a></li>
+      <li class="{% if data.img == "agricultural-produce" %} current{% endif %}"><a href="/get-the-idea/agricultural-produce">Agricultural&nbsp;Produce</a></li>
+      <li class="{% if data.img == "investor-target-countries" %} current{% endif %}"><a href="/get-the-idea/investor-target-countries">Investor/Target&nbsp;Countries</a></li>
+      <li class="{% if data.img == "perspective-1" %} current{% endif %}"><a href="/get-the-idea/perspective-1">Perspective&nbsp;1</a></li>
+      <li class="last{% if data.img == "perspective-2" %} current{% endif %}"><a href="/get-the-idea/perspective-2">Perspective&nbsp;2</a></li>
+    </ul>
+  </li>
+</ul>
