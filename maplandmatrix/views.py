@@ -16,7 +16,7 @@ class MapView(TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super(MapView, self).get_context_data(**kwargs)
 		deal_list = []
-		location_attributes = sorted(ActivityAttributeGroup.objects.filter(attributes__icontains="point_lat")[:200], key=lambda x: random.random())
+		location_attributes = sorted(ActivityAttributeGroup.objects.filter(attributes__icontains="point_lat")[:50], key=lambda x: random.random())
 
 		for location in location_attributes:
 			intention_attributes = ActivityAttributeGroup.objects.filter(attributes__icontains="intention", fk_activity_id=location.fk_activity_id)
