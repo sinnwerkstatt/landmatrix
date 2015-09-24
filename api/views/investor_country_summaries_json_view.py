@@ -18,8 +18,6 @@ class InvestorCountrySummariesJSONView(JSONViewBase):
 
         countries_summary = self.get_by_investor_country(filter_sql)
 
-        print(countries_summary)
-
         countries = {}
         for c in countries_summary:
             if not c['country_id']: continue
@@ -37,8 +35,6 @@ class InvestorCountrySummariesJSONView(JSONViewBase):
         c["region_slug"] =c['region'].lower().replace(" ", "-")
         c['url'] = reverse("table_list", kwargs={"group": "by-target-country", "list": c['country'].lower().replace(" ", "-")})
         c[c['deal_scope']] = c['deals'] + country.get(c['deal_scope'], 0)
-        print('c',c)
-        print('deals',c['deals'], 'country', country.get("deals", 0))
         c['deals'] = c['deals'] + country.get("deals", 0)
 
         return c
@@ -48,25 +44,3 @@ class InvestorCountrySummariesJSONView(JSONViewBase):
         queryset = InvestorCountrySummariesQuerySet()
         queryset.set_filter_sql(filter_sql)
         return queryset.all()
-
-        base_filter_sql = ""
-        cursor = connection.cursor()
-        sql = """
-            SELECT DISTINCT
-                investor_country.id,
-                investor_country.name AS 'country',
-                investor_region.name,
-                cast(investor_country.point_lat as char),
-                cast(investor_country.point_lon as char),
-                count(distinct a.activity_identifier) AS deals,
-                deal_scope.value
-              FROM
-                activities a
-                %s
-              WHERE
-                %s
-                %s
-             GROUP BY investor_country.name, deal_scope.value;
-        """ % (self.BASE_JOIN, self.BASE_CONDITON, filter_sql)
-        print(sql), cursor.execute(sql)
-        return cursor.fetchall()
