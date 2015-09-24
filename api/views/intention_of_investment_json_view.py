@@ -13,7 +13,7 @@ class IntentionOfInvestmentJSONView(JSONViewBase):
     def dispatch(self, request, *args, **kwargs):
         filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
         found = self.get_intention(filter_sql, request.GET.get("intention", ""))
-        return HttpResponse(json.dumps(found, cls=DecimalEncoder))
+        return HttpResponse(json.dumps(found, cls=DecimalEncoder), content_type="application/json")
 
     def get_intention(self, filter_sql, parent_intention):
         queryset = IntentionQuerySet()

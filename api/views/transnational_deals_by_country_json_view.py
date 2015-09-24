@@ -19,7 +19,7 @@ class TransnationalDealsByCountryJSONView(JSONViewBase):
             'target_country': aggregate_regions(self.get_transnational_deals_by_target_country(filter_sql, country)),
             'investor_country': aggregate_regions(self.get_transnational_deals_by_investor_country(filter_sql, country))
         }
-        return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="text/plain")
+        return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="application/json")
 
     def get_transnational_deals_by_target_country(self, filter_sql, country):
         queryset = TransnationalDealsByTargetCountryQuerySet()

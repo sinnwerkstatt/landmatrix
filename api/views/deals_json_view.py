@@ -18,7 +18,7 @@ class DealsJSONView(JSONViewBase):
         start_time = timeit.default_timer()
         deals = list(self.get_deals(request))
         print(deals[:10], len(deals), timeit.default_timer() - start_time)
-        return HttpResponse(json.dumps(deals, cls=DecimalEncoder), content_type='text/plain')
+        return HttpResponse(json.dumps(deals, cls=DecimalEncoder), content_type='application/json')
 
     def get_deals(self, request):
         queryset = DealsQuerySet()
