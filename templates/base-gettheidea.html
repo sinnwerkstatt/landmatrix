@@ -1,32 +1,7 @@
-{% load i18n menu_tags menu_tags_addons cms_tags %}{% load cms_tags sekizai_tags %}<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>{% block page_title %}{% page_attribute "title" %}{% endblock %} - LAND MATRIX</title>
-        {% page_attribute "meta_description" as meta_description %}{% page_attribute "meta_keywords" as meta_keywords %}
-        <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
-        <meta name="keywords" content="{% if meta_keywords %}{{ meta_keywords }}{% else %}{% trans "Landmatrix" %}{% trans 'Default keywords' %}{% endif %}"/>
-        <meta name="viewport" content="width=device-width">
-
-        <link rel="stylesheet" href="/media/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/media/css/bootstrap-responsive.min.css">
-        <link rel="stylesheet" href="/media/css/main.css">
-        <link rel="stylesheet" href="/media/css/content.css">
-        <link rel="icon" href="/media/img/favicon.ico">
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-        {% if is_pdf_export %}<link rel="stylesheet" href="/media/landmatrix/css/htmltopdf.css" type="text/css" media="screen" title="no title" charset="utf-8">{% endif %}
-
-        <script src="/media/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="/media/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+{% extends "base.html" %}
+{% load i18n menu_tags menu_tags_addons cms_tags %}{% load cms_tags sekizai_tags %}
         {% block head %}
-        {% endblock %}
-        {% render_block "css" %}
+
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script type="text/javascript" src="/media/js/vendor/RGraph.pie.js"></script>
         <script type="text/javascript" src="/media/js/vendor/RGraph.bar.js"></script>
@@ -127,47 +102,7 @@ function draw (callback, chart_data) {
 };
         </script>
 
-    </head>
-    <body class="{% if popup %}popup {% endif %}{% block body_class %}{% page_attribute "slug" %}{% endblock %}">
-        <div class="wrap">
-            <!--[if lt IE 7]>
-                <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
-            <![endif]-->
-
-            {# top-level navigation #}
-            {# This code is taken from http://twitter.github.com/bootstrap/examples/hero.html #}
-
-            <div class="navbar navbar-inverse navbar-fixed-top">
-                <div class="navbar-inner">
-                    <div class="container">
-                        <div class="row">
-                            {% block header %}
-                                <a class="brand" href="/"></a>
-                                <ul class="nav">
-                                    {% block nav %}
-
-                                        {% load menu_tags %}
-                                        {% show_menu 1 1 0 0 "menu.html" %}
-
-                                    {% endblock %}
-                                </ul>
-                                {% block user_tools %}{% endblock %}
-                            {% endblock %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="container">
-
-                {% block messages %}
-                <ul class="unstyled messages">
-                    {% for message in messages %}
-                    <li class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}"><strong>{{ message.tags|capfirst }}:</strong> {{ message|safe }}</li>
-                    {% endfor %}
-                    {% block extra_messages %}{% endblock %}
-                </ul>
-                {% endblock %}
+        {% endblock %}
 
                 <!-- subnav -->
                 {% block subnav %}
@@ -179,65 +114,6 @@ function draw (callback, chart_data) {
                 </div>
                 {% endblock %}
 
-                {% block breadcrumb %}
-                <ul class="breadcrumb">
-                    <li><a href="/">Home</a> <span class="divider">|</span></li>
-                    <li>{% page_attribute "title" %}</li>
-                </ul>
-                {% endblock %}
-
-                {% block title_section %}
-                <div class="row title">
-                    <div class="span12">
-                        <h1 class="separator"><span>{% block title %}{% page_attribute "title" %}{% endblock %}</span></h1>
-                    </div>
-                </div>
-                {% endblock %}
-
                 {% block content %}
                 	{% placeholder "content" %}
                 {% endblock %}
-            </div> <!-- /container -->
-
-            <div class="push"></div>
-        </div>
-
-        <footer>
-            <div class="container">
-                <div class="row">
-                    <div class="span4">
-                        <p>Find us on <a href="https://www.facebook.com/LandMatrix" target="_blank">facebook</a>, <a href="https://twitter.com/intent/user?screen_name=Land_Matrix">twitter</a> or <a href="http://eepurl.com/AHK0r" target="_blank">subscribe to the newsletter</a>.</p>
-                    </div>
-                    <div class="span4 center">
-                            <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" class="cc-icons" target="_blank"></a>
-                    </div>
-                    <div class="span4 right">
-                        <p>&copy; {% now "Y" %}, LANDMATRIX.ORG</p>
-                    </div>
-                </div>
-            </div>
-        </footer>
-
-        {% block footer_scripts %}
-        <script src="/media/js/vendor/bootstrap.min.js"></script>
-        <script src="/media/js/main.js"></script>
-        <!-- Piwik -->
-        <script type="text/javascript">
-        var _paq = _paq || [];
-        _paq.push(['trackPageView']);
-        _paq.push(['enableLinkTracking']);
-        (function() {
-          var u=(("https:" == document.location.protocol) ? "https" : "http") + "://stats.landmatrix.org//";
-           _paq.push(['setTrackerUrl', u+'piwik.php']);
-          _paq.push(['setSiteId', 1]);
-          var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
-          g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-        })();
-
-        </script>
-        <noscript><p><img src="http://stats.landmatrix.org/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
-        <!-- End Piwik Code -->
-        {% endblock %}
-        {% render_block "js" %}
-    </body>
-</html>
