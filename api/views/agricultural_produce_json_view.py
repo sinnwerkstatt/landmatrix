@@ -53,7 +53,7 @@ class AgriculturalProduceJSONView(JSONViewBase):
                 "hectares": hectares,
             })
 
-        return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="text/plain")
+        return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="application/json")
 
     def calculate_sums(self, ap_list):
         available_sum, not_available_sum = 0, 0

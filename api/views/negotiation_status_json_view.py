@@ -12,7 +12,7 @@ class NegotiationStatusJSONView(JSONViewBase):
 
     def dispatch(self, request, *args, **kwargs):
         with_names = list(self.get_negotiation_status(request))
-        return HttpResponse(json.dumps(with_names, cls=DecimalEncoder))
+        return HttpResponse(json.dumps(with_names, cls=DecimalEncoder), content_type="application/json")
 
     def get_negotiation_status(self, request):
         filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
