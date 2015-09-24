@@ -121,3 +121,28 @@ class DealsTestData:
             self.investor_region.save()
             self.investor_country = Country(id=124, name='Investoria', fk_region=self.investor_region)
             self.investor_country.save()
+
+    def _generate_countries(self, num_countries):
+        self._generate_deal_country()
+        self._generate_investor_country()
+        for i in range(0, num_countries):
+            Country(
+                id=self.investor_country.id+1+i, name='Democratic Republic Of ' + str(i), fk_region=self.investor_region
+            ).save()
+
+    activity_identifiers = []
+    def _generate_deal(self, investor_country, target_country, attributes):
+        if not self.activity_identifiers: act_id = 1
+        else: act_id = self.activity_identifiers[-1]+1
+        self.activity_identifiers.append(act_id)
+
+        activity, stakeholder = self._generate_involvement(act_id)
+        attributes.update({
+            'target_country': str(target_country.id), 'pi_negotiation_status': 'concluded (oral agreement)', 'deal_scope': 'transnational', 'pi_deal': 'True'
+        })
+        ActivityAttributeGroup(
+            fk_activity=activity, fk_language_id=1, attributes=attributes
+        ).save()
+        StakeholderAttributeGroup(
+            fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': str(investor_country.id)}
+        ).save()
