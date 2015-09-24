@@ -22,11 +22,14 @@ def year_to_date(year):
     if not year: return None
     return ('0000'+str(year)+'-01-07')[-10:]
 
+def extract_value(part):
+    values = part.split('=>')
+    return values[1].strip('"')
+
 def replace_model_name_with_id(model, attributes, attribute):
 
     def extract_target_country(part):
-        values = part.split('=>')
-        return values[1].strip('"')
+        return extract_value(part)
 
     def replace_name_with_id(name):
         from migrate import V1
@@ -60,7 +63,31 @@ def clean_crops(attributes):
     return replace_model_name_with_id(Crop, attributes, 'crops')
 
 def clean_crops_and_target_country(attributes):
-    return clean_crops(clean_target_country(attributes))
+    return clean_coordinates(clean_crops(clean_target_country(attributes)))
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+def clean_coordinates(attributes):
+    if not 'point_lon' in attributes or not 'point_lat' in attributes: return attributes
+    parts = attributes.split(', ')
+    changed = False
+    for index, part in enumerate(parts):
+        coordinate = None
+        if part.startswith('"' + 'point_lon' + '"') or part.startswith('"' + 'point_lat' + '"'):
+            coordinate = extract_value(part)
+            if not is_number(coordinate):
+                changed = True
+                parts[index] = ''
+    if changed:
+        parts = [ part for part in parts if part ]
+        print(parts)
+
+    return ', '.join(parts)
 
 class MapActivityAttributeGroup(MapModel):
     old_class = editor.models.ActivityAttributeGroup
