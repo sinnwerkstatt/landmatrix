@@ -20,12 +20,12 @@ class Top10CountriesJSONView(JSONViewBase):
             "target_country": [],
         }
         for c in self.get_top_10_investors(filter_sql):
-            country = " %s" % TransnationalDealsQuerySet.LONG_COUNTRIES.get(c['investor_country'], c['investor_country'])
+            country = TransnationalDealsQuerySet.LONG_COUNTRIES.get(c['investor_country'], c['investor_country'])
             output["investor_country"].append(
                 {"name": country, "slug": slugify(c['investor_country']), "hectares": c['hectares'], "id": c['investor_country_id'], "deals": c['deals']}
             )
         for c in self.get_top_10_target_countries(filter_sql):
-            country = " %s" % TransnationalDealsQuerySet.LONG_COUNTRIES.get(c['target_country'], c['target_country'])
+            country = TransnationalDealsQuerySet.LONG_COUNTRIES.get(c['target_country'], c['target_country'])
             output["target_country"].append(
                 {"name": country, "slug": slugify(c['target_country']), "hectares": c['hectares'], "id":c['target_country_id'], "deals": c['deals']}
             )
