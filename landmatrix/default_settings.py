@@ -58,9 +58,12 @@ INSTALLED_APPS = (
 #   to check test coverage
     'coverage',
 
+    'django.contrib.gis',
+
 #   apps of the actual landmatrix project
     'landmatrix',
     'global_app',
+    'maplandmatrix',
     'chart_view',
     'api'
 )

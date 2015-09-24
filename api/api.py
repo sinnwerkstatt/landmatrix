@@ -20,7 +20,6 @@ class ActivityResource(ModelResource):
 class StakeholderResource(ModelResource):
     fk_status = fields.ForeignKey(StatusResource, attribute='fk_status')
     class Meta:
-
         queryset = Stakeholder.objects.all()
 
 class PrimaryInvestorResource(ModelResource):
