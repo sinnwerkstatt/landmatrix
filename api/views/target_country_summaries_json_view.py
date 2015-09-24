@@ -22,7 +22,7 @@ class TargetCountrySummariesJSONView(JSONViewBase):
         country_code = request.GET.get("country_code", None)
         countries_summary = self.get_by_target_country(filter_sql, region, country_code)
         output = [self.to_json_record(c) for c in countries_summary if c['country_id']]
-        return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="text/plain")
+        return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="application/json")
 
     def to_json_record(self, c):
         c['name'] = c['country']

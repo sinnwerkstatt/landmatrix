@@ -27,7 +27,7 @@ class InvestorCountrySummariesJSONView(JSONViewBase):
 
         output = [v for k,v in countries.items()]
 
-        return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="text/plain")
+        return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="application/json")
 
     def to_json_record(self, c, country):
         c['name'] = c['country']

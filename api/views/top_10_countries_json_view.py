@@ -29,7 +29,7 @@ class Top10CountriesJSONView(JSONViewBase):
             output["target_country"].append(
                 {"name": country, "slug": slugify(c['target_country']), "hectares": c['hectares'], "id":c['target_country_id'], "deals": c['deals']}
             )
-        return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="text/plain")
+        return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="application/json")
 
     def get_top_10_investors(self, filter_sql):
         queryset = Top10InvestorCountriesQuerySet()

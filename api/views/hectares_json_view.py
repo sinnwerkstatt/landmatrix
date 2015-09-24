@@ -14,7 +14,7 @@ class HectaresJSONView(JSONViewBase):
     def dispatch(self, request, *args, **kwargs):
         filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
         h = self.get_hectares(filter_sql)
-        return HttpResponse(json.dumps(h[0] if h else {}, cls=DecimalEncoder), content_type="text/plain")
+        return HttpResponse(json.dumps(h[0] if h else {}, cls=DecimalEncoder), content_type="application/json")
 
     def get_hectares(self, filter_sql):
         queryset = HectaresQuerySet()
