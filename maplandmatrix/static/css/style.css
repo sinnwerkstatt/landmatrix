@@ -1,0 +1,30 @@
+.ol-full-screen {
+    left: 0.5em;
+    top: 4.5em;
+    right:auto;
+}
+
+.ol-mouse-position {
+    position: absolute;
+    float: right;
+    top: 8px;
+    text-align: center;
+    background-color: #fff;
+    width: 10em;
+    background-opacity: 0.5;
+}
+
+.popover-title {
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #ebebeb;
+    border-radius: 5px 5px 0 0;
+    font-size: 14px;
+    margin: 0;
+    padding: 8px 14px;
+    text-align: center;
+}
+
+p {
+    margin: 0;
+    padding: 2px 2px;
+}

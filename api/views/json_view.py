@@ -4,6 +4,7 @@ from api.views.target_country_summaries_json_view import TargetCountrySummariesJ
 from api.views.investor_country_summaries_json_view import InvestorCountrySummariesJSONView
 from api.views.top_10_countries_json_view import Top10CountriesJSONView
 from api.views.transnational_deals_by_country_json_view import TransnationalDealsByCountryJSONView
+from api.views.deals_json_view import DealsJSONView
 from api.views.transnational_deals_json_view import TransnationalDealsJSONView
 from api.views.implementation_status_json_view import ImplementationStatusJSONView
 from api.views.intention_of_investment_json_view import IntentionOfInvestmentJSONView
@@ -29,10 +30,10 @@ class JSONView(TemplateView):
         'target_country_summaries.json':       TargetCountrySummariesJSONView,
         'agricultural-produce.json':           AgriculturalProduceJSONView,
         'hectares.json':                       HectaresJSONView,
+        'deals.json':                          DealsJSONView,
     }
 
     def dispatch(self, request, *args, **kwargs):
         if kwargs.get('type') in self.targets:
             return self.targets[kwargs.get('type')]().dispatch(request, args, kwargs)
         raise ValueError(str(kwargs) + ' could not be resolved to any of ' + str(list(self.targets.keys())))
-
