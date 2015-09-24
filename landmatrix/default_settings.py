@@ -162,7 +162,6 @@ TEMPLATE_DIRS = (
 CMS_TEMPLATES = (
     ('1-column.html', '1 column'),
     ('start.html', 'Start'),
-    ('fullwidth.html', 'django CMS stock'),
     ('base-gettheidea.html', 'Get the idea'),
 )
 
