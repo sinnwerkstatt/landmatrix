@@ -24,11 +24,9 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
         negotiation.attributes->'pi_negotiation_status'       AS negotiation_status,
         implementation.attributes->'pi_implementation_status' AS implementation_status
     FROM landmatrix_activity                       AS a
---    JOIN      landmatrix_status                                        ON landmatrix_status.id = a.fk_status_id
     LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
 --    LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id
     LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
---    LEFT JOIN landmatrix_status                    AS pi_st            ON pi.fk_status_id = pi_st.id
 --    LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'
 --    LEFT JOIN landmatrix_country                   AS investor_country ON CAST(skvf1.attributes->'country' AS NUMERIC) = investor_country.id
 --    LEFT JOIN landmatrix_region                    AS investor_region  ON investor_country.fk_region_id = investor_region.id
@@ -39,7 +37,6 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
     LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'
     LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'
     LEFT JOIN landmatrix_activityattributegroup    AS bf               ON a.id = bf.fk_activity_id AND bf.attributes ? 'pi_deal'
---    LEFT JOIN landmatrix_activityattributegroup    AS size             ON a.id = size.fk_activity_id AND size.attributes ? 'pi_deal_size'
     LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'
     WHERE
         a.version = (

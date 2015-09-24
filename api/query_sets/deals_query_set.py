@@ -38,8 +38,8 @@ WHERE
     AND a.fk_status_id IN (2, 3)
     AND bf.attributes->'pi_deal' = 'True'
     AND pi.version = (
-        SELECT MAX(version) FROM landmatrix_primaryinvestor AS amax
-        WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
+        SELECT MAX(version) FROM landmatrix_primaryinvestor AS pimax
+        WHERE pimax.primary_investor_identifier = pi.primary_investor_identifier AND pimax.fk_status_id IN (2, 3, 4)
     )
     AND pi.fk_status_id IN (2, 3)
 -- additional where conditions:
