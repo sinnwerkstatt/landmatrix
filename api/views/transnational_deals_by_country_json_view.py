@@ -19,15 +19,11 @@ class TransnationalDealsByCountryJSONView:
         return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="application/json")
 
     def get_transnational_deals_by_target_country(self, get):
-        country = get.get("country", None)
         queryset = TransnationalDealsByTargetCountryQuerySet(get)
-        queryset.set_country(country)
         return queryset.all()
 
     def get_transnational_deals_by_investor_country(self, get):
-        country = get.get("country", None)
         queryset = TransnationalDealsByInvestorCountryQuerySet(get)
-        queryset.set_country(country)
         return queryset.all()
 
 
