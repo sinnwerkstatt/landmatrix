@@ -39,7 +39,6 @@ from api.tests.deals_test_data import DealsTestData
 
 class TestAgriculturalProduce(ApiTestFunctions, DealsTestData):
 
-    PREFIX = '/en/api/'
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational'
     DEAL_SCOPE = 'transnational'
     NEGOTIATION_STATUS = 'concluded (oral agreement)'
@@ -147,6 +146,19 @@ class TestAgriculturalProduceDomesticConcludedIntended2(TestAgriculturalProduceD
 class TestAgriculturalProduceDomesticFailed(TestAgriculturalProduceDomesticConcluded):
     NEGOTIATION_STATUS = "failed (contract canceled)"
     POSTFIX = '.json?negotiation_status=failed&deal_scope=domestic'
+
+
+class TestAgriculturalProduceDataSource(TestAgriculturalProduce):
+
+    POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
+    RELEVANT_ATTRIBUTES = {'type': 'Media report'}
+    NUM_RELEVANT_COMBINATIONS = 0
+
+
+class TestAgriculturalProduceDataSourceNot(TestAgriculturalProduce):
+    POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
+    RELEVANT_ATTRIBUTES = {'type': 'NOT A Media report'}
+
 
 def pprint(array):
     for element in array:
