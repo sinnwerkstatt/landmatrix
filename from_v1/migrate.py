@@ -18,7 +18,7 @@ def load_project(proj_path, app_name):
 
 V1, V2 = 'v1_pg', 'v2'
 
-BASE_PATH = '/home/lene/workspace'
+BASE_PATH = '/home/lene/workspace/landmatrix'
 
 load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
 load_project(BASE_PATH+'/land-matrix', 'editor')
@@ -32,8 +32,11 @@ if __name__ == '__main__':
         from map_model_implementations import *
         from editor.models import ActivityAttributeGroup
 
-        # a number of possible uses listed here as examples
+        MapActivity._done = True
+        MapLanguage._done = True
+        MapActivityAttributeGroup.map_all(save=True)
 
+        # a number of possible uses listed here as examples
         if False:
             MapActivity._done = True
             MapLanguage._done = True
@@ -62,5 +65,5 @@ if __name__ == '__main__':
 
     except ConnectionDoesNotExist:
         print('You need to set CONVERT_DB to True in settings.py!')
-    except AttributeError:
-        print('You need to check out branch "postgres" of the old land-matrix project under '+BASE_PATH+'/land-matrix!')
+#    except AttributeError:
+#        print('You need to check out branch "postgres" of the old land-matrix project under '+BASE_PATH+'/land-matrix!')
