@@ -2,7 +2,6 @@ import timeit
 from api.query_sets.deals_query_set import DealsQuerySet
 from api.query_sets.negotiation_status_query_set import NegotiationStatusQuerySet
 from api.views.decimal_encoder import DecimalEncoder
-from api.views.json_view_base import JSONViewBase
 
 import json
 from django.http.response import HttpResponse
@@ -11,7 +10,7 @@ from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class DealsJSONView(JSONViewBase):
+class DealsJSONView():
 
     def dispatch(self, request, *args, **kwargs):
         print(args, kwargs)

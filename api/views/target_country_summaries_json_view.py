@@ -1,26 +1,21 @@
 from django.core.urlresolvers import reverse
 from api.query_sets.target_country_summaries_query_set import TargetCountrySummariesQuerySet
 from api.views.decimal_encoder import DecimalEncoder
-from api.views.json_view_base import JSONViewBase
 
 from django.http.response import HttpResponse
 import json
-from django.template.defaultfilters import slugify
 from itertools import groupby
 from global_app.forms.add_deal_general_form import AddDealGeneralForm
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class TargetCountrySummariesJSONView(JSONViewBase):
+class TargetCountrySummariesJSONView:
 
     INTENTIONS = filter(lambda k: "Mining" not in k, [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices])
 
     def dispatch(self, request, *args, **kwargs):
-        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-        region = request.GET.get("regions", None)
-        country_code = request.GET.get("country_code", None)
-        countries_summary = self.get_by_target_country(filter_sql, region, country_code)
+        countries_summary = self.get_by_target_country(request.GET)
         output = [self.to_json_record(c) for c in countries_summary if c['country_id']]
         return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="application/json")
 
@@ -38,8 +33,10 @@ class TargetCountrySummariesJSONView(JSONViewBase):
         ]
         return c
 
-    def get_by_target_country(self, filter_sql, region, country_code):
-        queryset = TargetCountrySummariesQuerySet(filter_sql)
+    def get_by_target_country(self, get):
+        region = get.get("regions", None)
+        country_code = get.get("country_code", None)
+        queryset = TargetCountrySummariesQuerySet(get)
         queryset.set_country_region(country_code, region)
         return queryset.all()
 

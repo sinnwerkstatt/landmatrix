@@ -1,5 +1,4 @@
 from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
-from api.views.json_view_base import JSONViewBase
 
 from django.http.response import HttpResponse
 import json
@@ -7,16 +6,15 @@ import json
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class TransnationalDealsJSONView(JSONViewBase):
+class TransnationalDealsJSONView:
 
     def dispatch(self, request, *args, **kwargs):
-        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-        countries = self.get_transnational_deals(filter_sql, request.GET.getlist("region", []))
+        countries = self.get_transnational_deals(request.GET)
         return HttpResponse(json.dumps(countries, ensure_ascii=False), content_type="application/json")
 
-    def get_transnational_deals(self, filter_sql, regions=None):
-        queryset = TransnationalDealsQuerySet(filter_sql)
-        queryset.set_regions(regions)
+    def get_transnational_deals(self, get):
+        queryset = TransnationalDealsQuerySet(get)
+        queryset.set_regions(get.getlist("region", []))
         return queryset.all()
 
 
