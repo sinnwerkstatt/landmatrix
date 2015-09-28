@@ -163,5 +163,6 @@ CMS_TEMPLATES = (
     ('1-column.html', '1 column'),
     ('start.html', 'Start'),
     ('base-gettheidea.html', 'Get the idea'),
+    ('base-map.html', 'Map'),
 )
 
