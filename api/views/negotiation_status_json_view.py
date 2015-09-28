@@ -16,6 +16,5 @@ class NegotiationStatusJSONView(JSONViewBase):
 
     def get_negotiation_status(self, request):
         filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-        queryset = NegotiationStatusQuerySet()
-        queryset.set_filter_sql(filter_sql)
+        queryset = NegotiationStatusQuerySet(filter_sql)
         return queryset.all()

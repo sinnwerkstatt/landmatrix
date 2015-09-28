@@ -14,8 +14,9 @@ class FakeQuerySet(QuerySet):
 
     _filter_sql = ''
 
-    def __init__(self):
+    def __init__(self, filter_sql):
         self._all_results = []
+        self.set_filter_sql(filter_sql)
         super().__init__()
 
     def all(self):

@@ -41,6 +41,5 @@ class InvestorCountrySummariesJSONView(JSONViewBase):
 
     def get_by_investor_country(self, filter_sql):
 
-        queryset = InvestorCountrySummariesQuerySet()
-        queryset.set_filter_sql(filter_sql)
+        queryset = InvestorCountrySummariesQuerySet(filter_sql)
         return queryset.all()
