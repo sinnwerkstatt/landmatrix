@@ -1,11 +1,9 @@
+from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from api.query_sets.fake_query_set import FakeQuerySet
 
-from django.template.defaultfilters import slugify
-from itertools import islice
-
-class TransnationalDealsQuerySet(FakeQuerySet):
+class TransnationalDealsQuerySet(FakeQuerySetWithSubquery):
 
     fields = [
         ('region_id', 'sub.region_id'),
@@ -16,17 +14,20 @@ class TransnationalDealsQuerySet(FakeQuerySet):
 
     QUERY = """
 SELECT DISTINCT
+--  columns:
     %s
 FROM landmatrix_activity                    AS a
 LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.fk_activity_id AND size.attributes ? 'pi_deal_size',
 (
     SELECT DISTINCT
         a.id,
+--  subquery columns:
         %s
     FROM landmatrix_activity                       AS a
     LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
     LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
     LEFT JOIN landmatrix_activityattributegroup    AS bf               ON a.id = bf.fk_activity_id AND bf.attributes ? 'pi_deal'
+--  additional joins:
     %s
     WHERE
         a.version = (
@@ -41,7 +42,9 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
         )
         AND pi.fk_status_id IN (2, 3)
         AND investor_country.id <> deal_country.id
+--  additional where conditions:
         %s
+--  filter sql:
         %s
 
 )                                           AS sub
@@ -56,13 +59,8 @@ GROUP BY sub.region_id, sub.region
     def all(self):
         if self.country:
             self._additional_wheres.append("%s.id = %s " % (self.country, self.COUNTRY_FIELD))
-        return FakeQuerySet.all(self)
+        return super().all()
 
-    def sql_query(self):
-        return self.QUERY % (self.columns(), self.subquery_columns(), self.additional_joins(), self.additional_wheres(), self._filter_sql)
-
-    def subquery_columns(self):
-        return ",\n        ".join([definition+" AS "+alias for alias, definition in self._subquery_fields])
 
 
 class TransnationalDealsByTargetCountryQuerySet(TransnationalDealsQuerySet):

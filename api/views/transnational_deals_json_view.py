@@ -14,7 +14,6 @@ class TransnationalDealsJSONView:
 
     def get_transnational_deals(self, get):
         queryset = TransnationalDealsQuerySet(get)
-        queryset.set_regions(get.getlist("region", []))
         return queryset.all()
 
 
