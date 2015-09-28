@@ -24,9 +24,8 @@ class TestTop10Countries(ApiTestFunctions, DealsTestData):
     PREFIX = '/en/api/'
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational'
     DEAL_SCOPE = 'transnational'
-    RELEVANT_ATTRIBUTES = {
-        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'pi_negotiation_status': 'Concluded (Contract signed)'
-    }
+    NEGOTIATION_STATUS = 'concluded (oral agreement)'
+    RELEVANT_ATTRIBUTES = {}
     NUM_RELEVANT_DEALS = 1
 
     def setUp(self):
@@ -43,14 +42,10 @@ class TestTop10Countries(ApiTestFunctions, DealsTestData):
 
     NUM_DEALS = 11
     def test_with_data(self):
-        self._generate_countries(self.NUM_DEALS)
-        for i in range(0, self.NUM_DEALS+1):
-            investor_country = Country(self.investor_country.id+1+i)
-            self._generate_deal(investor_country, self.deal_country, {'pi_deal_size': 2 << i})
+        self._generate_enough_deals(self.NEGOTIATION_STATUS)
 
-        result = self.get_content('top-10-countries')
-        investors = result['investor_country']
-        targets = result['target_country']
+        investors, targets = self._get_result()
+
         self.assertEqual(1, len(targets))
         self.assertEqual(self.deal_country.name, targets[0]['name'])
         self.assertEqual(self.NUM_DEALS, targets[0]['deals'])
@@ -62,3 +57,62 @@ class TestTop10Countries(ApiTestFunctions, DealsTestData):
             self.assertEqual(1, investors[i]['deals'])
             self.assertGreater(last_size, investors[i]['hectares'])
             last_size = investors[i]['hectares']
+
+    def test_with_wrong_status(self):
+        self._generate_enough_deals(self.NEGOTIATION_STATUS + 'xxx')
+
+        investors, targets = self._get_result()
+
+        self.assertEqual(0, len(targets))
+        self.assertEqual(0, len(investors))
+
+    def _get_result(self):
+        result = self.get_content('top-10-countries')
+        investors = result['investor_country']
+        targets = result['target_country']
+        return investors, targets
+
+    def _generate_enough_deals(self, status):
+        self._generate_countries(self.NUM_DEALS)
+        for i in range(0, self.NUM_DEALS + 1):
+            investor_country = Country(self.investor_country.id + 1 + i)
+            attributes = {'pi_deal_size': 2 << i, 'deal_scope': self.DEAL_SCOPE, 'pi_negotiation_status': status}
+            attributes.update(self.RELEVANT_ATTRIBUTES)
+            self._generate_deal(investor_country, self.deal_country, attributes)
+
+
+class TestTop10CountriesIntended(TestTop10Countries):
+    NEGOTIATION_STATUS = "intended (under negotiation)"
+    POSTFIX = '.json?negotiation_status=intended&deal_scope=transnational'
+
+
+class TestTop10CountriesConcludedIntended1(TestTop10Countries):
+    NEGOTIATION_STATUS = 'concluded (oral agreement)'
+    POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational'
+
+
+class TestTop10CountriesConcludedIntended2(TestTop10Countries):
+    NEGOTIATION_STATUS = "intended (under negotiation)"
+    POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational'
+
+
+class TestTop10CountriesFailed(TestTop10Countries):
+    NEGOTIATION_STATUS = "failed (contract canceled)"
+    POSTFIX = '.json?negotiation_status=failed&deal_scope=transnational'
+
+
+class TestTop10CountriesDataSource(TestTop10Countries):
+
+    POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
+    RELEVANT_ATTRIBUTES = {'type': 'Media report'}
+
+    def test_with_data(self):
+        self._generate_enough_deals(self.NEGOTIATION_STATUS)
+        investors, targets = self._get_result()
+        self.assertEqual(0, len(targets))
+        self.assertEqual(0, len(investors))
+
+
+class TestTop10CountriesDataSourceNot(TestTop10Countries):
+    POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
+    RELEVANT_ATTRIBUTES = {'type': 'NOT A Media report'}

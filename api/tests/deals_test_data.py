@@ -138,7 +138,7 @@ class DealsTestData:
 
         activity, stakeholder = self._generate_involvement(act_id)
         attributes.update({
-            'target_country': str(target_country.id), 'pi_negotiation_status': 'concluded (oral agreement)', 'deal_scope': 'transnational', 'pi_deal': 'True'
+            'target_country': str(target_country.id), 'pi_deal': 'True'
         })
         ActivityAttributeGroup(
             fk_activity=activity, fk_language_id=1, attributes=attributes
