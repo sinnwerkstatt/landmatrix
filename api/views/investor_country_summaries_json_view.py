@@ -1,22 +1,17 @@
 from django.core.urlresolvers import reverse
 from api.query_sets.investor_country_summaries_query_set import InvestorCountrySummariesQuerySet
 from api.views.decimal_encoder import DecimalEncoder
-from api.views.json_view_base import JSONViewBase
 
 from django.http.response import HttpResponse
 import json
-from django.template.defaultfilters import slugify
-from itertools import groupby
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class InvestorCountrySummariesJSONView(JSONViewBase):
+class InvestorCountrySummariesJSONView:
 
     def dispatch(self, request, *args, **kwargs):
-        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-
-        countries_summary = self.get_by_investor_country(filter_sql)
+        countries_summary = self.get_by_investor_country(request.GET)
 
         countries = {}
         for c in countries_summary:
@@ -39,7 +34,7 @@ class InvestorCountrySummariesJSONView(JSONViewBase):
 
         return c
 
-    def get_by_investor_country(self, filter_sql):
+    def get_by_investor_country(self, get):
 
-        queryset = InvestorCountrySummariesQuerySet(filter_sql)
+        queryset = InvestorCountrySummariesQuerySet(get)
         return queryset.all()

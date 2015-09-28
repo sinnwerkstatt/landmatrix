@@ -1,6 +1,5 @@
 from api.query_sets.agricultural_produce_query_set import AgriculturalProduceQuerySet
 from api.views.decimal_encoder import DecimalEncoder
-from api.views.json_view_base import JSONViewBase
 
 import json
 from django.http.response import HttpResponse
@@ -8,7 +7,7 @@ from django.http.response import HttpResponse
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class AgriculturalProduceJSONView(JSONViewBase):
+class AgriculturalProduceJSONView:
 
     REGIONS = {
         'america': ["5","13","21"],
@@ -20,7 +19,6 @@ class AgriculturalProduceJSONView(JSONViewBase):
     }
 
     def dispatch(self, request, *args, **kwargs):
-        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
         output = []
         for region, value in self.REGIONS.items():
             ap_region = {
@@ -35,7 +33,7 @@ class AgriculturalProduceJSONView(JSONViewBase):
                 "flex_crop": 0,
                 "multiple_use": 0,
             }
-            ap_list = self.get_agricultural_produces(filter_sql, value)
+            ap_list = self.get_agricultural_produces(request.GET, value)
 
             available_sum, not_available_sum = self.calculate_sums(ap_list)
 
@@ -64,7 +62,7 @@ class AgriculturalProduceJSONView(JSONViewBase):
                 not_available_sum += float(ap['hectares'])
         return available_sum, not_available_sum
 
-    def get_agricultural_produces(self, filter_sql, region_ids):
-        queryset = AgriculturalProduceQuerySet(filter_sql)
+    def get_agricultural_produces(self, get, region_ids):
+        queryset = AgriculturalProduceQuerySet(get)
         queryset.set_regions(region_ids)
         return queryset.all()
