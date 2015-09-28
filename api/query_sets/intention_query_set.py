@@ -60,8 +60,9 @@ WHERE sub.id = a.id
 GROUP BY sub.intention ORDER BY sub.intention
 """
 
-    def set_intention(self, intention):
-        self.intention = intention
+    def __init__(self, get_data):
+        super().__init__(get_data)
+        self.intention = get_data.get("intention", "")
 
     INTENTIONS = list(filter(lambda k: "Mining" not in k, [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices]))
     INTENTIONS_AGRICULTURE = [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices[0][2]]

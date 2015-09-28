@@ -15,5 +15,4 @@ class IntentionOfInvestmentJSONView:
 
     def get_intention(self, get):
         queryset = IntentionQuerySet(get)
-        queryset.set_intention(get.get("intention", ""))
         return queryset.all()
