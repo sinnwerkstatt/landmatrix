@@ -17,6 +17,5 @@ class HectaresJSONView(JSONViewBase):
         return HttpResponse(json.dumps(h[0] if h else {}, cls=DecimalEncoder), content_type="application/json")
 
     def get_hectares(self, filter_sql):
-        queryset = HectaresQuerySet()
-        queryset.set_filter_sql(filter_sql)
+        queryset = HectaresQuerySet(filter_sql)
         return queryset.all()

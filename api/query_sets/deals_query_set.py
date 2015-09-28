@@ -50,6 +50,9 @@ WHERE
     _additional_joins = []
     _additional_wheres = []
 
+    def __init__(self):
+        super().__init__('')
+
     def set_limit(self, limit):
         self.limit = limit
 

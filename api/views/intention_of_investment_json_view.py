@@ -16,7 +16,6 @@ class IntentionOfInvestmentJSONView(JSONViewBase):
         return HttpResponse(json.dumps(found, cls=DecimalEncoder), content_type="application/json")
 
     def get_intention(self, filter_sql, parent_intention):
-        queryset = IntentionQuerySet()
+        queryset = IntentionQuerySet(filter_sql)
         queryset.set_intention(parent_intention)
-        queryset.set_filter_sql(filter_sql)
         return queryset.all()

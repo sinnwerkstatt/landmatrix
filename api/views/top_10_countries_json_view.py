@@ -32,11 +32,9 @@ class Top10CountriesJSONView(JSONViewBase):
         return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="application/json")
 
     def get_top_10_investors(self, filter_sql):
-        queryset = Top10InvestorCountriesQuerySet()
-        queryset.set_filter_sql(filter_sql)
+        queryset = Top10InvestorCountriesQuerySet(filter_sql)
         return queryset.all()
 
     def get_top_10_target_countries(self, filter_sql):
-        queryset = Top10TargetCountriesQuerySet()
-        queryset.set_filter_sql(filter_sql)
+        queryset = Top10TargetCountriesQuerySet(filter_sql)
         return queryset.all()

@@ -22,15 +22,13 @@ class TransnationalDealsByCountryJSONView(JSONViewBase):
         return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="application/json")
 
     def get_transnational_deals_by_target_country(self, filter_sql, country):
-        queryset = TransnationalDealsByTargetCountryQuerySet()
+        queryset = TransnationalDealsByTargetCountryQuerySet(filter_sql)
         queryset.set_country(country)
-        queryset.set_filter_sql(filter_sql)
         return queryset.all()
 
     def get_transnational_deals_by_investor_country(self, filter_sql, country):
-        queryset = TransnationalDealsByInvestorCountryQuerySet()
+        queryset = TransnationalDealsByInvestorCountryQuerySet(filter_sql)
         queryset.set_country(country)
-        queryset.set_filter_sql(filter_sql)
         return queryset.all()
 
 
