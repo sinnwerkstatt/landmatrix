@@ -65,7 +65,6 @@ class AgriculturalProduceJSONView(JSONViewBase):
         return available_sum, not_available_sum
 
     def get_agricultural_produces(self, filter_sql, region_ids):
-        queryset = AgriculturalProduceQuerySet()
-        queryset.set_filter_sql(filter_sql)
+        queryset = AgriculturalProduceQuerySet(filter_sql)
         queryset.set_regions(region_ids)
         return queryset.all()

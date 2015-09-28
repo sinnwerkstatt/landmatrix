@@ -15,9 +15,8 @@ class TransnationalDealsJSONView(JSONViewBase):
         return HttpResponse(json.dumps(countries, ensure_ascii=False), content_type="application/json")
 
     def get_transnational_deals(self, filter_sql, regions=None):
-        queryset = TransnationalDealsQuerySet()
+        queryset = TransnationalDealsQuerySet(filter_sql)
         queryset.set_regions(regions)
-        queryset.set_filter_sql(filter_sql)
         return queryset.all()
 
 
