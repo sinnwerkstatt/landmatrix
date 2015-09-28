@@ -34,10 +34,7 @@ class TargetCountrySummariesJSONView:
         return c
 
     def get_by_target_country(self, get):
-        region = get.get("regions", None)
-        country_code = get.get("country_code", None)
         queryset = TargetCountrySummariesQuerySet(get)
-        queryset.set_country_region(country_code, region)
         return queryset.all()
 
     def map_intention(self, intention):

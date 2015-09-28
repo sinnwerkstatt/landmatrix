@@ -18,19 +18,34 @@ class FakeQuerySet(QuerySet):
 
     def __init__(self, get_data):
         self._all_results = []
-        self.set_filter_sql(self._get_filter(get_data))
+        self._set_filter_sql(self._get_filter(get_data))
         super().__init__()
 
     def all(self):
         self._fetch_all()
         return self._all_results
 
-    @classmethod
-    def set_filter_sql(cls, filter):
-        cls._filter_sql = filter
-
     def sql_query(self):
         return self.QUERY % self._filter_sql
+
+#    def sql_query(self):
+#        return self.QUERY % (self.columns(), self.additional_joins(), self.additional_wheres(), self._filter_sql)
+
+    _additional_joins = []
+    _additional_wheres = []
+
+    def columns(self):
+        return ",\n    ".join([definition+" AS "+alias for alias, definition in self.fields])
+
+    def additional_joins(self):
+        return "\n".join(self._additional_joins)
+
+    def additional_wheres(self):
+        return 'AND ' + "\n    AND ".join(self._additional_wheres) if self._additional_wheres else ''
+
+
+    def _set_filter_sql(self, filter):
+        self._filter_sql = filter
 
     def _fetch_all(self):
         if not self._all_results:

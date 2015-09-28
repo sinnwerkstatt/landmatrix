@@ -47,8 +47,6 @@ WHERE
 -- filter sql:
     %s
 """
-    _additional_joins = []
-    _additional_wheres = []
 
     def __init__(self):
         super().__init__('')
@@ -137,18 +135,6 @@ WHERE
         print(self.sql_query())
 
         return super().all()
-
-    def columns(self):
-        return ",\n    ".join([definition+" AS "+alias for alias, definition in self.fields])
-
-    def additional_joins(self):
-        return "\n".join(self._additional_joins)
-
-    def additional_wheres(self):
-        return 'AND ' + "\n    AND ".join(self._additional_wheres) if self._additional_wheres else ''
-
-    def sql_query(self):
-        return self.QUERY % (self.columns(), self.additional_joins(), self.additional_wheres(), self._filter_sql)
 
 
 def add_to_list_if_not_present(old_list, additional_elements):
