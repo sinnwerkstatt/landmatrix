@@ -43,6 +43,7 @@ class TestTargetCountrySummaries(ApiTestFunctions, DealsTestData):
                     attributes.update(self.RELEVANT_ATTRIBUTES)
                     self._generate_deal(self.investor_country, self.deal_country, attributes)
 
+
 class TestTargetCountrySummariesIntended(TestTargetCountrySummaries):
     NEGOTIATION_STATUS = "intended (under negotiation)"
     POSTFIX = '.json?negotiation_status=intended&deal_scope=transnational'
@@ -66,7 +67,6 @@ class TestTargetCountrySummariesFailed(TestTargetCountrySummaries):
 
 
 class TestTargetCountrySummariesDataSource(TestTargetCountrySummaries):
-
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
     RELEVANT_ATTRIBUTES = {'type': 'Media report'}
     NUM_RELEVANT_COMBINATIONS = 0
