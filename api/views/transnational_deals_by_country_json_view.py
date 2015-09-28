@@ -1,7 +1,6 @@
 from api.query_sets.transnational_deals_by_country_query_set import TransnationalDealsByTargetCountryQuerySet, \
     TransnationalDealsByInvestorCountryQuerySet
 from api.views.decimal_encoder import DecimalEncoder
-from api.views.json_view_base import JSONViewBase
 
 from django.http.response import HttpResponse
 import json
@@ -10,24 +9,24 @@ from django.template.defaultfilters import slugify
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class TransnationalDealsByCountryJSONView(JSONViewBase):
+class TransnationalDealsByCountryJSONView:
 
     def dispatch(self, request, *args, **kwargs):
-        filter_sql = self._get_filter(request.GET.getlist("negotiation_status", []), request.GET.getlist("deal_scope", []), request.GET.get("data_source_type"))
-        country = request.GET.get("country", None)
         output = {
-            'target_country': aggregate_regions(self.get_transnational_deals_by_target_country(filter_sql, country)),
-            'investor_country': aggregate_regions(self.get_transnational_deals_by_investor_country(filter_sql, country))
+            'target_country': aggregate_regions(self.get_transnational_deals_by_target_country(request.GET)),
+            'investor_country': aggregate_regions(self.get_transnational_deals_by_investor_country(request.GET))
         }
         return HttpResponse(json.dumps(output, cls=DecimalEncoder), content_type="application/json")
 
-    def get_transnational_deals_by_target_country(self, filter_sql, country):
-        queryset = TransnationalDealsByTargetCountryQuerySet(filter_sql)
+    def get_transnational_deals_by_target_country(self, get):
+        country = get.get("country", None)
+        queryset = TransnationalDealsByTargetCountryQuerySet(get)
         queryset.set_country(country)
         return queryset.all()
 
-    def get_transnational_deals_by_investor_country(self, filter_sql, country):
-        queryset = TransnationalDealsByInvestorCountryQuerySet(filter_sql)
+    def get_transnational_deals_by_investor_country(self, get):
+        country = get.get("country", None)
+        queryset = TransnationalDealsByInvestorCountryQuerySet(get)
         queryset.set_country(country)
         return queryset.all()
 
