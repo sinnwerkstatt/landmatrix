@@ -68,19 +68,19 @@ class TestHectaresIntended(TestHectares):
     POSTFIX = '.json?negotiation_status=intended&deal_scope=transnational'
 
 
-class TestTop10CountriesConcludedIntended1(TestHectares):
+class TestHectaresConcludedIntended1(TestHectares):
     NEGOTIATION_STATUS = 'concluded (oral agreement)'
     POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational'
     NUM_RELEVANT_COMBINATIONS = 2
 
 
-class TestTop10CountriesConcludedIntended2(TestHectares):
+class TestHectaresConcludedIntended2(TestHectares):
     NEGOTIATION_STATUS = "intended (under negotiation)"
     POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational'
     NUM_RELEVANT_COMBINATIONS = 2
 
 
-class TestTop10CountriesFailed(TestHectares):
+class TestHectaresFailed(TestHectares):
     NEGOTIATION_STATUS = "failed (contract canceled)"
     POSTFIX = '.json?negotiation_status=failed&deal_scope=transnational'
 
@@ -96,31 +96,31 @@ class TestHectaresDomesticIntended(TestHectaresDomesticConcluded):
     POSTFIX = '.json?negotiation_status=intended&deal_scope=domestic'
 
 
-class TestTop10CountriesDomesticConcludedIntended1(TestHectaresDomesticConcluded):
+class TestHectaresDomesticConcludedIntended1(TestHectaresDomesticConcluded):
     NEGOTIATION_STATUS = 'concluded (oral agreement)'
     POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=domestic'
     NUM_RELEVANT_COMBINATIONS = 2
 
 
-class TestTop10CountriesDomesticConcludedIntended2(TestHectaresDomesticConcluded):
+class TestHectaresDomesticConcludedIntended2(TestHectaresDomesticConcluded):
     NEGOTIATION_STATUS = "intended (under negotiation)"
     POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=domestic'
     NUM_RELEVANT_COMBINATIONS = 2
 
 
-class TestTop10CountriesDomesticFailed(TestHectaresDomesticConcluded):
+class TestHectaresDomesticFailed(TestHectaresDomesticConcluded):
     NEGOTIATION_STATUS = "failed (contract canceled)"
     POSTFIX = '.json?negotiation_status=failed&deal_scope=domestic'
 
 
-class TestTop10CountriesDataSource(TestHectares):
+class TestHectaresDataSource(TestHectares):
 
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
     RELEVANT_ATTRIBUTES = {'type': 'Media report'}
     NUM_RELEVANT_COMBINATIONS = 0
 
 
-class TestTop10CountriesDataSourceNot(TestHectares):
+class TestHectaresDataSourceNot(TestHectares):
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
     RELEVANT_ATTRIBUTES = {'type': 'NOT A Media report'}
 
