@@ -5,6 +5,8 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class FakeQuerySetWithSubquery(FakeQuerySet):
 
+    _additional_subquery_options = ""
+
     QUERY = """
 SELECT DISTINCT
 --  columns:
@@ -13,7 +15,7 @@ FROM landmatrix_activity                    AS a
 LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.fk_activity_id AND size.attributes ? 'pi_deal_size',
 (
     SELECT DISTINCT
-        a.id,
+        a.id
 --  subquery columns:
         %s
     FROM landmatrix_activity                       AS a
@@ -38,17 +40,30 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
         %s
 --  filter sql:
         %s
+-- additional subquery options:
+    %s
 )                                           AS sub
 WHERE sub.id = a.id
 --  group by:
 %s
+--  order by:
+%s
 """
 
     def sql_query(self):
-        return self.QUERY % (self.columns(), self.subquery_columns(), self.additional_joins(), self.additional_wheres(), self._filter_sql, self.group_by())
+        return self.QUERY % (
+            self.columns(),
+            self.subquery_columns(),
+            self.additional_joins(),
+            self.additional_wheres(),
+            self._filter_sql,
+            self._additional_subquery_options,
+            self.group_by(),
+            self.order_by()
+        )
 
     def subquery_columns(self):
-        return ",\n        ".join([definition+" AS "+alias for alias, definition in self._subquery_fields])
+        return ",\n        " + ",\n        ".join([definition+" AS "+alias for alias, definition in self._subquery_fields]) if self._subquery_fields else ''
 
 
 class FakeQuerySetFlat(FakeQuerySet):
