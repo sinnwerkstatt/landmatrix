@@ -1,3 +1,5 @@
+from api.query_sets.hectares_query_set import HectaresQuerySet
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from .api_test_functions import ApiTestFunctions
