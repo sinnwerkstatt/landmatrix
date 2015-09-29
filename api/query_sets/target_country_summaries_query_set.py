@@ -1,9 +1,11 @@
+from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from api.query_sets.fake_query_set import FakeQuerySet
+from django.core.urlresolvers import reverse
+from itertools import groupby
 
-
-class TargetCountrySummariesQuerySet(FakeQuerySet):
+class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
 
     fields = [
         ('country_id', 'sub.country_id'),
@@ -15,56 +17,24 @@ class TargetCountrySummariesQuerySet(FakeQuerySet):
         ('hectares',   "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))"),
         ('intentions', 'ARRAY_AGG(sub.intention)')
     ]
-
-    QUERY = """
-SELECT
-    sub.country_id,
-    sub.country AS country,
-    sub.name as region,
-    sub.point_lat,
-    sub.point_lon,
-    COUNT(DISTINCT a.activity_identifier)                                           AS deal_count,
-    ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC))) AS deal_size,
-    ARRAY_AGG(sub.intention)                                            AS intentions
-FROM landmatrix_activity                    AS a
-LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.fk_activity_id AND size.attributes ? 'pi_deal_size',
-(
-    SELECT DISTINCT
-        a.id,
-        deal_country.id AS country_id,
-        deal_country.name AS country,
-        deal_region.name,
-        deal_country.point_lat AS point_lat,
-        deal_country.point_lon AS point_lon,
-        STRING_AGG(DISTINCT intention.attributes->'intention', ',') AS intention
-    FROM landmatrix_activity                       AS a
-    LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
-    LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
-    LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
-    LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'
-    LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id
-    LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id
-    LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'
-    LEFT JOIN landmatrix_activityattributegroup    AS bf               ON a.id = bf.fk_activity_id AND bf.attributes ? 'pi_deal'
-    LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'
-    WHERE
-        a.version = (
-            SELECT MAX(version) FROM landmatrix_activity AS amax
-            WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
-        )
-        AND a.fk_status_id IN (2, 3)
-        AND bf.attributes->'pi_deal' = 'True'
-        AND pi.version = (
-            SELECT MAX(version) FROM landmatrix_primaryinvestor AS amax
-            WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
-        )
-        AND pi.fk_status_id IN (2, 3)
-        %s
-    GROUP BY a.id, deal_country.id, deal_region.name
-)                                           AS sub
-WHERE sub.id = a.id
-            GROUP BY sub.country, sub.country_id, sub.name, sub.point_lat, sub.point_lon
-"""
+    _subquery_fields = [
+        ('country_id', "deal_country.id"),
+        ('country', "deal_country.name"),
+        ('name', "deal_region.name"),
+        ('point_lat', "deal_country.point_lat"),
+        ('point_lon', "deal_country.point_lon"),
+        ('intention', "STRING_AGG(DISTINCT intention.attributes->'intention', ',')"),
+    ]
+    _additional_joins = [
+        "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'",
+        "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
+        "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'",
+        "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
+        "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id",
+        "LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id",
+    ]
+    _additional_subquery_options = "GROUP BY a.id, deal_country.id, deal_region.name"
+    _group_by = ['sub.country, sub.country_id, sub.name, sub.point_lat, sub.point_lon']
 
     def __init__(self, get_data):
         super().__init__(get_data)
@@ -77,4 +47,22 @@ WHERE sub.id = a.id
         if self.country_code:
             self._filter_sql += "AND deal_country.code_alpha3 = '%s' " % self.country_code
 
-        return FakeQuerySet.all(self)
+        countries_summary = super().all()
+        return [self.to_json_record(c) for c in countries_summary if c['country_id']]
+
+    def to_json_record(self, c):
+        c['name'] = c['country']
+        c["country_slug"] =c['country'].lower().replace(" ", "-")
+        c["region_slug"] =c['region'].lower().replace(" ", "-")
+        c["country_url"] = reverse("table_list", kwargs={"group": "by-target-country", "list": c['country'].lower().replace(" ", "-")})
+
+        filtered_intentions = [i for i in c['intentions'] if i]
+        sorted_intentions = [self.map_intention(c) for c in sorted(filtered_intentions)]
+        c["intentions"] = [
+            "%s (%s)" % (key, len(list(group)))
+            for key, group in groupby(sorted_intentions)
+        ]
+        return c
+
+    def map_intention(self, intention):
+        return intention.split(',')[0] if intention else None

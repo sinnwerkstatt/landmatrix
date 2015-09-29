@@ -51,7 +51,7 @@ WHERE sub.id = a.id
 """
 
     def sql_query(self):
-        return self.QUERY % (
+        return (self.QUERY + '\n%s') % (
             self.columns(),
             self.subquery_columns(),
             self.additional_joins(),
@@ -59,7 +59,8 @@ WHERE sub.id = a.id
             self._filter_sql,
             self._additional_subquery_options,
             self.group_by(),
-            self.order_by()
+            self.order_by(),
+            self.limit()
         )
 
     def subquery_columns(self):

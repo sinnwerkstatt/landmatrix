@@ -35,6 +35,7 @@ class FakeQuerySet(QuerySet):
     _additional_wheres = []
     _group_by = []
     _order_by = []
+    _limit = None
 
     def columns(self):
         return ",\n    ".join([definition+" AS "+alias for alias, definition in self.fields])
@@ -50,6 +51,9 @@ class FakeQuerySet(QuerySet):
 
     def order_by(self):
         return "\nORDER BY " + ', '.join(self._order_by) if self._order_by else ''
+
+    def limit(self):
+        return 'LIMIT ' + str(self._limit) if self._limit else ''
 
     def _set_filter_sql(self, filter):
         self._filter_sql = filter
