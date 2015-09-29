@@ -33,6 +33,7 @@ class FakeQuerySet(QuerySet):
 
     _additional_joins = []
     _additional_wheres = []
+    _group_by = []
 
     def columns(self):
         return ",\n    ".join([definition+" AS "+alias for alias, definition in self.fields])
@@ -43,6 +44,8 @@ class FakeQuerySet(QuerySet):
     def additional_wheres(self):
         return 'AND ' + "\n    AND ".join(self._additional_wheres) if self._additional_wheres else ''
 
+    def group_by(self):
+        return "\nGROUP BY " + ', '.join(self._group_by) if self._group_by else ''
 
     def _set_filter_sql(self, filter):
         self._filter_sql = filter

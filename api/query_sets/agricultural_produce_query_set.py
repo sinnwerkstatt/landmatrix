@@ -1,27 +1,17 @@
+from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from api.query_sets.fake_query_set import FakeQuerySet
 
-
-class AgriculturalProduceQuerySet(FakeQuerySet):
+class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
 
     fields = [
         ('agricultural_produce', 'sub.agricultural_produce'),
         ('deals',      'COUNT(DISTINCT a.activity_identifier)'),
         ('hectares',   "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))"),
     ]
-
-    QUERY = """
-SELECT
-          sub.agricultural_produce,
-    COUNT(DISTINCT a.activity_identifier)                                           AS deal_count,
-    ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC))) AS deal_size
-FROM landmatrix_activity                    AS a
-LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.fk_activity_id AND size.attributes ? 'pi_deal_size',
-(
-    SELECT DISTINCT
-        a.id,
-        CASE
+    _subquery_fields = [
+        ('agricultural_produce', """CASE
             WHEN (
                 SELECT COUNT(DISTINCT ap.name)
                 FROM landmatrix_crop                   AS c
@@ -35,41 +25,86 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
                 JOIN landmatrix_activityattributegroup AS kv ON a.id = kv.fk_activity_id AND kv.attributes ? 'crops' AND CAST(kv.attributes->'crops' AS NUMERIC) = c.id
                 LIMIT 1
             )
-        END AS agricultural_produce
-    FROM landmatrix_activity                       AS a
-    LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
-    LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
-    LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
-    LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'
-    LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id
-    LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id
-    LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'
-    LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'
-    LEFT JOIN landmatrix_activityattributegroup    AS bf               ON a.id = bf.fk_activity_id AND bf.attributes ? 'pi_deal'
-    LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'
-    WHERE
-        a.version = (
-            SELECT MAX(version) FROM landmatrix_activity AS amax
-            WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
-        )
-        AND a.fk_status_id IN (2, 3)
-        AND bf.attributes->'pi_deal' = 'True'
-        AND pi.version = (
-            SELECT MAX(version) FROM landmatrix_primaryinvestor AS amax
-            WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
-        )
-        AND pi.fk_status_id IN (2, 3)
-        %s
-    GROUP BY a.id
-)                                           AS sub
-WHERE sub.id = a.id
-GROUP BY sub.agricultural_produce
-"""
+        END"""),
+    ]
+    _additional_joins = [
+        "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
+        "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
+        "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id",
+        "LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id",
+        "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
+        "LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'"
+        "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
+    ]
+    _group_by = ['sub.agricultural_produce']
 
-    def set_regions(self, region_ids):
+    def __init__(self, get_data, region_ids):
+        super().__init__(get_data)
         self.region_ids = region_ids
 
     def all(self):
         if self.region_ids:
-            self._filter_sql += " AND deal_region.id IN (%s)" % ",".join(self.region_ids)
-        return FakeQuerySet.all(self)
+            self._additional_wheres = ["deal_region.id IN (%s)" % ",".join(self.region_ids)]
+        return super().all()
+
+
+class AllAgriculturalProduceQuerySet:
+
+    REGIONS = {
+        'america': ["5","13","21"],
+        'africa':  ["11","14","15","17","18"],
+        'asia':    ["30","34","35","143","145"],
+        'oceania': ["53","54","57","61","29"],
+        'europe':  ["151","154","155","39"],
+        'overall': None
+    }
+
+    def __init__(self, get_data):
+        self.get_data = get_data
+
+    def all(self):
+        output = []
+        for region, value in self.REGIONS.items():
+            ap_region = {
+                "food_crop": 0,
+                "non_food": 0,
+                "flex_crop": 0,
+                "multiple_use": 0,
+            }
+            hectares = {
+                "food_crop": 0,
+                "non_food": 0,
+                "flex_crop": 0,
+                "multiple_use": 0,
+            }
+            ap_list = self.get_agricultural_produces(self.get_data, value)
+
+            available_sum, not_available_sum = self.calculate_sums(ap_list)
+
+            for ap in ap_list:
+                if ap['agricultural_produce']:
+                    ap_name = ap['agricultural_produce'].lower().replace(" ", "_").replace("-", "_")
+                    ap_region[ap_name] = round(float(ap['hectares'])/available_sum*100)
+                    hectares[ap_name] = ap['hectares']
+
+            output.append({
+                "region": region,
+                "available": available_sum,
+                "not_available": not_available_sum,
+                "agricultural_produce": ap_region,
+                "hectares": hectares,
+            })
+        return output
+
+    def calculate_sums(self, ap_list):
+        available_sum, not_available_sum = 0, 0
+        for ap in ap_list:
+            if ap['agricultural_produce']:
+                available_sum += float(ap['hectares'])
+            else:
+                not_available_sum += float(ap['hectares'])
+        return available_sum, not_available_sum
+
+    def get_agricultural_produces(self, get, region_ids):
+        queryset = AgriculturalProduceQuerySet(get, region_ids)
+        return queryset.all()

@@ -1,6 +1,4 @@
-from api.views.agricultural_produce_json_view import AgriculturalProduceJSONView
-from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from api.query_sets.agricultural_produce_query_set import AllAgriculturalProduceQuerySet
 from landmatrix.models.agricultural_produce import AgriculturalProduce
 from landmatrix.models.crop import Crop
 
@@ -47,9 +45,9 @@ class TestAgriculturalProduce(ApiTestFunctions, DealsTestData):
 
     def test_empty(self):
         result = self.get_content('agricultural-produce')
-        self.assertEqual(len(AgriculturalProduceJSONView.REGIONS), len(result))
+        self.assertEqual(len(AllAgriculturalProduceQuerySet.REGIONS), len(result))
         for region in result:
-            self.assertIn(region['region'], AgriculturalProduceJSONView.REGIONS)
+            self.assertIn(region['region'], AllAgriculturalProduceQuerySet.REGIONS)
             self.assertEqual(0, region['available'])
             self.assertEqual(0, region['not_available'])
 
@@ -57,7 +55,7 @@ class TestAgriculturalProduce(ApiTestFunctions, DealsTestData):
         self._generate_enough_deals()
         result = self.get_content('agricultural-produce')
         for region in result:
-            self.assertIn(region['region'], AgriculturalProduceJSONView.REGIONS)
+            self.assertIn(region['region'], AllAgriculturalProduceQuerySet.REGIONS)
             if region['region'] == 'overall':
                 self.assertEqual(
                     self.NUM_RELEVANT_COMBINATIONS*AgriculturalProduce.objects.count()*(self.NUM_DEALS*(self.NUM_DEALS+1))/2*self.NUM_CROPS*2,
