@@ -83,7 +83,6 @@ class TestDeals(ApiTestFunctions, DealsTestData):
     def test_investor_region(self):
         self._generate_deal(self.investor_country, self.deal_country, {'point_lat': 0, 'point_lon': 1, 'intention': 'investor_country invests in deal_country'})
         self._generate_deal(self.deal_country, self.investor_country, {'point_lat': 2, 'point_lon': 3, 'intention': 'deal_country invests in investor_country'})
-        DealsQuerySet.DEBUG = True
         self.POSTFIX = '.json?investor_region=' + str(self.investor_region.id)
         result = self.get_content('deals')
         self.assertEqual(1, len(result))
