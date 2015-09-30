@@ -55,10 +55,8 @@ class TestDeals(ApiTestFunctions, DealsTestData):
     def test_investor_country(self):
         self._generate_deal(self.investor_country, self.deal_country, {'point_lat': 0, 'point_lon': 1, 'intention': 'investor_country invests in deal_country'})
         self._generate_deal(self.deal_country, self.investor_country, {'point_lat': 2, 'point_lon': 3, 'intention': 'deal_country invests in investor_country'})
-        DealsQuerySet.DEBUG = True
         result = self.get_content('deals')
         self.assertEqual(2, len(result))
-        return 
         self.POSTFIX = '.json?investor_country=' + str(self.investor_country.id)
         result = self.get_content('deals')
         self.assertEqual(1, len(result))
@@ -68,3 +66,45 @@ class TestDeals(ApiTestFunctions, DealsTestData):
         self.assertEqual(1, len(result))
         self.assertEqual('deal_country invests in investor_country', result[0]['intention'])
 
+    def test_target_country(self):
+        self._generate_deal(self.investor_country, self.deal_country, {'point_lat': 0, 'point_lon': 1, 'intention': 'investor_country invests in deal_country'})
+        self._generate_deal(self.deal_country, self.investor_country, {'point_lat': 2, 'point_lon': 3, 'intention': 'deal_country invests in investor_country'})
+        result = self.get_content('deals')
+        self.assertEqual(2, len(result))
+        self.POSTFIX = '.json?target_country=' + str(self.deal_country.id)
+        result = self.get_content('deals')
+        self.assertEqual(1, len(result))
+        self.assertEqual('investor_country invests in deal_country', result[0]['intention'])
+        self.POSTFIX = '.json?target_country=' + str(self.investor_country.id)
+        result = self.get_content('deals')
+        self.assertEqual(1, len(result))
+        self.assertEqual('deal_country invests in investor_country', result[0]['intention'])
+
+    def test_investor_region(self):
+        self._generate_deal(self.investor_country, self.deal_country, {'point_lat': 0, 'point_lon': 1, 'intention': 'investor_country invests in deal_country'})
+        self._generate_deal(self.deal_country, self.investor_country, {'point_lat': 2, 'point_lon': 3, 'intention': 'deal_country invests in investor_country'})
+        DealsQuerySet.DEBUG = True
+        self.POSTFIX = '.json?investor_region=' + str(self.investor_region.id)
+        result = self.get_content('deals')
+        self.assertEqual(1, len(result))
+        self.assertEqual('investor_country invests in deal_country', result[0]['intention'])
+        self.POSTFIX = '.json?investor_region=' + str(self.deal_region.id)
+        result = self.get_content('deals')
+        self.assertEqual(1, len(result))
+        self.assertEqual('deal_country invests in investor_country', result[0]['intention'])
+
+    MIN_LAT = -30
+    MAX_LAT = 30
+    MIN_LON = -30
+    MAX_LON = 30
+    def test_window(self):
+        for lat in range(2*self.MIN_LAT, 2*self.MAX_LAT, 5):
+            for lon in range(2*self.MIN_LON, 2*self.MAX_LON, 5):
+                self._generate_deal(self.investor_country, self.deal_country, {'point_lat': lat, 'point_lon': lon})
+        self.POSTFIX = '.json?window=%f,%f,%f,%f' % (self.MIN_LAT, self.MAX_LAT, self.MIN_LON, self.MAX_LON)
+        result = self.get_content('deals')
+        for point in result:
+            self.assertGreaterEqual(float(point['point_lat']), self.MIN_LAT)
+            self.assertLessEqual(float(point['point_lat']), self.MAX_LAT)
+            self.assertGreaterEqual(float(point['point_lon']), self.MIN_LAT)
+            self.assertLessEqual(float(point['point_lon']), self.MAX_LAT)
