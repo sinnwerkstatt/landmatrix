@@ -2,9 +2,8 @@ from api.query_sets.fake_query_set_with_subquery import FakeQuerySetFlat
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from api.query_sets.fake_query_set import FakeQuerySet
-
 from django.template.defaultfilters import slugify
+
 
 class TransnationalDealsQuerySet(FakeQuerySetFlat):
 
