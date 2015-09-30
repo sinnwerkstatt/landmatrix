@@ -1,6 +1,6 @@
 //Coordinates : need to CONVERT the projections from ... to ... :
 	//EPSG:4326: is the WGS84 projection, commun use for the World (ex: GPS)
-	//EPSG:3857:Spherical Mercator projection used by Google and OpenStreetMap
+	//EPSG:3857:Spherical Web Mercator projection used by Google and OpenStreetMap
 
 // Globale Variablen 
 var map;
@@ -14,15 +14,11 @@ $(document).ready(function() {
 		// Base Maps Layers. To change the default Layer : "visible: true or false". 
 		// ol.layer.Group defines the LayerSwitcher organisation
 		layers: [
-			// new ol.layer.Group({
-			// 	'title': 'Deals', 
-			// 	layers : [cluster],
-			// }),
 			new ol.layer.Group({
 				'title':'Base Maps',
 				layers: [
 					new ol.layer.Tile({
-						title:'OSM',
+						title:'OpenStreetMap',
 						type:'base',
 						visible:false,
 						source: new ol.source.OSM()
@@ -46,7 +42,7 @@ $(document).ready(function() {
 				title:'Context Layers',
 				layers:[
 					new ol.layer.Tile({
-						title:'Global Cropland',
+						title:'Give a layer Title here',
 						visible:false,
 						source: new ol.source.TileWMS({
 							url:'',
@@ -55,7 +51,7 @@ $(document).ready(function() {
 						})
 					}),
 					new ol.layer.Tile({
-						title:'Global Landcover',
+						title:'Give a layer Title here',
 						visible:false,
 						source: new ol.source.TileWMS({
 							url:'',
@@ -101,33 +97,35 @@ $(document).ready(function() {
 		tipLabel:'Legende'
 	});
 	map.addControl(layerSwitcher);
-//debugger;
 	
 	map.on('click', function (evt){
-	 	map.forEachFeatureAtPixel(evt.pixel, function (feature, layer){
-	 		// With Click on the markers, shows a popup the markers features
-	 		console.log("feature clicked: " + evt.feature);
+	 	// map.forEachFeatureAtPixel(evt.pixel, function (feature, layer){
+	 	// 	// With Click on the markers, shows a popup the markers features
 
+	 	var PopupFeature = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+       		console.log("feature clicked: " + feature.getProperties());
+//debugger;
 			var element = document.getElementById('popup');
-		
+			
 			var popup = new ol.Overlay({
 				element: element,
 				position:'center',
 				stopEvent: false,
 			});
 			map.addOverlay(popup);
+				
 			if (feature){
 		 		popup.setPosition(evt.coordinate);
 		 		$(element).popover({
-				    'placement': 'top',
-				    'html': true,
-				    'content': '<p>Latitude:</p><code>' + feature.get('latitude') + '</code>'+ '<p>Longitude:</p><code>' + feature.get('longitude') + '</code>'+ '<p>Intention of investment:</p><code>' + feature.get('intention') + '</code>'
-		   		});
-		   		$(element).popover('show');
+		 			'placement': 'top',
+					'html': true,
+				    'content': '<p>Coordinates:</p><code>' + feature.get() + '</code>' + '<p>Intention of investment:</p><code>' + feature.get('name') + '</code>'
+			   	});
+				$(element).popover('show');
 		   	} else {
 		   		$(element).popover('destroy');
-	   		}
-	 		return feature;
+		   	}
+		   	return feature;
 	 	});
 	});
 
@@ -154,6 +152,7 @@ function addClusteredMarker (longitude, latitude, intention) {
 	var styleCache = {};
 	var feature = new ol.Feature({
 		geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857')),
+		//name: intention, 
 	});
 	clusters.push(feature);
 
@@ -214,7 +213,7 @@ function addClusteredMarker (longitude, latitude, intention) {
 			    	if (radius > 75) {
 			    		radius = 25;
 			    	}
-			    	else if (radius < 10) {
+			    	else if (radius < 7) {
 			    		radius = 7;
 			    	}
 
