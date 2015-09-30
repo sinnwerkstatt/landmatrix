@@ -7,7 +7,7 @@ from itertools import groupby
 
 class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
 
-    fields = [
+    FIELDS = [
         ('country_id', 'sub.country_id'),
         ('country',    'sub.country'),
         ('region',     'sub.name'),
@@ -17,7 +17,7 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         ('hectares',   "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))"),
         ('intentions', 'ARRAY_AGG(sub.intention)')
     ]
-    _subquery_fields = [
+    SUBQUERY_FIELDS = [
         ('country_id', "deal_country.id"),
         ('country', "deal_country.name"),
         ('name', "deal_region.name"),
@@ -33,7 +33,7 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id",
         "LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id",
     ]
-    _additional_subquery_options = "GROUP BY a.id, deal_country.id, deal_region.name"
+    ADDITIONAL_SUBQUERY_OPTIONS = "GROUP BY a.id, deal_country.id, deal_region.name"
     GROUP_BY = ['sub.country, sub.country_id, sub.name, sub.point_lat, sub.point_lon']
 
     def __init__(self, get_data):

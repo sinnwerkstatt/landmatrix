@@ -8,12 +8,12 @@ from global_app.forms.add_deal_general_form import AddDealGeneralForm
 
 class ImplementationStatusQuerySet(FakeQuerySetWithSubquery):
 
-    fields = [
+    FIELDS = [
         ('implementation_status', 'sub.implementation_status'),
         ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
         ('deal_size',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
     ]
-    _subquery_fields = [
+    SUBQUERY_FIELDS = [
         ('negotiation_status', "negotiation.attributes->'pi_negotiation_status'"),
         ('implementation_status',    "implementation.attributes->'pi_implementation_status'")
     ]

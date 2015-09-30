@@ -5,12 +5,12 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class NegotiationStatusQuerySet(FakeQuerySetWithSubquery):
 
-    fields = [
+    FIELDS = [
         ('name', 'sub.negotiation_status'),
         ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
         ('hectares',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
     ]
-    _subquery_fields = [
+    SUBQUERY_FIELDS = [
         ('negotiation_status', "negotiation.attributes->'pi_negotiation_status'"),
         ('implementation_status', "implementation.attributes->'pi_implementation_status'")
     ]
@@ -19,5 +19,5 @@ class NegotiationStatusQuerySet(FakeQuerySetWithSubquery):
         "LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'",
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
-    _order_by = ['sub.negotiation_status']
+    ORDER_BY = ['sub.negotiation_status']
     GROUP_BY = ['sub.negotiation_status']

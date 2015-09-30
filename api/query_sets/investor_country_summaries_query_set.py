@@ -6,7 +6,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class InvestorCountrySummariesQuerySet(FakeQuerySetFlat):
 
-    fields = [
+    FIELDS = [
         ('country_id', 'investor_country.id'),
         ('country',    'investor_country.name'),
         ('region',     'investor_region.name'),

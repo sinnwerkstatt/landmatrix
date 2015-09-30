@@ -5,12 +5,12 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
 
-    fields = [
+    FIELDS = [
         ('agricultural_produce', 'sub.agricultural_produce'),
         ('deals',      'COUNT(DISTINCT a.activity_identifier)'),
         ('hectares',   "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))"),
     ]
-    _subquery_fields = [
+    SUBQUERY_FIELDS = [
         ('agricultural_produce', """CASE
             WHEN (
                 SELECT COUNT(DISTINCT ap.name)

@@ -5,7 +5,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class FakeQuerySetWithSubquery(FakeQuerySet):
 
-    _additional_subquery_options = ""
+    ADDITIONAL_SUBQUERY_OPTIONS = ''
 
     QUERY = """
 SELECT DISTINCT
@@ -50,6 +50,10 @@ WHERE sub.id = a.id
 %s
 """
 
+    def __init__(self, get_data):
+        super().__init__(get_data)
+        self._additional_subquery_options = self.ADDITIONAL_SUBQUERY_OPTIONS
+
     def sql_query(self):
         return (self.QUERY + '\n%s') % (
             self.columns(),
@@ -64,7 +68,7 @@ WHERE sub.id = a.id
         )
 
     def subquery_columns(self):
-        return ",\n        " + ",\n        ".join([definition+" AS "+alias for alias, definition in self._subquery_fields]) if self._subquery_fields else ''
+        return ",\n        " + ",\n        ".join([definition+" AS "+alias for alias, definition in self.SUBQUERY_FIELDS]) if self.SUBQUERY_FIELDS else ''
 
 
 class FakeQuerySetFlat(FakeQuerySet):
@@ -97,7 +101,9 @@ WHERE
     %s
 --  group by:
 %s
+--  limit:
+%s
 """
 
     def sql_query(self):
-        return self.QUERY % (self.columns(), self.additional_joins(), self.additional_wheres(), self._filter_sql, self.group_by())
+        return self.QUERY % (self.columns(), self.additional_joins(), self.additional_wheres(), self._filter_sql, self.group_by(), self.limit())
