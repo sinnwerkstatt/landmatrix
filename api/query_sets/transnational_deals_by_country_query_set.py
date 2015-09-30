@@ -1,9 +1,11 @@
 from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery
 
+from django.template.defaultfilters import slugify
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class TransnationalDealsQuerySet(FakeQuerySetWithSubquery):
+class TransnationalDealsQuerySetBase(FakeQuerySetWithSubquery):
 
     fields = [
         ('region_id', 'sub.region_id'),
@@ -24,7 +26,7 @@ class TransnationalDealsQuerySet(FakeQuerySetWithSubquery):
 
 
 
-class TransnationalDealsByTargetCountryQuerySet(TransnationalDealsQuerySet):
+class TransnationalDealsByTargetCountryQuerySet(TransnationalDealsQuerySetBase):
 
     _subquery_fields = [
         ('region_id', "deal_region.id"),
@@ -44,7 +46,7 @@ class TransnationalDealsByTargetCountryQuerySet(TransnationalDealsQuerySet):
     _additional_wheres = ["deal_region.name IS NOT NULL", "investor_country.id <> deal_country.id"]
 
 
-class TransnationalDealsByInvestorCountryQuerySet(TransnationalDealsQuerySet):
+class TransnationalDealsByInvestorCountryQuerySet(TransnationalDealsQuerySetBase):
 
     _subquery_fields = [
         ('region_id', "investor_region.id"),
@@ -64,3 +66,44 @@ class TransnationalDealsByInvestorCountryQuerySet(TransnationalDealsQuerySet):
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
     _additional_wheres = ["investor_country.name IS NOT NULL", "investor_country.id <> deal_country.id"]
+
+class TransnationalDealsByCountryQuerySet:
+
+    def __init__(self, get_data):
+        self.get_data = get_data
+
+    def all(self):
+        return {
+            'target_country': aggregate_regions(self.get_transnational_deals_by_target_country(self.get_data)),
+            'investor_country': aggregate_regions(self.get_transnational_deals_by_investor_country(self.get_data))
+        }
+
+    def get_transnational_deals_by_target_country(self, get):
+        queryset = TransnationalDealsByTargetCountryQuerySet(get)
+        return queryset.all()
+
+    def get_transnational_deals_by_investor_country(self, get):
+        queryset = TransnationalDealsByInvestorCountryQuerySet(get)
+        return queryset.all()
+
+
+def aggregate_regions(t_deals):
+    sum_deals, sum_hectares = 0, 0
+    output = []
+    for d in t_deals:
+        output.append({
+            "region_id": d['region_id'],
+            "region": d['region'],
+            "deals": d['deals'] or 0,
+            "hectares": d['hectares'] or 0,
+            "slug": slugify(d['region']),
+        })
+        sum_deals += d['deals'] or 0
+        sum_hectares += float(d['hectares'] or 0)
+    output.append({
+        "region_id": 0,
+        "region": "Total",
+        "deals": sum_deals,
+        "hectares": sum_hectares,
+    })
+    return output

@@ -12,14 +12,13 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class DealsJSONView():
 
-    def dispatch(self, request, *args, **kwargs):
-        print(args, kwargs)
+    def dispatch(self, request):
         start_time = timeit.default_timer()
-        deals = list(self.get_deals(request))
-        print(deals[:10], len(deals), timeit.default_timer() - start_time)
-        return HttpResponse(json.dumps(deals, cls=DecimalEncoder), content_type='application/json')
+        data = list(self.get_json(request))
+        print(data[:10], len(data), timeit.default_timer() - start_time)
+        return HttpResponse(json.dumps(data, cls=DecimalEncoder), content_type='application/json')
 
-    def get_deals(self, request):
+    def get_json(self, request):
         queryset = DealsQuerySet()
         queryset.set_limit(request.GET.get('limit', None))
         queryset.set_investor_country(request.GET.get('investor_country', None))

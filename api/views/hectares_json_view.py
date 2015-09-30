@@ -9,10 +9,9 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class HectaresJSONView:
 
-    def dispatch(self, request, *args, **kwargs):
-        h = self.get_hectares(request.GET)
-        return HttpResponse(json.dumps(h[0] if h else {}, cls=DecimalEncoder), content_type="application/json")
+    def dispatch(self, request):
+        data = self.get_json(request.GET)
+        return HttpResponse(json.dumps(data[0] if data else {}, cls=DecimalEncoder), content_type="application/json")
 
-    def get_hectares(self, get):
-        queryset = HectaresQuerySet(get)
-        return queryset.all()
+    def get_json(self, get):
+        return HectaresQuerySet(get).all()
