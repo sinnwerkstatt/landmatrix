@@ -25,7 +25,7 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         ('point_lon', "deal_country.point_lon"),
         ('intention', "STRING_AGG(DISTINCT intention.attributes->'intention', ',')"),
     ]
-    _additional_joins = [
+    ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'",
         "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'",
@@ -34,7 +34,7 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         "LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id",
     ]
     _additional_subquery_options = "GROUP BY a.id, deal_country.id, deal_region.name"
-    _group_by = ['sub.country, sub.country_id, sub.name, sub.point_lat, sub.point_lon']
+    GROUP_BY = ['sub.country, sub.country_id, sub.name, sub.point_lat, sub.point_lon']
 
     def __init__(self, get_data):
         super().__init__(get_data)

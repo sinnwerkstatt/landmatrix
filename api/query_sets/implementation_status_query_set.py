@@ -17,13 +17,13 @@ class ImplementationStatusQuerySet(FakeQuerySetWithSubquery):
         ('negotiation_status', "negotiation.attributes->'pi_negotiation_status'"),
         ('implementation_status',    "implementation.attributes->'pi_implementation_status'")
     ]
-    _additional_joins = [
+    ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
         "LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'"
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
-    _group_by = ['sub.implementation_status']
-    _order_by = ['sub.implementation_status']
+    GROUP_BY = ['sub.implementation_status']
+    ORDER_BY = ['sub.implementation_status']
 
     IMPLEMENTATION_STATUS = list(filter(None, [c[0] and str(c[1]) or None for c in AddDealGeneralForm().fields["implementation_status"].choices]))
 

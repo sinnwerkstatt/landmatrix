@@ -19,14 +19,14 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
             ELSE intention.attributes->'intention'
         END""")
     ]
-    _additional_joins = [
+    ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
         "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
         "LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'"
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
-    _group_by = ['sub.intention']
-    _order_by = ['sub.intention']
+    GROUP_BY = ['sub.intention']
+    ORDER_BY = ['sub.intention']
     _additional_subquery_options = "GROUP BY a.id, intention.attributes->'intention'"
 
     def __init__(self, get_data):
