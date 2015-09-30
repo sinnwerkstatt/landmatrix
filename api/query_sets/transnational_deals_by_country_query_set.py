@@ -13,7 +13,7 @@ class TransnationalDealsQuerySetBase(FakeQuerySetWithSubquery):
         ('deals',     'COUNT(DISTINCT a.activity_identifier)'),
         ('hectares',  "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
     ]
-    _group_by = ['sub.region_id', 'sub.region']
+    GROUP_BY = ['sub.region_id', 'sub.region']
 
     def __init__(self, get_data):
         super().__init__(get_data)
@@ -33,7 +33,7 @@ class TransnationalDealsByTargetCountryQuerySet(TransnationalDealsQuerySetBase):
         ('region',    "deal_region.name")
     ]
     COUNTRY_FIELD = 'investor_country'
-    _additional_joins = [
+    ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id",
         "LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'",
         "LEFT JOIN landmatrix_country                   AS investor_country ON CAST(skvf1.attributes->'country' AS NUMERIC) = investor_country.id",
@@ -43,7 +43,7 @@ class TransnationalDealsByTargetCountryQuerySet(TransnationalDealsQuerySetBase):
         "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
-    _additional_wheres = ["deal_region.name IS NOT NULL", "investor_country.id <> deal_country.id"]
+    ADDITIONAL_WHERES = ["deal_region.name IS NOT NULL", "investor_country.id <> deal_country.id"]
 
 
 class TransnationalDealsByInvestorCountryQuerySet(TransnationalDealsQuerySetBase):
@@ -55,7 +55,7 @@ class TransnationalDealsByInvestorCountryQuerySet(TransnationalDealsQuerySetBase
 
     COUNTRY_FIELD = 'deal_country'
 
-    _additional_joins = [
+    ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id",
         "LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'",
         "LEFT JOIN landmatrix_country                   AS investor_country ON CAST(skvf1.attributes->'country' AS NUMERIC) = investor_country.id",
@@ -65,7 +65,7 @@ class TransnationalDealsByInvestorCountryQuerySet(TransnationalDealsQuerySetBase
         "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
-    _additional_wheres = ["investor_country.name IS NOT NULL", "investor_country.id <> deal_country.id"]
+    ADDITIONAL_WHERES = ["investor_country.name IS NOT NULL", "investor_country.id <> deal_country.id"]
 
 class TransnationalDealsByCountryQuerySet:
 

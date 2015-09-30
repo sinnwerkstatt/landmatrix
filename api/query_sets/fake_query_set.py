@@ -16,9 +16,20 @@ class FakeQuerySet(QuerySet):
 
     _filter_sql = ''
 
+    ADDITIONAL_JOINS = []
+    ADDITIONAL_WHERES = []
+    GROUP_BY = []
+    ORDER_BY = []
+    LIMIT = None
+
     def __init__(self, get_data):
         self._all_results = []
         self._set_filter_sql(self._get_filter(get_data))
+        self._additional_joins = self.ADDITIONAL_JOINS
+        self._additional_wheres = self.ADDITIONAL_WHERES
+        self._group_by = self.GROUP_BY
+        self._order_by = self.ORDER_BY
+        self._limit = self.LIMIT
         super().__init__()
 
     def all(self):
@@ -31,11 +42,6 @@ class FakeQuerySet(QuerySet):
 #    def sql_query(self):
 #        return self.QUERY % (self.columns(), self.additional_joins(), self.additional_wheres(), self._filter_sql)
 
-    _additional_joins = []
-    _additional_wheres = []
-    _group_by = []
-    _order_by = []
-    _limit = None
 
     def columns(self):
         return ",\n    ".join([definition+" AS "+alias for alias, definition in self.fields])

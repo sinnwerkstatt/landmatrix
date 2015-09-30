@@ -1,9 +1,10 @@
+from api.query_sets.fake_query_set_with_subquery import FakeQuerySetFlat
+import timeit
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from api.query_sets.fake_query_set import FakeQuerySet
 
-
-class DealsQuerySet(FakeQuerySet):
+class DealsQuerySet(FakeQuerySetFlat):
 
     BASE_FILTER_MAP = {
         "concluded": ("concluded (oral agreement)", "concluded (contract signed)"),
@@ -17,6 +18,7 @@ class DealsQuerySet(FakeQuerySet):
         ('intention', "intention.attributes->'intention'")
     ]
 
+    ADDITIONAL_WHERES = ["location.attributes ? 'point_lat' AND location.attributes? 'point_lon'"]
     QUERY = """
 SELECT DISTINCT
     %s
@@ -46,10 +48,15 @@ WHERE
     %s
 -- filter sql:
     %s
+-- group by
+%s
 """
 
-    def __init__(self):
-        super().__init__('')
+    def __init__(self, get_data):
+        if not 'deal_scope' in get_data:
+            get_data = get_data.copy()
+            get_data.setlist('deal_scope', ['domestic', 'transnational'])
+        super().__init__(get_data)
 
     def set_limit(self, limit):
         self.limit = limit
@@ -61,9 +68,10 @@ WHERE
                 "LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id",
                 "LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'",
         ])
+        print('COUNTRY ID', country_id)
         add_to_list_if_not_present(
             self._additional_wheres, [
-                "skvf1.attributes->'country' = " + country_id
+                "skvf1.attributes->'country' = '%s'" % country_id
         ])
 
     def set_investor_region(self, region_id):
@@ -132,9 +140,14 @@ WHERE
         if self.limit:
             self._filter_sql += 'LIMIT %s' % self.limit
 
-        print(self.sql_query())
+        start_time = timeit.default_timer()
 
-        return super().all()
+        output = super().all()
+
+        if self.DEBUG:
+            print('Query time:', timeit.default_timer() - start_time)
+
+        return output
 
 
 def add_to_list_if_not_present(old_list, additional_elements):

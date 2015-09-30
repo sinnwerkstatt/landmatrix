@@ -17,17 +17,17 @@ class Top10InvestorCountriesQuerySet(FakeQuerySetWithSubquery):
         ('investor_country', 'investor_country.name'),
         ('investor_country_id', 'investor_country.id'),
     ]
-    _additional_joins = [
+    ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id",
         "LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'",
         "LEFT JOIN landmatrix_country                   AS investor_country ON CAST(skvf1.attributes->'country' AS NUMERIC) = investor_country.id",
         "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'",
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
-    _additional_wheres = ["investor_country.id IS NOT NULL"]
-    _group_by = ['sub.investor_country', 'sub.investor_country_id']
-    _order_by = ['hectares DESC']
-    _limit = 10
+    ADDITIONAL_WHERES = ["investor_country.id IS NOT NULL"]
+    GROUP_BY = ['sub.investor_country', 'sub.investor_country_id']
+    ORDER_BY = ['hectares DESC']
+    LIMIT = 10
 
 
 class Top10TargetCountriesQuerySet(FakeQuerySetWithSubquery):
@@ -42,7 +42,7 @@ class Top10TargetCountriesQuerySet(FakeQuerySetWithSubquery):
         ('target_country', 'deal_country.name'),
         ('target_country_id', 'deal_country.id'),
     ]
-    _additional_joins = [
+    ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id",
         "LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'",
         "LEFT JOIN landmatrix_country                   AS investor_country ON CAST(skvf1.attributes->'country' AS NUMERIC) = investor_country.id",
@@ -51,10 +51,10 @@ class Top10TargetCountriesQuerySet(FakeQuerySetWithSubquery):
         "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'",
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
-    _additional_wheres = ["investor_country.id IS NOT NULL"]
-    _group_by = ['sub.target_country', 'sub.target_country_id']
-    _order_by = ['hectares DESC']
-    _limit = 10
+    ADDITIONAL_WHERES = ["investor_country.id IS NOT NULL"]
+    GROUP_BY = ['sub.target_country', 'sub.target_country_id']
+    ORDER_BY = ['hectares DESC']
+    LIMIT = 10
 
 
 class Top10CountriesQuerySet:
