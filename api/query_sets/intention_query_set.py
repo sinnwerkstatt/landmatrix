@@ -8,12 +8,12 @@ from global_app.forms.add_deal_general_form import AddDealGeneralForm
 
 class IntentionQuerySet(FakeQuerySetWithSubquery):
 
-    fields = [
+    FIELDS = [
         ('intention', 'sub.intention'),
         ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
         ('deal_size',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
     ]
-    _subquery_fields = [
+    SUBQUERY_FIELDS = [
         ('intention', """CASE
             WHEN COUNT(DISTINCT intention.attributes->'intention') > 1 THEN 'Multiple intention'
             ELSE intention.attributes->'intention'
@@ -27,7 +27,7 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
     ]
     GROUP_BY = ['sub.intention']
     ORDER_BY = ['sub.intention']
-    _additional_subquery_options = "GROUP BY a.id, intention.attributes->'intention'"
+    ADDITIONAL_SUBQUERY_OPTIONS = "GROUP BY a.id, intention.attributes->'intention'"
 
     def __init__(self, get_data):
         super().__init__(get_data)

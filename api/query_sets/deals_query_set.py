@@ -12,65 +12,45 @@ class DealsQuerySet(FakeQuerySetFlat):
         "failed": ("failed (contract canceled)", "failed (negotiations failed)"),
     }
 
-    fields = [
+    FIELDS = [
         ('point_lat', "location.attributes->'point_lat'"),
         ('point_lon', "location.attributes->'point_lon'"),
         ('intention', "intention.attributes->'intention'")
     ]
-
+    ADDITIONAL_JOINS = [
+        "LEFT JOIN landmatrix_activityattributegroup    AS location         ON a.id = location.fk_activity_id AND location.attributes ? 'point_lat' AND location.attributes ? 'point_lon'",
+        "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'"
+    ]
     ADDITIONAL_WHERES = ["location.attributes ? 'point_lat' AND location.attributes ? 'point_lon'"]
-    QUERY = """
-SELECT DISTINCT
-    %s
-FROM landmatrix_activity                    AS a
-LEFT JOIN landmatrix_activityattributegroup    AS location         ON a.id = location.fk_activity_id AND location.attributes ? 'point_lat' AND location.attributes ? 'point_lon'
-LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
-LEFT JOIN landmatrix_activityattributegroup    AS bf               ON a.id = bf.fk_activity_id AND bf.attributes ? 'pi_deal'
-LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
-LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
--- additional joins:
--- if filtering by implementation status
---    LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'
-%s
-WHERE
-    a.version = (
-        SELECT MAX(version) FROM landmatrix_activity AS amax
-        WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
-    )
-    AND a.fk_status_id IN (2, 3)
-    AND bf.attributes->'pi_deal' = 'True'
-    AND pi.version = (
-        SELECT MAX(version) FROM landmatrix_primaryinvestor AS pimax
-        WHERE pimax.primary_investor_identifier = pi.primary_investor_identifier AND pimax.fk_status_id IN (2, 3, 4)
-    )
-    AND pi.fk_status_id IN (2, 3)
--- additional where conditions:
-    %s
--- filter sql:
-    %s
--- group by
-%s
-"""
 
     def __init__(self, get_data):
         if not 'deal_scope' in get_data:
             get_data = get_data.copy()
             get_data.setlist('deal_scope', ['domestic', 'transnational'])
         super().__init__(get_data)
-        self.set_limit(get_data.get('limit', None))
-        self.set_investor_country(get_data.get('investor_country', None))
-        self.set_investor_region(get_data.get('investor_region', None))
-        self.set_target_country(get_data.get('target_country', None))
-        self.set_target_region(get_data.get('target_region', None))
+        self._set_limit(get_data.get('limit', None))
+        self._set_investor_country(get_data.get('investor_country', None))
+        self._set_investor_region(get_data.get('investor_region', None))
+        self._set_target_country(get_data.get('target_country', None))
+        self._set_target_region(get_data.get('target_region', None))
         if get_data.get('window'):
             lat_min, lat_max, lon_min, lon_max = get_data.get('window').split(',')
-            self.set_window(lat_min, lat_max, lon_min, lon_max)
+            self._set_window(lat_min, lat_max, lon_min, lon_max)
 
+    def all(self):
+        start_time = timeit.default_timer()
 
-    def set_limit(self, limit):
-        self.limit = limit
+        output = super().all()
 
-    def set_investor_country(self, country_id):
+        if self.DEBUG:
+            print('Query time:', timeit.default_timer() - start_time)
+
+        return output
+
+    def _set_limit(self, limit):
+        self._limit = limit
+
+    def _set_investor_country(self, country_id):
         if not country_id: return
         self._additional_joins = add_to_list_if_not_present(
             self._additional_joins, [
@@ -82,7 +62,7 @@ WHERE
                 "skvf1.attributes->'country' = '%s'" % country_id
         ])
 
-    def set_investor_region(self, region_id):
+    def _set_investor_region(self, region_id):
         if not region_id: return
         self._additional_joins = add_to_list_if_not_present(
             self._additional_joins, [
@@ -95,7 +75,7 @@ WHERE
                 "investor_country.fk_region_id = " + region_id
         ])
 
-    def set_target_country(self, country_id):
+    def _set_target_country(self, country_id):
         if not country_id: return
         self._additional_joins = add_to_list_if_not_present(
             self._additional_joins, [
@@ -106,7 +86,7 @@ WHERE
                 "target_country.attributes->'target_country' = '%s'" % country_id
         ])
 
-    def set_target_region(self, region_id):
+    def _set_target_region(self, region_id):
         if not region_id: return
         self._additional_joins = add_to_list_if_not_present(
             self._additional_joins, [
@@ -118,7 +98,7 @@ WHERE
                 "deal_country.fk_region_id = " + region_id
         ])
 
-    def set_window(self, lat_min, lat_max, lon_min, lon_max):
+    def _set_window(self, lat_min, lat_max, lon_min, lon_max):
         # respect the 180th meridian
         if lon_min > lon_max: lon_max, lon_min = lon_min, lon_max
         self._additional_wheres = add_to_list_if_not_present(
@@ -129,7 +109,7 @@ WHERE
                 "CAST(location.attributes->'point_lon' AS NUMERIC) <= " + lon_max,
         ])
 
-    def set_negotiation_status(self, negotiation_status):
+    def _set_negotiation_status(self, negotiation_status):
         if not negotiation_status: return
         self._additional_joins = add_to_list_if_not_present(
             self._additional_joins, [
@@ -143,19 +123,6 @@ WHERE
             self._additional_wheres, [
                 "LOWER(negotiation.attributes->'pi_negotiation_status') IN ('%s') " % "', '".join(stati)
         ])
-
-    def all(self):
-        if self.limit:
-            self._filter_sql += 'LIMIT %s' % self.limit
-
-        start_time = timeit.default_timer()
-
-        output = super().all()
-
-        if self.DEBUG:
-            print('Query time:', timeit.default_timer() - start_time)
-
-        return output
 
 
 def add_to_list_if_not_present(old_list, additional_elements):

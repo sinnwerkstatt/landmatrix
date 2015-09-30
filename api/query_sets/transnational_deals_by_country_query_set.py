@@ -7,7 +7,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class TransnationalDealsQuerySetBase(FakeQuerySetWithSubquery):
 
-    fields = [
+    FIELDS = [
         ('region_id', 'sub.region_id'),
         ('region',    'sub.region'),
         ('deals',     'COUNT(DISTINCT a.activity_identifier)'),
@@ -28,7 +28,7 @@ class TransnationalDealsQuerySetBase(FakeQuerySetWithSubquery):
 
 class TransnationalDealsByTargetCountryQuerySet(TransnationalDealsQuerySetBase):
 
-    _subquery_fields = [
+    SUBQUERY_FIELDS = [
         ('region_id', "deal_region.id"),
         ('region',    "deal_region.name")
     ]
@@ -48,7 +48,7 @@ class TransnationalDealsByTargetCountryQuerySet(TransnationalDealsQuerySetBase):
 
 class TransnationalDealsByInvestorCountryQuerySet(TransnationalDealsQuerySetBase):
 
-    _subquery_fields = [
+    SUBQUERY_FIELDS = [
         ('region_id', "investor_region.id"),
         ('region',    "investor_region.name")
     ]
