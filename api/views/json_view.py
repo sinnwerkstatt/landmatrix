@@ -1,4 +1,5 @@
 from api.query_sets.agricultural_produce_query_set import AllAgriculturalProduceQuerySet
+from api.query_sets.hectares_query_set import HectaresQuerySet
 from api.query_sets.implementation_status_query_set import ImplementationStatusQuerySet
 from api.query_sets.intention_query_set import IntentionQuerySet
 from api.query_sets.investor_country_summaries_query_set import InvestorCountrySummariesQuerySet
@@ -8,7 +9,6 @@ from api.query_sets.top_10_countries_query_set import Top10CountriesQuerySet
 from api.query_sets.transnational_deals_by_country_query_set import TransnationalDealsByCountryQuerySet
 from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
 
-from api.views.hectares_json_view import HectaresJSONView
 from api.views.deals_json_view import DealsJSONView
 
 from api.views.decimal_encoder import DecimalEncoder
@@ -39,6 +39,7 @@ TargetCountrySummariesJSONView = json_generator(TargetCountrySummariesQuerySet)
 Top10CountriesJSONView = json_generator(Top10CountriesQuerySet)
 TransnationalDealsJSONView = json_generator(TransnationalDealsQuerySet)
 TransnationalDealsByCountryJSONView = json_generator(TransnationalDealsByCountryQuerySet)
+HectaresJSONView = json_generator(HectaresQuerySet)
 
 
 class JSONView(TemplateView):

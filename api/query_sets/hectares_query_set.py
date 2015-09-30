@@ -14,3 +14,7 @@ class HectaresQuerySet(FakeQuerySetWithSubquery):
         "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
+
+    def all(self):
+        data = super().all()
+        return data[0] if data else {}
