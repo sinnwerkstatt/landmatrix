@@ -33,7 +33,7 @@ class TransnationalDealsQuerySet(FakeQuerySetFlat):
         'British Virgin Islands': 'British Virgin Iss*',
     }
 
-    fields = [
+    FIELDS = [
         ('target_country',   "CONCAT(deal_country.fk_region_id, '.', deal_country.name, '#!#', deal_country.id)"),
         ('investor_country', "ARRAY_AGG(DISTINCT CONCAT(investor_country.fk_region_id, '.', investor_country.name,  '#!#', investor_country.id))"),
     ]

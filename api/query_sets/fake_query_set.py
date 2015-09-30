@@ -44,7 +44,7 @@ class FakeQuerySet(QuerySet):
 
 
     def columns(self):
-        return ",\n    ".join([definition+" AS "+alias for alias, definition in self.fields])
+        return ",\n    ".join([definition+" AS "+alias for alias, definition in self.FIELDS])
 
     def additional_joins(self):
         return "\n".join(self._additional_joins)
@@ -68,7 +68,7 @@ class FakeQuerySet(QuerySet):
         if not self._all_results:
             for result in self._execute_query():
                 try:
-                    as_dict = {self.fields[i][0]: result[i] for i in range(len(self.fields))}
+                    as_dict = {self.FIELDS[i][0]: result[i] for i in range(len(self.FIELDS))}
                 except KeyError:
                     raise RuntimeError('You probably haven\'t defined the correct fields for your FakeQuerySet.')
                 as_model = FakeModel(as_dict)

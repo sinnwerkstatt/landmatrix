@@ -7,13 +7,13 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class Top10InvestorCountriesQuerySet(FakeQuerySetWithSubquery):
 
-    fields = [
+    FIELDS = [
         ('investor_country', 'investor_country'),
         ('investor_country_id', 'investor_country_id'),
         ('hectares',          "COALESCE(ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC))), 0)"),
         ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
     ]
-    _subquery_fields = [
+    SUBQUERY_FIELDS = [
         ('investor_country', 'investor_country.name'),
         ('investor_country_id', 'investor_country.id'),
     ]
@@ -32,13 +32,13 @@ class Top10InvestorCountriesQuerySet(FakeQuerySetWithSubquery):
 
 class Top10TargetCountriesQuerySet(FakeQuerySetWithSubquery):
 
-    fields = [
+    FIELDS = [
         ('target_country', 'sub.target_country'),
         ('target_country_id', 'sub.target_country_id'),
         ('hectares',          "COALESCE(ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC))), 0)"),
         ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
     ]
-    _subquery_fields = [
+    SUBQUERY_FIELDS = [
         ('target_country', 'deal_country.name'),
         ('target_country_id', 'deal_country.id'),
     ]
