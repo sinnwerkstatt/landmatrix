@@ -57,6 +57,15 @@ WHERE
             get_data = get_data.copy()
             get_data.setlist('deal_scope', ['domestic', 'transnational'])
         super().__init__(get_data)
+        self.set_limit(get_data.get('limit', None))
+        self.set_investor_country(get_data.get('investor_country', None))
+        self.set_investor_region(get_data.get('investor_region', None))
+        self.set_target_country(get_data.get('target_country', None))
+        self.set_target_region(get_data.get('target_region', None))
+        if get_data.get('window'):
+            lat_min, lat_max, lon_min, lon_max = get_data.get('window').split(',')
+            self.set_window(lat_min, lat_max, lon_min, lon_max)
+
 
     def set_limit(self, limit):
         self.limit = limit
@@ -68,7 +77,6 @@ WHERE
                 "LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id",
                 "LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'",
         ])
-        print('COUNTRY ID', country_id)
         self._additional_wheres = add_to_list_if_not_present(
             self._additional_wheres, [
                 "skvf1.attributes->'country' = '%s'" % country_id
