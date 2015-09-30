@@ -27,7 +27,7 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
             )
         END"""),
     ]
-    _additional_joins = [
+    ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
         "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
         "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id",
@@ -36,7 +36,8 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
         "LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'"
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
-    _group_by = ['sub.agricultural_produce']
+    GROUP_BY = ['sub.agricultural_produce']
+    ORDER_BY = ['sub.agricultural_produce']
 
     def __init__(self, get_data, region_ids):
         super().__init__(get_data)

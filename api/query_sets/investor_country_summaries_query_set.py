@@ -15,7 +15,7 @@ class InvestorCountrySummariesQuerySet(FakeQuerySetFlat):
         ('deals',      'COUNT(DISTINCT a.activity_identifier)'),
         ('deal_scope', "deal_scope.attributes->'deal_scope'")
     ]
-    _additional_joins = [
+    ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
         "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
         "LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id",
@@ -25,7 +25,7 @@ class InvestorCountrySummariesQuerySet(FakeQuerySetFlat):
         "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
         "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id",
     ]
-    _group_by = ["investor_country.id, investor_region.name, deal_scope.attributes->'deal_scope'"]
+    GROUP_BY = ["investor_country.id, investor_region.name, deal_scope.attributes->'deal_scope'"]
 
     def all(self):
         countries_summary = super().all()
