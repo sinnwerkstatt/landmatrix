@@ -1,4 +1,3 @@
-import pprint
 from api.query_sets.top_10_countries_query_set import Top10InvestorCountriesQuerySet, Top10TargetCountriesQuerySet
 from landmatrix.models.country import Country
 
@@ -26,7 +25,6 @@ class TestTop10Countries(ApiTestFunctions, DealsTestData):
     DEAL_SCOPE = 'transnational'
     NEGOTIATION_STATUS = 'concluded (oral agreement)'
     RELEVANT_ATTRIBUTES = {}
-    NUM_RELEVANT_DEALS = 1
 
     def setUp(self):
         self.RELEVANT_ATTRIBUTES['deal_scope'] = self.DEAL_SCOPE
