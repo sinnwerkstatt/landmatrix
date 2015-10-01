@@ -149,6 +149,7 @@ $(document).ready(function() {
 // MARKERS in clusters. ONE MARKER = ONE DEAL
 //longitude, latitude, intention im Index.html definiert
 function addClusteredMarker (longitude, latitude, intention) {
+
 	var styleCache = {};
 	var feature = new ol.Feature({
 		geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857')),
