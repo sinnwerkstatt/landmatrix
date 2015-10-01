@@ -9,6 +9,7 @@ import random
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 
 from .models import MapPluginModel
+import requests
 
 
 class MapPlugin(CMSPluginBase):
@@ -43,30 +44,14 @@ class MapPlugin(CMSPluginBase):
         return super().get_form(request, obj, **kwargs)
 
     def render(self, context, instance, placeholder):
-        print("Howdy! I'm a "+self.__class__.__name__)
-        # context.update({
-        #     'body': plugin_tags_to_user_html(instance.body, context, placeholder),
-        #     'placeholder': placeholder,
-        #     'object': instance
-        # })
         deal_list = []
-        location_attributes = sorted(ActivityAttributeGroup.objects.filter(attributes__icontains="point_lat").
-			exclude(attributes__icontains="°").\
-			exclude(attributes__icontains="04.738 N").\
-			exclude(attributes__icontains="-3.0001328124999426666666cro").\
-			exclude(attributes__icontains="4.134665") \
-                                     [:200], key=lambda x: random.random())
 
-        for location in location_attributes:
-            intention_attributes = ActivityAttributeGroup.objects.filter(attributes__icontains="intention", fk_activity_id=location.fk_activity_id)
-            deal = {
-			    "deal_id": location.fk_activity_id,
-				"point_lat": location.attributes.get("point_lat"),
-				"point_lon": location.attributes.get("point_lon"),
-				"intention": intention_attributes and intention_attributes[0].attributes.get("intention") or "",
-			}
-            deal_list.append(deal)
-        print(deal_list)
+        r = requests.get('http://127.0.0.1:8000/en/api/deals.json?limit=200')
+        print('RESPONSE:', r.json(), len(r.json()))
+
+        if True:
+            deal_list = r.json()
+
         context['ActivityAttribute_list'] = deal_list
         return context
 

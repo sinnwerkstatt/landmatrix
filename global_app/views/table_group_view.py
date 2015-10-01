@@ -87,7 +87,7 @@ class TableGroupView(TemplateView):
         request.POST = MultiValueDict(
             {"data": [json.dumps({"filters": self.filters, "columns": self.columns})]}
         )
-        ap.debug = self.debug_query
+        ap.DEBUG = self.debug_query
         res = ap.dispatch(request, action="list_group").content
         query_result = json.loads(res.decode())
 
