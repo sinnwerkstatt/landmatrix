@@ -17,7 +17,7 @@ class DealsJSONView(JSONViewBase):
         print(args, kwargs)
         start_time = timeit.default_timer()
         deals = list(self.get_deals(request))
-        print(deals[:10], len(deals), timeit.default_timer() - start_time)
+#        print(deals[:10], len(deals), timeit.default_timer() - start_time)
         return HttpResponse(json.dumps(deals, cls=DecimalEncoder), content_type='application/json')
 
     def get_deals(self, request):
