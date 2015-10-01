@@ -6,6 +6,8 @@ import json
 
 class ApiTestFunctions(TestCase):
 
+    PREFIX = '/en/api/'
+
     def url(self, resource): return self.PREFIX + resource + self.POSTFIX
 
     def url_id(self, resource, id): return self.PREFIX + resource + self.INFIX + str(id) + self.POSTFIX
