@@ -44,15 +44,9 @@ class MapPlugin(CMSPluginBase):
         return super().get_form(request, obj, **kwargs)
 
     def render(self, context, instance, placeholder):
-        deal_list = []
-
-        r = requests.get('http://127.0.0.1:8000/en/api/deals.json?limit=200')
-        print('RESPONSE:', r.json(), len(r.json()))
-
-        if True:
-            deal_list = r.json()
-
-        context['ActivityAttribute_list'] = deal_list
+        deals = requests.get('http://127.0.0.1:8000/en/api/deals.json?limit=200').json()
+        print('RESPONSE:', deals, len(deals))
+        context['ActivityAttribute_list'] = deals
         return context
 
     def save_model(self, request, obj, form, change):
