@@ -1,16 +1,17 @@
+from api.query_sets.deals_query_set import DealsQuerySet
+from .models import MapPluginModel
+
 from cms.plugin_pool import plugin_pool
 from cms.plugin_base import CMSPluginBase
 from djangocms_text_ckeditor.forms import TextForm
-from djangocms_text_ckeditor.utils import plugin_tags_to_user_html
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-import random
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 
-from .models import MapPluginModel
 import requests
 
+
+MAX_NUM_DEALS = 500
 
 class MapPlugin(CMSPluginBase):
 
@@ -19,7 +20,6 @@ class MapPlugin(CMSPluginBase):
     name = _("Map")
     form = TextForm
     render_template = "index.html"
-
 
     def get_editor_widget(self, request, plugins):
         """ Returns the Django form Widget to be used for the text area """
@@ -44,8 +44,8 @@ class MapPlugin(CMSPluginBase):
         return super().get_form(request, obj, **kwargs)
 
     def render(self, context, instance, placeholder):
-        deals = requests.get('http://127.0.0.1:8000/en/api/deals.json?limit=200').json()
-        print('RESPONSE:', deals, len(deals))
+        deals = requests.get('http://127.0.0.1:8000/en/api/deals.json?limit=%s' % MAX_NUM_DEALS).json()
+#        print('RESPONSE: %s DEALS' % len(deals))
         context['ActivityAttribute_list'] = deals
         return context
 
