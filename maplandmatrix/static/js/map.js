@@ -1,6 +1,6 @@
 //Coordinates : need to CONVERT the projections from ... to ... :
 	//EPSG:4326: is the WGS84 projection, commun use for the World (ex: GPS)
-	//EPSG:3857:Spherical Mercator projection used by Google and OpenStreetMap
+	//EPSG:3857:Spherical Web Mercator projection used by Google and OpenStreetMap
 
 // Globale Variablen 
 var map;
@@ -18,7 +18,7 @@ $(document).ready(function() {
 				'title':'Base Maps',
 				layers: [
 					new ol.layer.Tile({
-						title:'OSM',
+						title:'OpenStreetMap',
 						type:'base',
 						visible:false,
 						source: new ol.source.OSM()
@@ -33,9 +33,7 @@ $(document).ready(function() {
 						title:'Toner',
 						type:'base',
 						visible:true,
-						source: new ol.source.Stamen({
-							layer:'toner'
-						})
+						source: new ol.source.Stamen({layer:'toner'})
 					}),
 				]
 			}),
@@ -44,7 +42,7 @@ $(document).ready(function() {
 				title:'Context Layers',
 				layers:[
 					new ol.layer.Tile({
-						title:'Global Cropland',
+						title:'Give a layer Title here',
 						visible:false,
 						source: new ol.source.TileWMS({
 							url:'',
@@ -53,7 +51,7 @@ $(document).ready(function() {
 						})
 					}),
 					new ol.layer.Tile({
-						title:'Global Landcover',
+						title:'Give a layer Title here',
 						visible:false,
 						source: new ol.source.TileWMS({
 							url:'',
@@ -75,6 +73,9 @@ $(document).ready(function() {
     						}),
 							new ol.control.FullScreen(),
 							new ol.control.Attribution,
+							// new ol.control.ZoomToExtent({
+    			// 				extent:undefined
+							// }),
 		],
 		interactions : [
 							new ol.interaction.Select(),
@@ -96,35 +97,53 @@ $(document).ready(function() {
 		tipLabel:'Legende'
 	});
 	map.addControl(layerSwitcher);
+	
+	map.on('click', function (evt){
+	 	// map.forEachFeatureAtPixel(evt.pixel, function (feature, layer){
+	 	// 	// With Click on the markers, shows a popup the markers features
 
-	map.on('click', function(evt){
-	 	map.forEachFeatureAtPixel(evt.pixel, function(feature, layer){
-	 		// do something
-	 		console.log("feature clicked: " + evt.feature);
+	 	var PopupFeature = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+       		console.log("feature clicked: " + feature.getProperties());
 //debugger;
 			var element = document.getElementById('popup');
-		
+			
 			var popup = new ol.Overlay({
 				element: element,
 				position:'center',
-				stopEvent: false
+				stopEvent: false,
 			});
 			map.addOverlay(popup);
+				
 			if (feature){
-	 		popup.setPosition(evt.coordinate);
-	 		$(element).popover({
-			    'placement': 'top',
-			    'html': true,
-			    'content': '<p>Latitude:</p><code>' + feature.get('latitude') + '</code>'+ '<p>Longitude:</p><code>' + feature.get('longitude') + '</code>'+ '<p>Intention of investment:</p><code>' + feature.get('intention') + '</code>'
-	   		});
-	   		$(element).popover('show');
-	   		} else {
-	   		$(element).popover('destroy');
-	   		}
-	 		return feature;
+		 		popup.setPosition(evt.coordinate);
+		 		$(element).popover({
+		 			'placement': 'top',
+					'html': true,
+				    'content': '<p>Coordinates:</p><code>' + feature.get() + '</code>' + '<p>Intention of investment:</p><code>' + feature.get('name') + '</code>'
+			   	});
+				$(element).popover('show');
+		   	} else {
+		   		$(element).popover('destroy');
+		   	}
+		   	return feature;
 	 	});
 	});
-	
+
+	// change Mouse Cursor when over Marker
+	var target = map.getTarget();
+    var jTarget = typeof target === "string" ? $("#" + target) : $(target);
+    $(map.getViewport()).on('mousemove', function (e) {
+        var pixel = map.getEventPixel(e.originalEvent);
+        var hit = map.forEachFeatureAtPixel(pixel, function (feature, layer) {
+            return true;
+        });
+  	 	if (hit) {
+  	 		jTarget.css("cursor", "pointer");
+        } else {
+            jTarget.css("cursor", "");
+        }
+    });
+
 }); //gesamte document.ready.function Klammer
 
 // MARKERS in clusters. ONE MARKER = ONE DEAL
@@ -133,6 +152,7 @@ function addClusteredMarker (longitude, latitude, intention) {
 	var styleCache = {};
 	var feature = new ol.Feature({
 		geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857')),
+		//name: intention, 
 	});
 	clusters.push(feature);
 
@@ -145,78 +165,83 @@ function addClusteredMarker (longitude, latitude, intention) {
 		features: clusters
 		})
 	});
-	var cluster = new ol.layer.Vector({
-	  source: clusterSource,
-	  //element: document.getElementById('popup'),
-	  style: function(feature, resolution) {
-	    var size = feature.get('features').length;
-	//Give a color to each Intention of Investment, only for single points
-	// PROBLEM : how to clustered the points by color? 	
-		var color = "";
-			if (size > 1){
-				color = '#4C76AB';
-			}
-			else if (intention=='Agriculture'){
-				color = '#1D6914';
-			}
-			else if (intention=='Forestry'){
-				color= '#2A4BD7';
-			}
-			else if (intention=='Conservation'){
-				color= '#575757';
-			}
-			else if (intention=='Industry'){
-				color= '#AD2323';
-			}
-			else if (intention=='Renewable Energy'){
-				color= '#81C57A';
-			}
-			else if (intention=='Tourism'){
-				color= '#9DAFFF';
-			}
-			else if (intention=='Other'){
-				color= '#8126C0';
-			}
-			else if (intention=='Mining'){
-				color='#814A19';
-			}
-			else {
-				color='black';
-			}
+	var cluster = //new ol.layer.Group({
+		//'title':'Deals', 
+		//visible: true,
+		//layers: [
+			new ol.layer.Vector({
+			  source: clusterSource,
+			  style: function(feature, resolution) {
+			    var size = feature.get('features').length;
+			//Give a color to each Intention of Investment, only for single points
+			// PROBLEM : how to clustered the points by color? 	
+				var color = "";
+					if (size > 1){
+						color = '#4C76AB';
+					}
+					else if (intention=='Agriculture'){
+						color = '#1D6914';
+					}
+					else if (intention=='Forestry'){
+						color= '#2A4BD7';
+					}
+					else if (intention=='Conservation'){
+						color= '#575757';
+					}
+					else if (intention=='Industry'){
+						color= '#AD2323';
+					}
+					else if (intention=='Renewable Energy'){
+						color= '#81C57A';
+					}
+					else if (intention=='Tourism'){
+						color= '#9DAFFF';
+					}
+					else if (intention=='Other'){
+						color= '#8126C0';
+					}
+					else if (intention=='Mining'){
+						color='#814A19';
+					}
+					else {
+						color='black';
+					}
 
-		var style = styleCache[size];
+				var style = styleCache[size];
 
-	  	var radius = size/2;
-	    	if (radius > 75) {
-	    		radius = 25;
-	    	}
-	    	else if (radius < 10) {
-	    		radius = 7;
-	    	}
+			  	var radius = size/2;
+			    	if (radius > 75) {
+			    		radius = 25;
+			    	}
+			    	else if (radius < 7) {
+			    		radius = 7;
+			    	}
 
-	    if (!style) {
-	      style = [new ol.style.Style({
-	        image: new ol.style.Circle({
-	        	radius: radius,
-	        	stroke: new ol.style.Stroke({
-	            	color: '#fff'
-	          		}),
-		        fill: new ol.style.Fill({
-		        color: color, 
-		        })
-	        }),
-	        text: new ol.style.Text({
-	          text: size.toString(),
-	          fill: new ol.style.Fill({
-	            color: '#fff'
-	          })
-	        })
-	      })];
-	      styleCache[size] = style;
-	    }
-	    return style;
-	  }
-	});
+			    if (!style) {
+			      style = [new ol.style.Style({
+			        image: new ol.style.Circle({
+			        	radius: radius,
+			        	stroke: new ol.style.Stroke({
+			            	color: '#fff'
+			          		}),
+				        fill: new ol.style.Fill({
+				        color: color, 
+				        })
+			        }),
+			        text: new ol.style.Text({
+			          text: size.toString(),
+			          fill: new ol.style.Fill({
+			            color: '#fff'
+			          })
+			        })
+			      })];
+			      styleCache[size] = style;
+			    }
+			    return style;
+			  }
+			})
+		//],
+	//});
 	map.addLayer(cluster);	
 };
 
