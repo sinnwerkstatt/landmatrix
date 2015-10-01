@@ -15,13 +15,14 @@ class DealsQuerySet(FakeQuerySetFlat):
     FIELDS = [
         ('point_lat', "location.attributes->'point_lat'"),
         ('point_lon', "location.attributes->'point_lon'"),
-        ('intention', "intention.attributes->'intention'")
+        ('intention', "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention'), ', '), '')")
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattributegroup    AS location         ON a.id = location.fk_activity_id AND location.attributes ? 'point_lat' AND location.attributes ? 'point_lon'",
         "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'"
     ]
     ADDITIONAL_WHERES = ["location.attributes ? 'point_lat' AND location.attributes ? 'point_lon'"]
+    GROUP_BY = ['location.attributes']
 
     def __init__(self, get_data):
         if not 'deal_scope' in get_data:
