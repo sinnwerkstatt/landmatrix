@@ -31,3 +31,5 @@ coverage >= 3.7
 
 xlwt >= 1.0.0
 python-mimeparse >= 0.1.4
+
+requests
