@@ -27,13 +27,16 @@
 	//define Features for the MARKERS
 	$(document).ready(function() {
 /*
-		$.get("/en/api/deals.json?limit=200", function (data) {
-			for (var i = 0; i < data.length; i++) {
-				marker = data[i];
-				console.log(marker.point_lon, marker.point_lat, "marker.intention");
-				addClusteredMarker(marker.point_lon, marker.point_lat, "marker.intention");
+		$.get(
+			"/en/api/deals.json?limit=<limit>&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>",
+			function (data) {
+				for (var i = 0; i < data.length; i++) {
+					marker = data[i];
+					console.log(marker.point_lon, marker.point_lat, "marker.intention");
+					addClusteredMarker(marker.point_lon, marker.point_lat, "marker.intention");
+				}
 			}
-		});
+		);
 */
 		{% for ActivityAttribute in ActivityAttribute_list %}
 			addClusteredMarker({{ ActivityAttribute.point_lon }}, {{ ActivityAttribute.point_lat }}, "{{ ActivityAttribute.intention}}");

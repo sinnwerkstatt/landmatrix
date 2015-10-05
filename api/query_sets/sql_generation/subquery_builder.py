@@ -1,7 +1,7 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from global_app.views.sql_generation.join_functions import join_attributes
-from global_app.views.sql_generation.list_sql_builder import ListSQLBuilder
+from api.query_sets.sql_generation.join_functions import join_attributes
+from api.query_sets.sql_generation.list_sql_builder import ListSQLBuilder
 
 
 class SubqueryBuilder(ListSQLBuilder):

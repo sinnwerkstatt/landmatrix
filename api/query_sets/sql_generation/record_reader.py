@@ -1,13 +1,15 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+from api.query_sets.sql_generation.sql_builder import list_view_wanted, SQLBuilder
+from api.query_sets.sql_generation.subquery_builder import SubqueryBuilder
 
 from django.db import connection
 from django.conf import settings
 
-from global_app.views.sql_generation.subquery_builder import SubqueryBuilder
-from global_app.views.sql_generation.sql_builder import SQLBuilder, list_view_wanted
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class RecordReader:
+
+    DEBUG = False
 
     def __init__(self, filters, columns):
         self.filters = filters
@@ -40,7 +42,7 @@ class RecordReader:
         return SQLBuilder.create(self.filters, self.columns).get_sql()
 
     def _execute_sql(self, sql):
-        if (False and settings.DEBUG): print('*'*80, 'SQL: \n', sql)
+        if (self.DEBUG): print('*'*80, 'SQL: \n', sql)
 
         cursor = connection.cursor()
         cursor.execute(sql)

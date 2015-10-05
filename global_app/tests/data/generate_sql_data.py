@@ -22,7 +22,7 @@ os.chdir(proj_path)
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from global_app.views import DummyActivityProtocol
+from global_app.views import ActivityProtocol
 
 def read_data(filename):
     with open(os.path.dirname(os.path.realpath(__file__)) + '/' + filename, 'r') as f:
@@ -40,7 +40,7 @@ files_to_generate = [
 
 for filename in files_to_generate:
     postdata = read_data('landmatrix_' + filename + '.out')
-    protocol = DummyActivityProtocol()
+    protocol = ActivityProtocol()
     request = HttpRequest()
     request.POST = {'data': postdata}
     res = protocol.dispatch(request, action="list_group").content
