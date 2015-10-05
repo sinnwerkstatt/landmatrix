@@ -1,14 +1,10 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models.browse_condition import BrowseCondition
-from global_app.views.view_aux_functions import create_condition_formset, FILTER_VAR_ACT, FILTER_VAR_INV
-from global_app.views.browse_condition_form import BrowseConditionForm
-from global_app.views.browse_filter_conditions import BrowseFilterConditions, get_field_by_key, a_keys
-from global_app.tests.test_view_base import extract_tag
-
 from django.test import TestCase
 from django.utils.datastructures import MultiValueDict
-from pprint import pprint
+
+from global_app.views.view_aux_functions import create_condition_formset, FILTER_VAR_ACT, FILTER_VAR_INV
+from global_app.tests.test_view_base import extract_tag
 
 
 class TestBrowseConditionForm(TestCase):
@@ -78,7 +74,7 @@ class TestBrowseConditionForm(TestCase):
             self._check_all_forms_for_vars_and_ops(formset)
 
     def test_all_fields_and_ops(self):
-        from global_app.views.sql_generation.filter_to_sql import FilterToSQL
+        from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
         for field in FILTER_VAR_ACT+FILTER_VAR_INV:
             for op in FilterToSQL.OPERATION_MAP.keys():
                 formset = self.Formset(
@@ -109,6 +105,6 @@ class TestBrowseConditionForm(TestCase):
             self.assertIn(var, variable_select)
 
     def _check_all_operators_present(self, operator_select):
-        from global_app.views.sql_generation.filter_to_sql import FilterToSQL
+        from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
         for op in FilterToSQL.OPERATION_MAP.keys():
             self.assertIn(op, operator_select)

@@ -17,11 +17,12 @@ from django.http.response import HttpResponse
 import json
 
 from django.views.generic.base import TemplateView
+from global_app.views.activity_protocol import ActivityQuerySet
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-def json_generator(query_set_class):
+def json_get_generator(query_set_class):
 
     class Generator:
         def dispatch(self, request):
@@ -30,17 +31,29 @@ def json_generator(query_set_class):
 
     return Generator
 
-AgriculturalProduceJSONGenerator = json_generator(AllAgriculturalProduceQuerySet)
-DealsJSONGenerator = json_generator(DealsQuerySet)
-ImplementationStatusJSONGenerator = json_generator(ImplementationStatusQuerySet)
-IntentionOfInvestmentJSONGenerator = json_generator(IntentionQuerySet)
-InvestorCountrySummariesJSONGenerator = json_generator(InvestorCountrySummariesQuerySet)
-NegotiationStatusJSONGenerator = json_generator(NegotiationStatusQuerySet)
-TargetCountrySummariesJSONGenerator = json_generator(TargetCountrySummariesQuerySet)
-Top10CountriesJSONGenerator = json_generator(Top10CountriesQuerySet)
-TransnationalDealsJSONGenerator = json_generator(TransnationalDealsQuerySet)
-TransnationalDealsByCountryJSONGenerator = json_generator(TransnationalDealsByCountryQuerySet)
-HectaresJSONGenerator = json_generator(HectaresQuerySet)
+
+def json_post_generator(query_set_class):
+
+    class Generator:
+        def dispatch(self, request):
+            data = query_set_class(request.POST).all()
+            return HttpResponse(json.dumps(data, cls=DecimalEncoder), content_type="application/json")
+
+    return Generator
+
+AgriculturalProduceJSONGenerator = json_get_generator(AllAgriculturalProduceQuerySet)
+DealsJSONGenerator = json_get_generator(DealsQuerySet)
+ImplementationStatusJSONGenerator = json_get_generator(ImplementationStatusQuerySet)
+IntentionOfInvestmentJSONGenerator = json_get_generator(IntentionQuerySet)
+InvestorCountrySummariesJSONGenerator = json_get_generator(InvestorCountrySummariesQuerySet)
+NegotiationStatusJSONGenerator = json_get_generator(NegotiationStatusQuerySet)
+TargetCountrySummariesJSONGenerator = json_get_generator(TargetCountrySummariesQuerySet)
+Top10CountriesJSONGenerator = json_get_generator(Top10CountriesQuerySet)
+TransnationalDealsJSONGenerator = json_get_generator(TransnationalDealsQuerySet)
+TransnationalDealsByCountryJSONGenerator = json_get_generator(TransnationalDealsByCountryQuerySet)
+HectaresJSONGenerator = json_get_generator(HectaresQuerySet)
+
+ActivitiesJSONGenerator = json_post_generator(ActivityQuerySet)
 
 
 class JSONView(TemplateView):
@@ -48,17 +61,18 @@ class JSONView(TemplateView):
     template_name = 'plugins/overview.html'
 
     targets = {
-        'negotiation_status.json':             NegotiationStatusJSONGenerator,
-        'implementation_status.json':          ImplementationStatusJSONGenerator,
-        'intention_of_investment.json':        IntentionOfInvestmentJSONGenerator,
-        'transnational_deals.json':            TransnationalDealsJSONGenerator,
-        'top-10-countries.json':               Top10CountriesJSONGenerator,
-        'transnational_deals_by_country.json': TransnationalDealsByCountryJSONGenerator,
-        'investor_country_summaries.json':     InvestorCountrySummariesJSONGenerator,
-        'target_country_summaries.json':       TargetCountrySummariesJSONGenerator,
-        'agricultural-produce.json':           AgriculturalProduceJSONGenerator,
-        'hectares.json':                       HectaresJSONGenerator,
-        'deals.json':                          DealsJSONGenerator,
+        'negotiation_status.json':              NegotiationStatusJSONGenerator,
+        'implementation_status.json':           ImplementationStatusJSONGenerator,
+        'intention_of_investment.json':         IntentionOfInvestmentJSONGenerator,
+        'transnational_deals.json':             TransnationalDealsJSONGenerator,
+        'top-10-countries.json':                Top10CountriesJSONGenerator,
+        'transnational_deals_by_country.json':  TransnationalDealsByCountryJSONGenerator,
+        'investor_country_summaries.json':      InvestorCountrySummariesJSONGenerator,
+        'target_country_summaries.json':        TargetCountrySummariesJSONGenerator,
+        'agricultural-produce.json':            AgriculturalProduceJSONGenerator,
+        'hectares.json':                        HectaresJSONGenerator,
+        'deals.json':                           DealsJSONGenerator,
+        'activities.json':                      ActivitiesJSONGenerator,
     }
 
     def dispatch(self, request, *args, **kwargs):

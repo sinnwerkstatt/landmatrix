@@ -1,3 +1,5 @@
+from api.query_sets.sql_generation.record_reader import RecordReader
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.test import TestCase
@@ -6,7 +8,7 @@ from django.http import HttpRequest
 import json
 
 from .deals_test_data import DealsTestData
-from global_app.views import DummyActivityProtocol
+from global_app.views import ActivityProtocol
 from landmatrix.models import Activity
 
 class TestActivityProtocol(TestCase, DealsTestData):
@@ -15,13 +17,14 @@ class TestActivityProtocol(TestCase, DealsTestData):
         self.old_setting = settings.DEBUG
         settings.DEBUG = False
         self.request = HttpRequest()
-        self.protocol = DummyActivityProtocol()
+        self.protocol = ActivityProtocol()
 
     def tearDown(self):
         settings.DEBUG = self.old_setting
 
     def test_minimal_view_executes(self):
-        return self.get_and_check_response(self.MINIMAL_POST)
+        response = self.get_and_check_response(self.MINIMAL_POST)
+        return response
 
     def test_all_deal_sql_executes(self):
         return self.get_and_check_response(self.TYPICAL_POST)
@@ -90,7 +93,6 @@ class TestActivityProtocol(TestCase, DealsTestData):
 
     def get_and_check_response(self, post=None):
         from django.db.utils import ProgrammingError
-        from django.db import connection
         try:
             if post: self._set_POST(post)
             response = self.protocol.dispatch(self.request, None)

@@ -25,7 +25,7 @@ application = get_wsgi_application()
 #
 # actual script follows.
 #
-from global_app.views import DummyActivityProtocol
+from global_app.views import ActivityProtocol
 
 from django.http import HttpRequest
 from django.db import connection
@@ -97,7 +97,7 @@ class Compare:
     def _compare_with_expected(self):
 
         postdata, records = self._read_data('landmatrix_' + self._filename+'.out')
-        protocol = DummyActivityProtocol()
+        protocol = ActivityProtocol()
         res = protocol.dispatch(self._prepare_request(postdata), action="list_group").content
         query_result = json.loads(res.decode())['activities'][:self.NUM_COMPARED_RECORDS]
         self.sql[self._filename] = [connection.queries[-1]['sql'] if connection.queries else 'WHAT? NO QUERIES? ' + self._filename]

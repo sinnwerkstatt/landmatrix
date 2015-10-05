@@ -4,10 +4,10 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models import BrowseCondition
-from global_app.views.sql_generation.filter_to_sql import FilterToSQL
+from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from global_app.views.base_model_form import BaseModelForm
 from global_app.views.browse_text_input import BrowseTextInput
-from global_app.views.browse_filter_conditions import BrowseFilterConditions, get_field_by_key, a_keys
+from global_app.views.browse_filter_conditions import get_field_by_key, a_keys
 
 
 class BrowseConditionForm(BaseModelForm):

@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from global_app.views.sql_generation.sql_builder import SQLBuilder
+from api.query_sets.sql_generation.sql_builder import SQLBuilder
 
 class GroupSQLBuilder(SQLBuilder):
 
