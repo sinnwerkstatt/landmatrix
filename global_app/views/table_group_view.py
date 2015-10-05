@@ -5,7 +5,7 @@ from .browse_filter_conditions import BrowseFilterConditions
 from .intention_map import IntentionMap
 from .download import Download
 from landmatrix.models import BrowseCondition
-from global_app.views.dummy_activity_protocol import DummyActivityProtocol
+from global_app.views.activity_protocol import ActivityProtocol
 
 from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
@@ -83,7 +83,7 @@ class TableGroupView(TemplateView):
             else 'csv'
 
     def get_records(self, request):
-        ap = DummyActivityProtocol()
+        ap = ActivityProtocol()
         request.POST = MultiValueDict(
             {"data": [json.dumps({"filters": self.filters, "columns": self.columns})]}
         )

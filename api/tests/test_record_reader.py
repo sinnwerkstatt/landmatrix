@@ -1,10 +1,11 @@
+from api.query_sets.sql_generation.record_reader import RecordReader
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.test import TestCase
 
-from global_app.views.sql_generation.record_reader import RecordReader
-from .deals_test_data import DealsTestData
-from .generate_old_sql import GenerateOldSQL
+from global_app.tests.deals_test_data import DealsTestData
+from global_app.tests.generate_old_sql import GenerateOldSQL
 
 null = None
 
@@ -86,6 +87,7 @@ class TestRecordReader(TestCase, DealsTestData, GenerateOldSQL):
             { "investor": {"tags": {"24055__is": ["0"]}} },
         ]
 
+        old_filters = post['filters']
         for test in to_test:
             post['filters'] = test
             reader = RecordReader(post['filters'], post['columns'])
@@ -93,6 +95,7 @@ class TestRecordReader(TestCase, DealsTestData, GenerateOldSQL):
             self.assertIn(self._browse_filters_to_sql(post['filters'])['investor']['from'], reader.get_all_at_once_sql())
             self.assertIn(self._browse_filters_to_sql(post['filters'])['activity']['where'], reader.get_all_at_once_sql())
             self.assertIn(self._browse_filters_to_sql(post['filters'])['investor']['where'], reader.get_all_at_once_sql())
+        post['filters'] = old_filters
 
     def _check_order_by(self, column, expected):
         post = self.MINIMAL_POST

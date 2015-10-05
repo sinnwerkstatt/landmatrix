@@ -28,7 +28,7 @@ application = get_wsgi_application()
 #
 
 from django.db import connection
-from global_app.views.sql_generation.sql_builder import SQLBuilder
+from api.query_sets.sql_generation.sql_builder import SQLBuilder
 
 def get_excluded_deals():
     if not get_excluded_deals.deals:
@@ -388,7 +388,7 @@ def execute(sql):
 
 #test_split_inner_query()
 
-from global_app.views.sql_generation.record_reader import RecordReader
+from api.query_sets.sql_generation import RecordReader
 
 
 null = None

@@ -5,8 +5,9 @@ from django.test import TestCase
 from landmatrix.models import Activity
 from .deals_test_data import DealsTestData
 from .generate_old_sql import GenerateOldSQL
-from global_app.views.sql_generation.sql_builder import SQLBuilder
-from global_app.views.sql_generation.join_functions import join_expression
+from api.query_sets.sql_generation.join_functions import join_expression
+from api.query_sets.sql_generation.sql_builder import SQLBuilder
+
 
 class TestSQLBuilder(TestCase, DealsTestData, GenerateOldSQL):
 
@@ -50,9 +51,6 @@ class TestSQLBuilder(TestCase, DealsTestData, GenerateOldSQL):
         self.assertIn('ORDER BY', builder.get_order_sql())
         self.assertIn(expected, builder.get_order_sql())
 
-
-from django_hstore import hstore
-from django.conf import settings
 
 class TestORMGeneratedQueries(TestCase, DealsTestData):
 

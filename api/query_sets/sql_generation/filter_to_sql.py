@@ -1,8 +1,10 @@
+from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.utils.translation import ugettext_lazy as _
 
-from global_app.views.sql_generation.join_functions import join_attributes
+from api.query_sets.sql_generation.join_functions import join_attributes
 
 
 class FilterToSQL:
@@ -172,8 +174,8 @@ class FilterToSQL:
                     tables_from_inv += "LEFT JOIN (sh_key_value_lookup skv%(count)i, countries skvc%(count)i, regions skvr%(count)i) \n" % {"count": i}
                     tables_from_inv += " ON (skv%(count)i.stakeholder_identifier = s.stakeholder_identifier AND skv%(count)i.key = 'country' AND skv%(count)i.value = skvc%(count)i.name AND skvr%(count)i.id = skvc%(count)i.fk_region)"%{"count": i, "key": variable}
                 else:
-                    tables_from_inv += "LEFT JOIN (sh_key_value_lookup skv%(count)i)\n" % {"count": i}
-                    tables_from_inv += " ON (skv%(count)i.stakeholder_identifier = s.stakeholder_identifier AND skv%(count)i.key_id = '%(key)s')\n" % {"count": i, "key": variable}
+                    tables_from_inv += "LEFT JOIN " + StakeholderAttributeGroup._meta.db_table + " AS skv%(count)i\n" % {"count": i}
+                    tables_from_inv += " ON (skv%(count)i.fk_stakeholder_id = s.id AND skv%(count)i.attributes ? '%(key)s')\n" % {"count": i, "key": variable}
 
         return tables_from_inv
 

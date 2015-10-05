@@ -1,9 +1,10 @@
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models import *
-from global_app.views.sql_generation.filter_to_sql import FilterToSQL
-from global_app.views.sql_generation.join_functions import *
-from global_app.views.sql_generation.sql_builder_data import SQLBuilderData
+from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
+from api.query_sets.sql_generation.join_functions import *
+from api.query_sets.sql_generation.sql_builder_data import SQLBuilderData
 
 
 def list_view_wanted(filters):
@@ -18,6 +19,7 @@ class SQLBuilder(SQLBuilderData):
     def create(cls, filters, columns):
         from .list_sql_builder import ListSQLBuilder
         from .group_sql_builder import GroupSQLBuilder
+
         if list_view_wanted(filters):
             return ListSQLBuilder(filters, columns)
         else:
