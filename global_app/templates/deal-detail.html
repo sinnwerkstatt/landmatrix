@@ -2,6 +2,17 @@
 {% load i18n custom_tags %}
 {% load humanize %}
 
+{% block head %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <style type="text/css">
+    .bs-example{
+    	margin: 20px;
+    }
+  </style>
+{% endblock %}
 
 {% block page_title %}Deal details{% endblock %}
 {% block title %}Deal details{% endblock %}
@@ -20,53 +31,298 @@
 
     <h5>Activity</h5>
 
+    <div class="bs-example">
+      <div class="panel-group" id="accordion">
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Spatial Data</a>
+            </h4>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse in">
+            <div class="panel-body">
+              <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                <tr><td colspan="2"><h3>Location</h3></td></tr>
+                <tr><td>Level of accuracy:</td>                                     <td>{{deal.attributes.level_of_accuracy}}</td></tr>
+                <tr>
+                    <td>Location:</td>
+                    <td>
+                        {{deal.attributes.location}}
+                        <!--div class="map" style="width:470px; height:400px; margin-bottom: 30px;"></div-->
+                    </td>
+                </tr>
+                <tr><td>Latitude:</td>                                              <td>{{deal.attributes.point_lat}}</td></tr>
+                <tr><td>Longitude:</td>                                             <td>{{deal.attributes.point_lon}}</td></tr>
+                <tr><td>Target country:</td>                                        <td>{{deal.attributes.target_country}}</td></tr>
+                <!--tr><td>Additional comments:</td><td>{{deal.attributes.xxxx}}</td></tr-->
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">General Information</a>
+            </h4>
+          </div>
+          <div id="collapseTwo" class="panel-collapse collapse">
+            <div class="panel-body">
+              <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                <tr><td colspan="2"><h3>Land Area</h3></td></tr>
+                <tr><td>Intended size:</td>                                         <td>{{deal.attributes.intended_size}}</td></tr>
+                <tr><td>Current size under contract (leased or purchased area):</td><td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>Current size in operation (production):</td>                <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td colspan="2"><h3>Intention of investment</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.intention}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td colspan="2"><h3>Nature of the deal</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.nature}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td colspan="2"><h3>Negotiation status</h3></td></tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        {% if deal.attributes.negotiation_status %}{{deal.attributes.negotiation_status}}
+                        {% elif deal.attributes.pi_negotiation_status %}{{deal.attributes.pi_negotiation_status}}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr><td>Contract number:</td>                                       <td>{{deal.attributes.contract_number}}</td></tr>
+                <tr><td>Contract date:</td>                                         <td>{{deal.attributes.contract_date}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td colspan="2"><h3>Duration of the agreement</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td colspan="2"><h3>Implementation status</h3></td></tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        {% if deal.attributes.implementation_status %}{{deal.attributes.implementation_status}}
+                        {% elif deal.attributes.pi_implementation_status %}{{deal.attributes.pi_implementation_status}}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td colspan="2"><h3>Purchase Price</h3></td></tr>
+                <tr><td>Purchase price:</td>                                        <td>{{deal.attributes.purchase_price}}</td></tr>
+                <tr><td>Purchase price currency:</td>                               <td>{{deal.attributes.purchase_price_currency}}</td></tr>
+                <tr><td>Purchase price area type:</td>                              <td>{{deal.attributes.purchase_price_area}}</td></tr>
+                <tr><td>Purchase price area type:</td>                              <td>{{deal.attributes.purchase_price_type}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td colspan="2"><h3>Leasing fees</h3></td></tr>
+                <tr><td>Annual leasing fee:</td>                                    <td>{{deal.attributes.annual_leasing_fee}}</td></tr>
+                <tr><td>Annual leasing fee currency:</td>                           <td>{{deal.attributes.annual_leasing_fee_currency}}</td></tr>
+                <tr><td>Annual leasing fee area:</td>                               <td>{{deal.attributes.annual_leasing_fee_area}}</td></tr>
+                <tr><td>Annual leasing fee type:</td>                               <td>{{deal.attributes.annual_leasing_fee_type}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td colspan="2"><h3>Contract farming</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.contract_farming}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Employment</a>
+            </h4>
+          </div>
+          <div id="collapseThree" class="panel-collapse collapse">
+            <div class="panel-body">
+              <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                <tr><td colspan="2"><h3>Number of total jobs created</h3></td></tr>
+                <tr><td>Jobs created (total):</td>                                  <td>{{deal.attributes.total_jobs_created}}</td></tr>
+                <tr><td>Planned number of jobs (total):</td>                        <td>{{deal.attributes.total_jobs_planned}}</td></tr>
+                <tr><td>Planned employees (total):</td>                             <td>{{deal.attributes.total_jobs_planned_employees}}</td></tr>
+                <tr><td>Planned daily/seasonal workers (total):</td>                <td>{{deal.attributes.total_jobs_planned_daily_workers}}</td></tr>
+                <tr><td>Current number of jobs (total):</td>                        <td>{{deal.attributes.total_jobs_current}}</td></tr>
+                <tr><td>Current number of employees (total):</td>                   <td>{{deal.attributes.total_jobs_current_employees}}</td></tr>
+                <tr><td>Current number of daily/seasonal workers (total):</td>      <td>{{deal.attributes.total_jobs_current_daily_workers}}</td></tr>
+                <tr><td>Additional comments on jobs created (total):</td>           <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Number of jobs for foreigners created</h3></td></tr>
+                <tr><td>Jobs created (foreign):</td>                                <td>{{deal.attributes.foreign_jobs_created}}</td></tr>
+                <tr><td>Planned number of jobs (foreign):</td>                      <td>{{deal.attributes.foreign_jobs_planned}}</td></tr>
+                <tr><td>Planned employees (foreign):</td>                           <td>{{deal.attributes.foreign_jobs_planned_employees}}</td></tr>
+                <tr><td>Planned daily/seasonal workers (foreign):</td>              <td>{{deal.attributes.foreign_jobs_planned_daily_workers}}</td></tr>
+                <tr><td>Current number of jobs (foreign):</td>                      <td>{{deal.attributes.foreign_jobs_current}}</td></tr>
+                <tr><td>Current number of employees (foreign):</td>                 <td>{{deal.attributes.foreign_jobs_current_employees}}</td></tr>
+                <tr><td>Current number of daily/seasonal workers (foreign):</td>    <td>{{deal.attributes.foreign_jobs_current_daily_workers}}</td></tr>
+                <tr><td>Additional comments on jobs created (foreign):</td>         <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Number of domestic jobs created</h3></td></tr>
+                <tr><td>Jobs created (domestic):</td>                               <td>{{deal.attributes.domestic_jobs_created}}</td></tr>
+                <tr><td>Planned number of jobs (domestic):</td>                     <td>{{deal.attributes.domestic_jobs_planned}}</td></tr>
+                <tr><td>Planned employees (domestic):</td>                          <td>{{deal.attributes.domestic_jobs_planned_employees}}</td></tr>
+                <tr><td>Planned daily/seasonal workers (domestic):</td>             <td>{{deal.attributes.domestic_jobs_planned_daily_workers}}</td></tr>
+                <tr><td>Current number of jobs (domestic):</td>                     <td>{{deal.attributes.domestic_jobs_current}}</td></tr>
+                <tr><td>Current number of employees (domestic):</td>                <td>{{deal.attributes.domestic_jobs_current_employees}}</td></tr>
+                <tr><td>Current number of daily/seasonal workers (domestic):</td>   <td>{{deal.attributes.domestic_jobs_current_daily_workers}}</td></tr>
+                <tr><td>Additional comments on jobs created (domestic):</td>        <td>{{deal.attributes.xxxx}}</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">Investor info</a>
+            </h4>
+          </div>
+          <div id="collapseFour" class="panel-collapse collapse">
+            <div class="panel-body">
+              <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                <tr><td>Name of the investment project:</td>                        <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>Primary Investor:</td>                                      <td>{{deal.primary_investor.name}}</td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>Additional comments regarding investors:</td>               <td>{{deal.attributes.xxxx}}</td></tr>
+
+                {% if deal.stakeholder %}
+                  <tr><td colspan="2"><h3>Secondary investors</h3></td></tr>
+                  <tr>
+                      <td>{{deal.stakeholder.investor_name}} ({{deal.stakeholder.country}}{% if deal.stakeholder.classification %}, {{deal.stakeholder.classification}}{% endif %})</td>
+                      <td>[percentage]%</td>
+                  </tr>
+                {% endif %}
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">Data Sources</a>
+            </h4>
+          </div>
+          <div id="collapseFive" class="panel-collapse collapse">
+            <div class="panel-body">
+              <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+              </table>
+
+                <strong>Data sources:</strong>
+                type: {{deal.attributes.type}}
+                file: {{deal.attributes.file}}
+                url: {{deal.attributes.url}}
+
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">Local Communities</a>
+            </h4>
+          </div>
+          <div id="collapseSix" class="panel-collapse collapse">
+            <div class="panel-body">
+              <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven">Former Use</a>
+            </h4>
+          </div>
+          <div id="collapseSeven" class="panel-collapse collapse">
+            <div class="panel-body">
+              <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+              </table>
+
+                land owner: {{deal.attributes.land_owner}}
+
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseEight">Produce info</a>
+            </h4>
+          </div>
+          <div id="collapseEight" class="panel-collapse collapse">
+            <div class="panel-body">
+              <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+              </table>
+
+              <strong>Produce info:</strong>
+              {% if deal.attributes.intention  %}Intention:  {{deal.attributes.intention}}{% endif %}
+              {% if deal.attributes.land_use   %}Land use:   {{deal.attributes.land_use}}{% endif %}
+              {% if deal.attributes.animals    %}Animals:    {{deal.attributes.animals}}{% endif %}
+              {% if deal.attributes.land_cover %}Land cover: {{deal.attributes.land_cover}}{% endif %}
+
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseNine">Water</a>
+            </h4>
+          </div>
+          <div id="collapseNine" class="panel-collapse collapse">
+            <div class="panel-body">
+              <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseTen">Gender-related info</a>
+            </h4>
+          </div>
+          <div id="collapseTen" class="panel-collapse collapse">
+            <div class="panel-body">
+              <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <p>Deal scope:     {{deal.attributes.deal_scope}}</p>
     <p>old reliability ranking: {{deal.attributes.old_reliability_ranking}}</p>
-    {% if deal.attributes.negotiation_status %}
-        <p>Negotiation status: {{deal.attributes.negotiation_status}}</p>
-    {% elif deal.attributes.pi_negotiation_status %}
-        <p>Negotiation status: {{deal.attributes.pi_negotiation_status}}</p>
-    {% endif %}
-    {% if deal.attributes.implementation_status %}
-        <p>Implementation status: {{deal.attributes.implementation_status}}</p>
-    {% elif deal.attributes.pi_implementation_status %}
-        <p>Implementation status: {{deal.attributes.pi_implementation_status}}</p>
-    {% endif %}
-    <p>land owner: {{deal.attributes.land_owner}}</p>
-    <p>intended size: {{deal.attributes.intended_size}}</p>
     <p>date: {{deal.attributes.date}}</p>
-
-    <p>
-        <strong>Produce info:</strong>
-        {% if deal.attributes.intention  %}Intention:  {{deal.attributes.intention}}{% endif %}
-        {% if deal.attributes.land_use   %}Land use:   {{deal.attributes.land_use}}{% endif %}
-        {% if deal.attributes.animals    %}Animals:    {{deal.attributes.animals}}{% endif %}
-        {% if deal.attributes.land_cover %}Land cover: {{deal.attributes.land_cover}}{% endif %}
-    </p>
-
-    <p>
-        <strong>Data sources:</strong>
-        type: {{deal.attributes.type}}
-        file: {{deal.attributes.file}}
-        url: {{deal.attributes.url}}
-    </p>
-    <p>
-        <strong>Spatial data:</strong>
-        Target country: {{deal.attributes.target_country}}
-        {{deal.attributes.location}}
-        ({{deal.attributes.point_lat}}/{{deal.attributes.point_lon}})
-        ({{deal.attributes.level_of_accuracy}})
-    </p>
-
-    <h5>Primary Investor</h5>
-    <p>{{deal.primary_investor.name}}</p>
-
-    {% if deal.stakeholder %}
-      <h5>Stakeholder</h5>
-      <p>{{deal.stakeholder.investor_name}}</p>
-      <p>{{deal.stakeholder.classification}}</p>
-      <p>{{deal.stakeholder.country}}</p>
-    {% endif %}
 
   {% else %}
     <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
