@@ -1,15 +1,13 @@
-from api.query_sets.sql_generation.record_reader import RecordReader
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+from .deals_test_data import DealsTestData
+from global_app.views import ActivityProtocol
+from landmatrix.models import Activity
 
 from django.test import TestCase
 from django.conf import settings
 from django.http import HttpRequest
 import json
 
-from .deals_test_data import DealsTestData
-from global_app.views import ActivityProtocol
-from landmatrix.models import Activity
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class TestActivityProtocol(TestCase, DealsTestData):
 

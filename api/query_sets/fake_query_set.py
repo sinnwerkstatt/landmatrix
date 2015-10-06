@@ -12,7 +12,7 @@ class FakeModel(dict):
 
 class FakeQuerySet(QuerySet):
 
-    DEBUG = False
+    DEBUG = True
 
     _filter_sql = ''
 
