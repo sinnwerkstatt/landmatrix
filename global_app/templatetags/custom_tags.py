@@ -15,6 +15,12 @@ register = template.Library()
 
 
 @register.filter
+def lookup(d, key):
+    if key < len(d):
+        return d[key]
+
+
+@register.filter
 @stringfilter
 def slug_and_slash_to_plus(value):
     """
@@ -23,13 +29,16 @@ def slug_and_slash_to_plus(value):
     """
     return slugify('+'.join(value.split('/')))
 
+
 @register.filter
 def replaceUnderscores(value):
     return value.replace("_", " ")
 
+
 @register.filter
 def split(str,splitter):
     return str.split(splitter)
+
 
 @register.filter(name='ensure_list')
 def ensure_list(value):
@@ -37,6 +46,7 @@ def ensure_list(value):
         return value
     else:
         return [value,]
+
 
 @register.filter(name='display_values')
 def get_display_values(values, field):
@@ -50,6 +60,7 @@ def get_display_values(values, field):
         else:
             result.append(get_display_value_by_field(field, v))
     return result
+
 
 @register.filter
 def get_range( value ):
@@ -71,6 +82,7 @@ def get_range( value ):
     Instead of 3 one may use the variable set in the views
   """
   return range(int(value))
+
 
 @register.filter
 def naturaltime_from_string(value):
@@ -127,15 +139,18 @@ def add_get_parameter(parser, token):
 
     return AddGetParameter(values)
 
+
 @register.simple_tag
 def get_GET_params(GET):
     return GET.urlencode()
+
 
 @register.simple_tag
 def add_or_update_param(GET, new_param, new_value):
     params = GET.copy()
     params[new_param] = new_value
     return params.urlencode()
+
 
 @register.filter
 def create_order_by_link(value):

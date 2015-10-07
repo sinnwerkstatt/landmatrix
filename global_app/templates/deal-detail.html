@@ -3,6 +3,8 @@
 {% load humanize %}
 
 {% block head %}
+
+  {# bootstrap #}
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -12,6 +14,10 @@
     	margin: 20px;
     }
   </style>
+
+  {# map #}
+  <script src="/media/js/editor/map.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=en"></script>
 {% endblock %}
 
 {% block page_title %}Deal details{% endblock %}
@@ -43,19 +49,20 @@
           <div id="collapseOne" class="panel-collapse collapse in">
             <div class="panel-body">
               <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+
                 <tr><td colspan="2"><h3>Location</h3></td></tr>
                 <tr><td>Level of accuracy:</td>                                     <td>{{deal.attributes.level_of_accuracy}}</td></tr>
                 <tr>
                     <td>Location:</td>
                     <td>
                         {{deal.attributes.location}}
-                        <!--div class="map" style="width:470px; height:400px; margin-bottom: 30px;"></div-->
+                        <div class="map" style="width:470px; height:400px; margin-bottom: 30px;"></div>
                     </td>
                 </tr>
                 <tr><td>Latitude:</td>                                              <td>{{deal.attributes.point_lat}}</td></tr>
                 <tr><td>Longitude:</td>                                             <td>{{deal.attributes.point_lon}}</td></tr>
                 <tr><td>Target country:</td>                                        <td>{{deal.attributes.target_country}}</td></tr>
-                <!--tr><td>Additional comments:</td><td>{{deal.attributes.xxxx}}</td></tr-->
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
               </table>
             </div>
           </div>
@@ -70,17 +77,21 @@
           <div id="collapseTwo" class="panel-collapse collapse">
             <div class="panel-body">
               <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+
                 <tr><td colspan="2"><h3>Land Area</h3></td></tr>
                 <tr><td>Intended size:</td>                                         <td>{{deal.attributes.intended_size}}</td></tr>
                 <tr><td>Current size under contract (leased or purchased area):</td><td>{{deal.attributes.xxxx}}</td></tr>
                 <tr><td>Current size in operation (production):</td>                <td>{{deal.attributes.xxxx}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
                 <tr><td colspan="2"><h3>Intention of investment</h3></td></tr>
                 <tr><td></td>                                                       <td>{{deal.attributes.intention}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
                 <tr><td colspan="2"><h3>Nature of the deal</h3></td></tr>
                 <tr><td></td>                                                       <td>{{deal.attributes.nature}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
                 <tr><td colspan="2"><h3>Negotiation status</h3></td></tr>
                 <tr>
                     <td></td>
@@ -93,8 +104,10 @@
                 <tr><td>Contract number:</td>                                       <td>{{deal.attributes.contract_number}}</td></tr>
                 <tr><td>Contract date:</td>                                         <td>{{deal.attributes.contract_date}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
                 <tr><td colspan="2"><h3>Duration of the agreement</h3></td></tr>
                 <tr><td></td>                                                       <td>{{deal.attributes.xxxx}}</td></tr>
+
                 <tr><td colspan="2"><h3>Implementation status</h3></td></tr>
                 <tr>
                     <td></td>
@@ -105,18 +118,21 @@
                     </td>
                 </tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
                 <tr><td colspan="2"><h3>Purchase Price</h3></td></tr>
                 <tr><td>Purchase price:</td>                                        <td>{{deal.attributes.purchase_price}}</td></tr>
                 <tr><td>Purchase price currency:</td>                               <td>{{deal.attributes.purchase_price_currency}}</td></tr>
                 <tr><td>Purchase price area type:</td>                              <td>{{deal.attributes.purchase_price_area}}</td></tr>
                 <tr><td>Purchase price area type:</td>                              <td>{{deal.attributes.purchase_price_type}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
                 <tr><td colspan="2"><h3>Leasing fees</h3></td></tr>
                 <tr><td>Annual leasing fee:</td>                                    <td>{{deal.attributes.annual_leasing_fee}}</td></tr>
                 <tr><td>Annual leasing fee currency:</td>                           <td>{{deal.attributes.annual_leasing_fee_currency}}</td></tr>
                 <tr><td>Annual leasing fee area:</td>                               <td>{{deal.attributes.annual_leasing_fee_area}}</td></tr>
                 <tr><td>Annual leasing fee type:</td>                               <td>{{deal.attributes.annual_leasing_fee_type}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
                 <tr><td colspan="2"><h3>Contract farming</h3></td></tr>
                 <tr><td></td>                                                       <td>{{deal.attributes.contract_farming}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
@@ -134,6 +150,7 @@
           <div id="collapseThree" class="panel-collapse collapse">
             <div class="panel-body">
               <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+
                 <tr><td colspan="2"><h3>Number of total jobs created</h3></td></tr>
                 <tr><td>Jobs created (total):</td>                                  <td>{{deal.attributes.total_jobs_created}}</td></tr>
                 <tr><td>Planned number of jobs (total):</td>                        <td>{{deal.attributes.total_jobs_planned}}</td></tr>
@@ -177,6 +194,7 @@
           <div id="collapseFour" class="panel-collapse collapse">
             <div class="panel-body">
               <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+
                 <tr><td>Name of the investment project:</td>                        <td>{{deal.attributes.xxxx}}</td></tr>
                 <tr><td>Primary Investor:</td>                                      <td>{{deal.primary_investor.name}}</td></tr>
                 <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
@@ -203,17 +221,16 @@
           <div id="collapseFive" class="panel-collapse collapse">
             <div class="panel-body">
               <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
-                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+                {% for i in deal.attributes.type|length|get_range %}
+                  <tr><td colspan="2"><h3>Data Source</h3></td></tr>
+                  <tr><td>Data source type:</td>                                    <td>{{deal.attributes.type|lookup:i}}</td></tr>
+                  <tr><td>URL:</td>                                                 <td>{{deal.attributes.url|lookup:i}}</td></tr>
+                  <tr><td>File:</td>                                                <td>{{deal.attributes.file|lookup:i}}</td></tr>
+                  <tr><td>Date:</td>                                                <td>{{deal.attributes.xxxx}}</td></tr>
+                  <tr><td>Includes in-country-verified information:</td>            <td>{{deal.attributes.xxxx}}</td></tr>
+                  <tr><td>Additional comments:</td>                                 <td>{{deal.attributes.xxxx}}</td></tr>
+                {% endfor %}
               </table>
-
-                <strong>Data sources:</strong>
-                type: {{deal.attributes.type}}
-                file: {{deal.attributes.file}}
-                url: {{deal.attributes.url}}
-
             </div>
           </div>
         </div>
@@ -227,9 +244,24 @@
           <div id="collapseSix" class="panel-collapse collapse">
             <div class="panel-body">
               <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>How did community react?</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.community_reaction}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Consultation of local community</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.community_consultation}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Promised or received compensation</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.community_compensation}}</td></tr>
+
+                <tr><td colspan="2"><h3>Benefits for local communities</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.community_benefits}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Number of people actually displaced</h3></td></tr>
+                <tr><td>Number of displaced people:</td>                            <td>{{deal.attributes.number_of_displaced_people}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
               </table>
             </div>
@@ -245,14 +277,19 @@
           <div id="collapseSeven" class="panel-collapse collapse">
             <div class="panel-body">
               <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Former land owner</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.land_owner}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Former land use</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.land_use}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Former land cover</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.land_cover}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
               </table>
-
-                land owner: {{deal.attributes.land_owner}}
-
             </div>
           </div>
         </div>
@@ -266,18 +303,29 @@
           <div id="collapseEight" class="panel-collapse collapse">
             <div class="panel-body">
               <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Detailed crop, animal and mineral information</h3></td></tr>
+                <tr><td>Crops:</td>                                                 <td>{{deal.attributes.crops}}</td></tr>
+                <tr><td>Animals:</td>                                               <td>{{deal.attributes.animals}}</td></tr>
+                <tr><td>Minerals:</td>                                              <td>{{deal.attributes.minerals}}</td></tr>
+
+                <tr><td colspan="2"><h3>Use of produce</h3></td></tr>
+                <tr><td>Has domestic use:</td>                                      <td>{{deal.attributes.has_domestic_use}}</td></tr>
+                <tr><td>Domestic use:</td>                                          <td>{{deal.attributes.domestic_use}}</td></tr>
+                <tr><td>Has export:</td>                                            <td>{{deal.attributes.has_export}}</td></tr>
+                <tr><td>Export:</td>                                                <td>{{deal.attributes.export}}</td></tr>
+                <tr><td>Country 1:</td>                                             <td>{{deal.attributes.export_country1}}</td></tr>
+                <tr><td>Country 1 ratio:</td>                                       <td>{{deal.attributes.export_country1_ratio}}</td></tr>
+                <tr><td>Country 2:</td>                                             <td>{{deal.attributes.export_country2}}</td></tr>
+                <tr><td>Country 2 ratio:</td>                                       <td>{{deal.attributes.export_country2_ratio}}</td></tr>
+                <tr><td>Country 3:</td>                                             <td>{{deal.attributes.export_country3}}</td></tr>
+                <tr><td>Country 3 ratio:</td>                                       <td>{{deal.attributes.export_country3_ratio}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>In country processing of produce</h3></td></tr>
+                <tr><td>In country processing of produce:</td>                      <td>{{deal.attributes.in_country_processing}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
               </table>
-
-              <strong>Produce info:</strong>
-              {% if deal.attributes.intention  %}Intention:  {{deal.attributes.intention}}{% endif %}
-              {% if deal.attributes.land_use   %}Land use:   {{deal.attributes.land_use}}{% endif %}
-              {% if deal.attributes.animals    %}Animals:    {{deal.attributes.animals}}{% endif %}
-              {% if deal.attributes.land_cover %}Land cover: {{deal.attributes.land_cover}}{% endif %}
-
             </div>
           </div>
         </div>
@@ -291,9 +339,20 @@
           <div id="collapseNine" class="panel-collapse collapse">
             <div class="panel-body">
               <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Water extraction envisaged</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.water_extraction_envisaged}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Source of water extraction</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.source_of_water_extraction}}</td></tr>
+                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>How much do investors pay for water and the use of water infrastructure?</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>How much water is extracted?</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.water_extraction_amount}}</td></tr>
                 <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
               </table>
             </div>
@@ -309,10 +368,9 @@
           <div id="collapseTen" class="panel-collapse collapse">
             <div class="panel-body">
               <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-                <tr><td colspan="2"><h3>TO DO</h3></td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
-                <tr><td>TO DO:</td>                                                 <td>{{deal.attributes.xxxx}}</td></tr>
-                <tr><td>Additional comments:</td>                                   <td>{{deal.attributes.xxxx}}</td></tr>
+
+                <tr><td colspan="2"><h3>Any gender-specific information about the investment and its impacts</h3></td></tr>
+                <tr><td></td>                                                       <td>{{deal.attributes.xxxx}}</td></tr>
               </table>
             </div>
           </div>
@@ -320,12 +378,10 @@
       </div>
     </div>
 
-    <p>Deal scope:     {{deal.attributes.deal_scope}}</p>
-    <p>old reliability ranking: {{deal.attributes.old_reliability_ranking}}</p>
-    <p>date: {{deal.attributes.date}}</p>
-
   {% else %}
+
     <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
+
   {% endif %}
 
 {% endblock %}
