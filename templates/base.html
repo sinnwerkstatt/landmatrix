@@ -29,6 +29,8 @@
         {% render_block "css" %}
     </head>
     <body class="{% if popup %}popup {% endif %}{% block body_class %}{% page_attribute "slug" %}{% endblock %}">
+        {% cms_toolbar %}
+
         <div class="wrap">
             <!--[if lt IE 7]>
                 <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
