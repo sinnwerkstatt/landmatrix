@@ -1,7 +1,8 @@
-{% extends "base.html" %}
+{% extends "global_base.html" %}
 {% load i18n custom_tags %}
 {% load humanize %}
 
+{% with cms_page='global' %}
 
 {% block page_title %}{% if group == "all" %}All deals{% elif filters.group_value %}{{ name }}{% else %}By {{ group }}{% endif %}{% endblock %}
 {% block title %}{% if group == "all" %}All deals{% elif filters.group_value %}{{ name }}{% else %}By {{ group }}{% endif %}{% endblock %}
@@ -202,27 +203,27 @@ $(document).ready(function () {
         <div class="actions btn-group pull-right">
             <button data-toggle="dropdown" class="btn dropdown-toggle">Download whole database <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li><a href="/{{cms_page}}/database.csv?download_format=csv">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/{{cms_page}}/database.csv?download_format=xls">as Excel (.xls)</a></li>
-              <li><a href="/{{cms_page}}/database.csv?download_format=xml">as XML (.xml)</a></li>
+              <li><a href="/{{ cms_page }}/all.csv">as Comma Separated Values (.csv)</a></li>
+              <li><a href="/{{ cms_page }}/all.xls">as Excel (.xls)</a></li>
+              <li><a href="/{{ cms_page }}/all.xml">as XML (.xml)</a></li>
             </ul>
         </div>
         {% if group_value %}
         <div class="actions btn-group pull-right">
             <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li><a href="/{{cms_page}}/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'csv' %}">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/{{cms_page}}/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'xls' %}">as Excel (.xls)</a></li>
-              <li><a href="/{{cms_page}}/{{ group_slug }}/{{group_value}}.csv?{% add_or_update_param request.GET 'download_format' 'xml' %}">as XML (.xml)</a></li>
+              <li><a href="/{{ cms_page }}/{{ group_slug }}/{{group_value}}.csv">as Comma Separated Values (.csv)</a></li>
+              <li><a href="/{{ cms_page }}/{{ group_slug }}/{{group_value}}.xls">as Excel (.xls)</a></li>
+              <li><a href="/{{ cms_page }}/{{ group_slug }}/{{group_value}}.xml">as XML (.xml)</a></li>
             </ul>
         </div>
         {% else %}
         <div class="actions btn-group pull-right">
             <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li><a href="/{{cms_page}}/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'csv' %}">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/{{cms_page}}/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'xls' %}">as Excel (.xls)</a></li>
-              <li><a href="/{{cms_page}}/{{ group_slug }}.csv?{% add_or_update_param request.GET 'download_format' 'xml' %}">as XML (.xml)</a></li>
+              <li><a href="/{{ cms_page }}/{{ group_slug }}.csv">as Comma Separated Values (.csv)</a></li>
+              <li><a href="/{{ cms_page }}/{{ group_slug }}.xls">as Excel (.xls)</a></li>
+              <li><a href="/{{ cms_page }}/{{ group_slug }}.xml">as XML (.xml)</a></li>
             </ul>
         </div>
         {% endif %}
@@ -470,3 +471,5 @@ $(document).ready(function () {
 <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
 {% endif %}
 {% endblock %}
+
+{% endwith %}

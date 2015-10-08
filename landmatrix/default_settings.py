@@ -36,15 +36,13 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 
 #   works with django 1.8, not in 1.7:
-#    'django.contrib.postgres',
+    # 'django.contrib.postgres',
     'django_hstore',
-
-    'rest_framework',
 
     'tastypie',
 
-# this apparently messes up the URL lookup in collaboration with cms. maybe try including it after cms.
-#    'debug_toolbar',
+#   this apparently messes up the URL lookup in collaboration with cms. maybe try including it after cms.
+    # 'debug_toolbar',
 
 #   django-cms and dependencies
     'cms',
@@ -55,11 +53,18 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.sites',
     'sekizai',
+    'djangocms_text_ckeditor',
 
-#    'django-nose',
+#   to check test coverage
+    'coverage',
 
+    'django.contrib.gis',
+
+#   apps of the actual landmatrix project
     'landmatrix',
     'global_app',
+    'maplandmatrix',
+    'chart_view',
     'api'
 )
 
@@ -72,7 +77,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 #   added by generating the project with django 1.8, does not work in 1.7:
-#    'django.middleware.security.SecurityMiddleware',
+    # 'django.middleware.security.SecurityMiddleware',
 
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.doc.XViewMiddleware',
@@ -128,14 +133,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 #
-# django REAT framework stuff
-#
-REST_FRAMEWORK = {
-#    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-    'PAGE_SIZE': 100
-}
-
-#
 # tastypie
 #
 API_LIMIT_PER_PAGE = 100
@@ -165,5 +162,7 @@ TEMPLATE_DIRS = (
 CMS_TEMPLATES = (
     ('1-column.html', '1 column'),
     ('start.html', 'Start'),
+    ('base-gettheidea.html', 'Get the idea'),
+    ('base-map.html', 'Map'),
 )
 

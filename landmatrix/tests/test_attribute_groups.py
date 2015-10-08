@@ -37,6 +37,8 @@ class TestAttributeGroups(WithStatus):
 
     def test_access_hstore_dictfield(self):
         group = ActivityAttributeGroup.objects.last()
+        if not isinstance(group.attributes, dict):
+            self.skipTest('django_hstore app is not included properly')
         self.assertEqual('blub', group.attributes['blah'])
         self.assertEqual(1.2345, float(group.attributes['yadda']))
 

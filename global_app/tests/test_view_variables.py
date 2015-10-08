@@ -47,17 +47,18 @@ class TestViewVariables(TestCase, DealsTestData):
         self.assertEqual('crop', self.view.group)
 
     def test_filters_with_filter_set(self):
+        # TODO: find a set of GET Variables that produce non-empty filters
         self._call_dispatch_with_GET('filtered')
-        print('filters:', self.view.filters)
-        self._call_dispatch_with_GET('filtered&')
-        print('filters:', self.view.filters)
-        self.skipTest('not yet implemented')
-
-    def test_filters_with_filter_unset_and_group_database(self):
-        self.skipTest('not yet implemented')
-
-    def test_filters_with_filter_unset(self):
-        self.skipTest('not yet implemented')
+        # print('\nfilters:', self.view.filters)
+        from global_app.views.browse_filter_conditions import BrowseFilterConditions
+        BrowseFilterConditions.DEBUG = False
+        self._call_dispatch_with_GET(
+            'filtered&conditions_empty-0-operator=[in]&conditions_empty-1-operator=[is]&conditions_empty-MAX_NUM_FORMS=[]&' +
+            'conditions_empty-0-value=[30,40]&conditions_empty-0-variable=[5233]&conditions_empty-1-variable=[-2]&' +
+            'conditions_empty-1-value=[20]&conditions_empty-TOTAL_FORMS=[2]&conditions_empty-INITIAL_FORMS=[2]'
+        )
+        # print('filters:', self.view.filters)
+        BrowseFilterConditions.DEBUG = False
 
     def test_order_by(self):
         self.assertEqual('deal_id', self.view._order_by())
@@ -65,8 +66,8 @@ class TestViewVariables(TestCase, DealsTestData):
         self._call_dispatch_with_GET('order_by=crop')
         self.assertEqual('crop', self.view._order_by())
 
-        self._call_dispatch_with_GET('order_by=sddfgtrejfihrpooitgh')
-        self.assertEqual('sddfgtrejfihrpooitgh', self.view._order_by())
+        with self.assertRaises(KeyError):
+            self._call_dispatch_with_GET('order_by=sddfgtrejfihrpooitgh')
 
         self._call_dispatch_with_GET('order_by=all')
         self.assertEqual('deal_id', self.view._order_by())
@@ -76,10 +77,6 @@ class TestViewVariables(TestCase, DealsTestData):
 
         self._call_dispatch_with_GET('order_by=deal_count', group='crop')
         self.assertEqual('deal_count', self.view._order_by())
-
-        from django.db.utils import ProgrammingError
-        with self.assertRaises(ProgrammingError, msg='deal_id column should not be present in group views!'):
-            self._call_dispatch_with_GET('order_by=all', group='crop')
 
     def test_limit(self):
         self.assertFalse(self.view._limit_query())

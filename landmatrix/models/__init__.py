@@ -1,3 +1,4 @@
+
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 
 from landmatrix.models.activity import Activity
@@ -7,6 +8,9 @@ from landmatrix.models.browse_rule import BrowseRule
 from landmatrix.models.browse_condition import BrowseCondition
 from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
+from landmatrix.models.currency import Currency
+from landmatrix.models.animal import Animal
+from landmatrix.models.mineral import Mineral
 from landmatrix.models.involvement import Involvement
 from landmatrix.models.language import Language
 from landmatrix.models.primary_investor import PrimaryInvestor

@@ -3,9 +3,39 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from landmatrix.models import Activity, ActivityAttributeGroup, Involvement, PrimaryInvestor, Stakeholder, StakeholderAttributeGroup, Country
 
 from django.db.models import Max
+import itertools
+
+
+class Indexable:
+
+    def __init__(self, it):
+        self.iterable = iter(it)
+        self.already_computed = []
+
+    def __iter__(self):
+        for element in self.iterable:
+            self.already_computed.append(element)
+            yield element
+
+    def __getitem__(self, index):
+        try:
+            max_idx = index.stop
+        except AttributeError:
+            max_idx = index
+        n = max_idx-len(self.already_computed)+1
+        if n > 0:
+            self.already_computed.extend(itertools.islice(self.iterable, n))
+        return self.already_computed[index]
 
 
 class Deal:
+
+    class Manager:
+
+        def all(self):
+            return Indexable(Deal(deal_id['activity_identifier']) for deal_id in Activity.objects.values('activity_identifier').distinct())
+
+    objects = Manager()
 
     def __init__(self, id):
         self.id = id
@@ -18,6 +48,9 @@ class Deal:
         # last() always has latest version, no need for MAX() gymnastics
         self.primary_investor = PrimaryInvestor.objects.filter(id__in=primary_investor_ids).last()
         self.stakeholder = get_stakeholder(stakeholder_ids)
+
+    def __str__(self):
+        return str({'attributes': self.attributes, 'primary_investor': self.primary_investor, 'stakeholder': self.stakeholder})
 
 
 def get_latest_activity(deal_id):
@@ -60,7 +93,7 @@ def update_attributes(attributes, key, value):
 
 
 def resolve_country(key, value):
-    return Country.objects.get(id=int(value)).name if 'country' in key else value
+    return Country.objects.get(id=int(value)).name if 'country' in key and value.isdigit() else value
 
 
 def get_stakeholder_attributes(stakeholder):
