@@ -5,6 +5,7 @@ LOG_DB_QUERIES = False
 
 CONVERT_DB = False
 CONVERT_FROM_MY = False
+TEST_AGAINST_LIVE_DB = False
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -13,7 +14,8 @@ DEBUG = False
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'landmatrix_2',                         # CORRECT DB FOR V2 GOES HERE
         'USER': '<USER GOES HERE>',
         'PASSWORD': '********',

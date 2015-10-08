@@ -39,8 +39,13 @@ class TestViewAuxFunctions(TestCase):
 
     def test_with_actual_data(self):
         formset = self.Formset(self.actual_formset_args, prefix="conditions_empty")
+        BrowseFilterConditions.DEBUG = False
         try:
-            BrowseFilterConditions(formset, ['deal_id']).parse()
+            filters = BrowseFilterConditions(formset, ['deal_id']).parse()
+            self.assertIn('tags', filters['activity'])
+            self.assertIn('pi_negotiation_status__in', filters['activity']['tags'])
+            self.assertIn('Concluded (Oral Agreement)', filters['activity']['tags']['pi_negotiation_status__in'])
+            self.assertIn('Concluded (Contract signed)', filters['activity']['tags']['pi_negotiation_status__in'])
         except NameError:
             self.fail('parse() not yet fully implemented')
 

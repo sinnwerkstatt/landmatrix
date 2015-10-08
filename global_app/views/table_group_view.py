@@ -4,9 +4,8 @@ from .view_aux_functions import create_condition_formset, render_to_response
 from .browse_filter_conditions import BrowseFilterConditions
 from .intention_map import IntentionMap
 from .download import Download
-from .column_monkey_patch import get_monkey_patch
 from landmatrix.models import BrowseCondition
-from global_app.views.dummy_activity_protocol import DummyActivityProtocol
+from global_app.views.activity_protocol import ActivityProtocol
 
 from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
@@ -18,7 +17,12 @@ import json, numbers
 class TableGroupView(TemplateView):
 
     LOAD_MORE_AMOUNT = 20
-    DOWNLOAD_COLUMNS = ["deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal", "data_source", "contract_farming", "crop"]
+    DOWNLOAD_COLUMNS = [
+        "deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status",
+        "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal",
+        "data_source_type", "data_source_url", "data_source_date", "data_source_organisation",
+        "contract_farming", "crop"
+    ]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
         "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
@@ -28,7 +32,6 @@ class TableGroupView(TemplateView):
 
     template_name = "group-by.html"
     debug_query = False
-
 
     def is_download(self):
         return self.download_type is not None
@@ -43,8 +46,6 @@ class TableGroupView(TemplateView):
         self._set_group(**kwargs)
         self._set_filters()
         self._set_columns()
-
-        self.monkey_patch = get_monkey_patch(self.columns, self.group)
 
         query_result = self.get_records(request)
 
@@ -82,11 +83,11 @@ class TableGroupView(TemplateView):
             else 'csv'
 
     def get_records(self, request):
-        ap = DummyActivityProtocol()
+        ap = ActivityProtocol()
         request.POST = MultiValueDict(
-            {"data": [json.dumps({"filters": self.filters, "columns": self.monkey_patch._optimize_columns()})]}
+            {"data": [json.dumps({"filters": self.filters, "columns": self.columns})]}
         )
-        ap.debug = self.debug_query
+        ap.DEBUG = self.debug_query
         res = ap.dispatch(request, action="list_group").content
         query_result = json.loads(res.decode())
 
@@ -130,6 +131,7 @@ class TableGroupView(TemplateView):
         for ext in Download.supported_formats():
             if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
                 self.download_type = ext
+#                self.debug_query = True
                 return
 
     def _set_group(self, **kwargs):
@@ -153,23 +155,18 @@ class TableGroupView(TemplateView):
             self.columns = self._columns()
 
     def _set_filters(self):
-        self.filters = {}
+        self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
         ConditionFormset = create_condition_formset()
         if self._filter_set():
             # set given filters
             self.current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
-            if self.current_formset_conditions.is_valid():
-                self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
         else:
-            # set default filters
-            self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
-            filter_dict = self._get_filter_dict()
-            self.current_formset_conditions = ConditionFormset(filter_dict, prefix="conditions_empty")
             if self.group == "database":
-                self.filters = BrowseFilterConditions(None, [self._order_by()], None).parse()
+                self.current_formset_conditions = None
             else:
-                # TODO: make the following line work again
-                self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
+                self.current_formset_conditions = ConditionFormset(self._get_filter_dict(), prefix="conditions_empty")
+
+        self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
 
         self.filters["group_by"] = self.group
         self.filters["group_value"] = self.group_value
@@ -201,48 +198,13 @@ class TableGroupView(TemplateView):
         return [ self._get_row(record, query_result) for record in query_result ]
 
     def _get_row(self, record, query_result):
-        single_column_results = self.monkey_patch._single_column_results(query_result)
-        offset = 1
         # iterate over database result
         row = {}
         for j, c in enumerate(self.columns):
             # iterate over columns relevant for view or download
-            j += offset
-            value = record[j]
-            # do not remove crop column if we expect a grouping in the sql string
-            if self.monkey_patch.is_patched_column(c):
-                # artificially insert the data fetched from the smaller SQL query dataset, don't take it from the large set
-                # Assumption deal_id is second column in row!
-                offset -= 1
-                if record[1] in single_column_results[c]:
-                    value = single_column_results[c][record[1]]
-                else:
-                    value = None
-
-            if c == "data_source":
-                value = self._process_data_source(j, record)
-                offset += 3
-
+            value = record[j+1]
             row[c] = self._process_value(c, value)
         return row
-
-    def _process_data_source(self, j, record):
-        try:
-            data_sources = {
-                "data_source_type": record[j],
-                "data_source_url": record[j + 1],
-                "data_source_date": record[j + 2],
-                "data_source_organization": record[j + 3],
-            }
-        except IndexError as e:
-            print(e.__cause__)
-            print(list(zip(self.columns, record)))
-            print(j)
-            raise e
-
-        return self._map_values_of_group(
-            data_sources, "%(data_source_date)s%(data_source_url)s%(data_source_organization)s%(data_source_type)s"
-        )
 
     def _process_intention(self, value):
         if not isinstance(value, list):
@@ -276,12 +238,12 @@ class TableGroupView(TemplateView):
             'investor_country': self._process_stitched_together_field,
             'investor_region': self._process_stitched_together_field,
             'crop': self._process_stitched_together_field,
-            'latlon': lambda value: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in value],
+            'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
             'negotiation_status': self._process_name_and_year,
             'implementation_status': self._process_name_and_year,
-            "intended_size": lambda value: value and value[0],
-            "production_size": lambda value: value and value[0],
-            "contract_size": lambda value: value and value[0],
+            "intended_size": lambda v: v and v[0],
+            "production_size": lambda v: v and v[0],
+            "contract_size": lambda v: v and v[0],
         }
         if c in process_functions:
             return process_functions[c](value)
