@@ -121,11 +121,15 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
         return ds_taggroups
 
     @classmethod
-    def get_data(cls, activity):
-        taggroups = activity.a_tag_group_set.filter(fk_a_tag__fk_a_value__value__contains="data_source").order_by("fk_a_tag__fk_a_value__value")
+    def get_data(cls, deal):
+        taggroups = deal.activity.activityattributegroup_set.filter(name__contains='data_source').order_by('name')
+#        print(taggroups)
+#        taggroups = activity.a_tag_group_set.filter(fk_a_tag__fk_a_value__value__contains="data_source").order_by("fk_a_tag__fk_a_value__value")
         data = []
         for i, taggroup in enumerate(taggroups):
-            data.append(DealDataSourceForm.get_data(activity, tg=taggroup))
+            print('i, taggroup', i, taggroup)
+            data.append(DealDataSourceForm.get_data(deal, tg=taggroup))
+            print('data', data)
         return data
 
 

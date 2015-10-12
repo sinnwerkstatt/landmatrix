@@ -40,10 +40,10 @@ class Deal:
     def __init__(self, id):
         self.id = id
 
-        activity = get_latest_activity(id)
-        self.attributes = get_activity_attributes(activity)
+        self.activity = get_latest_activity(id)
+        self.attributes = self.get_activity_attributes()
 
-        primary_investor_ids, stakeholder_ids = get_pi_and_sh_id(activity)
+        primary_investor_ids, stakeholder_ids = self.get_pi_and_sh_id()
 
         # last() always has latest version, no need for MAX() gymnastics
         self.primary_investor = PrimaryInvestor.objects.filter(id__in=primary_investor_ids).last()
@@ -52,22 +52,22 @@ class Deal:
     def __str__(self):
         return str({'attributes': self.attributes, 'primary_investor': self.primary_investor, 'stakeholder': self.stakeholder})
 
+    def get_activity_attributes(self):
+        attributes = ActivityAttributeGroup.objects.filter(fk_activity=self.activity).values('attributes')
+        attributes_list = [a['attributes'] for a in attributes]
+        return aggregate_activity_attributes(attributes_list, {})
+
+    def get_pi_and_sh_id(self):
+        involvements = self.involvement_set().values('fk_primary_investor_id', 'fk_stakeholder_id')
+        return [i['fk_primary_investor_id'] for i in involvements], [i['fk_stakeholder_id'] for i in involvements]
+
+    def involvement_set(self):
+        return Involvement.objects.select_related().filter(fk_activity=self.activity)
+
 
 def get_latest_activity(deal_id):
     version_max = _get_latest_version(deal_id)
     return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
-
-
-def get_activity_attributes(activity):
-    attributes = ActivityAttributeGroup.objects.filter(fk_activity=activity).values('attributes')
-    attributes_list = [a['attributes'] for a in attributes]
-    return aggregate_activity_attributes(attributes_list, {})
-
-
-def get_pi_and_sh_id(activity):
-    queryset = Involvement.objects.select_related().filter(fk_activity=activity)
-    involvements = queryset.values('fk_primary_investor_id', 'fk_stakeholder_id')
-    return [i['fk_primary_investor_id'] for i in involvements], [i['fk_stakeholder_id'] for i in involvements]
 
 
 def get_stakeholder(stakeholder_ids):

@@ -8,6 +8,8 @@ from copy import copy
 
 
 BaseDealSecondaryInvestorFormSet = formset_factory(DealSecondaryInvestorForm, extra=0)
+
+
 class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
     def get_taggroups(self, request=None):
         return []
@@ -42,10 +44,11 @@ class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
     def get_data(cls, activity):
         #raise IOError, [{"investor": str(i.fk_stakeholder.id)} for i in activity.involvement_set.all()]
         data = []
-        for i in activity.involvement_set.get_involvements_for_activity(activity):
+        for i in activity.involvement_set().all(): #get_involvements_for_activity(activity):
             if not i.fk_stakeholder:
                 continue
-            comments = Comment.objects.filter(fk_sh_tag_group__fk_stakeholder=i.fk_stakeholder.id, fk_sh_tag_group__fk_sh_tag__fk_sh_value__value="General", fk_sh_tag_group__fk_sh_tag__fk_sh_key__key="name").order_by("-id")
+            comments = False and \
+                       Comment.objects.filter(fk_sh_tag_group__fk_stakeholder=i.fk_stakeholder.id, fk_sh_tag_group__fk_sh_tag__fk_sh_value__value="General", fk_sh_tag_group__fk_sh_tag__fk_sh_key__key="name").order_by("-id")
             comment = ""
             if comments and len(comments) > 0:
                 comment = comments[0].comment
