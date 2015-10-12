@@ -15,8 +15,15 @@ class ChangeDealOverallCommentForm(BaseForm):
 
     @classmethod
     def get_data(cls, object, tg=None, prefix=""):
+        from inspect import currentframe, getframeinfo
         data = super(ChangeDealOverallCommentForm, cls).get_data(object, tg, prefix)
-        comments = Comment.objects.filter(fk_a_tag_group__fk_activity=object.id, fk_a_tag_group__fk_a_tag__fk_a_value__value="overall").order_by("-timestamp")
+
+        if False:
+            comments = Comment.objects.filter(fk_a_tag_group__fk_activity=object.id, fk_a_tag_group__fk_a_tag__fk_a_value__value="overall").order_by("-timestamp")
+        else:
+            frameinfo = getframeinfo(currentframe())
+            print('*** comments not yet implemented! ',frameinfo.filename, frameinfo.lineno)
+            comments = None
         if comments and len(comments) > 0:
             data["tg_overall_comment"] = comments[0].comment
         return data

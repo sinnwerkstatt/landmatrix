@@ -1,12 +1,16 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
+from django.utils.datastructures import SortedDict, MultiValueDict
 from django import forms
 from django.utils.html import conditional_escape
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 
 from copy import copy, deepcopy
+from django_hstore.dict import HStoreDict
 import re
+from landmatrix.models.deal import Deal
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 class BaseForm(forms.Form):
 
@@ -283,83 +287,54 @@ class BaseForm(forms.Form):
         """
         data = MultiValueDict()
         taggroup = tg
-        for i, (n, f) in enumerate(cls().fields.items()):
-            pn = prefix and "%s-%s"%(prefix, n) or n
-            if n.startswith('tg_'):
-                if n.endswith('_comment'):
-                    if taggroup and taggroup.comment_set.count() > 0:
-                        data[pn] = taggroup.comment_set.all().order_by("-timestamp")[0].comment
-                elif not tg:
-                    try:
-                        if isinstance(object, Stakeholder):
-                            taggroup = object.sh_tag_group_set.get(fk_sh_tag__fk_sh_value__value=n[3:])
-                        else:
-                            taggroup = object.a_tag_group_set.get(fk_a_tag__fk_a_value__value=n[3:])
-                    except:
-                        taggroup = None
-                        continue
+        print('get_data', str(object)[:140], '...', tg)
+        for i, (field_name, field) in enumerate(cls().fields.items()):
+            pn = prefix and "%s-%s"%(prefix, field_name) or field_name
+
+            print('    field', i, field_name, field, prefix)
+
+            if field_name.startswith('tg_'):
+                taggroup = cls.get_data_for_tg_field(data, field_name, object, pn, taggroup, tg)
+
             else:
                 if not taggroup:
                     continue
-                if isinstance(taggroup, SH_Tag_Group):
-                    tags = taggroup.sh_tag_set.filter(fk_sh_key__key=str(n))
-                else:
-                    tags = taggroup.a_tag_set.filter(fk_a_key__key=str(n))
+                print('        not tg field and taggroup:', field_name, str(taggroup)[1:])
+                tags = cls.get_tags(field_name, object, taggroup)
+                print ('       tags', tags)
+
                 if len(tags) > 0:
-                    if isinstance(f, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
-                        values = []
-                        if isinstance(taggroup, SH_Tag_Group):
-                            tvalues = [t.fk_sh_value.value for t in tags]
-                        else:
-                            tvalues = [t.fk_a_value.value for t in tags]
-                        for l in tvalues:
-                            value = ""
-                            for k, v in [i[:2] for i in f.choices]:
-                                if v == l:
-                                    value = str(k)
-                                    break
-                            if isinstance(f, NestedMultipleChoiceField) and not value:
-                                for choice in f.choices:
-                                    for k, v in [i[:2] for i in choice[2] or []]:
-                                        if v == l:
-                                            value = str(k)
-                                            break
-                            if value:
-                                values.append(value)
-                        data[pn] = values
+                    if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
+                        cls.get_multiple_choice_data(data, field, pn, taggroup, tags)
                     else:
                         # Year based data?
-                        if isinstance(f, forms.MultiValueField):
-                            yb_data = []
-                            for tag in tags:
-                                if isinstance(taggroup, SH_Tag_Group):
-                                    value = tag.fk_sh_value.value
-                                    year = ""
-                                else:
-                                    value = tag.fk_a_value.value
-                                    year = tag.fk_a_value.year
-                                if isinstance(f.fields[0], forms.ChoiceField):
-                                    for k, v in f.fields[0].choices:
-                                        if v == value:
-                                            value = str(k)
-                                            break
-                                if year or value:
-                                    yb_data.append("%s:%s" % (value or "", year or ""))
-                            data[pn] = "|".join(yb_data)
+                        if isinstance(field, forms.MultiValueField):
+                            cls.get_year_based_data(data, field, pn, taggroup, tags)
                         else:
-                            a = tags.all()
-                            if isinstance(taggroup, SH_Tag_Group):
-                                value = tags[0].fk_sh_value.value
+                            if isinstance(tags, HStoreDict):
+                                a = tags
                             else:
-                                value = tags[0].fk_a_value.value
-                                year = tags[0].fk_a_value.year
-                            if isinstance(f, forms.ChoiceField):
-                                for k, v in f.choices:
+                                a = tags.all()
+
+                            if field_name in tags:
+                                value = tags[field_name]
+                            elif hasattr(taggroup, field_name):
+                                value = getattr(taggroup, field_name)
+                            # elif isinstance(taggroup, SH_Tag_Group):
+                            #     value = tags[0].fk_sh_value.value
+                            # else:
+                            #     value = tags[0].fk_a_value.value
+                            #     year = tags[0].fk_a_value.year
+                            date = tags['date'] if 'date' in tags else taggroup.date
+
+                            print('        value, date', value, date)
+                            if isinstance(field, forms.ChoiceField):
+                                for k, v in field.choices:
                                     if v == value:
                                         value = str(k)
                                         break
                                 data[pn] = value
-                            elif isinstance(f, forms.DateField):
+                            elif isinstance(field, forms.DateField):
                                 # reformat date values
                                 try:
                                     data[pn] = datetime.strptime(value, "%Y-%m-%d").strftime("%d:%m:%Y")
@@ -368,7 +343,83 @@ class BaseForm(forms.Form):
                                     data[pn] = value
                             else:
                                 data[pn] = value
+        print('returned data', data)
         return data
+
+    @classmethod
+    def get_multiple_choice_data(cls, data, field, pn, taggroup, tags):
+        values = []
+        if isinstance(taggroup, SH_Tag_Group):
+            tvalues = [t.fk_sh_value.value for t in tags]
+        else:
+            tvalues = [t.fk_a_value.value for t in tags]
+        for l in tvalues:
+            value = ""
+            for k, v in [i[:2] for i in field.choices]:
+                if v == l:
+                    value = str(k)
+                    break
+            if isinstance(field, NestedMultipleChoiceField) and not value:
+                for choice in field.choices:
+                    for k, v in [i[:2] for i in choice[2] or []]:
+                        if v == l:
+                            value = str(k)
+                            break
+            if value:
+                values.append(value)
+        data[pn] = values
+
+    @classmethod
+    def get_year_based_data(cls, data, field, pn, taggroup, tags):
+        yb_data = []
+        for tag in tags:
+            if isinstance(taggroup, SH_Tag_Group):
+                value = tag.fk_sh_value.value
+                year = ""
+            else:
+                value = tag.fk_a_value.value
+                year = tag.fk_a_value.year
+            if isinstance(field.fields[0], forms.ChoiceField):
+                for k, v in field.fields[0].choices:
+                    if v == value:
+                        value = str(k)
+                        break
+            if year or value:
+                yb_data.append("%s:%s" % (value or "", year or ""))
+        data[pn] = "|".join(yb_data)
+
+    @classmethod
+    def get_tags(cls, field_name, object, taggroup):
+        if isinstance(object, Deal):
+            tags = taggroup.attributes
+        elif isinstance(taggroup, SH_Tag_Group):
+            tags = taggroup.sh_tag_set.filter(fk_sh_key__key=str(field_name))
+        else:
+            tags = taggroup.a_tag_set.filter(fk_a_key__key=str(field_name))
+        return tags
+
+    @classmethod
+    def get_data_for_tg_field(cls, data, field_name, object, pn, taggroup, tg):
+        from inspect import currentframe, getframeinfo
+
+        if field_name.endswith('_comment'):
+
+            if False:
+                if taggroup and taggroup.comment_set.count() > 0:
+                    data[pn] = taggroup.comment_set.all().order_by("-timestamp")[0].comment
+            else:
+                frameinfo = getframeinfo(currentframe())
+                print('*** comments not yet implemented! ',frameinfo.filename, frameinfo.lineno)
+
+        elif not tg:
+            try:
+                if isinstance(object, Stakeholder):
+                    taggroup = object.sh_tag_group_set.get(fk_sh_tag__fk_sh_value__value=field_name[3:])
+                else:
+                    taggroup = object.a_tag_group_set.get(fk_a_tag__fk_a_value__value=field_name[3:])
+            except:
+                taggroup = None
+        return taggroup
 
     class Meta:
         exclude = ()
