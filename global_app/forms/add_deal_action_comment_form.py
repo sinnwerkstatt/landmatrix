@@ -66,15 +66,29 @@ class AddDealActionCommentForm(BaseForm):
 
     @classmethod
     def get_data(cls, activity):
+        from inspect import currentframe, getframeinfo
+
         data = super(AddDealActionCommentForm, cls).get_data(activity)
-        a_feedback = A_Feedback.objects.filter(fk_activity=activity)
+        if False:
+            a_feedback = A_Feedback.objects.filter(fk_activity=activity)
+        else:
+            frameinfo = getframeinfo(currentframe())
+            print('*** feedback not yet implemented! ',frameinfo.filename, frameinfo.lineno)
+            a_feedback = []
+
         if len(a_feedback) > 0:
             feedback = a_feedback[0]
             data.update({
                 "assign_to_user": feedback.fk_user_assigned.id,
                 "tg_feedback_comment": feedback.comment,
             })
-        fully_updated_history = Activity.objects.get_fully_updated_history(activity.activity_identifier)
+        if False:
+            fully_updated_history = Activity.objects.get_fully_updated_history(activity.activity_identifier)
+        else:
+            frameinfo = getframeinfo(currentframe())
+            print('*** fully updated history not yet implemented! ',frameinfo.filename, frameinfo.lineno)
+            fully_updated_history = []
+
         fully_updated = []
         for h in fully_updated_history:
             fully_updated.append("%s - %s: %s" %(DateFormat(h.fully_updated).format("Y-m-d H:i:s"), h.username, h.comment))
