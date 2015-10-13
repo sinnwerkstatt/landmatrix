@@ -1,15 +1,15 @@
 import time, datetime
 
 from django import template
-from django.template import Library, Node, resolve_variable, TemplateSyntaxError
-from django.template import Context, Template, Node, resolve_variable, TemplateSyntaxError, Variable
+from django.forms.fields import MultiValueField, ChoiceField, BooleanField
+from django.template import Node, resolve_variable, Variable
 from django.template.defaultfilters import slugify
 from django.template.defaultfilters import stringfilter
 from django.contrib.humanize.templatetags.humanize import naturaltime
-# from django.utils.encoding import force_unicode
 
 
 # from editor.views import get_display_value_by_field
+from global_app.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
 
 register = template.Library()
 
@@ -61,6 +61,33 @@ def get_display_values(values, field):
             result.append(get_display_value_by_field(field, v))
     return result
 
+def get_display_value_by_field(field, value):
+    choices_dict = {}
+    if isinstance(field, MultiValueField):
+        field = field.fields[0]
+    if isinstance(field, ChoiceField):
+        if isinstance(field, NestedMultipleChoiceField):
+            for k, v, c in field.choices:
+                if isinstance(c, (list, tuple)):
+                    # This is an optgroup, so look inside the group for options
+                    for k2, v2 in c:
+                        choices_dict.update({k2:v2})
+                choices_dict.update({k:v})
+        else:
+            choices_dict = dict(field.choices)
+        # get displayed value/s?
+        dvalue = None
+        if isinstance(value, (list, tuple)):
+            dvalue = []
+            for v in value:
+                dvalue.append(str(choices_dict.get(int(value))))
+        else:
+            dvalue = value and str(choices_dict.get(int(value)))
+        return dvalue
+    if isinstance(field, BooleanField):
+        dvalue = value == "on" and "True" or value == "off" and "False" or None
+        return dvalue or value
+    return value
 
 @register.filter
 def get_range( value ):

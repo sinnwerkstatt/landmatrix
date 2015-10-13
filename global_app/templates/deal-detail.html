@@ -67,7 +67,7 @@
             </div>
           </div>
         </div>
-
+{% comment %}
         <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
@@ -375,6 +375,7 @@
             </div>
           </div>
         </div>
+{% endcomment %}
       </div>
     </div>
 
@@ -389,8 +390,6 @@
     <table>
 
       {% for form in forms %}
-
-        <tr><td>
 
           {% if form.forms %}
 
@@ -428,19 +427,26 @@
 
           {% else %} {# form.forms #}
 
-              {% for field in form %}
+            <tr><td>Form:</td></tr>
 
-                  {{ field }}
+            {% for field in form %}
 
-                  {% if field.value and field.label %}
-                      <tr><td>{{ field.label }}</td><td>{{ field.value|ensure_list|display_values:field.field|join:"<br />" }}</td></tr>
-                  {% endif %}
+              <tr>
+              <td>Field:</td><td>{{ field }}</td>
 
-              {% endfor %}
+              {% if field.value and field.label %}
+                <td><strong>Value and Label:</strong></td>
+                </tr><tr><td></td>
+                <td>{{ field.label }}</td><td>{{ field.value|ensure_list|display_values:field.field|join:"<br />" }}</td>
+              {% else %}
+                <td>Label: {{ field.label }}</td><td>Value: {{ field.value }}</td>
+              {% endif %}
+
+              </tr>
+
+            {% endfor %}
 
           {% endif %}  {# form.forms #}
-
-        </td></tr>
 
       {% endfor %}
 

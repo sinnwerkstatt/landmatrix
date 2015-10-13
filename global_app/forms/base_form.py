@@ -297,11 +297,7 @@ class BaseForm(forms.Form):
                 taggroup = cls.get_data_for_tg_field(data, field_name, object, pn, taggroup, tg)
 
             else:
-                if not taggroup:
-                    continue
-                print('        not tg field and taggroup:', field_name, str(taggroup)[1:])
                 tags = cls.get_tags(field_name, object, taggroup)
-                print ('       tags', tags)
 
                 if len(tags) > 0:
                     if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
@@ -311,40 +307,46 @@ class BaseForm(forms.Form):
                         if isinstance(field, forms.MultiValueField):
                             cls.get_year_based_data(data, field, pn, taggroup, tags)
                         else:
-                            if isinstance(tags, HStoreDict):
-                                a = tags
-                            else:
-                                a = tags.all()
-
-                            if field_name in tags:
-                                value = tags[field_name]
-                            elif hasattr(taggroup, field_name):
-                                value = getattr(taggroup, field_name)
-                            # elif isinstance(taggroup, SH_Tag_Group):
-                            #     value = tags[0].fk_sh_value.value
-                            # else:
-                            #     value = tags[0].fk_a_value.value
-                            #     year = tags[0].fk_a_value.year
-                            date = tags['date'] if 'date' in tags else taggroup.date
-
-                            print('        value, date', value, date)
-                            if isinstance(field, forms.ChoiceField):
-                                for k, v in field.choices:
-                                    if v == value:
-                                        value = str(k)
-                                        break
-                                data[pn] = value
-                            elif isinstance(field, forms.DateField):
-                                # reformat date values
-                                try:
-                                    data[pn] = datetime.strptime(value, "%Y-%m-%d").strftime("%d:%m:%Y")
-                                except:
-                                    # catch invalid date formats from import
-                                    data[pn] = value
-                            else:
-                                data[pn] = value
+                            cls.get_other_data(data, field, field_name, pn, taggroup, tags)
         print('returned data', data)
         return data
+
+    @classmethod
+    def get_other_data(cls, data, field, field_name, pn, taggroup, tags):
+        if isinstance(tags, dict):
+            a = tags
+        else:
+            a = tags.all()
+
+        if field_name in tags:
+            value = tags[field_name]
+        elif hasattr(taggroup, field_name):
+            value = getattr(taggroup, field_name)
+        else:
+            print('didnt find %s' % field_name)
+            value = None
+        # elif isinstance(taggroup, SH_Tag_Group):
+        #     value = tags[0].fk_sh_value.value
+        # else:
+        #     value = tags[0].fk_a_value.value
+        #     year = tags[0].fk_a_value.year
+        date = tags['date'] if 'date' in tags else taggroup.date
+        print('        value, date', value, date)
+        if isinstance(field, forms.ChoiceField):
+            for k, v in field.choices:
+                if v == value:
+                    value = str(k)
+                    break
+            data[pn] = value
+        elif isinstance(field, forms.DateField):
+            # reformat date values
+            try:
+                data[pn] = datetime.strptime(value, "%Y-%m-%d").strftime("%d:%m:%Y")
+            except:
+                # catch invalid date formats from import
+                data[pn] = value
+        else:
+            data[pn] = value
 
     @classmethod
     def get_multiple_choice_data(cls, data, field, pn, taggroup, tags):
@@ -391,7 +393,7 @@ class BaseForm(forms.Form):
     @classmethod
     def get_tags(cls, field_name, object, taggroup):
         if isinstance(object, Deal):
-            tags = taggroup.attributes
+            tags = object.attributes
         elif isinstance(taggroup, SH_Tag_Group):
             tags = taggroup.sh_tag_set.filter(fk_sh_key__key=str(field_name))
         else:
@@ -427,6 +429,7 @@ class BaseForm(forms.Form):
         readonly_fields = ()
 
     def __init__(self, *args, **kwargs):
+
         super(BaseForm, self).__init__(*args, **kwargs)
         if hasattr(self.Meta, "exclude"):
             for field in self.Meta.exclude:

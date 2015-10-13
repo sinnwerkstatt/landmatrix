@@ -7,5 +7,5 @@ class ChangeInvestorForm(AddInvestorForm):
 
     @classmethod
     def get_data(cls, object, tg=None, prefix=""):
-        data = super(ChangeInvestorForm, cls).get_data(object, tg, prefix)
+        data = super().get_data(object, tg, prefix)
         return data

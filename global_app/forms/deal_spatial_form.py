@@ -26,6 +26,7 @@ class DealSpatialForm(BaseForm):
     target_region = forms.ModelChoiceField(required=False, label=_("Target Region"), widget=forms.HiddenInput, queryset=Region.objects.all().order_by("name"))
     tg_location_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
+
 DealSpatialBaseFormSet = formset_factory(DealSpatialForm, extra=1)
 
 
