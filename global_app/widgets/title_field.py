@@ -4,9 +4,10 @@ from .title_widget import TitleWidget
 
 from django import forms
 
+
 class TitleField(forms.CharField):
     widget = forms.HiddenInput
 
     def __init__(self, *args, **kwargs):
         self.widget = TitleWidget(initial=kwargs.get("initial"))
-        super(TitleField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)

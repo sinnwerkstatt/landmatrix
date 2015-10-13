@@ -16,7 +16,7 @@ class ChangeDealOverallCommentForm(BaseForm):
     @classmethod
     def get_data(cls, object, tg=None, prefix=""):
         from inspect import currentframe, getframeinfo
-        data = super(ChangeDealOverallCommentForm, cls).get_data(object, tg, prefix)
+        data = super().get_data(object, tg, prefix)
 
         if False:
             comments = Comment.objects.filter(fk_a_tag_group__fk_activity=object.id, fk_a_tag_group__fk_a_tag__fk_a_value__value="overall").order_by("-timestamp")
