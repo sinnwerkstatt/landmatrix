@@ -75,14 +75,11 @@ class TestInvolvement(WithStatus):
         # Need to strip all spaces when checking if Involvement string representation contains
         # string representation of the subobjects because the subobjects are indnented.
         self.assertTrue(
-            str(Activity.objects.last()).replace(' ', '')
-            in str(Involvement.objects.last()).replace(' ', '')
+            ''.join(str(Activity.objects.last()).split()) in ''.join(str(Involvement.objects.last()).split())
         )
         self.assertTrue(
-            str(Stakeholder.objects.last()).replace(' ', '')
-            in str(Involvement.objects.last()).replace(' ', '')
+            ''.join(str(Stakeholder.objects.last()).split()) in ''.join(str(Involvement.objects.last()).split())
         )
         self.assertTrue(
-            str(PrimaryInvestor.objects.last()).replace(' ', '')
-            in str(Involvement.objects.last()).replace(' ', '')
+            ''.join(str(PrimaryInvestor.objects.last()).split()) in ''.join(str(Involvement.objects.last()).split())
         )
