@@ -75,19 +75,29 @@ def get_display_value_by_field(field, value):
                 choices_dict.update({k:v})
         else:
             choices_dict = dict(field.choices)
+
+        print('get_display_value_by_field', (field, value), choices_dict)
         # get displayed value/s?
         dvalue = None
         if isinstance(value, (list, tuple)):
             dvalue = []
             for v in value:
-                dvalue.append(str(choices_dict.get(int(value))))
+                dvalue.append(get_value_from_i18nized_choices_dict(choices_dict, value))
         else:
-            dvalue = value and str(choices_dict.get(int(value)))
+            dvalue = value and get_value_from_i18nized_choices_dict(choices_dict, value)
         return dvalue
     if isinstance(field, BooleanField):
         dvalue = value == "on" and "True" or value == "off" and "False" or None
         return dvalue or value
     return value
+
+def get_value_from_i18nized_choices_dict(choices_dict, value):
+    if isinstance(value, int):
+        return str(choices_dict.get(int(value)))
+    elif value in choices_dict.values():
+        return value
+    raise RuntimeError('Damn: %s not in %s' %(value, str(choices_dict)))
+
 
 @register.filter
 def get_range( value ):

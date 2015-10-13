@@ -125,10 +125,10 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
         taggroups = deal.activity.activityattributegroup_set.filter(name__contains='data_source').order_by('name')
 #        print(taggroups)
 #        taggroups = activity.a_tag_group_set.filter(fk_a_tag__fk_a_value__value__contains="data_source").order_by("fk_a_tag__fk_a_value__value")
-        data = []
+        data = {}
         for i, taggroup in enumerate(taggroups):
             print('i, taggroup', i, taggroup)
-            data.append(DealDataSourceForm.get_data(deal, tg=taggroup))
+            data[i] = DealDataSourceForm.get_data(deal, tg=taggroup)
             print('data', data)
         return data
 
