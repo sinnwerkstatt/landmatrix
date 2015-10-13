@@ -43,6 +43,7 @@ class DealSecondaryInvestorForm(BaseForm):
             (0, str(_("Multinational enterprise (MNE)")))
         ]
         self.fields["country"].choices.extend([(c.id, c.name) for c in Country.objects.all().order_by("name")])
+        print(self)
 
     def clean_investor(self):
         investor = int(self.cleaned_data["investor"] or 0)
@@ -59,8 +60,8 @@ class DealSecondaryInvestorForm(BaseForm):
         return cleaned_data
 
     def has_investor(self):
-        if self.initial.has_key("investor") and self.initial["investor"]:
+        if self.initial.get("investor"):
             return True
-        elif self.is_valid() and self.cleaned_data.has_key("investor") and self.cleaned_data["investor"]:
+        elif self.is_valid() and self.cleaned_data.get("investor"):
             return True
         return False

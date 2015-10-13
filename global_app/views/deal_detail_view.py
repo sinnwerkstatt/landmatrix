@@ -23,16 +23,16 @@ from django.template import RequestContext
 
 
 FORMS = [
-    ("spatial_data", PublicViewDealSpatialForm),
+#!    ("spatial_data", PublicViewDealSpatialForm),
 #    ("general_information", ChangeDealGeneralForm),
 #     ("employment", ChangeDealEmploymentForm),
-#!     ("investor_info", DealSecondaryInvestorFormSet),
-    ("data_sources", PublicViewDealDataSourceForm),
+    ("investor_info", DealSecondaryInvestorFormSet),
+#!    ("data_sources", PublicViewDealDataSourceForm),
 #     ("local_communities", DealLocalCommunitiesForm),
 #     ("former_use", DealFormerUseForm),
 #     ("produce_info", PublicViewDealProduceInfoForm),
 #     ("water", DealWaterForm),
-    ("gender-related_info", DealGenderRelatedInfoForm),
+#!    ("gender-related_info", DealGenderRelatedInfoForm),
     # ("overall_comment", ChangeDealOverallCommentForm),
     # ("action_comment", ChangeDealActionCommentForm),
     # ("history", DealHistoryForm)
