@@ -42,21 +42,31 @@ class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
 
     @classmethod
     def get_data(cls, activity):
+        from inspect import currentframe, getframeinfo
         #raise IOError, [{"investor": str(i.fk_stakeholder.id)} for i in activity.involvement_set.all()]
-        data = []
-        for i in activity.involvement_set().all(): #get_involvements_for_activity(activity):
-            if not i.fk_stakeholder:
+        data = {}
+        involvements = activity.involvement_set().all() #get_involvements_for_activity(activity)
+        for i, involvement in enumerate(involvements):
+            if not involvement.fk_stakeholder:
                 continue
-            comments = False and \
-                       Comment.objects.filter(fk_sh_tag_group__fk_stakeholder=i.fk_stakeholder.id, fk_sh_tag_group__fk_sh_tag__fk_sh_value__value="General", fk_sh_tag_group__fk_sh_tag__fk_sh_key__key="name").order_by("-id")
+
+            if False:
+                comments = Comment.objects.filter(fk_sh_tag_group__fk_stakeholder=involvement.fk_stakeholder.id, fk_sh_tag_group__fk_sh_tag__fk_sh_value__value="General", fk_sh_tag_group__fk_sh_tag__fk_sh_key__key="name").order_by("-id")
+            else:
+                frameinfo = getframeinfo(currentframe())
+                print('*** comments not yet implemented! ',frameinfo.filename, frameinfo.lineno)
+                comments = None
+
             comment = ""
             if comments and len(comments) > 0:
                 comment = comments[0].comment
             investor = {
-                "investor": i.fk_stakeholder.id,
+                "investor": involvement.fk_stakeholder.id,
                 "tg_general_comment": comment,
-                "investment_ratio": i.investment_ratio,
+                "investment_ratio": involvement.investment_ratio,
             }
-            data.append(investor)
+            data[i] = investor
+        data.update({'form-TOTAL_FORMS': len(involvements), 'form-INITIAL_FORMS': len(involvements), 'form-MAX_NUM_FORMS': len(involvements)})
+        print('DealSecondaryInvestorFormSet.get_data', data)
         return data
 
