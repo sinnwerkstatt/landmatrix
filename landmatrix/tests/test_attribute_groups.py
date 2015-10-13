@@ -44,8 +44,7 @@ class TestAttributeGroups(WithStatus):
 
     def test_string_contains_language(self):
         self.assertTrue(
-            str(Language.objects.last()).replace(' ', '')
-            in str(ActivityAttributeGroup.objects.last()).replace(' ', '')
+            ''.join(str(Language.objects.last()).split()) in ''.join(str(ActivityAttributeGroup.objects.last()).split())
         )
 
     def test_string_contains_attributes(self):
