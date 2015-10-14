@@ -64,6 +64,9 @@ class Deal:
     def involvement_set(self):
         return Involvement.objects.select_related().filter(fk_activity=self.activity)
 
+    def attribute_groups(self):
+        return ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
+
 
 def get_latest_activity(deal_id):
     version_max = _get_latest_version(deal_id)
