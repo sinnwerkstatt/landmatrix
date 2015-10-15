@@ -76,7 +76,6 @@ def get_display_value_by_field(field, value):
         else:
             choices_dict = dict(field.choices)
 
-        print('get_display_value_by_field', (field, value), choices_dict)
         # get displayed value/s?
         dvalue = None
         if isinstance(value, (list, tuple)):
@@ -92,7 +91,7 @@ def get_display_value_by_field(field, value):
     return value
 
 def get_value_from_i18nized_choices_dict(choices_dict, value):
-    if isinstance(value, int):
+    if choices_dict.get(int(value)):
         return str(choices_dict.get(int(value)))
     elif value in choices_dict.values():
         return value
