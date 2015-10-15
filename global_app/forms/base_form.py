@@ -7,12 +7,16 @@ from django.utils.safestring import mark_safe
 from copy import copy, deepcopy
 from django_hstore.dict import HStoreDict
 import re
+from global_app.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.deal import Deal
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class BaseForm(forms.Form):
+
+    DEBUG = False
 
     error_css_class = "error"
 
@@ -280,24 +284,27 @@ class BaseForm(forms.Form):
         return count
 
     @classmethod
-    def get_data(cls, object, tg=None, prefix=""):
+    def get_data(cls, deal, taggroup=None, prefix=""):
         """
         Get form data for activity or stakeholder,
         using taggroup only - if given (for formsets)
         """
+
+        from traceback import print_tb
+
         data = MultiValueDict()
-        taggroup = tg
-        print('get_data', str(object)[:140], '...', tg)
+        if cls.DEBUG: print('get_data', str(deal)[:140], '...', taggroup)
         for i, (field_name, field) in enumerate(cls().fields.items()):
             pn = prefix and "%s-%s"%(prefix, field_name) or field_name
 
-            print('    field', i, field_name, field, prefix)
+            if cls.DEBUG: print('    field', i, field_name, field, prefix)
 
             if field_name.startswith('tg_'):
-                taggroup = cls.get_data_for_tg_field(data, field_name, object, pn, taggroup, tg)
+                taggroup = cls.get_data_for_tg_field(data, field_name, deal, pn, taggroup, taggroup)
 
             else:
-                tags = cls.get_tags(field_name, object, taggroup)
+                tags, taggroup = cls.get_tags(field_name, deal, taggroup)
+                #print(tags)
 
                 if len(tags) > 0:
                     if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
@@ -308,30 +315,33 @@ class BaseForm(forms.Form):
                             cls.get_year_based_data(data, field, pn, taggroup, tags)
                         else:
                             cls.get_other_data(data, field, field_name, pn, taggroup, tags)
-        print('returned data', data)
+        if cls.DEBUG: print('returned data', data)
         return data
 
     @classmethod
     def get_other_data(cls, data, field, field_name, pn, taggroup, tags):
-        if isinstance(tags, dict):
-            a = tags
-        else:
-            a = tags.all()
-
-        if field_name in tags:
-            value = tags[field_name]
+        if cls.DEBUG: print('get_other_data')
+        if isinstance(taggroup, ActivityAttributeGroup) and taggroup.attributes.get(field_name):
+            print('TAGGROUP[attributes]!')
+            value = taggroup.attributes[field_name]
         elif hasattr(taggroup, field_name):
+            print('TAGGROUP!')
             value = getattr(taggroup, field_name)
-        else:
-            print('didnt find %s' % field_name)
+        elif field_name in tags:
+            print('TAGS!')
+            value = tags[field_name]
+        elif hasattr(tags, field_name):
+            print('TAGS ATTR!')
+            value = getattr(taggroup, field_name)
+        elif isinstance(tags, list):
+            print('it\'s a list: %s ... ]' % str(tags)[:140])
             value = None
-        # elif isinstance(taggroup, SH_Tag_Group):
-        #     value = tags[0].fk_sh_value.value
-        # else:
-        #     value = tags[0].fk_a_value.value
-        #     year = tags[0].fk_a_value.year
-        date = tags['date'] if 'date' in tags else taggroup.date
-        print('        value, date', value, date)
+        else:
+            if cls.DEBUG: print('didnt find %s' % field_name)
+            value = None
+        date = tags['date'] if 'date' in tags else None # tags.date or taggroup.date
+        if cls.DEBUG: print('        value, date', value, date)
+
         if isinstance(field, forms.ChoiceField):
             for k, v in field.choices:
                 if v == value:
@@ -351,7 +361,10 @@ class BaseForm(forms.Form):
     @classmethod
     def get_multiple_choice_data(cls, data, field, pn, taggroup, tags):
         values = []
-        if isinstance(taggroup, SH_Tag_Group):
+        if cls.DEBUG: print(tags)
+        if True:
+            tvalues = tags
+        elif isinstance(taggroup, SH_Tag_Group):
             tvalues = [t.fk_sh_value.value for t in tags]
         else:
             tvalues = [t.fk_a_value.value for t in tags]
@@ -375,7 +388,10 @@ class BaseForm(forms.Form):
     def get_year_based_data(cls, data, field, pn, taggroup, tags):
         yb_data = []
         for tag in tags:
-            if isinstance(taggroup, SH_Tag_Group):
+            if True:
+                value = tags[tag]
+                year = tags.get('date', '')
+            elif isinstance(taggroup, SH_Tag_Group):
                 value = tag.fk_sh_value.value
                 year = ""
             else:
@@ -391,17 +407,19 @@ class BaseForm(forms.Form):
         data[pn] = "|".join(yb_data)
 
     @classmethod
-    def get_tags(cls, field_name, object, taggroup):
-        if isinstance(object, Deal):
-            tags = object.attributes
+    def get_tags(cls, field_name, deal, taggroup):
+        if isinstance(deal, Deal):
+            tags = deal.attributes
+            if not taggroup:
+                taggroup = list(deal.attribute_groups())
         elif isinstance(taggroup, SH_Tag_Group):
             tags = taggroup.sh_tag_set.filter(fk_sh_key__key=str(field_name))
         else:
             tags = taggroup.a_tag_set.filter(fk_a_key__key=str(field_name))
-        return tags
+        return tags, taggroup
 
     @classmethod
-    def get_data_for_tg_field(cls, data, field_name, object, pn, taggroup, tg):
+    def get_data_for_tg_field(cls, data, field_name, deal, pn, taggroup, tg):
         from inspect import currentframe, getframeinfo
 
         if field_name.endswith('_comment'):
@@ -415,10 +433,10 @@ class BaseForm(forms.Form):
 
         elif not tg:
             try:
-                if isinstance(object, Stakeholder):
-                    taggroup = object.sh_tag_group_set.get(fk_sh_tag__fk_sh_value__value=field_name[3:])
+                if isinstance(deal, Stakeholder):
+                    taggroup = deal.sh_tag_group_set.get(fk_sh_tag__fk_sh_value__value=field_name[3:])
                 else:
-                    taggroup = object.a_tag_group_set.get(fk_a_tag__fk_a_value__value=field_name[3:])
+                    taggroup = deal.a_tag_group_set.get(fk_a_tag__fk_a_value__value=field_name[3:])
             except:
                 taggroup = None
         return taggroup

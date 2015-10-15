@@ -32,11 +32,10 @@ class YearBasedTextInput(YearBasedWidget):
         return u''.join(rendered_widgets)
 
     def value_from_datadict(self, data, files, name):
-        #return [widget.value_from_datadict(data, files, name + '_%s' % i) for i, widget in enumerate(self.widgets)]
         value = [data[k] for k in sorted(filter(lambda o: re.match(r"%s_\d+"%name,o), data))]
 
         # update widgets
         self.widgets = []
-        for i in range(len(value)/2):
+        for i in range(len(value)//2):
             self.widgets.extend([NumberInput(attrs={"class": "year-based"}), NumberInput(attrs={"class": "year-based-year"})])
         return value

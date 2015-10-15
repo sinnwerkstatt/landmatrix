@@ -1,3 +1,5 @@
+from global_app.forms.base_form import BaseForm
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from global_app.forms.deal_secondary_investor_form import DealSecondaryInvestorForm
@@ -67,6 +69,6 @@ class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
             }
             data[i] = investor
         data.update({'form-TOTAL_FORMS': len(involvements), 'form-INITIAL_FORMS': len(involvements), 'form-MAX_NUM_FORMS': len(involvements)})
-        print('DealSecondaryInvestorFormSet.get_data', data)
+        if BaseForm.DEBUG: print('DealSecondaryInvestorFormSet.get_data', data)
         return data
 
