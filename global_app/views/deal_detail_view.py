@@ -3,7 +3,8 @@ from global_app.forms.change_deal_action_comment_form import ChangeDealActionCom
 from global_app.forms.change_deal_employment_form import ChangeDealEmploymentForm
 from global_app.forms.change_deal_general_form import ChangeDealGeneralForm
 from global_app.forms.change_deal_overall_comment_form import ChangeDealOverallCommentForm
-from global_app.forms.deal_data_source_form import ChangeDealDataSourceFormSet, PublicViewDealDataSourceForm
+from global_app.forms.deal_data_source_form import ChangeDealDataSourceFormSet, PublicViewDealDataSourceForm, \
+    PublicViewDealDataSourceFormSet
 from global_app.forms.deal_former_use_form import DealFormerUseForm
 from global_app.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
 from global_app.forms.deal_history_form import DealHistoryForm
@@ -23,16 +24,16 @@ from django.template import RequestContext
 
 
 FORMS = [
-#!    ("spatial_data", PublicViewDealSpatialForm),
+#    ("spatial_data", PublicViewDealSpatialForm),
 #    ("general_information", ChangeDealGeneralForm),
-#     ("employment", ChangeDealEmploymentForm),
-    ("investor_info", DealSecondaryInvestorFormSet),
-#!    ("data_sources", PublicViewDealDataSourceForm),
-#     ("local_communities", DealLocalCommunitiesForm),
-#     ("former_use", DealFormerUseForm),
-#     ("produce_info", PublicViewDealProduceInfoForm),
-#     ("water", DealWaterForm),
-#!    ("gender-related_info", DealGenderRelatedInfoForm),
+#    ("employment", ChangeDealEmploymentForm),
+#    ("investor_info", DealSecondaryInvestorFormSet),
+    ("data_sources", PublicViewDealDataSourceFormSet),
+    # ("local_communities", DealLocalCommunitiesForm),
+    # ("former_use", DealFormerUseForm),
+    # ("produce_info", PublicViewDealProduceInfoForm),
+    # ("water", DealWaterForm),
+    # ("gender-related_info", DealGenderRelatedInfoForm),
     # ("overall_comment", ChangeDealOverallCommentForm),
     # ("action_comment", ChangeDealActionCommentForm),
     # ("history", DealHistoryForm)
@@ -59,6 +60,6 @@ class DealDetailView(TemplateView):
         forms = []
         for form in FORMS:
             data = form[1].get_data(deal)
-            new_form = form[1](data=data)
+            new_form = form[1](initial=data)
             forms.append(new_form)
         return forms

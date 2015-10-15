@@ -45,7 +45,7 @@ class AddDealSpatialFormSet(DealSpatialBaseFormSet):
         taggroups = activity.a_tag_group_set.filter(fk_a_tag__fk_a_value__value__contains="location").order_by("fk_a_tag__fk_a_value__value")
         data = []
         for i, taggroup in enumerate(taggroups):
-            data.append(DealSpatialForm.get_data(activity, tg=taggroup))
+            data.append(DealSpatialForm.get_data(activity, taggroup=taggroup))
         return data
 
 

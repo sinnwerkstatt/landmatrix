@@ -14,12 +14,12 @@ class ChangeDealOverallCommentForm(BaseForm):
     tg_overall_comment = forms.CharField(required=False, label="", widget=CommentInput)
 
     @classmethod
-    def get_data(cls, object, tg=None, prefix=""):
+    def get_data(cls, deal, tg=None, prefix=""):
         from inspect import currentframe, getframeinfo
-        data = super().get_data(object, tg, prefix)
+        data = super().get_data(deal, tg, prefix)
 
         if False:
-            comments = Comment.objects.filter(fk_a_tag_group__fk_activity=object.id, fk_a_tag_group__fk_a_tag__fk_a_value__value="overall").order_by("-timestamp")
+            comments = Comment.objects.filter(fk_a_tag_group__fk_activity=deal.id, fk_a_tag_group__fk_a_tag__fk_a_value__value="overall").order_by("-timestamp")
         else:
             frameinfo = getframeinfo(currentframe())
             print('*** comments not yet implemented! ',frameinfo.filename, frameinfo.lineno)
