@@ -20,8 +20,12 @@ class YearBasedTextInput(YearBasedWidget):
         ]
 
     def decompress(self, value):
+        from pprint import pprint
         if value:
-            sorted_values = sorted(value.split("|"), key=lambda v: v.split(":")[1] and int(v.split(":")[1]) or 0)
+            values = value.split("|")
+            pprint(values)
+
+            sorted_values = sorted(values, key=lambda v: v.split(":")[1] if ':' in v else '0')
             splitted = []
             for s in sorted_values:
                 splitted.extend(s.split(":"))

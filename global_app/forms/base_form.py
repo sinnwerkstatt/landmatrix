@@ -295,12 +295,12 @@ class BaseForm(forms.Form):
         data = MultiValueDict()
         if cls.DEBUG: print('get_data', str(deal)[:140], '...', taggroup)
         for i, (field_name, field) in enumerate(cls().fields.items()):
-            pn = prefix and "%s-%s"%(prefix, field_name) or field_name
+            prefixed_name = prefix and "%s-%s"%(prefix, field_name) or field_name
 
             if cls.DEBUG: print('    field', i, field_name, field, prefix)
 
             if field_name.startswith('tg_'):
-                taggroup = cls.get_data_for_tg_field(data, field_name, deal, pn, taggroup, taggroup)
+                taggroup = cls.get_data_for_tg_field(data, field_name, deal, prefixed_name, taggroup, taggroup)
 
             else:
                 tags, taggroup = cls.get_tags(field_name, deal, taggroup)
@@ -308,30 +308,30 @@ class BaseForm(forms.Form):
 
                 if len(tags) > 0:
                     if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
-                        cls.get_multiple_choice_data(data, field, pn, taggroup, tags)
+                        cls.get_multiple_choice_data(data, field, field_name, prefixed_name, taggroup, tags)
                     else:
                         # Year based data?
                         if isinstance(field, forms.MultiValueField):
-                            cls.get_year_based_data(data, field, pn, taggroup, tags)
+                            cls.get_year_based_data(data, field, field_name, prefixed_name, taggroup, tags)
                         else:
-                            cls.get_other_data(data, field, field_name, pn, taggroup, tags)
+                            cls.get_other_data(data, field, field_name, prefixed_name, taggroup, tags)
         if cls.DEBUG: print('returned data', data)
         return data
 
     @classmethod
-    def get_other_data(cls, data, field, field_name, pn, taggroup, tags):
+    def get_other_data(cls, data, field, field_name, prefixed_name, taggroup, tags):
         if cls.DEBUG: print('get_other_data')
         if isinstance(taggroup, ActivityAttributeGroup) and taggroup.attributes.get(field_name):
-            print('TAGGROUP[attributes]!')
+            print('TAGGROUP[attributes]:', field_name, taggroup.attributes[field_name])
             value = taggroup.attributes[field_name]
         elif hasattr(taggroup, field_name):
-            print('TAGGROUP!')
+            print('TAGGROUP:', field_name, getattr(taggroup, field_name))
             value = getattr(taggroup, field_name)
         elif field_name in tags:
-            print('TAGS!')
+            print('TAGS!:', field_name, tags[field_name])
             value = tags[field_name]
         elif hasattr(tags, field_name):
-            print('TAGS ATTR!')
+            print('TAGS ATTR!', field_name)
             value = getattr(taggroup, field_name)
         elif isinstance(tags, list):
             print('it\'s a list: %s ... ]' % str(tags)[:140])
@@ -347,23 +347,23 @@ class BaseForm(forms.Form):
                 if v == value:
                     value = str(k)
                     break
-            data[pn] = value
+            data[prefixed_name] = value
         elif isinstance(field, forms.DateField):
             # reformat date values
             try:
-                data[pn] = datetime.strptime(value, "%Y-%m-%d").strftime("%d:%m:%Y")
+                data[prefixed_name] = datetime.strptime(value, "%Y-%m-%d").strftime("%d:%m:%Y")
             except:
                 # catch invalid date formats from import
-                data[pn] = value
+                data[prefixed_name] = value
         else:
-            data[pn] = value
+            data[prefixed_name] = value
 
     @classmethod
-    def get_multiple_choice_data(cls, data, field, pn, taggroup, tags):
+    def get_multiple_choice_data(cls, data, field, field_name, prefixed_name, taggroup, tags):
         values = []
-        if cls.DEBUG: print(tags)
+        if cls.DEBUG: print('get_multiple_choice_data()', field_name, tags)
         if True:
-            tvalues = tags
+            tvalues = tags[field_name]
         elif isinstance(taggroup, SH_Tag_Group):
             tvalues = [t.fk_sh_value.value for t in tags]
         else:
@@ -382,21 +382,16 @@ class BaseForm(forms.Form):
                             break
             if value:
                 values.append(value)
-        data[pn] = values
+        data[prefixed_name] = values
 
     @classmethod
-    def get_year_based_data(cls, data, field, pn, taggroup, tags):
+    def get_year_based_data(cls, data, field, field_name, prefixed_name, taggroup, tags):
+        if True or cls.DEBUG: print('get_year_based_data()', field_name, tags.get(field_name))
         yb_data = []
-        for tag in tags:
-            if True:
-                value = tags[tag]
-                year = tags.get('date', '')
-            elif isinstance(taggroup, SH_Tag_Group):
-                value = tag.fk_sh_value.value
-                year = ""
-            else:
-                value = tag.fk_a_value.value
-                year = tag.fk_a_value.year
+#        for tag in tags:
+        for tag in [field_name]:
+            value = tags[tag]
+            year = tags.get('date', '')
             if isinstance(field.fields[0], forms.ChoiceField):
                 for k, v in field.fields[0].choices:
                     if v == value:
@@ -404,7 +399,7 @@ class BaseForm(forms.Form):
                         break
             if year or value:
                 yb_data.append("%s:%s" % (value or "", year or ""))
-        data[pn] = "|".join(yb_data)
+        data[prefixed_name] = "|".join(yb_data)
 
     @classmethod
     def get_tags(cls, field_name, deal, taggroup):
