@@ -290,8 +290,6 @@ class BaseForm(forms.Form):
         using taggroup only - if given (for formsets)
         """
 
-        from traceback import print_tb
-
         data = MultiValueDict()
         if cls.DEBUG: print('get_data', str(deal)[:140], '...', taggroup)
         for i, (field_name, field) in enumerate(cls().fields.items()):
@@ -308,7 +306,7 @@ class BaseForm(forms.Form):
 
                 if len(tags) > 0:
                     if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
-                        cls.get_multiple_choice_data(data, field, field_name, prefixed_name, taggroup, tags)
+                        cls.get_multiple_choice_data(data, field, field_name, prefixed_name, taggroup)
                     else:
                         # Year based data?
                         if isinstance(field, forms.MultiValueField):
@@ -359,34 +357,34 @@ class BaseForm(forms.Form):
             data[prefixed_name] = value
 
     @classmethod
-    def get_multiple_choice_data(cls, data, field, field_name, prefixed_name, taggroup, tags):
+    def get_multiple_choice_data(cls, data, field, field_name, prefixed_name, taggroup):
+        tag_values = set([group.attributes[field_name] for group in taggroup if field_name in group.attributes])
+        if True or cls.DEBUG: print('get_multiple_choice_data()', field_name, tag_values)
         values = []
-        if cls.DEBUG: print('get_multiple_choice_data()', field_name, tags)
-        if True:
-            tvalues = tags[field_name]
-        elif isinstance(taggroup, SH_Tag_Group):
-            tvalues = [t.fk_sh_value.value for t in tags]
-        else:
-            tvalues = [t.fk_a_value.value for t in tags]
-        for l in tvalues:
-            value = ""
-            for k, v in [i[:2] for i in field.choices]:
-                if v == l:
-                    value = str(k)
-                    break
-            if isinstance(field, NestedMultipleChoiceField) and not value:
-                for choice in field.choices:
-                    for k, v in [i[:2] for i in choice[2] or []]:
-                        if v == l:
-                            value = str(k)
-                            break
+        for tag_value in tag_values:
+            value = cls.get_multiple_choice_value(field, tag_value)
             if value:
                 values.append(value)
         data[prefixed_name] = values
 
     @classmethod
+    def get_multiple_choice_value(cls, field, tag_value):
+        value = ""
+        for k, v in [i[:2] for i in field.choices]:
+            if v == tag_value:
+                value = str(k)
+                break
+        if isinstance(field, NestedMultipleChoiceField) and not value:
+            for choice in field.choices:
+                for k, v in [i[:2] for i in choice[2] or []]:
+                    if v == tag_value:
+                        value = str(k)
+                        break
+        return value
+
+    @classmethod
     def get_year_based_data(cls, data, field, field_name, prefixed_name, taggroup, tags):
-        if True or cls.DEBUG: print('get_year_based_data()', field_name, tags.get(field_name))
+        if cls.DEBUG: print('get_year_based_data()', field_name, tags.get(field_name))
         yb_data = []
 #        for tag in tags:
         for tag in [field_name]:
