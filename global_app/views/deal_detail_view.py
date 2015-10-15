@@ -25,10 +25,10 @@ from django.template import RequestContext
 
 FORMS = [
 #    ("spatial_data", PublicViewDealSpatialForm),
-#    ("general_information", ChangeDealGeneralForm),
+    ("general_information", ChangeDealGeneralForm),
 #    ("employment", ChangeDealEmploymentForm),
 #    ("investor_info", DealSecondaryInvestorFormSet),
-    ("data_sources", PublicViewDealDataSourceFormSet),
+#    ("data_sources", PublicViewDealDataSourceFormSet),
     # ("local_communities", DealLocalCommunitiesForm),
     # ("former_use", DealFormerUseForm),
     # ("produce_info", PublicViewDealProduceInfoForm),
