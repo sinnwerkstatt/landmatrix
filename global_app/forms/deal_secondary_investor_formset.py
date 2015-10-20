@@ -1,4 +1,7 @@
 from global_app.forms.base_form import BaseForm
+from landmatrix.models.country import Country
+from landmatrix.models.involvement import Involvement
+from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -42,12 +45,14 @@ class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
                 stakeholders.append(copy(stakeholder))
         return stakeholders
 
+
     @classmethod
-    def get_data(cls, activity):
+    def get_data(cls, deal):
         from inspect import currentframe, getframeinfo
+
         #raise IOError, [{"investor": str(i.fk_stakeholder.id)} for i in activity.involvement_set.all()]
-        data = {}
-        involvements = activity.involvement_set().all() #get_involvements_for_activity(activity)
+        data = []
+        involvements = deal.involvement_set().all() #get_involvements_for_activity(activity)
         for i, involvement in enumerate(involvements):
             if not involvement.fk_stakeholder:
                 continue
@@ -59,16 +64,40 @@ class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
                 print('*** comments not yet implemented! ',frameinfo.filename, frameinfo.lineno)
                 comments = None
 
-            comment = ""
-            if comments and len(comments) > 0:
-                comment = comments[0].comment
+            comment = comments[0].comment if comments and len(comments) > 0 else ''
             investor = {
                 "investor": involvement.fk_stakeholder.id,
                 "tg_general_comment": comment,
                 "investment_ratio": involvement.investment_ratio,
             }
-            data[i] = investor
-        data.update({'form-TOTAL_FORMS': len(involvements), 'form-INITIAL_FORMS': len(involvements), 'form-MAX_NUM_FORMS': len(involvements)})
-        if BaseForm.DEBUG: print('DealSecondaryInvestorFormSet.get_data', data)
+            data.append(investor)
+
         return data
 
+
+def get_investors(deal):
+    return {
+        'primary_investor': get_primary_investor(deal),
+        'secondary_investors': get_secondary_investors(deal)
+    }
+
+
+def get_primary_investor(deal):
+    return deal.primary_investor
+
+
+def get_secondary_investors(deal):
+    stakeholders = [
+        {
+            'investment_ratio': Involvement.objects.filter(fk_stakeholder=sh).first().investment_ratio,
+            'tags': {key: resolve_country(key, value)
+                     for key, value in StakeholderAttributeGroup.objects.filter(fk_stakeholder=sh).first().attributes.items()}
+        } for sh in deal.stakeholders
+    ]
+    return stakeholders
+
+
+def resolve_country(key, value):
+    if key != 'country': return value
+    if not value.isdigit(): return value
+    return Country.objects.get(id=value).name

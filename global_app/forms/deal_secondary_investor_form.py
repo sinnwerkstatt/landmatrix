@@ -43,7 +43,7 @@ class DealSecondaryInvestorForm(BaseForm):
             (0, str(_("Multinational enterprise (MNE)")))
         ]
         self.fields["country"].choices.extend([(c.id, c.name) for c in Country.objects.all().order_by("name")])
-        if self.DEBUG: print(self)
+        #print(self)
 
     def clean_investor(self):
         investor = int(self.cleaned_data["investor"] or 0)
