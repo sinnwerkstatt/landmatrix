@@ -10,7 +10,7 @@ from global_app.forms.deal_gender_related_info_form import DealGenderRelatedInfo
 from global_app.forms.deal_history_form import DealHistoryForm
 from global_app.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from global_app.forms.deal_produce_info_form import PublicViewDealProduceInfoForm
-from global_app.forms.deal_secondary_investor_formset import DealSecondaryInvestorFormSet
+from global_app.forms.deal_secondary_investor_formset import DealSecondaryInvestorFormSet, get_investors
 from global_app.forms.deal_spatial_form import PublicViewDealSpatialForm
 from global_app.forms.deal_water_form import DealWaterForm
 
@@ -21,19 +21,19 @@ from .view_aux_functions import render_to_response
 
 from django.views.generic import TemplateView
 from django.template import RequestContext
-
+from pprint import pprint
 
 FORMS = [
-#    ("spatial_data", PublicViewDealSpatialForm),
+    ("spatial_data", PublicViewDealSpatialForm),
     ("general_information", ChangeDealGeneralForm),
-#    ("employment", ChangeDealEmploymentForm),
-#    ("investor_info", DealSecondaryInvestorFormSet),
-#    ("data_sources", PublicViewDealDataSourceFormSet),
-    # ("local_communities", DealLocalCommunitiesForm),
-    # ("former_use", DealFormerUseForm),
-    # ("produce_info", PublicViewDealProduceInfoForm),
-    # ("water", DealWaterForm),
-    # ("gender-related_info", DealGenderRelatedInfoForm),
+    ("employment", ChangeDealEmploymentForm),
+    ("investor_info", DealSecondaryInvestorFormSet),
+    ("data_sources", PublicViewDealDataSourceFormSet),
+    ("local_communities", DealLocalCommunitiesForm),
+    ("former_use", DealFormerUseForm),
+    ("produce_info", PublicViewDealProduceInfoForm),
+    ("water", DealWaterForm),
+    ("gender-related_info", DealGenderRelatedInfoForm),
     # ("overall_comment", ChangeDealOverallCommentForm),
     # ("action_comment", ChangeDealActionCommentForm),
     # ("history", DealHistoryForm)
@@ -52,14 +52,17 @@ class DealDetailView(TemplateView):
                 'primary_investor': deal.primary_investor,
                 'stakeholder': deal.stakeholder,
         }
-        context['forms'] = self.get_forms(deal)
+        context['forms'] = get_forms(deal)
+        context['investor'] = get_investors(deal)
 
         return render_to_response(self.template_name, context, RequestContext(request))
 
-    def get_forms(self, deal):
+
+def get_forms(deal):
         forms = []
         for form in FORMS:
             data = form[1].get_data(deal)
             new_form = form[1](initial=data)
             forms.append(new_form)
         return forms
+

@@ -48,6 +48,7 @@ class Deal:
         # last() always has latest version, no need for MAX() gymnastics
         self.primary_investor = PrimaryInvestor.objects.filter(id__in=primary_investor_ids).last()
         self.stakeholder = get_stakeholder(stakeholder_ids)
+        self.stakeholders = get_stakeholders(stakeholder_ids)
 
     def __str__(self):
         return str({'attributes': self.attributes, 'primary_investor': self.primary_investor, 'stakeholder': self.stakeholder})
@@ -73,8 +74,12 @@ def get_latest_activity(deal_id):
     return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
 
 
+def get_stakeholders(ids):
+    return Stakeholder.objects.filter(id__in=ids)
+
+
 def get_stakeholder(stakeholder_ids):
-    sh = Stakeholder.objects.filter(id__in=stakeholder_ids).last()
+    sh = get_stakeholders(stakeholder_ids).last()
     return get_stakeholder_attributes(sh)
 
 
