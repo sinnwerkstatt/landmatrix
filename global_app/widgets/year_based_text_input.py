@@ -23,7 +23,6 @@ class YearBasedTextInput(YearBasedWidget):
         from pprint import pprint
         if value:
             values = value.split("|")
-            pprint(values)
 
             sorted_values = sorted(values, key=lambda v: v.split(":")[1] if ':' in v else '0')
             splitted = []
