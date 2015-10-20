@@ -61,9 +61,9 @@
                     <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
 
                       {% if form.forms.0.has_investor %}
-                        <tr><td>Primary investor</td><td>{{ investor.primary_investor }}</td></tr>
+                        <tr><td>Primary investor:</td><td>{{ investor.primary_investor.name }}</td></tr>
                         {% for i in investor.secondary_investors %}
-                          <tr><td>Secondary investor</td><td>{{i.investor_name}} - {{i.country}}</td></tr>
+                          <tr><td>Secondary investor:</td><td>{{i.tags.investor_name}} - {{i.tags.country}}, {{i.tags.classification}} ({{i.investment_ratio}}%)</td></tr>
                         {% endfor %}
 
                       {% else %}    {# form.forms.0.has_investor #}

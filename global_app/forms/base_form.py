@@ -1,3 +1,7 @@
+from global_app.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.deal import Deal
+
 from django.utils.datastructures import SortedDict, MultiValueDict
 from django import forms
 from django.utils.html import conditional_escape
@@ -5,11 +9,7 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 
 from copy import copy, deepcopy
-from django_hstore.dict import HStoreDict
 import re
-from global_app.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-from landmatrix.models.deal import Deal
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -388,7 +388,7 @@ class BaseForm(forms.Form):
         yb_data = []
 #        for tag in tags:
         for tag in [field_name]:
-            value = tags[tag]
+            value = tags.get(tag)
             year = tags.get('date', '')
             if isinstance(field.fields[0], forms.ChoiceField):
                 for k, v in field.fields[0].choices:
