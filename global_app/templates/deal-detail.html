@@ -63,7 +63,11 @@
                       {% if form.forms.0.has_investor %}
                         <tr><td>Primary investor:</td><td>{{ investor.primary_investor.name }}</td></tr>
                         {% for i in investor.secondary_investors %}
-                          <tr><td>Secondary investor:</td><td>{{i.tags.investor_name}} - {{i.tags.country}}, {{i.tags.classification}} ({{i.investment_ratio}}%)</td></tr>
+                          <tr>
+                            <td>Secondary investor:</td>
+                            <td>{{i.tags.investor_name}} - {{i.tags.country}}, {{i.tags.classification}} ({{i.investment_ratio}}%)</td>
+                            <td>{{i.comment}}</td>
+                          </tr>
                         {% endfor %}
 
                       {% else %}    {# form.forms.0.has_investor #}
