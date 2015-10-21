@@ -161,3 +161,11 @@ class MapCrop(MapModel):
         'agricultural_produce': 'fk_agricultural_produce',
     }
     depends = [ MapAgriculturalProduce ]
+
+class MapComment(MapModel):
+    old_class = editor.models.Comment
+    new_class = landmatrix.models.Comment
+    attributes = {
+        'activity_attribute_group': 'fk_activity_attribute_group',
+        'stakeholder_attribute_group': 'fk_stakeholder_attribute_group'
+    }
