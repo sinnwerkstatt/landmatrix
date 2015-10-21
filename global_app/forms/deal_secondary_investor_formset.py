@@ -1,4 +1,5 @@
 from global_app.forms.base_form import BaseForm
+from landmatrix.models.comment import Comment
 from landmatrix.models.country import Country
 from landmatrix.models.involvement import Involvement
 from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
@@ -57,12 +58,10 @@ class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
             if not involvement.fk_stakeholder:
                 continue
 
-            if False:
-                comments = Comment.objects.filter(fk_sh_tag_group__fk_stakeholder=involvement.fk_stakeholder.id, fk_sh_tag_group__fk_sh_tag__fk_sh_value__value="General", fk_sh_tag_group__fk_sh_tag__fk_sh_key__key="name").order_by("-id")
-            else:
-                frameinfo = getframeinfo(currentframe())
-                print('*** comments not yet implemented! ',frameinfo.filename, frameinfo.lineno)
-                comments = None
+            comments = Comment.objects.filter(
+                fk_stakeholder_attribute_group__fk_stakeholder=involvement.fk_stakeholder,
+                fk_stakeholder_attribute_group__attributes__contains={"name": "General" }
+            ).order_by("-id")
 
             comment = comments[0].comment if comments and len(comments) > 0 else ''
             investor = {
