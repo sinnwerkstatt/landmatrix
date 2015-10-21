@@ -20,7 +20,6 @@ class YearBasedTextInput(YearBasedWidget):
         ]
 
     def decompress(self, value):
-        from pprint import pprint
         if value:
             values = value.split("|")
 

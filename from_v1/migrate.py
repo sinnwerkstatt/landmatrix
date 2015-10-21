@@ -1,3 +1,4 @@
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
@@ -32,9 +33,7 @@ if __name__ == '__main__':
         from map_model_implementations import *
         from editor.models import ActivityAttributeGroup
 
-        MapActivity._done = True
-        MapLanguage._done = True
-        MapActivityAttributeGroup.map_all(save=True)
+        MapComment.map_all(save=True)
 
         # a number of possible uses listed here as examples
         if False:
@@ -59,11 +58,11 @@ if __name__ == '__main__':
                 MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
                 MapStakeholder, MapPrimaryInvestor, MapInvolvement,
                 MapStakeholderAttributeGroup,
-                MapAgriculturalProduce, MapCrop,
+                MapAgriculturalProduce, MapCrop, MapComment,
             ]:
                 map_class.map_all(save=True)
 
     except ConnectionDoesNotExist:
         print('You need to set CONVERT_DB to True in settings.py!')
-#    except AttributeError:
-#        print('You need to check out branch "postgres" of the old land-matrix project under '+BASE_PATH+'/land-matrix!')
+    except AttributeError:
+        print('You need to check out branch "postgres" of the old land-matrix project under '+BASE_PATH+'/land-matrix!')

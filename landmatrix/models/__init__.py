@@ -6,6 +6,7 @@ from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.agricultural_produce import AgriculturalProduce
 from landmatrix.models.browse_rule import BrowseRule
 from landmatrix.models.browse_condition import BrowseCondition
+from landmatrix.models.comment import Comment
 from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
 from landmatrix.models.currency import Currency
