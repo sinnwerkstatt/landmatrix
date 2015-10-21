@@ -1,3 +1,4 @@
+from pprint import pprint
 from global_app.forms.base_form import BaseForm
 from landmatrix.models.comment import Comment
 from landmatrix.models.country import Country
@@ -62,6 +63,8 @@ class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
                 fk_stakeholder_attribute_group__fk_stakeholder=involvement.fk_stakeholder,
                 fk_stakeholder_attribute_group__attributes__contains={"name": "General" }
             ).order_by("-id")
+            if comments:
+                print('Whoa, look, comments:', comments)
 
             comment = comments[0].comment if comments and len(comments) > 0 else ''
             investor = {
@@ -89,11 +92,28 @@ def get_secondary_investors(deal):
     stakeholders = [
         {
             'investment_ratio': Involvement.objects.filter(fk_stakeholder=sh).first().investment_ratio,
-            'tags': {key: resolve_country(key, value)
-                     for key, value in StakeholderAttributeGroup.objects.filter(fk_stakeholder=sh).first().attributes.items()}
+            'tags': get_tags(sh),
+            'comment': get_stakeholder_comments(sh)
         } for sh in deal.stakeholders
     ]
+    pprint(stakeholders)
     return stakeholders
+
+
+def get_tags(sh):
+    return {
+        key: resolve_country(key, value)
+        for key, value in StakeholderAttributeGroup.objects.filter(fk_stakeholder=sh).first().attributes.items()
+    }
+
+
+def get_stakeholder_comments(stakeholder):
+    attribute_group = StakeholderAttributeGroup.objects.filter(fk_stakeholder=stakeholder).order_by('id').last()
+    return Comment.objects.filter(
+            fk_stakeholder_attribute_group=attribute_group
+        ).exclude(
+            comment=''
+        ).order_by('-timestamp').values_list('comment', flat=True).first()
 
 
 def resolve_country(key, value):
