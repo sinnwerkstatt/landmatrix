@@ -89,16 +89,19 @@ def clean_coordinates(attributes):
 
     return ', '.join(parts)
 
-class MapActivityAttributeGroup(MapModel):
-    old_class = editor.models.ActivityAttributeGroup
-    new_class = landmatrix.models.ActivityAttributeGroup
-    attributes = {
-        'activity': 'fk_activity',
-        'language': 'fk_language',
-        'year': ('date', year_to_date),
-        'attributes': ('attributes', clean_crops_and_target_country)
-    }
-    depends = [ MapActivity, MapLanguage ]
+from migrate import V1
+
+if V1 == 'V1_pg':
+    class MapActivityAttributeGroup(MapModel):
+        old_class = editor.models.ActivityAttributeGroup
+        new_class = landmatrix.models.ActivityAttributeGroup
+        attributes = {
+            'activity': 'fk_activity',
+            'language': 'fk_language',
+            'year': ('date', year_to_date),
+            'attributes': ('attributes', clean_crops_and_target_country)
+        }
+        depends = [ MapActivity, MapLanguage ]
 
 class MapStakeholder(MapModel):
     old_class = editor.models.Stakeholder
@@ -108,15 +111,16 @@ class MapStakeholder(MapModel):
 def clean_country(attributes):
     return replace_country_name_with_id(attributes, 'country')
 
-class MapStakeholderAttributeGroup(MapModel):
-    old_class = editor.models.StakeholderAttributeGroup
-    new_class = landmatrix.models.StakeholderAttributeGroup
-    attributes = {
-        'stakeholder': 'fk_stakeholder',
-        'language': 'fk_language',
-        'attributes': ('attributes', clean_country)
-    }
-    depends = [ MapStakeholder, MapLanguage ]
+if V1 == 'V1_pg':
+    class MapStakeholderAttributeGroup(MapModel):
+        old_class = editor.models.StakeholderAttributeGroup
+        new_class = landmatrix.models.StakeholderAttributeGroup
+        attributes = {
+            'stakeholder': 'fk_stakeholder',
+            'language': 'fk_language',
+            'attributes': ('attributes', clean_country)
+        }
+        depends = [ MapStakeholder, MapLanguage ]
 
 class MapPrimaryInvestor(MapModel):
     old_class = editor.models.PrimaryInvestor
