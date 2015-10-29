@@ -1,3 +1,4 @@
+from django.core.exceptions import ImproperlyConfigured
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -17,7 +18,7 @@ def load_project(proj_path, app_name):
     from django.core.wsgi import get_wsgi_application
     application = get_wsgi_application()
 
-V1, V2 = 'v1_pg', 'v2'
+V1, V2 = 'v1_my', 'v2'
 
 BASE_PATH = '/home/lene/workspace/landmatrix'
 
@@ -31,9 +32,18 @@ if __name__ == '__main__':
     try:
 
         from map_model_implementations import *
-        from editor.models import ActivityAttributeGroup
+        from map_tag_groups import MapTagGroups
+        if V1 == 'V1_pg':
+            from editor.models import ActivityAttributeGroup
 
-        MapComment.map_all(save=True)
+        for map_class in [
+            MapLanguage, MapStatus,
+            MapActivity, MapTagGroups,
+            # MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
+            # MapStakeholder, MapPrimaryInvestor, MapInvolvement,
+            # MapAgriculturalProduce, MapCrop, MapComment,
+        ]:
+            map_class.map_all(save=False)
 
         # a number of possible uses listed here as examples
         if False:
@@ -60,9 +70,17 @@ if __name__ == '__main__':
                 MapStakeholderAttributeGroup,
                 MapAgriculturalProduce, MapCrop, MapComment,
             ]:
-                map_class.map_all(save=True)
+                map_class.map_all(save=False)
 
-    except ConnectionDoesNotExist:
+    except ConnectionDoesNotExist as e:
         print('You need to set CONVERT_DB to True in settings.py!')
-    except AttributeError:
-        print('You need to check out branch "postgres" of the old land-matrix project under '+BASE_PATH+'/land-matrix!')
+    except AttributeError as e:
+        print('You need to check out branch "postgres" of the old land-matrix project under')
+        print(BASE_PATH+'/land-matrix!')
+        print(e)
+    except (AttributeError, ImportError) as e:
+        print('To migrate the original MySQL data you need to check out branch "master" of the')
+        print('old land-matrix project under '+BASE_PATH+'/land-matrix!')
+        print(e)
+    except ImproperlyConfigured:
+        print('Do a "pip install mysqlclient" to install mysql drivers!')
