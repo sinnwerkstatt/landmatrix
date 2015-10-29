@@ -38,12 +38,14 @@ if __name__ == '__main__':
 
         for map_class in [
             MapLanguage, MapStatus,
-            MapActivity, MapTagGroups,
-            # MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
-            # MapStakeholder, MapPrimaryInvestor, MapInvolvement,
-            # MapAgriculturalProduce, MapCrop, MapComment,
+            MapActivity, MapActivityAttributeGroup,
+            MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
+            MapStakeholder,
+            MapStakeholderAttributeGroup,
+            MapPrimaryInvestor, MapInvolvement,
+            MapAgriculturalProduce, MapCrop,
         ]:
-            map_class.map_all(save=False)
+            map_class.map_all(save=True)
 
         # a number of possible uses listed here as examples
         if False:

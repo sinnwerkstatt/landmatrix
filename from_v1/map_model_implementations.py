@@ -1,9 +1,15 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from map_model import MapModel
 import landmatrix.models
 import editor.models
+
+def year_to_date(year):
+    if not year: return None
+    return ('0000'+str(year)+'-01-07')[-10:]
+
+from map_tag_groups import MapActivityTagGroup, MapStakeholderTagGroup
 
 class MapLanguage(MapModel):
     old_class = editor.models.Language
@@ -17,10 +23,6 @@ class MapActivity(MapModel):
     old_class = editor.models.Activity
     new_class = landmatrix.models.Activity
     depends = [ MapStatus ]
-
-def year_to_date(year):
-    if not year: return None
-    return ('0000'+str(year)+'-01-07')[-10:]
 
 def extract_value(part):
     values = part.split('=>')
@@ -102,6 +104,8 @@ if V1 == 'V1_pg':
             'attributes': ('attributes', clean_crops_and_target_country)
         }
         depends = [ MapActivity, MapLanguage ]
+else:
+    MapActivityAttributeGroup = MapActivityTagGroup
 
 class MapStakeholder(MapModel):
     old_class = editor.models.Stakeholder
@@ -121,6 +125,8 @@ if V1 == 'V1_pg':
             'attributes': ('attributes', clean_country)
         }
         depends = [ MapStakeholder, MapLanguage ]
+else:
+    MapStakeholderAttributeGroup = MapStakeholderTagGroup
 
 class MapPrimaryInvestor(MapModel):
     old_class = editor.models.PrimaryInvestor
