@@ -1,5 +1,6 @@
 from global_app.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.comment import Comment
 from landmatrix.models.deal import Deal
 
 from django.utils.datastructures import SortedDict, MultiValueDict
@@ -289,7 +290,6 @@ class BaseForm(forms.Form):
         Get form data for activity or stakeholder,
         using taggroup only - if given (for formsets)
         """
-
         data = MultiValueDict()
         if cls.DEBUG: print('get_data', str(deal)[:140], '...', taggroup)
         for i, (field_name, field) in enumerate(cls().fields.items()):
@@ -298,11 +298,10 @@ class BaseForm(forms.Form):
             if cls.DEBUG: print('    field', i, field_name, field, prefix)
 
             if field_name.startswith('tg_'):
-                taggroup = cls.get_data_for_tg_field(data, field_name, deal, prefixed_name, taggroup, taggroup)
+                taggroup = cls.get_data_for_tg_field(data, field_name, deal, prefixed_name, taggroup)
 
             else:
                 tags, taggroup = cls.get_tags(field_name, deal, taggroup)
-                #print(tags)
 
                 if len(tags) > 0:
                     if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
@@ -310,7 +309,7 @@ class BaseForm(forms.Form):
                     else:
                         # Year based data?
                         if isinstance(field, forms.MultiValueField):
-                            cls.get_year_based_data(data, field, field_name, prefixed_name, taggroup, tags)
+                            cls.get_year_based_data(data, field, field_name, prefixed_name, tags, taggroup)
                         else:
                             cls.get_other_data(data, field, field_name, prefixed_name, taggroup, tags)
         if cls.DEBUG: print('returned data', data)
@@ -381,10 +380,10 @@ class BaseForm(forms.Form):
         return None
 
     @classmethod
-    def get_year_based_data(cls, data, field, field_name, prefixed_name, taggroup, tags):
+    def get_year_based_data(cls, data, field, field_name, prefixed_name, tags, taggroup):
         if cls.DEBUG: print('get_year_based_data()', field_name, tags.get(field_name))
         yb_data = []
-#        for tag in tags:
+
         for tag in [field_name]:
             value = tags.get(tag)
             year = tags.get('date', '')
@@ -410,19 +409,15 @@ class BaseForm(forms.Form):
         return tags, taggroup
 
     @classmethod
-    def get_data_for_tg_field(cls, data, field_name, deal, pn, taggroup, tg):
-        from inspect import currentframe, getframeinfo
+    def get_data_for_tg_field(cls, data, field_name, deal, pn, taggroup):
 
         if field_name.endswith('_comment'):
 
-            if False:
-                if taggroup and taggroup.comment_set.count() > 0:
-                    data[pn] = taggroup.comment_set.all().order_by("-timestamp")[0].comment
-            else:
-                frameinfo = getframeinfo(currentframe())
-                print('*** comments not yet implemented! ',frameinfo.filename, frameinfo.lineno)
+            groups = taggroup if isinstance(taggroup, list) else [taggroup]
+            comments = BaseForm.get_comments_from_taggroups(groups)
+            cls.fill_comment_field(comments, data, field_name, pn)
 
-        elif not tg:
+        elif not taggroup:
             try:
                 if isinstance(deal, Stakeholder):
                     taggroup = deal.sh_tag_group_set.get(fk_sh_tag__fk_sh_value__value=field_name[3:])
@@ -431,6 +426,15 @@ class BaseForm(forms.Form):
             except:
                 taggroup = None
         return taggroup
+
+    @classmethod
+    def fill_comment_field(cls, comments, data, field_name, pn):
+        if comments and field_name[3:] in comments:
+            data[pn] = comments[field_name[3:]]
+
+    @classmethod
+    def get_comments_from_taggroups(cls, groups):
+        return dict([(k, v) for group in [g for g in groups if g] for (k, v) in group.attributes.items() if '_comment' in k])
 
     class Meta:
         exclude = ()
