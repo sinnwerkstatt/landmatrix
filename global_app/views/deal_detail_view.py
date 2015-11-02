@@ -1,13 +1,8 @@
-from copy import copy
-from global_app.forms.change_deal_action_comment_form import ChangeDealActionCommentForm
 from global_app.forms.change_deal_employment_form import ChangeDealEmploymentForm
 from global_app.forms.change_deal_general_form import ChangeDealGeneralForm
-from global_app.forms.change_deal_overall_comment_form import ChangeDealOverallCommentForm
-from global_app.forms.deal_data_source_form import ChangeDealDataSourceFormSet, PublicViewDealDataSourceForm, \
-    PublicViewDealDataSourceFormSet
+from global_app.forms.deal_data_source_form import PublicViewDealDataSourceFormSet
 from global_app.forms.deal_former_use_form import DealFormerUseForm
 from global_app.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
-from global_app.forms.deal_history_form import DealHistoryForm
 from global_app.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from global_app.forms.deal_produce_info_form import PublicViewDealProduceInfoForm
 from global_app.forms.deal_secondary_investor_formset import DealSecondaryInvestorFormSet, get_investors
@@ -34,9 +29,6 @@ FORMS = [
     ("produce_info", PublicViewDealProduceInfoForm),
     ("water", DealWaterForm),
     ("gender-related_info", DealGenderRelatedInfoForm),
-    # ("overall_comment", ChangeDealOverallCommentForm),
-    # ("action_comment", ChangeDealActionCommentForm),
-    # ("history", DealHistoryForm)
 ]
 
 class DealDetailView(TemplateView):
