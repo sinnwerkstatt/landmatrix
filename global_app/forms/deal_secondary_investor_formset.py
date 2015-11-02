@@ -89,15 +89,13 @@ def get_primary_investor(deal):
 
 
 def get_secondary_investors(deal):
-    stakeholders = [
+    return [
         {
             'investment_ratio': Involvement.objects.filter(fk_stakeholder=sh).first().investment_ratio,
             'tags': get_tags(sh),
             'comment': get_stakeholder_comments(sh)
         } for sh in deal.stakeholders
-    ]
-    pprint(stakeholders)
-    return stakeholders
+        ]
 
 
 def get_tags(sh):
