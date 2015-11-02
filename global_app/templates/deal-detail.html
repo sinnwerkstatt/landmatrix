@@ -61,7 +61,10 @@
                     <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
 
                       {% if form.forms.0.has_investor %}
-                        <tr><td>Primary investor:</td><td>{{ investor.primary_investor.name }}</td></tr>
+                        <tr>
+                          <td>Primary investor:</td>
+                          <td>{{ investor.primary_investor.name }}</td>
+                        </tr>
                         {% for i in investor.secondary_investors %}
                           <tr>
                             <td>Secondary investor:</td>

@@ -90,16 +90,21 @@ def get_display_value_by_field(field, value):
         return dvalue or value
     return value
 
+
 def get_value_from_i18nized_choices_dict(choices_dict, value):
-    if choices_dict.get(int(value)):
-        return str(choices_dict.get(int(value)))
-    elif value in choices_dict.values():
+    try:
+        if choices_dict.get(int(value)):
+            return str(choices_dict.get(int(value)))
+    except ValueError:
+        pass
+
+    if value in choices_dict.values():
         return value
     raise RuntimeError('Damn: %s not in %s' %(value, str(choices_dict)))
 
 
 @register.filter
-def get_range( value ):
+def get_range(value):
   """
     Filter - returns a list containing range made from given value
     Usage (in template):
