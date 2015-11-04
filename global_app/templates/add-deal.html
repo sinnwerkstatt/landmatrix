@@ -113,20 +113,7 @@
                 <div class="panel-body">
                   <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
 
-                    {% for field in form %}
-
-                      <tr>
-                      {# <td>Field:</td><td>{{ field }}</td> #}
-
-                      {#% if field.value %#}
-                      {#  <td>{{ field.label }}</td><td>{{ field.value|ensure_list|display_values:field.field|join:"<br />" }}</td> #}
-                      {#% else %#}
-                        <td>{{ field.label }}</td><td>{{ field }}</td>
-                      {#% endif %#}
-
-                      </tr>
-
-                    {% endfor %}
+                    {{ form.as_table }}
 
                   </table>
                 </div>
@@ -142,5 +129,7 @@
         
     </div>
   </div>
+
+    <input type="submit" value="Submit" />
 
 {% endblock %}
