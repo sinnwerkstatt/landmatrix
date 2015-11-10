@@ -5,10 +5,12 @@
 {% block head %}
 
   {# bootstrap #}
+  {% comment %}
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  {% endcomment %}
   <style type="text/css">
     .bs-example{
     	margin: 20px;
@@ -51,7 +53,7 @@
                 <div class="panel-heading">
                   <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                      Formset {{forloop.counter}}: {#{ form }#}
+                      Formset {{forloop.counter}}:
                     </a>
                   </h4>
                 </div>
@@ -61,6 +63,7 @@
                     <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
 
                       {% if form.forms.0.has_investor %}
+
                         <tr>
                           <td>Primary investor:</td>
                           <td>{{ investor.primary_investor.name }}</td>
@@ -75,25 +78,7 @@
 
                       {% else %}    {# form.forms.0.has_investor #}
 
-                        {% for form in form.forms %}
-                          {% for field in form %}
-                            {% if field.value and field.label %}
-                              {% if "Latitude" in field.label %}
-                                <tr style="display:none"><td></td><td><input class="point_lat" type="hidden" value="{{field.value}}"></td></tr>
-                              {% elif "Longitude" in field.label %}
-                                <tr style="display:none"><td></td><td><input class="point_lon" type="hidden" value="{{field.value}}"></td></tr>
-                              {% elif "Location" in field.label %}
-                                <tr><td>Location</td><td>{{field|safe}}</td></tr>
-                              {% elif "URL" in field.label %}
-                                <tr><td style="border-top: none">URL</td><td style="border-top: none">{% for v in field.value|ensure_list %}<a target="_blank" href='{{ v }}'>{{ v|truncatechars:55 }}</a>{% endfor %}</td></tr>
-                              {% elif "Date" in field.label %}
-                                <tr><td style="border-top: none">Date</td><td style="border-top: none">{{field.value}}</td></tr>
-                              {% else %}
-                                <tr><td>{{ field.label }}</td><td>{{ field.value|ensure_list|display_values:field.field|join:"<br />" }}</td></tr>
-                              {% endif %}
-                            {% endif %}
-                          {% endfor %}
-                        {% endfor %}
+                        {{ form }}
 
                       {% endif %}   {# form.forms.0.has_investor #}
                     </table>
@@ -105,7 +90,7 @@
                 <div class="panel-heading">
                   <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                      Form {{forloop.counter}}: {#{ form }#}
+                      Form {{forloop.counter}}:
                     </a>
                   </h4>
                 </div>

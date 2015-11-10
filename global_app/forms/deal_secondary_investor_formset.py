@@ -14,10 +14,11 @@ from django.forms.formsets import formset_factory
 from copy import copy
 
 
-BaseDealSecondaryInvestorFormSet = formset_factory(DealSecondaryInvestorForm, extra=0)
+BaseDealSecondaryInvestorFormSet = formset_factory(DealSecondaryInvestorForm, extra=1)
 
 
 class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
+
     def get_taggroups(self, request=None):
         return []
 
@@ -50,9 +51,6 @@ class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
 
     @classmethod
     def get_data(cls, deal):
-        from inspect import currentframe, getframeinfo
-
-        #raise IOError, [{"investor": str(i.fk_stakeholder.id)} for i in activity.involvement_set.all()]
         data = []
         involvements = deal.involvement_set().all() #get_involvements_for_activity(activity)
         for i, involvement in enumerate(involvements):

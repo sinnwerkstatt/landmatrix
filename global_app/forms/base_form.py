@@ -444,6 +444,7 @@ class BaseForm(forms.Form):
     def __init__(self, *args, **kwargs):
 
         super(BaseForm, self).__init__(*args, **kwargs)
+        print(self.__class__.__name__)
         if hasattr(self.Meta, "exclude"):
             for field in self.Meta.exclude:
                 del self.fields[field]

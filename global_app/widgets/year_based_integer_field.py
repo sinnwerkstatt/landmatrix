@@ -16,7 +16,7 @@ class YearBasedIntegerField(forms.MultiValueField):
         # update fields
         if value:
             self.fields = []
-            for i in range(len(value)/2):
+            for i in range(len(value)//2):
                 self.fields.extend([forms.IntegerField(required=False), forms.CharField(required=False)])
         return super(YearBasedIntegerField, self).clean(value)
 
@@ -24,7 +24,7 @@ class YearBasedIntegerField(forms.MultiValueField):
         """  """
         if data_list:
             yb_data = []
-            for i in range(len(data_list)/2):
+            for i in range(len(data_list)//2):
                 if data_list[i] or data_list[i+1]:
                     yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1])))
             return "|".join(yb_data)
