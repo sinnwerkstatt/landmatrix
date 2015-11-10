@@ -16,8 +16,13 @@
   </style>
 
   {# map #}
-  {# <script src="/media/js/editor/map.js" type="text/javascript" charset="utf-8"></script> #}
-  {# <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=en"></script> #}
+  <script src="/media/js/editor/map.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=en"></script>
+
+
+  <script src="/media/js/editor/year-based-fields.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/media/js/editor/livesearch.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/media/js/editor/add_change.js" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
 {% block page_title %}Add a deal{% endblock %}
@@ -26,7 +31,7 @@
 {% block breadcrumb %}
 <ul class="breadcrumb">
   <li><a href="/editor">Editor</a> <span class="divider">|</span></li>
-  <li><a href="/global/add/">Add a deal</a> <span class="divider">|</span></li>
+  <li><a href="/en/global/add/">Add a deal</a> <span class="divider">|</span></li>
   <li>Add a deal</li>
 </ul>
 {% endblock %}
@@ -36,100 +41,90 @@
 
   <h5>Add a deal</h5>
 
-  <div class="bs-example">
-    <div class="panel-group" id="accordion">
+  <form action="." method="post" enctype="multipart/form-data">
 
-      {% if forms %}
+    {% csrf_token %}
 
-        {% for form in forms %}
+    <div class="bs-example">
+      <div class="panel-group" id="accordion">
 
-          <div class="panel panel-default">
+        {% if forms %}
 
-            {% if form.forms %}
+          {% for form in forms %}
 
-              <div class="panel-heading">
-                <h4 class="panel-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                    Formset {{forloop.counter}}: {#{ form }#}
-                  </a>
-                </h4>
-              </div>
+            <div class="panel panel-default">
 
-              <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
-                <div class="panel-body">
-                  <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+              {% if form.forms %}
 
-                    {% if form.forms.0.has_investor %}
-                      <tr>
-                        <td>Primary investor:</td>
-                        <td>{{ investor.primary_investor.name }}</td>
-                      </tr>
-                      {% for i in investor.secondary_investors %}
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                      Formset {{forloop.counter}}: {#{ form }#}
+                    </a>
+                  </h4>
+                </div>
+
+                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+
+                      {% if form.forms.0.has_investor %}
+                        {{ form }}
+
+                        {% comment %}
                         <tr>
-                          <td>Secondary investor:</td>
-                          <td>{{i.tags.investor_name}} - {{i.tags.country}}, {{i.tags.classification}} ({{i.investment_ratio}}%)</td>
-                          <td>{{i.comment}}</td>
+                          <td>Primary investor:</td>
+                          <td>{{ investor.primary_investor.name }}</td>
                         </tr>
-                      {% endfor %}
-
-                    {% else %}    {# form.forms.0.has_investor #}
-
-                      {% for form in form.forms %}
-                        {% for field in form %}
-                          {% if field.value and field.label %}
-                            {% if "Latitude" in field.label %}
-                              <tr style="display:none"><td></td><td><input class="point_lat" type="hidden" value="{{field.value}}"></td></tr>
-                            {% elif "Longitude" in field.label %}
-                              <tr style="display:none"><td></td><td><input class="point_lon" type="hidden" value="{{field.value}}"></td></tr>
-                            {% elif "Location" in field.label %}
-                              <tr><td>Location</td><td>{{field|safe}}</td></tr>
-                            {% elif "URL" in field.label %}
-                              <tr><td style="border-top: none">URL</td><td style="border-top: none">{% for v in field.value|ensure_list %}<a target="_blank" href='{{ v }}'>{{ v|truncatechars:55 }}</a>{% endfor %}</td></tr>
-                            {% elif "Date" in field.label %}
-                              <tr><td style="border-top: none">Date</td><td style="border-top: none">{{field.value}}</td></tr>
-                            {% else %}
-                              <tr><td>{{ field.label }}</td><td>{{ field.value|ensure_list|display_values:field.field|join:"<br />" }}</td></tr>
-                            {% endif %}
-                          {% endif %}
+                        {% for i in investor.secondary_investors %}
+                          <tr>
+                            <td>Secondary investor:</td>
+                            <td>{{i.tags.investor_name}} - {{i.tags.country}}, {{i.tags.classification}} ({{i.investment_ratio}}%)</td>
+                            <td>{{i.comment}}</td>
+                          </tr>
                         {% endfor %}
-                      {% endfor %}
+                        {% endcomment %}
 
-                    {% endif %}   {# form.forms.0.has_investor #}
-                  </table>
+                      {% else %}    {# form.forms.0.has_investor #}
+
+                        {{ form }}
+
+                      {% endif %}   {# form.forms.0.has_investor #}
+                    </table>
+                  </div>
                 </div>
-              </div>
 
-            {% else %}      {# form.forms #}
+              {% else %}      {# form.forms #}
 
-              <div class="panel-heading">
-                <h4 class="panel-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                    Form {{forloop.counter}}: {#{ form }#}
-                  </a>
-                </h4>
-              </div>
-
-              <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
-                <div class="panel-body">
-                  <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-
-                    {{ form.as_table }}
-
-                  </table>
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                      Form {{forloop.counter}}: {#{ form }#}
+                    </a>
+                  </h4>
                 </div>
-              </div>
 
-            {% endif %}     {# form.forms #}
+                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                      {{ form.as_table }}
+                    </table>
+                  </div>
+                </div>
 
-          </div>            {# class="panel panel-default" #}
+              {% endif %}     {# form.forms #}
 
-        {% endfor %}
+            </div>            {# class="panel panel-default" #}
 
-      {% endif %}           {# forms #}
-        
+          {% endfor %}
+
+        {% endif %}           {# forms #}
+
+      </div>
     </div>
-  </div>
 
     <input type="submit" value="Submit" />
+
+  </form>
 
 {% endblock %}
