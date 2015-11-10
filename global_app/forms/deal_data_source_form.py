@@ -70,6 +70,7 @@ DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=1)
 
 
 class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
+
     def get_taggroups(self, request=None):
         ds_taggroups = []
         for i, form in enumerate(self.forms):
