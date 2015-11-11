@@ -58,11 +58,9 @@ class PublicViewDealSpatialForm(DealSpatialForm):
 
     class Meta:
         fields = (
-            "tg_location", "location", "point_lat", "point_lon",
+            "tg_location", "location", "point_lat", "point_lon", 'tg_location_comment'
         )
-        readonly_fields = (
-            "tg_location", "location", "point_lat", "point_lon",
-        )
+        readonly_fields = fields
 
 
 PublicViewDealSpatialFormSet = formset_factory(PublicViewDealSpatialForm, formset=AddDealSpatialFormSet, extra=0)
