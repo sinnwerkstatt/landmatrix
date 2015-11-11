@@ -9,14 +9,13 @@ from global_app.forms.deal_secondary_investor_formset import DealSecondaryInvest
 from global_app.forms.deal_spatial_form import PublicViewDealSpatialForm
 from global_app.forms.deal_water_form import DealWaterForm
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from landmatrix.models import Deal
 from .view_aux_functions import render_to_response
 
 from django.views.generic import TemplateView
 from django.template import RequestContext
-from pprint import pprint
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 FORMS = [
     ("spatial_data", PublicViewDealSpatialForm),
@@ -30,6 +29,7 @@ FORMS = [
     ("water", DealWaterForm),
     ("gender-related_info", DealGenderRelatedInfoForm),
 ]
+
 
 class DealDetailView(TemplateView):
 
