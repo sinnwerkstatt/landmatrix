@@ -61,25 +61,22 @@ class AddDealView(TemplateView):
                         print('investor_info', form.cleaned_data)
                     elif name_of_form(form) == 'data_sources':
                         for sub_form_data in form.cleaned_data:
-                            group = ActivityAttributeGroup(fk_activity=activity, date=date.today())
                             if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
                                 field = DealDataSourceForm().fields['type']
                                 choices = dict(field.choices)
                                 sub_form_data['type'] = str(choices[sub_form_data['type']])
-                            group.attributes = { key: value for key, value in sub_form_data.items() if value }
+                            group = create_attribute_group(activity, sub_form_data)
                             print(name_of_form(form), group)
                     elif name_of_form(form) == 'spatial_data':
                         for sub_form_data in form.cleaned_data:
-                            group = ActivityAttributeGroup(fk_activity=activity, date=date.today())
                             if sub_form_data['target_country'] and isinstance(sub_form_data['target_country'], Country):
                                 sub_form_data['target_country'] = sub_form_data['target_country'].pk
-                            group.attributes = { key: value for key, value in sub_form_data.items() if value }
-                            #print(name_of_form(form), group)
+                            group = create_attribute_group(activity, sub_form_data)
+                            print(name_of_form(form), group)
                     else:
                         if any(form.cleaned_data.values()):
-                            group = ActivityAttributeGroup(fk_activity=activity, date=date.today())
-                            group.attributes = { key: value for key, value in form.cleaned_data.items() if value }
-                            #print(name_of_form(form), group)
+                            group = create_attribute_group(activity, form.cleaned_data)
+                            print(name_of_form(form), group)
                         else:
                             print('no data sent:', name_of_form(form))
 
@@ -97,6 +94,15 @@ class AddDealView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['forms'] = forms
         return render_to_response(self.template_name, context, RequestContext(request))
+
+
+def create_attribute_group(activity, form_data):
+    group = ActivityAttributeGroup(
+        fk_activity=activity, date=date.today(),
+        attributes = {key: value for key, value in form_data.items() if value}
+    )
+
+    return group
 
 
 def get_forms(data=None):
