@@ -12,6 +12,7 @@ from landmatrix.models.crop import Crop
 from landmatrix.models.currency import Currency
 from landmatrix.models.animal import Animal
 from landmatrix.models.mineral import Mineral
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
 from landmatrix.models.involvement import Involvement
 from landmatrix.models.language import Language
 from landmatrix.models.primary_investor import PrimaryInvestor
