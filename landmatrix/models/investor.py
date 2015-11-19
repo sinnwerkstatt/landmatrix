@@ -23,7 +23,7 @@ class Investor(DefaultStringRepresentation, models.Model):
         ('50', _("Semi state-owned company")),
         ('60', _("State-/government(owned)")),
         ('70', _("Other (please specify in comment field)"))
-    ))
+    ), blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
