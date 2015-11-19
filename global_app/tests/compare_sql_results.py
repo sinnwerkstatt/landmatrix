@@ -27,6 +27,7 @@ application = get_wsgi_application()
 #
 from global_app.views import ActivityProtocol
 
+
 from django.http import HttpRequest
 from django.db import connection
 from django.db.utils import ProgrammingError
@@ -37,15 +38,20 @@ import time
 
 # first column is thrown away anyway
 def _throwaway_column(expected, actual): return True
+
 # data messed up, not all intended use got carried over in MySQL to PostgreSQL conversion
 def _actual_intention_in_expected(expected, actual):
     if None in actual: actual.remove(None)
-    return set(actual) <= set(expected.split('##!##'))
+    if not expected: return not actual
+    return set(expected.split('##!##')) <= set(actual)
+
 def _floats_pretty_equal(expected, actual):
     return 0.999 <= expected/actual <= 1.001
+
 # empty years are converted to zero by new SQL. who cares.
 def _null_to_zero_conversion(expected, actual):
     return expected[:-1] == actual if isinstance(expected, str) and expected.endswith('#0') else expected == actual
+
 def _same_string_multiple_times(expected, actual):
     return set(expected.split('##!##')) <= set(actual)
 
@@ -54,15 +60,22 @@ def _none_is_equaled(expected, actual):
     return expected == actual
 
 def _array_equal_to_tinkered_string(expected, actual):
-    return expected.split('##!##') == actual
+    return set(expected.split('##!##')) <= set(actual)
 
 class Compare:
 
-    NUM_COMPARED_RECORDS = 100
+    NUM_COMPARED_RECORDS = 1000
 
     files_to_compare = [
-        'by_crop', 'by_data_source_type', 'by_intention', 'by_investor',
-        'by_investor_country', 'by_investor_region', 'by_target_country', 'by_target_region', 'all_deals',
+        # 'by_crop',
+        #  'by_data_source_type',
+        #  'by_intention',
+        #  'by_investor_country',
+        'by_investor',
+        # 'by_investor_region',
+        # 'by_target_country',
+        # 'by_target_region',
+        # 'all_deals',
     ]
     warnings = {}
     errors = {}
@@ -104,8 +117,8 @@ class Compare:
 
         if len(query_result) != len(records):
             self._add_error('NUMBER OF RECORDS NOT EQUAL: expected %d, got %d' %(len(records), len(query_result)))
-            self._add_error(records)
-            self._add_error(query_result)
+            self._add_error('missing: ' + str(record_difference(records, query_result)))
+            self._add_error('additional: '+ str(record_difference(query_result, records)))
             return
 
         self._compare_all_items(query_result, records)
@@ -123,7 +136,7 @@ class Compare:
         for j in range(0, len(expected)):
             if not self._equal(j, expected[j], got[j]):
                 add_message = self._add_warning if self._similar(j, expected[j], got[j]) else self._add_error
-                add_message("%-20s field %2i: expected %-24s got %-24s" % (str(expected[1]), j, str(expected[j]), str(got[j])))
+                add_message("%-20s field %2i: expected %-24s got %-24s" % (str(expected[1]), j, '"'+str(expected[j])+'"', str(got[j])))
 
     def _print_messages(self, container, what, headerchar):
         if not container: return
@@ -217,8 +230,35 @@ class Compare:
             return self.similar_table[self._filename][field](expected, actual)
         return False
 
-    def num_errors(self):
-        return sum(len(messages) for messages in self.errors.values())
+
+def record_difference(records1, records2):
+    records1 = set(lists_to_tuples(records1))
+    records2 = set(lists_to_tuples(records2))
+    return records1 - records2
+
+
+def list_contains_lists(collection):
+    if not collection: return False
+    if not hasattr(collection, '__iter__'): return False
+    if isinstance(collection, str): return False
+    for item in collection:
+        if isinstance(item, list):
+            return True
+    return False
+
+
+def lists_to_tuples(collection):
+    return [list_item_to_tuple(record) for record in collection]
+
+
+def list_item_to_tuple(item):
+    if list_contains_lists(item):
+        return tuple(lists_to_tuples(item))[:2]
+    elif hasattr(item, '__iter__') and not isinstance(item, str):
+        return tuple(item)[:2]
+    else:
+        return item
+
 
 def run_test(sql, warnings):
     from django.conf import settings

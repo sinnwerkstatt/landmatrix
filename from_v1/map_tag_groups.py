@@ -11,7 +11,8 @@ load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
 load_project(BASE_PATH+'/land-matrix', 'editor')
 
 from landmatrix.models import Language, ActivityAttributeGroup, StakeholderAttributeGroup, Country
-from editor.models import A_Tag, A_Tag_Group, Comment, SH_Tag_Group, SH_Tag
+if V1 == 'v1_my':
+    from editor.models import A_Tag, A_Tag_Group, Comment, SH_Tag_Group, SH_Tag
 
 
 class MapTagGroups(MapModel):
@@ -47,8 +48,10 @@ class MapTagGroups(MapModel):
 
 class MapActivityTagGroup(MapTagGroups):
 
-    old_class = A_Tag_Group
-    tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity') # .filter(fk_activity__activity_identifier=147, fk_activity__version=4)
+    # prevent error if postgres branch of landmatrix 1 is checked out
+    if V1 == 'v1_my':
+        old_class = A_Tag_Group
+        tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity') # .filter(fk_activity__activity_identifier=147, fk_activity__version=4)
 
     @classmethod
     def relevant_tag_sets(cls, tag_group):
@@ -72,6 +75,11 @@ class MapActivityTagGroup(MapTagGroups):
 
     @classmethod
     def write_activity_attribute_group(cls, attrs, tag_group, year):
+
+        from map_model_implementations import clean_crops_and_target_country
+
+        attrs = clean_crops_and_target_country(attrs)
+
         aag = ActivityAttributeGroup(
             fk_activity_id=tag_group.fk_activity.id, fk_language=cls.language,
             date=year_to_date(year), attributes=attrs, name=attrs.get('name')
@@ -94,8 +102,10 @@ class MapActivityTagGroup(MapTagGroups):
 
 class MapStakeholderTagGroup(MapTagGroups):
 
-    old_class = SH_Tag_Group
-    tag_groups = SH_Tag_Group.objects.using(V1).select_related('fk_stakeholder')
+    # prevent error if postgres branch of landmatrix 1 is checked out
+    if V1 == 'v1_my':
+        old_class = SH_Tag_Group
+        tag_groups = SH_Tag_Group.objects.using(V1).select_related('fk_stakeholder')
 
     @classmethod
     def relevant_tag_sets(cls, tag_group):

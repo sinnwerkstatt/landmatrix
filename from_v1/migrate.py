@@ -1,3 +1,5 @@
+import traceback
+
 from django.core.exceptions import ImproperlyConfigured
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -33,17 +35,19 @@ if __name__ == '__main__':
 
         from map_model_implementations import *
         from map_tag_groups import MapTagGroups
-        if V1 == 'V1_pg':
+        if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
         for map_class in [
             MapLanguage, MapStatus,
-            MapActivity, MapActivityAttributeGroup,
+            MapActivity,
+            MapActivityAttributeGroup,
             MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
-            MapStakeholder,
+            MapStakeholder, MapPrimaryInvestor, MapInvolvement,
             MapStakeholderAttributeGroup,
-            MapPrimaryInvestor, MapInvolvement,
-            MapAgriculturalProduce, MapCrop,
+            MapAgriculturalProduce, MapCrop, MapComment,
+            MapInvestor, MapInvestorActivityInvolvement,
+            MapStakeholderInvestor,
         ]:
             map_class.map_all(save=True)
 
@@ -76,13 +80,17 @@ if __name__ == '__main__':
 
     except ConnectionDoesNotExist as e:
         print('You need to set CONVERT_DB to True in settings.py!')
+        print(e)
+        traceback.print_tb(last_traceback)
     except AttributeError as e:
         print('You need to check out branch "postgres" of the old land-matrix project under')
         print(BASE_PATH+'/land-matrix!')
         print(e)
+        traceback.print_tb(last_traceback)
     except (AttributeError, ImportError) as e:
         print('To migrate the original MySQL data you need to check out branch "master" of the')
         print('old land-matrix project under '+BASE_PATH+'/land-matrix!')
         print(e)
+        traceback.print_tb(last_traceback)
     except ImproperlyConfigured:
         print('Do a "pip install mysqlclient" to install mysql drivers!')
