@@ -1,5 +1,3 @@
-from setuptools.command.setopt import setopt
-
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 #
@@ -67,15 +65,15 @@ class Compare:
     NUM_COMPARED_RECORDS = 1000
 
     files_to_compare = [
-        # 'by_crop',
-        #  'by_data_source_type',
-        #  'by_intention',
-        #  'by_investor_country',
+        'by_crop',
+        'by_data_source_type',
+        'by_intention',
+        'by_investor_country',
         'by_investor',
-        # 'by_investor_region',
-        # 'by_target_country',
-        # 'by_target_region',
-        # 'all_deals',
+        'by_investor_region',
+        'by_target_country',
+        'by_target_region',
+        'all_deals',
     ]
     warnings = {}
     errors = {}
