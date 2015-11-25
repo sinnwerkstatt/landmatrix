@@ -1,5 +1,7 @@
 import datetime
 
+from django.db import connections
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from map_model import MapModel
@@ -10,8 +12,6 @@ import editor.models
 def year_to_date(year):
     if not year: return None
     return ('0000'+str(year)+'-01-07')[-10:]
-
-from map_tag_groups import MapActivityTagGroup, MapStakeholderTagGroup
 
 
 class MapLanguage(MapModel):
@@ -29,6 +29,19 @@ class MapActivity(MapModel):
     new_class = landmatrix.models.Activity
     depends = [ MapStatus ]
 
+    @classmethod
+    def all_records(cls):
+        ids = cls.all_ids()
+        cls._count = len(ids)
+        return cls.old_class.objects.using(V1).filter(pk__in=ids).values()
+
+    @classmethod
+    def all_ids(cls):
+        cursor = connections[V1].cursor()
+        cursor.execute(
+            'SELECT id FROM activities AS a WHERE version = (SELECT MAX(version) FROM activities WHERE activity_identifier = a.activity_identifier) ORDER BY activity_identifier'
+        )
+        return [id[0] for id in cursor.fetchall()]
 
 def extract_value(part):
     values = part.split('=>')
@@ -138,6 +151,8 @@ def clean_coordinates(attributes):
 
 
 from migrate import V1
+from map_tag_groups import MapActivityTagGroup, MapStakeholderTagGroup
+
 
 
 if V1 == 'v1_pg':
@@ -153,6 +168,7 @@ if V1 == 'v1_pg':
         depends = [ MapActivity, MapLanguage ]
 else:
     MapActivityAttributeGroup = MapActivityTagGroup
+
 
 class MapStakeholder(MapModel):
     old_class = editor.models.Stakeholder

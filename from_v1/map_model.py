@@ -146,7 +146,7 @@ class MapModel:
         from datetime import timedelta
         print(
             "%-30s: %8d objects, %s" % (
-                cls.old_class.__name__, cls.old_class.objects.using(V1).count(), str(timedelta(seconds=time()-cls.start_time))
+                cls.old_class.__name__, cls._count, str(timedelta(seconds=time()-cls.start_time))
             )
         )
 
