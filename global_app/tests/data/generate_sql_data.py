@@ -27,7 +27,8 @@ from global_app.views import ActivityProtocol
 def read_data(filename):
     with open(os.path.dirname(os.path.realpath(__file__)) + '/' + filename, 'r') as f:
         lines = f.readlines()
-    parameters = eval(lines[1])
+    parameters = eval(lines[0])
+    print(parameters)
     return parameters['data']
 
 files_to_generate = [
