@@ -36,7 +36,8 @@ files_to_generate = [
     'by_data_source_type',
     'by_intention',
     'by_investor',
-    'by_investor_country', 'by_investor_region', 'by_target_country', 'by_target_region', 'all_deals',
+    'by_investor_country', 'by_investor_region', 'by_target_country', 'by_target_region',
+    'all_deals',
 ]
 
 for filename in files_to_generate:

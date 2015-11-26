@@ -4,7 +4,7 @@ from django.db import connections
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from map_model import MapModel
+from mapping.map_model import MapModel
 import landmatrix.models
 import editor.models
 
@@ -13,38 +13,6 @@ def year_to_date(year):
     if not year: return None
     return ('0000'+str(year)+'-01-07')[-10:]
 
-
-class MapLanguage(MapModel):
-    old_class = editor.models.Language
-    new_class = landmatrix.models.Language
-
-
-class MapStatus(MapModel):
-    old_class = editor.models.Status
-    new_class = landmatrix.models.Status
-
-
-class MapActivity(MapModel):
-    old_class = editor.models.Activity
-    new_class = landmatrix.models.Activity
-    depends = [ MapStatus ]
-
-    @classmethod
-    def all_records(cls):
-        ids = cls.all_ids()
-        cls._count = len(ids)
-        return cls.old_class.objects.using(V1).filter(pk__in=ids).values()
-
-    @classmethod
-    def all_ids(cls):
-        cursor = connections[V1].cursor()
-        cursor.execute("""
-SELECT id
-FROM activities AS a
-WHERE version = (SELECT MAX(version) FROM activities WHERE activity_identifier = a.activity_identifier)
-ORDER BY activity_identifier
-        """)
-        return [id[0] for id in cursor.fetchall()]
 
 def extract_value(part):
     values = part.split('=>')
@@ -153,25 +121,7 @@ def clean_coordinates(attributes):
         return parts
 
 
-from migrate import V1
-from map_tag_groups import MapActivityTagGroup, MapStakeholderTagGroup
-
-
-
-if V1 == 'v1_pg':
-    class MapActivityAttributeGroup(MapModel):
-        old_class = editor.models.ActivityAttributeGroup
-        new_class = landmatrix.models.ActivityAttributeGroup
-        attributes = {
-            'activity': 'fk_activity',
-            'language': 'fk_language',
-            'year': ('date', year_to_date),
-            'attributes': ('attributes', clean_crops_and_target_country)
-        }
-        depends = [ MapActivity, MapLanguage ]
-else:
-    MapActivityAttributeGroup = MapActivityTagGroup
-
+from mapping.map_status import MapStatus
 
 class MapStakeholder(MapModel):
     old_class = editor.models.Stakeholder
@@ -196,8 +146,31 @@ ORDER BY stakeholder_identifier
         return [id[0] for id in cursor.fetchall()]
 
 
+from migrate import V1
+from mapping.map_tag_groups import MapActivityTagGroup
+
+from mapping.map_activity import MapActivity
+from mapping.map_language import MapLanguage
+
+if V1 == 'v1_pg':
+    class MapActivityAttributeGroup(MapModel):
+        old_class = editor.models.ActivityAttributeGroup
+        new_class = landmatrix.models.ActivityAttributeGroup
+        attributes = {
+            'activity': 'fk_activity',
+            'language': 'fk_language',
+            'year': ('date', year_to_date),
+            'attributes': ('attributes', clean_crops_and_target_country)
+        }
+        depends = [ MapActivity, MapLanguage ]
+else:
+    MapActivityAttributeGroup = MapActivityTagGroup
+
+
 def clean_country(attributes):
     return replace_country_name_with_id(attributes, 'country')
+
+from mapping.map_tag_groups import MapStakeholderTagGroup
 
 if V1 == 'v1_pg':
     class MapStakeholderAttributeGroup(MapModel):
@@ -244,9 +217,11 @@ class MapInvolvement(MapModel):
     def all_records(cls):
         activity_ids = MapActivity.all_ids()
         primary_investor_ids = MapPrimaryInvestor.all_ids()
+        stakeholder_ids = MapStakeholder.all_ids()
         records = cls.old_class.objects.using(V1).\
             filter(fk_activity__in=activity_ids).\
-            filter(fk_primary_investor__in=primary_investor_ids).values()
+            filter(fk_primary_investor__in=primary_investor_ids).\
+            filter(fk_stakeholder__in=stakeholder_ids).values()
         cls._count = len(records)
         return records
 

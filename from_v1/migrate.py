@@ -33,8 +33,8 @@ if __name__ == '__main__':
 
     try:
 
-        from map_model_implementations import *
-        from map_tag_groups import MapTagGroups
+        from mapping import *
+        # from mapping.map_tag_groups import MapTagGroups
         if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
