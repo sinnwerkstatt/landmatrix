@@ -1,6 +1,3 @@
-import datetime
-
-from django.db import connections
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -74,17 +71,6 @@ def replace_country_name_with_id(attributes, attribute):
     return replace_model_name_with_id(Country, attributes, attribute)
 
 
-def clean_target_country(attributes):
-    return replace_country_name_with_id(attributes, 'target_country')
-
-
-def clean_crops(attributes):
-    from editor.models import Crop
-    return replace_model_name_with_id(Crop, attributes, 'crops')
-
-
-def clean_crops_and_target_country(attributes):
-    return clean_coordinates(clean_crops(clean_target_country(attributes)))
 
 
 def is_number(s):
@@ -94,119 +80,11 @@ def is_number(s):
     except ValueError:
         return False
 
-
-def clean_coordinates(attributes):
-    if not 'point_lon' in attributes or not 'point_lat' in attributes: return attributes
-
-    if isinstance(attributes, str):
-        parts = attributes.split(', ')
-    else:
-        parts = attributes
-
-    changed = False
-    for index, part in enumerate(parts):
-        coordinate = None
-        if part.startswith('"' + 'point_lon' + '"') or part.startswith('"' + 'point_lat' + '"'):
-            coordinate = extract_value(part)
-            if not is_number(coordinate):
-                changed = True
-                parts[index] = ''
-    if changed:
-        parts = [ part for part in parts if part ]
-        print(parts)
-
-    if isinstance(attributes, str):
-        return ', '.join(parts)
-    else:
-        return parts
-
-
-from mapping.map_status import MapStatus
-
-class MapStakeholder(MapModel):
-    old_class = editor.models.Stakeholder
-    new_class = landmatrix.models.Stakeholder
-    depends = [ MapStatus ]
-
-    @classmethod
-    def all_records(cls):
-        ids = cls.all_ids()
-        cls._count = len(ids)
-        return cls.old_class.objects.using(V1).filter(pk__in=ids).values()
-
-    @classmethod
-    def all_ids(cls):
-        cursor = connections[V1].cursor()
-        cursor.execute("""
-SELECT id
-FROM stakeholders AS s
-WHERE version = (SELECT MAX(version) FROM stakeholders WHERE stakeholder_identifier = s.stakeholder_identifier)
-ORDER BY stakeholder_identifier
-        """)
-        return [id[0] for id in cursor.fetchall()]
-
-
-from migrate import V1
-from mapping.map_tag_groups import MapActivityTagGroup
-
+from mapping.map_stakeholder import MapStakeholder
 from mapping.map_activity import MapActivity
-from mapping.map_language import MapLanguage
+from mapping.map_primary_investor import MapPrimaryInvestor
+from migrate import V1
 
-if V1 == 'v1_pg':
-    class MapActivityAttributeGroup(MapModel):
-        old_class = editor.models.ActivityAttributeGroup
-        new_class = landmatrix.models.ActivityAttributeGroup
-        attributes = {
-            'activity': 'fk_activity',
-            'language': 'fk_language',
-            'year': ('date', year_to_date),
-            'attributes': ('attributes', clean_crops_and_target_country)
-        }
-        depends = [ MapActivity, MapLanguage ]
-else:
-    MapActivityAttributeGroup = MapActivityTagGroup
-
-
-def clean_country(attributes):
-    return replace_country_name_with_id(attributes, 'country')
-
-from mapping.map_tag_groups import MapStakeholderTagGroup
-
-if V1 == 'v1_pg':
-    class MapStakeholderAttributeGroup(MapModel):
-        old_class = editor.models.StakeholderAttributeGroup
-        new_class = landmatrix.models.StakeholderAttributeGroup
-        attributes = {
-            'stakeholder': 'fk_stakeholder',
-            'language': 'fk_language',
-            'attributes': ('attributes', clean_country)
-        }
-        depends = [ MapStakeholder, MapLanguage ]
-else:
-    MapStakeholderAttributeGroup = MapStakeholderTagGroup
-
-
-class MapPrimaryInvestor(MapModel):
-    old_class = editor.models.PrimaryInvestor
-    new_class = landmatrix.models.PrimaryInvestor
-    depends = [ MapStatus ]
-
-    @classmethod
-    def all_records(cls):
-        ids = cls.all_ids()
-        cls._count = len(ids)
-        return cls.old_class.objects.using(V1).filter(pk__in=ids).values()
-
-    @classmethod
-    def all_ids(cls):
-        cursor = connections[V1].cursor()
-        cursor.execute("""
-SELECT id
-FROM primary_investors AS pi
-WHERE version = (SELECT MAX(version) FROM primary_investors WHERE primary_investor_identifier = pi.primary_investor_identifier)
-ORDER BY primary_investor_identifier
-        """)
-        return [id[0] for id in cursor.fetchall()]
 
 class MapInvolvement(MapModel):
     old_class = editor.models.Involvement
