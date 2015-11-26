@@ -38,9 +38,12 @@ class MapActivity(MapModel):
     @classmethod
     def all_ids(cls):
         cursor = connections[V1].cursor()
-        cursor.execute(
-            'SELECT id FROM activities AS a WHERE version = (SELECT MAX(version) FROM activities WHERE activity_identifier = a.activity_identifier) ORDER BY activity_identifier'
-        )
+        cursor.execute("""
+SELECT id
+FROM activities AS a
+WHERE version = (SELECT MAX(version) FROM activities WHERE activity_identifier = a.activity_identifier)
+ORDER BY activity_identifier
+        """)
         return [id[0] for id in cursor.fetchall()]
 
 def extract_value(part):
@@ -175,6 +178,23 @@ class MapStakeholder(MapModel):
     new_class = landmatrix.models.Stakeholder
     depends = [ MapStatus ]
 
+    @classmethod
+    def all_records(cls):
+        ids = cls.all_ids()
+        cls._count = len(ids)
+        return cls.old_class.objects.using(V1).filter(pk__in=ids).values()
+
+    @classmethod
+    def all_ids(cls):
+        cursor = connections[V1].cursor()
+        cursor.execute("""
+SELECT id
+FROM stakeholders AS s
+WHERE version = (SELECT MAX(version) FROM stakeholders WHERE stakeholder_identifier = s.stakeholder_identifier)
+ORDER BY stakeholder_identifier
+        """)
+        return [id[0] for id in cursor.fetchall()]
+
 
 def clean_country(attributes):
     return replace_country_name_with_id(attributes, 'country')
@@ -198,11 +218,37 @@ class MapPrimaryInvestor(MapModel):
     new_class = landmatrix.models.PrimaryInvestor
     depends = [ MapStatus ]
 
+    @classmethod
+    def all_records(cls):
+        ids = cls.all_ids()
+        cls._count = len(ids)
+        return cls.old_class.objects.using(V1).filter(pk__in=ids).values()
+
+    @classmethod
+    def all_ids(cls):
+        cursor = connections[V1].cursor()
+        cursor.execute("""
+SELECT id
+FROM primary_investors AS pi
+WHERE version = (SELECT MAX(version) FROM primary_investors WHERE primary_investor_identifier = pi.primary_investor_identifier)
+ORDER BY primary_investor_identifier
+        """)
+        return [id[0] for id in cursor.fetchall()]
 
 class MapInvolvement(MapModel):
     old_class = editor.models.Involvement
     new_class = landmatrix.models.Involvement
     depends = [ MapActivity, MapStakeholder, MapPrimaryInvestor ]
+
+    @classmethod
+    def all_records(cls):
+        activity_ids = MapActivity.all_ids()
+        primary_investor_ids = MapPrimaryInvestor.all_ids()
+        records = cls.old_class.objects.using(V1).\
+            filter(fk_activity__in=activity_ids).\
+            filter(fk_primary_investor__in=primary_investor_ids).values()
+        cls._count = len(records)
+        return records
 
 
 class MapRegion(MapModel):
@@ -272,8 +318,8 @@ def get_country_for_primary_investor(pi_id):
     return None
 
 
-class MapInvestor(MapModel):
-    old_class = editor.models.PrimaryInvestor
+class MapInvestor(MapPrimaryInvestor):
+    # old_class = editor.models.PrimaryInvestor
     new_class = landmatrix.models.Investor
     attributes = {
         'primary_investor_identifier': 'investor_identifier',
@@ -355,8 +401,14 @@ class MapInvestorActivityInvolvement(MapModel):
         'investment_ratio': 'percentage',
         'fk_primary_investor_id': ('fk_investor_id', ('fk_status_id', get_status_for_investor))
     }
+    depends = [ MapActivity, MapStakeholder, MapPrimaryInvestor ]
 
     @classmethod
     def all_records(cls):
-        return cls.old_class.objects.using(V1).exclude(fk_activity__isnull=True).values()
-
+        activity_ids = MapActivity.all_ids()
+        primary_investor_ids = MapPrimaryInvestor.all_ids()
+        records = cls.old_class.objects.using(V1).\
+            filter(fk_activity__in=activity_ids).\
+            filter(fk_primary_investor__in=primary_investor_ids).values()
+        cls._count = len(records)
+        return records
