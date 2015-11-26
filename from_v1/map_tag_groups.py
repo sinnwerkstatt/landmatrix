@@ -20,7 +20,6 @@ SPECIFIC_ACTIVITY_IDENTIFIER = 12
 
 class MapTagGroups(MapModel):
 
-    language = Language.objects.get(pk=1)
     key_value_lookup = None
 
     @classmethod
@@ -30,13 +29,12 @@ class MapTagGroups(MapModel):
         cls._start_timer()
         cls._save = save
 
-        cls._count = len(cls.tag_groups)
-
         # migrate cached and/or generated values
         if cls.key_value_lookup:
             cls.migrate_lookup()
-        input('weiter...')
+
         # migrate original values. in case of conflict, original values overwrite cached values.
+        cls._count = len(cls.tag_groups)
         cls.migrate_tag_group_set(cls.tag_groups)
 
         cls._done = True
@@ -115,12 +113,11 @@ class MapActivityTagGroup(MapTagGroups):
         attrs = clean_crops_and_target_country(attrs)
 
         aag = ActivityAttributeGroup(
-            fk_activity_id=activity_id, fk_language=cls.language,
+            fk_activity_id=activity_id, fk_language=Language.objects.get(pk=1),
             date=year_to_date(year), attributes=attrs, name=attrs.get('name')
         )
 
         if cls._save:
-#            print(aag, attrs, activity_id, cls._save)
             aag.save(using=V2)
 
         return aag
@@ -133,23 +130,21 @@ class MapActivityTagGroup(MapTagGroups):
     @classmethod
     @transaction.atomic(using=V2)
     def migrate_lookup(cls):
+        cls._count = len(MapActivity.all_records())
+        for i, activity in enumerate(MapActivity.all_records()):
 
-        for activity in MapActivity.all_records():
             akv_objects = cls.key_value_lookup.objects.using(V1).filter(activity_identifier=activity['activity_identifier'])
 
-            if not akv_objects:
-                if activity['fk_status_id'] in (2, 3):
-                    print('no akv for activity '+str(activity))
-                    exit()
+            if not akv_objects and activity['fk_status_id'] in (2, 3):
+                print('no key-value=lookup entries for activity '+str(activity))
+                exit()
 
-#        for cached in cls.key_value_lookup.objects.using(V1).filter(activity_identifier=SPECIFIC_ACTIVITY_IDENTIFIER).order_by('activity_identifier')[:MAX_LOOKUP_OBJECTS]:
             for cached in akv_objects:
-
                 activity_id = Activity.objects.using(V2).filter(activity_identifier=cached.activity_identifier).order_by('-version')[:1][0].pk
-                if cached.activity_identifier == 12:
-                    print((cached.key, cached.value, cached.activity_identifier, activity_id))
                 attrs = {cached.key: cached.value}
                 cls.write_activity_attribute_group(attrs, activity_id)
+
+            cls._print_status({'id': ''}, i)
 
 
 class MapStakeholderTagGroup(MapTagGroups):
@@ -182,7 +177,7 @@ class MapStakeholderTagGroup(MapTagGroups):
     def write_stakeholder_attribute_group(cls, attrs, tag_group):
         attrs = resolve_country(attrs)
         sag = StakeholderAttributeGroup(
-            fk_stakeholder_id=tag_group.fk_stakeholder.id, fk_language=cls.language,
+            fk_stakeholder_id=tag_group.fk_stakeholder.id, fk_language=Language.objects.get(pk=1),
             attributes=attrs, name=attrs.get('name')
         )
 

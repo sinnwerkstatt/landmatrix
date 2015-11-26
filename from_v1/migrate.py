@@ -42,12 +42,15 @@ if __name__ == '__main__':
             MapLanguage, MapStatus,
             MapActivity,
             MapActivityAttributeGroup,
-            # MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
-            # MapStakeholder, MapPrimaryInvestor, MapInvolvement,
-            # MapStakeholderAttributeGroup,
-            # MapAgriculturalProduce, MapCrop, MapComment,
-            # MapInvestor, MapInvestorActivityInvolvement,
-            # MapStakeholderInvestor,
+            MapRegion,
+            MapCountry,
+            MapBrowseRule, MapBrowseCondition,
+            MapStakeholder, MapPrimaryInvestor,
+            MapInvolvement,
+            MapStakeholderAttributeGroup,
+            MapAgriculturalProduce, MapCrop, MapComment,
+            MapInvestor, MapInvestorActivityInvolvement,
+            MapStakeholderInvestor,
         ]:
             map_class.map_all(save=True)
 
