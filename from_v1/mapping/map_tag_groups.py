@@ -109,7 +109,7 @@ class MapActivityTagGroup(MapTagGroups):
     @classmethod
     def write_activity_attribute_group(cls, attrs, activity_id, year=None):
 
-        from mapping.map_model_implementations import clean_crops_and_target_country
+        from mapping.map_activity_attribute_group import clean_crops_and_target_country
 
         attrs = clean_crops_and_target_country(attrs)
 
@@ -148,7 +148,7 @@ class MapActivityTagGroup(MapTagGroups):
             cls._print_status({'id': 0}, i)
 
 
-from mapping.map_model_implementations import MapStakeholder
+from mapping.map_stakeholder import MapStakeholder
 
 class MapStakeholderTagGroup(MapTagGroups):
 
