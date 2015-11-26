@@ -48,7 +48,8 @@ if __name__ == '__main__':
             MapStakeholder, MapPrimaryInvestor,
             MapInvolvement,
             MapStakeholderAttributeGroup,
-            MapAgriculturalProduce, MapCrop, MapComment,
+            MapAgriculturalProduce, MapCrop,
+            # MapComment,
             MapInvestor, MapInvestorActivityInvolvement,
             MapStakeholderInvestor,
         ]:
