@@ -4,8 +4,9 @@ from django.db import models, transaction
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from migrate import V1, V2, load_project, BASE_PATH
-from map_model import MapModel
-from map_model_implementations import year_to_date, MapActivity
+from mapping.map_model import MapModel
+from mapping.map_activity import MapActivity
+from mapping.map_model_implementations import year_to_date
 
 load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
 load_project(BASE_PATH+'/land-matrix', 'editor')
@@ -108,7 +109,7 @@ class MapActivityTagGroup(MapTagGroups):
     @classmethod
     def write_activity_attribute_group(cls, attrs, activity_id, year=None):
 
-        from map_model_implementations import clean_crops_and_target_country
+        from mapping.map_model_implementations import clean_crops_and_target_country
 
         attrs = clean_crops_and_target_country(attrs)
 
@@ -144,15 +145,19 @@ class MapActivityTagGroup(MapTagGroups):
                 attrs = {cached.key: cached.value}
                 cls.write_activity_attribute_group(attrs, activity_id)
 
-            cls._print_status({'id': ''}, i)
+            cls._print_status({'id': 0}, i)
 
+
+from mapping.map_model_implementations import MapStakeholder
 
 class MapStakeholderTagGroup(MapTagGroups):
 
     # prevent error if postgres branch of landmatrix 1 is checked out
     if V1 == 'v1_my':
         old_class = SH_Tag_Group
-        tag_groups = SH_Tag_Group.objects.using(V1).select_related('fk_stakeholder')
+        tag_groups = SH_Tag_Group.objects.using(V1).select_related('fk_stakeholder').filter(
+            fk_stakeholder__pk__in=MapStakeholder.all_ids()
+        )
 
     @classmethod
     def relevant_tag_sets(cls, tag_group):
