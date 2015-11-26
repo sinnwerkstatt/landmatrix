@@ -1,7 +1,7 @@
 import landmatrix.models
 import editor.models
 from mapping.map_primary_investor import MapPrimaryInvestor
-from mapping.map_model_implementations import get_country_id_for_stakeholder
+from mapping.aux_functions import get_country_id_for_stakeholder
 from migrate import V1
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'

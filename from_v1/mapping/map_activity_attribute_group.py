@@ -3,12 +3,12 @@ import landmatrix.models
 import editor.models
 from migrate import V1
 
-from mapping.map_tag_groups import MapActivityTagGroup
+from mapping.map_activity_tag_group import MapActivityTagGroup
 
 from mapping.map_activity import MapActivity
 from mapping.map_language import MapLanguage
 
-from mapping.map_model_implementations import year_to_date, replace_model_name_with_id, replace_country_name_with_id, extract_value, is_number
+from mapping.aux_functions import year_to_date, replace_model_name_with_id, replace_country_name_with_id, extract_value, is_number
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -23,7 +23,6 @@ def clean_coordinates(attributes):
 
     changed = False
     for index, part in enumerate(parts):
-        coordinate = None
         if part.startswith('"' + 'point_lon' + '"') or part.startswith('"' + 'point_lat' + '"'):
             coordinate = extract_value(part)
             if not is_number(coordinate):
