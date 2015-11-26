@@ -24,7 +24,9 @@ application = get_wsgi_application()
 # actual script follows.
 #
 from global_app.views import ActivityProtocol
+from api.query_sets.sql_generation.record_reader import RecordReader
 
+RecordReader.DEBUG = False
 
 from django.http import HttpRequest
 from django.db import connection
@@ -51,21 +53,24 @@ def _null_to_zero_conversion(expected, actual):
     return expected[:-1] == actual if isinstance(expected, str) and expected.endswith('#0') else expected == actual
 
 def _same_string_multiple_times(expected, actual):
-    return set(expected.split('##!##')) <= set(actual)
+    if isinstance(expected, str):
+        return set(expected.split('##!##')) <= set(actual)
+    return set(expected) <= set(actual)
 
 def _none_is_equaled(expected, actual):
     if expected == None and '#!#' in actual and actual.startswith('#'): return True
     return expected == actual
 
 def _array_equal_to_tinkered_string(expected, actual):
-    return set(expected.split('##!##')) <= set(actual)
+    # return set(expected.split('##!##')) <= set(actual)
+    return _same_string_multiple_times(expected, actual)
 
 class Compare:
 
     NUM_COMPARED_RECORDS = 1000
 
     files_to_compare = [
-        'by_crop',
+        # 'by_crop',
         'by_data_source_type',
         'by_intention',
         'by_investor_country',
