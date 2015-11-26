@@ -16,7 +16,6 @@ if V1 == 'v1_my':
     from editor.models import A_Tag, A_Tag_Group, A_Key_Value_Lookup, Comment, SH_Tag_Group, SH_Tag
 
 
-MAX_LOOKUP_OBJECTS = 1000000
 SPECIFIC_ACTIVITY_IDENTIFIER = 12
 
 class MapTagGroups(MapModel):
@@ -61,16 +60,17 @@ class MapActivityTagGroup(MapTagGroups):
     # prevent error if postgres branch of landmatrix 1 is checked out
     if V1 == 'v1_my':
         old_class = A_Tag_Group
+###############################################################################################
         tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity').filter(
             fk_activity__pk__in=MapActivity.all_ids()
-        )
+        )#[:1000]
+###############################################################################################
         key_value_lookup = A_Key_Value_Lookup
 
     @classmethod
     def relevant_tag_sets(cls, tag_group):
         return [
             [tag_group.fk_a_tag],
-#            A_Tag.objects.using(V1).filter(fk_a_tag_group=tag_group).filter(fk_a_tag_group__fk_activity__pk__in=SPECIFIC_ACTIVITY_IDENTIFIER).select_related('fk_a_key', 'fk_a_value'),
             A_Tag.objects.using(V1).filter(fk_a_tag_group=tag_group).select_related('fk_a_key', 'fk_a_value'),
         ]
 
@@ -131,8 +131,11 @@ class MapActivityTagGroup(MapTagGroups):
     @classmethod
     @transaction.atomic(using=V2)
     def migrate_lookup(cls):
-        cls._count = len(MapActivity.all_records())
-        for i, activity in enumerate(MapActivity.all_records()):
+######################################################################################
+        records = MapActivity.all_records()#[:1000]
+#######################################################################################
+        cls._count = len(records)
+        for i, activity in enumerate(records):
 
             akv_objects = cls.key_value_lookup.objects.using(V1).filter(activity_identifier=activity['activity_identifier'])
 
