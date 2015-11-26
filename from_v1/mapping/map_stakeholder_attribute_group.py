@@ -1,11 +1,11 @@
-from mapping.map_tag_groups import MapStakeholderTagGroup
+from mapping.map_stakeholder_tag_group import MapStakeholderTagGroup
 import landmatrix.models
 import editor.models
 from mapping.map_model import MapModel
 from migrate import V1
 from mapping.map_stakeholder import MapStakeholder
 from mapping.map_language import MapLanguage
-from mapping.map_model_implementations import replace_country_name_with_id
+from mapping.aux_functions import replace_country_name_with_id
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
