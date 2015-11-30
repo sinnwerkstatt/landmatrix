@@ -27,6 +27,12 @@ BASE_PATH = '/home/lene/workspace/landmatrix'
 load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
 load_project(BASE_PATH+'/land-matrix', 'editor')
 
+
+def map_classes(*args):
+    for map_class in args:
+        map_class.map_all(save=True)
+
+
 if __name__ == '__main__':
 
     from django.db.utils import ConnectionDoesNotExist
@@ -38,22 +44,32 @@ if __name__ == '__main__':
         if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
-        for map_class in [
-            MapLanguage, MapStatus,
-            MapActivity,
-            MapActivityAttributeGroup,
-            MapRegion,
-            MapCountry,
-            MapBrowseRule, MapBrowseCondition,
-            MapStakeholder, MapPrimaryInvestor,
-            MapInvolvement,
-            MapStakeholderAttributeGroup,
-            MapAgriculturalProduce, MapCrop,
-            # MapComment,
-            MapInvestor, MapInvestorActivityInvolvement,
+        map_classes(
+            MapStatus,
+            MapInvestor,
+            MapActivity, MapStakeholder, MapPrimaryInvestor,
+            MapInvestorActivityInvolvement,
             MapStakeholderInvestor,
-        ]:
-            map_class.map_all(save=True)
+            MapStakeholderVentureInvolvement
+        )
+
+        if False:
+            for map_class in [
+                MapLanguage, MapStatus,
+                MapActivity,
+                MapActivityAttributeGroup,
+                MapRegion,
+                MapCountry,
+                MapBrowseRule, MapBrowseCondition,
+                MapStakeholder, MapPrimaryInvestor,
+                MapInvolvement,
+                MapStakeholderAttributeGroup,
+                MapAgriculturalProduce, MapCrop,
+                # MapComment,
+                MapInvestor, MapInvestorActivityInvolvement,
+                MapStakeholderInvestor,
+            ]:
+                map_class.map_all(save=True)
 
         # a number of possible uses listed here as examples
         if False:

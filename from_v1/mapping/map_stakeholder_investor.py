@@ -1,7 +1,7 @@
 from mapping.map_model import MapModel
 import landmatrix.models
 import editor.models
-from mapping.aux_functions import get_first_stakeholder_tag_value, get_country_id_for_stakeholder
+from mapping.aux_functions import get_first_stakeholder_tag_value, get_country_id_for_stakeholder, get_now
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -34,7 +34,8 @@ class MapStakeholderInvestor(MapModel):
             'id',
             ('name', get_name_for_stakeholder),
             ('country', get_country_id_for_stakeholder),
-            ('classification', get_classification_for_stakeholder)
+            ('classification', get_classification_for_stakeholder),
+            ('timestamp', get_now)
         )
     }
     DEBUG = False
