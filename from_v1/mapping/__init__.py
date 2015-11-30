@@ -18,6 +18,4 @@ from mapping.map_comment import MapComment
 from mapping.map_investor import MapInvestor
 from mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
 from mapping.map_stakeholder_investor import MapStakeholderInvestor
-
-# from mapping.map_model_implementations import *
-# from mapping.map_tag_groups import *
+from mapping.map_stakeholder_venture_involvement import MapStakeholderVentureInvolvement

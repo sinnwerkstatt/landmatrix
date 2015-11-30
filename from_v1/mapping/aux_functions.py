@@ -1,7 +1,12 @@
 import editor.models
 from migrate import V1
+from django.utils import timezone
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
+
+def get_now(_):
+    return timezone.now()
 
 
 def year_to_date(year):

@@ -21,3 +21,4 @@ from landmatrix.models.stakeholder import Stakeholder
 from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
 from landmatrix.models.status import Status
 from landmatrix.models.deal import Deal
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
