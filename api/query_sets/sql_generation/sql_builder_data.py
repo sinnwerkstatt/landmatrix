@@ -74,6 +74,11 @@ class SQLBuilderData:
 
             'primary_investor':   [ join_expression(PrimaryInvestor, 'p', 'i.fk_primary_investor_id') ],
 
+            'operational_stakeholder': [
+                join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+                join(Investor, 'li', on='iai.fk_investor_id = li.id')
+            ],
+
             'data_source_type':   ( 'data_source', [ join_attributes('data_source_type', 'type') ] ),
 
             'data_source':        [
@@ -142,6 +147,8 @@ class SQLBuilderData:
                          "SUM(a.availability) / COUNT(a.activity_identifier) AS availability"],
         "primary_investor": ["ARRAY_AGG(DISTINCT p.name) AS primary_investor",
                              "ARRAY_AGG(DISTINCT p.name) AS primary_investor"],
+        "operational_stakeholder": ["ARRAY_AGG(DISTINCT li.name) AS investor",
+                                    "ARRAY_AGG(DISTINCT li.name) AS investor"],
         "negotiation_status": [
             """ARRAY_AGG(DISTINCT CONCAT(
                         negotiation_status.attributes->'negotiation_status',        '#!#',

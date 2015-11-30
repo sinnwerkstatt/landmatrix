@@ -25,9 +25,13 @@ class TableGroupView(TemplateView):
     ]
     QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
-        "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
+        "deal_id", "target_country", "operational_stakeholder", "investor_name", "investor_country", "intention",
         "negotiation_status", "implementation_status", "intended_size", "contract_size",
     ]
+    # GROUP_COLUMNS_LIST = [
+    #     "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
+    #     "negotiation_status", "implementation_status", "intended_size", "contract_size",
+    # ]
     DEFAULT_GROUP = "by-target-region"
 
     template_name = "group-by.html"
@@ -272,7 +276,7 @@ class TableGroupView(TemplateView):
             "crop": ["crop", "intention", "deal_count", "availability"],
             "year": ["year", "intention", "deal_count", "availability"],
             "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
-            "all": ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country",
+            "all": ["deal_id", "target_country", "operational_stakeholder", "investor_name", "investor_country",
                     "intention", "negotiation_status", "implementation_status", "intended_size",
                     "contract_size", ]
         }
