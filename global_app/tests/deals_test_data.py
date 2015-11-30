@@ -31,7 +31,20 @@ class DealsTestData:
         sh.save()
         i = Involvement(fk_activity=act, fk_stakeholder=sh, fk_primary_investor = pi, investment_ratio=i_r)
         i.save()
+
+        self.make_investor_activity_involvement(act, i_r=i_r)
         return i
+
+    def make_investor_activity_involvement(self, activity, i_r = 0.):
+        from django.utils import timezone
+        investor = Investor(
+            investor_identifier=1, name=self.PI_NAME, fk_status=Status.objects.get(id=2), timestamp=timezone.now(), version=1
+        )
+        investor.save()
+        investor_activity_involvement = InvestorActivityInvolvement(
+            fk_activity=activity, fk_investor=investor, percentage=i_r, fk_status=Status.objects.get(id=2), timestamp=timezone.now()
+        )
+        investor_activity_involvement.save()
 
     def create_data(self):
         self.make_involvement(1.23)
