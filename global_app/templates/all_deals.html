@@ -283,8 +283,10 @@ $(document).ready(function () {
         <th><a {% if data.order_by == 'intention' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-intention' %}" {% elif data.order_by == '-intention' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'intention' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'intention' %}"{% endif %}>Intention of investment</a></th>
         {% elif "primary_investor"  == column %}
         <th><a {% if data.order_by == 'primary_investor' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-primary_investor' %}" {% elif data.order_by == '-primary_investor' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'primary_investor' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'primary_investor' %}"{% endif %}>Primary investor</a></th>
+        {% elif "operational_stakeholder"  == column %}
+        <th><a {% if data.order_by == 'operational_stakeholder' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-operational_stakeholder' %}" {% elif data.order_by == '-operational_stakeholder' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'operational_stakeholder' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'operational_stakeholder' %}"{% endif %}>Operational stakeholder</a></th>
         {% elif "investor_name"  == column %}
-        <th><a {% if data.order_by == 'investor_name' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-investor_name' %}" {% elif data.order_by == '-investor_name' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'investor_name' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'investor_name' %}"{% endif %}>Secondary&nbsp;investor</a></th>
+        <th><a {% if data.order_by == 'investor_name' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-investor_name' %}" {% elif data.order_by == '-investor_name' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'investor_name' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'investor_name' %}"{% endif %}>Secondary investors</a></th>
         {% elif "investor_country" == column %}
         <th class="investor-country"><a {% if data.order_by == 'investor_country' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-investor_country' %}" {% elif data.order_by == '-investor_country' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'investor_country' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'investor_country' %}"{% endif %}>Secondary&nbsp;investor country</a></th>
         {% elif "investor_region" == column %}
@@ -350,6 +352,15 @@ $(document).ready(function () {
             <td style="width:183px">
             {% if item.primary_investor %}
                 {% for i in item.primary_investor %}
+                  {{ i }}<br/>
+                {% endfor %}
+            {% else %}{% trans "unknown" %}
+            {% endif %}
+            </td>
+          {% elif column == "operational_stakeholder" %}
+            <td style="width:183px">
+            {% if item.operational_stakeholder %}
+                {% for i in item.operational_stakeholder %}
                   {{ i }}<br/>
                 {% endfor %}
             {% else %}{% trans "unknown" %}
