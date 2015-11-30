@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 import landmatrix.models
 import editor.models
 from mapping.map_primary_investor import MapPrimaryInvestor
@@ -26,9 +28,13 @@ def get_country_for_primary_investor(pi_id):
     return None
 
 
+def get_now(_):
+    return timezone.now()
+
+
 class MapInvestor(MapPrimaryInvestor):
     new_class = landmatrix.models.Investor
     attributes = {
         'primary_investor_identifier': 'investor_identifier',
-        'id': ('id', ('fk_country', get_country_for_primary_investor))
+        'id': ('id', ('fk_country', get_country_for_primary_investor), ('timestamp', get_now))
     }

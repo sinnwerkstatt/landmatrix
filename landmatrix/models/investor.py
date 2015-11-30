@@ -32,8 +32,8 @@ class Investor(DefaultStringRepresentation, models.Model):
 
 
 class InvestorVentureInvolvement(models.Model):
-    fk_venture = models.ForeignKey("self", verbose_name=_("Venture"), db_index=True, related_name='+')
-    fk_investor = models.ForeignKey("self", verbose_name=_("Investor"), db_index=True, related_name='+')
+    fk_venture = models.ForeignKey("Investor", db_index=True, related_name='+')
+    fk_investor = models.ForeignKey("Investor", db_index=True, related_name='+')
     percentage = models.FloatField(
         _('Percentage'), blank=True, null=True, validators=[MinValueValidator(0.0), MaxValueValidator(100.0)]
     )
@@ -42,6 +42,9 @@ class InvestorVentureInvolvement(models.Model):
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
 
+    def __str__(self):
+        return 'venture: %i stakeholder: %i percentage: %5.2f role: %s timestamp: %s' % \
+               (self.fk_venture_id, self.fk_investor_id, self.percentage, self.role, self.timestamp)
 
 class InvestorActivityInvolvement(models.Model):
     fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"), db_index=True)

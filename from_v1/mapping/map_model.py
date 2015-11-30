@@ -133,8 +133,8 @@ class MapModel:
             cls._count = cls.old_class.objects.using(V1).count()
         if index % 10 == 0:
             print(
-                "%-30s: %8d (%d/%d)" % (
-                    cls.old_class.__name__, int(record['id']), (index + 1), cls._count
+                "%-50s: %8d (%d/%d)" % (
+                    mapping_name(cls), int(record.get('id', 0)), (index + 1), cls._count
                 ),
                 end="\r"
             )
@@ -145,10 +145,15 @@ class MapModel:
         from time import time
         from datetime import timedelta
         print(
-            "%-30s: %8d objects, %s" % (
-                cls.old_class.__name__, cls._count, str(timedelta(seconds=time()-cls.start_time))
+            "%-50s: %8d objects, %s" % (
+                mapping_name(cls), cls._count, str(timedelta(seconds=time()-cls.start_time))
             )
         )
 
+
 def field_to_str(field):
         return str(field).split('.')[-1]
+
+
+def mapping_name(cls):
+    return '%s (%s)' % (cls.__name__, cls.old_class.__name__)
