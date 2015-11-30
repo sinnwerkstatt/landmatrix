@@ -25,6 +25,7 @@ class DealsTestData:
         self.activity_version += 1
         act = Activity(fk_status=Status.objects.get(id=2), activity_identifier=self.ACT_ID, version=self.activity_version)
         act.save()
+
         pi = PrimaryInvestor(fk_status=Status.objects.get(id=2), primary_investor_identifier=1, version=1, name=self.PI_NAME)
         pi.save()
         sh = Stakeholder(fk_status=Status.objects.get(id=2), stakeholder_identifier=1, version=1)
@@ -33,6 +34,7 @@ class DealsTestData:
         i.save()
 
         self.make_investor_activity_involvement(act, i_r=i_r)
+
         return i
 
     def make_investor_activity_involvement(self, activity, i_r = 0.):
