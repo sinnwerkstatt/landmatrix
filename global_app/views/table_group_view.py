@@ -219,7 +219,7 @@ class TableGroupView(TemplateView):
         else:
             intentions = [IntentionMap.get_parent(intention) for intention in set(value)]
 
-        return sorted(intentions)
+        return sorted(list(set(filter(None, intentions))))
 
     def _process_investor_name(self, value):
         return [
