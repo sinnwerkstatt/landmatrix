@@ -22,7 +22,6 @@ class RecordReader:
             records = self.get_all_at_once()
         return records
 
-
     def get_all_sql(self):
         if list_view_wanted(self.filters):
             sql = ''

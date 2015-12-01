@@ -135,7 +135,6 @@ class TableGroupView(TemplateView):
         for ext in Download.supported_formats():
             if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
                 self.download_type = ext
-#                self.debug_query = True
                 return
 
     def _set_group(self, **kwargs):
@@ -222,10 +221,13 @@ class TableGroupView(TemplateView):
         return sorted(list(set(filter(None, intentions))))
 
     def _process_investor_name(self, value):
-        return [
+        if not isinstance(value, list):
+            value = [value]
+        result = [
             {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else ""
             for inv in value
         ]
+        return result
 
     def _process_stitched_together_field(self, value):
         return [field.split("#!#")[0] for field in value]
