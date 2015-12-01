@@ -28,10 +28,6 @@ class TableGroupView(TemplateView):
         "deal_id", "target_country", "operational_stakeholder", "investor_name", "investor_country", "intention",
         "negotiation_status", "implementation_status", "intended_size", "contract_size",
     ]
-    # GROUP_COLUMNS_LIST = [
-    #     "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
-    #     "negotiation_status", "implementation_status", "intended_size", "contract_size",
-    # ]
     DEFAULT_GROUP = "by-target-region"
 
     template_name = "group-by.html"
@@ -230,6 +226,8 @@ class TableGroupView(TemplateView):
         return result
 
     def _process_stitched_together_field(self, value):
+        if not isinstance(value, list):
+            value = [value]
         return [field.split("#!#")[0] for field in value]
 
     def _process_name_and_year(self, value):
