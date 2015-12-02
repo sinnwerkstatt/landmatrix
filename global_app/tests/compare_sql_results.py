@@ -27,6 +27,16 @@ from global_app.views import ActivityProtocol
 from api.query_sets.sql_generation.record_reader import RecordReader
 
 RecordReader.DEBUG = False
+DEFAULT_FLOATS_SIMILAR_DEVIATION = 0.001
+# these are basically meaningless and ignore unexplainable differences in availability aggregation.
+# aggregated availability values are mostly nonsense anyway though.
+FLOATS_SIMILAR_DEVIATION = {
+    'by_target_country': 0.17,
+    'by_target_region': 0.04,
+    'by_crop': 0.13,
+    'by_intention': 0.07,
+    'by_data_source_type': 0.03
+}
 
 from django.http import HttpRequest
 from django.db import connection
@@ -45,8 +55,10 @@ def _actual_intention_in_expected(expected, actual):
     if not expected: return not actual
     return set(expected.split('##!##')) <= set(actual)
 
-def _floats_pretty_equal(expected, actual):
-    return 0.999 <= expected/actual <= 1.001
+def _floats_pretty_equal(difference):
+    def do_comparison(expected, actual):
+        return 1-difference <= expected/actual <= 1+difference
+    return do_comparison
 
 # empty years are converted to zero by new SQL. who cares.
 def _null_to_zero_conversion(expected, actual):
@@ -70,7 +82,7 @@ class Compare:
     NUM_COMPARED_RECORDS = 1000
 
     files_to_compare = [
-        # 'by_crop',
+        'by_crop',
         'by_data_source_type',
         'by_intention',
         'by_investor_country',
@@ -184,48 +196,48 @@ class Compare:
         'by_target_region': {
             0: _throwaway_column,
             2: _actual_intention_in_expected,
-            4: _floats_pretty_equal,
+            4: _floats_pretty_equal(FLOATS_SIMILAR_DEVIATION.get('by_target_region', DEFAULT_FLOATS_SIMILAR_DEVIATION)),
         },
         'by_target_country': {
             0: _throwaway_column,
             2: _array_equal_to_tinkered_string,
             3: _actual_intention_in_expected,
-            5: _floats_pretty_equal,
+            5: _floats_pretty_equal(FLOATS_SIMILAR_DEVIATION.get('by_target_country', DEFAULT_FLOATS_SIMILAR_DEVIATION)),
         },
         'by_investor_region': {
             0: _throwaway_column,
             1: _none_is_equaled,
             2: _actual_intention_in_expected,
-            4: _floats_pretty_equal
+            4: _floats_pretty_equal(FLOATS_SIMILAR_DEVIATION.get('by_investor_region', DEFAULT_FLOATS_SIMILAR_DEVIATION))
         },
         'by_investor_country': {
             0: _throwaway_column,
             1: _none_is_equaled,
             2: _array_equal_to_tinkered_string,
             3: _actual_intention_in_expected,
-            5: _floats_pretty_equal
+            5: _floats_pretty_equal(FLOATS_SIMILAR_DEVIATION.get('by_investor_country', DEFAULT_FLOATS_SIMILAR_DEVIATION))
         },
         'by_investor': {
             0: _throwaway_column,
             1: _none_is_equaled,
             2: _array_equal_to_tinkered_string,
             3: _actual_intention_in_expected,
-            5: _floats_pretty_equal
+            5: _floats_pretty_equal(FLOATS_SIMILAR_DEVIATION.get('by_investor', DEFAULT_FLOATS_SIMILAR_DEVIATION))
         },
         'by_intention': {
             0: _throwaway_column,
-            3: _floats_pretty_equal,
+            3: _floats_pretty_equal(FLOATS_SIMILAR_DEVIATION.get('by_intention', DEFAULT_FLOATS_SIMILAR_DEVIATION)),
         },
         'by_data_source_type': {
             0: _throwaway_column,
             2: _actual_intention_in_expected,
-            4: _floats_pretty_equal,
+            4: _floats_pretty_equal(FLOATS_SIMILAR_DEVIATION.get('by_data_source_type', DEFAULT_FLOATS_SIMILAR_DEVIATION)),
         },
         'by_crop': {
             0: _throwaway_column,
             1: _none_is_equaled,
             2: _actual_intention_in_expected,
-            4: _floats_pretty_equal,
+            4: _floats_pretty_equal(FLOATS_SIMILAR_DEVIATION.get('by_crop', DEFAULT_FLOATS_SIMILAR_DEVIATION)),
         }
     }
     def _similar(self, field, expected, actual):

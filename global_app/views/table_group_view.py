@@ -56,7 +56,6 @@ class TableGroupView(TemplateView):
     def render(self, items, kwargs):
         if self.is_download() and items:
             return self._get_download(items)
-
         context = {
             "view": "get-the-detail",
             "cms_page": 'global',
@@ -220,9 +219,15 @@ class TableGroupView(TemplateView):
         if not isinstance(value, list):
             value = [value]
         result = [
-            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else ""
+            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
             for inv in value
         ]
+        return result
+
+    def _process_stakeholder_name(self, value):
+        if not isinstance(value, list):
+            value = [value]
+        result = [{"name": inv} for inv in value]
         return result
 
     def _process_stitched_together_field(self, value):
@@ -235,10 +240,10 @@ class TableGroupView(TemplateView):
 
     def _process_value(self, c, value):
         if not value: return None
-
         process_functions = {
             'intention': self._process_intention,
             'investor_name': self._process_investor_name,
+            'stakeholder_name': self._process_stakeholder_name,
             'investor_country': self._process_stitched_together_field,
             'investor_region': self._process_stitched_together_field,
             'crop': self._process_stitched_together_field,
@@ -270,6 +275,7 @@ class TableGroupView(TemplateView):
             "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
             "target_region": ["target_region", "intention", "deal_count", "availability"],
             "investor_name": ["investor_name", "investor_country", "intention", "deal_count", "availability"],
+            "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
             "investor_country": ["investor_country", "investor_region", "intention", "deal_count", "availability"],
             "investor_region": ["investor_region", "intention", "deal_count", "availability"],
             "intention": ["intention", "deal_count", "availability"],

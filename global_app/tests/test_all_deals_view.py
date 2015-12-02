@@ -65,6 +65,14 @@ class TestInvestorNameGroupView(TestViewBase, TestCase):
         TestViewBase.setUp(self)
 
 
+class TestStakeholderNameGroupView(TestViewBase, TestCase):
+
+    VIEW_URL = '/en/global_app/by-stakeholder-name/none/'
+    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
+    def setUp(self):
+        TestViewBase.setUp(self)
+
+
 class TestInvestorCountryGroupView(TestViewBase, TestCase):
 
     VIEW_URL = '/en/global_app/by-investor-country/none/'
