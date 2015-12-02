@@ -18,14 +18,14 @@ class TableGroupView(TemplateView):
 
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = [
-        "deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status",
+        "deal_id", "target_country", "location", "stakeholder_name", "stakeholder_country", "intention", "negotiation_status",
         "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal",
         "data_source_type", "data_source_url", "data_source_date", "data_source_organisation",
         "contract_farming", "crop"
     ]
-    QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
+    QUERY_LIMITED_GROUPS = ["target_country", "stakeholder_name", "stakeholder_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
-        "deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "investor_country", "intention",
+        "deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country", "intention",
         "negotiation_status", "implementation_status", "intended_size", "contract_size",
     ]
     DEFAULT_GROUP = "by-target-region"
@@ -282,7 +282,7 @@ class TableGroupView(TemplateView):
             "crop": ["crop", "intention", "deal_count", "availability"],
             "year": ["year", "intention", "deal_count", "availability"],
             "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
-            "all": ["deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "investor_country",
+            "all": ["deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country",
                     "intention", "negotiation_status", "implementation_status", "intended_size",
                     "contract_size", ]
         }

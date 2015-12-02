@@ -92,6 +92,10 @@ class SQLBuilderData:
             ],
 
             'stakeholder_country': [
+                join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+                join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
+                join(InvestorVentureInvolvement, 'ivi', on='ivi.fk_venture_id = operational_stakeholder.id'),
+                join(Investor, 'stakeholders', on='ivi.fk_investor_id = stakeholders.id'),
                 join(Country, 'stakeholder_country', on='stakeholder_country.id = stakeholders.fk_country_id'),
             ],
 
