@@ -140,9 +140,15 @@ class SQLBuilder(SQLBuilderData):
         spec = self.COLUMNS.get(c, [join_attributes(c)])
         if isinstance(spec, tuple):
             if not any(spec[0] in string for string in self.join_expressions):
-                self.join_expressions.extend(spec[1])
+                self._add_join_if_not_present(spec[1])
         else:
-            self.join_expressions.extend(spec)
+            self._add_join_if_not_present(spec)
+
+    def _add_join_if_not_present(self, new_join_expressions):
+        for new_join_expression in new_join_expressions:
+            if new_join_expression not in self.join_expressions:
+                self.join_expressions.append(new_join_expression)
+
 
     @classmethod
     def max_version_condition(cls, model=Activity, alias='a', id_field='activity_identifier'):
