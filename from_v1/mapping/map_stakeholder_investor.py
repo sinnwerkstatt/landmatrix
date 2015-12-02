@@ -33,7 +33,7 @@ class MapStakeholderInvestor(MapModel):
         'id': (
             'id',
             ('name', get_name_for_stakeholder),
-            ('country', get_country_id_for_stakeholder),
+            ('fk_country_id', get_country_id_for_stakeholder),
             ('classification', get_classification_for_stakeholder),
             ('timestamp', get_now)
         )
