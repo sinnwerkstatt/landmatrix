@@ -277,7 +277,13 @@ class TableGroupView(TemplateView):
             "investor_name": ["investor_name", "investor_country", "intention", "deal_count", "availability"],
             "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
             "investor_country": ["investor_country", "investor_region", "intention", "deal_count", "availability"],
+# stakeholder_region temporarily disabled until a more intelligent caching for the public interface variables is implemented
+#            "stakeholder_country": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
+            "stakeholder_country": ["stakeholder_country", "intention", "deal_count", "availability"],
             "investor_region": ["investor_region", "intention", "deal_count", "availability"],
+# intention temporarily disabled until a more intelligent caching for the public interface variables is implemented
+#            "stakeholder_region": ["stakeholder_region", "intention", "deal_count", "availability"],
+            "stakeholder_region": ["stakeholder_region", "deal_count", "availability"],
             "intention": ["intention", "deal_count", "availability"],
             "crop": ["crop", "intention", "deal_count", "availability"],
             "year": ["year", "intention", "deal_count", "availability"],
