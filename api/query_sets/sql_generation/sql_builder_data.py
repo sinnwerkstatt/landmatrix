@@ -18,7 +18,9 @@ class SQLBuilderData:
         'intention':        "intention.attributes->'intention'",
         'investor_region':  'investor_region.name',
         'investor_country': 'investor_country.name',
+        'stakeholder_country': 'stakeholder_country.name',
         'investor_name':    "investor_name.attributes->'investor_name'",
+        'stakeholder_name': 'stakeholders.name',
         'data_source_type': "data_source_type.attributes->'type'"
     }
 
@@ -30,6 +32,9 @@ class SQLBuilderData:
             'intended_size': [join_attributes('intended_size')],
             'contract_size': [join_attributes('contract_size')],
             'production_size': [join_attributes('production_size')],
+
+            'deal_count': [],
+            'availability': [],
 
             'investor_country':   (
                 'investor_country', [
@@ -76,7 +81,18 @@ class SQLBuilderData:
 
             'operational_stakeholder': [
                 join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
-                join(Investor, 'li', on='iai.fk_investor_id = li.id')
+                join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id')
+            ],
+
+            'stakeholder_name': [
+                join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+                join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
+                join(InvestorVentureInvolvement, 'ivi', on='ivi.fk_venture_id = operational_stakeholder.id'),
+                join(Investor, 'stakeholders', on='ivi.fk_investor_id = stakeholders.id'),
+            ],
+
+            'stakeholder_country': [
+                join(Country, 'stakeholder_country', on='stakeholder_country.id = stakeholders.fk_country_id'),
             ],
 
             'data_source_type':   ( 'data_source', [ join_attributes('data_source_type', 'type') ] ),
@@ -106,9 +122,17 @@ class SQLBuilderData:
             "ARRAY_AGG(DISTINCT CONCAT(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)) AS investor_name",
             "CONCAT(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier) AS investor_name"
         ],
+        "stakeholder_name": [
+            "ARRAY_AGG(DISTINCT stakeholders.name) AS stakeholder_name",
+            "stakeholders.name AS stakeholder_name"
+        ],
         "investor_country": [
             "ARRAY_AGG(DISTINCT CONCAT(investor_country.name, '#!#', investor_country.code_alpha3)) AS investor_country",
             "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) AS investor_country"
+        ],
+        "stakeholder_country": [
+            "ARRAY_AGG(DISTINCT stakeholder_country.name) AS stakeholder_country",
+            "stakeholder_country.name AS stakeholder_country"
         ],
         "investor_region": [
             "ARRAY_AGG(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id)) AS investor_region",
@@ -124,7 +148,7 @@ class SQLBuilderData:
         ],
         "deal_availability": ["a.availability AS availability", "a.availability AS availability"],
         "data_source_type": [
-#            "ARRAY_AGG(DISTINCT CONCAT(data_source_type.attributes->'type', '#!#', data_source_type.group))s AS data_source_type",
+#            "ARRAY_AGG(DISTINCT CONCAT(data_source_type.attributes->'type', '#!#', data_source_type.group)) AS data_source_type",
             "ARRAY_AGG(DISTINCT data_source_type.attributes->'type') AS data_source_type",
             "data_source_type.attributes->'type' AS data_source_type"
         ],
@@ -147,8 +171,8 @@ class SQLBuilderData:
                          "SUM(a.availability) / COUNT(a.activity_identifier) AS availability"],
         "primary_investor": ["ARRAY_AGG(DISTINCT p.name) AS primary_investor",
                              "ARRAY_AGG(DISTINCT p.name) AS primary_investor"],
-        "operational_stakeholder": ["ARRAY_AGG(DISTINCT li.name) AS investor",
-                                    "ARRAY_AGG(DISTINCT li.name) AS investor"],
+        "operational_stakeholder": ["ARRAY_AGG(DISTINCT operational_stakeholder.name) AS investor",
+                                    "ARRAY_AGG(DISTINCT operational_stakeholder.name) AS investor"],
         "negotiation_status": [
             """ARRAY_AGG(DISTINCT CONCAT(
                         negotiation_status.attributes->'negotiation_status',        '#!#',

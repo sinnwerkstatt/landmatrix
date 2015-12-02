@@ -14,6 +14,9 @@ class RecordReader:
     def __init__(self, filters, columns):
         self.filters = filters
         self.columns = columns
+        if self.DEBUG:
+            print('*'*80, 'Filters: \n', filters)
+            print('*'*80, 'columns: \n', columns)
 
     def get_all(self, assemble=None):
         if list_view_wanted(self.filters):
