@@ -40,17 +40,17 @@ if __name__ == '__main__':
     try:
 
         from mapping import *
-        # from mapping.map_tag_groups import MapTagGroups
+        from mapping.aux_functions import get_country_id_for_stakeholder
         if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
         map_classes(
-            MapStatus,
-            MapInvestor,
-            MapActivity, MapStakeholder, MapPrimaryInvestor,
-            MapInvestorActivityInvolvement,
+            # MapStatus,
+            # MapInvestor,
+            # MapActivity, MapStakeholder, MapPrimaryInvestor,
+            # MapInvestorActivityInvolvement,
             MapStakeholderInvestor,
-            MapStakeholderVentureInvolvement
+            # MapStakeholderVentureInvolvement
         )
 
         if False:
