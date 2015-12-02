@@ -10,18 +10,19 @@ class SQLBuilderData:
         self._setup_column_sql()
 
     GROUP_TO_NAME = {
-        'all':              "'all deals'",
-        'target_region':    'deal_region.name',
-        'target_country':   'deal_country.name',
-        'year':             'EXTRACT(YEAR FROM pi_negotiation_status.date)',
-        'crop':             'crop.name',
-        'intention':        "intention.attributes->'intention'",
-        'investor_region':  'investor_region.name',
-        'investor_country': 'investor_country.name',
+        'all':                 "'all deals'",
+        'target_region':       'deal_region.name',
+        'target_country':      'deal_country.name',
+        'year':                'EXTRACT(YEAR FROM pi_negotiation_status.date)',
+        'crop':                'crop.name',
+        'intention':           "intention.attributes->'intention'",
+        'investor_region':     'investor_region.name',
+        'stakeholder_region':  'stakeholder_region.name',
+        'investor_country':    'investor_country.name',
         'stakeholder_country': 'stakeholder_country.name',
-        'investor_name':    "investor_name.attributes->'investor_name'",
-        'stakeholder_name': 'stakeholders.name',
-        'data_source_type': "data_source_type.attributes->'type'"
+        'investor_name':       "investor_name.attributes->'investor_name'",
+        'stakeholder_name':    'stakeholders.name',
+        'data_source_type':    "data_source_type.attributes->'type'"
     }
 
     COLUMNS = { }
@@ -99,6 +100,15 @@ class SQLBuilderData:
                 join(Country, 'stakeholder_country', on='stakeholder_country.id = stakeholders.fk_country_id'),
             ],
 
+            'stakeholder_region': [
+                join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+                join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
+                join(InvestorVentureInvolvement, 'ivi', on='ivi.fk_venture_id = operational_stakeholder.id'),
+                join(Investor, 'stakeholders', on='ivi.fk_investor_id = stakeholders.id'),
+                join(Country, 'stakeholder_country', on='stakeholder_country.id = stakeholders.fk_country_id'),
+                join(Region, 'stakeholder_region', on='stakeholder_region.id = stakeholder_country.fk_region_id')
+            ],
+
             'data_source_type':   ( 'data_source', [ join_attributes('data_source_type', 'type') ] ),
 
             'data_source':        [
@@ -141,6 +151,10 @@ class SQLBuilderData:
         "investor_region": [
             "ARRAY_AGG(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id)) AS investor_region",
             "CONCAT(investor_region.name, '#!#', investor_region.id) AS investor_region"
+        ],
+        "stakeholder_region": [
+            "ARRAY_AGG(DISTINCT stakeholder_region.name) AS stakeholder_region",
+            "stakeholder_region.name AS stakeholder_region"
         ],
         "intention": [
             "ARRAY_AGG(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention') AS intention",
