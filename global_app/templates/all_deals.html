@@ -285,8 +285,8 @@ $(document).ready(function () {
         <th><a {% if data.order_by == 'primary_investor' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-primary_investor' %}" {% elif data.order_by == '-primary_investor' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'primary_investor' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'primary_investor' %}"{% endif %}>Primary investor</a></th>
         {% elif "operational_stakeholder"  == column %}
         <th><a {% if data.order_by == 'operational_stakeholder' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-operational_stakeholder' %}" {% elif data.order_by == '-operational_stakeholder' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'operational_stakeholder' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'operational_stakeholder' %}"{% endif %}>Operational stakeholder</a></th>
-        {% elif "investor_name"  == column %}
-        <th><a {% if data.order_by == 'investor_name' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-investor_name' %}" {% elif data.order_by == '-investor_name' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'investor_name' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'investor_name' %}"{% endif %}>Secondary investors</a></th>
+        {% elif "stakeholder_name"  == column %}
+        <th><a {% if data.order_by == 'stakeholder_name' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-stakeholder_name' %}" {% elif data.order_by == '-stakeholder_name' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'stakeholder_name' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'stakeholder_name' %}"{% endif %}>Stakeholders</a></th>
         {% elif "investor_country" == column %}
         <th class="investor-country"><a {% if data.order_by == 'investor_country' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-investor_country' %}" {% elif data.order_by == '-investor_country' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'investor_country' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'investor_country' %}"{% endif %}>Secondary&nbsp;investor country</a></th>
         {% elif "investor_region" == column %}
@@ -366,10 +366,10 @@ $(document).ready(function () {
             {% else %}{% trans "unknown" %}
             {% endif %}
             </td>
-          {% elif column == "investor_name" %}
+          {% elif column == "stakeholder_name" %}
             <td style="width:183px">
-            {% if item.investor_name %}
-                {% for i in item.investor_name %}
+            {% if item.stakeholder_name %}
+                {% for i in item.stakeholder_name %}
                   <a href="/{{ cms_page }}/by-investor-name/{{i.id}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ i.name }}</a><br/>
                 {% endfor %}
             {% else %}{% trans "unknown" %}
