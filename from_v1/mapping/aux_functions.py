@@ -53,9 +53,7 @@ def get_first_stakeholder_tag_value(stakeholder_id, tag_key):
 
 def get_country_id_for_stakeholder(stakeholder_id):
     country = _get_country_for_stakeholder(stakeholder_id)
-    if country:
-        return country.pk
-    return None
+    return country.pk if country else None
 
 
 def _replace_model_name_with_id_str(model, attributes, attribute):
