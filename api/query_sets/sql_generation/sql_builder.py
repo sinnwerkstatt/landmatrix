@@ -128,10 +128,13 @@ class SQLBuilder(SQLBuilderData):
             return False
 
     def _need_involvements_and_stakeholders(self):
-        return 'investor' in self.filters or any(
+        return self._investor_filter_is_set() or any(
             x in ("investor_country","investor_region", "investor_name", 'primary_investor', "primary_investor_name")
             for x in self.columns
         )
+
+    def _investor_filter_is_set(self):
+        return 'investor' in self.filters and 'tags' in self.filters['investor'] and self.filters['investor']['tags']
 
     def _add_join_for_column(self, c):
         spec = self.COLUMNS.get(c, [join_attributes(c)])
