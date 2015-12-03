@@ -44,12 +44,13 @@ if __name__ == '__main__':
         if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
+        MapActivityAttributeGroup._done = True
         map_classes(
             # MapStatus,
             # MapInvestor,
             # MapActivity, MapStakeholder, MapPrimaryInvestor,
             # MapInvestorActivityInvolvement,
-            MapStakeholderInvestor,
+            MapPublicInterfaceCache,
             # MapStakeholderVentureInvolvement
         )
 
