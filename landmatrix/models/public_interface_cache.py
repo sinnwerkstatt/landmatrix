@@ -12,6 +12,7 @@ class PublicInterfaceCache(DefaultStringRepresentation, models.Model):
     deal_scope = models.CharField(
         verbose_name=_('Deal scope'), max_length=16,
         choices=(('domestic', 'domestic'), ('transnational', 'transnational')),
+        blank=True, null=True,
         db_index=True
     )
     negotiation_status = models.CharField(
@@ -23,7 +24,8 @@ class PublicInterfaceCache(DefaultStringRepresentation, models.Model):
             ("Concluded (Contract signed)", "Concluded (Contract signed)"),
             ("Failed (Negotiations failed)", "Failed (Negotiations failed)"),
             ("Failed (Contract canceled)", "Failed (Contract canceled)"),
-        ), db_index=True)
+        ), blank=True, null=True,
+        db_index=True)
     implementation_status = models.CharField(
         verbose_name=_('Implementation status'), max_length=64,
         choices=(
@@ -31,8 +33,9 @@ class PublicInterfaceCache(DefaultStringRepresentation, models.Model):
             ("Startup phase (no production)", "Startup phase (no production)"),
             ("In operation (production)", "In operation (production)"),
             ("Project abandoned", "Project abandoned"),
-        ), db_index=True)
-    deal_size = models.IntegerField(verbose_name=_('Deal size'), db_index=True)
+        ), blank=True, null=True,
+        db_index=True)
+    deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
 
     class Meta:
         index_together = [
