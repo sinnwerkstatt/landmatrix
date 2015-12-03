@@ -1,3 +1,5 @@
+from psycopg2._psycopg import ProgrammingError
+
 from .deals_test_data import DealsTestData
 from global_app.views import ActivityProtocol
 from landmatrix.models import Activity

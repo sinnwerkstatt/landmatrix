@@ -15,7 +15,7 @@ class GenerateOldSQL:
                 "where": "",
                 "from": "",
             },
-            "investor": {
+            "stakeholder": {
                 "where": "",
                 "from": "",
             }
@@ -130,8 +130,8 @@ class GenerateOldSQL:
                 else:
                     tables_from_inv += "LEFT JOIN " + StakeholderAttributeGroup._meta.db_table + " AS skv%(count)i\n" % {"count": i}
                     tables_from_inv += " ON (skv%(count)i.fk_stakeholder_id = s.id AND skv%(count)i.attributes ? '%(key)s')\n" % {"count": i, "key": variable}
-            sql["investor"]["from"] = tables_from_inv
-            sql["investor"]["where"] = where_inv
+            sql["stakeholder"]["from"] = tables_from_inv
+            sql["stakeholder"]["where"] = where_inv
         return sql
 
     ## operation => (numeric operand, character operand, description )
