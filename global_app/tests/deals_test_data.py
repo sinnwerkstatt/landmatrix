@@ -8,11 +8,14 @@ class DealsTestData:
 
     PI_NAME = 'This should be a darn unique investor name, right?'
     INTENTION = 'Livestock'
-    MINIMAL_POST = { "filters": { "group_by": "all" }, "columns": ["primary_investor", "intention"] }
-    LIST_POST = { "filters": { "group_by": "all" }, "columns": ["primary_investor", "intention"] }
+    MINIMAL_POST = { "filters": { "group_by": "all" }, "columns": ["operational_stakeholder", "intention"] }
+    LIST_POST = { "filters": { "group_by": "all" }, "columns": ["operational_stakeholder", "intention"] }
     TYPICAL_POST = {
         "filters": {"starts_with": 'null', "group_value": "", "group_by": "all"},
-        "columns": ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size"]
+        "columns": [
+            "deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country",
+            "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size"
+        ]
     }
     ACT_ID = 1
 
