@@ -6,13 +6,6 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 # Bit of code monkeying going on here because I couldn't get the test framework to run dynamically created test cases
 
-class TestInvestorRegionGroupView(TestViewBase, TestCase):
-
-    VIEW_URL = '/en/global_app/by-investor-region/none/'
-    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
-    def setUp(self):
-        TestViewBase.setUp(self)
-
 
 class TestTargetCountryGroupView(TestViewBase, TestCase):
 
@@ -30,25 +23,9 @@ class TestTargetRegionGroupView(TestViewBase, TestCase):
         TestViewBase.setUp(self)
 
 
-class TestInvestorNameGroupView(TestViewBase, TestCase):
-
-    VIEW_URL = '/en/global_app/by-investor-name/none/'
-    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
-    def setUp(self):
-        TestViewBase.setUp(self)
-
-
 class TestStakeholderNameGroupView(TestViewBase, TestCase):
 
     VIEW_URL = '/en/global_app/by-stakeholder-name/none/'
-    EXPECTED_VIEW_DATA = [ 'Agriculture' ]
-    def setUp(self):
-        TestViewBase.setUp(self)
-
-
-class TestInvestorCountryGroupView(TestViewBase, TestCase):
-
-    VIEW_URL = '/en/global_app/by-investor-country/none/'
     EXPECTED_VIEW_DATA = [ 'Agriculture' ]
     def setUp(self):
         TestViewBase.setUp(self)

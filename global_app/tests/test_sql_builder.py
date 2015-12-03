@@ -40,9 +40,9 @@ class TestSQLBuilder(TestCase, DealsTestData, GenerateOldSQL):
             post['filters'] = test
             builder = SQLBuilder.create(post['filters'], post['columns'])
             self.assertIn(self._browse_filters_to_sql(post['filters'])['activity']['from'], builder.filter_from())
-            self.assertIn(self._browse_filters_to_sql(post['filters'])['investor']['from'], builder.filter_from())
+            self.assertIn(self._browse_filters_to_sql(post['filters'])['stakeholder']['from'], builder.filter_from())
             self.assertIn(self._browse_filters_to_sql(post['filters'])['activity']['where'], builder.filter_where())
-            self.assertIn(self._browse_filters_to_sql(post['filters'])['investor']['where'], builder.filter_where())
+            self.assertIn(self._browse_filters_to_sql(post['filters'])['stakeholder']['where'], builder.filter_where())
 
     def _check_order_by(self, column, expected):
         post = self.MINIMAL_POST

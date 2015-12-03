@@ -71,6 +71,7 @@ def _same_string_multiple_times(expected, actual):
 
 def _none_is_equaled(expected, actual):
     if expected == None and '#!#' in actual and actual.startswith('#'): return True
+    if expected == None: return not actual
     return expected == actual
 
 def _array_equal_to_tinkered_string(expected, actual):
@@ -79,15 +80,15 @@ def _array_equal_to_tinkered_string(expected, actual):
 
 class Compare:
 
-    NUM_COMPARED_RECORDS = 1000
+    NUM_COMPARED_RECORDS = 5000
 
     files_to_compare = [
         'by_crop',
         'by_data_source_type',
         'by_intention',
-        'by_investor_country',
+        # 'by_investor_country',
         'by_investor',
-        'by_investor_region',
+        # 'by_investor_region',
         'by_target_country',
         'by_target_region',
         'all_deals',
@@ -140,8 +141,12 @@ class Compare:
 
     def _prepare_request(self, postdata):
         request = HttpRequest()
+        postdata = self._adjust_postdata_to_new_investor_model(postdata)
         request.POST = {'data': postdata}
         return request
+
+    def _adjust_postdata_to_new_investor_model(self, postdata):
+        return postdata.replace('primary_investor', 'operational_stakeholder').replace('investor', 'stakeholder')
 
     def _compare_all_items(self, query_result, records):
         for id in range(0, min(len(records), len(query_result))):
@@ -249,7 +254,7 @@ class Compare:
 def record_difference(records1, records2):
     records1 = set(lists_to_tuples(records1))
     records2 = set(lists_to_tuples(records2))
-    return records1 - records2
+    return sorted(list(records1 - records2))
 
 
 def list_contains_lists(collection):
