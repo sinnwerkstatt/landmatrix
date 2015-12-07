@@ -55,51 +55,26 @@ class DealsQuerySet(FakeQuerySetFlat):
         if not country_id: return
         self._additional_joins = add_to_list_if_not_present(
             self._additional_joins, [
-                "LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id",
-                "LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'",
+                "LEFT JOIN landmatrix_investorventureinvolvement AS ivi             ON ivi.fk_venture_id = operational_stakeholder.id",
+                "LEFT JOIN landmatrix_investor                  AS stakeholder      ON ivi.fk_investor_id = stakeholder.id",
         ])
         self._additional_wheres = add_to_list_if_not_present(
             self._additional_wheres, [
-                "skvf1.attributes->'country' = '%s'" % country_id
+                "stakeholder.fk_country_id = %s" % country_id
         ])
 
     def _set_investor_region(self, region_id):
         if not region_id: return
         self._additional_joins = add_to_list_if_not_present(
             self._additional_joins, [
-                "LEFT JOIN landmatrix_stakeholder               AS s                ON i.fk_stakeholder_id = s.id",
-                "LEFT JOIN landmatrix_stakeholderattributegroup AS skvf1            ON s.id = skvf1.fk_stakeholder_id AND skvf1.attributes ? 'country'",
-                "LEFT JOIN landmatrix_country                   AS investor_country ON CAST(skvf1.attributes->'country' AS NUMERIC) = investor_country.id",
+                "LEFT JOIN landmatrix_investorventureinvolvement AS ivi             ON ivi.fk_venture_id = operational_stakeholder.id",
+                "LEFT JOIN landmatrix_investor                  AS stakeholder      ON ivi.fk_investor_id = stakeholder.id",
+                "LEFT JOIN landmatrix_country                   AS investor_country ON stakeholder.fk_country_id = investor_country.id",
         ])
         self._additional_wheres = add_to_list_if_not_present(
             self._additional_wheres, [
                 "investor_country.fk_region_id = " + region_id
         ])
-
-    # def _set_investor_country(self, country_id):
-    #     if not country_id: return
-    #     self._additional_joins = add_to_list_if_not_present(
-    #         self._additional_joins, [
-    #             "LEFT JOIN landmatrix_investorventureinvolvement AS ivi             ON ivi.fk_venture_id = operational_stakeholder.id",
-    #             "LEFT JOIN landmatrix_investor                  AS stakeholder      ON ivi.fk_investor_id = stakeholder.id",
-    #     ])
-    #     self._additional_wheres = add_to_list_if_not_present(
-    #         self._additional_wheres, [
-    #             "stakeholder.fk_country_id = %s" % country_id
-    #     ])
-    #
-    # def _set_investor_region(self, region_id):
-    #     if not region_id: return
-    #     self._additional_joins = add_to_list_if_not_present(
-    #         self._additional_joins, [
-    #             "LEFT JOIN landmatrix_investorventureinvolvement AS ivi             ON ivi.fk_venture_id = operational_stakeholder.id",
-    #             "LEFT JOIN landmatrix_investor                  AS stakeholder      ON ivi.fk_investor_id = stakeholder.id",
-    #             "LEFT JOIN landmatrix_country                   AS investor_country ON stakeholder.fk_country_id = investor_country.id",
-    #     ])
-    #     self._additional_wheres = add_to_list_if_not_present(
-    #         self._additional_wheres, [
-    #             "investor_country.fk_region_id = " + region_id
-    #     ])
 
     def _set_target_country(self, country_id):
         if not country_id: return
