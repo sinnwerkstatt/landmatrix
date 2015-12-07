@@ -1,5 +1,7 @@
 from api.query_sets.top_10_countries_query_set import Top10InvestorCountriesQuerySet, Top10TargetCountriesQuerySet
+from landmatrix.models.activity import Activity
 from landmatrix.models.country import Country
+from landmatrix.models.investor import Investor
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -72,12 +74,10 @@ class TestTop10Countries(ApiTestFunctions, DealsTestData):
 
     def _generate_enough_deals(self, status):
         self._generate_countries(self.NUM_DEALS)
-        for i in range(0, self.NUM_DEALS + 1):
-            investor_country = Country(self.investor_country.id + 1 + i)
+        for i, investor_country in enumerate(Country.objects.all()[:self.NUM_DEALS]):
             attributes = {'pi_deal_size': 2 << i, 'deal_scope': self.DEAL_SCOPE, 'pi_negotiation_status': status}
             attributes.update(self.RELEVANT_ATTRIBUTES)
             self._generate_deal(investor_country, self.deal_country, attributes)
-
 
 class TestTop10CountriesIntended(TestTop10Countries):
     NEGOTIATION_STATUS = "intended (under negotiation)"

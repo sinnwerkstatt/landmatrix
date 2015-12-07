@@ -113,9 +113,10 @@ class DealsTestData:
         ).save()
 
     def _generate_operational_stakeholder(self, activity):
+        new_investor_identifier = get_latest_investor_identifier() + 1
         operational_stakeholder = Investor(
             name=self.PI_NAME, fk_country_id=self.investor_country.id,
-            fk_status=Status.objects.get(id=2), investor_identifier=1,
+            fk_status=Status.objects.get(id=2), investor_identifier=new_investor_identifier,
             version=1
         )
         operational_stakeholder.save()
@@ -126,9 +127,10 @@ class DealsTestData:
         return operational_stakeholder
 
     def _generate_stakeholder(self, operational_stakeholder):
+        new_investor_identifier = get_latest_investor_identifier() + 1
         stakeholder = Investor(
             name=self.STAKEHOLDER_NAME, fk_country_id=self.investor_country.id, fk_status=Status.objects.get(id=2),
-            investor_identifier=2, version=1
+            investor_identifier=new_investor_identifier, version=1
         )
         stakeholder.save()
         InvestorVentureInvolvement(
@@ -192,6 +194,9 @@ class DealsTestData:
         StakeholderAttributeGroup(
             fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': str(investor_country.id)}
         ).save()
+        self.investor_country = investor_country
+        op = self._generate_operational_stakeholder(activity)
+        stakeholder = self._generate_stakeholder(op)
         PublicInterfaceCache(
             fk_activity=activity,
             is_deal=attributes['pi_deal'],
@@ -200,3 +205,9 @@ class DealsTestData:
             implementation_status=attributes.get('pi_implementation_status'),
             deal_size=attributes.get('pi_deal_size')
         ).save()
+
+
+def get_latest_investor_identifier():
+    from django.db.models import Max
+    max_identifier = Investor.objects.values().aggregate(Max('investor_identifier'))['investor_identifier__max']
+    return max_identifier if max_identifier else 0
