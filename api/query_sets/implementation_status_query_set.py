@@ -1,5 +1,4 @@
 from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -11,16 +10,11 @@ class ImplementationStatusQuerySet(FakeQuerySetWithSubquery):
     FIELDS = [
         ('implementation_status', 'sub.implementation_status'),
         ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
-        ('deal_size',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
+        ('deal_size',          "ROUND(SUM(pi.deal_size))")
     ]
     SUBQUERY_FIELDS = [
-        ('negotiation_status', "negotiation.attributes->'pi_negotiation_status'"),
-        ('implementation_status',    "implementation.attributes->'pi_implementation_status'")
-    ]
-    ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
-        "LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'"
-        "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
+        ('negotiation_status', "pi.negotiation_status"),
+        ('implementation_status',    "pi.implementation_status")
     ]
     GROUP_BY = ['sub.implementation_status']
     ORDER_BY = ['sub.implementation_status']
