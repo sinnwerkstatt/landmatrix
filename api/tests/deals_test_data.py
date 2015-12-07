@@ -1,3 +1,5 @@
+from datetime import datetime
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models import *
@@ -50,6 +52,13 @@ class DealsTestData:
             }
         )
         aag.save()
+        pi = PublicInterfaceCache(
+            fk_activity = Activity.objects.last(),
+            is_deal=True,
+            deal_scope='transnational',
+            timestamp=datetime.now()
+        )
+        pi.save()
 
     language = None
     def _generate_language(self):
@@ -90,6 +99,14 @@ class DealsTestData:
             fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': str(self.investor_country.id)}
         )
         sh_attributes.save()
+        PublicInterfaceCache(
+            fk_activity=activity,
+            is_deal=attributes['pi_deal'],
+            deal_scope=attributes.get('deal_scope'),
+            negotiation_status=attributes.get('pi_negotiation_status'),
+            implementation_status=attributes.get('pi_implementation_status'),
+            deal_size=attributes.get('pi_deal_size')
+        ).save()
 
     def _generate_involvement(self, preset_id):
         activity = Activity(activity_identifier=preset_id, fk_status_id=2, version=1)
@@ -145,4 +162,12 @@ class DealsTestData:
         ).save()
         StakeholderAttributeGroup(
             fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': str(investor_country.id)}
+        ).save()
+        PublicInterfaceCache(
+            fk_activity=activity,
+            is_deal=attributes['pi_deal'],
+            deal_scope=attributes.get('deal_scope'),
+            negotiation_status=attributes.get('pi_negotiation_status'),
+            implementation_status=attributes.get('pi_implementation_status'),
+            deal_size=attributes.get('pi_deal_size')
         ).save()

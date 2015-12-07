@@ -20,9 +20,10 @@ class StatisticsManager(models.Manager):
     LEFT JOIN  """ + Country._meta.db_table + """ AS investor_country ON stakeholder_attrs.attributes->'country' = investor_country.name
     LEFT JOIN  """ + Region._meta.db_table + """ AS investor_region ON investor_country.fk_region_id = investor_region.id
     LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON activity_attrs.attributes->'target_country' = deal_country.name
-    LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id"""
+    LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id"""+\
+    "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal\n"
 
-        HECTARES_SQL = "ROUND(COALESCE(SUM(CAST(REPLACE(activity_attrs.attributes->'pi_deal_size', ',', '.') AS numeric)), 0)) AS deal_size"
+        HECTARES_SQL = "ROUND(COALESCE(SUM(pi.deal_size)), 0)) AS deal_size"
 
         BASE_CONDITON = """a.version = (
         SELECT MAX(version)
