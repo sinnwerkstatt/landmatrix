@@ -37,29 +37,6 @@ class SQLBuilderData:
             'deal_count': [],
             'availability': [],
 
-            # 'investor_country':   (
-            #     'investor_country', [
-            #         join_attributes(
-            #             'skvl1', 'country',
-            #             attributes_model=StakeholderAttributeGroup, attribute_field='fk_stakeholder_id'
-            #         ),
-            #         join(
-            #             Country, 'investor_country',
-            #             on="investor_country.id = CAST(skvl1.attributes->'country' AS numeric)"
-            #         ),
-            #         join_expression(Region, 'investor_region', 'investor_country.fk_region_id')
-            #     ]
-            # ),
-
-            # 'investor_name':      [
-            #     join(PrimaryInvestor, 'pi', 'i.fk_primary_investor_id = pi.id'),
-            #     join(Status, 'pi_st', 'pi.fk_status_id = pi_st.id'),
-            #     join_attributes(
-            #         'investor_name',
-            #         attributes_model=StakeholderAttributeGroup, attribute_field='fk_stakeholder_id'
-            #     )
-            # ],
-
             'year': [ join_attributes('pi_negotiation_status') ],
 
             'crop':               [
@@ -77,8 +54,6 @@ class SQLBuilderData:
                     join_expression(Region, 'deal_region', 'deal_country.fk_region_id')
                 ]
             ),
-
-            # 'primary_investor':   [ join_expression(PrimaryInvestor, 'p', 'i.fk_primary_investor_id') ],
 
             'operational_stakeholder': [
                 join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
