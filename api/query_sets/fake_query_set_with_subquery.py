@@ -12,6 +12,7 @@ SELECT DISTINCT
 --  columns:
     %s
 FROM landmatrix_activity                    AS a
+LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_activity_id AND pi.is_deal
 LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.fk_activity_id AND size.attributes ? 'pi_deal_size',
 (
     SELECT DISTINCT
@@ -19,9 +20,9 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
 --  subquery columns:
         %s
     FROM landmatrix_activity                       AS a
+    LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_activity_id AND pi.is_deal
     LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
-    LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
-    LEFT JOIN landmatrix_activityattributegroup    AS bf               ON a.id = bf.fk_activity_id AND bf.attributes ? 'pi_deal'
+--#    LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
 --  additional joins:
     %s
     WHERE
@@ -30,12 +31,12 @@ LEFT JOIN landmatrix_activityattributegroup AS size             ON a.id = size.f
             WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
         )
         AND a.fk_status_id IN (2, 3)
-        AND bf.attributes->'pi_deal' = 'True'
-        AND pi.version = (
-            SELECT MAX(version) FROM landmatrix_primaryinvestor AS amax
-            WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
-        )
-        AND pi.fk_status_id IN (2, 3)
+        AND pi.is_deal
+--#        AND pi.version = (
+--#            SELECT MAX(version) FROM landmatrix_primaryinvestor AS amax
+--#            WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
+--#        )
+--#        AND pi.fk_status_id IN (2, 3)
 --  additional where conditions:
         %s
 --  filter sql:
@@ -78,9 +79,10 @@ SELECT DISTINCT
 --  columns:
     %s
 FROM landmatrix_activity                       AS a
+LEFT JOIN landmatrix_publicinterfacecache      AS pi               ON a.id = pi.fk_activity_id AND pi.is_deal
 LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
-LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
-LEFT JOIN landmatrix_activityattributegroup    AS bf               ON a.id = bf.fk_activity_id AND bf.attributes ? 'pi_deal'
+--# LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
+--#LEFT JOIN landmatrix_activityattributegroup    AS bf               ON a.id = bf.fk_activity_id AND bf.attributes ? 'pi_deal'
 --  additional joins:
 %s
 WHERE
@@ -89,12 +91,13 @@ WHERE
         WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
     )
     AND a.fk_status_id IN (2, 3)
-    AND bf.attributes->'pi_deal' = 'True'
-    AND pi.version = (
-        SELECT MAX(version) FROM landmatrix_primaryinvestor AS amax
-        WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
-    )
-    AND pi.fk_status_id IN (2, 3)
+--#    AND bf.attributes->'pi_deal' = 'True'
+    AND pi.is_deal
+--#    AND pi.version = (
+--#        SELECT MAX(version) FROM landmatrix_primaryinvestor AS amax
+--#        WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
+--#    )
+--#    AND pi.fk_status_id IN (2, 3)
 --  additional where conditions:
     %s
 --  filter sql:

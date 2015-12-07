@@ -46,7 +46,7 @@ class TestActivityProtocol(TestCase, DealsTestData):
                 LEFT JOIN landmatrix_stakeholder            AS s          ON (i.fk_stakeholder_id = s.id)
                 LEFT JOIN landmatrix_primaryinvestor        AS p          ON (i.fk_primary_investor_id = p.id)
                 LEFT JOIN landmatrix_activityattributegroup AS intention  ON (a.id = intention.fk_activity_id AND intention.attributes ? 'intention')
-                LEFT JOIN landmatrix_activityattributegroup AS pi_deal    ON (a.id = pi_deal.fk_activity_id AND pi_deal.attributes ? 'pi_deal')
+                LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal
                 LEFT JOIN landmatrix_activityattributegroup AS deal_scope ON (a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope')
             WHERE a.version = (
                     SELECT max(version)
@@ -54,7 +54,6 @@ class TestActivityProtocol(TestCase, DealsTestData):
                     WHERE amax.fk_status_id = st.id AND amax.activity_identifier = a.activity_identifier AND st.name IN ('active', 'overwritten', 'deleted')
                 )
                 AND landmatrix_status.name IN ('active', 'overwritten')
-                AND pi_deal.attributes->'pi_deal' = 'True'
                 AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
             GROUP BY a.id"""
         result = self._execute_sql(sql)

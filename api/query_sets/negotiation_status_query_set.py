@@ -8,11 +8,13 @@ class NegotiationStatusQuerySet(FakeQuerySetWithSubquery):
     FIELDS = [
         ('name', 'sub.negotiation_status'),
         ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
-        ('hectares',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
+        ('hectares',          "ROUND(SUM(pi.deal_size))")
     ]
     SUBQUERY_FIELDS = [
-        ('negotiation_status', "negotiation.attributes->'pi_negotiation_status'"),
-        ('implementation_status', "implementation.attributes->'pi_implementation_status'")
+        # ('negotiation_status', "negotiation.attributes->'pi_negotiation_status'"),
+        # ('implementation_status', "implementation.attributes->'pi_implementation_status'")
+        ('negotiation_status', 'pi.negotiation_status'),
+        ('implementation_status', 'pi.implementation_status')
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'",
