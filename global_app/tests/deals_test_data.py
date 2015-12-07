@@ -58,10 +58,19 @@ class DealsTestData:
             fk_activity=Activity.objects.last(),
             fk_language=Language.objects.last(),
             date=date.today(),
+            # attributes={
+            #     'intention': self.INTENTION,
+            #     'target_country': self.country.id
+            # }
             attributes={
                 'intention': self.INTENTION, 'pi_deal': 'True', 'deal_scope': 'transnational',
-                'target_country': self.country.id
+                'target_country': Country.objects.last().id
             }
+        ).save()
+        PublicInterfaceCache(
+            fk_activity=Activity.objects.last(),
+            is_deal=True,
+            deal_scope='transnational'
         ).save()
 
     def create_country(self):
