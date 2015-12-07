@@ -7,6 +7,7 @@ from landmatrix.models import *
 class DealsTestData:
 
     PI_NAME = 'This should be a darn unique investor name, right?'
+    STAKEHOLDER_NAME = "I'm sure this is a unique stakeholder name, yeah!"
     INTENTION = 'Livestock'
     MINIMAL_POST = { "filters": { "group_by": "all" }, "columns": ["primary_investor", "intention"] }
     LIST_POST = { "filters": { "group_by": "all" }, "columns": ["primary_investor", "intention"] }
@@ -99,6 +100,9 @@ class DealsTestData:
             fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': str(self.investor_country.id)}
         )
         sh_attributes.save()
+        op = self._generate_operational_stakeholder(activity)
+        stakeholder = self._generate_stakeholder(op)
+
         PublicInterfaceCache(
             fk_activity=activity,
             is_deal=attributes['pi_deal'],
@@ -107,6 +111,31 @@ class DealsTestData:
             implementation_status=attributes.get('pi_implementation_status'),
             deal_size=attributes.get('pi_deal_size')
         ).save()
+
+    def _generate_operational_stakeholder(self, activity):
+        operational_stakeholder = Investor(
+            name=self.PI_NAME, fk_country_id=self.investor_country.id,
+            fk_status=Status.objects.get(id=2), investor_identifier=1,
+            version=1
+        )
+        operational_stakeholder.save()
+        InvestorActivityInvolvement(
+            fk_activity=activity, fk_investor=operational_stakeholder, percentage=100,
+            fk_status=Status.objects.get(id=2)
+        ).save()
+        return operational_stakeholder
+
+    def _generate_stakeholder(self, operational_stakeholder):
+        stakeholder = Investor(
+            name=self.STAKEHOLDER_NAME, fk_country_id=self.investor_country.id, fk_status=Status.objects.get(id=2),
+            investor_identifier=2, version=1
+        )
+        stakeholder.save()
+        InvestorVentureInvolvement(
+            fk_venture=operational_stakeholder, fk_investor=stakeholder, percentage=100,
+            fk_status=Status.objects.get(id=2),
+        ).save()
+        return stakeholder
 
     def _generate_involvement(self, preset_id):
         activity = Activity(activity_identifier=preset_id, fk_status_id=2, version=1)
