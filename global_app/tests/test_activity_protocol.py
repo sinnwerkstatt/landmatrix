@@ -11,6 +11,7 @@ import json
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+
 class TestActivityProtocol(TestCase, DealsTestData):
 
     def setUp(self):
@@ -37,23 +38,24 @@ class TestActivityProtocol(TestCase, DealsTestData):
             SELECT DISTINCT
                 a.id                                                    AS id,
                 'all deals'                                             AS name,
-                array_to_string(array_agg(DISTINCT p.name), '##!##')    AS primary_investor,
+                array_to_string(array_agg(DISTINCT operational_stakeholder.name), '##!##')    AS operational_stakeholder,
                 array_to_string(array_agg(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention,
                 'dummy'                                                 AS dummy
-            FROM landmatrix_activity                        AS a
-                JOIN landmatrix_status                                    ON (landmatrix_status.id = a.fk_status_id)
-                LEFT JOIN landmatrix_involvement            AS i          ON (i.fk_activity_id = a.id)
-                LEFT JOIN landmatrix_stakeholder            AS s          ON (i.fk_stakeholder_id = s.id)
-                LEFT JOIN landmatrix_primaryinvestor        AS p          ON (i.fk_primary_investor_id = p.id)
-                LEFT JOIN landmatrix_activityattributegroup AS intention  ON (a.id = intention.fk_activity_id AND intention.attributes ? 'intention')
-                LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal
-                LEFT JOIN landmatrix_activityattributegroup AS deal_scope ON (a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope')
+            FROM landmatrix_activity                             AS a
+                LEFT JOIN landmatrix_publicinterfacecache        AS pi          ON a.id = pi.fk_activity_id
+                LEFT JOIN landmatrix_status                      AS status      ON status.id = a.fk_status_id
+                LEFT JOIN landmatrix_investoractivityinvolvement AS iai         ON iai.fk_activity_id = a.id
+                LEFT JOIN landmatrix_investor                    AS operational_stakeholder ON iai.fk_investor_id = operational_stakeholder.id
+                LEFT JOIN landmatrix_investorventureinvolvement  AS ivi         ON ivi.fk_venture_id = operational_stakeholder.id
+                LEFT JOIN landmatrix_investor                    AS stakeholder ON ivi.fk_investor_id = stakeholder.id
+                LEFT JOIN landmatrix_activityattributegroup      AS intention   ON (a.id = intention.fk_activity_id AND intention.attributes ? 'intention')
             WHERE a.version = (
                     SELECT max(version)
                     FROM landmatrix_activity AS amax, landmatrix_status AS st
                     WHERE amax.fk_status_id = st.id AND amax.activity_identifier = a.activity_identifier AND st.name IN ('active', 'overwritten', 'deleted')
                 )
-                AND landmatrix_status.name IN ('active', 'overwritten')
+                AND pi.is_deal
+                AND status.name IN ('active', 'overwritten')
                 AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
             GROUP BY a.id"""
         result = self._execute_sql(sql)
@@ -81,7 +83,7 @@ class TestActivityProtocol(TestCase, DealsTestData):
     def _assert_contains_created_record(self, records):
         self.assertGreaterEqual(1, len(records))
         self.assertTrue(isinstance(records[-1], list) or isinstance(records[-1], tuple) and not isinstance(records[-1], str))
-        self._assert_element_present_verbatim_or_as_list(self.PI_NAME, records[-1])
+        self._assert_element_present_verbatim_or_as_list(self.OS_NAME, records[-1])
         self._assert_element_present_verbatim_or_as_list(self.INTENTION, records[-1])
 
     def _assert_element_present_verbatim_or_as_list(self, element, record):

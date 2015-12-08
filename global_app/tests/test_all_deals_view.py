@@ -17,11 +17,11 @@ class TestAllDealsView(TestViewBase, TestCase):
     def setUp(self):
         TestViewBase.setUp(self)
         self.create_country()
-        self.EXPECTED_VIEW_DATA = [ self.country.name, DealsTestData.PI_NAME ]
+        self.EXPECTED_VIEW_DATA = [self.country.name, DealsTestData.OS_NAME]
 
     def test_view_contains_investor_name(self):
         if settings.DEBUG: print(self.content, file=open('/tmp/testresult.html', 'w'))
-        self.assertIn(self.PI_NAME, self.content)
+        self.assertIn(self.OS_NAME, self.content)
 
     def test_view_contains_country(self):
         try:
