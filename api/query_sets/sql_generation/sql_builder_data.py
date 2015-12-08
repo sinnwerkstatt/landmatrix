@@ -13,7 +13,7 @@ class SQLBuilderData:
         'all':                 "'all deals'",
         'target_region':       'deal_region.name',
         'target_country':      'deal_country.name',
-        'year':                'EXTRACT(YEAR FROM pi_negotiation_status.date)',
+        'year':                'EXTRACT(YEAR FROM negotiation_status.date)',
         'crop':                'crop.name',
         'intention':           "intention.attributes->'intention'",
         'stakeholder_region':  'stakeholder_region.name',
@@ -34,7 +34,7 @@ class SQLBuilderData:
             'deal_count': [],
             'availability': [],
 
-            'year': [ join_attributes('pi_negotiation_status') ],
+            'year': [ join_attributes('negotiation_status') ],
 
             'crop':               [
                 join_attributes('akvl1', 'crops'),
@@ -140,8 +140,8 @@ class SQLBuilderData:
                           " deal_region.name AS target_region"],
         "deal_size": ["IFNULL(pi.deal_size, 0) + 0 AS deal_size",
                       "IFNULL(pi.deal_size, 0) + 0 AS deal_size"],
-        "year": ["EXTRACT(YEAR FROM pi_negotiation_status.date) AS year",
-                 "EXTRACT(YEAR FROM pi_negotiation_status.date) AS year"],
+        "year": ["EXTRACT(YEAR FROM negotiation_status.date) AS year",
+                 "EXTRACT(YEAR FROM negotiation_status.date) AS year"],
         "deal_count": ["COUNT(DISTINCT a.activity_identifier) as deal_count",
                        "COUNT(DISTINCT a.activity_identifier) as deal_count"],
         "availability": ["SUM(a.availability) / COUNT(a.activity_identifier) AS availability",

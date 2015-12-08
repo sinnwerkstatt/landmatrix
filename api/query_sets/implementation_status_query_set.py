@@ -13,7 +13,6 @@ class ImplementationStatusQuerySet(FakeQuerySetWithSubquery):
         ('deal_size',          "ROUND(SUM(pi.deal_size))")
     ]
     SUBQUERY_FIELDS = [
-        ('negotiation_status', "pi.negotiation_status"),
         ('implementation_status',    "pi.implementation_status")
     ]
     GROUP_BY = ['sub.implementation_status']
