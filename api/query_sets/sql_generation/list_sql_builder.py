@@ -9,7 +9,7 @@ class ListSQLBuilder(SQLBuilder):
     GROUP_CONDITIONS = {
         "target_region":    ' AND deal_region.slug = lower(\'%s\') ',
         "target_country":   ' AND deal_country.slug = lower(\'%s\') ',
-#        "year":             ' AND pi_negotiation_status.year = \'%s\' ',
+        "year":             ' AND negotiation_status.year = \'%s\' ',
         "crop":             ' AND crop.slug = lower(\'%s\') ',
         "intention":        ' AND lower(replace(intention.value, \' \', \'-\')) = lower(\'%s\') ',
         "investor_region":  ' AND investor_region.slug = \'%s\' ',

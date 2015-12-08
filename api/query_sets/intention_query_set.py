@@ -9,9 +9,9 @@ from global_app.forms.add_deal_general_form import AddDealGeneralForm
 class IntentionQuerySet(FakeQuerySetWithSubquery):
 
     FIELDS = [
-        ('intention', 'sub.intention'),
-        ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
-        ('deal_size',          "ROUND(SUM(pi.deal_size))")
+        ('intention',  'sub.intention'),
+        ('deal_count', 'COUNT(DISTINCT a.activity_identifier)'),
+        ('deal_size',  'ROUND(SUM(pi.deal_size))')
     ]
     SUBQUERY_FIELDS = [
         ('intention', """CASE

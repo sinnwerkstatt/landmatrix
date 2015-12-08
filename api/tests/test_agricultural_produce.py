@@ -97,66 +97,66 @@ class TestAgriculturalProduce(ApiTestFunctions, DealsTestData):
             for i in range(0, self.NUM_CROPS):
                 Crop(name=produce_name+str(i), fk_agricultural_produce=produce).save()
 
-# class TestAgriculturalProduceIntended(TestAgriculturalProduce):
-#     NEGOTIATION_STATUS = "intended (under negotiation)"
-#     POSTFIX = '.json?negotiation_status=intended&deal_scope=transnational'
-#
-#
-# class TestAgriculturalProduceConcludedIntended1(TestAgriculturalProduce):
-#     NEGOTIATION_STATUS = 'concluded (oral agreement)'
-#     POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational'
-#     NUM_RELEVANT_COMBINATIONS = 2
-#
-#
-# class TestAgriculturalProduceConcludedIntended2(TestAgriculturalProduce):
-#     NEGOTIATION_STATUS = "intended (under negotiation)"
-#     POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational'
-#     NUM_RELEVANT_COMBINATIONS = 2
-#
-#
-# class TestAgriculturalProduceFailed(TestAgriculturalProduce):
-#     NEGOTIATION_STATUS = "failed (contract canceled)"
-#     POSTFIX = '.json?negotiation_status=failed&deal_scope=transnational'
-#
-#
-# class TestAgriculturalProduceDomesticConcluded(TestAgriculturalProduce):
-#     NEGOTIATION_STATUS = 'concluded (oral agreement)'
-#     DEAL_SCOPE = 'domestic'
-#     POSTFIX = '.json?negotiation_status=concluded&deal_scope=domestic'
-#
-#
-# class TestAgriculturalProduceDomesticIntended(TestAgriculturalProduceDomesticConcluded):
-#     NEGOTIATION_STATUS = "intended (under negotiation)"
-#     POSTFIX = '.json?negotiation_status=intended&deal_scope=domestic'
-#
-#
-# class TestAgriculturalProduceDomesticConcludedIntended1(TestAgriculturalProduceDomesticConcluded):
-#     NEGOTIATION_STATUS = 'concluded (oral agreement)'
-#     POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=domestic'
-#     NUM_RELEVANT_COMBINATIONS = 2
-#
-#
-# class TestAgriculturalProduceDomesticConcludedIntended2(TestAgriculturalProduceDomesticConcluded):
-#     NEGOTIATION_STATUS = "intended (under negotiation)"
-#     POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=domestic'
-#     NUM_RELEVANT_COMBINATIONS = 2
-#
-#
-# class TestAgriculturalProduceDomesticFailed(TestAgriculturalProduceDomesticConcluded):
-#     NEGOTIATION_STATUS = "failed (contract canceled)"
-#     POSTFIX = '.json?negotiation_status=failed&deal_scope=domestic'
-#
-#
-# class TestAgriculturalProduceDataSource(TestAgriculturalProduce):
-#
-#     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
-#     RELEVANT_ATTRIBUTES = {'type': 'Media report'}
-#     NUM_RELEVANT_COMBINATIONS = 0
-#
-#
-# class TestAgriculturalProduceDataSourceNot(TestAgriculturalProduce):
-#     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
-#     RELEVANT_ATTRIBUTES = {'type': 'NOT A Media report'}
+class TestAgriculturalProduceIntended(TestAgriculturalProduce):
+    NEGOTIATION_STATUS = "intended (under negotiation)"
+    POSTFIX = '.json?negotiation_status=intended&deal_scope=transnational'
+
+
+class TestAgriculturalProduceConcludedIntended1(TestAgriculturalProduce):
+    NEGOTIATION_STATUS = 'concluded (oral agreement)'
+    POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational'
+    NUM_RELEVANT_COMBINATIONS = 2
+
+
+class TestAgriculturalProduceConcludedIntended2(TestAgriculturalProduce):
+    NEGOTIATION_STATUS = "intended (under negotiation)"
+    POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=transnational'
+    NUM_RELEVANT_COMBINATIONS = 2
+
+
+class TestAgriculturalProduceFailed(TestAgriculturalProduce):
+    NEGOTIATION_STATUS = "failed (contract canceled)"
+    POSTFIX = '.json?negotiation_status=failed&deal_scope=transnational'
+
+
+class TestAgriculturalProduceDomesticConcluded(TestAgriculturalProduce):
+    NEGOTIATION_STATUS = 'concluded (oral agreement)'
+    DEAL_SCOPE = 'domestic'
+    POSTFIX = '.json?negotiation_status=concluded&deal_scope=domestic'
+
+
+class TestAgriculturalProduceDomesticIntended(TestAgriculturalProduceDomesticConcluded):
+    NEGOTIATION_STATUS = "intended (under negotiation)"
+    POSTFIX = '.json?negotiation_status=intended&deal_scope=domestic'
+
+
+class TestAgriculturalProduceDomesticConcludedIntended1(TestAgriculturalProduceDomesticConcluded):
+    NEGOTIATION_STATUS = 'concluded (oral agreement)'
+    POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=domestic'
+    NUM_RELEVANT_COMBINATIONS = 2
+
+
+class TestAgriculturalProduceDomesticConcludedIntended2(TestAgriculturalProduceDomesticConcluded):
+    NEGOTIATION_STATUS = "intended (under negotiation)"
+    POSTFIX = '.json?negotiation_status=concluded&negotiation_status=intended&deal_scope=domestic'
+    NUM_RELEVANT_COMBINATIONS = 2
+
+
+class TestAgriculturalProduceDomesticFailed(TestAgriculturalProduceDomesticConcluded):
+    NEGOTIATION_STATUS = "failed (contract canceled)"
+    POSTFIX = '.json?negotiation_status=failed&deal_scope=domestic'
+
+
+class TestAgriculturalProduceDataSource(TestAgriculturalProduce):
+
+    POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
+    RELEVANT_ATTRIBUTES = {'type': 'Media report'}
+    NUM_RELEVANT_COMBINATIONS = 0
+
+
+class TestAgriculturalProduceDataSourceNot(TestAgriculturalProduce):
+    POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational&data_source_type=1'
+    RELEVANT_ATTRIBUTES = {'type': 'NOT A Media report'}
 
 
 def pprint(array):
