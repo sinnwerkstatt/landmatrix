@@ -47,14 +47,11 @@ class TestIntention(ApiTestFunctions, DealsTestData):
     PREFIX = '/en/api/'
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational'
     DEAL_SCOPE = 'transnational'
+    DEAL_SIZE = 12345
     RELEVANT_ATTRIBUTES = {
-        'pi_deal_size': '12345', 'deal_scope': 'transnational', 'intention': 'Forestry', 'pi_negotiation_status': 'Concluded (Contract signed)'
+        'intention': 'Forestry', 'pi_negotiation_status': 'Concluded (Contract signed)'
     }
     NUM_RELEVANT_DEALS = 1
-
-    def setUp(self):
-        self.RELEVANT_ATTRIBUTES['deal_scope'] = self.DEAL_SCOPE
-        pass
 
     def tearDown(self):
         IntentionQuerySet.DEBUG = False
@@ -67,7 +64,7 @@ class TestIntention(ApiTestFunctions, DealsTestData):
             self.assertEqual(0, record['hectares'])
 
     def test_with_data(self):
-        self._generate_negotiation_status_data(123, self.RELEVANT_ATTRIBUTES)
+        self._generate_negotiation_status_data(123, self.DEAL_SIZE, self.DEAL_SCOPE, self.RELEVANT_ATTRIBUTES)
         IntentionQuerySet.DEBUG = False
         result = self.get_content('intention_of_investment')
         if self.__class__.__name__ == 'TestIntentionAgriculture...':
@@ -81,7 +78,7 @@ class TestIntention(ApiTestFunctions, DealsTestData):
 
         self.assertEqual(1 if self.NUM_RELEVANT_DEALS > 0 else 0, relevant_line[0]['deals'])
         self.assertEqual(self.RELEVANT_ATTRIBUTES['intention'], relevant_line[0]['name'])
-        self.assertEqual(float(self.RELEVANT_ATTRIBUTES['pi_deal_size']) if self.NUM_RELEVANT_DEALS > 0 else 0, relevant_line[0]['hectares'])
+        self.assertEqual(float(self.DEAL_SIZE) if self.NUM_RELEVANT_DEALS > 0 else 0, relevant_line[0]['hectares'])
 
     def num_results(self):
         return len(IntentionQuerySet.INTENTIONS)+2
@@ -89,8 +86,7 @@ class TestIntention(ApiTestFunctions, DealsTestData):
     def test_with_both_transnational_and_domestic(self):
         attributes = self.RELEVANT_ATTRIBUTES
         for index, scope in enumerate(['transnational', 'domestic']):
-            attributes['deal_scope'] = scope
-            self._generate_negotiation_status_data(123+index, attributes)
+            self._generate_negotiation_status_data(123+index, self.DEAL_SIZE, scope, attributes)
 
         result = self.get_content('intention_of_investment')
         self.assertEqual(self.num_results(), len(result))
@@ -100,7 +96,7 @@ class TestIntention(ApiTestFunctions, DealsTestData):
         relevant_line = list(filter(lambda line: line['name'] == self.RELEVANT_ATTRIBUTES['intention'], result))
         self.assertEqual(self.NUM_RELEVANT_DEALS, relevant_line[0]['deals'])
         self.assertEqual(self.RELEVANT_ATTRIBUTES['intention'], relevant_line[0]['name'])
-        self.assertEqual(self.NUM_RELEVANT_DEALS*float(self.RELEVANT_ATTRIBUTES['pi_deal_size']), relevant_line[0]['hectares'])
+        self.assertEqual(self.NUM_RELEVANT_DEALS*float(self.DEAL_SIZE), relevant_line[0]['hectares'])
 
 
 class TestIntentionIntended(TestIntention):

@@ -9,11 +9,14 @@ class DealsTestData:
     PI_NAME = 'This should be a darn unique investor name, right?'
     STAKEHOLDER_NAME = "I'm sure this is a unique stakeholder name, yeah!"
     INTENTION = 'Livestock'
-    MINIMAL_POST = { "filters": { "group_by": "all" }, "columns": ["primary_investor", "intention"] }
-    LIST_POST = { "filters": { "group_by": "all" }, "columns": ["primary_investor", "intention"] }
+    MINIMAL_POST = { "filters": { "group_by": "all" }, "columns": ["operational_stakeholder", "intention"] }
+    LIST_POST = { "filters": { "group_by": "all" }, "columns": ["operational_stakeholder", "intention"] }
     TYPICAL_POST = {
         "filters": {"starts_with": 'null', "group_value": "", "group_by": "all"},
-        "columns": ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size"]
+        "columns": [
+            "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
+            "negotiation_status", "implementation_status", "intended_size", "contract_size"
+        ]
     }
     ACT_ID = 1
 
@@ -47,10 +50,7 @@ class DealsTestData:
             fk_activity = Activity.objects.last(),
             fk_language=self.language,
             date=date.today(),
-            attributes={
-                'intention': self.INTENTION, 'pi_deal': 'True', 'deal_scope': 'transnational',
-                'target_country': Country.objects.last().id
-            }
+            attributes={'intention': self.INTENTION, 'target_country': Country.objects.last().id}
         )
         aag.save()
         pi = PublicInterfaceCache(
@@ -74,12 +74,15 @@ class DealsTestData:
     DEFAULT_DOMESTIC_DEAL_ID = 124
 
     def _generate_transnational_negotiation_status_data(self, preset_id=DEFAULT_TRANSNATIONAL_DEAL_ID):
-        self._generate_negotiation_status_data(preset_id, {'pi_deal_size': '12345', 'deal_scope': 'transnational'})
+        self._generate_negotiation_status_data(preset_id, 12345, 'transnational')
 
     def _generate_domestic_negotiation_status_data(self, preset_id=DEFAULT_DOMESTIC_DEAL_ID):
-        self._generate_negotiation_status_data(preset_id, {'pi_deal_size': '2345', 'deal_scope': 'domestic'})
+        self._generate_negotiation_status_data(preset_id, 2345, 'domestic')
 
-    def _generate_negotiation_status_data(self, preset_id, deviating_attributes):
+    def _generate_negotiation_status_data(self, preset_id, deal_size, deal_scope, deviating_attributes=None):
+        if not deviating_attributes:
+            deviating_attributes = {}
+
         self._generate_language()
         activity, stakeholder = self._generate_involvement(preset_id)
         self._generate_deal_country()
@@ -96,40 +99,42 @@ class DealsTestData:
             fk_activity=activity, fk_language_id=1, attributes=attributes
         )
         ac_attributes.save()
-        sh_attributes = StakeholderAttributeGroup(
-            fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': str(self.investor_country.id)}
-        )
-        sh_attributes.save()
-        op = self._generate_operational_stakeholder(activity)
+        op = self._generate_operational_stakeholder(activity, self.investor_country)
         stakeholder = self._generate_stakeholder(op)
 
         PublicInterfaceCache(
             fk_activity=activity,
             is_deal=attributes['pi_deal'],
-            deal_scope=attributes.get('deal_scope'),
+            deal_scope=deal_scope,
             negotiation_status=attributes.get('pi_negotiation_status'),
             implementation_status=attributes.get('pi_implementation_status'),
-            deal_size=attributes.get('pi_deal_size')
+            deal_size=deal_size
         ).save()
 
-    def _generate_operational_stakeholder(self, activity):
+    def _generate_operational_stakeholder(self, activity, country=None):
+
+        if not country:
+            country = self.investor_country
+
         new_investor_identifier = get_latest_investor_identifier() + 1
         operational_stakeholder = Investor(
-            name=self.PI_NAME, fk_country_id=self.investor_country.id,
+            name=self.PI_NAME, fk_country_id=country.id,
             fk_status=Status.objects.get(id=2), investor_identifier=new_investor_identifier,
             version=1
         )
         operational_stakeholder.save()
+
         InvestorActivityInvolvement(
             fk_activity=activity, fk_investor=operational_stakeholder, percentage=100,
             fk_status=Status.objects.get(id=2)
         ).save()
+
         return operational_stakeholder
 
     def _generate_stakeholder(self, operational_stakeholder):
         new_investor_identifier = get_latest_investor_identifier() + 1
         stakeholder = Investor(
-            name=self.STAKEHOLDER_NAME, fk_country_id=self.investor_country.id, fk_status=Status.objects.get(id=2),
+            name=self.STAKEHOLDER_NAME, fk_country=operational_stakeholder.fk_country, fk_status=Status.objects.get(id=2),
             investor_identifier=new_investor_identifier, version=1
         )
         stakeholder.save()
@@ -191,11 +196,8 @@ class DealsTestData:
         ActivityAttributeGroup(
             fk_activity=activity, fk_language_id=1, attributes=attributes
         ).save()
-        StakeholderAttributeGroup(
-            fk_stakeholder=stakeholder, fk_language_id=1, attributes={'country': str(investor_country.id)}
-        ).save()
-        self.investor_country = investor_country
-        op = self._generate_operational_stakeholder(activity)
+
+        op = self._generate_operational_stakeholder(activity, investor_country)
         stakeholder = self._generate_stakeholder(op)
         PublicInterfaceCache(
             fk_activity=activity,
