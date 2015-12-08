@@ -16,11 +16,8 @@ class SQLBuilderData:
         'year':                'EXTRACT(YEAR FROM pi_negotiation_status.date)',
         'crop':                'crop.name',
         'intention':           "intention.attributes->'intention'",
-        # 'investor_region':     'investor_region.name',
         'stakeholder_region':  'stakeholder_region.name',
-        # 'investor_country':    'investor_country.name',
         'stakeholder_country': 'stakeholder_country.name',
-        # 'investor_name':       "investor_name.attributes->'investor_name'",
         'stakeholder_name':    'stakeholders.name',
         'data_source_type':    "data_source_type.attributes->'type'"
     }
@@ -103,30 +100,17 @@ class SQLBuilderData:
                 join_activity_attributes('level_of_accuracy', 'level_of_accuracy'),
             ],
         }
-        # self.COLUMNS['investor_region'] = self.COLUMNS['investor_country']
         self.COLUMNS['target_region'] = self.COLUMNS['target_country']
 
     SQL_COLUMN_MAP = {
-        # "investor_name": [
-        #     "ARRAY_AGG(DISTINCT CONCAT(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier)) AS investor_name",
-        #     "CONCAT(investor_name.attributes->'investor_name', '#!#', s.stakeholder_identifier) AS investor_name"
-        # ],
         "stakeholder_name": [
             "ARRAY_AGG(DISTINCT CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier)) AS stakeholder_name",
             "CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier) AS stakeholder_name"
         ],
-        # "investor_country": [
-        #     "ARRAY_AGG(DISTINCT CONCAT(investor_country.name, '#!#', investor_country.code_alpha3)) AS investor_country",
-        #     "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) AS investor_country"
-        # ],
         "stakeholder_country": [
             "ARRAY_AGG(DISTINCT CONCAT(stakeholder_country.name, '#!#', stakeholder_country.code_alpha3)) AS stakeholder_country",
             "CONCAT(stakeholder_country.name, '#!#', stakeholder_country.code_alpha3) AS stakeholder_country"
         ],
-        # "investor_region": [
-        #     "ARRAY_AGG(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id)) AS investor_region",
-        #     "CONCAT(investor_region.name, '#!#', investor_region.id) AS investor_region"
-        # ],
         "stakeholder_region": [
             "ARRAY_AGG(DISTINCT CONCAT(stakeholder_region.name, '#!#', stakeholder_region.id)) AS stakeholder_region",
             "CONCAT(stakeholder_region.name, '#!#', stakeholder_region.id) AS stakeholder_region"
@@ -162,8 +146,6 @@ class SQLBuilderData:
                        "COUNT(DISTINCT a.activity_identifier) as deal_count"],
         "availability": ["SUM(a.availability) / COUNT(a.activity_identifier) AS availability",
                          "SUM(a.availability) / COUNT(a.activity_identifier) AS availability"],
-        # "primary_investor": ["ARRAY_AGG(DISTINCT p.name) AS primary_investor",
-        #                      "ARRAY_AGG(DISTINCT p.name) AS primary_investor"],
         "operational_stakeholder": ["ARRAY_AGG(DISTINCT operational_stakeholder.name) AS investor",
                                     "ARRAY_AGG(DISTINCT operational_stakeholder.name) AS investor"],
         "negotiation_status": [
