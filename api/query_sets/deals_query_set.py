@@ -59,9 +59,8 @@ class DealsQuerySet(FakeQuerySetFlat):
                 "LEFT JOIN landmatrix_investor                  AS stakeholder      ON ivi.fk_investor_id = stakeholder.id",
         ])
         self._additional_wheres = add_to_list_if_not_present(
-            self._additional_wheres, [
-                "stakeholder.fk_country_id = %s" % country_id
-        ])
+            self._additional_wheres, ["stakeholder.fk_country_id = %s" % country_id]
+        )
 
     def _set_investor_region(self, region_id):
         if not region_id: return
@@ -72,9 +71,8 @@ class DealsQuerySet(FakeQuerySetFlat):
                 "LEFT JOIN landmatrix_country                   AS investor_country ON stakeholder.fk_country_id = investor_country.id",
         ])
         self._additional_wheres = add_to_list_if_not_present(
-            self._additional_wheres, [
-                "investor_country.fk_region_id = " + region_id
-        ])
+            self._additional_wheres, ["investor_country.fk_region_id = " + region_id]
+        )
 
     def _set_target_country(self, country_id):
         if not country_id: return
@@ -83,9 +81,8 @@ class DealsQuerySet(FakeQuerySetFlat):
                 "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
         ])
         self._additional_wheres = add_to_list_if_not_present(
-            self._additional_wheres, [
-                "target_country.attributes->'target_country' = '%s'" % country_id
-        ])
+            self._additional_wheres, ["target_country.attributes->'target_country' = '%s'" % country_id]
+        )
 
     def _set_target_region(self, region_id):
         if not region_id: return
@@ -95,9 +92,8 @@ class DealsQuerySet(FakeQuerySetFlat):
                 "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id"
         ])
         self._additional_wheres = add_to_list_if_not_present(
-            self._additional_wheres, [
-                "deal_country.fk_region_id = " + region_id
-        ])
+            self._additional_wheres, ["deal_country.fk_region_id = " + region_id]
+        )
 
     def _set_window(self, lat_min, lat_max, lon_min, lon_max):
         # respect the 180th meridian
@@ -112,17 +108,13 @@ class DealsQuerySet(FakeQuerySetFlat):
 
     def _set_negotiation_status(self, negotiation_status):
         if not negotiation_status: return
-        self._additional_joins = add_to_list_if_not_present(
-            self._additional_joins, [
-                "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
-        ])
         stati = []
         for n in negotiation_status:
             stati.extend(self.BASE_FILTER_MAP.get(n))
 
         self._additional_wheres = add_to_list_if_not_present(
             self._additional_wheres, [
-                "LOWER(negotiation.attributes->'pi_negotiation_status') IN ('%s') " % "', '".join(stati)
+                "LOWER(pi.negotiation_status) IN ('%s') " % "', '".join(stati)
         ])
 
 
