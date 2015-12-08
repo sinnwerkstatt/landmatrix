@@ -21,21 +21,14 @@ class DealsTestData:
     ACT_ID = 1
 
     activity_version = 0
-    def make_involvement(self, i_r = 0.):
+    def make_activity_with_new_version(self, ):
         self.activity_version += 1
         act = Activity(fk_status=Status.objects.get(id=2), activity_identifier=self.ACT_ID, version=self.activity_version)
         act.save()
-        pi = PrimaryInvestor(fk_status=Status.objects.get(id=2), primary_investor_identifier=1, version=1, name=self.PI_NAME)
-        pi.save()
-        sh = Stakeholder(fk_status=Status.objects.get(id=2), stakeholder_identifier=1, version=1)
-        sh.save()
-        i = Involvement(fk_activity=act, fk_stakeholder=sh, fk_primary_investor = pi, investment_ratio=i_r)
-        i.save()
-        return i
 
     def create_data(self):
         from datetime import date
-        self.make_involvement(1.23)
+        self.make_activity_with_new_version()
         self._generate_language()
         Region(
             name='South-East Asia', slug='south-east-asia', point_lat=0., point_lon=120.
@@ -84,7 +77,7 @@ class DealsTestData:
             deviating_attributes = {}
 
         self._generate_language()
-        activity, stakeholder = self._generate_involvement(preset_id)
+        activity = self._generate_activity(preset_id)
         self._generate_deal_country()
         self._generate_investor_country()
         attributes = {
@@ -99,8 +92,9 @@ class DealsTestData:
             fk_activity=activity, fk_language_id=1, attributes=attributes
         )
         ac_attributes.save()
+
         op = self._generate_operational_stakeholder(activity, self.investor_country)
-        stakeholder = self._generate_stakeholder(op)
+        self._generate_stakeholder(op)
 
         PublicInterfaceCache(
             fk_activity=activity,
@@ -144,16 +138,10 @@ class DealsTestData:
         ).save()
         return stakeholder
 
-    def _generate_involvement(self, preset_id):
+    def _generate_activity(self, preset_id):
         activity = Activity(activity_identifier=preset_id, fk_status_id=2, version=1)
         activity.save()
-        p_i = PrimaryInvestor(id=preset_id, primary_investor_identifier=preset_id, fk_status_id=2, version=1)
-        p_i.save()
-        stakeholder = Stakeholder(id=preset_id, stakeholder_identifier=preset_id, fk_status_id=2, version=1)
-        stakeholder.save()
-        involvement = Involvement(fk_activity=activity, fk_primary_investor=p_i, fk_stakeholder=stakeholder)
-        involvement.save()
-        return activity, stakeholder
+        return activity
 
     deal_country = None
     deal_region = None
@@ -189,7 +177,7 @@ class DealsTestData:
         else: act_id = self.activity_identifiers[-1]+1
         self.activity_identifiers.append(act_id)
 
-        activity, stakeholder = self._generate_involvement(act_id)
+        activity = self._generate_activity(act_id)
         attributes.update({
             'target_country': str(target_country.id), 'pi_deal': 'True'
         })
@@ -198,7 +186,7 @@ class DealsTestData:
         ).save()
 
         op = self._generate_operational_stakeholder(activity, investor_country)
-        stakeholder = self._generate_stakeholder(op)
+        self._generate_stakeholder(op)
         PublicInterfaceCache(
             fk_activity=activity,
             is_deal=attributes['pi_deal'],
