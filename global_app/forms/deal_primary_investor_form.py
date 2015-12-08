@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models.primary_investor import PrimaryInvestor
+#from landmatrix.models.primary_investor import PrimaryInvestor
 
 from .base_form import BaseForm
 from global_app.widgets import CommentInput, TitleField, PrimaryInvestorField

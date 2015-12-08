@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import Activity, ActivityAttributeGroup, Involvement, PrimaryInvestor, Stakeholder, StakeholderAttributeGroup, Country
+from landmatrix.models import Activity, ActivityAttributeGroup, Stakeholder, StakeholderAttributeGroup, Country#, PrimaryInvestor, Involvement
 
 from django.db.models import Max
 import itertools
@@ -46,7 +46,7 @@ class Deal:
         primary_investor_ids, stakeholder_ids = self.get_pi_and_sh_id()
 
         # last() always has latest version, no need for MAX() gymnastics
-        self.primary_investor = PrimaryInvestor.objects.filter(id__in=primary_investor_ids).last()
+#        self.primary_investor = PrimaryInvestor.objects.filter(id__in=primary_investor_ids).last()
         self.stakeholder = get_stakeholder(stakeholder_ids)
         self.stakeholders = get_stakeholders(stakeholder_ids)
 
@@ -63,7 +63,8 @@ class Deal:
         return [i['fk_primary_investor_id'] for i in involvements], [i['fk_stakeholder_id'] for i in involvements]
 
     def involvement_set(self):
-        return Involvement.objects.select_related().filter(fk_activity=self.activity)
+#        return Involvement.objects.select_related().filter(fk_activity=self.activity)
+        return None
 
     def attribute_groups(self):
         return ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
