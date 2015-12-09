@@ -1,7 +1,7 @@
 from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.country import Country
-from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
+#from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
