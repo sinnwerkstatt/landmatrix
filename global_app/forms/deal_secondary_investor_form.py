@@ -1,4 +1,5 @@
-from landmatrix.models.stakeholder import Stakeholder
+#from landmatrix.models.stakeholder import Stakeholder
+from landmatrix.models.investor import Investor
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -61,9 +62,21 @@ class DealSecondaryInvestorForm(BaseForm):
         return False
 
     def _fill_investor_choices(self):
-        self.investor_choices = list(map(lambda i: (i.id, i.name), Stakeholder.objects.raw_choices()))
+        self.investor_choices = [
+            (investor.id, self._investor_description(investor))
+            for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
+        ]
         self.fields["investor"].choices = list(self.fields["investor"].choices)[:1]
         self.fields["investor"].choices.extend(self.investor_choices)
+
+    def _investor_description(self, investor):
+        return investor.name + ' (' + self._investor_country_name(investor) + ')' + ' ' + self._investor_classification(investor)
+
+    def _investor_country_name(self, investor):
+        return Country.objects.get(pk=investor.fk_country_id).name if investor.fk_country_id else '-'
+
+    def _investor_classification(self, investor):
+        return investor.get_classification_display() if investor.classification else '-'
 
     def _fill_country_choices(self):
         self.fields["country"].choices = [
