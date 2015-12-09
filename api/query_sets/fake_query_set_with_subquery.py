@@ -20,7 +20,7 @@ LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_
         %s
     FROM landmatrix_activity                       AS a
     LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_activity_id AND pi.is_deal
-    LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
+--#    LEFT JOIN landmatrix_involvement               AS i                ON i.fk_activity_id = a.id
 --#    LEFT JOIN landmatrix_primaryinvestor           AS pi               ON i.fk_primary_investor_id = pi.id
 --  additional joins:
     %s
