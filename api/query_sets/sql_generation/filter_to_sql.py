@@ -1,10 +1,8 @@
-#from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from django.utils.translation import ugettext_lazy as _
 
 from api.query_sets.sql_generation.join_functions import join_attributes
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FilterToSQL:

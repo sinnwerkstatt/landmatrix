@@ -1,7 +1,4 @@
-#from landmatrix.models.stakeholder import Stakeholder
 from landmatrix.models.investor import Investor
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from .base_form import BaseForm
 from global_app.widgets import CommentInput, TitleField, LivesearchSelect
@@ -11,6 +8,8 @@ from landmatrix.models.region import Region
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealSecondaryInvestorForm(BaseForm):
