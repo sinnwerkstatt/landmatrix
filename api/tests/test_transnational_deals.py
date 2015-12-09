@@ -1,12 +1,11 @@
 from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.country import Country
-#from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from .api_test_functions import ApiTestFunctions
 from api.tests.deals_test_data import DealsTestData
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 """
@@ -47,7 +46,6 @@ class TestTransnationalDeals(ApiTestFunctions, DealsTestData):
         result = self.get_content('transnational_deals')
         if self.__class__.__name__ == 'TestIntentionAgriculture...':
             TransnationalDealsQuerySet.DEBUG = True
-            print(self.RELEVANT_ATTRIBUTES, ActivityAttributeGroup.objects.all(), StakeholderAttributeGroup.objects.all(), result)
 
         self.assertEqual(self.NUM_RELEVANT_DEALS*Country.objects.count(), len(result))
 

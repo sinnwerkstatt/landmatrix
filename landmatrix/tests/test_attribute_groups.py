@@ -1,7 +1,7 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.utils import timezone
-from landmatrix.models import ActivityAttributeGroup, Activity, Language #, Stakeholder, StakeholderAttributeGroup,
+from landmatrix.models import ActivityAttributeGroup, Activity, Language
 from landmatrix.tests.with_status import WithStatus
 
 class TestAttributeGroups(WithStatus):
@@ -13,8 +13,6 @@ class TestAttributeGroups(WithStatus):
             fk_status=self.status
         ).save()
         self.activity = Activity.objects.last()
-        # Stakeholder(stakeholder_identifier=1, version=2, fk_status=self.status).save()
-        # self.stakeholder = Stakeholder.objects.last()
         Language(english_name='English', local_name='English', locale='en').save()
         self.language = Language.objects.last()
         self.attributes = { 'blah': 'blub', 'yadda': 1.2345 }

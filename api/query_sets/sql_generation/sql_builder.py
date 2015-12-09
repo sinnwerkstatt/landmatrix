@@ -60,8 +60,10 @@ class SQLBuilder(SQLBuilderData):
 
         if self._need_involvements_and_stakeholders():
             self.join_expressions.extend([
-                join_expression(Involvement, 'i', 'a.id', 'fk_activity_id'),
-                join_expression(Stakeholder, 's', 'i.fk_stakeholder_id')
+                join_expression(InvestorActivityInvolvement, 'iai', 'a.id', 'iai.fk_activity_id'),
+                join_expression(Investor, 'operational_stakeholder', 'operational_stakeholder.id', 'iai.fk_investor_id'),
+                join_expression(InvestorVentureInvolvement, 'ivi', 'operational_stakeholder.id', 'ivi.fk_venture_id'),
+                join_expression(Investor, 'stakeholder', 'stakeholder.id', 'ivi.fk_venture_id')
             ])
 
         for c in get_join_columns(self.columns, self.group, self.group_value):
