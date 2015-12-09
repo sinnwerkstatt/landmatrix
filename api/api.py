@@ -1,4 +1,4 @@
-from landmatrix.models import Activity, Stakeholder, Status, ActivityAttributeGroup #Involvement,, PrimaryInvestor
+from landmatrix.models import Activity, Status, ActivityAttributeGroup #Involvement, PrimaryInvestor, Stakeholder
 
 from tastypie import fields
 from tastypie.resources import ModelResource
@@ -17,10 +17,10 @@ class ActivityResource(ModelResource):
         queryset = Activity.objects.all()
 
 
-class StakeholderResource(ModelResource):
-    fk_status = fields.ForeignKey(StatusResource, attribute='fk_status')
-    class Meta:
-        queryset = Stakeholder.objects.all()
+# class StakeholderResource(ModelResource):
+#     fk_status = fields.ForeignKey(StatusResource, attribute='fk_status')
+#     class Meta:
+#         queryset = Stakeholder.objects.all()
 
 # class PrimaryInvestorResource(ModelResource):
 #     fk_status = fields.ForeignKey(StatusResource, attribute='fk_status')
