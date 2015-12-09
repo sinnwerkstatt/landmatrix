@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import Activity, ActivityAttributeGroup, Stakeholder, StakeholderAttributeGroup, Country#, PrimaryInvestor, Involvement
+from landmatrix.models import Activity, ActivityAttributeGroup, Country, Stakeholder # StakeholderAttributeGroup, #, PrimaryInvestor, Involvement
 
 from django.db.models import Max
 import itertools
