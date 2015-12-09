@@ -1,4 +1,4 @@
-from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
+#from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -128,7 +128,7 @@ class GenerateOldSQL:
                     tables_from_inv += "LEFT JOIN (sh_key_value_lookup skv%(count)i, countries skvc%(count)i, regions skvr%(count)i) \n" % {"count": i}
                     tables_from_inv += " ON (skv%(count)i.stakeholder_identifier = s.stakeholder_identifier AND skv%(count)i.key = 'country' AND skv%(count)i.value = skvc%(count)i.name AND skvr%(count)i.id = skvc%(count)i.fk_region)"%{"count": i, "key": variable}
                 else:
-                    tables_from_inv += "LEFT JOIN " + StakeholderAttributeGroup._meta.db_table + " AS skv%(count)i\n" % {"count": i}
+                    tables_from_inv += "LEFT JOIN landmatrix_stakeholderattributegroup AS skv%(count)i\n" % {"count": i}
                     tables_from_inv += " ON (skv%(count)i.fk_stakeholder_id = s.id AND skv%(count)i.attributes ? '%(key)s')\n" % {"count": i, "key": variable}
             sql["stakeholder"]["from"] = tables_from_inv
             sql["stakeholder"]["where"] = where_inv

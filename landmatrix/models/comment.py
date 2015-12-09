@@ -16,9 +16,9 @@ class Comment(models.Model):
     fk_activity_attribute_group = models.ForeignKey(
         "ActivityAttributeGroup", verbose_name=_("Activity attribute group"), blank=True, null=True
     )
-    fk_stakeholder_attribute_group = models.ForeignKey(
-        "StakeholderAttributeGroup", verbose_name=_("Stakeholder attribute group"), blank=True, null=True
-    )
+    # fk_stakeholder_attribute_group = models.ForeignKey(
+    #     "StakeholderAttributeGroup", verbose_name=_("Stakeholder attribute group"), blank=True, null=True
+    # )
 
     def __str__(self):
         return self.comment

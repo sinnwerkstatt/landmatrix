@@ -1,8 +1,7 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.utils import timezone
-from landmatrix.models import ActivityAttributeGroup, StakeholderAttributeGroup, \
-    Activity, Stakeholder, Language
+from landmatrix.models import ActivityAttributeGroup, Activity, Stakeholder, Language #, StakeholderAttributeGroup,
 from landmatrix.tests.with_status import WithStatus
 
 class TestAttributeGroups(WithStatus):
@@ -27,8 +26,6 @@ class TestAttributeGroups(WithStatus):
     def test_gets_created(self):
         group = ActivityAttributeGroup(fk_activity=self.activity)
         self.assertEqual(self.activity.id, group.fk_activity.id)
-        group2 = StakeholderAttributeGroup(fk_stakeholder=self.stakeholder)
-        self.assertEqual(self.stakeholder.id, group2.fk_stakeholder.id)
 
     def test_gets_saved(self):
         group = ActivityAttributeGroup(fk_activity=self.activity, fk_language=self.language)
