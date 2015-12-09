@@ -1,12 +1,12 @@
-#from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
+from django.utils.translation import ugettext_lazy as _
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-from django.utils.translation import ugettext_lazy as _
 
 """ browse_filters_to_sql() from landmatrix V1 is preserved here to test generated
     SQL against the old SQL
 """
+
+
 class GenerateOldSQL:
 
     def _browse_filters_to_sql(self, filters):

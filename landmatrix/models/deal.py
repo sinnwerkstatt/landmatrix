@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import Activity, ActivityAttributeGroup, Country#, Stakeholder # StakeholderAttributeGroup, #, PrimaryInvestor, Involvement
+from landmatrix.models import Activity, ActivityAttributeGroup, Country
 
 from django.db.models import Max
 import itertools
@@ -75,13 +75,13 @@ def get_latest_activity(deal_id):
     return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
 
 
-def get_stakeholders(ids):
-    return Stakeholder.objects.filter(id__in=ids)
+# def get_stakeholders(ids):
+#     return Stakeholder.objects.filter(id__in=ids)
 
 
-def get_stakeholder(stakeholder_ids):
-    sh = get_stakeholders(stakeholder_ids).last()
-    return get_stakeholder_attributes(sh)
+# def get_stakeholder(stakeholder_ids):
+#     sh = get_stakeholders(stakeholder_ids).last()
+#     return get_stakeholder_attributes(sh)
 
 
 def aggregate_activity_attributes(attributes_list, already_set_attributes):
@@ -105,9 +105,9 @@ def resolve_country(key, value):
     return Country.objects.get(id=int(value)).name if 'country' in key and value.isdigit() else value
 
 
-def get_stakeholder_attributes(stakeholder):
-    attributes = StakeholderAttributeGroup.objects.filter(fk_stakeholder=stakeholder).values('attributes')
-    return {key: resolve_country(key, value) for a in attributes for key, value in a['attributes'].items()}
+# def get_stakeholder_attributes(stakeholder):
+#     attributes = StakeholderAttributeGroup.objects.filter(fk_stakeholder=stakeholder).values('attributes')
+#     return {key: resolve_country(key, value) for a in attributes for key, value in a['attributes'].items()}
 
 
 def _get_latest_version(deal_id):
