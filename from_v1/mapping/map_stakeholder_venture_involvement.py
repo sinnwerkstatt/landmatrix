@@ -1,7 +1,7 @@
 from mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
 import landmatrix.models
 import editor.models
-from mapping.map_involvement import MapInvolvement
+#from mapping.map_involvement import MapInvolvement
 from migrate import V1, V2
 
 from datetime import datetime
@@ -32,6 +32,7 @@ def get_collective_status(pi_status, st_status):
     if 5 in (pi_status, st_status): return 5
     if 6 in (pi_status, st_status): return 6
     return 3
+
 
 def get_status(involvement):
     pi_status = editor.models.PrimaryInvestor.objects.using(V1).get(pk=involvement['fk_primary_investor_id']).fk_status_id

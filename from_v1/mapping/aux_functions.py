@@ -100,3 +100,16 @@ def _get_country_for_stakeholder(stakeholder_id):
     if country_name:
         return editor.models.Country.objects.using(V1).get(name=country_name)
     return None
+
+
+from mapping.map_activity import MapActivity
+def all_involvement_records(cls):
+    activity_ids = MapActivity.all_ids()
+    primary_investor_ids = MapPrimaryInvestor.all_ids()
+    stakeholder_ids = MapStakeholder.all_ids()
+    records = cls.old_class.objects.using(V1).\
+        filter(fk_activity__in=activity_ids).\
+        filter(fk_primary_investor__in=primary_investor_ids).\
+        filter(fk_stakeholder__in=stakeholder_ids).values()
+    cls._count = len(records)
+    return records

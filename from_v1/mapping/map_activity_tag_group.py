@@ -49,6 +49,9 @@ class MapActivityTagGroup(MapTagGroups):
 
     @classmethod
     def write_activity_attribute_group_with_comments(cls, attrs, tag_group, year):
+        from mapping.map_activity_attribute_group import clean_crops_and_target_country
+
+        attrs = clean_crops_and_target_country(attrs)
 
         aag = cls.write_activity_attribute_group(attrs, tag_group.fk_activity.pk, year)
 
@@ -66,7 +69,9 @@ class MapActivityTagGroup(MapTagGroups):
 
         from mapping.map_activity_attribute_group import clean_crops_and_target_country
 
-        attrs = clean_crops_and_target_country(attrs)
+        # print(attrs, clean_crops_and_target_country(attrs))
+        # attrs = clean_crops_and_target_country(attrs)
+        # attrs = { key: str(value) for key, value in attrs.items()}
 
         aag = ActivityAttributeGroup(
             fk_activity_id=activity_id, fk_language=Language.objects.get(pk=1),
