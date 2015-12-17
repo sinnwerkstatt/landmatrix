@@ -1,11 +1,14 @@
-# postgis instructions
+ # postgis instructions
 
 The postgis extension to PostgreSQL needs to be installed for the maplandmatrix app to run.
 
 ## Installing postgis on your system
-It's not trivial, because it's neither in the official debian nor ubuntu repositories :-(
 
-`<insert instructions to install postgis on the system here.>`
+In Debian (Sid), just install it:
+
+```
+$sudo apt-get install postgresql-9.4-postgis-scripts
+```
 
 ## Installing postgis on your Postgres DB
 ```
