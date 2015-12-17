@@ -1,3 +1,13 @@
+# How to migrate data from Landmatrix V1
+Basically, look at `migrate.py` for examples. THe classes doing the migration are, somewhat inconsistently, called
+`Map<class>`. 
+
+Some migrations depend on other migrations being run first. If you want to run such a migration without running the
+depended upon migration first, set the class variable `_done` in the depended upon class to `True`, as in 
+`MapActivityAttributeGroup._done = True`.
+  
+ 
+
 # How to find activities where the coordinates are borked
 Executed on the dataset I have for development. Before deployment, should be run on production data again.
 ```
