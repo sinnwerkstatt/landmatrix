@@ -25,10 +25,29 @@ ol.control.LayerSwitcher = function(opt_options) {
     button.setAttribute('title', tipLabel);
     element.appendChild(button);
 
+    this.search = document.createElement('div');
+    this.search.className = 'panel';
+    this.search.setAttribute('id', 'search-location');
+
+    var innerHTML = '<form role="form">';
+    innerHTML = innerHTML + '  <div class="form-group has-feedback">';
+    innerHTML = innerHTML + '    <input type="text" class="form-control" placeholder="Search location" />';
+    innerHTML = innerHTML + '    <i class="form-control-feedback glyphicon glyphicon-search"></i>';
+    innerHTML = innerHTML + '  </div>';
+    innerHTML = innerHTML + '</form>';
+
+    this.search.innerHTML = innerHTML;
+    element.appendChild(this.search);
+
+    this.legend = document.createElement('div');
+    this.legend.className = 'panel';
+    this.legend.setAttribute('id', 'legend');
+    element.appendChild(this.legend);
+
     this.panel = document.createElement('div');
     this.panel.className = 'panel';
     element.appendChild(this.panel);
-
+    
     var this_ = this;
 
     element.onmouseover = function(e) {
