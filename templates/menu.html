@@ -1,9 +1,11 @@
 {% load i18n menu_tags cms_tags %}
 <!-- base menu -->
 {% for child in children %}
-  <li>
-    <a class="{{ child.get_menu_title|slugify }} toggle-tooltip bottom"
-       title="{% trans child.get_menu_title %}"
-       href="{{ child.get_absolute_url }}">{% trans child.get_menu_title %}</a>
-  </li>
+    <li>
+        <a class="{{ child.get_menu_title|slugify }} toggle-tooltip navbar-inverse"
+            title="{% trans child.get_menu_title %}"
+            href="{{ child.get_absolute_url }}">
+            {% trans child.get_menu_title %}
+        </a>
+    </li>
 {% endfor %}
