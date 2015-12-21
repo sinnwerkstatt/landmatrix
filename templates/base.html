@@ -13,16 +13,16 @@
         <meta name="keywords" content="{% if meta_keywords %}{{ meta_keywords }}{% else %}{% trans "Landmatrix" %}{% trans 'Default keywords' %}{% endif %}"/>
         <meta name="viewport" content="width=device-width">
 
-        <link rel="stylesheet" href="/media/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/media/css/bootstrap-responsive.min.css">
-        <link rel="stylesheet" href="/media/css/main.css">
-        <link rel="stylesheet" href="/media/css/content.css">
+        <link rel="stylesheet" href="/media/css/legacy/bootstrap.min.css">
+        <link rel="stylesheet" href="/media/css/legacy/bootstrap-responsive.min.css">
+        <link rel="stylesheet" href="/media/css/legacy/main.css">
+        <link rel="stylesheet" href="/media/css/legacy/content.css">
         <link rel="icon" href="/media/img/favicon.ico">
 
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
         {% if is_pdf_export %}<link rel="stylesheet" href="/media/landmatrix/css/htmltopdf.css" type="text/css" media="screen" title="no title" charset="utf-8">{% endif %}
 
-        <script src="/media/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        <script src="/media/js/legacy/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="/media/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
@@ -114,8 +114,8 @@
         </footer>
 
         {% block footer_scripts %}
-        <script src="/media/js/vendor/bootstrap.min.js"></script>
-        <script src="/media/js/main.js"></script>
+        <script src="/media/js/legacy/vendor/bootstrap.min.js"></script>
+        <script src="/media/js/legacy/main.js"></script>
         <!-- Piwik -->
         <script type="text/javascript">
         var _paq = _paq || [];

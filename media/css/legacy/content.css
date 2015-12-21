@@ -131,21 +131,21 @@ h2.separator span:first-child {
  *       ========================================================================== */
 @font-face {
     font-family: 'Unit';
-    src: url('fonts/unit-bold-webfont.eot');
-    src: url('fonts/unit-bold-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/unit-bold-webfont.woff') format('woff'),
-         url('fonts/unit-bold-webfont.ttf') format('truetype'),
-         url('fonts/unit-bold-webfont.svg#unit-boldregular') format('svg');
+    src: url('../fonts/unit-bold-webfont.eot');
+    src: url('../fonts/unit-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/unit-bold-webfont.woff') format('woff'),
+         url('../fonts/unit-bold-webfont.ttf') format('truetype'),
+         url('../fonts/unit-bold-webfont.svg#unit-boldregular') format('svg');
     font-weight: bold;
     font-style: normal;
 }
 @font-face {
     font-family: 'Unit';
-    src: url('fonts/unit-regular-webfont.eot');
-    src: url('fonts/unit-regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/unit-regular-webfont.woff') format('woff'),
-         url('fonts/unit-regular-webfont.ttf') format('truetype'),
-         url('fonts/unit-regular-webfont.svg#unit-regularregular') format('svg');
+    src: url('../fonts/unit-regular-webfont.eot');
+    src: url('../fonts/unit-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/unit-regular-webfont.woff') format('woff'),
+         url('../fonts/unit-regular-webfont.ttf') format('truetype'),
+         url('../fonts/unit-regular-webfont.svg#unit-regularregular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -224,7 +224,7 @@ a:hover {
     filter: none;
 }
 .navbar .brand {
-	background: url(../img/lm-logo.png) no-repeat;
+	background: url(../../img/lm-logo.png) no-repeat;
 	display: block;
 	margin: 6px 0 0 0;
 	padding: 5px 0 0 40px;
@@ -299,7 +299,7 @@ a:hover {
 	left: 12px;
 	width: 11px;
 	height: 18px;
-	background: url(../img/arrows.png) no-repeat;
+	background: url(../../img/arrows.png) no-repeat;
 	text-indent: -9999px;
 }
 .title .next {
@@ -320,7 +320,7 @@ a:hover {
 	right: 0;
 	width: 14px;
 	height: 14px;
-	background: url(../img/plus-minus.png) no-repeat -14px 0;
+	background: url(../../img/plus-minus.png) no-repeat -14px 0;
 	text-indent: -9999px;
 	opacity: 0.5;
 }
@@ -403,7 +403,7 @@ footer a {
 
 a.cc-icons {
     display: inline-block;
-    background: url(../img/cc-icons.png) no-repeat;
+    background: url(../../img/cc-icons.png) no-repeat;
     background-position: 0 0;
     width: 71px;
     height: 20px;
@@ -412,7 +412,7 @@ a.cc-icons:hover {
     background-position: 0 -20px;
 }
 .newsletter-icon {
-    background: url(../img/subscribe-icon.png) no-repeat;
+    background: url(../../img/subscribe-icon.png) no-repeat;
     background-position: right 1px;
     padding-right: 25px;
 }
@@ -429,7 +429,7 @@ a.about {
 	display: block;
 	width: 28px;
 	height: 34px;
-	background: url(../img/nav-icons.png) no-repeat;
+	background: url(../../img/nav-icons.png) no-repeat;
 	text-indent: -99999px;
 }
 .navbar .nav>li {
@@ -464,7 +464,7 @@ i.big {
 	display: block;
 	width: 40px;
 	height: 48px;
-	background: url(../img/nav-icons.png) no-repeat 0 -68px;
+	background: url(../../img/nav-icons.png) no-repeat 0 -68px;
 	text-indent: -99999px;
 	float: left;
 	margin-top: -5px;
@@ -489,7 +489,7 @@ i.big.get-involved {
  *    SECTOR ICONS
  *       ========================================================================== */
 .intention-icon {
-	background: url(../img/intention-icons.png) no-repeat;
+	background: url(../../img/intention-icons.png) no-repeat;
 	display: block;
 	float: left;
 	width: 32px;
@@ -572,7 +572,7 @@ i.big.get-involved {
 
 }
 .icon-info {
-	background: url(../img/icons.png) no-repeat;
+	background: url(../../img/icons.png) no-repeat;
 }
 h4 .icon {
 	margin-top: 3px;
@@ -643,7 +643,7 @@ h4 .icon {
 }
 .get-the-detail li .separator {
 	display: block;
-	background: url(../img/arrow-right.png) no-repeat;
+	background: url(../../img/arrow-right.png) no-repeat;
 	width: 28px;
 	height: 46px;
 	position: absolute;
@@ -1076,11 +1076,11 @@ table th a {
 .get-the-detail table th a:hover,
 .get-the-detail table th a.desc:hover,
 .get-the-detail table th a.asc {
-    background: url(../img/icon-sort-asc.png) no-repeat 6px bottom;
+    background: url(../../img/icon-sort-asc.png) no-repeat 6px bottom;
 }
 .get-the-detail table th a.asc:hover,
 .get-the-detail table th a.desc {
-    background: url(../img/icon-sort-desc.png) no-repeat 6px bottom;
+    background: url(../../img/icon-sort-desc.png) no-repeat 6px bottom;
 }
 .get-the-detail .table-striped tbody tr:nth-child(odd) td {
    background-color: #e2e2e2;
@@ -1158,7 +1158,7 @@ table th a {
 }
 .container select {
 	color: #3b3b3b;
-	background: #e5e5e5 url(../img/select-arrow.png) no-repeat right 12px;
+	background: #e5e5e5 url(../../img/select-arrow.png) no-repeat right 12px;
 	border: 1px solid #bcbcbc;
 	-webkit-appearance: none;
 	padding: 0 4px;

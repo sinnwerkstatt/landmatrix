@@ -76,6 +76,7 @@ class JSONView(TemplateView):
     }
 
     def dispatch(self, request, *args, **kwargs):
+        #DealsQuerySet.DEBUG = True
         if kwargs.get('type') in self.targets:
             return self.targets[kwargs.get('type')]().dispatch(request)
         raise ValueError(str(kwargs) + ' could not be resolved to any of ' + str(list(self.targets.keys())))
