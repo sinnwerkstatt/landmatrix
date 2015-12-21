@@ -26,6 +26,7 @@ class DealSpatialForm(BaseForm):
     target_region = forms.ModelChoiceField(required=False, label=_("Target Region"), widget=forms.HiddenInput, queryset=Region.objects.all().order_by("name"))
     tg_location_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
+
 DealSpatialBaseFormSet = formset_factory(DealSpatialForm, extra=1)
 
 
@@ -44,7 +45,7 @@ class AddDealSpatialFormSet(DealSpatialBaseFormSet):
         taggroups = activity.a_tag_group_set.filter(fk_a_tag__fk_a_value__value__contains="location").order_by("fk_a_tag__fk_a_value__value")
         data = []
         for i, taggroup in enumerate(taggroups):
-            data.append(DealSpatialForm.get_data(activity, tg=taggroup))
+            data.append(DealSpatialForm.get_data(activity, taggroup=taggroup))
         return data
 
 
@@ -57,11 +58,9 @@ class PublicViewDealSpatialForm(DealSpatialForm):
 
     class Meta:
         fields = (
-            "tg_location", "location", "point_lat", "point_lon",
+            "tg_location", "location", "point_lat", "point_lon", 'tg_location_comment'
         )
-        readonly_fields = (
-            "tg_location", "location", "point_lat", "point_lon",
-        )
+        readonly_fields = fields
 
 
 PublicViewDealSpatialFormSet = formset_factory(PublicViewDealSpatialForm, formset=AddDealSpatialFormSet, extra=0)

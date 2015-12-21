@@ -20,9 +20,10 @@ class StatisticsManager(models.Manager):
     LEFT JOIN  """ + Country._meta.db_table + """ AS investor_country ON stakeholder_attrs.attributes->'country' = investor_country.name
     LEFT JOIN  """ + Region._meta.db_table + """ AS investor_region ON investor_country.fk_region_id = investor_region.id
     LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON activity_attrs.attributes->'target_country' = deal_country.name
-    LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id"""
+    LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id"""+\
+    "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal\n"
 
-        HECTARES_SQL = "ROUND(COALESCE(SUM(CAST(REPLACE(activity_attrs.attributes->'pi_deal_size', ',', '.') AS numeric)), 0)) AS deal_size"
+        HECTARES_SQL = "ROUND(COALESCE(SUM(pi.deal_size)), 0)) AS deal_size"
 
         BASE_CONDITON = """a.version = (
         SELECT MAX(version)
@@ -37,7 +38,7 @@ class StatisticsManager(models.Manager):
             AND st.name IN ('active', 'overwritten', 'deleted')
     )
     AND status.name IN ('active', 'overwritten') AND pi_st.name IN ('active', 'overwritten')
-    AND activity_attrs.attributes->'pi_deal' = 'True'"""
+    AND pi.is_deal"""
 
         cursor = connection.cursor()
         sql = """SELECT
@@ -50,7 +51,7 @@ LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON
 (
     SELECT DISTINCT
         a.id,
-        activity_attrs.attributes->'pi_negotiation_status' AS negotiation_status,
+        pi.negotiation_status AS negotiation_status,
         activity_attrs.date AS negotiation_status_date
     FROM """ + Activity._meta.db_table + """ AS a
     """ + BASE_JOIN + """

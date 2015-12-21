@@ -76,6 +76,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+#    'django.middleware.transaction.TransactionMiddleware',
 #   added by generating the project with django 1.8, does not work in 1.7:
     # 'django.middleware.security.SecurityMiddleware',
 

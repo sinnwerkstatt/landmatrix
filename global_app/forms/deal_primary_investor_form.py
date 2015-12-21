@@ -1,7 +1,5 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models.primary_investor import PrimaryInvestor
-
 from .base_form import BaseForm
 from global_app.widgets import CommentInput, TitleField, PrimaryInvestorField
 
@@ -48,7 +46,7 @@ class DealPrimaryInvestorForm(BaseForm):
     @classmethod
     def get_data(cls, activity):
         data = super(DealPrimaryInvestorForm, cls).get_data(activity)
-        primary_investor = primary_investor = PrimaryInvestor.objects.get_primary_investor_for_activity(activity)
+        primary_investor = PrimaryInvestor.objects.get_primary_investor_for_activity(activity)
         if primary_investor:
             data["primary_investor"] = primary_investor.primary_investor_identifier
         return data
