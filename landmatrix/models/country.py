@@ -4,7 +4,9 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+
 class Country(models.Model):
+
     fk_region = models.ForeignKey("Region", verbose_name=_("Region"))
     code_alpha2 = models.CharField(_("Code ISO 3166-1 alpha2"), max_length=2)
     code_alpha3 = models.CharField(_("Code ISO 3166-1 alpha3"), max_length=3)

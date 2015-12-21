@@ -16,19 +16,16 @@ class YearBasedChoiceField(forms.MultiValueField):
         # update fields
         if value:
             self.fields = []
-            for i in range(len(value)/2):
+            for i in range(len(value)//2):
                 self.fields.extend([forms.ChoiceField(choices=self.choices, required=False), forms.CharField(required=False)])
         return super(YearBasedChoiceField, self).clean(value)
 
     def compress(self, data_list):
         if data_list:
             yb_data = []
-            for i in range(len(data_list)/2):
+            for i in range(len(data_list)//2):
                 if data_list[i] or data_list[i+1]:
                     yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1])))
             return "|".join(yb_data)
         else:
             self.fields = [forms.ChoiceField(choices=self.choices, required=False), forms.CharField(required=False)]
-
-    # def prepare_value(self, value):
-    #     raise IOError, "ok"

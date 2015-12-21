@@ -21,7 +21,9 @@ class YearBasedTextInput(YearBasedWidget):
 
     def decompress(self, value):
         if value:
-            sorted_values = sorted(value.split("|"), key=lambda v: v.split(":")[1] and int(v.split(":")[1]) or 0)
+            values = value.split("|")
+
+            sorted_values = sorted(values, key=lambda v: v.split(":")[1] if ':' in v else '0')
             splitted = []
             for s in sorted_values:
                 splitted.extend(s.split(":"))
@@ -32,11 +34,10 @@ class YearBasedTextInput(YearBasedWidget):
         return u''.join(rendered_widgets)
 
     def value_from_datadict(self, data, files, name):
-        #return [widget.value_from_datadict(data, files, name + '_%s' % i) for i, widget in enumerate(self.widgets)]
         value = [data[k] for k in sorted(filter(lambda o: re.match(r"%s_\d+"%name,o), data))]
 
         # update widgets
         self.widgets = []
-        for i in range(len(value)/2):
+        for i in range(len(value)//2):
             self.widgets.extend([NumberInput(attrs={"class": "year-based"}), NumberInput(attrs={"class": "year-based-year"})])
         return value

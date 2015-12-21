@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import ActivityAttributeGroup, StakeholderAttributeGroup
+from landmatrix.models import ActivityAttributeGroup
 
 
 def get_join_columns(columns, group, group_value):
@@ -27,7 +27,6 @@ def join_expression(table_or_model, alias, local_field, foreign_field='id'):
 
 def local_table_alias(model):
     if model == ActivityAttributeGroup: return 'a'
-    elif model == StakeholderAttributeGroup: return 's'
     else: raise RuntimeError('Model not recognized: '+str(model))
 
 

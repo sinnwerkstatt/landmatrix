@@ -9,7 +9,7 @@ class ListSQLBuilder(SQLBuilder):
     GROUP_CONDITIONS = {
         "target_region":    ' AND deal_region.slug = lower(\'%s\') ',
         "target_country":   ' AND deal_country.slug = lower(\'%s\') ',
-        "year":             ' AND pi_negotiation_status.year = \'%s\' ',
+        "year":             ' AND negotiation_status.year = \'%s\' ',
         "crop":             ' AND crop.slug = lower(\'%s\') ',
         "intention":        ' AND lower(replace(intention.value, \' \', \'-\')) = lower(\'%s\') ',
         "investor_region":  ' AND investor_region.slug = \'%s\' ',
@@ -58,7 +58,7 @@ sub.name AS name,
 'dummy' AS dummy
 FROM
 landmatrix_activity AS a """ + "\n" \
-+ join_attributes('size', 'pi_deal_size') + "\n" \
++  "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal\n" \
 + join_attributes('intended_size') + "\n" \
 + join_attributes('contract_size') + "\n" \
 + join_attributes('production_size') + "\n" \
@@ -70,9 +70,9 @@ JOIN (
     %(name)s AS name,
     %(columns)s    'dummy' AS dummy
     FROM landmatrix_activity AS a
-    %(from)s""" + "\n" \
-    + join_attributes('pi_deal') + "\n" \
-    + join_attributes('deal_scope') + """
+    %(from)s""" + "\n" + \
+    "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal\n" +\
+     join_attributes('deal_scope') + """
     %(from_filter)s
     WHERE """ + "\nAND ".join([ cls.max_version_condition(), cls.status_active_condition(), cls.is_deal_condition(), cls.not_mining_condition() ]) + """
     %(where)s
@@ -82,4 +82,3 @@ JOIN (
 %(group_by)s, sub.name
 %(order_by)s
 %(limit)s"""
-

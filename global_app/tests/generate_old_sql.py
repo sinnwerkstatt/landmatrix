@@ -1,12 +1,12 @@
-from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
+from django.utils.translation import ugettext_lazy as _
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-from django.utils.translation import ugettext_lazy as _
 
 """ browse_filters_to_sql() from landmatrix V1 is preserved here to test generated
     SQL against the old SQL
 """
+
+
 class GenerateOldSQL:
 
     def _browse_filters_to_sql(self, filters):
@@ -15,7 +15,7 @@ class GenerateOldSQL:
                 "where": "",
                 "from": "",
             },
-            "investor": {
+            "stakeholder": {
                 "where": "",
                 "from": "",
             }
@@ -128,10 +128,10 @@ class GenerateOldSQL:
                     tables_from_inv += "LEFT JOIN (sh_key_value_lookup skv%(count)i, countries skvc%(count)i, regions skvr%(count)i) \n" % {"count": i}
                     tables_from_inv += " ON (skv%(count)i.stakeholder_identifier = s.stakeholder_identifier AND skv%(count)i.key = 'country' AND skv%(count)i.value = skvc%(count)i.name AND skvr%(count)i.id = skvc%(count)i.fk_region)"%{"count": i, "key": variable}
                 else:
-                    tables_from_inv += "LEFT JOIN " + StakeholderAttributeGroup._meta.db_table + " AS skv%(count)i\n" % {"count": i}
+                    tables_from_inv += "LEFT JOIN landmatrix_stakeholderattributegroup AS skv%(count)i\n" % {"count": i}
                     tables_from_inv += " ON (skv%(count)i.fk_stakeholder_id = s.id AND skv%(count)i.attributes ? '%(key)s')\n" % {"count": i, "key": variable}
-            sql["investor"]["from"] = tables_from_inv
-            sql["investor"]["where"] = where_inv
+            sql["stakeholder"]["from"] = tables_from_inv
+            sql["stakeholder"]["where"] = where_inv
         return sql
 
     ## operation => (numeric operand, character operand, description )

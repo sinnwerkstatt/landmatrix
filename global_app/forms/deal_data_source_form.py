@@ -24,6 +24,7 @@ import re
 
 class DealDataSourceForm(BaseForm):
 
+    DEBUG = False
     tg_data_source = TitleField(required=False, label="", initial=_("Data source"))
     type = forms.TypedChoiceField(required=False, label=_("Data source type"), choices=(
         (10, _("Media report")),
@@ -64,14 +65,12 @@ class DealDataSourceForm(BaseForm):
     def get_availability_total(self):
         return 4
 
-    def __init__(self, *args, **kwargs):
-        super(DealDataSourceForm, self).__init__(*args, **kwargs)
-
 
 DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=1)
 
 
 class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
+
     def get_taggroups(self, request=None):
         ds_taggroups = []
         for i, form in enumerate(self.forms):
@@ -121,11 +120,11 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
         return ds_taggroups
 
     @classmethod
-    def get_data(cls, activity):
-        taggroups = activity.a_tag_group_set.filter(fk_a_tag__fk_a_value__value__contains="data_source").order_by("fk_a_tag__fk_a_value__value")
-        data = []
+    def get_data(cls, deal):
+        taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
+        data = {}
         for i, taggroup in enumerate(taggroups):
-            data.append(DealDataSourceForm.get_data(activity, tg=taggroup))
+            data[i] = DealDataSourceForm.get_data(deal, taggroup=taggroup)
         return data
 
 
@@ -144,7 +143,16 @@ class PublicViewDealDataSourceForm(DealDataSourceForm):
             "tg_data_source", "type", "url", "company", "date"
         )
 
+    @classmethod
+    def get_data(cls, deal):
+        taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
+        print('PublicViewDealDataSourceForm: taggroups', taggroups)
+        data = {}
+        for i, taggroup in enumerate(taggroups):
+            data[i] = DealDataSourceForm.get_data(deal, taggroup=taggroup)
+        return data
 
 PublicViewDealDataSourceFormSet = formset_factory(
-    PublicViewDealDataSourceForm, formset=AddDealDataSourceFormSet, extra=0
-)
+        PublicViewDealDataSourceForm, formset=AddDealDataSourceFormSet, extra=0
+    )
+

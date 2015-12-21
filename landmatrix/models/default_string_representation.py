@@ -24,6 +24,9 @@ class DefaultStringRepresentation:
 
         DefaultStringRepresentation.indent_depth -= 1
 
+        if DefaultStringRepresentation.indent_depth == 0:
+            ret = "\n" + ret
+
         return ret
 
     def _iteritem_to_object_pair(self, key, value):
