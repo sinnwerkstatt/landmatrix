@@ -35,6 +35,7 @@ class MapModel:
 
     attributes = { }
     depends = []
+    DEBUG = False
 
     @classmethod
     def map(cls, id, save=False):
@@ -48,12 +49,16 @@ class MapModel:
         cls._check_dependencies()
         cls._start_timer()
 
-        for index, record in enumerate(cls.old_class.objects.using(V1).values()):
+        for index, record in enumerate(cls.all_records()):
             cls.map_record(record, save)
             cls._print_status(record, index)
 
         cls._done = True
         cls._print_summary()
+
+    @classmethod
+    def all_records(cls):
+        return cls.old_class.objects.using(V1).values()
 
     @classmethod
     def map_record(cls, record, save=False):
@@ -64,9 +69,37 @@ class MapModel:
 
     @classmethod
     def set_attribute_processed(cls, object, attribute, value):
+        """
+        attribute can be any of the following:
+        - None. Then the attribute/value combination is ignored on the processed object.
+        - The name of the attribute as a string. Then the processed object's attribute with the name attribute is set to
+          value.
+        - A 2-tuple, first the name of the attribute as string and second a function to process value with. The
+          processed object's attribute with the name attribute[0] is set to attribute[1](value).
+        - An n-tuple, each element being either the name of an attribute or a pair of attribute names/processing functions.
+          Each of the tuple's elements is treated for  the same value.
+        """
+
+        if type(attribute) is tuple and len(attribute) == 1:
+            attribute = attribute[0]
+
+        if attribute is None:
+            return
+
         if type(attribute) is tuple and callable(attribute[1]):
+            if cls.DEBUG:
+                print(
+                    'set attribute %s to %s, i.e. %s after processing with %s' % (attribute[0], attribute[1](value), value, attribute[1].__name__)
+                )
             setattr(object, attribute[0], attribute[1](value))
+        elif type(attribute) is tuple:
+            if cls.DEBUG:
+                print('set attributes %s to value %s' % (str(attribute), value))
+            cls.set_attribute_processed(object, attribute[0], value)
+            cls.set_attribute_processed(object, attribute[1:], value)
         else:
+            if cls.DEBUG:
+                print('set attribute %s to value %s' % (attribute, value))
             setattr(object, attribute, value)
 
     @classmethod
@@ -100,8 +133,8 @@ class MapModel:
             cls._count = cls.old_class.objects.using(V1).count()
         if index % 10 == 0:
             print(
-                "%-30s: %8d (%d/%d)" % (
-                    cls.old_class.__name__, int(record['id']), (index + 1), cls._count
+                "%-50s: %8d (%d/%d)" % (
+                    mapping_name(cls), int(record.get('id', 0)), (index + 1), cls._count
                 ),
                 end="\r"
             )
@@ -112,10 +145,15 @@ class MapModel:
         from time import time
         from datetime import timedelta
         print(
-            "%-30s: %8d objects, %s" % (
-                cls.old_class.__name__, cls.old_class.objects.using(V1).count(), str(timedelta(seconds=time()-cls.start_time))
+            "%-50s: %8d objects, %s" % (
+                mapping_name(cls), cls._count, str(timedelta(seconds=time()-cls.start_time))
             )
         )
 
+
 def field_to_str(field):
         return str(field).split('.')[-1]
+
+
+def mapping_name(cls):
+    return '%s (%s)' % (cls.__name__, cls.old_class.__name__)

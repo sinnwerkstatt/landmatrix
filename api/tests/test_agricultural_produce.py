@@ -1,4 +1,6 @@
 from api.query_sets.agricultural_produce_query_set import AllAgriculturalProduceQuerySet
+from api.query_sets.fake_query_set import FakeQuerySet
+from api.query_sets.sql_generation.record_reader import RecordReader
 from landmatrix.models.agricultural_produce import AgriculturalProduce
 from landmatrix.models.crop import Crop
 
@@ -86,7 +88,6 @@ class TestAgriculturalProduce(ApiTestFunctions, DealsTestData):
                         attributes = {'pi_deal_size': 2 << i, 'deal_scope': scope, 'pi_negotiation_status': status, 'crops': crop.id}
                         attributes.update(self.RELEVANT_ATTRIBUTES)
                         self._generate_deal(self.investor_country, self.deal_country, attributes)
-
 
     NUM_CROPS = 2
     def _generate_agricultural_produce(self):

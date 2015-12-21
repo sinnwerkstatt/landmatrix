@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import Activity, ActivityAttributeGroup, Involvement, PrimaryInvestor, Stakeholder, StakeholderAttributeGroup, Country
+from landmatrix.models import Activity, ActivityAttributeGroup, Country
 
 from django.db.models import Max
 import itertools
@@ -40,17 +40,34 @@ class Deal:
     def __init__(self, id):
         self.id = id
 
-        activity = get_latest_activity(id)
-        self.attributes = get_activity_attributes(activity)
+        self.activity = get_latest_activity(id)
+        self.attributes = self.get_activity_attributes()
 
-        primary_investor_ids, stakeholder_ids = get_pi_and_sh_id(activity)
+        primary_investor_ids, stakeholder_ids = self.get_pi_and_sh_id()
 
         # last() always has latest version, no need for MAX() gymnastics
-        self.primary_investor = PrimaryInvestor.objects.filter(id__in=primary_investor_ids).last()
+#        self.primary_investor = PrimaryInvestor.objects.filter(id__in=primary_investor_ids).last()
         self.stakeholder = get_stakeholder(stakeholder_ids)
+        self.stakeholders = get_stakeholders(stakeholder_ids)
 
     def __str__(self):
         return str({'attributes': self.attributes, 'primary_investor': self.primary_investor, 'stakeholder': self.stakeholder})
+
+    def get_activity_attributes(self):
+        attributes = ActivityAttributeGroup.objects.filter(fk_activity=self.activity).values('attributes')
+        attributes_list = [a['attributes'] for a in attributes]
+        return aggregate_activity_attributes(attributes_list, {})
+
+    def get_pi_and_sh_id(self):
+        involvements = self.involvement_set().values('fk_primary_investor_id', 'fk_stakeholder_id')
+        return [i['fk_primary_investor_id'] for i in involvements], [i['fk_stakeholder_id'] for i in involvements]
+
+    def involvement_set(self):
+#        return Involvement.objects.select_related().filter(fk_activity=self.activity)
+        return None
+
+    def attribute_groups(self):
+        return ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
 
 
 def get_latest_activity(deal_id):
@@ -58,21 +75,13 @@ def get_latest_activity(deal_id):
     return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
 
 
-def get_activity_attributes(activity):
-    attributes = ActivityAttributeGroup.objects.filter(fk_activity=activity).values('attributes')
-    attributes_list = [a['attributes'] for a in attributes]
-    return aggregate_activity_attributes(attributes_list, {})
+# def get_stakeholders(ids):
+#     return Stakeholder.objects.filter(id__in=ids)
 
 
-def get_pi_and_sh_id(activity):
-    queryset = Involvement.objects.select_related().filter(fk_activity=activity)
-    involvements = queryset.values('fk_primary_investor_id', 'fk_stakeholder_id')
-    return [i['fk_primary_investor_id'] for i in involvements], [i['fk_stakeholder_id'] for i in involvements]
-
-
-def get_stakeholder(stakeholder_ids):
-    sh = Stakeholder.objects.filter(id__in=stakeholder_ids).last()
-    return get_stakeholder_attributes(sh)
+# def get_stakeholder(stakeholder_ids):
+#     sh = get_stakeholders(stakeholder_ids).last()
+#     return get_stakeholder_attributes(sh)
 
 
 def aggregate_activity_attributes(attributes_list, already_set_attributes):
@@ -96,9 +105,9 @@ def resolve_country(key, value):
     return Country.objects.get(id=int(value)).name if 'country' in key and value.isdigit() else value
 
 
-def get_stakeholder_attributes(stakeholder):
-    attributes = StakeholderAttributeGroup.objects.filter(fk_stakeholder=stakeholder).values('attributes')
-    return {key: resolve_country(key, value) for a in attributes for key, value in a['attributes'].items()}
+# def get_stakeholder_attributes(stakeholder):
+#     attributes = StakeholderAttributeGroup.objects.filter(fk_stakeholder=stakeholder).values('attributes')
+#     return {key: resolve_country(key, value) for a in attributes for key, value in a['attributes'].items()}
 
 
 def _get_latest_version(deal_id):

@@ -12,42 +12,42 @@ null = None
 class TestRecordReader(TestCase, DealsTestData, GenerateOldSQL):
 
     GROUP_VIEW_PARAMETERS = [
-        {"columns": ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size"],
+        {"columns": ["deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country", "intention", "negotiation_status", "implementation_status", "intended_size", "contract_size"],
          "filters": {"deal_scope": "transnational", "order_by": ["deal_id"], "group_by": "all", "limit": "",
                      "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}}, "group_value": "",
-                     "investor": {"tags": {}}, "starts_with": null}},
+                     "stakeholder": {"tags": {}}, "starts_with": null}},
         {"columns": ["crop", "intention", "deal_count", "availability"],
          "filters": {"deal_scope": "transnational", "order_by": ["crop"], "group_by": "crop", "limit": "",
                      "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}}, "group_value": "",
-                     "investor": {"tags": {}}, "starts_with": null}},
+                     "stakeholder": {"tags": {}}, "starts_with": null}},
         {"columns": ["data_source_type", "intention", "deal_count", "availability"],
          "filters": {"deal_scope": "transnational", "order_by": ["data_source_type"], "group_by": "data_source_type", "limit": "",
                      "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}}, "group_value": "",
-                     "investor": {"tags": {}}, "starts_with": null}},
+                     "stakeholder": {"tags": {}}, "starts_with": null}},
         {"columns": ["intention", "deal_count", "availability"],
          "filters": {"deal_scope": "transnational", "order_by": ["intention"], "group_by": "intention", "limit": "",
                      "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}}, "group_value": "",
-                     "investor": {"tags": {}}, "starts_with": null}},
-        {"columns": ["investor_name", "investor_country", "intention", "deal_count", "availability"],
-         "filters": {"deal_scope": "transnational", "order_by": ["investor_name"], "group_by": "investor_name", "limit": "",
+                     "stakeholder": {"tags": {}}, "starts_with": null}},
+        {"columns": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
+         "filters": {"deal_scope": "transnational", "order_by": ["stakeholder_name"], "group_by": "stakeholder_name", "limit": "",
                      "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}}, "group_value": "",
-                     "investor": {"tags": {}}, "starts_with": null}},
-        {"columns": ["investor_country", "investor_region", "intention", "deal_count", "availability"],
-         "filters": {"deal_scope": "transnational", "order_by": ["investor_country"], "group_by": "investor_country", "limit": "",
+                     "stakeholder": {"tags": {}}, "starts_with": null}},
+        {"columns": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
+         "filters": {"deal_scope": "transnational", "order_by": ["stakeholder_country"], "group_by": "stakeholder_country", "limit": "",
                      "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}}, "group_value": "",
-                     "investor": {"tags": {}}, "starts_with": null}},
-        {"columns": ["investor_region", "intention", "deal_count", "availability"],
-         "filters": {"deal_scope": "transnational", "order_by": ["investor_region"], "group_by": "investor_region", "limit": "",
+                     "stakeholder": {"tags": {}}, "starts_with": null}},
+        {"columns": ["stakeholder_region", "intention", "deal_count", "availability"],
+         "filters": {"deal_scope": "transnational", "order_by": ["stakeholder_region"], "group_by": "stakeholder_region", "limit": "",
                      "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}}, "group_value": "",
-                     "investor": {"tags": {}}, "starts_with": null}},
+                     "stakeholder": {"tags": {}}, "starts_with": null}},
         {"columns": ["target_country", "target_region", "intention", "deal_count", "availability"],
          "filters": {"deal_scope": "transnational", "order_by": ["target_country"], "group_by": "target_country", "limit": "",
                      "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}}, "group_value": "",
-                     "investor": {"tags": {}}, "starts_with": null}},
+                     "stakeholder": {"tags": {}}, "starts_with": null}},
         {"columns": ["target_region", "intention", "deal_count", "availability"],
          "filters": {"deal_scope": "transnational", "order_by": ["target_region"], "group_by": "target_region", "limit": "",
                      "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}}, "group_value": "",
-                     "investor": {"tags": {}}, "starts_with": null}},
+                     "stakeholder": {"tags": {}}, "starts_with": null}},
     ]
 
     def test_parameters_sql_syntax(self):
@@ -84,7 +84,7 @@ class TestRecordReader(TestCase, DealsTestData, GenerateOldSQL):
         post = self.MINIMAL_POST
         to_test = [
             { "activity": {"tags": {"pi_negotiation_status__in": ["Concluded (Oral Agreement)", "Concluded (Contract signed)"]}} },
-            { "investor": {"tags": {"24055__is": ["0"]}} },
+            { "stakeholder": {"tags": {"24055__is": ["0"]}} },
         ]
 
         old_filters = post['filters']
@@ -92,9 +92,9 @@ class TestRecordReader(TestCase, DealsTestData, GenerateOldSQL):
             post['filters'] = test
             reader = RecordReader(post['filters'], post['columns'])
             self.assertIn(self._browse_filters_to_sql(post['filters'])['activity']['from'], reader.get_all_at_once_sql())
-            self.assertIn(self._browse_filters_to_sql(post['filters'])['investor']['from'], reader.get_all_at_once_sql())
+            self.assertIn(self._browse_filters_to_sql(post['filters'])['stakeholder']['from'], reader.get_all_at_once_sql())
             self.assertIn(self._browse_filters_to_sql(post['filters'])['activity']['where'], reader.get_all_at_once_sql())
-            self.assertIn(self._browse_filters_to_sql(post['filters'])['investor']['where'], reader.get_all_at_once_sql())
+            self.assertIn(self._browse_filters_to_sql(post['filters'])['stakeholder']['where'], reader.get_all_at_once_sql())
         post['filters'] = old_filters
 
     def _check_order_by(self, column, expected):

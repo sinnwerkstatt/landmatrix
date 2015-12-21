@@ -14,11 +14,16 @@ class RecordReader:
     def __init__(self, filters, columns):
         self.filters = filters
         self.columns = columns
+        if self.DEBUG:
+            print('*'*80, 'Filters: \n', filters)
+            print('*'*80, 'columns: \n', columns)
 
     def get_all(self, assemble=None):
         if list_view_wanted(self.filters):
-            return self._slap_columns_together(assemble)
-        return self.get_all_at_once()
+            records = self._slap_columns_together(assemble)
+        else:
+            records = self.get_all_at_once()
+        return records
 
     def get_all_sql(self):
         if list_view_wanted(self.filters):
@@ -52,6 +57,7 @@ class RecordReader:
         assemble = assemble or self._make_record_from_column_data
 
         column_data = self.get_all_columns()
+
         final_data = []
         for i in range(0, len(column_data[self.columns[0]])):
             self._ensure_records_equal(column_data, i)

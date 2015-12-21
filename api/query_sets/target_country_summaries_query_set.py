@@ -14,7 +14,7 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         ('lat',        'sub.point_lat'),
         ('lon',        'sub.point_lon'),
         ('deals',      'COUNT(DISTINCT a.activity_identifier)'),
-        ('hectares',   "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))"),
+        ('hectares',   "ROUND(SUM(pi.deal_size))"),
         ('intentions', 'ARRAY_AGG(sub.intention)')
     ]
     SUBQUERY_FIELDS = [
@@ -26,9 +26,7 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         ('intention', "STRING_AGG(DISTINCT intention.attributes->'intention', ',')"),
     ]
     ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'",
         "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
-        "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'",
         "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
         "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id",
         "LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id",
