@@ -5,14 +5,14 @@
 
 {% block head %}
 
-    <script type="text/javascript" src="{% static "js/lib/ol3/ol-debug.js" %}"></script>
+    <script type="text/javascript" src="/media/js/vendor/openlayers/ol-debug.js"></script>
     <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
 
     <script type="text/javascript" src="{% static "js/map.js" %}"></script>
     <script type="text/javascript" src="{% static "js/layers.js" %}"></script>
 
 
-    <link rel="stylesheet" href="{% static "css/ol.css" %}"/>
+    <link rel="stylesheet" href="/media/js/vendor/openlayers/ol.css"/>
     <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
 
     <link rel="stylesheet" href="{% static "css/map.css" %}"/>
@@ -204,56 +204,6 @@
                 </div>
             </div>
         </div>
-        <div class="span5">
-            <div class="actions btn-group pull-right">
-                <button data-toggle="dropdown" class="btn dropdown-toggle">Download whole database <span
-                        class="caret"></span></button>
-                <ul class="dropdown-menu">
-                    <li><a href="/{{ cms_page }}/all.csv">as Comma Separated Values (.csv)</a></li>
-                    <li><a href="/{{ cms_page }}/all.xls">as Excel (.xls)</a></li>
-                    <li><a href="/{{ cms_page }}/all.xml">as XML (.xml)</a></li>
-                </ul>
-            </div>
-            {% if group_value %}
-                <div class="actions btn-group pull-right">
-                    <button class="btn dropdown-toggle " data-toggle="dropdown">Download area data <span
-                            class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="/{{ cms_page }}/{{ group_slug }}/{{ group_value }}.csv">as Comma Separated Values
-                            (.csv)</a></li>
-                        <li><a href="/{{ cms_page }}/{{ group_slug }}/{{ group_value }}.xls">as Excel (.xls)</a></li>
-                        <li><a href="/{{ cms_page }}/{{ group_slug }}/{{ group_value }}.xml">as XML (.xml)</a></li>
-                    </ul>
-                </div>
-            {% else %}
-                <div class="actions btn-group pull-right">
-                    <button class="btn dropdown-toggle " data-toggle="dropdown">Download area data <span
-                            class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="/{{ cms_page }}/{{ group_slug }}.csv">as Comma Separated Values (.csv)</a></li>
-                        <li><a href="/{{ cms_page }}/{{ group_slug }}.xls">as Excel (.xls)</a></li>
-                        <li><a href="/{{ cms_page }}/{{ group_slug }}.xml">as XML (.xml)</a></li>
-                    </ul>
-                </div>
-            {% endif %}
-            <a href="#" class="toggle-tooltip pull-right download-hint"
-               title="Due to ongoing server optimization, we momentarily disabled download of filtered datasets. We apologize for the inconvenience.">
-                <i class="icon icon-question-sign"> </i></a>
-        </div>
-    </div>
-
-    <!--
-    <div id="mapmetacontrol" class="row">
-        <div id="filters-active" class="col-md-8">
-            <span>Active Filters:</span>
-            <span class="label label-default">Lorem Ipsum Filter</span>
-            <span class="label label-default">Bacon Latin Filter</span>
-        </div>
-
-        <div id="filters-manage" class="col-md-2">
-            <span>Manage Filters</span>
-        </div>
-
         <div id="search" class="col-md-2">
             <form role="form">
                 <div class="form-group has-feedback">
@@ -262,7 +212,7 @@
                 </div>
             </form>
         </div>
-    </div>-->
+    </div>
 
     <div id="map" class="map" title='All Deals'></div>
 

@@ -1,0 +1,16 @@
+{
+  "name": "landmatrix",
+  "version": "2.0.0",
+  "private": true,
+  "dependencies": {
+    "json3": "~3.3.1",
+    "es5-shim": "~3.1.0",
+    "bootstrap": "~3.3.5",
+    "bootstrap-additions": "~0.3.1",
+    "font-awesome": "~4.3.0",
+    "humanize-duration": "3.1.0",
+    "openlayers": "https://github.com/openlayers/ol3/releases/download/v3.11.1/v3.11.1-dist.zip"
+  },
+  "devDependencies": {},
+  "appPath": "app"
+}
