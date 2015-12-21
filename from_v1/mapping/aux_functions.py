@@ -83,7 +83,7 @@ def _replace_model_name_with_id_dict(model, attributes, attribute):
         return model.objects.using(V1).filter(name=name).values('id')[0]['id']
 
     value = attributes[attribute]
-    if value.isdigit():
+    if is_number(value):
         return attributes
 
     attributes[attribute] = replace_name_with_id(value)
