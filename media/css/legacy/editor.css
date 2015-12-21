@@ -6,7 +6,7 @@ ul.nav li a.manage
  {
     width: 28px;
     height: 34px;
-    background: url(../img/editor-icons.png) no-repeat;
+    background: url(../../img/editor-icons.png) no-repeat;
     text-indent: -9999px;
     opacity: 1;
 }
