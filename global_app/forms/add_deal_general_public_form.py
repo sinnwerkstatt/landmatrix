@@ -2,6 +2,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from global_app.forms.add_deal_general_form import AddDealGeneralForm
 
+
 class AddDealGeneralPublicForm(AddDealGeneralForm):
 
     class Meta:
