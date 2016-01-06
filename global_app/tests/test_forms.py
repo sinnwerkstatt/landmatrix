@@ -23,6 +23,7 @@ from global_app.forms.deal_history_form import DealHistoryForm
 from global_app.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from global_app.forms.deal_primary_investor_form import DealPrimaryInvestorForm
 from global_app.forms.deal_produce_info_form import DealProduceInfoForm
+from landmatrix.models.crop import Crop
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -92,6 +93,7 @@ class TestForms(TestCase):
         self._test_form_instantiates(AddPrimaryInvestorForm)
 
     def test_add_primaryinvestor_form_data(self):
+        self.skipTest('primary investor form obsolete and not yet rewritten')
         self._test_primary_investor_form(AddPrimaryInvestorForm)
 
     def _test_primary_investor_form(self, form_class):
@@ -141,7 +143,7 @@ class TestForms(TestCase):
             'form-0-type': 10, 'form-0-url': 'http://lmgtfy.com/?q=what+is+the+internet'
         })
         # print(formset.errors)
-        self.assertTrue(formset.is_valid)
+        self.assertTrue(formset.is_valid())
 
     def test_change_deal_data_source_form_data(self):
         self._test_data_source_formset(ChangeDealDataSourceFormSet)
@@ -154,7 +156,7 @@ class TestForms(TestCase):
 
     def test_deal_former_use_form_data(self):
         form = DealFormerUseForm({'land_owner': (10,)})
-        self.assertTrue(form.is_valid)
+        self.assertTrue(form.is_valid())
 
     def test_deal_gender_related_info_form_instantiates(self):
         self._test_form_instantiates(DealGenderRelatedInfoForm)
@@ -166,22 +168,24 @@ class TestForms(TestCase):
         self._test_form_instantiates(DealLocalCommunitiesForm)
 
     def test_deal_local_communities_form_data(self):
-        form = DealLocalCommunitiesForm({'community_reaction': (10,)})
-        self.assertTrue(form.is_valid)
+        form = DealLocalCommunitiesForm({'community_reaction': 10})
+        self.assertTrue(form.is_valid())
 
     def test_deal_primary_investor_form_instantiates(self):
         self._test_form_instantiates(DealPrimaryInvestorForm)
 
     def test_deal_primary_investor_form_data(self):
-        form = DealPrimaryInvestorForm({'project_name': 'blah', 'primary_investor': 'blub'})
-        self.assertTrue(form.is_valid)
+        form = DealPrimaryInvestorForm({'project_name': 'blah', 'primary_investor': 10})
+        self.assertTrue(form.is_valid())
 
     def test_deal_produce_info_form_instantiates(self):
         self._test_form_instantiates(DealProduceInfoForm)
 
     def test_deal_produce_info_form_data(self):
-        form = DealProduceInfoForm({'crops': (1, 2, 3)})
-        self.assertTrue(form.is_valid)
+        Crop(code='BLA', name='Blah', slug='blah').save()
+        id = Crop.objects.first().pk
+        form = DealProduceInfoForm({'crops': (id,)})
+        self.assertTrue(form.is_valid())
 
 
 
