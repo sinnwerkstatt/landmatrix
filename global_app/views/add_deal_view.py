@@ -11,7 +11,7 @@ from global_app.forms.deal_produce_info_form import DealProduceInfoForm
 from global_app.forms.deal_secondary_investor_formset import DealSecondaryInvestorFormSet, get_investors
 from global_app.forms.deal_spatial_form import AddDealSpatialFormSet
 from global_app.forms.deal_water_form import DealWaterForm
-from global_app.forms.investor_formset import InvestorFormSet, OperationalStakeholderForm
+from global_app.forms.operational_stakeholder_form import OperationalStakeholderForm
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.country import Country
@@ -50,7 +50,7 @@ class AddDealView(TemplateView):
 
         # if this is a POST request we need to process the form data
         if request.method == 'POST':
-
+            print(request.POST)
             # check whether it's valid:
             if all(form.is_valid() for form in forms):
 
