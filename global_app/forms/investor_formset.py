@@ -1,5 +1,9 @@
 from pprint import pprint
+
+from django.core.exceptions import ValidationError
+
 from global_app.forms.base_form import BaseForm
+from global_app.forms.operational_stakeholder_form import _investor_description
 from landmatrix.models.comment import Comment
 
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
@@ -18,14 +22,6 @@ from copy import copy
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-
-class OperationalStakeholderForm(BaseForm):
-    tg_operational_stakeholder = TitleField(required=False, label="", initial=_("Operational Stakeholder"))
-    operational_stakeholder = forms.ModelChoiceField(
-            required=True, label=_("Existing Operational Stakeholder"),
-            queryset=Investor.objects.filter(pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct())
-    )#, widget=LivesearchSelect)
-    project_name = forms.CharField(required=False, label=_("Name of investment project"), max_length=255)
 
 
 class InvestorForm(BaseForm):
@@ -86,17 +82,6 @@ class InvestorForm(BaseForm):
         ]
         self.fields["country"].choices.extend([(c.id, c.name) for c in Country.objects.all().order_by("name")])
 
-
-def _investor_description(investor):
-    return investor.name + ' (' + _investor_country_name(investor) + ')' + ' ' + _investor_classification(investor)
-
-
-def _investor_country_name(investor):
-    return Country.objects.get(pk=investor.fk_country_id).name if investor.fk_country_id else '-'
-
-
-def _investor_classification(investor):
-    return investor.get_classification_display() if investor.classification else '-'
 
 
 BaseInvestorFormSet = formset_factory(InvestorForm, extra=1)
