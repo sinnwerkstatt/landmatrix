@@ -31,7 +31,7 @@ class InvestorForm(BaseForm):
     investor = forms.ChoiceField(required=False, label=_("Existing investor"), choices=())#, widget=LivesearchSelect)
     investor_name = forms.CharField(required=False, label=_("Name"), max_length=255)
     country = forms.ChoiceField(required=False, label=_("Country"), choices=())
-#    region = forms.ModelChoiceField(required=False, label=_("Region"), widget=forms.HiddenInput, queryset=Region.objects.all().order_by('name'))
+    region = forms.ModelChoiceField(required=False, label=_("Region"), widget=forms.HiddenInput, queryset=Region.objects.all().order_by('name'))
     classification = forms.ChoiceField(
             required=False, label=_("Classification"), choices=Investor.classification_choices, widget=forms.RadioSelect
     )

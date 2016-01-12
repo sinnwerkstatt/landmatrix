@@ -10,7 +10,9 @@ from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+
 class OperationalStakeholderChoiceField(ModelChoiceField):
+
     def label_from_instance(self, obj):
         return _investor_description(obj)
 
@@ -24,9 +26,12 @@ class OperationalStakeholderForm(BaseForm):
     tg_operational_stakeholder = TitleField(required=False, label="", initial=_("Operational Stakeholder"))
     operational_stakeholder = OperationalStakeholderChoiceField(
             required=True, label=_("Existing Operational Stakeholder"),
-            queryset=Investor.objects.filter(pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()).order_by('name')
-    )#, widget=LivesearchSelect)
+            queryset=Investor.objects.filter(
+                    pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
+            ).order_by('name')
+    )  # , widget=LivesearchSelect)
     project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)
+
 
 def _investor_description(investor):
     return investor.name + ' (' + _investor_country_name(investor) + ')' + ' ' + _investor_classification(investor)
