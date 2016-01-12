@@ -1,3 +1,5 @@
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models import Activity, ActivityAttributeGroup, Country
@@ -43,28 +45,31 @@ class Deal:
         self.activity = get_latest_activity(id)
         self.attributes = self.get_activity_attributes()
 
-        primary_investor_ids, stakeholder_ids = self.get_pi_and_sh_id()
-
-        # last() always has latest version, no need for MAX() gymnastics
-#        self.primary_investor = PrimaryInvestor.objects.filter(id__in=primary_investor_ids).last()
-        self.stakeholder = get_stakeholder(stakeholder_ids)
-        self.stakeholders = get_stakeholders(stakeholder_ids)
+        self.operational_stakeholder = self.get_operational_stakeholder()
+        self.stakeholders = self.get_stakeholders()
 
     def __str__(self):
-        return str({'attributes': self.attributes, 'primary_investor': self.primary_investor, 'stakeholder': self.stakeholder})
+        return str(
+                {
+                    'attributes': self.attributes, 'operational stakeholder': self.operational_stakeholder,
+                    'stakeholders': self.stakeholders
+                }
+        )
 
     def get_activity_attributes(self):
         attributes = ActivityAttributeGroup.objects.filter(fk_activity=self.activity).values('attributes')
         attributes_list = [a['attributes'] for a in attributes]
         return aggregate_activity_attributes(attributes_list, {})
 
-    def get_pi_and_sh_id(self):
-        involvements = self.involvement_set().values('fk_primary_investor_id', 'fk_stakeholder_id')
-        return [i['fk_primary_investor_id'] for i in involvements], [i['fk_stakeholder_id'] for i in involvements]
+    def get_operational_stakeholder(self):
+        involvements = InvestorActivityInvolvement.objects.filter(fk_activity=self.activity)
+        if len(involvements) > 1:
+            raise RuntimeError('More than one OP for activity %s: %s' % (str(self.activity), str(involvements)))
+        return Investor.objects.get(pk=involvements[0].fk_investor_id)
 
-    def involvement_set(self):
-#        return Involvement.objects.select_related().filter(fk_activity=self.activity)
-        return None
+    def get_stakeholders(self):
+        stakeholder_involvements = InvestorVentureInvolvement.objects.filter(fk_venture=self.operational_stakeholder.pk)
+        return [Investor.objects.get(pk=involvement.fk_investor_id) for involvement in stakeholder_involvements]
 
     def attribute_groups(self):
         return ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
@@ -73,15 +78,6 @@ class Deal:
 def get_latest_activity(deal_id):
     version_max = _get_latest_version(deal_id)
     return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
-
-
-# def get_stakeholders(ids):
-#     return Stakeholder.objects.filter(id__in=ids)
-
-
-# def get_stakeholder(stakeholder_ids):
-#     sh = get_stakeholders(stakeholder_ids).last()
-#     return get_stakeholder_attributes(sh)
 
 
 def aggregate_activity_attributes(attributes_list, already_set_attributes):
