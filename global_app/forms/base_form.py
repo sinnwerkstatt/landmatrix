@@ -398,6 +398,9 @@ class BaseForm(forms.Form):
 
     @classmethod
     def get_tags(cls, field_name, deal, taggroup):
+        if not deal and not taggroup:
+            return [], None
+
         if isinstance(deal, Deal):
             tags = deal.attributes
             if not taggroup:
