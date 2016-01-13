@@ -39,10 +39,11 @@ LEFT JOIN landmatrix_publicinterfacecache      AS pi               ON a.id = pi.
     LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id
     LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id
     WHERE
-        a.version = (
-            SELECT MAX(version) FROM landmatrix_activity AS amax
-            WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
-        ) AND a.fk_status_id IN (2, 3)
+--        a.version = (
+--            SELECT MAX(version) FROM landmatrix_activity AS amax
+--            WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
+--        ) AND
+            a.fk_status_id IN (2, 3)
         AND pi.is_deal
 --        AND pi.deal_scope = 'transnational'
 --        AND pi.deal_scope = 'domestic'

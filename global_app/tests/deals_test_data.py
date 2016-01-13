@@ -26,14 +26,18 @@ class DealsTestData:
     def make_involvement(self, i_r = 0.):
         self.make_language()
         self.activity_version += 1
-        act = Activity(fk_status=Status.objects.get(id=2), activity_identifier=self.ACT_ID, version=self.activity_version)
+        act = Activity(
+                fk_status=Status.objects.get(id=2), activity_identifier=self.ACT_ID,
+#                version=self.activity_version
+        )
         act.save()
         self.make_investor_activity_involvement(act, i_r)
 
     def make_investor_activity_involvement(self, activity, i_r = 0.):
         from django.utils import timezone
         investor = Investor(
-            investor_identifier=1, name=self.OS_NAME, fk_status=Status.objects.get(id=2), timestamp=timezone.now(), version=1
+            investor_identifier=1, name=self.OS_NAME, fk_status=Status.objects.get(id=2), timestamp=timezone.now(),
+#                version=1
         )
         investor.save()
         investor_activity_involvement = InvestorActivityInvolvement(
@@ -76,7 +80,10 @@ class DealsTestData:
     def create_activity_with_status(self, status_id, act_id = 0, version=1):
         self.make_language()
         if not act_id: act_id = self.ACT_ID
-        Activity(fk_status=Status.objects.get(id=status_id), activity_identifier=act_id, version=version).save()
+        Activity(
+                fk_status=Status.objects.get(id=status_id), activity_identifier=act_id,
+#                version=version
+        ).save()
 
     def add_attributes_to_activity(self, activity, attributes):
         ActivityAttributeGroup(fk_activity=activity, fk_language_id=1, date=date.today(),attributes=attributes).save()

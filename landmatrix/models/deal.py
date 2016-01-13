@@ -39,14 +39,9 @@ class Deal:
 
     objects = Manager()
 
-    def __init__(self, id):
-        self.id = id
-
-        self.activity = get_latest_activity(id)
-        self.attributes = self.get_activity_attributes()
-
-        self.operational_stakeholder = self.get_operational_stakeholder()
-        self.stakeholders = self.get_stakeholders()
+    def __init__(self, deal_id=None):
+        if deal_id is not None:
+            self._set_activity(get_latest_activity(deal_id))
 
     def __str__(self):
         return str(
@@ -55,6 +50,12 @@ class Deal:
                     'stakeholders': self.stakeholders
                 }
         )
+
+    @classmethod
+    def from_activity(cls, activity):
+        deal = Deal()
+        deal._set_activity(activity)
+        return deal
 
     def get_activity_attributes(self):
         attributes = ActivityAttributeGroup.objects.filter(fk_activity=self.activity).values('attributes')
@@ -65,6 +66,8 @@ class Deal:
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity=self.activity)
         if len(involvements) > 1:
             raise RuntimeError('More than one OP for activity %s: %s' % (str(self.activity), str(involvements)))
+        if len(involvements) < 1:
+            raise RuntimeError('No OP for activity %s: %s' % (str(self.activity), str(involvements)))
         return Investor.objects.get(pk=involvements[0].fk_investor_id)
 
     def get_stakeholders(self):
@@ -74,10 +77,22 @@ class Deal:
     def attribute_groups(self):
         return ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
 
+    def get_history(self):
+        return [Deal.from_activity(activity)
+                for activity in  self.activity.history.filter(activity_identifier=self.activity.activity_identifier)]
+
+    def _set_activity(self, activity):
+        self.id = activity.activity_identifier
+        self.activity = activity
+        self.attributes = self.get_activity_attributes()
+        self.operational_stakeholder = self.get_operational_stakeholder()
+        self.stakeholders = self.get_stakeholders()
+
 
 def get_latest_activity(deal_id):
-    version_max = _get_latest_version(deal_id)
-    return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
+    return Activity.objects.filter(activity_identifier=deal_id).last()
+    # version_max = _get_latest_version(deal_id)
+    # return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
 
 
 def aggregate_activity_attributes(attributes_list, already_set_attributes):

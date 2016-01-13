@@ -102,6 +102,8 @@ class DealDetailView(TemplateView):
         deal = Deal(kwargs["deal_id"])
         context = super().get_context_data(**kwargs)
         context['deal'] = {
+                'id': deal.activity.id,
+                'activity_identifier': deal.activity.activity_identifier,
                 'attributes': deal.attributes,
                 'primary_investor': deal.operational_stakeholder,
                 'stakeholder': deal.stakeholders,
@@ -109,6 +111,7 @@ class DealDetailView(TemplateView):
         context['forms'] = get_forms(deal)
         # context['investor'] = get_investors(deal)
         context['investor'] = deal.stakeholders
+        context['history'] = deal.get_history()
 
         return render_to_response(self.template_name, context, RequestContext(request))
 
