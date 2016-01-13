@@ -1,9 +1,12 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+from landmatrix.models.default_string_representation import DefaultStringRepresentation
+
+from simple_history.models import HistoricalRecords
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django_hstore import hstore
-from landmatrix.models.default_string_representation import DefaultStringRepresentation
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class ActivityAttributeGroup(DefaultStringRepresentation, models.Model):
@@ -15,3 +18,4 @@ class ActivityAttributeGroup(DefaultStringRepresentation, models.Model):
     # TODO: Add geometry (location point)
 
     objects = hstore.HStoreManager()
+    history = HistoricalRecords()

@@ -49,12 +49,14 @@ class TestActivityProtocol(TestCase, DealsTestData):
                 LEFT JOIN landmatrix_investorventureinvolvement  AS ivi         ON ivi.fk_venture_id = operational_stakeholder.id
                 LEFT JOIN landmatrix_investor                    AS stakeholder ON ivi.fk_investor_id = stakeholder.id
                 LEFT JOIN landmatrix_activityattributegroup      AS intention   ON (a.id = intention.fk_activity_id AND intention.attributes ? 'intention')
-            WHERE a.version = (
-                    SELECT max(version)
-                    FROM landmatrix_activity AS amax, landmatrix_status AS st
-                    WHERE amax.fk_status_id = st.id AND amax.activity_identifier = a.activity_identifier AND st.name IN ('active', 'overwritten', 'deleted')
-                )
-                AND pi.is_deal
+            WHERE
+--            a.version = (
+--                    SELECT max(version)
+--                    FROM landmatrix_activity AS amax, landmatrix_status AS st
+--                    WHERE amax.fk_status_id = st.id AND amax.activity_identifier = a.activity_identifier AND st.name IN ('active', 'overwritten', 'deleted')
+--                )
+--                AND
+                pi.is_deal
                 AND status.name IN ('active', 'overwritten')
                 AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
             GROUP BY a.id"""

@@ -44,19 +44,24 @@ if __name__ == '__main__':
         if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
-        for map_class in [
-            MapLanguage, MapStatus,
-            MapActivity,
-            MapActivityAttributeGroup,
-            # MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
-            # MapStakeholder, MapPrimaryInvestor, MapInvolvement,
-            # MapStakeholderAttributeGroup,
-            # MapAgriculturalProduce, MapCrop, MapComment,
-            # MapInvestor, MapInvestorActivityInvolvement,
-            MapPublicInterfaceCache,
-            # MapStakeholderInvestor,
-        ]:
-            map_class.map_all(save=True)
+        MapActivity._done = True
+        MapInvestor._done = True
+        MapInvestorActivityInvolvement.map_all(save=True)
+        MapStakeholderVentureInvolvement.map_all()
+        if False:
+            for map_class in [
+                MapLanguage, MapStatus,
+                MapActivity,
+                MapActivityAttributeGroup,
+                # MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
+                # MapStakeholder, MapPrimaryInvestor, MapInvolvement,
+                # MapStakeholderAttributeGroup,
+                # MapAgriculturalProduce, MapCrop, MapComment,
+                # MapInvestor, MapInvestorActivityInvolvement,
+                MapPublicInterfaceCache,
+                # MapStakeholderInvestor,
+            ]:
+                map_class.map_all(save=True)
 
         # a number of possible uses listed here as examples
         if False:
