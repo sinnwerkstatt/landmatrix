@@ -74,7 +74,10 @@ JOIN (
     "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal\n" +\
      join_attributes('deal_scope') + """
     %(from_filter)s
-    WHERE """ + "\nAND ".join([ cls.max_version_condition(), cls.status_active_condition(), cls.is_deal_condition(), cls.not_mining_condition() ]) + """
+    WHERE """ + "\nAND ".join([
+#            cls.max_version_condition(),
+            cls.status_active_condition(), cls.is_deal_condition(), cls.not_mining_condition()
+        ]) + """
     %(where)s
     %(where_filter)s
     GROUP BY a.id

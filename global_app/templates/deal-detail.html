@@ -112,7 +112,31 @@
           {% endfor %}
 
         {% endif %}           {# forms #}
-        
+
+        {% if history|length > 1 %}
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                History
+              </a>
+            </h4>
+          </div>
+
+          <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+            <div class="panel-body">
+              {% for item in history %}
+                <p>{{ item }}</p>
+              {% endfor %}
+              <p>{{ history|length }}</p>
+            </div>
+          </div>
+        {% else %}
+          <p>Nope, no history!</p>
+          <p>Deal: {{ deal.id }} {{ deal.activity_identifier }}</p>
+          <p>{{ history }}</p>
+          <p>{{ history|length }}</p>
+        {% endif %}
+
       </div>
     </div>
 
