@@ -7,13 +7,9 @@ class HectaresQuerySet(FakeQuerySetWithSubquery):
 
     FIELDS = [
         ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
-        ('hectares',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
+        ('hectares',          "ROUND(SUM(pi.deal_size))")
     ]
     SUBQUERY_FIELDS = []
-    ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
-        "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
-    ]
 
     def all(self):
         data = super().all()

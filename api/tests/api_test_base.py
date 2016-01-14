@@ -27,7 +27,7 @@ class ApiTestBase(DealsTestData):
             self.assertIsInstance(content, dict)
 
     def test_foreign_keys(self):
-        self.make_involvement()
+        self.make_activity_with_new_version()
         response = self.client.get(self.url('involvement'))
         content = json.loads(response.content.decode('utf-8'))
         for fk in ('fk_activity', 'fk_stakeholder', 'fk_primary_investor'):
@@ -38,7 +38,7 @@ class ApiTestBase(DealsTestData):
 class ApiTestExtendedBase(ApiTestBase):
 
     def test_access_specific_record(self):
-        self.make_involvement(1.23)
+        self.make_activity_with_new_version(1.23)
 
         content = self.get_content('involvement')
         response = self.client.get(content[self.RESULTS_INDEX][0][self.URI_INDEX])
@@ -51,8 +51,8 @@ class ApiTestExtendedBase(ApiTestBase):
         self.assertEqual(1.23, float(content['investment_ratio']))
 
     def test_view_content(self):
-        self.make_involvement()
-        self.make_involvement(1.23)
+        self.make_activity_with_new_version()
+        self.make_activity_with_new_version(1.23)
 
         content = self.get_content('involvement')
         self.assertIsInstance(content, dict)
