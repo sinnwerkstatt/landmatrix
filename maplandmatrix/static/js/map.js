@@ -316,11 +316,15 @@ $(document).ready(function () {
     $.get(
         "/en/api/deals.json?limit=300", //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
         function (data) {
-            for (var i = 0; i < data.length; i++) {
-                var marker = data[i];
-                addClusteredMarker(parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention);
+            if (data.length < 1) {
+                $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
+            } else {
+                for (var i = 0; i < data.length; i++) {
+                    var marker = data[i];
+                    addClusteredMarker(parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention);
+                }
+                console.log('Added deals: ', i);
             }
-            console.log('Added deals: ', i);
         }
     );
 });
