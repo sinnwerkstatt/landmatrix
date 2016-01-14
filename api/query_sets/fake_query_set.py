@@ -102,9 +102,9 @@ class FakeQuerySet(QuerySet):
             stati = []
             for n in negotiation_status:
                 stati.extend(self.BASE_FILTER_MAP.get(n))
-            filter_sql += " AND LOWER(negotiation.attributes->'pi_negotiation_status') IN ('%s') " % "', '".join(stati)
+            filter_sql += " AND LOWER(pi.negotiation_status) IN ('%s') " % "', '".join(stati)
         if len(deal_scope) == 1:
-            filter_sql += " AND deal_scope.attributes->'deal_scope' = '%s' " % deal_scope[0]
+            filter_sql += " AND pi.deal_scope = '%s' " % deal_scope[0]
         if data_source_type:
             filter_sql += """ AND NOT (
             SELECT ARRAY_AGG(data_source_type.attributes->'type')

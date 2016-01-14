@@ -23,12 +23,12 @@ HINT:  Must be superuser to create this extension.`
 
 Solution (found here: http://calvinx.com/2012/12/05/geodjango-postgis-test-databases/):
 ```
-$ sudo -U postgres psql -c "CREATE DATABASE template_postgis ENCODING='utf-8';"
-$ sudo -U postgres psql -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"
+$ sudo -u postgres psql -c "CREATE DATABASE template_postgis ENCODING='utf-8';"
+$ sudo -u postgres psql -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"
 $ POSTGIS_SQL_PATH=$(dirname $(locate /postgis.sql))
-$ sudo -U postgres psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql
-$ sudo -U postgres psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
-$ sudo -U postgres psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
-$ sudo -U postgres psql -d template_postgis -c "GRANT ALL ON geography_columns TO PUBLIC;"
-$ sudo -U postgres psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+$ sudo -u postgres psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql
+$ sudo -u postgres psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
+$ sudo -u postgres psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
+$ sudo -u postgres psql -d template_postgis -c "GRANT ALL ON geography_columns TO PUBLIC;"
+$ sudo -u postgres psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
 ```

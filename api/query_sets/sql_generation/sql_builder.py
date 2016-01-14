@@ -60,8 +60,10 @@ class SQLBuilder(SQLBuilderData):
 
         if self._need_involvements_and_stakeholders():
             self.join_expressions.extend([
-                join_expression(Involvement, 'i', 'a.id', 'fk_activity_id'),
-                join_expression(Stakeholder, 's', 'i.fk_stakeholder_id')
+                join_expression(InvestorActivityInvolvement, 'iai', 'a.id', 'iai.fk_activity_id'),
+                join_expression(Investor, 'operational_stakeholder', 'operational_stakeholder.id', 'iai.fk_investor_id'),
+                join_expression(InvestorVentureInvolvement, 'ivi', 'operational_stakeholder.id', 'ivi.fk_venture_id'),
+                join_expression(Investor, 'stakeholder', 'stakeholder.id', 'ivi.fk_venture_id')
             ])
 
         for c in get_join_columns(self.columns, self.group, self.group_value):
@@ -128,18 +130,27 @@ class SQLBuilder(SQLBuilderData):
             return False
 
     def _need_involvements_and_stakeholders(self):
-        return 'investor' in self.filters or any(
+        return self._investor_filter_is_set() or any(
             x in ("investor_country","investor_region", "investor_name", 'primary_investor', "primary_investor_name")
             for x in self.columns
         )
+
+    def _investor_filter_is_set(self):
+        return 'investor' in self.filters and 'tags' in self.filters['investor'] and self.filters['investor']['tags']
 
     def _add_join_for_column(self, c):
         spec = self.COLUMNS.get(c, [join_attributes(c)])
         if isinstance(spec, tuple):
             if not any(spec[0] in string for string in self.join_expressions):
-                self.join_expressions.extend(spec[1])
+                self._add_join_if_not_present(spec[1])
         else:
-            self.join_expressions.extend(spec)
+            self._add_join_if_not_present(spec)
+
+    def _add_join_if_not_present(self, new_join_expressions):
+        for new_join_expression in new_join_expressions:
+            if new_join_expression not in self.join_expressions:
+                self.join_expressions.append(new_join_expression)
+
 
     @classmethod
     def max_version_condition(cls, model=Activity, alias='a', id_field='activity_identifier'):
@@ -154,7 +165,7 @@ class SQLBuilder(SQLBuilderData):
 
     @classmethod
     def is_deal_condition(cls):
-        return "pi_deal.attributes->'pi_deal' = 'True'"
+        return "pi.is_deal"
 
     @classmethod
     def not_mining_condition(cls):
@@ -173,7 +184,7 @@ class SQLBuilder(SQLBuilderData):
 
         sql = """SELECT DISTINCT a.activity_identifier AS deal_id
 FROM landmatrix_activity                    AS a
-LEFT JOIN landmatrix_activityattributegroup AS pi_deal   ON a.id = pi_deal.fk_activity_id AND pi_deal.attributes ? 'pi_deal'
+LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal
 LEFT JOIN landmatrix_activityattributegroup AS intention ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
           WHERE
 """ + "\nAND ".join([ cls.max_version_condition(), cls.status_active_condition(), cls.is_deal_condition() ]) + """

@@ -1,3 +1,5 @@
+import traceback
+
 from django.core.exceptions import ImproperlyConfigured
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -25,40 +27,59 @@ BASE_PATH = '/home/lene/workspace/landmatrix'
 load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
 load_project(BASE_PATH+'/land-matrix', 'editor')
 
+
+def map_classes(*args):
+    for map_class in args:
+        map_class.map_all(save=True)
+
+
 if __name__ == '__main__':
 
     from django.db.utils import ConnectionDoesNotExist
 
     try:
 
-        from map_model_implementations import *
-        from map_tag_groups import MapTagGroups
-        if V1 == 'V1_pg':
+        from mapping import *
+        from mapping.aux_functions import get_country_id_for_stakeholder
+        if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
         for map_class in [
             MapLanguage, MapStatus,
-            MapActivity, MapActivityAttributeGroup,
-            MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
-            MapStakeholder,
-            MapStakeholderAttributeGroup,
-            MapPrimaryInvestor, MapInvolvement,
-            MapAgriculturalProduce, MapCrop,
+            MapActivity,
+            MapActivityAttributeGroup,
+            # MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
+            # MapStakeholder, MapPrimaryInvestor, MapInvolvement,
+            # MapStakeholderAttributeGroup,
+            # MapAgriculturalProduce, MapCrop, MapComment,
+            # MapInvestor, MapInvestorActivityInvolvement,
+            MapPublicInterfaceCache,
+            # MapStakeholderInvestor,
         ]:
             map_class.map_all(save=True)
 
         # a number of possible uses listed here as examples
+        if False:
+            for map_class in [
+                MapLanguage, MapStatus,
+                MapActivity,
+                MapActivityAttributeGroup,
+                MapRegion,
+                MapCountry,
+                MapBrowseRule, MapBrowseCondition,
+                MapAgriculturalProduce, MapCrop,
+                # MapComment,
+                MapInvestor, MapInvestorActivityInvolvement,
+                MapStakeholderInvestor,
+            ]:
+                map_class.map_all(save=True)
+
         if False:
             MapActivity._done = True
             MapLanguage._done = True
             MapActivityAttributeGroup.map_all(save=True)
             MapAgriculturalProduce.map_all(save=True)
             MapCrop.map_all(save=True)
-
-        if False:   # run to fix messed up country attributes on StakeholderAttributeGroup
-            MapStakeholder._done = True
-            MapLanguage._done = True
-            MapStakeholderAttributeGroup.map_all(save=True)
 
         if False:   # example for migrating just one record
             MapActivityAttributeGroup.map(ActivityAttributeGroup.objects.using(V1).last().id)
@@ -68,14 +89,13 @@ if __name__ == '__main__':
                 MapLanguage, MapStatus,
                 MapActivity, MapActivityAttributeGroup,
                 MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
-                MapStakeholder, MapPrimaryInvestor, MapInvolvement,
-                MapStakeholderAttributeGroup,
                 MapAgriculturalProduce, MapCrop, MapComment,
             ]:
                 map_class.map_all(save=False)
 
     except ConnectionDoesNotExist as e:
         print('You need to set CONVERT_DB to True in settings.py!')
+        print(e)
     except AttributeError as e:
         print('You need to check out branch "postgres" of the old land-matrix project under')
         print(BASE_PATH+'/land-matrix!')
@@ -84,5 +104,6 @@ if __name__ == '__main__':
         print('To migrate the original MySQL data you need to check out branch "master" of the')
         print('old land-matrix project under '+BASE_PATH+'/land-matrix!')
         print(e)
+        raise
     except ImproperlyConfigured:
         print('Do a "pip install mysqlclient" to install mysql drivers!')

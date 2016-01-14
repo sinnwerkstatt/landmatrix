@@ -9,9 +9,9 @@ from global_app.forms.add_deal_general_form import AddDealGeneralForm
 class IntentionQuerySet(FakeQuerySetWithSubquery):
 
     FIELDS = [
-        ('intention', 'sub.intention'),
-        ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
-        ('deal_size',          "ROUND(SUM(CAST(REPLACE(size.attributes->'pi_deal_size', ',', '.') AS NUMERIC)))")
+        ('intention',  'sub.intention'),
+        ('deal_count', 'COUNT(DISTINCT a.activity_identifier)'),
+        ('deal_size',  'ROUND(SUM(pi.deal_size))')
     ]
     SUBQUERY_FIELDS = [
         ('intention', """CASE
@@ -21,9 +21,6 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
-        "LEFT JOIN landmatrix_activityattributegroup    AS negotiation      ON a.id = negotiation.fk_activity_id AND negotiation.attributes ? 'pi_negotiation_status'"
-        "LEFT JOIN landmatrix_activityattributegroup    AS implementation   ON a.id = implementation.fk_activity_id AND implementation.attributes ? 'pi_implementation_status'"
-        "LEFT JOIN landmatrix_activityattributegroup    AS deal_scope       ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'"
     ]
     GROUP_BY = ['sub.intention']
     ORDER_BY = ['sub.intention']
