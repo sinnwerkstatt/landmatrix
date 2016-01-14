@@ -18,14 +18,14 @@ class TableGroupView(TemplateView):
 
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = [
-        "deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status",
+        "deal_id", "target_country", "location", "stakeholder_name", "stakeholder_country", "intention", "negotiation_status",
         "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal",
         "data_source_type", "data_source_url", "data_source_date", "data_source_organisation",
         "contract_farming", "crop"
     ]
-    QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
+    QUERY_LIMITED_GROUPS = ["target_country", "stakeholder_name", "stakeholder_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
-        "deal_id", "target_country", "primary_investor", "investor_name", "investor_country", "intention",
+        "deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country", "intention",
         "negotiation_status", "implementation_status", "intended_size", "contract_size",
     ]
     DEFAULT_GROUP = "by-target-region"
@@ -56,7 +56,6 @@ class TableGroupView(TemplateView):
     def render(self, items, kwargs):
         if self.is_download() and items:
             return self._get_download(items)
-
         context = {
             "view": "get-the-detail",
             "cms_page": 'global',
@@ -131,7 +130,6 @@ class TableGroupView(TemplateView):
         for ext in Download.supported_formats():
             if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
                 self.download_type = ext
-#                self.debug_query = True
                 return
 
     def _set_group(self, **kwargs):
@@ -215,15 +213,26 @@ class TableGroupView(TemplateView):
         else:
             intentions = [IntentionMap.get_parent(intention) for intention in set(value)]
 
-        return sorted(intentions)
+        return sorted(list(set(filter(None, intentions))))
 
     def _process_investor_name(self, value):
-        return [
-            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else ""
+        if not isinstance(value, list):
+            value = [value]
+        result = [
+            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
             for inv in value
         ]
+        return result
+
+    def _process_stakeholder_name(self, value):
+        if not isinstance(value, list):
+            value = [value]
+        result = [{"name": inv} for inv in value]
+        return result
 
     def _process_stitched_together_field(self, value):
+        if not isinstance(value, list):
+            value = [value]
         return [field.split("#!#")[0] for field in value]
 
     def _process_name_and_year(self, value):
@@ -231,12 +240,14 @@ class TableGroupView(TemplateView):
 
     def _process_value(self, c, value):
         if not value: return None
-
         process_functions = {
             'intention': self._process_intention,
             'investor_name': self._process_investor_name,
-            'investor_country': self._process_stitched_together_field,
-            'investor_region': self._process_stitched_together_field,
+            'stakeholder_name': self._process_stakeholder_name,
+#            'investor_country': self._process_stitched_together_field,
+            'stakeholder_country': self._process_stitched_together_field,
+#            'investor_region': self._process_stitched_together_field,
+            'stakeholder_region': self._process_stitched_together_field,
             'crop': self._process_stitched_together_field,
             'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
             'negotiation_status': self._process_name_and_year,
@@ -265,14 +276,21 @@ class TableGroupView(TemplateView):
         columns = {
             "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
             "target_region": ["target_region", "intention", "deal_count", "availability"],
-            "investor_name": ["investor_name", "investor_country", "intention", "deal_count", "availability"],
-            "investor_country": ["investor_country", "investor_region", "intention", "deal_count", "availability"],
-            "investor_region": ["investor_region", "intention", "deal_count", "availability"],
+#            "investor_name": ["investor_name", "investor_country", "intention", "deal_count", "availability"],
+            "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
+#            "investor_country": ["investor_country", "investor_region", "intention", "deal_count", "availability"],
+# stakeholder_region temporarily disabled until a more intelligent caching for the public interface variables is implemented
+#            "stakeholder_country": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
+            "stakeholder_country": ["stakeholder_country", "intention", "deal_count", "availability"],
+#            "investor_region": ["investor_region", "intention", "deal_count", "availability"],
+# intention temporarily disabled until a more intelligent caching for the public interface variables is implemented
+#            "stakeholder_region": ["stakeholder_region", "intention", "deal_count", "availability"],
+            "stakeholder_region": ["stakeholder_region", "deal_count", "availability"],
             "intention": ["intention", "deal_count", "availability"],
             "crop": ["crop", "intention", "deal_count", "availability"],
             "year": ["year", "intention", "deal_count", "availability"],
             "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
-            "all": ["deal_id", "target_country", "primary_investor", "investor_name", "investor_country",
+            "all": ["deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country",
                     "intention", "negotiation_status", "implementation_status", "intended_size",
                     "contract_size", ]
         }

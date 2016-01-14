@@ -23,7 +23,7 @@ a.activity_identifier,
 %(columns)s, a.id AS id
 FROM landmatrix_activity AS a
 %(from)s
-""" + join_attributes('pi_deal') + """
+LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal
 """ + join_attributes('deal_scope') + """
 %(from_filter)s
 WHERE """ + "\nAND ".join([ cls.max_version_condition(), cls.status_active_condition(), cls.is_deal_condition(), cls.not_mining_condition() ]) + """

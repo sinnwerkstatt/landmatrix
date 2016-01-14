@@ -52,7 +52,7 @@ class GroupSQLBuilder(SQLBuilder):
               %(columns)s,'dummy' as dummy
 FROM landmatrix_activity                    AS a
 %(from)s
-LEFT JOIN landmatrix_activityattributegroup AS pi_deal    ON a.id = pi_deal.fk_activity_id AND  pi_deal.attributes ? 'pi_deal'
+LEFT JOIN landmatrix_publicinterfacecache   AS pi         ON a.id = pi.fk_activity_id AND pi.is_deal
 LEFT JOIN landmatrix_activityattributegroup AS deal_scope ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'
 %(from_filter)s
 WHERE """ + "\nAND ".join([ cls.max_version_condition(), cls.status_active_condition(), cls.is_deal_condition(), cls.not_mining_condition() ]) + """

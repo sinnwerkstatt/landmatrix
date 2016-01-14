@@ -8,9 +8,10 @@ from global_app.forms.deal_former_use_form import DealFormerUseForm
 from global_app.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
 from global_app.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from global_app.forms.deal_produce_info_form import DealProduceInfoForm
-from global_app.forms.deal_secondary_investor_formset import DealSecondaryInvestorFormSet, get_investors
 from global_app.forms.deal_spatial_form import AddDealSpatialFormSet
 from global_app.forms.deal_water_form import DealWaterForm
+from global_app.forms.operational_stakeholder_form import OperationalStakeholderForm
+
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.country import Country
@@ -27,7 +28,7 @@ FORMS = [
     ("spatial_data", AddDealSpatialFormSet),            #
     ("general_information", AddDealGeneralForm),        #
     ("employment", AddDealEmploymentForm),              #
-    ("investor_info", DealSecondaryInvestorFormSet),
+    ("investor_info", OperationalStakeholderForm),
     ("data_sources", AddDealDataSourceFormSet),         #
     ("local_communities", DealLocalCommunitiesForm),    #
     ("former_use", DealFormerUseForm),                  #
@@ -53,7 +54,6 @@ class AddDealView(TemplateView):
             if all(form.is_valid() for form in forms):
 
                 activity_identifier = Activity.objects.values().aggregate(Max('activity_identifier'))['activity_identifier__max']+1
-                print(activity_identifier)
                 activity = Activity(activity_identifier=activity_identifier, fk_status_id=1, version=1)
 
                 for form in forms:

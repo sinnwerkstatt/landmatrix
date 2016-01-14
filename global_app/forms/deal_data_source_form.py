@@ -121,6 +121,9 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
 
     @classmethod
     def get_data(cls, deal):
+        if not deal:
+            return {}
+
         taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
         data = {}
         for i, taggroup in enumerate(taggroups):

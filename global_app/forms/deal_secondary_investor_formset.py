@@ -2,8 +2,6 @@ from pprint import pprint
 from global_app.forms.base_form import BaseForm
 from landmatrix.models.comment import Comment
 from landmatrix.models.country import Country
-from landmatrix.models.involvement import Involvement
-from landmatrix.models.stakeholder_attribute_group import StakeholderAttributeGroup
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 

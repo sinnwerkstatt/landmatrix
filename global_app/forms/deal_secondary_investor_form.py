@@ -1,6 +1,4 @@
-from landmatrix.models.stakeholder import Stakeholder
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+from landmatrix.models.investor import Investor
 
 from .base_form import BaseForm
 from global_app.widgets import CommentInput, TitleField, LivesearchSelect
@@ -11,6 +9,8 @@ from landmatrix.models.region import Region
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 class DealSecondaryInvestorForm(BaseForm):
     # Investor
@@ -19,15 +19,9 @@ class DealSecondaryInvestorForm(BaseForm):
     investor_name = forms.CharField(required=False, label=_("Name"), max_length=255)
     country = forms.ChoiceField(required=False, label=_("Country"), choices=())
     region = forms.ModelChoiceField(required=False, label=_("Region"), widget=forms.HiddenInput, queryset=Region.objects.all().order_by('name'))
-    classification = forms.ChoiceField(required=False, label=_("Classification"), choices=(
-        (10, _("Private company")),
-        (20, _("Stock-exchange listed company")),
-        (30, _("Individual entrepreneur")),
-        (40, _("Investment fund")),
-        (50, _("Semi state-owned company")),
-        (60, _("State-/government(-owned)")),
-        (70, _("Other (please specify in comment field)")),
-    ), widget=forms.RadioSelect)
+    classification = forms.ChoiceField(
+            required=False, label=_("Classification"), choices=Investor.classification_choices, widget=forms.RadioSelect
+    )
     investment_ratio = forms.DecimalField(max_digits=19, decimal_places=2, required=False, label=_("Percentage of investment"), help_text=_("%"))
     tg_general_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
@@ -61,9 +55,21 @@ class DealSecondaryInvestorForm(BaseForm):
         return False
 
     def _fill_investor_choices(self):
-        self.investor_choices = list(map(lambda i: (i.id, i.name), Stakeholder.objects.raw_choices()))
+        self.investor_choices = [
+            (investor.id, self._investor_description(investor))
+            for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
+        ]
         self.fields["investor"].choices = list(self.fields["investor"].choices)[:1]
         self.fields["investor"].choices.extend(self.investor_choices)
+
+    def _investor_description(self, investor):
+        return investor.name + ' (' + self._investor_country_name(investor) + ')' + ' ' + self._investor_classification(investor)
+
+    def _investor_country_name(self, investor):
+        return Country.objects.get(pk=investor.fk_country_id).name if investor.fk_country_id else '-'
+
+    def _investor_classification(self, investor):
+        return investor.get_classification_display() if investor.classification else '-'
 
     def _fill_country_choices(self):
         self.fields["country"].choices = [

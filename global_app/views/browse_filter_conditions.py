@@ -106,7 +106,7 @@ class BrowseFilterConditions:
                         # countries and crops are referred by keys
                         values = fl.get("value")
                     elif "Negotiation status" in f.label:
-                        variable = "pi_negotiation_status"
+                        variable = "negotiation_status"
                 filters_act["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
 
         self.data["activity"] = filters_act

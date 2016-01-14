@@ -398,6 +398,9 @@ class BaseForm(forms.Form):
 
     @classmethod
     def get_tags(cls, field_name, deal, taggroup):
+        if not deal and not taggroup:
+            return [], None
+
         if isinstance(deal, Deal):
             tags = deal.attributes
             if not taggroup:
@@ -444,7 +447,8 @@ class BaseForm(forms.Form):
     def __init__(self, *args, **kwargs):
 
         super(BaseForm, self).__init__(*args, **kwargs)
-        print(self.__class__.__name__)
+        if self.DEBUG:
+            print(self.__class__.__name__, args)
         if hasattr(self.Meta, "exclude"):
             for field in self.Meta.exclude:
                 del self.fields[field]

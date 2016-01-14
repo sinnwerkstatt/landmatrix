@@ -1,3 +1,5 @@
+from landmatrix.models.investor import Investor
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from global_app.forms.base_form import BaseForm
@@ -12,15 +14,9 @@ class AddInvestorForm(BaseForm):
     tg_general = TitleField(required=False, label="", initial=_("General"))
     investor_name = forms.CharField(required=False, label=_("Name"), max_length=255)
     country = forms.ChoiceField(required=False, label=_("Country"), choices=())
-    classification = forms.ChoiceField(required=False, label=_("Classification"), choices=(
-        (10, _("Private company")),
-        (20, _("Stock-exchange listed company")),
-        (30, _("Individual entrepreneur")),
-        (40, _("Investment fund")),
-        (50, _("Semi state-owned company")),
-        (60, _("State-/government(-owned)")),
-        (70, _("Other (please specify in comment field)")),
-    ), widget=forms.RadioSelect)
+    classification = forms.ChoiceField(
+            required=False, label=_("Classification"), choices=Investor.classification_choices, widget=forms.RadioSelect
+    )
     tg_general_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
     def __init__(self, *args, **kwargs):

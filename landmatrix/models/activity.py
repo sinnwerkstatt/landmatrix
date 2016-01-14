@@ -1,9 +1,10 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.status import Status
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 class Activity(DefaultStringRepresentation, models.Model):
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
