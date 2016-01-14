@@ -1,3 +1,4 @@
+from global_app.views.deal_comparison_view import DealComparisonView
 from .views.all_deals_view import AllDealsView
 from .views.table_group_view import TableGroupView
 from .views.deal_detail_view import DealDetailView
@@ -25,6 +26,7 @@ urlpatterns = patterns('globalapp.views',
     url(r'^all(?P<type>\.csv)?/$', AllDealsView.as_view(), name='all_deal'),
     url(r'^all(?P<type>\.xml)?/$', AllDealsView.as_view(), name='all_deal'),
     url(r'^all(?P<type>\.xls)?/$', AllDealsView.as_view(), name='all_deal'),
+    url(r'^compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
     url(r'^(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
     url(r'^add/$', AddDealView.as_view(), name='deal_detail'),
