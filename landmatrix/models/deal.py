@@ -78,7 +78,8 @@ class Deal:
         return ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
 
     def get_history(self):
-        return [Deal.from_activity(activity)
+        from landmatrix.models.deal_history import DealHistoryItem
+        return [DealHistoryItem.from_activity(activity)
                 for activity in  self.activity.history.filter(activity_identifier=self.activity.activity_identifier)]
 
     def _set_activity(self, activity):
