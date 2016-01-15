@@ -124,10 +124,11 @@
 
           <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
             <div class="panel-body">
-              {% for item in history %}
+
+              {% for date, item in history.items %}
                 <p>
                   {% if forloop.counter == 1 %}<strong>{% endif %}
-                  {{ item.activity.history_date }} {{ item.activity_changed_by }}
+                  {{ date }} {{ item.activity_changed_by }}
                   {{ item.activity }}
                   history id: {{ item.activity.history_id }}
                   {% if forloop.counter == 1 %}</strong>{% endif %}
