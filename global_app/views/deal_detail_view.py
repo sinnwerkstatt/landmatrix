@@ -94,9 +94,7 @@ class DealDetailView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         deal = Deal(kwargs["deal_id"])
         context = self.get_context(deal, kwargs)
-        context['history'] = [
-            history_item for history_item in deal.get_history()
-            ]
+        context['history'] = deal.get_history()
 
         return self.render_forms(request, context)
 
