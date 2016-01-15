@@ -79,8 +79,19 @@ class Deal:
 
     def get_history(self):
         from landmatrix.models.deal_history import DealHistoryItem
-        return [DealHistoryItem.from_activity(activity)
-                for activity in  self.activity.history.filter(activity_identifier=self.activity.activity_identifier)]
+        return {
+            activity.history_date: DealHistoryItem.from_activity(activity) for activity in self._activity_history()
+        }
+
+    def _activity_history(self):
+        return self.activity.history.filter(activity_identifier=self.activity.activity_identifier)
+
+    def get_change_dates(self):
+        attributes_history_dates = [
+            item[0]
+            for item in ActivityAttributeGroup.history.filter(fk_activity_id=self.activity.id).values_list('history_date')
+        ]
+        unique_dates = _unique_rounded_dates(attributes_history_dates)
 
     def _set_activity(self, activity):
         self.id = activity.activity_identifier
@@ -88,6 +99,11 @@ class Deal:
         self.attributes = self.get_activity_attributes()
         self.operational_stakeholder = self.get_operational_stakeholder()
         self.stakeholders = self.get_stakeholders()
+
+
+def _unique_rounded_dates(dates):
+    from datetime import datetime
+    return sorted(list(set([datetime(d.year, d.month, d.day, d.hour, d.minute, d.second) for d in dates])))
 
 
 def get_latest_activity(deal_id):

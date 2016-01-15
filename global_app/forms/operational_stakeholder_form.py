@@ -34,7 +34,11 @@ class OperationalStakeholderForm(BaseForm):
 
 
 def _investor_description(investor):
-    return investor.name + ' (' + _investor_country_name(investor) + ')' + ' ' + _investor_classification(investor)
+    return _investor_name(investor) + ' (' + _investor_country_name(investor) + ')' + ' ' + _investor_classification(investor)
+
+
+def _investor_name(investor):
+    return investor.name if len(investor.name) <= 80 else investor.name[:80] + '...'
 
 
 def _investor_country_name(investor):
