@@ -16,6 +16,12 @@
 
 
 
+
+
+
+
+
+
             {% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
     <meta name="keywords" content="
 
@@ -23,13 +29,19 @@
 
 
 
+
+
+
+
+
+
             {% if meta_keywords %}{{ meta_keywords }}{% else %}{% trans "Landmatrix" %}{% trans 'Default keywords' %}{% endif %}"/>
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="/media/js/vendor/bootstrap/dist/css/bootstrap.min.css">
     <!-- <link rel="stylesheet" href="/media/js/vendor/bootstrap/dist/css/bootstrap-theme.min.css"> -->
     <link rel="stylesheet" href="/media/js/vendor/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/media/css/legacy/main.css">
+    <!-- <link rel="stylesheet" href="/media/css/legacy/main.css"> -->
     <link rel="stylesheet" href="/media/css/legacy/content.css">
     <link rel="icon" href="/media/img/favicon.ico">
 
@@ -83,7 +95,7 @@
                             <li>
                                 <form role="form">
                                     <div class="form-group has-feedback">
-                                        <input type="text" class="form-control" placeholder="Search countries" />
+                                        <input type="text" class="form-control" placeholder="Search countries"/>
                                         <i class="form-control-feedback glyphicon glyphicon-search"></i>
                                     </div>
                                 </form>
@@ -104,17 +116,17 @@
                             <li>
                                 <form role="form">
                                     <div class="form-group has-feedback">
-                                        <input type="text" class="form-control" placeholder="Search countries" />
+                                        <input type="text" class="form-control" placeholder="Search countries"/>
                                         <i class="form-control-feedback glyphicon glyphicon-search"></i>
                                     </div>
                                 </form>
                             </li>
                             <li role="separator" class="divider"></li>
+                            <li>Observatory 1</li>
+                            <li>Observatory 2</li>
+                            <li role="separator" class="divider"></li>
                             <li>Country 1</li>
-                            <li role="separator" class="divider"></li>
                             <li>Country 2</li>
-                            <li role="separator" class="divider"></li>
-                            <li>Country 3</li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -122,11 +134,11 @@
                            aria-expanded="false"><span class="fa-spacer fa-plus-circle"></span>Get Involved <span
                                 class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li>Report a deal</li>
+                            <li><a href="add-deal">Report a deal</a></li>
                             <li role="separator" class="divider"></li>
-                            <li>Get in touch</li>
+                            <li><a href="contact">Get in touch</a></li>
                             <li role="separator" class="divider"></li>
-                            <li>Download</li>
+                            <li><a href="download">Download</a></li>
                         </ul>
                     </li>
 
@@ -172,11 +184,8 @@
             </ul>
         {% endblock %}
         {% block title_section %}
-            <div class="row title">
-                <div class="span12">
-                    <h1 class="separator"><span>{% block title %}{% page_attribute "title" %}{% endblock %}</span>
-                    </h1>
-                </div>
+            <div class="row">
+                <h1><span>{% block title %}{% page_attribute "title" %}{% endblock %}</span></h1>
             </div>
         {% endblock %}
 
@@ -189,16 +198,64 @@
 <footer>
     <div class="container">
         <div class="row">
-            <div class="span4">
-                <p>Find us on <a href="https://www.facebook.com/LandMatrix" target="_blank">facebook</a>, <a
-                        href="https://twitter.com/intent/user?screen_name=Land_Matrix">twitter</a> or <a
-                        href="http://eepurl.com/AHK0r" target="_blank">subscribe to the newsletter</a>.</p>
+            <div class="col-md-3">
+                <ul class="list-unstyled">
+                    <li><h4>Explore</h4></li>
+                    <li><a href="global">Global Web of transn. deals</a></li>
+                    <li><a href="">Global map of investments</a></li>
+                    <li><a href="">Interactive Map</a></li>
+                    <li><a href="">Grid of deals by country</a></li>
+                    <li><a href="">Download Data</a></li>
+                </ul>
             </div>
-            <div class="span4 center">
+            <div class="col-md-3">
+                <ul class="list-unstyled">
+                    <li><h4>Get Involved</h4></li>
+                    <li><a href="">Add a deal</a></li>
+                    <li><a href="">Report a deal</a></li>
+                    <li><a href="">Develop your own app</a></li>
+                    <li><a href="">Provide Feedback</a></li>
+                    <li><a href="">Help improve translations</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3">
+                <ul class="list-unstyled">
+                    <li><h4>Stay Informed</h4></li>
+                    <li><a href="">Blog</a></li>
+                    <li><a href="">Newsletter</a></li>
+                    <li><a href="">Publications</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3">
+                <ul class="list-unstyled">
+                    <li><h4>About</h4></li>
+                    <li><a href="">About Land Matrix</a></li>
+                    <li><a href="">The JLC Partnership</a></li>
+                    <li><a href="">Data policy</a></li>
+                    <li><a href="">Get in touch</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Spread the word and share land matrix</h4>
+                <a href="https://twitter.com/Land_Matrix"><span class="fa-twitter-square"></span>
+                <a href="https://www.facebook.com/LandMatrix"><span class="fa-facebook-square"></span></a>
+            </div>
+            <div class="col-md-4 center">
+                <h4>Share and adapt</h4>
                 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" class="cc-icons" target="_blank"></a>
-            </div>
-            <div class="span4 right">
+                <a href="https://github.com/sinnwerkstatt/landmatrix"><span class="fa-github-square"></span></a>
                 <p>&copy; {% now "Y" %}, LANDMATRIX.ORG</p>
+            </div>
+            <div class="col-md-4 right">
+                <h4>Sign up to receive updates</h4>
+                <a href="http://eepurl.com/AHK0r"><span class="fa-envelope"></span></a>
             </div>
         </div>
     </div>
