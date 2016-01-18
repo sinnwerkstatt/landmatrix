@@ -110,6 +110,7 @@ $(document).ready(function () {
 
         ],
         controls: [
+            new ol.control.FullScreen(),
             new ol.control.Zoom(),
             new ol.control.ScaleLine(),
             new ol.control.MousePosition({

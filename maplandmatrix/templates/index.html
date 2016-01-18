@@ -4,19 +4,16 @@
 {% load static %}
 
 {% block head %}
-
     <script type="text/javascript" src="/media/js/vendor/openlayers/ol-debug.js"></script>
     <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
 
     <script type="text/javascript" src="{% static "js/map.js" %}"></script>
     <script type="text/javascript" src="{% static "js/layers.js" %}"></script>
 
-
     <link rel="stylesheet" href="/media/js/vendor/openlayers/ol.css"/>
     <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
 
     <link rel="stylesheet" href="{% static "css/map.css" %}"/>
-
 {% endblock %}
 
 {% block content %}
@@ -104,13 +101,13 @@
             }).click();
         });
     </script>
-    <div class="row">
-        <div class="span7">
+    <div class="hidden">
+        <div class="col-md-7">
             <div class="collapsible">
                 <div class="collapsible-form">
                     <form method="GET" class="form-inline filters">
                         <div id="empty" class="rules row">
-                            <div class="span8">
+                            <div class="col-md-8">
                                 <input type="hidden" name="filtered" value="true"/>
                                 <input type="hidden" name="limit" value="{{ limit }}"/>
                                 <input type="hidden" name="order_by" value="{{ data.order_by }}"/>
@@ -132,7 +129,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="span8">
+                            <div class="col-md-8">
                                 <script type="text/javascript">
                                     $(document).ready(function () {
                                         //
@@ -204,7 +201,7 @@
                 </div>
             </div>
         </div>
-        <div id="search" class="col-md-2">
+        <div id="search" class="col-md-2 right">
             <form role="form">
                 <div class="form-group has-feedback">
                     <input type="text" class="form-control" placeholder="Search countries" />
@@ -223,6 +220,5 @@
         <a href="#" id="popup-closer" class="ol-popup-closer"></a>
         <div id="popup-content"></div>
     </div>
-    <div id="foobar"></div>
 
 {% endblock %}
