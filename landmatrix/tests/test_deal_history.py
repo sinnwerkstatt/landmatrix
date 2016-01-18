@@ -17,6 +17,7 @@ class TestDealHistory(WithStatus):
         WithStatus.setUp(self)
         Language(english_name='English', local_name='English', locale='en').save()
         self.language = Language.objects.last()
+        DealHistoryItem.use_rounded_dates = False
 
     def test_get_history_single(self):
         activity = _create_activity(1)
@@ -50,7 +51,6 @@ class TestDealHistory(WithStatus):
         deal = DealHistoryItem.from_activity(activity)
         history = deal.get_history()
         history_latest = history.popitem(last=True)
-        print('history_latest', history_latest)
         history_older = history.popitem(last=True)
         self.assertEqual('blubb', history_latest[1].attributes['blah'])
         self.assertEqual('blunb', history_older[1].attributes['blah'])
