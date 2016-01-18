@@ -1,3 +1,7 @@
+from collections import OrderedDict
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from random import randint
+
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -51,9 +55,24 @@ class Deal:
                 }
         )
 
+    def __eq__(self, other):
+        if self.operational_stakeholder != other.operational_stakeholder:
+            return False
+        if self.stakeholders != other.stakeholders:
+            return False
+        for attribute in (k for k in self.activity.__dict__.keys() if not k[0] == '_'):
+            if self.activity.__dict__[attribute] != other.activity.__dict__[attribute]:
+                return False
+        for attribute in self.attributes.keys():
+            random_default_value = randint()
+            if getattr(self, attribute, random_default_value) != getattr(other, attribute, random_default_value):
+                return False
+
+        return True
+
     @classmethod
     def from_activity(cls, activity):
-        deal = Deal()
+        deal = cls()
         deal._set_activity(activity)
         return deal
 
@@ -65,9 +84,9 @@ class Deal:
     def get_operational_stakeholder(self):
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity=self.activity)
         if len(involvements) > 1:
-            raise RuntimeError('More than one OP for activity %s: %s' % (str(self.activity), str(involvements)))
+            raise MultipleObjectsReturned('More than one OP for activity %s: %s' % (str(self.activity), str(involvements)))
         if len(involvements) < 1:
-            raise RuntimeError('No OP for activity %s: %s' % (str(self.activity), str(involvements)))
+            raise ObjectDoesNotExist('No OP for activity %s: %s' % (str(self.activity), str(involvements)))
         return Investor.objects.get(pk=involvements[0].fk_investor_id)
 
     def get_stakeholders(self):
@@ -77,33 +96,15 @@ class Deal:
     def attribute_groups(self):
         return ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
 
-    def get_history(self):
-        from landmatrix.models.deal_history import DealHistoryItem
-        return {
-            activity.history_date: DealHistoryItem.from_activity(activity) for activity in self._activity_history()
-        }
-
-    def _activity_history(self):
-        return self.activity.history.filter(activity_identifier=self.activity.activity_identifier)
-
-    def get_change_dates(self):
-        attributes_history_dates = [
-            item[0]
-            for item in ActivityAttributeGroup.history.filter(fk_activity_id=self.activity.id).values_list('history_date')
-        ]
-        unique_dates = _unique_rounded_dates(attributes_history_dates)
-
     def _set_activity(self, activity):
+        if activity is None:
+            raise ObjectDoesNotExist()
+
         self.id = activity.activity_identifier
         self.activity = activity
         self.attributes = self.get_activity_attributes()
         self.operational_stakeholder = self.get_operational_stakeholder()
         self.stakeholders = self.get_stakeholders()
-
-
-def _unique_rounded_dates(dates):
-    from datetime import datetime
-    return sorted(list(set([datetime(d.year, d.month, d.day, d.hour, d.minute, d.second) for d in dates])))
 
 
 def get_latest_activity(deal_id):
