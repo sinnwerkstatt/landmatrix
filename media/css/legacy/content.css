@@ -530,6 +530,7 @@ a:hover {
 /* ==========================================================================
  *    FOOTER (including Sticky Footer by Ryan Fait http://ryanfait.com/)
  *       ========================================================================== */
+
 * {
     margin: 0;
 }
@@ -543,7 +544,6 @@ footer {
     min-height: 100%;
     height: auto !important;
     height: 100%;
-    margin: 0 auto -50px; /* the bottom margin is the negative value of the footer's height */
 }
 
 
@@ -552,6 +552,14 @@ footer .container {
     padding-bottom: 10px;
 }
 
+footer .col-md-3 {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.wrap {
+    margin-bottom: 20px;
+}
 
 .push {
 /*    height: 50px; /* .push must be the same height as footer */
@@ -1753,6 +1761,7 @@ textarea {
     .section-overview-wrapper .span6 {
     }
 
+    /*
     .wrap {
         margin-bottom: -91px;
     }
@@ -1764,6 +1773,7 @@ textarea {
     footer {
         height: 71px;
     }
+    */
 }
 
 /*
