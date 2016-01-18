@@ -1,5 +1,9 @@
 from datetime import datetime
+
+from django.core.exceptions import ObjectDoesNotExist
+
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 from landmatrix.models.language import Language
 from landmatrix.tests.with_status import WithStatus
 
@@ -21,27 +25,28 @@ class TestDeal(WithStatus):
         Language(english_name='English', local_name='English', locale='en').save()
         self.language = Language.objects.last()
 
-    def DEACTIVATED_test_gets_created_witout_activities(self):
-        deal = Deal(1)
+    def test_gets_created_witout_activities(self):
+        with self.assertRaises(ObjectDoesNotExist):
+            deal = Deal(1)
 
     def test_all_without_activities(self):
         self.assertEqual([], list(Deal.objects.all()))
 
-    def DEACTIVATED_test_all_with_one_activity(self):
+    def test_all_with_one_activity(self):
         length = 1
         for act_id in range(1, length+1):
             self._create_activity(act_id)
         deals = Deal.objects.all()
         self._check_is_deal_list(deals, 1)
 
-    def DEACTIVATED_test_all_with_several_activities(self):
+    def test_all_with_several_activities(self):
         length = self.NUM_ACTIVITIES
         for act_id in range(1, length+1):
             self._create_activity(act_id)
         deals = Deal.objects.all()
         self._check_is_deal_list(deals, self.NUM_ACTIVITIES)
 
-    def DEACTIVATED_test_all_is_indexable(self):
+    def test_all_is_indexable(self):
         length = self.NUM_ACTIVITIES
         for act_id in range(1, length+1):
             self._create_activity(act_id)
@@ -49,7 +54,7 @@ class TestDeal(WithStatus):
         self.assertIsInstance(deals[0], Deal)
         self.assertIsInstance(deals[self.NUM_ACTIVITIES-1], Deal)
 
-    def DEACTIVATED_test_all_index_out_of_range(self):
+    def test_all_index_out_of_range(self):
         length = self.NUM_ACTIVITIES
         for act_id in range(1, length+1):
             self._create_activity(act_id)
@@ -57,13 +62,13 @@ class TestDeal(WithStatus):
         with self.assertRaises(IndexError):
             deals[self.NUM_ACTIVITIES]
 
-    def DEACTIVATED_test_single_set_of_attributes(self):
+    def test_single_set_of_attributes(self):
         self._create_activity(1)
         self._create_attributes(1, {'some_attribute': 'some_value'})
         deal = Deal(1)
         self.assertDictEqual(deal.attributes, {'some_attribute': 'some_value'})
 
-    def DEACTIVATED_test_multiple_attributes(self):
+    def test_multiple_attributes(self):
         self._create_activity(1)
         self._create_attributes(1, {'some_attribute': 'some_value'})
         self._create_attributes(1, {'some_other_attribute': 'some_other_value'})
@@ -71,7 +76,7 @@ class TestDeal(WithStatus):
 
         self.assertDictEqual(deal.attributes, {'some_attribute': 'some_value', 'some_other_attribute': 'some_other_value'})
 
-    def DEACTIVATED_test_attribute_groups(self):
+    def test_attribute_groups(self):
         self._create_activity(1)
         self._create_attributes(1, {'some_attribute': 'some_value'})
         self._create_attributes(1, {'some_other_attribute': 'some_other_value'})
@@ -83,7 +88,7 @@ class TestDeal(WithStatus):
                 set(group.attributes.items()).issubset(set({'some_attribute': 'some_value', 'some_other_attribute': 'some_other_value'}.items()))
             )
 
-    def DEACTIVATED_test_same_attribute_multiple_values(self):
+    def test_same_attribute_multiple_values(self):
         self._create_activity(1)
         self._create_attributes(1, {'the_same_attribute': 'some_value'})
         self._create_attributes(1, {'the_same_attribute': 'some_other_value'})
@@ -102,9 +107,14 @@ class TestDeal(WithStatus):
 
     def _create_activity(self, act_id):
         Activity(
-            activity_identifier=act_id, version=1, availability=0.5, fully_updated=timezone.now(),
+            activity_identifier=act_id, availability=0.5, fully_updated=timezone.now(),
             fk_status_id=2
         ).save()
+        Investor(investor_identifier=1, name='test investor', classification=10, fk_status_id=2).save()
+        InvestorActivityInvolvement(
+            fk_activity=Activity.objects.last(), fk_investor=Investor.objects.last(), fk_status_id=2, percentage=100
+        ).save()
+
 
     def _create_attributes(self, act_id, attributes):
         act = Activity.objects.filter(activity_identifier=act_id).first()
