@@ -7,6 +7,35 @@ body {
     padding: 0;
 }
 
+h1 {
+    position: relative;
+    text-align: center;
+    text-color: #ed881b;
+}
+
+h1 span {
+    background: #fff;
+    padding: 0 15px;
+    position: relative;
+    z-index: 1;
+}
+
+h1:before {
+    background: #555;
+    content: "";
+    display: block;
+    height: 1px;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+}
+
+h1:before {
+    left: 0;
+}
+
+/*
+
 h1.separator,
 h2.separator {
     border-top: 1px solid #1d1d1d;
@@ -28,6 +57,8 @@ h1.separator span:first-child,
 h2.separator span:first-child {
     text-align: center;
 }
+
+*/
 
 .get-the-idea h1,
 .get-the-idea a:hover {
@@ -196,7 +227,7 @@ h5,
 h6,
 label {
     font-family: 'Open Sans', sans-serif;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 18px;
     color: #3b3b3b;
 }
@@ -206,13 +237,13 @@ h2,
 h3,
 h4 {
     font-family: 'Unit';
-    color: #3b3b3b;
 }
 
 h1 {
     text-transform: uppercase;
     font-size: 28px;
     line-height: 32px;
+    color: #ed881b;
 }
 
 h2 {
@@ -253,6 +284,16 @@ a:hover {
  *    HEADER
  *       ========================================================================== */
 
+.container-fluid {
+    max-width: 86vw;
+    width: auto;
+}
+
+.container {
+    max-width: 86vw;
+    width: auto;
+}
+
 .navbar-default .navbar-inner {
     background-color: #1d1d1d;
     background-image: none;
@@ -270,8 +311,9 @@ a:hover {
     border-bottom-right-radius: 0px;
 }
 
+/*
 .navbar-brand {
-    margin-left: 8vw;
+    margin-left: 8vw; 
 }
 
 @media (min-width: 768px) {
@@ -281,9 +323,9 @@ a:hover {
     }
 }
 
-
+*/
 .navbar-right {
-    margin-right: 8vw;
+/*    margin-right: 8vw; */
     color: #555555;
 }
 
@@ -302,7 +344,7 @@ a:hover {
     background: url(../../img/lm-logo.png) no-repeat;
     display: block;
     padding: 5px;
-    margin-left: 8vw;
+ /*   margin-left: 8vw; */
     margin-top: 15px;
     margin-right: 40px;
     width: 180px;
@@ -317,7 +359,7 @@ a:hover {
 
 .navbar .nav > li > a {
     min-height: 100%;
-    font-size: 2em;
+    font-size: 1.5em;
 }
 
 .navbar-default .navbar-nav > .open > a,
@@ -389,6 +431,7 @@ a:hover {
     opacity: 1;
 }
 
+/*
 .title span {
     position: relative;
 }
@@ -410,6 +453,8 @@ a:hover {
     left: auto;
     right: 12px;
 }
+
+*/
 
 .collapsible {
     position: relative;
@@ -494,33 +539,48 @@ body {
     height: 100%;
 }
 
-.wrap {
+footer {
     min-height: 100%;
     height: auto !important;
     height: 100%;
     margin: 0 auto -50px; /* the bottom margin is the negative value of the footer's height */
 }
 
-.wrap > .container {
-    padding-top: 60px;
-    padding-bottom: 40px;
+
+footer .container {
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
+
 .push {
-    height: 50px; /* .push must be the same height as footer */
+/*    height: 50px; /* .push must be the same height as footer */
 }
 
 footer {
-    background-color: #1d1d1d;
+    background-color: #ccc;
     padding: 10px;
-    height: 30px;
     display: block;
 }
 
 footer p,
+footer li,
 footer a {
-    color: #fff;
+    color: #555;
+    font-size: 1.2em;
+    line-height: 1.4em;
+    text-decoration: none;
 }
+
+footer h4 {
+    font-size: 1.3em;
+    text-transform: uppercase;
+}
+
+footer hr {
+    border-top: 1px solid #fff;
+}
+
 
 a.cc-icons {
     display: inline-block;
