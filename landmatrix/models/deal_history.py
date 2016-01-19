@@ -1,7 +1,10 @@
+from django.core.exceptions import ObjectDoesNotExist
+
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.deal import Deal, aggregate_activity_attributes
 
 from collections import OrderedDict
+from datetime import datetime
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -14,15 +17,23 @@ class DealHistoryItem(Deal):
     @classmethod
     def from_activity_with_date(cls, activity, date):
         cls.date = date
-        deal = super().from_activity(activity)
+        deal = cls()
+        deal._set_activity(activity)
         cls.date = None
         return deal
+
+    @classmethod
+    def get_history_for(cls, deal):
+        cls.use_rounded_dates = False
+        my_deal = cls.from_activity_with_date(deal.activity, datetime.now())
+#        cls.use_rounded_dates = True
+        return my_deal.get_history()
 
     def get_activity_attributes(self):
         attributes = ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
 
         if self.date:
-            attributes = [a.history.as_of(DealHistoryItem.date) for a in attributes]
+            attributes = [a.history.as_of(self.date) for a in attributes if existed_at_date(a, self.date)]
 
         attributes_list = [a.attributes for a in attributes]
         return aggregate_activity_attributes(attributes_list, {})
@@ -41,7 +52,9 @@ class DealHistoryItem(Deal):
             date_and_activity.append((activity.history_date, DealHistoryItem.from_activity(activity)))
 
         for date in self.get_change_dates():
-            date_and_activity.append((date, DealHistoryItem.from_activity_with_date(self.activity.history.as_of(date), date)))
+            date_and_activity.append(
+                    (date, DealHistoryItem.from_activity_with_date(self.activity.history.as_of(date), date))
+            )
 
         return date_and_activity
 
@@ -61,4 +74,11 @@ def _unique_rounded_dates(dates):
     from datetime import datetime
     return sorted(list(set([datetime(d.year, d.month, d.day, d.hour, d.minute, d.second) for d in dates])))
 
+
+def existed_at_date(a, date):
+    try:
+        a.history.as_of(date)
+        return True
+    except ObjectDoesNotExist:
+        return False
 
