@@ -55,7 +55,6 @@ class ChangeDealSpatialFormSet(AddDealSpatialFormSet):
 
 
 class PublicViewDealSpatialForm(DealSpatialForm):
-    DEBUG = True
     class Meta:
         fields = (
             "tg_location", "location", "point_lat", "point_lon", 'tg_location_comment'
