@@ -28,7 +28,7 @@ class TestDealHistory(WithStatus):
     def test_get_history_activity_changed(self):
         deal = _create_deal_history()
         self.assertEqual(2, len(deal.get_history()))
-        self.assertEqual(deal, list(deal.get_history().values())[-1])
+        self.assertEqual(deal, list(deal.get_history().values())[0])
 
     def test_get_history_activity_ordered_by_date(self):
         deal = _create_deal_history()
@@ -36,10 +36,10 @@ class TestDealHistory(WithStatus):
         history_item = history.popitem(last=True)
         for i in range(0, len(history)):
             next_item = history.popitem()
-            self.assertLess(next_item[0], history_item[0])
+            self.assertGreater(next_item[0], history_item[0])
             history_item = next_item
 
-        self.assertEqual(deal, list(deal.get_history().values())[-1])
+        self.assertEqual(deal, list(deal.get_history().values())[0])
 
     def test_get_history_with_changed_attributes_returns_more_than_one_state(self):
         activity = self._create_activity_with_changed_attributes()
