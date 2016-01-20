@@ -50,22 +50,26 @@ class Deal:
     def __str__(self):
         return str(
                 {
-                    'attributes': self.attributes, 'operational stakeholder': self.operational_stakeholder,
-                    'stakeholders': self.stakeholders
+                    'activity': self.activity, 'attributes': self.attributes,
+                    'operational stakeholder': self.operational_stakeholder, 'stakeholders': self.stakeholders
                 }
         )
 
     def __eq__(self, other):
         if self.operational_stakeholder != other.operational_stakeholder:
+            print('operational_stakeholder', self.operational_stakeholder, other.operational_stakeholder)
             return False
         if self.stakeholders != other.stakeholders:
+            print('stakeholders', self.stakeholders, other.stakeholders)
             return False
         for attribute in (k for k in self.activity.__dict__.keys() if not k[0] == '_'):
             if self.activity.__dict__[attribute] != other.activity.__dict__[attribute]:
+                print('activity attribute', attribute, self.activity.__dict__[attribute], other.activity.__dict__[attribute])
                 return False
         for attribute in self.attributes.keys():
             random_default_value = randint()
             if getattr(self, attribute, random_default_value) != getattr(other, attribute, random_default_value):
+                print('attribute', attribute, getattr(self, attribute, random_default_value) != getattr(other, attribute, random_default_value))
                 return False
 
         return True

@@ -4,7 +4,7 @@ from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.deal import Deal, aggregate_activity_attributes
 
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, time, tzinfo
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -24,9 +24,10 @@ class DealHistoryItem(Deal):
 
     @classmethod
     def get_history_for(cls, deal):
+        tmp_use_rounded_dates = cls.use_rounded_dates
         cls.use_rounded_dates = False
         my_deal = cls.from_activity_with_date(deal.activity, datetime.now())
-#        cls.use_rounded_dates = True
+        cls.use_rounded_dates = tmp_use_rounded_dates
         return my_deal.get_history()
 
     def get_activity_attributes(self):
@@ -42,7 +43,7 @@ class DealHistoryItem(Deal):
         return self.activity.changed_by
 
     def get_history(self):
-        return OrderedDict(sorted(self._activity_history(), key=lambda item: item[0]))
+        return OrderedDict(reversed(sorted(self._activity_history(), key=lambda item: item[0])))
 
     def _activity_history(self):
         date_and_activity = []
@@ -52,11 +53,17 @@ class DealHistoryItem(Deal):
             date_and_activity.append((activity.history_date, DealHistoryItem.from_activity(activity)))
 
         for date in self.get_change_dates():
-            date_and_activity.append(
-                    (date, DealHistoryItem.from_activity_with_date(self.activity.history.as_of(date), date))
-            )
+            try:
+                historical_activity = self.activity.history.as_of(date)
+                date_and_activity.append(
+                        (date,
+                         DealHistoryItem.from_activity_with_date(
+                                 historical_activity, date))
+                )
+            except ObjectDoesNotExist:
+                pass
 
-        return date_and_activity
+        return sorted(date_and_activity, key=lambda entry: entry[0])
 
     def get_change_dates(self):
         attributes_history_dates = [
@@ -71,8 +78,12 @@ class DealHistoryItem(Deal):
 
 
 def _unique_rounded_dates(dates):
-    from datetime import datetime
-    return sorted(list(set([datetime(d.year, d.month, d.day, d.hour, d.minute, d.second) for d in dates])))
+    return sorted(list(set([_rounded_date(d) for d in dates])))
+
+
+def _rounded_date(d):
+    from django.utils import timezone
+    return datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, tzinfo=timezone.now().tzinfo)
 
 
 def existed_at_date(a, date):
