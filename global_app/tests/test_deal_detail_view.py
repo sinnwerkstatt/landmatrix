@@ -49,10 +49,7 @@ class TestDealDetailView(TestCase):
         activity = Activity.history.get(history_id=self.history_ids[0])
         activity_identifier = activity.activity_identifier
         timestamp = date_string_to_timestamp(activity.history_date)
-        try:
-            response = self._get_url_following_redirects('/global_app/compare/%i_%s/' % (activity_identifier, timestamp))
-        except NotImplementedError:
-            self.skipTest('nyi, tbd, brb')
+        response = self._get_url_following_redirects('/global_app/compare/%i_%s/' % (activity_identifier, timestamp))
 
     def _get_url_following_redirects(self, url):
         response = self.client.get(url)
