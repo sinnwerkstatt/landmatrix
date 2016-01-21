@@ -65,7 +65,8 @@ INSTALLED_APPS = (
     'global_app',
     'maplandmatrix',
     'chart_view',
-    'api'
+    'editor',
+    'api',
 )
 
 MIDDLEWARE_CLASSES = (
