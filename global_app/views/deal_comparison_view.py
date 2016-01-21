@@ -75,6 +75,7 @@ def deal_from_activity_id_and_timestamp(id_and_timestamp):
 
 def previous_history_state(deal):
     from datetime import timedelta
+#    print('previous_history_state', deal)
     return Activity.history.filter(id=deal.activity.id).\
         filter(history_date__lte=deal.activity.history_date-timedelta(microseconds=1)).\
         order_by('history_date').last()
