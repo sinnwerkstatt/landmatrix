@@ -1,5 +1,4 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 from landmatrix.models.activity import Activity
@@ -8,7 +7,7 @@ from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class TestDealDetailView(TestCase):
+class TestDealComparisonView(TestCase):
 
     def setUp(self):
         self.client = Client()
@@ -49,7 +48,22 @@ class TestDealDetailView(TestCase):
         activity = Activity.history.get(history_id=self.history_ids[0])
         activity_identifier = activity.activity_identifier
         timestamp = date_string_to_timestamp(activity.history_date)
-        response = self._get_url_following_redirects('/global_app/compare/%i_%s/' % (activity_identifier, timestamp))
+        response = self._get_url_following_redirects(
+                '/global_app/compare/%i_%s/' % (activity_identifier, timestamp)
+        )
+        self.assertEqual(200, response.status_code)
+        # nothing to test here really unless you got to the trouble of creating activities with data
+
+    def test_view_with_activity_identifier_and_timestamp_oldest_version(self):
+        self._create_activity_history()
+        activity = Activity.history.get(history_id=self.history_ids[-1])
+        activity_identifier = activity.activity_identifier
+
+        timestamp = date_string_to_timestamp(activity.history_date)
+        with self.assertRaises(ObjectDoesNotExist):
+            self._get_url_following_redirects(
+                '/global_app/compare/%i_%s/' % (activity_identifier, timestamp)
+            )
 
     def _get_url_following_redirects(self, url):
         response = self.client.get(url)
@@ -75,8 +89,4 @@ def random_recognizable_number():
     return randint(1000000000, 2147483646)
 
 def date_string_to_timestamp(date):
-    from datetime import datetime
-    from time import mktime
     return date.timestamp()
-    timestamp = mktime(datetime.strptime(date, "%Y-%m-%d %H:%M:%S.%f").timetuple())
-    return timestamp
