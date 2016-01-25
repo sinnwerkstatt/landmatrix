@@ -1,5 +1,3 @@
-
-# Create your views here.
 from django.template.context import RequestContext
 
 from django.views.generic import TemplateView
@@ -20,3 +18,5 @@ class EditorView(TemplateView):
             context['user'] = request.user
 
         return render_to_response(self.template_name, context, RequestContext(request))
+
+

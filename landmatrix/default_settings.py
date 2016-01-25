@@ -55,6 +55,8 @@ INSTALLED_APPS = (
     'sekizai',
     'djangocms_text_ckeditor',
 
+    'django_extensions',
+
 #   to check test coverage
     'coverage',
 

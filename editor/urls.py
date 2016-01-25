@@ -1,4 +1,4 @@
-from .views import EditorView
+from editor.views.editor_view import EditorView
 from global_app.views.add_deal_view import AddDealView
 
 from django.conf.urls import url, patterns
@@ -21,11 +21,4 @@ Including another URLconf
 
 urlpatterns = patterns('editor.views',
     url(r'^$', login_required(EditorView.as_view()), name='app_main'),
-    # url(r'^all(?P<type>\.csv)?/$', AllDealsView.as_view(), name='all_deal'),
-    # url(r'^all(?P<type>\.xml)?/$', AllDealsView.as_view(), name='all_deal'),
-    # url(r'^all(?P<type>\.xls)?/$', AllDealsView.as_view(), name='all_deal'),
-    # url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
-    # url(r'^(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
-    # url(r'^add/$', AddDealView.as_view(), name='deal_detail'),
-
 )
