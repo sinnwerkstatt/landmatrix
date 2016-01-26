@@ -37,9 +37,6 @@ INSTALLED_APPS = (
 
     'django.contrib.humanize',
 
-    'template_tests',
-    'django_extensions',
-
 #   works with django 1.8, not in 1.7:
     # 'django.contrib.postgres',
     'django_hstore',
