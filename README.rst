@@ -34,7 +34,8 @@ Set up the database, user and postgis:
 
 $ ./init.sh
 
-Run the migrations:
+If you want to restore old data to the database (see below), now would be a good time.
+After the database is ready, Run the migrations - just to make sure:
 
 $ python manage.py migrate
 
@@ -45,11 +46,11 @@ $ python manage.py runserver
 Backup to dump
 --------------
 
-$ pg_dump -U landmatrix landmatrix -f landmatrix-dump.sql
+$ pg_dump -U landmatrix landmatrix_2 -f landmatrix-dump.sql
 
 
 Restore Dump
 ------------
 
-$ psql -U landmatrix -d landmatrix_mergedmaster -f landmatrix-dump.sql
+$ psql -U landmatrix -d landmatrix_2 -f landmatrix-dump.sql
 
