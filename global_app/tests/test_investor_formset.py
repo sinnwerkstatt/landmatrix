@@ -18,13 +18,21 @@ class TestInvestorFormset(TestCase):
         self._test_form_instantiates(OperationalStakeholderForm)
 
     def test_operational_stakeholder_data(self):
-        Investor(investor_identifier=1, name='invTESTor', classification=10, version=1, fk_status_id=2).save()
+        Investor(
+                investor_identifier=1, name='invTESTor', classification=10,
+                # version=1,
+                fk_status_id=2
+        ).save()
         id = Investor.objects.first().pk
         form = OperationalStakeholderForm({'operational_stakeholder': id})
         self.assertTrue(form.is_valid())
 
     def test_operational_stakeholder_data_present(self):
-        Investor(investor_identifier=1, name='invTESTor', classification=10, version=1, fk_status_id=2).save()
+        Investor(
+                investor_identifier=1, name='invTESTor', classification=10,
+                # version=1,
+                fk_status_id=2
+        ).save()
         id = Investor.objects.first().pk
         form = OperationalStakeholderForm({'operational_stakeholder': id})
         self.assertTrue(form.is_valid())

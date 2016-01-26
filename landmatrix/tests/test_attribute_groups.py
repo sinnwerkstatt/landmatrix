@@ -9,7 +9,9 @@ class TestAttributeGroups(WithStatus):
     def setUp(self):
         WithStatus.setUp(self)
         Activity(
-            activity_identifier=1, version=1, availability=0.5, fully_updated=timezone.now(),
+            activity_identifier=1,
+#                version=1,
+                availability=0.5, fully_updated=timezone.now(),
             fk_status=self.status
         ).save()
         self.activity = Activity.objects.last()

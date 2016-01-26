@@ -24,12 +24,15 @@ from api import urls as api_urls
 from global_app import urls as global_urls
 from global_app.views.filter_widget_ajax_view import FilterWidgetAjaxView
 from chart_view import urls as chart_urls
+from editor import urls as editor_urls
 
 
 urlpatterns = i18n_patterns('',
+    url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(api_urls)),
     url(r'^global_app/', include(global_urls)),
+    url(r'^editor/', include(editor_urls)),
     url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
     url(r'^chart_view/', include(chart_urls)),
     url(r'^', include('cms.urls')),

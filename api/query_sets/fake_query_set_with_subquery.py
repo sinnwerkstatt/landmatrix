@@ -25,11 +25,12 @@ LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_
 --  additional joins:
     %s
     WHERE
-        a.version = (
-            SELECT MAX(version) FROM landmatrix_activity AS amax
-            WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
-        )
-        AND a.fk_status_id IN (2, 3)
+--        a.version = (
+--            SELECT MAX(version) FROM landmatrix_activity AS amax
+--            WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
+--        )
+--        AND
+           a.fk_status_id IN (2, 3)
 --#        AND pi.version = (
 --#            SELECT MAX(version) FROM landmatrix_primaryinvestor AS amax
 --#            WHERE amax.primary_investor_identifier = pi.primary_investor_identifier AND amax.fk_status_id IN (2, 3, 4)
@@ -83,11 +84,12 @@ LEFT JOIN landmatrix_investor                  AS operational_stakeholder ON iai
 --  additional joins:
 %s
 WHERE
-    a.version = (
-        SELECT MAX(version) FROM landmatrix_activity AS amax
-        WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
-    )
-    AND a.fk_status_id IN (2, 3)
+--    a.version = (
+--        SELECT MAX(version) FROM landmatrix_activity AS amax
+--        WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
+--    )
+--    AND
+    a.fk_status_id IN (2, 3)
 --  additional where conditions:
     %s
 --  filter sql:
