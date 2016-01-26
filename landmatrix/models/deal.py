@@ -39,7 +39,12 @@ class Deal:
     class Manager:
 
         def all(self):
-            return Indexable(Deal(deal_id['activity_identifier']) for deal_id in Activity.objects.values('activity_identifier').distinct())
+            activities = Activity.objects.distinct().values('activity_identifier')
+            return Indexable(Deal(deal_id['activity_identifier']) for deal_id in activities)
+
+        def filter(self, **kwargs):
+            activities = Activity.objects.filter(**kwargs).distinct().values('activity_identifier')
+            return Indexable(Deal(deal_id['activity_identifier']) for deal_id in activities)
 
     objects = Manager()
 

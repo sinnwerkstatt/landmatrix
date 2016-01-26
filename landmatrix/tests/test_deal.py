@@ -59,8 +59,31 @@ class TestDeal(WithStatus):
         for act_id in range(1, length+1):
             self._create_activity(act_id)
         deals = Deal.objects.all()
+        self._assert_is_n_deals(deals, length)
+
+    SUBSET_LENGTH = 4
+    def test_filter_activity_identifier(self):
+        length = self.NUM_ACTIVITIES
+        for act_id in range(1, length+1):
+            self._create_activity(act_id)
+        deals = Deal.objects.filter(activity_identifier__lt=self.SUBSET_LENGTH+1)
+        self._assert_is_n_deals(deals, self.SUBSET_LENGTH)
+        for deal in deals:
+            self.assertLess(self.SUBSET_LENGTH+1, deal.activity_identifier)
+
+    def test_filter_attributes(self):
+        length = self.NUM_ACTIVITIES
+        for act_id in range(1, length+1):
+            self._create_activity(act_id)
+            self._create_attributes(act_id, {'some_attribute': act_id})
+
+
+
+    def _assert_is_n_deals(self, deals, length):
+        for i in range(0, length):
+            self.assertIsInstance(deals[i], Deal)
         with self.assertRaises(IndexError):
-            deals[self.NUM_ACTIVITIES]
+            deals[length]
 
     def test_single_set_of_attributes(self):
         self._create_activity(1)
@@ -106,16 +129,20 @@ class TestDeal(WithStatus):
             self.assertIsInstance(deal, Deal)
 
     def _create_activity(self, act_id):
-        Activity(
+        act = Activity(
             activity_identifier=act_id, availability=0.5, fully_updated=timezone.now(),
             fk_status_id=2
-        ).save()
-        Investor(investor_identifier=1, name='test investor', classification=10, fk_status_id=2).save()
-        InvestorActivityInvolvement(
-            fk_activity=Activity.objects.last(), fk_investor=Investor.objects.last(), fk_status_id=2, percentage=100
-        ).save()
-
+        )
+        act.save()
+        self._create_investor(act)
 
     def _create_attributes(self, act_id, attributes):
         act = Activity.objects.filter(activity_identifier=act_id).first()
         ActivityAttributeGroup(fk_activity=act, attributes=attributes, fk_language=self.language, date=datetime.now()).save()
+
+    def _create_investor(self, activity, inv_id=None):
+        if not inv_id:
+            inv_id = activity.activity_identifier
+        inv = Investor(investor_identifier=inv_id, name='Investor '+str(inv_id), fk_status_id=2)
+        inv.save()
+        InvestorActivityInvolvement(fk_activity=activity, fk_investor=inv, percentage=50, fk_status_id=2).save()
