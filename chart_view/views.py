@@ -9,8 +9,6 @@ class ChartView(TemplateView):
     template_name = "plugins/overview.html"
 
     def dispatch(self, request, *args, **kwargs):
-        from random import randint
-        print('B'+'O'*randint(1,9)+'AH ALDA!')
         context = {
             "view": "chart view",
         }
