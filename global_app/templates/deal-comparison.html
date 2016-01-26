@@ -1,0 +1,144 @@
+{% load i18n custom_tags %}
+
+{% block content %}
+
+<table style="width: 100%">
+
+  {% for comparison_forms in forms %}
+
+    <tr>
+      <td style="width: 50%">
+
+          <div class="bs-example">
+            <div class="panel-group" id="accordion">
+
+            {% if comparison_forms.2 %}<strong>DIFFERENT</strong>{% endif %}
+            {% if comparison_forms.0 %}
+
+                <div class="panel panel-default">
+
+                  {% if comparison_forms.0.forms %}                                                      {# this is a formset #}
+
+                    {% for form in comparison_forms.0.forms %}
+
+                      <div class="panel-heading">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                            Formset {{forloop.counter}}:
+                          </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                          <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                              {{ form }}
+                          </table>
+                        </div>
+                      </div>
+
+                    {% endfor %}
+
+                  {% else %}      {# comparison_forms.0.forms #}
+
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                          Form {{forloop.counter}}:
+                        </a>
+                      </h4>
+                    </div>
+
+                    <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                      <div class="panel-body">
+                        <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+
+                          {{ comparison_forms.0.as_table }}
+
+                        </table>
+                      </div>
+                    </div>
+
+                  {% endif %}     {# form.forms #}
+
+                </div>            {# class="panel panel-default" #}
+
+            {% endif %}           {# comparison_forms.0 #}
+
+          </div>
+        </div>
+
+    </td>
+
+    <td style="width: 50%">
+
+          <div class="bs-example">
+            <div class="panel-group" id="accordion">
+
+            {% if comparison_forms.1 %}
+
+                <div class="panel panel-default">
+
+                  {% if comparison_forms.1.forms %}                                                      {# this is a formset #}
+
+                    {% for form in comparison_forms.1.forms %}
+
+                      <div class="panel-heading">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                            Formset {{forloop.counter}}:
+                          </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                          <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                              {{ form }}
+                          </table>
+                        </div>
+                      </div>
+
+                    {% endfor %}
+
+                  {% else %}      {# comparison_forms.1.forms #}
+
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                          Form {{forloop.counter}}:
+                        </a>
+                      </h4>
+                    </div>
+
+                    <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                      <div class="panel-body">
+                        <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+
+                          {{ comparison_forms.1.as_table }}
+
+                        </table>
+                      </div>
+                    </div>
+
+                  {% endif %}     {# form.forms #}
+
+                </div>            {# class="panel panel-default" #}
+
+            {% endif %}           {# comparison_forms.1 #}
+
+          </div>
+        </div>
+
+      </td>
+    </tr>
+
+  {% endfor %}
+
+</table>
+
+
+
+
+
+{% endblock %}

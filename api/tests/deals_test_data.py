@@ -61,7 +61,10 @@ class DealsTestData:
 
     def create_activity_with_status(self, status_id, act_id = 0, version=1):
         if not act_id: act_id = self.ACT_ID
-        Activity(fk_status=Status.objects.get(id=status_id), activity_identifier=act_id, version=version).save()
+        Activity(
+                fk_status=Status.objects.get(id=status_id), activity_identifier=act_id,
+                # version=version
+        ).save()
 
     DEFAULT_TRANSNATIONAL_DEAL_ID = 123
     DEFAULT_DOMESTIC_DEAL_ID = 124
@@ -114,7 +117,7 @@ class DealsTestData:
         operational_stakeholder = Investor(
             name=self.PI_NAME, fk_country_id=country.id,
             fk_status=Status.objects.get(id=2), investor_identifier=new_investor_identifier,
-            version=1
+            # version=1
         )
         operational_stakeholder.save()
 
@@ -129,7 +132,8 @@ class DealsTestData:
         new_investor_identifier = get_latest_investor_identifier() + 1
         stakeholder = Investor(
             name=self.STAKEHOLDER_NAME, fk_country=operational_stakeholder.fk_country, fk_status=Status.objects.get(id=2),
-            investor_identifier=new_investor_identifier, version=1
+            investor_identifier=new_investor_identifier,
+                # version=1
         )
         stakeholder.save()
         InvestorVentureInvolvement(
@@ -139,7 +143,10 @@ class DealsTestData:
         return stakeholder
 
     def _generate_activity(self, preset_id):
-        activity = Activity(activity_identifier=preset_id, fk_status_id=2, version=1)
+        activity = Activity(
+                activity_identifier=preset_id, fk_status_id=2,
+                # version=1
+        )
         activity.save()
         return activity
 
