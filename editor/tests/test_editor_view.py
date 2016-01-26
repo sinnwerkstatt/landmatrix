@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 from editor.models import UserRegionalInfo
+from editor.views.editor_view import EditorView
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
 
@@ -15,6 +16,7 @@ class TestEditorView(TestCase):
 
     NORMAL_USER = 'normal_user'
     NORMAL_PASSWORD = 'blah'
+    SUPER_USER = 'superuser'
 
     def setUp(self):
         self.client = Client()
@@ -51,6 +53,33 @@ class TestEditorView(TestCase):
         self._create_region_info()
         self.assertIn(self.country, self.user.userregionalinfo.country.all())
         self.assertIn(self.region, self.user.userregionalinfo.region.all())
+
+    def test_super_user(self):
+        self._create_country_and_region()
+        self._create_region_info()
+        self._add_superuser(self.user.userregionalinfo)
+        self.assertEqual(self.SUPER_USER, self.user.userregionalinfo.super_user.username)
+
+    def test_latest_added(self):
+        view = EditorView()
+        print(view.latest_added())
+
+    def test_latest_deleted(self):
+        view = EditorView()
+        print(view.latest_deleted())
+
+    def test_latest_modified(self):
+        view = EditorView()
+        print(view.latest_modified())
+
+    def test_attention_needed(self):
+        view = EditorView()
+        print(view.attention_needed(self.user))
+
+    def _add_superuser(self, region_info):
+        superuser = User.objects.create_user(username=self.SUPER_USER)
+        region_info.super_user = superuser
+        region_info.save()
 
     def _create_region_info(self):
         region_info = UserRegionalInfo(user=self.user)
