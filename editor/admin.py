@@ -11,6 +11,7 @@ class UserRegionalInfoInline(admin.StackedInline):
     model = UserRegionalInfo
     can_delete = False
     verbose_name_plural = 'regional info'
+    fk_name = 'user'
 
 
 # Define a new User admin
