@@ -1,3 +1,8 @@
+from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
+from global_app.views.browse_filter_conditions import BrowseFilterConditions
+from global_app.views.view_aux_functions import create_condition_formset
+from landmatrix.models.browse_condition import BrowseCondition
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
@@ -90,6 +95,27 @@ class FakeQuerySet(QuerySet):
         "failed": ("failed (contract canceled)", "failed (negotiations failed)"),
     }
 
+    def _set_filters(self, GET):
+        self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
+        ConditionFormset = create_condition_formset()
+        # if self._filter_set():
+        # set given filters
+        formset_data = GET.copy()
+        formset_data.update({"conditions_empty-TOTAL_FORMS": 1, "conditions_empty-INITIAL_FORMS": 0, "form-MAX_NUM_FORMS": 1000})
+        self.current_formset_conditions = ConditionFormset(formset_data, prefix="conditions_empty")
+        # else:
+        #     if self.group == "database":
+        #         self.current_formset_conditions = None
+        #     else:
+        #         self.current_formset_conditions = ConditionFormset(self._get_filter_dict(), prefix="conditions_empty")
+
+        # self.filters = BrowseFilterConditions(self.current_formset_conditions, [self.order_by()], 0).parse()
+        self.filters = BrowseFilterConditions(self.current_formset_conditions, [], 0).parse()
+
+        # self.filters["group_by"] = self.group_by()
+        # self.filters["group_value"] = self.group_value
+        self.filters["starts_with"] = GET.get("starts_with", None)
+
     def _get_filter(self, get_data):
         negotiation_status = get_data.getlist("negotiation_status", [])
         deal_scope = get_data.getlist("deal_scope", [])
@@ -111,6 +137,11 @@ class FakeQuerySet(QuerySet):
             FROM %s AS data_source_type
             WHERE a.id = data_source_type.fk_activity_id AND data_source_type.attributes ? 'type'
         ) = ARRAY['Media report']""" % ActivityAttributeGroup._meta.db_table
+
+        self._set_filters(get_data)
+        # self._add_order_by_columns()
+        self.filter_to_sql = FilterToSQL(self.filters, self.columns)
+
 
         return filter_sql
 

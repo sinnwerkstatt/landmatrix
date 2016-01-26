@@ -10,11 +10,15 @@ class FilterToSQL:
     def __init__(self, filters, columns):
         self.filters = filters
         self.columns = columns
+        # print('FilterToSQL: filters', self.filters)
+        # print('FilterToSQL: columns', self.columns)
 
     def filter_from(self):
+        # print('FilterToSQL:  tables', self._tables_activity() + "\n" + self._tables_investor())
         return self._tables_activity() + "\n" + self._tables_investor()
 
     def filter_where(self):
+        # print('FilterToSQL:   where', self._where_activity() + "\n" + self.where_investor())
         return self._where_activity() + "\n" + self.where_investor()
 
     # operation => (numeric operand, character operand, description )
