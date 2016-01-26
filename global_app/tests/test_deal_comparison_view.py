@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase, Client
 
@@ -59,7 +60,7 @@ class TestDealComparisonView(TestCase):
         activity = Activity.history.get(history_id=self.history_ids[-1])
         activity_identifier = activity.activity_identifier
 
-        timestamp = date_string_to_timestamp(activity.history_date)
+        timestamp = date_string_to_timestamp(activity.history_date-timedelta(seconds=1))
         with self.assertRaises(ObjectDoesNotExist):
             self._get_url_following_redirects(
                 '/global_app/compare/%i_%s/' % (activity_identifier, timestamp)

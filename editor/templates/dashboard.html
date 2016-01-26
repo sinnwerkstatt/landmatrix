@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n custom_tags %}
+{% load humanize %}
+
+{% block head %}
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block title %}Dashboard{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="/en/editor/">Editor</a> <span class="divider">|</span></li>
+  <li><a href="/en/editor/">Dashboard</a> <span class="divider">|</span></li>
+  <li>Dashboard</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+  <p>
+      Blah blah lorem dingsbums usw. etc.
+  </p>
+  {% if user %}
+    <p>{{user}}</p>
+  {% else %}
+    <p>Oh noes! There is no user!!eleventy!</p>
+  {% endif %}
+
+{% endblock %}
+
+
