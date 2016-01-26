@@ -65,12 +65,16 @@ INSTALLED_APPS = (
 
     'django.contrib.gis',
 
+    'simple_history',
+    'django_extensions',
+
 #   apps of the actual landmatrix project
     'landmatrix',
     'global_app',
     'maplandmatrix',
     'chart_view',
-    'api'
+    'editor',
+    'api',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -84,6 +88,9 @@ MIDDLEWARE_CLASSES = (
 #    'django.middleware.transaction.TransactionMiddleware',
 #   added by generating the project with django 1.8, does not work in 1.7:
     # 'django.middleware.security.SecurityMiddleware',
+
+    # populate the history user automatically
+    'simple_history.middleware.HistoryRequestMiddleware',
 
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.doc.XViewMiddleware',

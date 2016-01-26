@@ -2,6 +2,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.tests.with_status import WithStatus
 
+
 class TestFilterWidgetAjaxView(WithStatus):
     """ TODO:
         - when the values are selected from a list, operator in must return checkboxes, while is must return a select or radio button

@@ -112,7 +112,49 @@
           {% endfor %}
 
         {% endif %}           {# forms #}
-        
+
+        {% if history|length > 1 %}
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                History
+              </a>
+            </h4>
+          </div>
+
+          <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+            <div class="panel-body">
+
+              <table>
+                {% for date, item in history.items %}
+                  <tr>
+                    <td>
+                      {% if forloop.counter == 1 %}<strong>{% endif %}
+                        {{ date }}
+                      {% if forloop.counter == 1 %}</strong>{% endif %}
+                    </td>
+                    <td>{{ item.activity_changed_by }}</td>
+                    <td>activity identifier: {{ item.activity.activity_identifier }}</td>
+                    <td>availability: {{ item.activity.availability }}</td>
+                    <td>history id: {{ item.activity.history_id }}</td>
+
+                    <td>
+                      {% if not forloop.last %}
+                        {# TODO: include as AJAX call #}
+                        <a href="/en/global/compare/{{item.activity.activity_identifier}}_{{item.activity_history_date}}/x/">
+                          compare with previous version
+                        </a>
+                      {% else %}
+                        first version
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </div>
+          </div>
+        {% endif %}
+
       </div>
     </div>
 

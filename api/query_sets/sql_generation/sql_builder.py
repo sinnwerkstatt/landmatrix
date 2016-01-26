@@ -187,7 +187,10 @@ FROM landmatrix_activity                    AS a
 LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal
 LEFT JOIN landmatrix_activityattributegroup AS intention ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
           WHERE
-""" + "\nAND ".join([ cls.max_version_condition(), cls.status_active_condition(), cls.is_deal_condition() ]) + """
+""" + "\nAND ".join([
+#            cls.max_version_condition(),
+            cls.status_active_condition(), cls.is_deal_condition()
+        ]) + """
         AND intention.attributes->'intention' = 'Mining'"""
 
         cursor = connection.cursor()

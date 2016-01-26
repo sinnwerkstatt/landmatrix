@@ -3,6 +3,8 @@ from landmatrix.models.activity import Activity
 from landmatrix.models.country import Country
 from landmatrix.models.status import Status
 
+from simple_history.models import HistoricalRecords
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -29,7 +31,8 @@ class Investor(DefaultStringRepresentation, models.Model):
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
 
-    version = models.IntegerField(_("Version"), db_index=True)
+#    version = models.IntegerField(_("Version"), db_index=True)
+    history = HistoricalRecords()
 
 
 class InvestorVentureInvolvement(models.Model):

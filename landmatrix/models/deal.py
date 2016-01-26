@@ -1,3 +1,7 @@
+from collections import OrderedDict
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from random import randint
+
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -35,26 +39,51 @@ class Deal:
     class Manager:
 
         def all(self):
-            return Indexable(Deal(deal_id['activity_identifier']) for deal_id in Activity.objects.values('activity_identifier').distinct())
+            activities = Activity.objects.distinct().values('activity_identifier')
+            return Indexable(Deal(deal_id['activity_identifier']) for deal_id in activities)
+
+        def filter(self, **kwargs):
+            activities = Activity.objects.filter(**kwargs).distinct().values('activity_identifier')
+            return Indexable(Deal(deal_id['activity_identifier']) for deal_id in activities)
 
     objects = Manager()
 
-    def __init__(self, id):
-        self.id = id
-
-        self.activity = get_latest_activity(id)
-        self.attributes = self.get_activity_attributes()
-
-        self.operational_stakeholder = self.get_operational_stakeholder()
-        self.stakeholders = self.get_stakeholders()
+    def __init__(self, deal_id=None):
+        if deal_id is not None:
+            self._set_activity(get_latest_activity(deal_id))
 
     def __str__(self):
         return str(
                 {
-                    'attributes': self.attributes, 'operational stakeholder': self.operational_stakeholder,
-                    'stakeholders': self.stakeholders
+                    'activity': self.activity, 'attributes': self.attributes,
+                    'operational stakeholder': self.operational_stakeholder, 'stakeholders': self.stakeholders
                 }
         )
+
+    def __eq__(self, other):
+        if self.operational_stakeholder != other.operational_stakeholder:
+            print('operational_stakeholder', self.operational_stakeholder, other.operational_stakeholder)
+            return False
+        if self.stakeholders != other.stakeholders:
+            print('stakeholders', self.stakeholders, other.stakeholders)
+            return False
+        for attribute in (k for k in self.activity.__dict__.keys() if not k[0] == '_'):
+            if self.activity.__dict__[attribute] != other.activity.__dict__[attribute]:
+                print('activity attribute', attribute, self.activity.__dict__[attribute], other.activity.__dict__[attribute])
+                return False
+        for attribute in self.attributes.keys():
+            random_default_value = randint()
+            if getattr(self, attribute, random_default_value) != getattr(other, attribute, random_default_value):
+                print('attribute', attribute, getattr(self, attribute, random_default_value) != getattr(other, attribute, random_default_value))
+                return False
+
+        return True
+
+    @classmethod
+    def from_activity(cls, activity):
+        deal = cls()
+        deal._set_activity(activity)
+        return deal
 
     def get_activity_attributes(self):
         attributes = ActivityAttributeGroup.objects.filter(fk_activity=self.activity).values('attributes')
@@ -64,7 +93,9 @@ class Deal:
     def get_operational_stakeholder(self):
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity=self.activity)
         if len(involvements) > 1:
-            raise RuntimeError('More than one OP for activity %s: %s' % (str(self.activity), str(involvements)))
+            raise MultipleObjectsReturned('More than one OP for activity %s: %s' % (str(self.activity), str(involvements)))
+        if len(involvements) < 1:
+            raise ObjectDoesNotExist('No OP for activity %s: %s' % (str(self.activity), str(involvements)))
         return Investor.objects.get(pk=involvements[0].fk_investor_id)
 
     def get_stakeholders(self):
@@ -74,10 +105,21 @@ class Deal:
     def attribute_groups(self):
         return ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
 
+    def _set_activity(self, activity):
+        if activity is None:
+            raise ObjectDoesNotExist()
+
+        self.id = activity.activity_identifier
+        self.activity = activity
+        self.attributes = self.get_activity_attributes()
+        self.operational_stakeholder = self.get_operational_stakeholder()
+        self.stakeholders = self.get_stakeholders()
+
 
 def get_latest_activity(deal_id):
-    version_max = _get_latest_version(deal_id)
-    return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
+    return Activity.objects.filter(activity_identifier=deal_id).last()
+    # version_max = _get_latest_version(deal_id)
+    # return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
 
 
 def aggregate_activity_attributes(attributes_list, already_set_attributes):
