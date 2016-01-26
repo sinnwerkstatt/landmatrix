@@ -11,6 +11,8 @@ class ActivityQuerySet:
     def __init__(self, post_data):
         data = post_data.get('data', '{"filters": {}, "columns": {}}')
         self.data = json.loads(data)
+        if 'columns' not in self.data:
+            self.data['columns'] = {}
 
     def all(self):
         return {

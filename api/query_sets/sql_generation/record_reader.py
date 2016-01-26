@@ -48,7 +48,7 @@ class RecordReader:
 
     def _execute_sql(self, sql):
         if (self.DEBUG): print('*'*80, 'SQL: \n', sql)
-
+        # print('RecordReader: SQL', sql)
         cursor = connection.cursor()
         cursor.execute(sql)
         return cursor.fetchall()
