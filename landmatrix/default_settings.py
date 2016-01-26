@@ -31,9 +31,14 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django_gulp',
+    'livereload',
     'django.contrib.staticfiles',
 
     'django.contrib.humanize',
+
+    'template_tests',
+    'django_extensions',
 
 #   works with django 1.8, not in 1.7:
     # 'django.contrib.postgres',
@@ -86,6 +91,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
+    'livereload.middleware.LiveReloadScript'
 )
 
 ROOT_URLCONF = 'landmatrix.urls'
@@ -114,6 +120,8 @@ WSGI_APPLICATION = 'landmatrix.wsgi.application'
 LANGUAGE_CODE = 'en'
 LANGUAGES = [
     ('en', 'English'),
+    ('de', 'Deutsch'),
+    ('es', 'Espagnol'),
 ]
 
 TIME_ZONE = 'Europe/Berlin'
@@ -167,3 +175,12 @@ CMS_TEMPLATES = (
     ('base-map.html', 'Map'),
 )
 
+# CMS Editor (ckeditor)
+
+CKEDITOR_SETTINGS = {
+    'toolbar': 'CMS',
+    'skin': 'moono',
+    'stylesSet': [
+        {'name': 'Panel', 'element': 'div', 'class': 'panel-lm'}
+    ]
+}
