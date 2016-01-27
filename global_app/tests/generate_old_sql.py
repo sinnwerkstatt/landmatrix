@@ -43,7 +43,7 @@ class GenerateOldSQL:
                     operation = variable_operation[1]
                 # empty as operation or no value given
                 if operation == "is_empty" or not value or (value and not value[0]):
-                    where_act += " AND akv%(count)i.value IS NULL " % {
+                    where_act += " AND attr_%(count)i.value IS NULL " % {
                         "count": i,
                     }
                 elif operation in ("in", "not_in"):
@@ -55,7 +55,7 @@ class GenerateOldSQL:
                             "op": self.OPERATION_MAP[operation][0] % in_values,
                         }
                     else:
-                        where_act += " AND akv%(count)i.attributes->'%(variable)s' %(op)s " % {
+                        where_act += " AND attr_%(count)i.attributes->'%(variable)s' %(op)s " % {
                             "count": i,
                             "op": self.OPERATION_MAP[operation][0] % in_values,
                             'variable': variable
@@ -70,21 +70,21 @@ class GenerateOldSQL:
                             where_act += " AND ar%(count)i.name %(op)s " % { "count": i, "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")}
                         else:
                             where_act += "  %(value)s  %(year)s " % {
-                                "value": v and " AND akv%(count)i.value %(op)s " % { "count": i, "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")}  or "",
-                                "year": year and " AND akv%i.year = '%s' " % (i, year) or ""
+                                "value": v and " AND attr_%(count)i.value %(op)s " % { "count": i, "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")}  or "",
+                                "year": year and " AND attr_%i.year = '%s' " % (i, year) or ""
                             }
                 # join tag tables for each condition
                 if variable == "region":
-                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS akv%(count)i, countries AS ac%(count)i, regions AS ar%(count)i \n" % {"count": i}
-                    tables_from_act += " ON (a.id = akv%(count)i.fk_activity_id AND akv%(count)i.attributes ? 'target_country' AND akv%(count)i.value = ac%(count)i.name AND ar%(count)i.id = ac%(count)i.fk_region)"%{"count": i, "key": variable}
+                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i, countries AS ac%(count)i, regions AS ar%(count)i \n" % {"count": i}
+                    tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? 'target_country' AND attr_%(count)i.value = ac%(count)i.name AND ar%(count)i.id = ac%(count)i.fk_region)"%{"count": i, "key": variable}
                 if variable.isdigit():
-                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS akv%(count)i\n" % {"count": i}
-                    tables_from_act += " ON (a.id = akv%(count)i.fk_activity_id AND akv%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
+                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i\n" % {"count": i}
+                    tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
                 else:
                     from api.query_sets.sql_generation.join_functions import join_attributes
-                    tables_from_act += join_attributes("akv%(count)i" % {"count": i}, variable)
-#                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS akv%(count)i\n" % {"count": i}
-#                    tables_from_act += " ON (a.id = akv%(count)i.fk_activity_id AND akv%(count)i.attributes ? '%(key)s')"%{"count": i, "key": variable}
+                    tables_from_act += join_attributes("attr_%(count)i" % {"count": i}, variable)
+#                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i\n" % {"count": i}
+#                    tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? '%(key)s')"%{"count": i, "key": variable}
         sql["activity"]["from"] = tables_from_act
         sql["activity"]["where"] = where_act
         if filters.get("investor", {}).get("tags"):
