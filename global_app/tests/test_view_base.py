@@ -30,7 +30,7 @@ class TestViewBase(DealsTestData):
         tbody = extract_tag(self.content, '<tbody>', '</tbody>')
         self.assertNotEqual(tbody, '', self.__class__.__name__ + ' does not find any data.')
 
-    def test_view_data_ok(self):
+    def DISABLED_test_view_data_ok(self):
         if False and self.__class__.__name__ == 'TestAllDealsView':
             print(self.EXPECTED_VIEW_DATA)
             print(self.extract_view_data())
