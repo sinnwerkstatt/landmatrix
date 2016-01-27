@@ -29,9 +29,9 @@ class FakeQuerySet(QuerySet):
 
     def __init__(self, get_data):
         self._all_results = []
-        self._set_filter_sql(self._get_filter(get_data))
         self._additional_joins = self.ADDITIONAL_JOINS
         self._additional_wheres = self.ADDITIONAL_WHERES
+        self._set_filter_sql(self._get_filter(get_data))
         self._group_by = self.GROUP_BY
         self._order_by = self.ORDER_BY
         self._limit = self.LIMIT
@@ -52,7 +52,9 @@ class FakeQuerySet(QuerySet):
         return ",\n    ".join([definition+" AS "+alias for alias, definition in self.FIELDS])
 
     def additional_joins(self):
-        return "\n".join(self._additional_joins)
+        no_dups = []
+        [no_dups.append(i) for i in self._additional_joins if not no_dups.count(i)]
+        return "\n".join(no_dups)
 
     def additional_wheres(self):
         return 'AND ' + "\n    AND ".join(self._additional_wheres) if self._additional_wheres else ''
@@ -141,7 +143,11 @@ class FakeQuerySet(QuerySet):
         self._set_filters(get_data)
         # self._add_order_by_columns()
         self.filter_to_sql = FilterToSQL(self.filters, self.columns)
-
+        additional_sql = self.filter_to_sql.filter_where()
+        filter_sql += additional_sql
+        additional_joins = self.filter_to_sql.filter_from()
+        if additional_joins:
+            self._additional_joins.append(additional_joins)
 
         return filter_sql
 
