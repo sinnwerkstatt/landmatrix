@@ -214,7 +214,7 @@ h5,
 h6,
 label {
     font-family: 'Open Sans', sans-serif;
-    font-size: 20pt;
+    font-size: 16pt;
     line-height: 2em;
     color: #4a4a4a;
 }
@@ -348,7 +348,7 @@ a.btn,
 }
 
 .navbar .nav > li > a {
-    min-height: 100%;
+/*    min-height: 100%;*/
     color: #4a4a4a;
 }
 
@@ -370,15 +370,14 @@ a.btn,
 
 .lm-spacer {
     padding-right: 10px;
-    font-size: 1.2em;
-    margin-bottom: 50px;
+ /*   font-size: 1.2em;
+    margin-bottom: 50px; */
 }
 
 .lm-lang {
     margin-top: -5px;
     margin-left: -15px;
     color: white;
-    font-size: 1.5em;
 }
 
 .right {
@@ -537,8 +536,8 @@ body {
 }
 
 footer {
-    min-height: 100%;
     height: auto !important;
+    font-size: 12pt;
 }
 
 
@@ -1247,10 +1246,18 @@ textarea {
     display: none;
 }
 
-/** OLD CRUFT (PRE OPENLAYERS)
 /* ==========================================================================
  *    MAPS
- *       ==========================================================================
+ * ========================================================================== */
+
+.map {
+    font-size: 12pt !important;
+    line-height: 1em !important;
+}
+
+
+
+/** OLD CRUFT (PRE OPENLAYERS)
 .map img {
  max-width: none;
 }
