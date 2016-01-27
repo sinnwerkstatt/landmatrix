@@ -100,3 +100,4 @@ class TestEditorView(TestCase):
             url = response.url
             response = self.client.get(url)
         return url, response
+
