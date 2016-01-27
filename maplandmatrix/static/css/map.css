@@ -109,9 +109,14 @@ p {
     top: 3em;
 }
 
+.map .panel,li,ul,.group  {
+    line-height: 0.5em !important;
+    font-size: 12px !important;
+}
+
 .legend-symbol {
     float: left;
-    height: 1.2em;
+/*    height: 1.2em; */
     margin-left: 3.3em;
     margin-right: 0.3em;
     text-align: center;
