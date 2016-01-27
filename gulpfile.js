@@ -8,6 +8,7 @@ gulp.task('watch', function () {
 
     gulp.watch('**/templates/**').on('change', livereload.changed);
     gulp.watch('**/media/css/**').on('change', livereload.changed);
+    gulp.watch('**/maplandmatrix/**').on('change', livereload.changed);
 
 });
 
