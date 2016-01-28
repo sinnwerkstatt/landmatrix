@@ -156,6 +156,7 @@ class FilterToSQL:
                 i = index+FilterToSQL.count_offset
                 variable_operation = tag.split("__")
                 variable = variable_operation[0]
+
                 # join tag tables for each condition
                 if variable == "region":
                     tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i, countries AS ac%(count)i, regions AS ar%(count)i \n" % {"count": i}
