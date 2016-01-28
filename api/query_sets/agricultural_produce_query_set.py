@@ -28,7 +28,7 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
         END"""),
     ]
     ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
+        # "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
         "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
         "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id",
         "LEFT JOIN landmatrix_region                    AS deal_region      ON deal_country.fk_region_id = deal_region.id",

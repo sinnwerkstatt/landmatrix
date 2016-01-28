@@ -47,10 +47,18 @@ class RecordReader:
         return SQLBuilder.create(self.filters, self.columns).get_sql()
 
     def _execute_sql(self, sql):
-        if (self.DEBUG): print('*'*80, 'SQL: \n', sql)
-        # print('RecordReader: SQL', sql)
+        import time
+        start_time = time.time()
+
+        if self.DEBUG:
+            print('*'*80, 'SQL: \n', sql)
+
         cursor = connection.cursor()
         cursor.execute(sql)
+
+        if self.DEBUG:
+            print('*'*40, 'execution time:', time.time() - start_time)
+
         return cursor.fetchall()
 
     def _slap_columns_together(self, assemble=None):
