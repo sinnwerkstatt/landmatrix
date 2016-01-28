@@ -31,8 +31,8 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django_gulp',
-    'livereload',
+#    'django_gulp',
+#    'livereload',
     'django.contrib.staticfiles',
 
     'django.contrib.humanize',
