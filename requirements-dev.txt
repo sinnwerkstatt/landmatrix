@@ -1,0 +1,3 @@
+-r requirements.txt
+django-gulp>=2.3.0
+django-livereload>=1.5

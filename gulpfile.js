@@ -6,9 +6,9 @@ var watch = require('gulp-watch');
 gulp.task('watch', function () {
     livereload.listen();
 
-    gulp.watch('**/templates/**').on('change', livereload.changed);
-    gulp.watch('**/media/css/**').on('change', livereload.changed);
-    gulp.watch('**/maplandmatrix/**').on('change', livereload.changed);
+    gulp.watch('**/templates/**', { interval: 1000 }).on('change', livereload.changed);
+    gulp.watch('**/media/css/**', { interval: 1000 }).on('change', livereload.changed);
+    gulp.watch('**/maplandmatrix/**', { interval: 1000 }).on('change', livereload.changed);
 
 });
 
