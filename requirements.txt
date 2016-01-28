@@ -36,6 +36,3 @@ requests
 
 django-simple-history
 django-extensions
-
-django-gulp>=2.3.0
-django-livereload>=1.5
