@@ -52,9 +52,40 @@ class FakeQuerySet(QuerySet):
         return ",\n    ".join([definition+" AS "+alias for alias, definition in self.FIELDS])
 
     def additional_joins(self):
-        no_dups = []
-        [no_dups.append(i) for i in self._additional_joins if not no_dups.count(i)]
+        no_dups = self._uniquify_join_expressions(self._additional_joins)
+        # print('additional joins:', no_dups)
         return "\n".join(no_dups)
+
+    def _uniquify_join_expressions(self, joins):
+        no_dups = []
+        [no_dups.append(i) for i in reversed(joins) if not self._contains_join(no_dups, i)]
+        return reversed(no_dups)
+
+    def _contains_join(self, joins, join):
+        for checked_join in joins:
+            if self._joins_equal(join, checked_join):
+                return True
+        return False
+
+    def _join_components(self, join):
+        import re
+        m = re.match('LEFT JOIN (?P<table>\w+)\s+AS\s+(?P<alias>\w+)\s+ON\s+(?P<condition>.+)', join)
+        if not m:
+            return None, None, None
+        return m.group('table'), m.group('alias'), m.group('condition')
+
+    def _joins_equal(self, join_1, join_2):
+
+        table_1, alias_1, condition_1 = self._join_components(join_1)
+        table_2, alias_2, condition_2 = self._join_components(join_2)
+        if table_1 is None or table_2 is None:
+            return False
+        if table_1 != table_2:
+            return False
+        if not 'attr_' in alias_1 or not 'attr_' in alias_2:
+            return False
+        return condition_1 == condition_2.replace(alias_2, alias_1)
+
 
     def additional_wheres(self):
         return 'AND ' + "\n    AND ".join(self._additional_wheres) if self._additional_wheres else ''
@@ -82,13 +113,20 @@ class FakeQuerySet(QuerySet):
                 self._all_results.append(as_model)
 
     def _execute_query(self):
+        import time
+        start_time = time.time()
+
         if self.DEBUG:
-            print('Query:', self.sql_query())
+            print('*'*80, 'SQL: \n', self.sql_query())
+
         cursor = connection.cursor()
         cursor.execute(self.sql_query())
         all_results = list(cursor.fetchall())
+
         if self.DEBUG:
-            print('Results:', all_results)
+            print('*'*20, 'execution time:', time.time() - start_time)
+            print('*'*20, 'Results:', all_results)
+
         return all_results
 
     BASE_FILTER_MAP = {
