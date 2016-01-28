@@ -67,7 +67,8 @@ class SQLBuilder(SQLBuilderData):
             ])
 
         for c in get_join_columns(self.columns, self.group, self.group_value):
-            self._add_join_for_column(c)
+            if not c == 'deal_id':
+                self._add_join_for_column(c)
 
         return "\n".join(self.join_expressions)
 
