@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 
 from global_app.forms.add_deal_employment_form import AddDealEmploymentForm
 from global_app.forms.add_deal_general_form import AddDealGeneralForm
@@ -15,11 +16,13 @@ from global_app.forms.operational_stakeholder_form import OperationalStakeholder
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.country import Country
+from landmatrix.models.language import Language
 from .view_aux_functions import render_to_response
 
 from django.views.generic import TemplateView
 from django.template import RequestContext
-from django.db.models import Max
+from django.db.models import Max, Model
+from django.db import transaction
 from datetime import date
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -54,34 +57,17 @@ class AddDealView(TemplateView):
             if all(form.is_valid() for form in forms):
 
                 activity_identifier = Activity.objects.values().aggregate(Max('activity_identifier'))['activity_identifier__max']+1
-                activity = Activity(activity_identifier=activity_identifier, fk_status_id=1, version=1)
+                activity = Activity(activity_identifier=activity_identifier, fk_status_id=1)
 
+                groups = []
                 for form in forms:
-                    if name_of_form(form) == 'investor_info':
-                        print('investor_info', form.cleaned_data)
-                    elif name_of_form(form) == 'data_sources':
-                        for sub_form_data in form.cleaned_data:
-                            if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
-                                field = DealDataSourceForm().fields['type']
-                                choices = dict(field.choices)
-                                sub_form_data['type'] = str(choices[sub_form_data['type']])
-                            group = create_attribute_group(activity, sub_form_data)
-                            print(name_of_form(form), group)
-                    elif name_of_form(form) == 'spatial_data':
-                        for sub_form_data in form.cleaned_data:
-                            if sub_form_data['target_country'] and isinstance(sub_form_data['target_country'], Country):
-                                sub_form_data['target_country'] = sub_form_data['target_country'].pk
-                            group = create_attribute_group(activity, sub_form_data)
-                            print(name_of_form(form), group)
-                    else:
-                        if any(form.cleaned_data.values()):
-                            group = create_attribute_group(activity, form.cleaned_data)
-                            print(name_of_form(form), group)
-                        else:
-                            print('no data sent:', name_of_form(form))
+                    groups.extend(create_attributes_for_form(activity, form))
+
+                self.save_activity_and_attributes(activity, groups)
 
                 # redirect to a new URL:
                 # return HttpResponseRedirect('/thanks/')
+
             else:
                 for form in forms:
                     if form.is_valid():
@@ -95,13 +81,58 @@ class AddDealView(TemplateView):
         context['forms'] = forms
         return render_to_response(self.template_name, context, RequestContext(request))
 
+    @transaction.atomic
+    def save_activity_and_attributes(self, activity, groups):
+        activity.save()
+        # print('activity:', activity)
+        # print('groups:', groups)
+        for group in groups:
+            group.fk_activity = activity
+            # print('attributes:', group)
+            group.save()
+
+def create_attributes_for_form(activity, form):
+    groups = []
+
+    if name_of_form(form) == 'investor_info':
+        print('investor_info', form.cleaned_data)
+
+    elif name_of_form(form) == 'data_sources':
+        for sub_form_data in form.cleaned_data:
+            if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
+                field = DealDataSourceForm().fields['type']
+                choices = dict(field.choices)
+                sub_form_data['type'] = str(choices[sub_form_data['type']])
+            group = create_attribute_group(activity, sub_form_data)
+            print(name_of_form(form), group)
+            groups.append(group)
+
+    elif name_of_form(form) == 'spatial_data':
+        for sub_form_data in form.cleaned_data:
+            if sub_form_data['target_country'] and isinstance(sub_form_data['target_country'], Country):
+                sub_form_data['target_country'] = sub_form_data['target_country'].pk
+            group = create_attribute_group(activity, sub_form_data)
+            print(name_of_form(form), group)
+            groups.append(group)
+
+    else:
+        if any(form.cleaned_data.values()):
+            group = create_attribute_group(activity, form.cleaned_data)
+            print(name_of_form(form), group)
+            groups.append(group)
+
+        else:
+            print('no data sent:', name_of_form(form))
+
+    return groups
+
 
 def create_attribute_group(activity, form_data):
     group = ActivityAttributeGroup(
         fk_activity=activity, date=date.today(),
-        attributes = {key: value for key, value in form_data.items() if value}
+        attributes = {key: model_to_id(value) for key, value in form_data.items() if value},
+        fk_language=Language.objects.get(english_name='English')
     )
-
     return group
 
 
@@ -118,3 +149,16 @@ def name_of_form(form):
         if Form == form.__class__:
             return name
     raise ValueError('Form %s not in FORMS' % form.__class__.__name__)
+
+
+def model_to_id(value):
+    print('model to id:', value, type(value))
+    if isinstance(value, QuerySet):
+        return model_to_id(list(value))
+    elif isinstance(value, Model):
+        return value.pk
+    elif isinstance(value, list):
+        print('model to id is list:', value)
+        return [model_to_id(v) for v in value]
+    else:
+        return value
