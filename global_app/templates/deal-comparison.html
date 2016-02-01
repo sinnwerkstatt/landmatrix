@@ -1,13 +1,13 @@
+{% extends "base.html" %}
 {% load i18n custom_tags %}
 
 {% block content %}
 
-<table style="width: 100%">
+<div class="row">
 
   {% for comparison_forms in forms %}
 
-    <tr>
-      <td style="width: 50%">
+    <div class="col-md-2">
 
           <div class="bs-example">
             <div class="panel-group" id="accordion">
@@ -68,9 +68,9 @@
           </div>
         </div>
 
-    </td>
+    </div>
 
-    <td style="width: 50%">
+    <div class="col-md-2">
 
           <div class="bs-example">
             <div class="panel-group" id="accordion">
@@ -130,8 +130,8 @@
           </div>
         </div>
 
-      </td>
-    </tr>
+      </div>
+    </div>
 
   {% endfor %}
 

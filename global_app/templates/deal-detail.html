@@ -39,81 +39,77 @@
 
     <h5>Activity</h5>
 
-    <div class="bs-example">
       <div class="panel-group" id="accordion">
 
         {% if forms %}
 
           {% for form in forms %}
-
+             
             <div class="panel panel-default">
 
-              {% if form.forms %}
-
                 <div class="panel-heading">
                   <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                      Formset {{forloop.counter}}:
+                    <a data-toggle="collapse" data-target="#collapse{{forloop.counter}}" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                      {% if form.forms %}
+                          Formset {{forloop.counter}}:
+                      {% else %}
+                          Form {{forloop.counter}}:
+                      {% endif %}
+                      <span id="collapsebtn{{forloop.counter}}" class="lm-chevron-circle-down pull-right"></span>
                     </a>
                   </h4>
                 </div>
 
-                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse">
                   <div class="panel-body">
                     <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                      {% if form.forms %}
 
-                      {% if form.forms.0.has_investor %}
+                          {% if form.forms.0.has_investor %}
 
-                        <tr>
-                          <td>Primary investor:</td>
-                          <td>{{ investor.primary_investor.name }}</td>
-                        </tr>
-                        {% for i in investor.secondary_investors %}
-                          <tr>
-                            <td>Secondary investor:</td>
-                            <td>{{i.tags.investor_name}} - {{i.tags.country}}, {{i.tags.classification}} ({{i.investment_ratio}}%)</td>
-                            <td>{{i.comment}}</td>
-                          </tr>
-                        {% endfor %}
+                            <tr>
+                              <td>Primary investor:</td>
+                              <td>{{ investor.primary_investor.name }}</td>
+                            </tr>
+                            {% for i in investor.secondary_investors %}
+                              <tr>
+                                <td>Secondary investor:</td>
+                                <td>{{i.tags.investor_name}} - {{i.tags.country}}, {{i.tags.classification}} ({{i.investment_ratio}}%)</td>
+                                <td>{{i.comment}}</td>
+                              </tr>
+                            {% endfor %}
 
-                      {% else %}    {# form.forms.0.has_investor #}
+                          {% else %}    {# form.forms.0.has_investor #}
 
-                        {{ form }}
+                            {{ form }}
 
-                      {% endif %}   {# form.forms.0.has_investor #}
+                          {% endif %}   {# form.forms.0.has_investor #}
+                        {% else %}
+                            {{ form.as_table }}
+                        {% endif %}
                     </table>
                   </div>
                 </div>
-
-              {% else %}      {# form.forms #}
-
-                <div class="panel-heading">
-                  <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                      Form {{forloop.counter}}:
-                    </a>
-                  </h4>
-                </div>
-
-                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
-                  <div class="panel-body">
-                    <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-
-                      {{ form.as_table }}
-
-                    </table>
-                  </div>
-                </div>
-
-              {% endif %}     {# form.forms #}
 
             </div>            {# class="panel panel-default" #}
+
+            <script>
+                var collapsename = "#collapse{{forloop.counter}}";
+                console.log(collapsename);
+                $(collapsename).on("hidden.bs.collapse", function() {
+                    $("#collapsebtn{{forloop.counter}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
+                });
+                 $(collapsename).on("shown.bs.collapse", function() {
+                    $("#collapsebtn{{forloop.counter}}").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
+                });
+            </script>
 
           {% endfor %}
 
         {% endif %}           {# forms #}
 
         {% if history|length > 1 %}
+        <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
               <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
@@ -153,9 +149,9 @@
               </table>
             </div>
           </div>
+        </div>
         {% endif %}
 
-      </div>
     </div>
 
   {% else %}
