@@ -31,6 +31,6 @@ urlpatterns = patterns('globalapp.views',
     url(r'^compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
     url(r'^(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
-    url(r'^add/$', AddDealView.as_view(), name='deal_detail'),
+    url(r'^add/$', AddDealView.as_view(), name='add_deal'),
 
 )
