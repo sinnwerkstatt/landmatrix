@@ -4,19 +4,20 @@
 {% load static %}
 
 {% block head %}
-    <script type="text/javascript" src="/media/js/vendor/openlayers/ol-debug.js"></script>
+    <script type="text/javascript" src="{% static "vendor/openlayers/ol.js" %}"></script>
     <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
 
     <script type="text/javascript" src="{% static "js/map.js" %}"></script>
     <script type="text/javascript" src="{% static "js/layers.js" %}"></script>
 
-    <link rel="stylesheet" href="/media/js/vendor/openlayers/ol.css"/>
+    <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
     <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
 
     <link rel="stylesheet" href="{% static "css/map.css" %}"/>
 {% endblock %}
 
 {% block content %}
+    {% include "filters.html" %}
     <div id="alert_placeholder"></div>
 
     <div id="map" class="map" title='All Deals'></div>
