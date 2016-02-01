@@ -4,7 +4,7 @@ from django.contrib.gis import admin
 from cms.models import CMSPlugin
 from djangocms_text_ckeditor.utils import plugin_tags_to_id_list, replace_plugin_tags
 from django.utils.text import Truncator
-from django.utils.html import strip_tags, clean_html
+from django.utils.html import strip_tags  #, clean_html
 from django.utils.translation import ugettext_lazy as _
 
 class MapPluginModel(CMSPlugin):
@@ -32,7 +32,8 @@ class MapPluginModel(CMSPlugin):
         return u"%s" % (truncator.words(3)[:30]+"...")
 
     def clean(self):
-        self.body = clean_html(self.body)
+        # self.body = clean_html(self.body)
+        pass
 
     def clean_plugins(self):
         ids = plugin_tags_to_id_list(self.body)
