@@ -1,4 +1,4 @@
-{% load i18n cms_tags %}{% load cms_tags sekizai_tags %}{% load menu_tags %}<!DOCTYPE html>
+{% load i18n cms_tags %}{% load cms_tags sekizai_tags %}{% load menu_tags %}{% load static %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -38,22 +38,22 @@
             {% if meta_keywords %}{{ meta_keywords }}{% else %}{% trans "Landmatrix" %}{% trans 'Default keywords' %}{% endif %}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="/media/js/vendor/bootstrap/dist/css/bootstrap.min.css">
-    <!-- <link rel="stylesheet" href="/media/js/vendor/bootstrap/dist/css/bootstrap-theme.min.css"> -->
-    <!-- <link rel="stylesheet" href="/media/css/legacy/main.css"> -->
-    <link rel="stylesheet" href="/media/css/content.css">
-    <link rel="stylesheet" href="/media/css/icons.css">
-    <link rel="icon" href="/media/img/favicon.ico">
+    <link rel="stylesheet" href="{% static "vendor/bootstrap/dist/css/bootstrap.min.css" %}">
+    <!-- <link rel="stylesheet" href="{% static "vendor/bootstrap/dist/css/bootstrap-theme.min.css" %}"> -->
+    <!-- <link rel="stylesheet" href="{% static "css/legacy/main.css" %}"> -->
+    <link rel="stylesheet" href="{% static "css/content.css" %}">
+    <link rel="stylesheet" href="{% static "css/icons.css" %}">
+    <link rel="icon" href="{% static "img/favicon.ico" %}">
 
     <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
     {% if is_pdf_export %}
-        <link rel="stylesheet" href="/media/landmatrix/css/htmltopdf.css" type="text/css" media="screen"
+        <link rel="stylesheet" href="{% static "css/htmltopdf.css" %}" type="text/css" media="screen"
               title="no title" charset="utf-8">{% endif %}
 
-    <!-- <script src="/media/js/legacy/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>-->
+    <!-- <script src="{% static "js/legacy/vendor/modernizr-2.6.2-respond-1.1.0.min.js" %}"></script>-->
 
     <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
-    <script>window.jQuery || document.write('<script src="/media/js/vendor/jquery/dist/jquery.min.js"><\/script>')</script>
+    <script>window.jQuery || document.write('<script src="{% static "vendor/jquery/dist/jquery.min.js" %}"><\/script>')</script>
     {% block head %}
     {% endblock %}
     {% render_block "css" %}
@@ -196,6 +196,7 @@
         {% endblock %}
 
         {% block content %}{% endblock %}
+
     </div> <!-- /container -->
 
     <div class="push"></div>
@@ -268,9 +269,9 @@
 </footer>
 
 {% block footer_scripts %}
-    <script src="/media/js/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="{% static "vendor/bootstrap/dist/js/bootstrap.min.js" %}"></script>
 
-    <script src="/media/js/legacy/main.js"></script>
+    <script src="{% static "legacy/main.js" %}"></script>
     <!-- Piwik -->
     <script type="text/javascript">
         var _paq = _paq || [];
