@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 
 #   works with django 1.8, not in 1.7:
-    # 'django.contrib.postgres',
+    'django.contrib.postgres',
     'django_hstore',
 
     'tastypie',
@@ -84,7 +84,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 #    'django.middleware.transaction.TransactionMiddleware',
 #   added by generating the project with django 1.8, does not work in 1.7:
-    # 'django.middleware.security.SecurityMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 
     # populate the history user automatically
     'simple_history.middleware.HistoryRequestMiddleware',
