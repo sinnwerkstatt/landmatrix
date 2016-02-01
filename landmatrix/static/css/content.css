@@ -179,25 +179,25 @@ body {
 
 @font-face {
     font-family: Open Sans;
-    src: url(/media/fonts/OpenSans-Regular.ttf);
+    src: url(/static/fonts/OpenSans-Regular.ttf);
     font-weight: normal;
 }
 
 @font-face {
     font-family: Open Sans;
-    src: url(/media/fonts/OpenSans-Semibold.ttf);
+    src: url(/static/fonts/OpenSans-Semibold.ttf);
     font-weight: bold;
 }
 
 @font-face {
     font-family: Open Sans;
-    src: url(/media/fonts/OpenSans-Bold.ttf);
+    src: url(/static/fonts/OpenSans-Bold.ttf);
     font-weight: 600;
 }
 
 @font-face {
     font-family: Open Sans;
-     src: url(/media/fonts/OpenSans-Light.ttf);
+     src: url(/static/fonts/OpenSans-Light.ttf);
     font-weight: lighter;
 }
 
@@ -240,14 +240,9 @@ h6 {
     margin: 0;
 }
 
-a {
-    text-decoration: underline;
-}
-
-
-
 a:hover {
     color: #fc941f;
+    text-decoration: underline;
 }
 
 ::-moz-selection {
@@ -323,7 +318,7 @@ a:hover {
 }
 
 .navbar .brand {
-    background: url(/media/img/lm-logo.png) no-repeat;
+    background: url(/static/img/lm-logo.png) no-repeat;
     display: block;
     padding: 5px;
  /*   margin-left: 8vw; */
@@ -396,6 +391,44 @@ a.btn,
     margin: 36px 0 18px
 }
 
+.panel {
+    border: 0px none;
+    border-bottom: solid 2px #c1c1c1 !important;
+    border-top: solid 2px #c1c1c1 !important;
+    border-radius: 0px !important;
+    background: none !important;
+    width: 100%;
+    height: 100%;
+}
+
+.panel-heading, .panel-title {
+    background: none !important;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    width: 100%;
+    height: 100%;
+}
+
+.panel-heading {
+}
+
+div.panel > div > h4 > a {
+    font-size: 20pt !important;
+    color: #4a4a4a;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.panel-collapse, .collapse, .panel-body {
+    border: 0px none !important;
+}
+
+
+.in {
+    border-top: dashed 2px #c1c1c1 !important;
+}
+
 /* ==========================================================================
  *    SUBNAVIGATION
  *       ========================================================================== */
@@ -439,7 +472,7 @@ a.btn,
     left: 12px;
     width: 11px;
     height: 18px;
-    background: url(/media/img/arrows.png) no-repeat;
+    background: url(/static/img/arrows.png) no-repeat;
     text-indent: -9999px;
 }
 
@@ -466,7 +499,7 @@ a.btn,
     right: 0;
     width: 14px;
     height: 14px;
-    background: url(/media/img/plus-minus.png) no-repeat -14px 0;
+    background: url(/static/img/plus-minus.png) no-repeat -14px 0;
     text-indent: -9999px;
     opacity: 0.5;
 }
@@ -573,7 +606,7 @@ footer a {
     color: #4a4a4a;
     font-size: 1.2em;
     line-height: 1.4em;
-    text-decoration: none;
+    text-decoration: none !important;
 }
 
 footer h4 {
@@ -600,7 +633,7 @@ footer > a:hover {
 
 a.cc-icons {
     display: inline-block;
-    background: url(/media/img/cc-icons.png) no-repeat;
+    background: url(/static/img/cc-icons.png) no-repeat;
     background-position: 0 0;
     width: 71px;
     height: 20px;
@@ -611,7 +644,7 @@ a.cc-icons:hover {
 }
 
 .newsletter-icon {
-    background: url(/media/img/subscribe-icon.png) no-repeat;
+    background: url(/static/img/subscribe-icon.png) no-repeat;
     background-position: right 1px;
     padding-right: 25px;
 }
@@ -630,7 +663,7 @@ a.about {
     display: block;
     width: 28px;
     height: 34px;
-    background: url(/media/img/nav-icons.png) no-repeat;
+    background: url(/static/img/nav-icons.png) no-repeat;
     text-indent: -99999px;
 }
 
@@ -674,7 +707,7 @@ i.big {
     display: block;
     width: 40px;
     height: 48px;
-    background: url(/media/img/nav-icons.png) no-repeat 0 -68px;
+    background: url(/static/img/nav-icons.png) no-repeat 0 -68px;
     text-indent: -99999px;
     float: left;
     margin-top: -5px;
@@ -708,7 +741,7 @@ i.big.get-involved {
 /* riot: This could be realized by using font-awesome or other glyphfonts (can be custom created */
 
 .intention-icon {
-    background: url(/media/img/intention-icons.png) no-repeat;
+    background: url(/static/img/intention-icons.png) no-repeat;
     display: block;
     float: left;
     width: 32px;
@@ -813,7 +846,7 @@ i.big.get-involved {
 }
 
 .icon-info {
-    background: url(/media/img/icons.png) no-repeat;
+    background: url(/static/img/icons.png) no-repeat;
 }
 
 h4 .icon {
@@ -899,7 +932,7 @@ h4 .icon {
 
 .get-the-detail li .separator {
     display: block;
-    background: url(/media/img/arrow-right.png) no-repeat;
+    background: url(/static/img/arrow-right.png) no-repeat;
     width: 28px;
     height: 46px;
     position: absolute;
@@ -1093,7 +1126,7 @@ h4 .icon {
 .icon-twitter {
     display: inline-block;
     vertical-align: text-top;
-    background-image: url("/media/img/icon-twitter.png");
+    background-image: url("/static/img/icon-twitter.png");
     background-repeat: no-repeat;
 }
 
@@ -1143,12 +1176,13 @@ label[for=id_honeypot] {
 input,
 select,
 textarea {
-    -webkit-border-radius: 5 !important;
-    -moz-border-radius: 5 !important;
-    border-radius: 5 !important;
+    -webkit-border-radius: 5px !important;
+    -moz-border-radius: 5px !important;
+    border-radius: 5px !important;
+    border: 1px solid;
     border-color: #4a4a4a;
     box-shadow: none !important;
-    colork: #4a4a4a;
+    color: #4a4a4a;
 }
 
 .formcontrol {
@@ -1378,7 +1412,7 @@ ul.legend.offset li > span {
  *       ========================================================================== */
 .table th,
 .table td {
-    padding: 16px 8px 8px;
+    padding: 16px 8px 8px !important;
     border-top: 1px solid #bcbcbc;
 }
 
@@ -1415,12 +1449,12 @@ table th a {
 .get-the-detail table th a:hover,
 .get-the-detail table th a.desc:hover,
 .get-the-detail table th a.asc {
-    background: url(/media/img/icon-sort-asc.png) no-repeat 6px bottom;
+    background: url(/static/img/icon-sort-asc.png) no-repeat 6px bottom;
 }
 
 .get-the-detail table th a.asc:hover,
 .get-the-detail table th a.desc {
-    background: url(/media/img/icon-sort-desc.png) no-repeat 6px bottom;
+    background: url(/static/img/icon-sort-desc.png) no-repeat 6px bottom;
 }
 
 .get-the-detail .table-striped tbody tr:nth-child(odd) td {
@@ -1460,7 +1494,7 @@ table th a {
 .entry-point-all {
     width: 979px;
     height: 52px;
-    background: url(/media/img/entry-points.png) no-repeat;
+    background: url(/static/img/entry-points.png) no-repeat;
     display: block;
     text-indent: -9999px;
     margin: 5px auto 0;
@@ -1514,24 +1548,10 @@ table th a {
 
 .container select {
     color: #4a4a4a;
-    background: #e5e5e5 url(/media/img/select-arrow.png) no-repeat right 12px;
+    background: #e5e5e5 url(/static/img/select-arrow.png) no-repeat right 12px;
     border: 1px solid #bcbcbc;
     -webkit-appearance: none;
     padding: 0 4px;
-}
-
-.container input,
-.container textarea {
-    color: #4a4a4a;
-    border: 1px solid #bcbcbc;
-}
-
-input,
-button,
-select,
-textarea {
-    font-family: "Open Sans", sans-serif;
-    font-size: 12px !important;
 }
 
 /* UNSET BOOTSTRAP STYLES FOR MAP (https://github.com/twitter/bootstrap/issues/1552) */
