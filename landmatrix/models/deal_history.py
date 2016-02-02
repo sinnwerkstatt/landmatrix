@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 
+from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.deal import Deal, aggregate_activity_attributes
 
@@ -18,6 +19,9 @@ class DealHistoryItem(Deal):
     def from_activity_with_date(cls, activity, date):
         cls.date = date
         deal = cls()
+        # if not isinstance(activity, Activity):
+        #     activity = Activity.objects.get(activity.id)
+        print('activity:', activity)
         deal._set_activity(activity)
         cls.date = None
         return deal
@@ -31,7 +35,7 @@ class DealHistoryItem(Deal):
         return my_deal.get_history()
 
     def get_activity_attributes(self):
-        attributes = ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
+        attributes = ActivityAttributeGroup.objects.filter(fk_activity_id=self.activity.id)
 
         if self.date:
             attributes = [a.history.as_of(self.date) for a in attributes if existed_at_date(a, self.date)]

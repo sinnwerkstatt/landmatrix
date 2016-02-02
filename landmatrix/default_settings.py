@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 
 #   works with django 1.8, not in 1.7:
-    # 'django.contrib.postgres',
+    'django.contrib.postgres',
     'django_hstore',
 
     'tastypie',
@@ -84,13 +84,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 #    'django.middleware.transaction.TransactionMiddleware',
 #   added by generating the project with django 1.8, does not work in 1.7:
-    # 'django.middleware.security.SecurityMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 
     # populate the history user automatically
     'simple_history.middleware.HistoryRequestMiddleware',
 
     'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.doc.XViewMiddleware',
+    # 'django.middleware.doc.XViewMiddleware',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
@@ -100,10 +100,26 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'landmatrix.urls'
 
+# from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+
+# TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+#     'django.contrib.auth.context_processors.auth',
+#     'django.core.context_processors.i18n',
+#     'django.core.context_processors.media',
+#     'django.core.context_processors.static',
+#     'django.core.context_processors.request',
+#     'django.contrib.messages.context_processors.messages',
+#     'sekizai.context_processors.sekizai',
+#     'cms.context_processors.cms_settings',
+# )
+# TEMPLATE_DIRS = (
+#     os.path.join(BASE_DIR, "templates"),
+# )
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -111,6 +127,14 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.media',
+                'django.core.context_processors.static',
+                'django.core.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+                'sekizai.context_processors.sekizai',
+                'cms.context_processors.cms_settings',
             ],
         },
     },
@@ -158,23 +182,6 @@ API_LIMIT_PER_PAGE = 100
 # django-cms stuff
 #
 SITE_ID = 1
-
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-
-TEMPLATE_CONTEXT_PROCESSORS = TCP + (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-    'sekizai.context_processors.sekizai',
-    'cms.context_processors.cms_settings',
-)
-
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, "templates"),
-)
 
 CMS_TEMPLATES = (
     ('1-column.html', '1 column'),
