@@ -95,7 +95,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
-    'livereload.middleware.LiveReloadScript'
+#    'livereload.middleware.LiveReloadScript'
 )
 
 ROOT_URLCONF = 'landmatrix.urls'
