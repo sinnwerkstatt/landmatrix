@@ -1410,10 +1410,25 @@ ul.legend.offset li > span {
 /* ==========================================================================
  *    TABLES
  *       ========================================================================== */
-.table th,
-.table td {
+table th,
+table td {
     padding: 16px 8px 8px !important;
-    border-top: 1px solid #bcbcbc;
+    border-bottom: 1px solid #c1c1c1;
+}
+
+table .btn {
+    display: block;
+    padding: 0px;
+    margin: 0px;
+    vertical-align: inherit;
+}
+
+table {
+    width: 100%;
+}
+
+table tbody {
+    width: 100%;
 }
 
 .table-condensed th,
@@ -1436,6 +1451,11 @@ table th,
 table th a {
     display: block;
     float: left;
+}
+
+form .panel-body {
+    padding: 0px;
+    padding-top: 5px;
 }
 
 .get-the-detail table th a {
