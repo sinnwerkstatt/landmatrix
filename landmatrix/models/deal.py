@@ -91,7 +91,7 @@ class Deal:
         return aggregate_activity_attributes(attributes_list, {})
 
     def get_operational_stakeholder(self):
-        involvements = InvestorActivityInvolvement.objects.filter(fk_activity=self.activity)
+        involvements = InvestorActivityInvolvement.objects.filter(fk_activity_id=self.activity.id)
         if len(involvements) > 1:
             raise MultipleObjectsReturned('More than one OP for activity %s: %s' % (str(self.activity), str(involvements)))
         if len(involvements) < 1:
