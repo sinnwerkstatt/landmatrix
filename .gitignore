@@ -1,6 +1,12 @@
 
 settings.py
 
+# Collected(!) statics
+static/
+
+# Ignore global javascript vendor packages
+landmatrix/static/vendor/
+
 # IDE files and files from my personal environment
 dir.sh
 .idea
@@ -65,6 +71,3 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
-
-# Frontend vendor libraries
-media/js/vendor
