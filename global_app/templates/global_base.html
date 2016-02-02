@@ -21,13 +21,13 @@
 
 {% block subnav %}
 <div class="row title entry-point">
-  <div class="span12">
+  <div class="col-md-4">
     <h4>Entry points</h4>
     <span class="entry-point-{{ group_slug }}">Entry point {{ group_slug }}</span>
   </div>
 </div>
 <div class="row collapsible collapsed">
-    <ul class="nav nav-pills subnav span12">
+    <ul class="nav nav-pills subnav col-md-4">
 		<li class="by-target-country {% if group_slug == "by-target-country" or group_slug == "by-target-region" %} active{% endif %}">
             <div class="thumbnail">
                 <a href="/global/by-target-country/none/">By target country</a><br/>

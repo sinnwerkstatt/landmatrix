@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% load cms_tags menu_tags %}
+{% extends "base.html" %}{% load cms_tags menu_tags staticfiles %}
 
 {% block title_section %}{% endblock %}
 
@@ -60,8 +60,8 @@
 
 {% block footer_scripts %}
 {{ block.super }}
-<script type="text/javascript" src="/media/js/legacy/vendor/jquery.fancybox.js?v=2.1.4"></script>
-<link rel="stylesheet" type="text/css" href="/media/css/legacy/jquery.fancybox.css?v=2.1.4" media="screen" />
+<script type="text/javascript" src="{% static "legacy/vendor/jquery.fancybox.js?v=2.1.4" %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static "css/legacy/jquery.fancybox.css?v=2.1.4" media="screen" />
 <script type="text/javascript">
 $(document).ready(function () {
     $(".fancybox").fancybox({

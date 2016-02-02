@@ -1,5 +1,5 @@
 {
-  "directory": "media/js/vendor",
+  "directory": "landmatrix/static/vendor",
   "analytics": false,
   "interactive": true
 
