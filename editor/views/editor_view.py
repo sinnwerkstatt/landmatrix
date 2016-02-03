@@ -50,31 +50,6 @@ class EditorView(TemplateView):
             "feedbacks": response["feedbacks"],
         }
         return render_to_response(self.template_name, data, RequestContext(request))
-        context = {
-            'user': request.user,
-            'latest_modified': self.latest_modified(),
-            'latest_added': self.latest_added(),
-            'latest_deleted': self.latest_deleted(),
-            'attention_needed': self.attention_needed(request.user),
-            'feedback_requests': self.feedback_requests(request.user)
-        }
-        return render_to_response(self.template_name, context, RequestContext(request))
-
-    def latest_modified(self):
-        
-        return []
-
-    def latest_added(self):
-        return []
-
-    def latest_deleted(self):
-        return []
-
-    def attention_needed(self, user):
-        return []
-
-    def feedback_requests(self, user):
-        return []
 
 
 def get_overall_deal_count():
@@ -190,6 +165,10 @@ class Protocol(View):
             page = paginator.page(paginator.num_pages)
         return page
 
+
+from django.utils.translation import ugettext_lazy as _
+
+
 class ChangesetProtocol(Protocol):
 
     #@method_decorator(login_required)
@@ -223,17 +202,20 @@ class ChangesetProtocol(Protocol):
         res_latest_added = {"cs":[]}
         paginator = Paginator(changesets.get_by_state("active"), 10)
         page = self._get_page(request.GET.get('latest_added_page'), paginator)
-        for cs in page.object_list:
+        print('dashboard: page:', page)
+        for changeset in page.object_list:
+            print('  changeset:', changeset)
             comment = ""
-            review = A_Changeset_Review.objects.filter(fk_a_changeset=cs.id)
-            if len(review) > 0:
-                comment = review[0].comment
-            else:
-                comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
+            # review = A_Changeset_Review.objects.filter(fk_a_changeset=cs.id)
+            # if len(review) > 0:
+            #     comment = review[0].comment
+            # else:
+            #   comment = changeset.comment and len(changeset.comment) > 0 and changeset.comment or "-"
+            comment = 'TODO: comment! (ChangesetProtocol.dashboard())'
             res_latest_added["cs"].append({
-                "deal_id": cs.fk_activity.activity_identifier,
-                "user": cs.fk_user and cs.fk_user.username or unicode(_("Public User")),
-                "timestamp": cs.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                "deal_id": changeset.fk_activity.activity_identifier,
+                "user": changeset.fk_user and changeset.fk_user.username or str(_("Public User")),
+                "timestamp": changeset.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                 "comment": comment
                 })
         res_latest_added["pagination"] = self._pagination_to_json(paginator, page)
@@ -242,17 +224,18 @@ class ChangesetProtocol(Protocol):
         res_latest_modified = {"cs":[]}
         paginator = Paginator(changesets.get_by_state("overwritten"), 10)
         page = self._get_page(request.GET.get('latest_modified_page'), paginator)
-        for cs in page.object_list:
-            comment = ""
-            review = A_Changeset_Review.objects.filter(fk_a_changeset=cs.id)
-            if len(review) > 0:
-                comment = review[0].comment
-            else:
-                comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
+        for changeset in page.object_list:
+            # comment = ""
+            # review = A_Changeset_Review.objects.filter(fk_a_changeset=changeset.id)
+            # if len(review) > 0:
+            #     comment = review[0].comment
+            # else:
+            #     comment = changeset.comment and len(changeset.comment) > 0 and changeset.comment or "-"
+            comment = 'TODO: changeset review comment! (ChangesetProtocol.dashboard())'
             res_latest_modified["cs"].append({
-                "deal_id": cs.fk_activity.activity_identifier,
-                "user": cs.fk_user and cs.fk_user.username or unicode(_("Public User")),
-                "timestamp": cs.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                "deal_id": changeset.fk_activity.activity_identifier,
+                "user": changeset.fk_user and changeset.fk_user.username or str(_("Public User")),
+                "timestamp": changeset.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                 "comment": comment
                 })
         res_latest_modified["pagination"] = self._pagination_to_json(paginator, page)
@@ -261,17 +244,18 @@ class ChangesetProtocol(Protocol):
         res_latest_deleted = {"cs":[]}
         paginator = Paginator(changesets.get_by_state("deleted"), 10)
         page = self._get_page(request.GET.get('latest_deleted_page'), paginator)
-        for cs in page.object_list:
+        for changeset in page.object_list:
             comment = ""
-            review = A_Changeset_Review.objects.filter(fk_a_changeset=cs.id)
-            if len(review) > 0:
-                comment = review[0].comment
-            else:
-                comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
+            # review = A_Changeset_Review.objects.filter(fk_a_changeset=changeset.id)
+            # if len(review) > 0:
+            #     comment = review[0].comment
+            # else:
+            #     comment = changeset.comment and len(changeset.comment) > 0 and changeset.comment or "-"
+            comment = 'TODO: changeset review comment! (ChangesetProtocol.dashboard())'
             res_latest_deleted["cs"].append({
-                "deal_id": cs.fk_activity.activity_identifier,
-                "user": cs.fk_user and cs.fk_user.username or str(_("Public User")),
-                "timestamp": cs.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                "deal_id": changeset.fk_activity.activity_identifier,
+                "user": changeset.fk_user and changeset.fk_user.username or str(_("Public User")),
+                "timestamp": changeset.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                 "comment":comment
                 })
         res_latest_deleted["pagination"] = self._pagination_to_json(paginator, page)
@@ -318,26 +302,27 @@ class ChangesetProtocol(Protocol):
         for cs in changesets_update:
             # find out which fields changed
             fields_changed = []
-            prev_activity = Activity.objects.get(activity_identifier=cs.fk_activity.activity_identifier,
-                                                 version=cs.previous_version)
-            prev_tags = A_Tag.objects.filter(fk_a_tag_group__fk_activity=prev_activity)
-            tags = A_Tag.objects.filter(fk_a_tag_group__fk_activity=cs.fk_activity)
-            prev_keys = []
-            for tag in tags:
-                for prev_tag in tags:
-                    if tag.fk_a_key.key == prev_tag.fk_a_key.key:
-                        if tag.fk_a_value != prev_tag.fk_a_value:
-                            # field has been changed
-                            fields_changed.append(tag.fk_a_key.id)
-                        break
-            for key in set([t.fk_a_key.id for t in tags]).difference([t.fk_a_key.id for t in prev_tags]):
-                # field has been added or deleted
-                fields_changed.append(key)
-            comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
+            # prev_activity = Activity.objects.get(activity_identifier=cs.fk_activity.activity_identifier,
+            #                                      version=cs.previous_version)
+            # prev_tags = A_Tag.objects.filter(fk_a_tag_group__fk_activity=prev_activity)
+            # tags = A_Tag.objects.filter(fk_a_tag_group__fk_activity=cs.fk_activity)
+            # prev_keys = []
+            # for tag in tags:
+            #     for prev_tag in tags:
+            #         if tag.fk_a_key.key == prev_tag.fk_a_key.key:
+            #             if tag.fk_a_value != prev_tag.fk_a_value:
+            #                 # field has been changed
+            #                 fields_changed.append(tag.fk_a_key.id)
+            #             break
+            # for key in set([t.fk_a_key.id for t in tags]).difference([t.fk_a_key.id for t in prev_tags]):
+            #     # field has been added or deleted
+            #     fields_changed.append(key)
+            # comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
+            comment = 'TODO: previous activity (ChangesetProtocol.handle_updates())'
             updates["cs"].append({
-                "id": cs.id,
+                # "id": cs.id,
                 "deal_id": cs.fk_activity.activity_identifier,
-                "user": cs.fk_user and cs.fk_user.username or unicode(_("Public User")),
+                "user": cs.fk_user and cs.fk_user.username or str(_("Public User")),
                 "fields_changed": fields_changed,
                 "comment": comment
             })
@@ -377,11 +362,12 @@ class ChangesetProtocol(Protocol):
         changesets_insert = page.object_list
         inserts = {"cs": []}
         for cs in changesets_insert:
-            comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
+            # comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
+            comment = 'TODO: previous activity (ChangesetProtocol.handle_inserts())'
             inserts["cs"].append({
-                "id": cs.id,
+                # "id": cs.id,
                 "deal_id": cs.fk_activity.activity_identifier,
-                "user": cs.fk_user and cs.fk_user.username or unicode(_("Public User")),
+                "user": cs.fk_user and cs.fk_user.username or str(_("Public User")),
                 "comment": comment
             })
         if inserts["cs"]:
