@@ -21,7 +21,6 @@ class DealHistoryItem(Deal):
         deal = cls()
         # if not isinstance(activity, Activity):
         #     activity = Activity.objects.get(activity.id)
-        print('activity:', activity)
         deal._set_activity(activity)
         cls.date = None
         return deal

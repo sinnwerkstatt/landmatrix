@@ -86,7 +86,7 @@ class Deal:
         return deal
 
     def get_activity_attributes(self):
-        attributes = ActivityAttributeGroup.objects.filter(fk_activity=self.activity).values('attributes')
+        attributes = ActivityAttributeGroup.objects.filter(fk_activity_id=self.activity.id).values('attributes')
         attributes_list = [a['attributes'] for a in attributes]
         return aggregate_activity_attributes(attributes_list, {})
 
@@ -103,7 +103,7 @@ class Deal:
         return [Investor.objects.get(pk=involvement.fk_investor_id) for involvement in stakeholder_involvements]
 
     def attribute_groups(self):
-        return ActivityAttributeGroup.objects.filter(fk_activity=self.activity)
+        return ActivityAttributeGroup.objects.filter(fk_activity_id=self.activity.id)
 
     def _set_activity(self, activity):
         if activity is None:
