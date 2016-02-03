@@ -92,7 +92,6 @@
 
             <script>
                 var collapsename = "#collapse{{forloop.counter}}";
-                console.log(collapsename);
                 $(collapsename).on("hidden.bs.collapse", function() {
                     $("#collapsebtn{{forloop.counter}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
                 });
