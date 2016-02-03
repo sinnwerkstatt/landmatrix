@@ -1,4 +1,5 @@
 from global_app.views.deal_comparison_view import DealComparisonView
+from global_app.views.change_deal import ChangeDealView
 from .views.all_deals_view import AllDealsView
 from .views.table_group_view import TableGroupView
 from .views.deal_detail_view import DealDetailView
@@ -29,8 +30,9 @@ urlpatterns = patterns('globalapp.views',
     url(r'^compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^compare/(?P<activity_1>[\d_\.]+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
+    url(r'^add/$', AddDealView.as_view(), name='add_deal'),
+    url(r'^change/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
     url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
     url(r'^(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
-    url(r'^add/$', AddDealView.as_view(), name='add_deal'),
 
 )

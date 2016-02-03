@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load i18n custom_tags %}
+{% load humanize %}
+
+{% block head %}
+
+  {# bootstrap #}
+    <!-- TODO: Clear up library usage here. Why is this file including them itself? Should've been done
+    on top. in base.html already. -->
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <style type="text/css">
+    .bs-example{
+    	margin: 20px;
+    }
+  </style>
+
+  {# map #}
+  <script src="/media/js/editor/map.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=en"></script>
+
+
+  <script src="/media/js/editor/year-based-fields.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/media/js/editor/livesearch.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/media/js/editor/add_change.js" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+{% block page_title %}Change deal  #{{ deal_id }}{% endblock %}
+{% block title %}Change deal  #{{ deal_id }}{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="/editor">Editor</a> <span class="divider">|</span></li>
+  <li><a href="/en/global/change/{{ deal_id }}">Change deal #{{ deal_id }}</a> <span class="divider">|</span></li>
+  <li>Change deal  #{{ deal_id }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+
+
+  <h5>Change deal #{{ deal_id }}</h5>
+
+  <form action="." method="post" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <div class="bs-example">
+      <div class="panel-group" id="accordion">
+
+        {% if forms %}
+
+          {% for form in forms %}
+
+            <div class="panel panel-default">
+
+              {% if form.forms %}
+
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                      Formset {{forloop.counter}}: {#{ form }#}
+                    </a>
+                  </h4>
+                </div>
+
+                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+
+                      {% if form.forms.0.has_investor %}
+                        {{ form }}
+
+                        {% comment %}
+                        <tr>
+                          <td>Primary investor:</td>
+                          <td>{{ investor.primary_investor.name }}</td>
+                        </tr>
+                        {% for i in investor.secondary_investors %}
+                          <tr>
+                            <td>Secondary investor:</td>
+                            <td>{{i.tags.investor_name}} - {{i.tags.country}}, {{i.tags.classification}} ({{i.investment_ratio}}%)</td>
+                            <td>{{i.comment}}</td>
+                          </tr>
+                        {% endfor %}
+                        {% endcomment %}
+
+                      {% else %}    {# form.forms.0.has_investor #}
+
+                        {{ form }}
+
+                      {% endif %}   {# form.forms.0.has_investor #}
+                    </table>
+                  </div>
+                </div>
+
+              {% else %}      {# form.forms #}
+
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                      Form {{forloop.counter}}: {#{ form }#}
+                    </a>
+                  </h4>
+                </div>
+
+                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                      {{ form.as_table }}
+                    </table>
+                  </div>
+                </div>
+
+              {% endif %}     {# form.forms #}
+
+            </div>            {# class="panel panel-default" #}
+
+          {% endfor %}
+
+        {% endif %}           {# forms #}
+
+      </div>
+    </div>
+
+    <input type="submit" value="Submit" />
+
+  </form>
+
+{% endblock %}
