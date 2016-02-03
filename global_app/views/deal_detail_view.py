@@ -8,7 +8,7 @@ from global_app.forms.deal_produce_info_form import PublicViewDealProduceInfoFor
 from global_app.forms.deal_spatial_form import PublicViewDealSpatialForm
 from global_app.forms.deal_water_form import DealWaterForm
 from global_app.forms.operational_stakeholder_form import OperationalStakeholderForm
-from global_app.views.add_deal_view import name_of_form, create_attribute_group
+from global_app.views.save_deal_view import name_of_form, create_attribute_group
 from global_app.views.view_aux_functions import render_to_string, render_to_response
 
 from landmatrix.models import Deal
@@ -42,20 +42,6 @@ FORMS = [
 class DealDetailView(TemplateView):
 
     template_name = 'deal-detail.html'
-
-    def wrong_dispatch(self, request, *args, **kwargs):
-        forms = get_forms(request.POST)
-
-        # check whether it's valid:
-        if all(form.is_valid() for form in forms):
-            display_valid_forms(forms)
-        else:
-            display_invalid_forms(forms)
-        # if a GET (or any other method) we'll create a blank form
-
-        context = super().get_context_data(**kwargs)
-        context['forms'] = forms
-        return render_to_response(self.template_name, context, RequestContext(request))
 
     def dispatch(self, request, *args, **kwargs):
         deal = Deal(kwargs["deal_id"])

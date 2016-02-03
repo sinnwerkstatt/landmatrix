@@ -1,3 +1,5 @@
+from landmatrix.models.activity import Activity
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from .base_form import BaseForm
@@ -42,7 +44,11 @@ class AddDealSpatialFormSet(DealSpatialBaseFormSet):
 
     @classmethod
     def get_data(cls, activity):
-        taggroups = activity.a_tag_group_set.filter(fk_a_tag__fk_a_value__value__contains="location").order_by("fk_a_tag__fk_a_value__value")
+        if isinstance(activity, Activity):
+            taggroups = activity.activityattributegroup_set.filter(fk_a_tag__fk_a_value__value__contains="location").order_by("fk_a_tag__fk_a_value__value")
+        else:
+            taggroups = []
+
         data = []
         for i, taggroup in enumerate(taggroups):
             data.append(DealSpatialForm.get_data(activity, taggroup=taggroup))
