@@ -79,6 +79,7 @@ body {
 .container .row {
     margin-left: 0px;
     margin-right: 0px;
+    padding-bottom: 5px;
 }
 
 
@@ -95,10 +96,13 @@ body {
     background: white;
     font-weight: bold;
     opacity: 0.5;
-    padding: 15px 3vw;
-    font-size: 16pt;
+    font-size: 12pt;
     box-shadow: none;
     text-shadow: none;
+}
+
+.container a.btn-large {
+    padding: 15px 3vw;
 }
 
 .container button:focus,
@@ -214,15 +218,15 @@ h5,
 h6,
 label {
     font-family: 'Open Sans', sans-serif;
-    font-size: 16pt;
-    line-height: 2em;
+    font-size: 12pt;
+    line-height: 1.5em;
     color: #4a4a4a;
 }
 
 h1 {
     font-family: 'Open Sans', sans-serif;
     font-weight: 600;
-    font-size: 36pt;
+    font-size: 24pt;
     text-transform: uppercase;
     /*line-height: 32px;*/
     color: #fc941f;
@@ -339,7 +343,7 @@ a.btn,
 .nav a {
     text-decoration: none;
     font-weight: lighter;
-    font-size: 20pt;
+    font-size: 12pt;
 }
 
 .navbar .nav > li > a {
@@ -413,7 +417,7 @@ a.btn,
 }
 
 div.panel > div > h4 > a {
-    font-size: 20pt !important;
+    font-size: 12pt !important;
     color: #4a4a4a;
     display: block;
     width: 100%;
@@ -1413,7 +1417,8 @@ ul.legend.offset li > span {
 table th,
 table td {
     padding: 16px 8px 8px !important;
-    border-bottom: 1px solid #c1c1c1;
+    /*border-bottom: 1px solid #c1c1c1; */
+    border: 0px none;
 }
 
 table .btn {
