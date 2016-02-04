@@ -17,7 +17,9 @@ class OperationalStakeholderChoiceField(ModelChoiceField):
         return _investor_description(obj)
 
     def clean(self, value):
-        if not Investor.objects.filter(pk=value).exists():
+        if not value:
+            value = 0
+        if not Investor.objects.filter(pk=int(value)).exists():
             raise ValidationError('Investor %i does not exist' % value)
         return value
 
