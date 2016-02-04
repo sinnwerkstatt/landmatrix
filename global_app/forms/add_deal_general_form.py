@@ -10,6 +10,9 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class AddDealGeneralForm(BaseForm):
+
+    form_title = _('General Info')
+
     # Land area
     tg_land_area = TitleField(required=False, label="", initial=_("Land area"))
     intended_size = forms.IntegerField(required=False, label=_("Intended size"), help_text=_("ha"), widget=NumberInput)

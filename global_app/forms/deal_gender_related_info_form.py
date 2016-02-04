@@ -9,6 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 
 class DealGenderRelatedInfoForm(BaseForm):
 
+    form_title = _('Gender-related info')
+
     tg_gender_specific_info = TitleField(
         required=False, label="", initial=_("Any gender-specific information about the investment and its impacts")
     )

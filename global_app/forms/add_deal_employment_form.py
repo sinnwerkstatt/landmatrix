@@ -8,6 +8,9 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class AddDealEmploymentForm(BaseForm):
+
+    form_title = _('Employment')
+
     # Total number of jobs created
     tg_total_number_of_jobs_created = TitleField(required=False, label="", initial=_("Number of total jobs created"))
     total_jobs_created = forms.BooleanField(required=False, label=_("Total number of jobs created"))

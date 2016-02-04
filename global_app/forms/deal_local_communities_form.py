@@ -9,6 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 
 class DealLocalCommunitiesForm(BaseForm):
 
+    form_title = _('Local communities')
+
     # How did community react?
     tg_community_reaction = TitleField(required=False, label="", initial=_("How did community react?"))
     community_reaction = forms.ChoiceField(required=False, label=_("Community reaction"), choices=(
