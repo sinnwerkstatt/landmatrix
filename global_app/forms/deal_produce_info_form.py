@@ -15,6 +15,8 @@ from django.utils.translation import ugettext_lazy as _
 
 class DealProduceInfoForm(BaseForm):
 
+    form_title = _('Produce info')
+
     # Detailed crop, animal and mineral information
     tg_crop_animal_mineral = TitleField(required=False, label="", initial=_("Detailed crop, animal and mineral information"))
     crops = forms.ModelMultipleChoiceField(required=False, label=_("Crops"), queryset=Crop.objects.all(), widget=forms.CheckboxSelectMultiple)

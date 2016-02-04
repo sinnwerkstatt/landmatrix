@@ -23,6 +23,9 @@ class OperationalStakeholderChoiceField(ModelChoiceField):
 
 
 class OperationalStakeholderForm(BaseForm):
+
+    form_title = _('Investor info')
+
     tg_operational_stakeholder = TitleField(required=False, label="", initial=_("Operational Stakeholder"))
     operational_stakeholder = OperationalStakeholderChoiceField(
             required=True, label=_("Existing Operational Stakeholder"),
