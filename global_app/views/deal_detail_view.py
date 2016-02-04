@@ -38,18 +38,6 @@ FORMS = [
     ("gender-related_info", DealGenderRelatedInfoForm),
 ]
 
-FORM_TITLES = [
-    _('Location'),
-    _('General Information'),
-    _('Employment'),
-    _('Investor Info'),
-    _('Data Sources'),
-    _('Local Communities'),
-    _('Former Use'),
-    _('Produce Info'),
-    _('Water'),
-    _('Gender-related Info')
-]
 
 class DealDetailView(TemplateView):
 
@@ -69,7 +57,6 @@ class DealDetailView(TemplateView):
             'stakeholder': deal.stakeholders,
         }
         context['forms'] = get_forms(deal)
-        context['form_titles'] = get_form_titles(deal)
         context['investor'] = deal.stakeholders
         context['history'] = DealHistoryItem.get_history_for(deal)
         return context
@@ -126,8 +113,4 @@ def get_forms(deal):
 def get_form(deal, form_class):
     data = form_class[1].get_data(deal)
     return form_class[1](initial=data)
-
-
-def get_form_titles(deal):
-    return FORM_TITLES
 

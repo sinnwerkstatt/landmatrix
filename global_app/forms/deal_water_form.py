@@ -10,6 +10,8 @@ from django.utils.safestring import mark_safe
 
 class DealWaterForm(BaseForm):
 
+    form_title = _('Water')
+
     tg_water_extraction_envisaged = TitleField(required=False, label="", initial=_("Water extraction envisaged"))
     water_extraction_envisaged = forms.ChoiceField(required=False, label=_("Water extraction envisaged"), choices=(
         (10, _("Yes")),

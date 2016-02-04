@@ -45,11 +45,7 @@
                 <div class="panel-heading">
                   <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                      {% if form.forms %}
-                          Formset {{forloop.counter}}: {#{ form }#}
-                      {% else %}      {# form.forms #}
-                          Form {{forloop.counter}}: {#{ form }#}
-                      {% endif %}     {# form.forms #}
+                      {{ form.form_title }}
                       <span id="collapsebtn{{forloop.counter}}" class="lm-chevron-circle-up pull-right"></span>
                     </a>
                   </h4>
