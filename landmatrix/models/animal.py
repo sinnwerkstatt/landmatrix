@@ -1,7 +1,6 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from django.db import models
 
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class Animal(models.Model):

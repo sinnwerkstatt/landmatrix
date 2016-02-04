@@ -1,4 +1,4 @@
-
+from landmatrix.models.activity_changeset_review import ActivityChangesetReview
 from landmatrix.models.activity_feedback import ActivityFeedback
 from landmatrix.models.activity_changeset import ActivityChangeset
 
@@ -27,7 +27,7 @@ class ChangesetProtocol(View):
             raise IOError("Parameters missing")
 
         if action == "dashboard":
-            return ChangesetProtocol.dashboard(self, request)
+            return self.dashboard(request)
         else:
             raise IOError("Unknown action")
 
@@ -63,7 +63,7 @@ class ChangesetProtocol(View):
         return results
 
     def changeset_comment(self, changeset):
-        # review = A_Changeset_Review.objects.filter(fk_a_changeset=changeset.id)
+        review = ActivityChangesetReview.objects.filter(fk_activity_changeset_id=changeset.id)
         # if len(review) > 0:
         #     return review[0].comment
         # else:
