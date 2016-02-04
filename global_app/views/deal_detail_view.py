@@ -45,10 +45,7 @@ class DealDetailView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         deal = Deal(kwargs["deal_id"])
-        context = self.get_context(deal, kwargs)
-        context['history'] = DealHistoryItem.get_history_for(deal)
-
-        return self.render_forms(request, context)
+        return self.render_forms(request, self.get_context(deal, kwargs))
 
     def get_context(self, deal, kwargs):
         context = super().get_context_data(**kwargs)
@@ -61,6 +58,7 @@ class DealDetailView(TemplateView):
         }
         context['forms'] = get_forms(deal)
         context['investor'] = deal.stakeholders
+        context['history'] = DealHistoryItem.get_history_for(deal)
         return context
 
     def render_forms(self, request, context):
