@@ -34,7 +34,7 @@ class ActivityChangeset:
 
     @classmethod
     def from_latest(cls, activity_identifier):
-        print('from_latest:', activity_identifier)
+        # print('from_latest:', activity_identifier)
         most_recent = cls.activity_from_identifier(activity_identifier).history.last()
         return ActivityChangeset(most_recent)
 
@@ -44,7 +44,6 @@ class ActivityChangeset:
 
     def __init__(self, historical_activity):
         self.activity = historical_activity
-        print('ActivityChangeset', historical_activity, historical_activity.history_user_id)
         self.fk_user = None if not historical_activity.history_user_id else User.objects.get(pk=historical_activity.history_user_id)
         self.timestamp = historical_activity.history_date
         self.source = None  # models.TextField(_("Source"), blank=True, null=True)
