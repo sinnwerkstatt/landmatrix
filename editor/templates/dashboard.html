@@ -15,10 +15,14 @@
 <div class="row stats">
     <div class="span3">{% trans "Overall deals" %}:<br><span class="number">{{ statistics.overall_deal_count }}</span></div>
     <div class="span3">{% trans "Public deals"%}:<br><span class="number">{{ statistics.public_deal_count }}</span></div>
-    <div class="span3">{% trans "New deals"%}:<br><span class="number">{{ statistics.deals_added_count }}</span></div>
-    <div class="span3">{% trans "Imported deals updated"%}:<br><span class="number">{{ statistics.deals_changed_count }}</span></div>
 </div>
 <p>&nbsp;</p>
+{% endif %}
+
+{% if user %}
+    <p>{{user}}</p>
+{% else %}
+    <p>Oh noes! There is no user!!eleventy!</p>
 {% endif %}
 
 <ul class="thumbnails">
