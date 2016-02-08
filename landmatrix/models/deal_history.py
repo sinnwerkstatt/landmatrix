@@ -53,13 +53,13 @@ class DealHistoryItem(Deal):
         for activity in list(self.activity.history.filter(
                 activity_identifier=self.activity.activity_identifier
         ).order_by('history_date')):
-            date_and_activity.append((activity.history_date, DealHistoryItem.from_activity(activity)))
+            date_and_activity.append((activity.history_date.timestamp(), DealHistoryItem.from_activity(activity)))
 
         for date in self.get_change_dates():
             try:
                 historical_activity = self.activity.history.as_of(date)
                 date_and_activity.append(
-                        (date,
+                        (date.timestamp(),
                          DealHistoryItem.from_activity_with_date(
                                  historical_activity, date))
                 )

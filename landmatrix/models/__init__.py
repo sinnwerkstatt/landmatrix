@@ -3,6 +3,9 @@ from landmatrix.models.default_string_representation import DefaultStringReprese
 
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_changeset import ActivityChangeset
+from landmatrix.models.activity_feedback import ActivityFeedback
+from landmatrix.models.activity_changeset_review import ReviewDecision, ActivityChangesetReview
 from landmatrix.models.agricultural_produce import AgriculturalProduce
 from landmatrix.models.browse_rule import BrowseRule
 from landmatrix.models.browse_condition import BrowseCondition

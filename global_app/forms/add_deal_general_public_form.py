@@ -1,9 +1,13 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from global_app.forms.add_deal_general_form import AddDealGeneralForm
+
+from django.utils.translation import ugettext_lazy as _
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class AddDealGeneralPublicForm(AddDealGeneralForm):
+
+    form_title = _('General Info')
 
     class Meta:
 

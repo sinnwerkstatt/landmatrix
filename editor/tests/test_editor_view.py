@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 from editor.models import UserRegionalInfo
-from editor.views.editor_view import EditorView
+from editor.views.editor_view import EditorView, get_overall_deal_count, get_public_deal_count
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
 
@@ -60,21 +60,12 @@ class TestEditorView(TestCase):
         self._add_superuser(self.user.userregionalinfo)
         self.assertEqual(self.SUPER_USER, self.user.userregionalinfo.super_user.username)
 
-    def test_latest_added(self):
-        view = EditorView()
-        print(view.latest_added())
+    def test_get_overall_deal_count(self):
+        print(get_overall_deal_count())
 
-    def test_latest_deleted(self):
-        view = EditorView()
-        print(view.latest_deleted())
+    def test_get_public_deal_count(self):
+        print(get_public_deal_count())
 
-    def test_latest_modified(self):
-        view = EditorView()
-        print(view.latest_modified())
-
-    def test_attention_needed(self):
-        view = EditorView()
-        print(view.attention_needed(self.user))
 
     def _add_superuser(self, region_info):
         superuser = User.objects.create_user(username=self.SUPER_USER)

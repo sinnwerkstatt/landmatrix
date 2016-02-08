@@ -148,7 +148,7 @@
                                         <td>
                                             {% if not forloop.last %}
                                                 {# TODO: include as AJAX call #}
-                                                <a href="/en/global/compare/{{ item.activity.activity_identifier }}_{{ item.activity_history_date }}">
+                                                <a href="/en/global/compare/{{ item.activity.activity_identifier }}_{{ item.date }}">
                                                     compare with previous version
                                                 </a>
                                             {% else %}
@@ -162,7 +162,6 @@
                     </div>
                 </div>
             {% endif %}
-
         </div>
 
     {% else %}

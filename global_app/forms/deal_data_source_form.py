@@ -71,6 +71,8 @@ DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=1)
 
 class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
 
+    form_title = _('Data sources')
+
     def get_taggroups(self, request=None):
         ds_taggroups = []
         for i, form in enumerate(self.forms):
@@ -133,6 +135,8 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
 
 class ChangeDealDataSourceFormSet(AddDealDataSourceFormSet):
 
+    form_title = _('Data sources')
+
     extra = 0
 
 
@@ -155,7 +159,12 @@ class PublicViewDealDataSourceForm(DealDataSourceForm):
             data[i] = DealDataSourceForm.get_data(deal, taggroup=taggroup)
         return data
 
-PublicViewDealDataSourceFormSet = formset_factory(
-        PublicViewDealDataSourceForm, formset=AddDealDataSourceFormSet, extra=0
-    )
+
+class PublicViewDealDataSourceFormSet(
+    formset_factory(PublicViewDealDataSourceForm, formset=AddDealDataSourceFormSet, extra=0)
+):
+
+    form_title = _('Data sources')
+
+
 

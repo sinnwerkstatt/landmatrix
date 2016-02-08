@@ -13,15 +13,15 @@ from global_app.views.view_aux_functions import render_to_string, render_to_resp
 
 from landmatrix.models import Deal
 from landmatrix.models.activity import Activity
-
 from landmatrix.models.country import Country
+from landmatrix.models.deal_history import DealHistoryItem
 
 from django.db.models import Max
 
 from django.views.generic import TemplateView
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.models.deal_history import DealHistoryItem
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -45,10 +45,7 @@ class DealDetailView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         deal = Deal(kwargs["deal_id"])
-        context = self.get_context(deal, kwargs)
-        context['history'] = DealHistoryItem.get_history_for(deal)
-
-        return self.render_forms(request, context)
+        return self.render_forms(request, self.get_context(deal, kwargs))
 
     def get_context(self, deal, kwargs):
         context = super().get_context_data(**kwargs)
@@ -61,6 +58,7 @@ class DealDetailView(TemplateView):
         }
         context['forms'] = get_forms(deal)
         context['investor'] = deal.stakeholders
+        context['history'] = DealHistoryItem.get_history_for(deal)
         return context
 
     def render_forms(self, request, context):
@@ -115,3 +113,4 @@ def get_forms(deal):
 def get_form(deal, form_class):
     data = form_class[1].get_data(deal)
     return form_class[1](initial=data)
+
