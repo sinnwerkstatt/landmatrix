@@ -44,7 +44,11 @@
           <td class="deal"> <a href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a></td>
           <td class="user">{{ changeset.user }}</td>
           <td class="comment" title="{{ changeset.comment }}"><span class="truncate">{{ changeset.comment }}</span></td>
-          <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
+          {% if changeset.timestamp %}
+            <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
+          {% else %}
+            <td class="date">-</td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
@@ -85,7 +89,11 @@
           <td class="deal"><a href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a></td>
           <td class="user">{{ changeset.user }}</td>
           <td class="comment" title="{{ changeset.comment }}"><span class="truncate">{{ changeset.comment }}</span></td>
-          <td class="date">{{ changeset.timestamp|naturaltime_from_string  }}</td>
+          {% if changeset.timestamp %}
+            <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
+          {% else %}
+            <td class="date">-</td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
@@ -126,7 +134,11 @@
           <td class="deal"><a href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a></td>
           <td class="user">{{ changeset.user }}</td>
           <td class="comment" title="{{ changeset.comment }}"><span class="truncate">{{ changeset.comment }}</span></td>
-          <td class="date">{{ changeset.timestamp|naturaltime_from_string  }}</td>
+          {% if changeset.timestamp %}
+            <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
+          {% else %}
+            <td class="date">-</td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
