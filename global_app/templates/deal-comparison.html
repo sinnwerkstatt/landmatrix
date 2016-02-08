@@ -42,14 +42,14 @@
                       <div class="panel-heading">
                         <h4 class="panel-title">
                           <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                            Formset {{forloop.counter}}:
+                            {{ form.form_title }}:
                           </a>
                         </h4>
                       </div>
 
                       <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
                         <div class="panel-body">
-                          <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                          <table>
                               {{ form }}
                           </table>
                         </div>
@@ -62,14 +62,14 @@
                     <div class="panel-heading">
                       <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                          Form {{forloop.counter}}:
+                          {{ comparison_forms.0.form_title }}:
                         </a>
                       </h4>
                     </div>
 
                     <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
                       <div class="panel-body">
-                        <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                        <table>
 
                           {{ comparison_forms.0.as_table }}
 
@@ -104,14 +104,14 @@
                   <div class="panel-heading">
                     <h4 class="panel-title">
                       <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                        Formset {{forloop.counter}}:
+                        {{ form.form_title }}:
                       </a>
                     </h4>
                   </div>
 
                   <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
                     <div class="panel-body">
-                      <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                      <table>
                           {{ form }}
                       </table>
                     </div>
@@ -124,14 +124,14 @@
                 <div class="panel-heading">
                   <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                      Form {{forloop.counter}}:
+                      {{ comparison_forms.1.form_title }}:
                     </a>
                   </h4>
                 </div>
 
                 <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
                   <div class="panel-body">
-                    <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                    <table>
 
                       {{ comparison_forms.1.as_table }}
 
