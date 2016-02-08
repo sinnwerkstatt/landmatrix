@@ -17,12 +17,17 @@ class OperationalStakeholderChoiceField(ModelChoiceField):
         return _investor_description(obj)
 
     def clean(self, value):
-        if not Investor.objects.filter(pk=value).exists():
+        if not value:
+            value = 0
+        if not Investor.objects.filter(pk=int(value)).exists():
             raise ValidationError('Investor %i does not exist' % value)
         return value
 
 
 class OperationalStakeholderForm(BaseForm):
+
+    form_title = _('Investor info')
+
     tg_operational_stakeholder = TitleField(required=False, label="", initial=_("Operational Stakeholder"))
     operational_stakeholder = OperationalStakeholderChoiceField(
             required=True, label=_("Existing Operational Stakeholder"),

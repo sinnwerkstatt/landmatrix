@@ -57,12 +57,6 @@
                                 <a data-toggle="collapse" data-parent="#accordion"
                                    href="#collapse{{ forloop.counter }}">
                                     {{ form.form_title }}
-
-                                    {% if form.forms %}
-                                        Formset {{ forloop.counter }}: {#{ form }#}
-                                    {% else %}      {# form.forms #}
-                                        Form {{ forloop.counter }}: {#{ form }#}
-                                    {% endif %}     {# form.forms #}
                                     <span id="collapsebtn{{ forloop.counter }}"
                                           class="lm-chevron-circle-up pull-right"></span>
                                 </a>

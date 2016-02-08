@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class DealSpatialForm(BaseForm):
-
+    form_title = _('Location')
     tg_location = TitleField(required=False, label="", initial=_("Location"))
     level_of_accuracy = forms.TypedChoiceField(required=False, label=_("Level of accuracy"), choices=(
         (0, _("---------")),
@@ -33,6 +33,8 @@ DealSpatialBaseFormSet = formset_factory(DealSpatialForm, extra=1)
 
 
 class AddDealSpatialFormSet(DealSpatialBaseFormSet):
+
+    form_title = _('Location')
 
     def get_taggroups(self, request=None):
         ds_taggroups = []
@@ -57,10 +59,14 @@ class AddDealSpatialFormSet(DealSpatialBaseFormSet):
 
 class ChangeDealSpatialFormSet(AddDealSpatialFormSet):
 
+    form_title = _('Location')
     extra = 0
 
 
 class PublicViewDealSpatialForm(DealSpatialForm):
+
+    form_title = _('Location')
+
     class Meta:
         fields = (
             "tg_location", "location", "point_lat", "point_lon", 'tg_location_comment'
