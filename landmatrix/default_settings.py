@@ -15,6 +15,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+from .settings import DEBUG
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -30,9 +31,20 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
-#    'django_gulp',
-#    'livereload',
+    'django.contrib.messages'
+)
+
+if DEBUG:
+    # Needs to be added in this order.
+    INSTALLED_APPS += (
+        'django_gulp',
+        'livereload',
+        'template_debug'
+    )
+
+# Rest of the pack
+
+INSTALLED_APPS += (
     'django.contrib.staticfiles',
 
     'django.contrib.humanize',
@@ -94,9 +106,11 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',
-#    'livereload.middleware.LiveReloadScript'
+    'cms.middleware.language.LanguageCookieMiddleware'
 )
+
+if DEBUG:
+    MIDDLEWARE_CLASSES += 'livereload.middleware.LiveReloadScript',
 
 ROOT_URLCONF = 'landmatrix.urls'
 
