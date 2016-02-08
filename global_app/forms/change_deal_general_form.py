@@ -10,6 +10,9 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class ChangeDealGeneralForm(BaseForm):
+
+    form_title = _('General Info')
+
     # Old reliability ranking
     tg_reliability_ranking  = TitleField(required=False, label="", initial=_("Reliability ranking"))
     old_reliability_ranking = forms.CharField(required=False, label=_("Old reliability ranking"), widget=forms.TextInput(attrs={"readonly": "readonly"}))

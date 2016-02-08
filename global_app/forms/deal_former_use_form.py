@@ -10,6 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 
 class DealFormerUseForm(BaseForm):
 
+    form_title = _('Former use')
+
     tg_land_owner = TitleField(required=False, label="", initial=_("Former land owner"))
     land_owner = forms.MultipleChoiceField(required=False, label=_("Former land owner"), choices=(
         (10, _("State")),

@@ -10,6 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 
 class ChangeDealEmploymentForm(BaseForm):
 
+    form_title = _('Employment')
+
     tg_total_number_of_jobs_created = TitleField(required=False, label="", initial=_("Number of total jobs created"))
     total_jobs_created = forms.BooleanField(required=False, label=_("Total number of jobs created"))
     total_jobs_planned = forms.IntegerField(required=False, label=_("Planned total number of jobs"), help_text=_("jobs"), widget=NumberInput)
