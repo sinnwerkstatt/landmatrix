@@ -1,162 +1,174 @@
 {% extends "base.html" %}
-{% load i18n custom_tags %}
+{% load i18n custom_tags static %}
 {% load humanize %}
+{% load debug_tags %}
 
 {% block head %}
 
-  {# bootstrap #}
-  {% comment %}
+    {# bootstrap #}
+    {% comment %}
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   {% endcomment %}
-  <style type="text/css">
-    .bs-example{
-    	margin: 20px;
-    }
-  </style>
 
-  {# map #}
-  {# <script src="/media/js/editor/map.js" type="text/javascript" charset="utf-8"></script> #}
-  {# <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=en"></script> #}
+    <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/map.css" %}"/>
+
+    {# map #}
+    <script src="{% static "vendor/openlayers/ol.js" %}" type="text/javascript"></script>
+    <script src="{% static "js/editor/detail.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static "js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
 {% block page_title %}Deal details{% endblock %}
 {% block title %}Deal details{% endblock %}
 
 {% block breadcrumb %}
-<ul class="breadcrumb">
-  <li><a href="/">Home</a> <span class="divider"></span></li>
-  <li><a href="/get-the-detail/">Get the detail</a> <span class="divider"></span></li>
-  <li>Deal details</li>
-</ul>
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider"></span></li>
+        <li><a href="/get-the-detail/">Get the detail</a> <span class="divider"></span></li>
+        <li>Deal details</li>
+    </ul>
 {% endblock %}
 
 {% block content %}
 
-  {% if deal %}
+    {% if deal %}
 
-    <h5>Activity</h5>
-
-      <div class="panel-group" id="accordion">
-
-        {% if forms %}
-
-          {% for form in forms %}
-             
-            <div class="panel panel-default">
-
-                <div class="panel-heading">
-                  <h4 class="panel-title">
-                    <a data-toggle="collapse" data-target="#collapse{{forloop.counter}}" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                      {% if form.forms %}
-                          Formset {{forloop.counter}}:
-                      {% else %}
-                          Form {{forloop.counter}}:
-                      {% endif %}
-                      <span id="collapsebtn{{forloop.counter}}" class="lm-chevron-circle-down pull-right"></span>
-                    </a>
-                  </h4>
-                </div>
-
-                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse">
-                  <div class="panel-body">
-                    <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-                      {% if form.forms %}
-
-                          {% if form.forms.0.has_investor %}
-
-                            <tr>
-                              <td>Primary investor:</td>
-                              <td>{{ investor.primary_investor.name }}</td>
-                            </tr>
-                            {% for i in investor.secondary_investors %}
-                              <tr>
-                                <td>Secondary investor:</td>
-                                <td>{{i.tags.investor_name}} - {{i.tags.country}}, {{i.tags.classification}} ({{i.investment_ratio}}%)</td>
-                                <td>{{i.comment}}</td>
-                              </tr>
-                            {% endfor %}
-
-                          {% else %}    {# form.forms.0.has_investor #}
-
-                            {{ form }}
-
-                          {% endif %}   {# form.forms.0.has_investor #}
-                        {% else %}
-                            {{ form.as_table }}
-                        {% endif %}
-                    </table>
-                  </div>
-                </div>
-
-            </div>            {# class="panel panel-default" #}
-
-            <script>
-                var collapsename = "#collapse{{forloop.counter}}";
-                $(collapsename).on("hidden.bs.collapse", function() {
-                    $("#collapsebtn{{forloop.counter}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
-                });
-                 $(collapsename).on("shown.bs.collapse", function() {
-                    $("#collapsebtn{{forloop.counter}}").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
-                });
-            </script>
-
-          {% endfor %}
-
-        {% endif %}           {# forms #}
-
-        {% if history|length > 1 %}
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h4 class="panel-title">
-              <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                History
-              </a>
-            </h4>
-          </div>
-
-          <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
-            <div class="panel-body">
-
-              <table>
-                {% for date, item in history.items %}
-                  <tr>
-                    <td>
-                      {% if forloop.counter == 1 %}<strong>{% endif %}
-                        {{ date }}
-                      {% if forloop.counter == 1 %}</strong>{% endif %}
-                    </td>
-                    <td>{{ item.activity_changed_by }}</td>
-                    <td>activity identifier: {{ item.activity.activity_identifier }}</td>
-                    <td>availability: {{ item.activity.availability }}</td>
-                    <td>history id: {{ item.activity.history_id }}</td>
-
-                    <td>
-                      {% if not forloop.last %}
-                        {# TODO: include as AJAX call #}
-                        <a href="/en/global/compare/{{item.activity.activity_identifier}}_{{item.activity_history_date}}/x/">
-                          compare with previous version
-                        </a>
-                      {% else %}
-                        first version
-                      {% endif %}
-                    </td>
-                  </tr>
-                {% endfor %}
-              </table>
-            </div>
-          </div>
+        <div class="row">
+            <h5>Activity</h5>
+            <a href="#_" class="expandcollapse btn btn-mini btn-primary pull-right"><i
+                    class='icon-white icon-plus-sign'></i> Expand All</a>
         </div>
-        {% endif %}
+        <div class="panel-group" id="accordion">
 
-    </div>
+            {% if forms %}
+                {% for form in forms %}
 
-  {% else %}
+                    <div class="panel panel-default">
 
-    <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-target="#collapse_{{ forloop.counter }}"
+                                   data-parent="#accordion" href="#collapse_{{ forloop.counter }}">
+                                    {{ form.form_title }}
 
-  {% endif %}
+                                    {% if form.forms %}
+                                        Formset {{ forloop.counter }}: {{ form.title }}
+                                    {% else %}
+                                        Form {{ forloop.counter }}: {{ form.title }}
+                                    {% endif %}
+                                    <span id="collapsebtn_{{ forloop.counter }}"
+                                          class="lm-chevron-circle-down pull-right"></span>
+                                </a>
+                            </h4>
+                        </div>
+
+                        <div id="collapse_{{ forloop.counter }}" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                                    {% if form.forms %}
+
+                                        {% if form.forms.0.has_investor %}
+
+                                            <tr>
+                                                <td>Primary investor:</td>
+                                                <td>{{ investor.primary_investor.name }}</td>
+                                            </tr>
+                                            {% for i in investor.secondary_investors %}
+                                                <tr>
+                                                    <td>Secondary investor:</td>
+                                                    <td>{{ i.tags.investor_name }}
+                                                        - {{ i.tags.country }}, {{ i.tags.classification }}
+                                                        ({{ i.investment_ratio }}%)
+                                                    </td>
+                                                    <td>{{ i.comment }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        {% else %}    {# form.forms.0.has_investor #}
+
+                                            {{ form }}
+
+                                        {% endif %}   {# form.forms.0.has_investor #}
+                                    {% else %}
+                                        {{ form.as_table }}
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>            {# class="panel panel-default" #}
+
+                    <script>
+                        var collapsename = "#collapse{{forloop.counter}}";
+                        $(collapsename).on("hidden.bs.collapse", function () {
+                            $("#collapsebtn{{forloop.counter}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
+                        });
+                        $(collapsename).on("shown.bs.collapse", function () {
+                            $("#collapsebtn{{forloop.counter}}").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
+                        });
+                    </script>
+
+                {% endfor %}
+
+            {% endif %}           {# forms #}
+
+            {% if history|length > 1 %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ forloop.counter }}">
+                                History
+                                <span id="collapsebtn_{{ forloop.counter }}"
+                                      class="lm-chevron-circle-down pull-right"></span>
+                            </a>
+                        </h4>
+                    </div>
+
+                    <div id="collapse_{{ forloop.counter }}" class="panel-collapse collapse in">
+                        <div class="panel-body">
+
+                            <table>
+                                {% for date, item in history.items %}
+                                    <tr>
+                                        <td>
+                                            {% if forloop.counter == 1 %}<strong>{% endif %}
+                                            {{ date }}
+                                            {% if forloop.counter == 1 %}</strong>{% endif %}
+                                        </td>
+                                        <!-- <td>{{ item.activity_changed_by }}</td>
+                                        <td>activity identifier: {{ item.activity.activity_identifier }}</td>
+                                        <td>availability: {{ item.activity.availability }}</td>
+                                        <td>history id: {{ item.activity.history_id }}</td>
+                                        -->
+
+                                        <td>
+                                            {% if not forloop.last %}
+                                                {# TODO: include as AJAX call #}
+                                                <a href="/en/global/compare/{{ item.activity.activity_identifier }}_{{ item.activity_history_date }}">
+                                                    compare with previous version
+                                                </a>
+                                            {% else %}
+                                                first version
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+
+    {% else %}
+
+        <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
+
+    {% endif %}
 
 {% endblock %}
