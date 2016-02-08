@@ -236,8 +236,13 @@ h2,
 h3,
 h4 {
     font-family: 'Open Sans', sans-serif;
+    text-transform: uppercase;
     font-weight: bold;
     color: #4a4a4a;
+}
+
+h4 {
+    font-size: 12pt;
 }
 
 h6 {
@@ -611,11 +616,6 @@ footer a {
     font-size: 1.2em;
     line-height: 1.4em;
     text-decoration: none !important;
-}
-
-footer h4 {
-    font-size: 1.3em;
-    text-transform: uppercase;
 }
 
 footer hr {
@@ -1288,11 +1288,15 @@ textarea {
  *    MAPS
  * ========================================================================== */
 
-.map {
+/*.map {
     font-size: 12pt !important;
     line-height: 1em !important;
 }
-
+*/
+.locationmap {
+    width: 400px;
+    height: 300px;
+}
 
 
 /** OLD CRUFT (PRE OPENLAYERS)
