@@ -84,162 +84,177 @@ $(document).ready(function () {
         radius: 5,
         fill: null,
         stroke: new ol.style.Stroke({color: 'red', width: 1})
-      });
+    });
 
     var styles = {
         'Point': [new ol.style.Style({
-          image: image
+            image: image
         })],
         'LineString': [new ol.style.Style({
-          stroke: new ol.style.Stroke({
-            color: 'green',
-            width: 1
-          })
+            stroke: new ol.style.Stroke({
+                color: 'green',
+                width: 1
+            })
         })],
         'MultiLineString': [new ol.style.Style({
-          stroke: new ol.style.Stroke({
-            color: 'green',
-            width: 1
-          })
+            stroke: new ol.style.Stroke({
+                color: 'green',
+                width: 1
+            })
         })],
         'MultiPoint': [new ol.style.Style({
-          image: image
+            image: image
         })],
         'MultiPolygon': [new ol.style.Style({
-          stroke: new ol.style.Stroke({
-            color: 'yellow',
-            width: 1
-          }),
-          fill: new ol.style.Fill({
-            color: 'rgba(255, 255, 0, 0.1)'
-          })
+            stroke: new ol.style.Stroke({
+                color: 'yellow',
+                width: 1
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 255, 0, 0.1)'
+            })
         })],
         'Polygon': [new ol.style.Style({
-          stroke: new ol.style.Stroke({
-            color: 'blue',
-            lineDash: [4],
-            width: 3
-          }),
-          fill: new ol.style.Fill({
-            color: 'rgba(0, 0, 255, 0.1)'
-          })
+            stroke: new ol.style.Stroke({
+                color: 'blue',
+                lineDash: [4],
+                width: 3
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(0, 0, 255, 0.1)'
+            })
         })],
         'GeometryCollection': [new ol.style.Style({
-          stroke: new ol.style.Stroke({
-            color: 'magenta',
-            width: 2
-          }),
-          fill: new ol.style.Fill({
-            color: 'magenta'
-          }),
-          image: new ol.style.Circle({
-            radius: 10,
-            fill: null,
             stroke: new ol.style.Stroke({
-              color: 'magenta'
+                color: 'magenta',
+                width: 2
+            }),
+            fill: new ol.style.Fill({
+                color: 'magenta'
+            }),
+            image: new ol.style.Circle({
+                radius: 10,
+                fill: null,
+                stroke: new ol.style.Stroke({
+                    color: 'magenta'
+                })
             })
-          })
         })],
         'Circle': [new ol.style.Style({
-          stroke: new ol.style.Stroke({
-            color: 'red',
-            width: 2
-          }),
-          fill: new ol.style.Fill({
-            color: 'rgba(255,0,0,0.2)'
-          })
+            stroke: new ol.style.Stroke({
+                color: 'red',
+                width: 2
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(255,0,0,0.2)'
+            })
         })]
-      };
+    };
 
-      var styleFunction = function(feature, resolution) {
+    var styleFunction = function (feature, resolution) {
         return styles[feature.getGeometry().getType()];
-      };
+    };
 
-      var geojsonObject = {
+    /*
+     var geojsonObject = {
+     'type': 'FeatureCollection',
+     'crs': {
+     'type': 'name',
+     'properties': {
+     'name': 'EPSG:3857'
+     }
+     },
+     'features': [{
+     'type': 'Feature',
+     'geometry': {
+     'type': 'Point',
+     'coordinates': [0, 0]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'LineString',
+     'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'LineString',
+     'coordinates': [[4e6, 2e6], [8e6, -2e6]]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'Polygon',
+     'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'MultiLineString',
+     'coordinates': [
+     [[-1e6, -7.5e5], [-1e6, 7.5e5]],
+     [[1e6, -7.5e5], [1e6, 7.5e5]],
+     [[-7.5e5, -1e6], [7.5e5, -1e6]],
+     [[-7.5e5, 1e6], [7.5e5, 1e6]]
+     ]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'MultiPolygon',
+     'coordinates': [
+     [[[-5e6, 6e6], [-5e6, 8e6], [-3e6, 8e6], [-3e6, 6e6]]],
+     [[[-2e6, 6e6], [-2e6, 8e6], [0, 8e6], [0, 6e6]]],
+     [[[1e6, 6e6], [1e6, 8e6], [3e6, 8e6], [3e6, 6e6]]]
+     ]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'GeometryCollection',
+     'geometries': [{
+     'type': 'LineString',
+     'coordinates': [[-5e6, -5e6], [0, -5e6]]
+     }, {
+     'type': 'Point',
+     'coordinates': [4e6, -5e6]
+     }, {
+     'type': 'Polygon',
+     'coordinates': [[[1e6, -6e6], [2e6, -4e6], [3e6, -6e6]]]
+     }]
+     }
+     }]
+     };
+     */
+
+    var geojsonObject = {
         'type': 'FeatureCollection',
         'crs': {
-          'type': 'name',
-          'properties': {
-            'name': 'EPSG:3857'
-          }
+            'type': 'name',
+            'properties': {
+                'name': 'EPSG:3857'
+            }
         },
-        'features': [{
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Point',
-            'coordinates': [0, 0]
-          }
-        }, {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'coordinates': [[4e6, -2e6], [8e6, 2e6]]
-          }
-        }, {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'coordinates': [[4e6, 2e6], [8e6, -2e6]]
-          }
-        }, {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Polygon',
-            'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
-          }
-        }, {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'MultiLineString',
-            'coordinates': [
-              [[-1e6, -7.5e5], [-1e6, 7.5e5]],
-              [[1e6, -7.5e5], [1e6, 7.5e5]],
-              [[-7.5e5, -1e6], [7.5e5, -1e6]],
-              [[-7.5e5, 1e6], [7.5e5, 1e6]]
-            ]
-          }
-        }, {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'MultiPolygon',
-            'coordinates': [
-              [[[-5e6, 6e6], [-5e6, 8e6], [-3e6, 8e6], [-3e6, 6e6]]],
-              [[[-2e6, 6e6], [-2e6, 8e6], [0, 8e6], [0, 6e6]]],
-              [[[1e6, 6e6], [1e6, 8e6], [3e6, 8e6], [3e6, 6e6]]]
-            ]
-          }
-        }, {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'GeometryCollection',
-            'geometries': [{
-              'type': 'LineString',
-              'coordinates': [[-5e6, -5e6], [0, -5e6]]
-            }, {
-              'type': 'Point',
-              'coordinates': [4e6, -5e6]
-            }, {
-              'type': 'Polygon',
-              'coordinates': [[[1e6, -6e6], [2e6, -4e6], [3e6, -6e6]]]
-            }]
-          }
-        }]
-      };
+        'features': []/*{
+            'type': 'Feature',
+            'geometry': {
+                'type': 'Polygon',
+                'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+            }
+        }]*/
+    };
 
-      var vectorSource = new ol.source.Vector({
+    var vectorSource = new ol.source.Vector({
         features: (new ol.format.GeoJSON()).readFeatures(geojsonObject)
-      });
+    });
 
-      vectorSource.addFeature(new ol.Feature(new ol.geom.Circle([5e6, 7e6], 1e6)));
-      vectorSource.addFeature(new ol.Feature(new ol.geom.Circle([0, 0], 1e6)));
-
-      var vectorLayer = new ol.layer.Vector({
+    var vectorLayer = new ol.layer.Vector({
         title: 'GeoJSON',
         visible: true,
         source: vectorSource,
         style: styleFunction
-      });
-
+    });
 
 
     map = new ol.Map({
@@ -484,16 +499,16 @@ $(document).ready(function () {
     });
 
     var addData = function (data) {
-            if (data.length < 1) {
-                $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
-            } else {
-                for (var i = 0; i < data.length; i++) {
-                    var marker = data[i];
-                    addClusteredMarker(parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention);
-                }
-                console.log('Added deals: ', i);
+        if (data.length < 1) {
+            $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
+        } else {
+            for (var i = 0; i < data.length; i++) {
+                var marker = data[i];
+                addClusteredMarker(parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention);
             }
+            console.log('Added deals: ', i);
         }
+    }
     $.get(
         "/en/api/deals.json?limit=300", //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
         addData

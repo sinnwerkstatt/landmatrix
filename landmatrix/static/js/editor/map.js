@@ -1,11 +1,166 @@
 var geocoders = new Array();
-var maps = new Array();
+var maps = {};
+var views = {};
 var markers = new Array();
 var autocompletes = new Array();
 var latChanged = new Array();
 var lonChanged = new Array();
+var lock = true;;
 
-function initializeMap (el, index) {
+$(document).ready(function () {
+    $(".maptemplate").each(function (index) {
+        $(this).attr('id', 'map' + (index + 1)).removeClass("maptemplate").addClass("map");
+        initializeMap(index + 1);
+        console.log("Ham: ", this);
+    });
+
+    $('#accordion').on("shown.bs.collapse", function(things) {
+        var mapId = String(things.target.id).split("_")[1];
+
+        maps[mapId].updateSize()
+    });
+});
+
+function unlockMaps() {
+    lock = false;
+}
+
+function getLocationFields(mapId) {
+    const target = "map" + mapId;
+
+    var parent = $("#"+target).parents("tbody");
+
+    var lat_field = parent.find(".point_lat input");
+    var lon_field = parent.find(".point_lon input");
+    return [lat_field, lon_field];
+}
+
+function updateMapLocation(mapId) {
+    if (lock == false) {
+
+        var [lat_field, lon_field] = getLocationFields(mapId);
+
+        var lat = 0.0;
+        lat =  parseFloat(lat_field.val());
+
+        var lon = 0.0;
+        lon = parseFloat(lon_field.val());
+
+        if (isNaN(lat) || isNaN(lon)) {
+            lon = lat = 0;
+        }
+
+        var center = ol.proj.fromLonLat([lon, lat]);
+        markers[mapId].setCoordinates(center);
+        views[mapId].setCenter(center);
+    }
+}
+
+function updateLocationFields(mapId, coords) {
+    if (lock == false) {
+        // Adjust marker
+        markers[mapId].setCoordinates(coords);
+
+        // Set center of mapview
+        var view = views[mapId];
+        view.setCenter(coords);
+
+        // Update form fields with converted coords
+        var formCoords = ol.proj.toLonLat(coords);
+
+        var [lat_field, lon_field] = getLocationFields(mapId);
+
+        lat_field.val(formCoords[1]);
+        lon_field.val(formCoords[0]);
+    }
+}
+
+var markerStyle = new ol.style.Style({
+    text: new ol.style.Text({
+        text: '\uf041',
+        font: 'normal 36px FontAwesome',
+        textBaseline: 'Bottom',
+        fill: new ol.style.Fill({
+          color: '#4bbb87'
+        })
+     })
+});
+
+
+function initializeMap (mapId) {
+    const target = "map" + mapId;
+
+    var [lat_field, lon_field] = getLocationFields(mapId);
+
+    var lat = 0.0;
+    lat =  parseFloat(lat_field.val());
+
+    var lon = 0.0;
+    lon = parseFloat(lon_field.val());
+
+    if (isNaN(lat) || isNaN(lon)) {
+        lon = lat = 0;
+    }
+
+    var center = ol.proj.fromLonLat([lon, lat]);
+
+    var view = new ol.View({
+        center: center,
+        zoom: 5
+    });
+
+    var marker = new ol.geom.Point(center);
+
+    var feature = new ol.Feature({
+        geometry: marker
+    });
+
+    feature.setStyle(markerStyle);
+
+    var source = new ol.source.Vector({
+        features: [feature]
+    });
+
+    var vectorLayer = new ol.layer.Vector({
+        source: source
+    });
+
+    var map = new ol.Map({
+       target: target,
+       layers: [
+            new ol.layer.Tile({
+                title: 'OpenStreetMap',
+                type: 'base',
+                visible: true,
+                source: new ol.source.OSM()
+            }),
+            vectorLayer
+        ],
+        view: view
+    });
+
+
+    maps[mapId] = map;
+    views[mapId] = view;
+    markers[mapId] = marker;
+
+    map.on('singleclick', function(evt) {
+        updateLocationFields(mapId, evt.coordinate);
+    });
+
+
+    lon_field.change(function() {
+        updateMapLocation(mapId);
+    });
+
+    lat_field.change(function() {
+        updateMapLocation(mapId);
+    });
+
+}
+
+
+function legacyInitializeMap(el, index) {
   //MAP
   var latlng = new google.maps.LatLng(41.659,-4.714);
   var options = {

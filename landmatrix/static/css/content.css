@@ -202,7 +202,7 @@ body {
 @font-face {
     font-family: Open Sans;
      src: url(/static/fonts/OpenSans-Light.ttf);
-    font-weight: lighter;
+    font-weight: 200;
 }
 
 body,
@@ -236,8 +236,13 @@ h2,
 h3,
 h4 {
     font-family: 'Open Sans', sans-serif;
+    text-transform: uppercase;
     font-weight: bold;
     color: #4a4a4a;
+}
+
+h4 {
+    font-size: 12pt;
 }
 
 h6 {
@@ -273,6 +278,10 @@ a:hover {
 .container {
     max-width: 86vw;
     width: auto;
+}
+
+.navbar-default {
+    background-color: rgba(156, 156, 156, 0.26);
 }
 
 .navbar-default .navbar-inner {
@@ -342,7 +351,7 @@ a:hover {
 a.btn,
 .nav a {
     text-decoration: none;
-    font-weight: lighter;
+    font-weight: 200;
     font-size: 12pt;
 }
 
@@ -611,11 +620,6 @@ footer a {
     font-size: 1.2em;
     line-height: 1.4em;
     text-decoration: none !important;
-}
-
-footer h4 {
-    font-size: 1.3em;
-    text-transform: uppercase;
 }
 
 footer hr {
@@ -1288,11 +1292,15 @@ textarea {
  *    MAPS
  * ========================================================================== */
 
-.map {
+/*.map {
     font-size: 12pt !important;
     line-height: 1em !important;
 }
-
+*/
+.locationmap {
+    width: 400px;
+    height: 300px;
+}
 
 
 /** OLD CRUFT (PRE OPENLAYERS)

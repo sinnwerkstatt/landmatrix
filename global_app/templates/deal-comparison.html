@@ -1,18 +1,36 @@
 {% extends "base.html" %}
-{% load i18n custom_tags %}
+{% load static i18n custom_tags %}
+
+{% block head %}
+
+  {# map #}
+  <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
+  <link rel="stylesheet" href="{% static "css/map.css" %}"/>
+
+  <script src="{% static "vendor/openlayers/ol-debug.js" %}" type="text/javascript"></script>
+  <script src="{% static "js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>
+
+{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="/en/global/">Global</a><span class="divider"></span></li>
+  <li><a href="/en/global_app/compare/{{forms.0}}_{{forms.1}}">Compare deal history</a></li>
+</ul>
+{% endblock %}
+
 
 {% block content %}
 
-<div class="row">
 
   {% for comparison_forms in forms %}
+    <div class="row">
 
-    <div class="col-md-2">
+        <div class="col-md-6{% if not comparison_forms.2 %} bg-warning{% endif %}">
 
-          <div class="bs-example">
             <div class="panel-group" id="accordion">
 
-            {% if comparison_forms.2 %}<strong>DIFFERENT</strong>{% endif %}
+            {% if not comparison_forms.2 %}<strong>DIFFERENT</strong>{% endif %}
             {% if comparison_forms.0 %}
 
                 <div class="panel panel-default">
@@ -24,14 +42,14 @@
                       <div class="panel-heading">
                         <h4 class="panel-title">
                           <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                            Formset {{forloop.counter}}:
+                            {{ form.form_title }}:
                           </a>
                         </h4>
                       </div>
 
                       <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
                         <div class="panel-body">
-                          <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                          <table>
                               {{ form }}
                           </table>
                         </div>
@@ -44,14 +62,14 @@
                     <div class="panel-heading">
                       <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                          Form {{forloop.counter}}:
+                          {{ comparison_forms.0.form_title }}:
                         </a>
                       </h4>
                     </div>
 
                     <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
                       <div class="panel-body">
-                        <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                        <table>
 
                           {{ comparison_forms.0.as_table }}
 
@@ -66,76 +84,75 @@
             {% endif %}           {# comparison_forms.0 #}
 
           </div>
-        </div>
 
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-6">
 
-          <div class="bs-example">
-            <div class="panel-group" id="accordion">
+        <div class="panel-group" id="accordion">
 
-            {% if comparison_forms.1 %}
+        {% if not comparison_forms.2 %}<strong>DIFFERENT</strong>{% endif %}
 
-                <div class="panel panel-default">
+        {% if comparison_forms.1 %}
 
-                  {% if comparison_forms.1.forms %}                                                      {# this is a formset #}
+            <div class="panel panel-default">
 
-                    {% for form in comparison_forms.1.forms %}
+              {% if comparison_forms.1.forms %}                                                      {# this is a formset #}
 
-                      <div class="panel-heading">
-                        <h4 class="panel-title">
-                          <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                            Formset {{forloop.counter}}:
-                          </a>
-                        </h4>
-                      </div>
+                {% for form in comparison_forms.1.forms %}
 
-                      <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
-                        <div class="panel-body">
-                          <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-                              {{ form }}
-                          </table>
-                        </div>
-                      </div>
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                        {{ form.form_title }}:
+                      </a>
+                    </h4>
+                  </div>
 
-                    {% endfor %}
-
-                  {% else %}      {# comparison_forms.1.forms #}
-
-                    <div class="panel-heading">
-                      <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                          Form {{forloop.counter}}:
-                        </a>
-                      </h4>
+                  <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                      <table>
+                          {{ form }}
+                      </table>
                     </div>
+                  </div>
 
-                    <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
-                      <div class="panel-body">
-                        <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
+                {% endfor %}
 
-                          {{ comparison_forms.1.as_table }}
+              {% else %}      {# comparison_forms.1.forms #}
 
-                        </table>
-                      </div>
-                    </div>
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                      {{ comparison_forms.1.form_title }}:
+                    </a>
+                  </h4>
+                </div>
 
-                  {% endif %}     {# form.forms #}
+                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <table>
 
-                </div>            {# class="panel panel-default" #}
+                      {{ comparison_forms.1.as_table }}
+
+                    </table>
+                  </div>
+                </div>
+
+              {% endif %}     {# form.forms #}
+
+            </div>            {# class="panel panel-default" #}
 
             {% endif %}           {# comparison_forms.1 #}
 
           </div>
         </div>
 
-      </div>
     </div>
+  
 
   {% endfor %}
 
-</table>
 
 
 
