@@ -22,8 +22,16 @@
 
 
 
+
+
+
+
             {% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
     <meta name="keywords" content="
+
+
+
+
 
 
 
@@ -68,7 +76,6 @@
 <div class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
 
-
         <!-- Collect the nav links, forms, and other content for toggling -->
 
         {% block header %}
@@ -85,9 +92,9 @@
             </div>
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
-                <ul class="nav navbar-nav navbar-left">
-                     <li><a href="/global"><span class="lm-spacer lm-globe"></span>Global</a></li>
-                     <li class="dropdown">
+                <ul class="nav navbar-nav">
+                    <li><a href="/global"><span class="lm-spacer lm-globe"></span>Global</a></li>
+                    <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false"><span class="lm-spacer lm-regions"></span>Regions <span
                                 class="caret"></span></a>
@@ -100,13 +107,13 @@
                                     </div>
                                 </form>
                             </li>
-                             <ul class="dropdown-menu">
-                                        {% block nav %}
+                            <ul class="dropdown-menu">
+                                {% block nav %}
 
-                                            {% show_menu 1 1 0 0 "menu.html" %}
+                                    {% show_menu 1 1 0 0 "menu.html" %}
 
-                                        {% endblock %}
-                             </ul>
+                                {% endblock %}
+                            </ul>
                             <li>Region 1</li>
                             <li role="separator" class="divider"></li>
                             <li>Region 2</li>
@@ -148,12 +155,12 @@
                             <li><a href="download">Download</a></li>
                         </ul>
                     </li>
-
-
                 </ul>
-                <ul class="nav navbar-default navbar-nav navbar-right">
+                <ul class="nav navbar-nav navbar-right">
                     <li><a href="#" role="button"><span class="badge">?</span></a></li>
-                    <li><a href="#" role="button"><span class="badge"><span class="fa lm-envelope"></span></span></a></li>
+                    <li><a href="#" role="button"><span class="badge"><span
+                            class="fa lm-envelope"></span></span></a>
+                    </li>
                     {% language_chooser "language_chooser.html" %}
                 </ul>
             </div>
@@ -246,19 +253,18 @@
             </div>
         </div>
 
-        <hr />
+        <hr/>
 
         <div class="row">
             <div class="col-md-4">
                 <h4>Spread the word and share land matrix</h4>
-                <a href="https://twitter.com/Land_Matrix"><span class="lm-twitter-square"></span>
+                <a href="https://twitter.com/Land_Matrix"><span class="lm-twitter-square"></span></a>
                 <a href="https://www.facebook.com/LandMatrix"><span class="lm-facebook-square"></span></a>
             </div>
             <div class="col-md-4 center">
                 <h4>Share and adapt</h4>
-                <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" class="cc-icons" target="_blank"></a>
+                <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span class="lm-creative-commons"></span></a>
                 <a href="https://github.com/sinnwerkstatt/landmatrix"><span class="lm-github-square"></span></a>
-                <p>&copy; {% now "Y" %}, LANDMATRIX.ORG</p>
             </div>
             <div class="col-md-4 right">
                 <h4>Sign up to receive updates</h4>
