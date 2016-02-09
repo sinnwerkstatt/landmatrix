@@ -70,7 +70,7 @@ INSTALLED_APPS = (
     'global_app',
     'maplandmatrix',
     'chart_view',
-    'editor',
+    'dashboard',
     'api',
 )
 

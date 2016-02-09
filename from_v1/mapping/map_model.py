@@ -44,13 +44,13 @@ class MapModel:
 
     @classmethod
     @transaction.atomic(using=V2)
-    def map_all(cls, save=False):
+    def map_all(cls, save=False, verbose=False):
 
         cls._check_dependencies()
         cls._start_timer()
 
         for index, record in enumerate(cls.all_records()):
-            cls.map_record(record, save)
+            cls.map_record(record, save, verbose)
             cls._print_status(record, index)
 
         cls._done = True
@@ -61,10 +61,12 @@ class MapModel:
         return cls.old_class.objects.using(V1).values()
 
     @classmethod
-    def map_record(cls, record, save=False):
+    def map_record(cls, record, save=False, verbose=False):
         new = cls.new_class()
         for attribute, value in record.items():
             cls.set_attribute_processed(new, cls._new_fieldname(attribute), value)
+            if verbose and attribute == 'source' and value:
+                print("%s: '%s' -> %s: '%s'" % (attribute, value, cls._new_fieldname(attribute), getattr(new, cls._new_fieldname(attribute))))
         if (save): new.save(using=V2)
 
     @classmethod
