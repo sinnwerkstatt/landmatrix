@@ -66,7 +66,7 @@ class SaveDealView(TemplateView):
                 self.save_activity_and_attributes(self.activity, groups)
 
                 # redirect to dashboard
-                return HttpResponseRedirect('/editor/')
+                return HttpResponseRedirect('/dashboard/')
 
             else:
                 for form in forms:

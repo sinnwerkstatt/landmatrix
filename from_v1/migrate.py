@@ -44,11 +44,14 @@ if __name__ == '__main__':
         if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
-        MapActivity._done = True
-        MapInvestor._done = True
-        MapInvestorActivityInvolvement.map_all(save=True)
-        MapStakeholderVentureInvolvement.map_all()
+        MapActivityChangeset.map_all(verbose=True)
+
         if False:
+            MapActivity._done = True
+            MapInvestor._done = True
+            MapInvestorActivityInvolvement.map_all(save=True)
+            MapStakeholderVentureInvolvement.map_all()
+
             for map_class in [
                 MapLanguage, MapStatus,
                 MapActivity,
@@ -101,10 +104,10 @@ if __name__ == '__main__':
     except ConnectionDoesNotExist as e:
         print('You need to set CONVERT_DB to True in settings.py!')
         print(e)
-    except AttributeError as e:
-        print('You need to check out branch "postgres" of the old land-matrix project under')
-        print(BASE_PATH+'/land-matrix!')
-        print(e)
+    # except AttributeError as e:
+    #     print('You need to check out branch "postgres" of the old land-matrix project under')
+    #     print(BASE_PATH+'/land-matrix!')
+    #     print(e)
     except (AttributeError, ImportError) as e:
         print('To migrate the original MySQL data you need to check out branch "master" of the')
         print('old land-matrix project under '+BASE_PATH+'/land-matrix!')

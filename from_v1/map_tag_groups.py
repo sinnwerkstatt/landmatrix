@@ -8,7 +8,7 @@ from map_model import MapModel
 from map_model_implementations import year_to_date, MapActivity
 
 load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
-load_project(BASE_PATH+'/land-matrix', 'editor')
+load_project(BASE_PATH+'/land-matrix', 'dashboard')
 
 from landmatrix.models import Language, Activity, ActivityAttributeGroup, StakeholderAttributeGroup, Country
 if V1 == 'v1_my':
