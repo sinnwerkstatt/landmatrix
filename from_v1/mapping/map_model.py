@@ -65,7 +65,7 @@ class MapModel:
         new = cls.new_class()
         for attribute, value in record.items():
             cls.set_attribute_processed(new, cls._new_fieldname(attribute), value)
-            if verbose and attribute == 'source' and value:
+            if verbose:
                 print("%s: '%s' -> %s: '%s'" % (attribute, value, cls._new_fieldname(attribute), getattr(new, cls._new_fieldname(attribute))))
         if (save): new.save(using=V2)
 
