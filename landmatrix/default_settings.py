@@ -15,7 +15,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-from .settings import DEBUG
+FRONTENDDEV = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -34,7 +34,7 @@ INSTALLED_APPS = (
     'django.contrib.messages'
 )
 
-if DEBUG:
+if FRONTENDDEV:
     # Needs to be added in this order.
     INSTALLED_APPS += (
         'django_gulp',
@@ -109,7 +109,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.language.LanguageCookieMiddleware'
 )
 
-if DEBUG:
+if FRONTENDDEV:
     MIDDLEWARE_CLASSES += 'livereload.middleware.LiveReloadScript',
 
 ROOT_URLCONF = 'landmatrix.urls'
