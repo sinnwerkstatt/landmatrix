@@ -21,13 +21,18 @@ $ sudo apt-get install postgresql-9.4-postgis-scripts postgresql-9.4-postgis-2.1
                      virtualenvwrapper python3-psycopg2 libpq-dev npm
 
 Now the frontend dependencies, we use bower (for now):
-$ sudo npm -g install bower gulp gulp-livereload  gulp-watch
+$ sudo npm -g install bower
 $ bower install
+
+If you intend to develop on the frontend, you'll probably want livereload:
+$ npm install gulp gulp-livereload  gulp-watch
 
 $ mkvirtualenv landmatrix
 
 $ workon landmatrix
 
+If you intend to do ANY development on the frontend/backend, use the requirements-dev.txt in the next step, it will
+include the default requirements.txt:
 $ pip install -r requirements.txt
 
 Set up the database, user and postgis:
