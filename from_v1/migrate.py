@@ -44,7 +44,7 @@ if __name__ == '__main__':
         if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
-        MapActivityChangeset.map_all(verbose=True)
+        MapActivityChangeset.map_all(save=True, verbose=False)
 
         if False:
             MapActivity._done = True
