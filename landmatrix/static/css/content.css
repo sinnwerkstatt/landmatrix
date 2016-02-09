@@ -202,7 +202,7 @@ body {
 @font-face {
     font-family: Open Sans;
      src: url(/static/fonts/OpenSans-Light.ttf);
-    font-weight: lighter;
+    font-weight: 200;
 }
 
 body,
@@ -280,6 +280,10 @@ a:hover {
     width: auto;
 }
 
+.navbar-default {
+    background-color: rgba(156, 156, 156, 0.26);
+}
+
 .navbar-default .navbar-inner {
     background-color: #1d1d1d;
     background-image: none;
@@ -347,7 +351,7 @@ a:hover {
 a.btn,
 .nav a {
     text-decoration: none;
-    font-weight: lighter;
+    font-weight: 200;
     font-size: 12pt;
 }
 
