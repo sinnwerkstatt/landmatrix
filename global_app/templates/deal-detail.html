@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load i18n custom_tags static %}
 {% load humanize %}
-{% load debug_tags %}
 
 {% block head %}
 
@@ -18,7 +17,7 @@
 
     {# map #}
     <script src="{% static "vendor/openlayers/ol.js" %}" type="text/javascript"></script>
-    <script src="{% static "js/editor/detail.js" %}" type="text/javascript" charset="utf-8"></script>
+    <!-- <script src="{% static "js/editor/detail.js" %}" type="text/javascript" charset="utf-8"></script> -->
     <script src="{% static "js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
@@ -29,7 +28,6 @@
     <ul class="breadcrumb">
         <li><a href="/">Home</a> <span class="divider"></span></li>
         <li><a href="/get-the-detail/">Get the detail</a> <span class="divider"></span></li>
-        <li>Deal details</li>
     </ul>
 {% endblock %}
 
@@ -98,12 +96,12 @@
                     </div>            {# class="panel panel-default" #}
 
                     <script>
-                        var collapsename = "#collapse{{forloop.counter}}";
+                        var collapsename = "#collapse_{{forloop.counter}}";
                         $(collapsename).on("hidden.bs.collapse", function () {
-                            $("#collapsebtn{{forloop.counter}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
+                            $("#collapsebtn_{{forloop.counter}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
                         });
                         $(collapsename).on("shown.bs.collapse", function () {
-                            $("#collapsebtn{{forloop.counter}}").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
+                            $("#collapsebtn_{{forloop.counter}}").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
                         });
                     </script>
 
@@ -127,11 +125,11 @@
                         <div class="panel-body">
 
                             <table>
-                                {% for date, item in history.items %}
+                                {% for changedate, item in history.items %}
                                     <tr>
                                         <td>
                                             {% if forloop.counter == 1 %}<strong>{% endif %}
-                                            {{ date }}
+                                                {{ changedate|timestamp_from_epoch }}
                                             {% if forloop.counter == 1 %}</strong>{% endif %}
                                         </td>
                                         <!-- <td>{{ item.activity_changed_by }}</td>
@@ -143,8 +141,8 @@
                                         <td>
                                             {% if not forloop.last %}
                                                 {# TODO: include as AJAX call #}
-                                                <a href="/en/global/compare/{{ item.activity.activity_identifier }}_{{ item.date }}">
-                                                    compare with previous version
+                                                <a type="button" class="btn" href="/global/compare/{{ item.activity.activity_identifier }}_{{ item.date }}">
+                                                    Compare with previous version
                                                 </a>
                                             {% else %}
                                                 first version
