@@ -1,6 +1,8 @@
 
 from django.utils.encoding import force_text
 
+from landmatrix.models.activity import Activity
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.activity_changeset_review import ActivityChangesetReview
 from landmatrix.models.activity_feedback import ActivityFeedback
 from landmatrix.models.activity_changeset import ActivityChangeset
@@ -59,7 +61,7 @@ class ChangesetProtocol(View):
         results = {"cs": []}
         for changeset in page.object_list:
             results["cs"].append(self.changeset_template_data(changeset))
-        results["pagination"] = self._pagination_to_json(paginator, page)
+        # results["pagination"] = self._pagination_to_json(paginator, page)
         return results
 
     def changeset_template_data(self, changeset, extra_data=None):
@@ -125,8 +127,7 @@ class ChangesetProtocol(View):
             a_changesets["my_deals"] = my_deals
 
     def handle_updates(self, a_changesets, changesets, limit, updates_page):
-        changesets_update = changesets.filter(fk_status__name="pending")  # , previous_version__isnull=False
-        print(changesets.all())
+        changesets_update = changesets.filter(fk_activity__fk_status__name="pending")  # , previous_version__isnull=False
         changesets_update = limit and changesets_update[:limit] or changesets_update
         print('handle_updates', changesets_update)
         paginator = Paginator(changesets_update, 10)
@@ -134,31 +135,41 @@ class ChangesetProtocol(View):
         changesets_update = page.object_list
         updates = {"cs": []}
         for changeset in changesets_update:
-            # find out which fields changed
-            fields_changed = []
-            # prev_activity = Activity.objects.get(activity_identifier=changeset.fk_activity.activity_identifier,
-            #                                      version=changeset.previous_version)
-            # prev_tags = A_Tag.objects.filter(fk_a_tag_group__fk_activity=prev_activity)
-            # tags = A_Tag.objects.filter(fk_a_tag_group__fk_activity=changeset.fk_activity)
-            # prev_keys = []
-            # for tag in tags:
-            #     for prev_tag in tags:
-            #         if tag.fk_a_key.key == prev_tag.fk_a_key.key:
-            #             if tag.fk_a_value != prev_tag.fk_a_value:
-            #                 # field has been changed
-            #                 fields_changed.append(tag.fk_a_key.id)
-            #             break
-            # for key in set([t.fk_a_key.id for t in tags]).difference([t.fk_a_key.id for t in prev_tags]):
-            #     # field has been added or deleted
-            #     fields_changed.append(key)
-            # comment = changeset.comment and len(changeset.comment) > 0 and changeset.comment or "-"
+            fields_changed = self._find_changed_fields(changeset)
+
             updates["cs"].append(self.changeset_template_data(changeset, {"fields_changed": fields_changed}))
         if updates["cs"]:
             updates["pagination"] = self._pagination_to_json(paginator, page)
             a_changesets["updates"] = updates
 
+    def _find_changed_fields(self, changeset):
+        """
+        This code never worked in the original Landmatrix. It is disabled until it is needed.
+        """
+        fields_changed = []
+        return fields_changed
+
+        activity = changeset.fk_activity
+        prev_activity = activity.history.as_of(changeset.timestamp)
+        prev_tags = ActivityAttributeGroup.history.filter(fk_activity=prev_activity). \
+            filter(history_date__lte=changeset.timestamp).values_list('attributes', flat=True)
+        tags = ActivityAttributeGroup.objects.filter(fk_activity=changeset.fk_activity).values_list('attributes',
+                                                                                                    flat=True)
+        prev_keys = []
+        for tag in tags:
+            for prev_tag in prev_tags:
+                if tag.fk_a_key.key == prev_tag.fk_a_key.key:
+                    if tag.fk_a_value != prev_tag.fk_a_value:
+                        # field has been changed
+                        fields_changed.append(tag.fk_a_key.id)
+                    break
+        for key in set([t.fk_a_key.id for t in tags]).difference([t.fk_a_key.id for t in prev_tags]):
+            # field has been added or deleted
+            fields_changed.append(key)
+        return fields_changed
+
     def handle_inserts(self, a_changesets, changesets, inserts_page, limit):
-        changesets_insert = changesets.filter(fk_status__name="pending")  #  previous_version__isnull=True)
+        changesets_insert = changesets.filter(fk_activity__fk_status__name="pending")  #  previous_version__isnull=True)
         changesets_insert = limit and changesets_insert[:limit] or changesets_insert
         paginator = Paginator(changesets_insert, 10)
         page = self._get_page(inserts_page, paginator)
@@ -171,7 +182,7 @@ class ChangesetProtocol(View):
             a_changesets["inserts"] = inserts
 
     def handle_deletes(self, a_changesets, changesets, deletions_page, limit):
-        changesets_delete = changesets.filter(fk_status__name="to_delete")
+        changesets_delete = changesets.filter(fk_activity__fk_status__name="to_delete")
         changesets_delete = limit and changesets_delete[:limit] or changesets_delete
         paginator = Paginator(changesets_delete, 10)
         page = self._get_page(deletions_page, paginator)

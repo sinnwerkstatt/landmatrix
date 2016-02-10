@@ -53,6 +53,8 @@
         {% endfor %}
       </tbody>
     </table>
+      {% comment %}
+      PAGINATION DISABLED AS PER ORALLY AGREED SPEC
     <div class="pagination">
       <ul>
           {% if "previous" in latest_added.pagination %}
@@ -66,6 +68,7 @@
           {% endif %}
       </ul>
     </div>
+      {% endcomment %}
     {% else %}
     <p>{% trans "No deals have been added lately." %}</p>
     {% endif %}
@@ -98,6 +101,8 @@
         {% endfor %}
       </tbody>
     </table>
+      {% comment %}
+      PAGINATION DISABLED AS PER ORALLY AGREED SPEC
     <div class="pagination">
       <ul>
           {% if "previous" in latest_modified.pagination %}
@@ -111,6 +116,7 @@
           {% endif %}
       </ul>
     </div>
+      {% endcomment %}
     {% else %}
     <p>{% trans "No deals have been modified lately." %}</p>
     {% endif %}
@@ -143,6 +149,8 @@
         {% endfor %}
       </tbody>
     </table>
+      {% comment %}
+      PAGINATION DISABLED AS PER ORALLY AGREED SPEC
     <div class="pagination">
       <ul>
           {% if "previous" in latest_deleted.pagination %}
@@ -158,6 +166,7 @@
           {% endif %}
       </ul>
     </div>
+      {% endcomment %}
     {% else %}
     <p>{% trans "No deals have been deleted lately." %}</p>
     {% endif %}

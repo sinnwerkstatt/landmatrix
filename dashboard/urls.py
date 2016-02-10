@@ -1,4 +1,5 @@
 from dashboard.views.editor_view import EditorView
+from dashboard.views.manage_view import ManageView
 from global_app.views.add_deal_view import AddDealView
 
 from django.conf.urls import url, patterns
@@ -21,4 +22,5 @@ Including another URLconf
 
 urlpatterns = patterns('dashboard.views',
     url(r'^$', login_required(EditorView.as_view()), name='app_main'),
+    url(r'^manage', login_required(ManageView.as_view()), name='app_main'),
 )
