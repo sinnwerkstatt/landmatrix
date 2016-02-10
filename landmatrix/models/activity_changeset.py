@@ -11,24 +11,18 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class ActivityChangesetManager(Manager):
 
-    def filter(self, **kwargs):
-        activitiy_identifiers = Activity.history.filter(**kwargs).order_by('-history_date').values_list('activity_identifier', flat=True)
-        return [
-            ActivityChangeset.from_latest(act_id)
-            for act_id in activitiy_identifiers
-            if ActivityChangeset.activity_from_identifier(act_id)
-        ]
-
     def get_by_state(self, status):
-        activitiy_identifiers = self.by_status_query_set(status).values_list('activity_identifier', flat=True).distinct()
-        return [ActivityChangeset.from_latest(act_id) for act_id in activitiy_identifiers]
+        act_ids = self.by_status_query_set(status).values_list('id', flat=True).distinct()
+        return ActivityChangeset.objects.filter(fk_activity_id__in=act_ids).order_by('-timestamp')
 
     def by_status_query_set(self, status):
         return Activity.history.filter(fk_status__name__contains=status.lower()).order_by('-history_date')
 
     def get_my_deals(self, user):
         changesets = ActivityChangeset.objects.filter(fk_user=user).\
-            filter(fk_activity__fk_status__name__in=("pending", "rejected"))
+            filter(fk_activity__fk_status__name__in=("pending", "rejected")).\
+            order_by('-timestamp').\
+            values_list('fk_activity_id', flat=True).distinct()
         return changesets
 
         changesets = self.raw("""
@@ -46,8 +40,6 @@ class ActivityChangesetManager(Manager):
                 AND s.name in ("pending", "rejected")
               ORDER BY timestamp DESC;
             """ % {"user": user})
-
-        pass
 
 
 class ActivityChangeset(Model):
