@@ -4,8 +4,8 @@ from django.test.client import Client
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from editor.models import UserRegionalInfo
-from editor.views.editor_view import EditorView, get_overall_deal_count, get_public_deal_count
+from dashboard.models import UserRegionalInfo
+from dashboard.views.editor_view import EditorView, get_overall_deal_count, get_public_deal_count
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
 
@@ -23,7 +23,7 @@ class TestEditorView(TestCase):
         self.user = User.objects.create_user(username=self.NORMAL_USER, password=self.NORMAL_PASSWORD)
 
     def test_user_not_logged_in_redirects_to_login_page(self):
-        url, response = self._get_url_following_redirects('/editor')
+        url, response = self._get_url_following_redirects('/dashboard')
         self.assertEqual(200, response.status_code)
         self.assertIn(settings.LOGIN_URL, url)
 
@@ -35,13 +35,13 @@ class TestEditorView(TestCase):
 
     def test_editor_page_shows_when_logged_in(self):
         self.client.login(username=self.NORMAL_USER, password=self.NORMAL_PASSWORD)
-        url, response = self._get_url_following_redirects('/editor')
+        url, response = self._get_url_following_redirects('/dashboard')
         self.assertEqual(200, response.status_code)
-        self.assertIn('/editor', url)
+        self.assertIn('/dashboard', url)
 
     def test_editor_page_contains_username(self):
         self.client.login(username=self.NORMAL_USER, password=self.NORMAL_PASSWORD)
-        url, response = self._get_url_following_redirects('/editor')
+        url, response = self._get_url_following_redirects('/dashboard')
         self.assertIn(self.NORMAL_USER, response.content.decode('utf-8'))
 
     def test_user_needs_region_info_filled(self):

@@ -5,7 +5,7 @@ from django.utils.datastructures import MultiValueDict
 from django.views.generic import TemplateView
 import json
 
-from editor.views.changeset_protocol import ChangesetProtocol
+from dashboard.views.changeset_protocol import ChangesetProtocol
 from global_app.views.view_aux_functions import render_to_response
 from landmatrix.models.activity import Activity
 
