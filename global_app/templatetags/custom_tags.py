@@ -136,6 +136,17 @@ def naturaltime_from_string(value):
     else:
         return "%s ago" % natural_time[0]
 
+@register.filter
+def timestamp_from_epoch(timestamp):
+    try:
+        #assume, that timestamp is given in seconds with decimal point
+        ts = float(timestamp)
+    except ValueError:
+        return None
+    return datetime.datetime.fromtimestamp(ts)
+
+
+
 """
 This is custom tag I wrote for myself for solving situations when you have filter form and page
 numbers in the same page. You want to change ?page=.. or add it if it doesn't exist to save
