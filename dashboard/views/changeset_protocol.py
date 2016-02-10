@@ -1,9 +1,10 @@
 
 from django.utils.encoding import force_text
 
+from global_app.views.activity_protocol import ActivityProtocol
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-from landmatrix.models.activity_changeset_review import ActivityChangesetReview
+from landmatrix.models.activity_changeset_review import ActivityChangesetReview, ReviewDecision
 from landmatrix.models.activity_feedback import ActivityFeedback
 from landmatrix.models.activity_changeset import ActivityChangeset
 
@@ -12,6 +13,9 @@ from django.http.response import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import json
+
+from landmatrix.models.investor import InvestorActivityInvolvement
+from landmatrix.models.status import Status
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -138,24 +142,23 @@ class ChangesetProtocol(View):
                         # approval of new deal
                         activity.fk_status = Status.objects.get(name="active")
                     activity.save()
-                    review_decision = Review_Decision.objects.get(name="approved")
-                    a_changeset_review = A_Changeset_Review.objects.create(
-                        fk_a_changeset=changeset,
+                    review_decision = ReviewDecision.objects.get(name="approved")
+                    a_changeset_review = ActivityChangesetReview.objects.create(
+                        fk_activity_changeset=changeset,
                         fk_user=request.user,
                         fk_review_decision=review_decision,
                         comment=cs_comment
                     )
-                    inv = Involvement.objects.get_involvements_for_activity(activity)
-                    inv = filter(lambda x: x.fk_stakeholder, inv)
+                    inv = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity)
+                    print('Involvements:', inv)
+                    # TODO: what is this line for? only get involvements which have a stakeholder? but we already have that!
+                    # inv = inv.filter(lambda x: x.fk_stakeholder)
                     ap = ActivityProtocol()
                     if len(inv) > 0:
-                        pi = inv[0].fk_primary_investor
-                        if any(set(s.stakeholder_identifier for s in
-                                   Stakeholder.objects.get_stakeholders_for_primary_investor(
-                                           pi.id)).symmetric_difference(
-                                i.fk_stakeholder.stakeholder_identifier for i in inv)):
+                        operational_stakeholder = inv[0].fk_investor
+                        if self.investor_has_changed(operational_stakeholder, inv):
                             # secondary investors has changed
-                            ap.update_secondary_investors(activity, pi, [
+                            ap.update_secondary_investors(activity, operational_stakeholder, [
                                 {"stakeholder": i.fk_stakeholder, "investment_ratio": i.investment_ratio} for i in inv],
                                                           request)
                     ap.fill_lookup_table(activity.activity_identifier)
@@ -172,6 +175,14 @@ class ChangesetProtocol(View):
                     )
                     ap = ActivityProtocol()
                     ap.remove_from_lookup_table(activity.activity_identifier)
+
+    def investor_has_changed(self, operational_stakeholder, inv):
+        return any(
+            set(s.investor_identifier for s in operational_stakeholder.get_subinvestors()).
+                symmetric_difference(
+                    i.fk_investor.investor_identifier for i in inv
+            )
+        )
 
     def reject(self, request, *args, **kwargs):
         """
