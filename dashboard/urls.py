@@ -21,21 +21,18 @@ Including another URLconf
 """
 
 def allowed_to_manage(user):
-    print('allowed_to_manage:', user)
-    print(user.group_set.all())
-    return True
-    ("Read-only", "Research admins", "Research assistants")
+    return bool(set(user.groups.values_list('name',flat=True)) & {"Read-only", "Research admins", "Research assistants"})
+
 
 urlpatterns = patterns('dashboard.views',
     url(r'^$', login_required(EditorView.as_view()), name='app_main'),
     url(
         r'^manage/(?P<type>deal|investor)/(?P<action>approve|reject)/(?P<id>[0-9]+)/',
-        # user_passes_test(allowed_to_manage, ManageContentView.as_view()), name='manage_deal'
-        ManageContentView.as_view(), name='manage_deal'
+        user_passes_test(allowed_to_manage)(ManageContentView.as_view()), name='manage_deal'
     ),
     url(
         r'^manage/',
-        # user_passes_test(allowed_to_manage, ManageView.as_view()), name='manage'),
-        ManageView.as_view(), name='manage'),
+        user_passes_test(allowed_to_manage)(ManageView.as_view()), name='manage'),
+        # ManageView.as_view(), name='manage'),
     url(r'^manage', login_required(ManageView.as_view()), name='app_main'),
 )
