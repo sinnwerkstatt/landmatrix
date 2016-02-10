@@ -33,6 +33,12 @@ class ChangesetProtocol(View):
 
         if action == "dashboard":
             return self.dashboard(request)
+        elif action == "list":
+            return self.list(request, *args, **kwargs)
+        elif action == "approve":
+            return self.approve(request, *args, **kwargs)
+        elif action == "reject":
+            return self.reject(request, *args, **kwargs)
         else:
             raise IOError("Unknown action")
 
@@ -53,6 +59,146 @@ class ChangesetProtocol(View):
         }
         pprint(res, width=150)
         return HttpResponse(json.dumps(res), content_type="application/json")
+
+    def list(self, request, *args, **kwargs):
+        """
+        POST params:
+            "a_changesets": ["updates", "deletes", "inserts"]
+            "sh_changesets": ["updates", "deletes", "inserts"]
+        """
+        user = request.user
+        if user.has_perm("editor.change_activity"):
+            self.data = {
+                "a_changesets": ["updates", "deletes", "inserts"],
+                "sh_changesets": ["deletes"],
+            }
+        else:
+            self.data = {
+                "a_changesets": ["my_deals"],
+            }
+        res = self._changeset_to_json(user, request.GET.get('my_deals_page'), request.GET.get('updates_page'), request.GET.get('inserts_page'), request.GET.get('deletions_page'))
+        res["feedbacks"] = self._feedbacks_to_json(user, request.GET.get('feedbacks_page'))
+        return HttpResponse(json.dumps(res), content_type="application/json")
+
+    def approve(self, request, *args, **kwargs):
+        """
+        POST params:
+            "a_changesets": [1,2,3]
+            "sh_changesets": [1,2,3]
+        """
+        res = {"errors": []}
+        print('approve:', self.data)
+        self._approve_a_changesets(request)
+        self._approve_sh_changesets(request)
+        return HttpResponse(json.dumps(res), content_type="application/json")
+
+    def _approve_sh_changesets(self, request):
+        for cs in self.data.get("sh_changesets", []):
+                cs_id = cs.get("id")
+                cs_comment = cs.get("comment")
+                changeset = SH_Changeset.objects.get(id=cs_id)
+                stakeholder = changeset.fk_stakeholder
+                if stakeholder.fk_status.name == "pending":
+                    if changeset.previous_version:
+                        # approval of updated or active stakeholder
+                        stakeholder.fk_status = Status.objects.get(name="overwritten")
+                    else:
+                        # approval of new deal
+                        stakeholder.fk_status = Status.objects.get(name="active")
+                    stakeholder.save()
+                    review_decision = Review_Decision.objects.get(name="approved")
+                    sh_changeset_review = SH_Changeset_Review.objects.create(
+                        fk_sh_changeset=changeset,
+                        fk_user=request.user,
+                        fk_review_decision=review_decision,
+                        comment=cs_comment
+                    )
+                elif stakeholder.fk_status.name == "to_delete":
+                    stakeholder.fk_status = Status.objects.get(name="deleted")
+                    stakeholder.save()
+                    review_decision = Review_Decision.objects.get(name="deleted")
+                    a_changeset_review = SH_Changeset_Review.objects.create(
+                        fk_sh_changeset=changeset,
+                        fk_user=request.user,
+                        fk_review_decision=review_decision,
+                        comment=cs_comment
+                    )
+
+    def _approve_a_changesets(self, request):
+        for cs in self.data.get("a_changesets", {}):
+                cs_id = cs.get("id")
+                cs_comment = cs.get("comment")
+                changeset = ActivityChangeset.objects.get(id=cs_id)
+                activity = changeset.fk_activity
+                if activity.fk_status.name == "pending":
+                    if changeset.previous_version:
+                        # approval of updated or active deal
+                        activity.fk_status = Status.objects.get(name="overwritten")
+                    else:
+                        # approval of new deal
+                        activity.fk_status = Status.objects.get(name="active")
+                    activity.save()
+                    review_decision = Review_Decision.objects.get(name="approved")
+                    a_changeset_review = A_Changeset_Review.objects.create(
+                        fk_a_changeset=changeset,
+                        fk_user=request.user,
+                        fk_review_decision=review_decision,
+                        comment=cs_comment
+                    )
+                    inv = Involvement.objects.get_involvements_for_activity(activity)
+                    inv = filter(lambda x: x.fk_stakeholder, inv)
+                    ap = ActivityProtocol()
+                    if len(inv) > 0:
+                        pi = inv[0].fk_primary_investor
+                        if any(set(s.stakeholder_identifier for s in
+                                   Stakeholder.objects.get_stakeholders_for_primary_investor(
+                                           pi.id)).symmetric_difference(
+                                i.fk_stakeholder.stakeholder_identifier for i in inv)):
+                            # secondary investors has changed
+                            ap.update_secondary_investors(activity, pi, [
+                                {"stakeholder": i.fk_stakeholder, "investment_ratio": i.investment_ratio} for i in inv],
+                                                          request)
+                    ap.fill_lookup_table(activity.activity_identifier)
+                    ap.prepare_deal_for_public_interface(activity.activity_identifier)
+                elif activity.fk_status.name == "to_delete":
+                    activity.fk_status = Status.objects.get(name="deleted")
+                    activity.save()
+                    review_decision = Review_Decision.objects.get(name="deleted")
+                    a_changeset_review = A_Changeset_Review.objects.create(
+                        fk_a_changeset=changeset,
+                        fk_user=request.user,
+                        fk_review_decision=review_decision,
+                        comment=cs_comment
+                    )
+                    ap = ActivityProtocol()
+                    ap.remove_from_lookup_table(activity.activity_identifier)
+
+    def reject(self, request, *args, **kwargs):
+        """
+        POST params:
+            "a_changesets": [1,2,3]
+            "sh_changesets": [1,2,3]
+        """
+        res = {"errors": []}
+        if self.data.has_key("a_changesets"):
+            for cs in self.data.get("a_changesets"):
+                cs_id = cs.get("id")
+                cs_comment = cs.get("comment")
+                changeset = A_Changeset.objects.get(id=cs_id)
+                activity = changeset.fk_activity
+                if activity.fk_status.name in ("pending", "to_delete"):
+                    activity.fk_status = Status.objects.get(name="rejected")
+                    activity.save()
+                    review_decision = Review_Decision.objects.get(name="rejected")
+                    a_changeset_review = A_Changeset_Review.objects.create(
+                            fk_a_changeset = changeset,
+                            fk_user = request.user,
+                            fk_review_decision = review_decision,
+                            comment = cs_comment
+                        )
+        if self.data.has_key("sh_changesets"):
+            raise NotImplementedError
+        return HttpResponse(json.dumps(res), mimetype="application/json")
 
     def get_paged_results(self, records, page_number, per_page=10):
         paginator = Paginator(records, per_page)
@@ -129,7 +275,6 @@ class ChangesetProtocol(View):
     def handle_updates(self, a_changesets, changesets, limit, updates_page):
         changesets_update = changesets.filter(fk_activity__fk_status__name="pending")  # , previous_version__isnull=False
         changesets_update = limit and changesets_update[:limit] or changesets_update
-        print('handle_updates', changesets_update)
         paginator = Paginator(changesets_update, 10)
         page = self._get_page(updates_page, paginator)
         changesets_update = page.object_list
