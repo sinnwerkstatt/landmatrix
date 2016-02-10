@@ -7,18 +7,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-""" For more information please see: https://docs.djangoproject.com/en/1.8/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Add an import:  from blog import urls as blog_urls
-    2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
-"""
 
 def allowed_to_manage(user):
     return bool(set(user.groups.values_list('name',flat=True)) & {"Read-only", "Research admins", "Research assistants"})
@@ -32,7 +20,6 @@ urlpatterns = patterns('dashboard.views',
     ),
     url(
         r'^manage/',
-        user_passes_test(allowed_to_manage)(ManageView.as_view()), name='manage'),
-        # ManageView.as_view(), name='manage'),
-    url(r'^manage', login_required(ManageView.as_view()), name='app_main'),
+        user_passes_test(allowed_to_manage)(ManageView.as_view()), name='manage'
+    ),
 )

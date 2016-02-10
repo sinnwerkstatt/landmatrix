@@ -132,8 +132,8 @@ $(document).ready(function () {
         <td class="modified">{{ changeset.fields_changed }}</td>
         <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
         <td class="action">
-          <a href="/manage/deal/approve/{{ changeset.id }}/" class="btn btn-success approve"><i class="icon-ok"></i> {% trans "Approve" %}</a>
-          <a href="/manage/deal/reject/{{ changeset.id }}/" class="btn btn-danger reject"><i class="icon-remove"></i> {% trans "Reject" %}</a>
+          <a href="/editor/manage/deal/approve/{{ changeset.id }}/" class="btn btn-success approve"><i class="icon-ok"></i> {% trans "Approve" %}</a>
+          <a href="/editor/manage/deal/reject/{{ changeset.id }}/" class="btn btn-danger reject"><i class="icon-remove"></i> {% trans "Reject" %}</a>
         </td>
       </tr>
       {% endfor %}
@@ -172,8 +172,8 @@ $(document).ready(function () {
         <td class="user">{{ changeset.user }}</td>
         <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
         <td class="action">
-          <a href="/manage/deal/approve/{{ changeset.id }}/" class="btn btn-success approve"><i class="icon-ok"></i> {% trans "Approve" %}</a>
-          <a href="/manage/deal/reject/{{ changeset.id }}/" class="btn btn-danger reject"><i class="icon-remove"></i> {% trans "Reject" %}</a>
+          <a href="/editor/manage/deal/approve/{{ changeset.id }}/" class="btn btn-success approve"><i class="icon-ok"></i> {% trans "Approve" %}</a>
+          <a href="/editor/manage/deal/reject/{{ changeset.id }}/" class="btn btn-danger reject"><i class="icon-remove"></i> {% trans "Reject" %}</a>
         </td>
       </tr>
       {% endfor %}
@@ -212,8 +212,8 @@ $(document).ready(function () {
         <td class="user">{{ changeset.user }}</td>
         <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
         <td class="action">
-          <a href="/manage/deal/approve/{{ changeset.id }}/" class="btn btn-success approve"><i class="icon-ok"></i> {% trans "Approve" %}</a>
-          <a href="/manage/deal/reject/{{ changeset.id }}/" class="btn btn-danger reject"><i class="icon-remove"></i> {% trans "Reject" %}</a>
+          <a href="/editor/manage/deal/approve/{{ changeset.id }}/" class="btn btn-success approve"><i class="icon-ok"></i> {% trans "Approve" %}</a>
+          <a href="/editor/manage/deal/reject/{{ changeset.id }}/" class="btn btn-danger reject"><i class="icon-remove"></i> {% trans "Reject" %}</a>
         </td>
       </tr>
       {% endfor %}
@@ -252,8 +252,8 @@ $(document).ready(function () {
         <td class="user">{{ changeset.user }}</td>
         <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
         <td class="action">
-          <a href="/manage/investor/approve/{{ changeset.id }}/" class="btn btn-success approve"><i class="icon-ok"></i> {% trans "Approve" %}</a>
-          <a href="/manage/investor/reject/{{ changeset.id }}/" class="btn btn-danger reject"><i class="icon-remove"></i> {% trans "Reject" %}</a>
+          <a href="/editor/manage/investor/approve/{{ changeset.id }}/" class="btn btn-success approve"><i class="icon-ok"></i> {% trans "Approve" %}</a>
+          <a href="/editor/manage/investor/reject/{{ changeset.id }}/" class="btn btn-danger reject"><i class="icon-remove"></i> {% trans "Reject" %}</a>
         </td>
       </tr>
       {% endfor %}

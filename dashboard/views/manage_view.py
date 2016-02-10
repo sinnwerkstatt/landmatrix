@@ -33,10 +33,12 @@ class ManageView(TemplateView):
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
     def render_authenticated_user(self, request, *args, **kwargs):
+        from pprint import pprint
         csp = ChangesetProtocol()
         request.POST = MultiValueDict({"data": [json.dumps({"a_changesets":["updates", "deletes", "inserts"], "sh_changesets": ["deletes"]})]})
         response = csp.dispatch(request, action="list")
         response = json.loads(response.content.decode())
+        print('ManageView resonse', response)
         data = {
             "view": "manage"
         }
