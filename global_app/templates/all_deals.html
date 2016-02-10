@@ -10,12 +10,12 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-  <li><a href="/">Home</a> <span class="divider">|</span></li>
-  <li><a href="/{{ cms_page }}/">Get the detail</a> <span class="divider">|</span></li>
+  <li><a href="/">Home</a> <span class="divider"></span></li>
+  <li><a href="/{{ cms_page }}/">Get the detail</a> <span class="divider"></span></li>
   {% if group == "all" %}
   <li>{{ name|capfirst }}</li>
   {% elif filters.group_value %}
-  <li><a href="/{{ cms_page }}/{{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">By {{ group }}</a> <span class="divider">|</span></li>
+  <li><a href="/{{ cms_page }}/{{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">By {{ group }}</a> <span class="divider"></span></li>
   <li>{{ name }}</li>
   {% else %}
   <li>By {{ group }}</li>
