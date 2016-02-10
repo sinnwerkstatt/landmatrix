@@ -118,10 +118,10 @@ table .map {
     position: relative;
     width: 100%;
     top: 15px;
-    margin-bottom: 15px;
     overflow: hidden;
     -moz-border-radius: 8px;
     border-radius: 8px;
+    /* border: 1px solid black; */
 }
 
 .legend-symbol {

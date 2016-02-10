@@ -12,10 +12,14 @@
 
 {% endblock %}
 
+
+{% block page_title %}Deal history comparison{% endblock %}
+{% block title %}Deal history comparison{% endblock %}
+
 {% block breadcrumb %}
 <ul class="breadcrumb">
-  <li><a href="/en/global/">Global</a><span class="divider"></span></li>
-  <li><a href="/en/global_app/compare/{{forms.0}}_{{forms.1}}">Compare deal history</a></li>
+  <li><a href="/global/">Global</a><span class="divider"></span></li>
+  <li><a href="/global/compare/X_Y">Compare deal history</a></li>
 </ul>
 {% endblock %}
 
@@ -47,7 +51,7 @@
                         </h4>
                       </div>
 
-                      <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                      <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                         <div class="panel-body">
                           <table>
                               {{ form }}
@@ -67,7 +71,7 @@
                       </h4>
                     </div>
 
-                    <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                    <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                       <div class="panel-body">
                         <table>
 
@@ -109,7 +113,7 @@
                     </h4>
                   </div>
 
-                  <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                  <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                     <div class="panel-body">
                       <table>
                           {{ form }}
@@ -129,7 +133,7 @@
                   </h4>
                 </div>
 
-                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse in">
+                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                   <div class="panel-body">
                     <table>
 
@@ -149,13 +153,7 @@
         </div>
 
     </div>
-  
 
   {% endfor %}
-
-
-
-
-
 
 {% endblock %}
