@@ -109,7 +109,7 @@ p {
     top: 3em;
 }
 
-.map .panel,li,ul,.group  {
+.map > .panel,li,ul,.group  {
     line-height: 0.5em !important;
     font-size: 12px !important;
 }
