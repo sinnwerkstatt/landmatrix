@@ -96,7 +96,7 @@ body {
     background: white;
     font-weight: bold;
     opacity: 0.5;
-    font-size: 12pt;
+    font-size: 12px;
     box-shadow: none;
     text-shadow: none;
 }
@@ -218,7 +218,7 @@ h5,
 h6,
 label {
     font-family: 'Open Sans', sans-serif;
-    font-size: 12pt;
+    font-size: 12px;
     line-height: 1.5em;
     color: #4a4a4a;
 }
@@ -226,7 +226,7 @@ label {
 h1 {
     font-family: 'Open Sans', sans-serif;
     font-weight: 600;
-    font-size: 24pt;
+    font-size: 28px;
     text-transform: uppercase;
     /*line-height: 32px;*/
     color: #fc941f;
@@ -242,7 +242,7 @@ h4 {
 }
 
 h4 {
-    font-size: 12pt;
+    font-size: 12px;
 }
 
 h6 {
@@ -352,7 +352,7 @@ a.btn,
 .nav a {
     text-decoration: none;
     font-weight: 200;
-    font-size: 12pt;
+    font-size: 16px;
 }
 
 .navbar .nav > li > a {
@@ -426,7 +426,7 @@ a.btn,
 }
 
 div.panel > div > h4 > a {
-    font-size: 12pt !important;
+    font-size: 12px !important;
     color: #4a4a4a;
     display: block;
     width: 100%;
@@ -583,7 +583,7 @@ body {
 
 footer {
     height: auto !important;
-    font-size: 12pt;
+    font-size: 12px;
 }
 
 
@@ -617,7 +617,6 @@ footer p,
 footer li,
 footer a {
     color: #4a4a4a;
-    font-size: 1.2em;
     line-height: 1.4em;
     text-decoration: none !important;
 }
@@ -628,7 +627,6 @@ footer hr {
 
 footer > a:hover {
     text-decoration: none;
-    color: ;
 }
 
 .lm-twitter-square:hover {
@@ -1116,7 +1114,6 @@ h4 .icon {
     margin-top: 27px;
     text-align: center;
     opacity: 0.5;
-    height: 23px;
 }
 
 .well-square.social:first-child {
@@ -1293,7 +1290,7 @@ textarea {
  * ========================================================================== */
 
 /*.map {
-    font-size: 12pt !important;
+    font-size: 12px !important;
     line-height: 1em !important;
 }
 */
