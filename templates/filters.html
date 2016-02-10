@@ -3,7 +3,7 @@
 
 {% block filters %}
 
-<div id="filters">
+<div id="filters" class="{% if not debug %} hidden{% endif %}">
 
 <script type="text/javascript">
 function init_form_condition (el) {
