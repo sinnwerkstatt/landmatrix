@@ -101,6 +101,20 @@ body {
     text-shadow: none;
 }
 
+.table > button,
+.table > a.btn {
+    color: white;
+    border-color: #fc941f;
+    border-width: 2px;
+    background: #fc941f;
+    font-weight: bold;
+    opacity: 0.5;
+    font-size: 12px;
+    box-shadow: none;
+    text-shadow: none;
+}
+
+
 .container a.btn-large {
     padding: 15px 3vw;
 }
@@ -1188,6 +1202,7 @@ textarea {
     border-color: #4a4a4a;
     box-shadow: none !important;
     color: #4a4a4a;
+    max-width: 90%;
 }
 
 .formcontrol {
