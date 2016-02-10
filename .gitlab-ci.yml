@@ -1,0 +1,8 @@
+before_script:
+  - virtualenv -p /usr/bin/python3.4 --system-site-packages venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
+
+test:
+  script:
+    - python manage.py test
