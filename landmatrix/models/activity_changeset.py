@@ -55,7 +55,6 @@ class ActivityChangeset(Model):
     comment = TextField(_("Comment"))
     fk_activity = ForeignKey("Activity", verbose_name=_("Activity"), blank=True, null=True)
     timestamp = DateTimeField(_("Timestamp"), auto_now_add=True)
-    source = TextField(_("Source"), blank=True, null=True)
 
     objects = ActivityChangesetManager()
 
@@ -78,6 +77,7 @@ class ActivityChangeset(Model):
         changeset.historical_activity = historical_activity
         changeset.timestamp = historical_activity.history_date
         changeset.fk_activity = Activity.objects.get(id=historical_activity.id)
+        return changeset
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

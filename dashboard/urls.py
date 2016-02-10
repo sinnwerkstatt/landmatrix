@@ -1,4 +1,4 @@
-from editor.views.editor_view import EditorView
+from dashboard.views.editor_view import EditorView
 from global_app.views.add_deal_view import AddDealView
 
 from django.conf.urls import url, patterns
@@ -19,6 +19,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 
-urlpatterns = patterns('editor.views',
+urlpatterns = patterns('dashboard.views',
     url(r'^$', login_required(EditorView.as_view()), name='app_main'),
 )

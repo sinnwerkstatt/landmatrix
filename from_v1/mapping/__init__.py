@@ -3,6 +3,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from mapping.map_language import MapLanguage
 from mapping.map_status import MapStatus
 from mapping.map_activity import MapActivity
+from mapping.map_activity_changeset import MapActivityChangeset
 from mapping.map_activity_attribute_group import MapActivityAttributeGroup
 from mapping.map_region import MapRegion
 from mapping.map_country import MapCountry

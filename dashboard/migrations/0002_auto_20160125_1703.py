@@ -8,7 +8,7 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('editor', '0001_initial'),
+        ('dashboard', '0001_initial'),
     ]
 
     operations = [
