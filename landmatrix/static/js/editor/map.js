@@ -12,10 +12,13 @@ $(document).ready(function () {
         $(this).attr('id', 'map' + (index + 1)).removeClass("maptemplate").addClass("map");
         initializeMap(index + 1);
         console.log("Ham: ", this);
+
     });
+    console.log('Hamlist', maps);
 
     $('#accordion').on("shown.bs.collapse", function(things) {
         var mapId = String(things.target.id).split("_")[1];
+        console.log("collapsehandler: ", mapId, maps);
 
         maps[mapId].updateSize()
     });
@@ -30,21 +33,24 @@ function getLocationFields(mapId) {
 
     var parent = $("#"+target).parents("tbody");
 
-    var lat_field = parent.find(".point_lat input");
-    var lon_field = parent.find(".point_lon input");
-    return [lat_field, lon_field];
+    var result = {
+        lat: parent.find(".point_lat input"),
+        lon: parent.find(".point_lon input")
+    };
+
+    return result;
 }
 
 function updateMapLocation(mapId) {
     if (lock == false) {
 
-        var [lat_field, lon_field] = getLocationFields(mapId);
+        var fields = getLocationFields(mapId);
 
         var lat = 0.0;
-        lat =  parseFloat(lat_field.val());
+        lat =  parseFloat(fields.lat.val());
 
         var lon = 0.0;
-        lon = parseFloat(lon_field.val());
+        lon = parseFloat(fields.lon.val());
 
         if (isNaN(lat) || isNaN(lon)) {
             lon = lat = 0;
@@ -68,10 +74,10 @@ function updateLocationFields(mapId, coords) {
         // Update form fields with converted coords
         var formCoords = ol.proj.toLonLat(coords);
 
-        var [lat_field, lon_field] = getLocationFields(mapId);
+        var fields = getLocationFields(mapId);
 
-        lat_field.val(formCoords[1]);
-        lon_field.val(formCoords[0]);
+        fields.lat.val(formCoords[1]);
+        fields.lon.val(formCoords[0]);
     }
 }
 
@@ -90,13 +96,13 @@ var markerStyle = new ol.style.Style({
 function initializeMap (mapId) {
     const target = "map" + mapId;
 
-    var [lat_field, lon_field] = getLocationFields(mapId);
+    var fields = getLocationFields(mapId);
 
     var lat = 0.0;
-    lat =  parseFloat(lat_field.val());
+    lat =  parseFloat(fields.lat.val());
 
     var lon = 0.0;
-    lon = parseFloat(lon_field.val());
+    lon = parseFloat(fields.lon.val());
 
     if (isNaN(lat) || isNaN(lon)) {
         lon = lat = 0;
@@ -149,11 +155,11 @@ function initializeMap (mapId) {
     });
 
 
-    lon_field.change(function() {
+    fields.lon.change(function() {
         updateMapLocation(mapId);
     });
 
-    lat_field.change(function() {
+    fields.lat.change(function() {
         updateMapLocation(mapId);
     });
 

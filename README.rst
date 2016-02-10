@@ -44,9 +44,20 @@ After the database is ready, Run the migrations - just to make sure:
 
 $ python manage.py migrate
 
+Also collecting the statics is essential:
+
+$ python manage.py collectstatic
+
 Run the server:
 
 $ python manage.py runserver
+
+Upgrading
+---------
+
+After upgrading, you may have to update the static files to see changes e.g. to the CSS:
+
+$ python manage.py collectstatic
 
 Backup to dump
 --------------
