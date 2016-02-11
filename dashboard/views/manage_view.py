@@ -69,9 +69,8 @@ class ManageDealForm(BaseForm):
     tg_action_comment = CharField(required=False, label="", widget=CommentInput)
 
     def __init__(self, *args, **kwargs):
-        if "instance" in kwargs:
-            kwargs.pop("instance")
-        super(ManageDealForm, self).__init__(*args, **kwargs)
+        kwargs.pop("instance", None)
+        super().__init__(*args, **kwargs)
 
     def save(self):
         return self
@@ -80,7 +79,7 @@ class ManageDealForm(BaseForm):
 class ManageContentView(UpdateView):
     template_name = "manage_item.html"
     form_class = ManageDealForm
-    success_url = "/manage/"
+    success_url = "/editor/manage/"
     instance = None
 
     def get_context_data(self, **kwargs):

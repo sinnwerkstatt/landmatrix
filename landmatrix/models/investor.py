@@ -1,3 +1,5 @@
+from django.db.models.manager import Manager
+
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.activity import Activity
 from landmatrix.models.country import Country
@@ -31,8 +33,12 @@ class Investor(DefaultStringRepresentation, models.Model):
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
 
-#    version = models.IntegerField(_("Version"), db_index=True)
     history = HistoricalRecords()
+
+    def get_subinvestors(self):
+        investor_ids = InvestorVentureInvolvement.objects.filter(fk_venture=self.id).\
+            values_list('fk_investor_id', flat=True).distinct()
+        return Investor.objects.filter(pk__in=investor_ids)
 
 
 class InvestorVentureInvolvement(models.Model):
@@ -52,6 +58,42 @@ class InvestorVentureInvolvement(models.Model):
 
 
 class InvestorActivityInvolvement(models.Model):
+
+    class IAIManager(Manager):
+
+        def get_involvements_for_activity(self, activity):
+            def original_sql():
+                return """
+SELECT i.*
+FROM primary_investors pi
+JOIN status pi_st ON pi.fk_status = pi_st.id
+JOIN involvements i ON i.fk_primary_investor = pi.id
+LEFT OUTER JOIN stakeholders s ON i.fk_stakeholder = s.id
+WHERE
+  i.fk_activity = %i
+  AND (
+    s.version IS NULL
+    OR s.version = (
+      SELECT MAX(version)
+      FROM stakeholders smax
+      JOIN status st ON smax.fk_status = st.id
+      WHERE smax.stakeholder_identifier = s.stakeholder_identifier AND st.name IN ("active", "overwritten")
+      GROUP BY smax.stakeholder_identifier
+    )
+  )
+  AND pi.version = (
+    SELECT max(version)
+    FROM primary_investors pimax
+    JOIN status st ON pimax.fk_status = st.id
+    WHERE pimax.primary_investor_identifier = pi.primary_investor_identifier AND st.name IN ("active", "overwritten", "deleted")
+  )
+  AND pi_st.name IN ("active", "overwritten")
+""" % activity.id
+
+            print('InvestorActivityInvolvement.Manager.get_involvements_for_activity() TODO: fix (learn from history)!')
+            return InvestorActivityInvolvement.objects.filter(fk_activity=activity).\
+                filter(fk_investor__fk_status__name__in=("active", "overwritten"))
+
     fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"), db_index=True)
     fk_investor = models.ForeignKey("Investor", verbose_name=_("Investor"), db_index=True)
     percentage = models.FloatField(
@@ -61,3 +103,10 @@ class InvestorActivityInvolvement(models.Model):
     comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
+
+    objects = IAIManager()
+
+    def __str__(self):
+        return "Activity: %i Investor: %i Percentage: %s comment: '%s'" % (
+            self.fk_activity_id, self.fk_investor_id, str(self.percentage), str(self.comment)[:40]
+        )

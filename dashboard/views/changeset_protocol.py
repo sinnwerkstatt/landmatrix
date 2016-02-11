@@ -1,9 +1,10 @@
 
 from django.utils.encoding import force_text
 
+from global_app.views.activity_protocol import ActivityProtocol
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-from landmatrix.models.activity_changeset_review import ActivityChangesetReview
+from landmatrix.models.activity_changeset_review import ActivityChangesetReview, ReviewDecision
 from landmatrix.models.activity_feedback import ActivityFeedback
 from landmatrix.models.activity_changeset import ActivityChangeset
 
@@ -11,7 +12,11 @@ from django.views.generic import View
 from django.http.response import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import transaction
 import json
+
+from landmatrix.models.investor import InvestorActivityInvolvement, InvestorVentureInvolvement
+from landmatrix.models.status import Status
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -126,52 +131,63 @@ class ChangesetProtocol(View):
 
     def _approve_a_changesets(self, request):
         for cs in self.data.get("a_changesets", {}):
-                cs_id = cs.get("id")
-                cs_comment = cs.get("comment")
-                changeset = ActivityChangeset.objects.get(id=cs_id)
-                activity = changeset.fk_activity
-                if activity.fk_status.name == "pending":
-                    if changeset.previous_version:
-                        # approval of updated or active deal
-                        activity.fk_status = Status.objects.get(name="overwritten")
-                    else:
-                        # approval of new deal
-                        activity.fk_status = Status.objects.get(name="active")
-                    activity.save()
-                    review_decision = Review_Decision.objects.get(name="approved")
-                    a_changeset_review = A_Changeset_Review.objects.create(
-                        fk_a_changeset=changeset,
-                        fk_user=request.user,
-                        fk_review_decision=review_decision,
-                        comment=cs_comment
-                    )
-                    inv = Involvement.objects.get_involvements_for_activity(activity)
-                    inv = filter(lambda x: x.fk_stakeholder, inv)
-                    ap = ActivityProtocol()
-                    if len(inv) > 0:
-                        pi = inv[0].fk_primary_investor
-                        if any(set(s.stakeholder_identifier for s in
-                                   Stakeholder.objects.get_stakeholders_for_primary_investor(
-                                           pi.id)).symmetric_difference(
-                                i.fk_stakeholder.stakeholder_identifier for i in inv)):
-                            # secondary investors has changed
-                            ap.update_secondary_investors(activity, pi, [
-                                {"stakeholder": i.fk_stakeholder, "investment_ratio": i.investment_ratio} for i in inv],
-                                                          request)
-                    ap.fill_lookup_table(activity.activity_identifier)
-                    ap.prepare_deal_for_public_interface(activity.activity_identifier)
-                elif activity.fk_status.name == "to_delete":
-                    activity.fk_status = Status.objects.get(name="deleted")
-                    activity.save()
-                    review_decision = Review_Decision.objects.get(name="deleted")
-                    a_changeset_review = A_Changeset_Review.objects.create(
-                        fk_a_changeset=changeset,
-                        fk_user=request.user,
-                        fk_review_decision=review_decision,
-                        comment=cs_comment
-                    )
-                    ap = ActivityProtocol()
-                    ap.remove_from_lookup_table(activity.activity_identifier)
+            changeset = ActivityChangeset.objects.get(id=cs.get("id"))
+            activity = changeset.fk_activity
+            if activity.fk_status.name == "pending":
+                self._approve_activity_change(activity, changeset, cs.get("comment"), request)
+            elif activity.fk_status.name == "to_delete":
+                self._approve_activity_deletion(activity, changeset, cs.get("comment"), request)
+
+    @transaction.atomic
+    def _approve_activity_change(self, activity, changeset, cs_comment, request):
+        activity.fk_status = Status.objects.get(name="overwritten" if changeset.previous_version else "active")
+        activity.save()
+        ActivityChangesetReview.objects.create(
+            fk_activity_changeset=changeset,
+            fk_user=request.user,
+            fk_review_decision=ReviewDecision.objects.get(name="approved"),
+            comment=cs_comment
+        )
+        involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity)
+        print('_approve_activity_change() Involvements:', involvements)
+        # TODO: what is this line for? only get involvements which have a stakeholder? but we already have that!
+        # inv = inv.filter(lambda x: x.fk_stakeholder)
+        ap = ActivityProtocol()
+        if len(involvements) > 0:
+            self._conditionally_update_stakeholders(activity, ap, involvements, request)
+
+        ap.prepare_deal_for_public_interface(activity.activity_identifier)
+
+    def _conditionally_update_stakeholders(self, activity, ap, involvements, request):
+        operational_stakeholder = involvements[0].fk_investor
+        print('_approve_activity_change() operational stakeholder:', operational_stakeholder)
+        if _any_investor_has_changed(operational_stakeholder, involvements):
+            # secondary investors has changed
+            # involvement_stakeholders = [
+            #     {"stakeholder": i.fk_stakeholder, "investment_ratio": i.investment_ratio} for i in involvements
+            # ]
+            involvement_stakeholders = [
+                {"stakeholder": ivi.fk_stakeholder, "investment_ratio": ivi.investment_ratio}
+                for iai in involvements
+                for ivi in InvestorVentureInvolvement.objects.filter(fk_investor=iai.fk_investor)
+            ]
+            print('_approve_activity_change() involvement_stakeholders:', involvement_stakeholders)
+            ap.update_secondary_investors(
+                activity, operational_stakeholder, involvement_stakeholders, request
+            )
+
+    def _approve_activity_deletion(self, activity, changeset, cs_comment, request):
+        activity.fk_status = Status.objects.get(name="deleted")
+        activity.save()
+        review_decision = ReviewDecision.objects.get(name="deleted")
+        ActivityChangesetReview.objects.create(
+            fk_a_changeset=changeset,
+            fk_user=request.user,
+            fk_review_decision=review_decision,
+            comment=cs_comment
+        )
+        ap = ActivityProtocol()
+        ap.remove_from_lookup_table(activity.activity_identifier)
 
     def reject(self, request, *args, **kwargs):
         """
@@ -412,4 +428,10 @@ class ChangesetProtocol(View):
         pagination["last"] = paginator.num_pages
         pagination["total"] = paginator.count
         return pagination
+
+
+def _any_investor_has_changed(operational_stakeholder, involvements):
+    op_subinvestor_ids = set(s.investor_identifier for s in operational_stakeholder.get_subinvestors())
+    involvement_investor_ids = (i.fk_investor.investor_identifier for i in involvements)
+    return any(op_subinvestor_ids.symmetric_difference(involvement_investor_ids))
 
