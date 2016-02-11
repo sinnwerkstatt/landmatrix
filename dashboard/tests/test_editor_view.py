@@ -17,13 +17,14 @@ class TestEditorView(TestCase):
     NORMAL_USER = 'normal_user'
     NORMAL_PASSWORD = 'blah'
     SUPER_USER = 'superuser'
+    DASHBOARD_URL = '/editor'
 
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(username=self.NORMAL_USER, password=self.NORMAL_PASSWORD)
 
     def test_user_not_logged_in_redirects_to_login_page(self):
-        url, response = self._get_url_following_redirects('/dashboard')
+        url, response = self._get_url_following_redirects(self.DASHBOARD_URL)
         self.assertEqual(200, response.status_code)
         self.assertIn(settings.LOGIN_URL, url)
 
@@ -35,13 +36,13 @@ class TestEditorView(TestCase):
 
     def test_editor_page_shows_when_logged_in(self):
         self.client.login(username=self.NORMAL_USER, password=self.NORMAL_PASSWORD)
-        url, response = self._get_url_following_redirects('/dashboard')
+        url, response = self._get_url_following_redirects(self.DASHBOARD_URL)
         self.assertEqual(200, response.status_code)
-        self.assertIn('/dashboard', url)
+        self.assertIn(self.DASHBOARD_URL, url)
 
     def test_editor_page_contains_username(self):
         self.client.login(username=self.NORMAL_USER, password=self.NORMAL_PASSWORD)
-        url, response = self._get_url_following_redirects('/dashboard')
+        url, response = self._get_url_following_redirects(self.DASHBOARD_URL)
         self.assertIn(self.NORMAL_USER, response.content.decode('utf-8'))
 
     def test_user_needs_region_info_filled(self):
