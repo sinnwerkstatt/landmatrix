@@ -62,11 +62,8 @@ class InvestorActivityInvolvement(models.Model):
     class IAIManager(Manager):
 
         def get_involvements_for_activity(self, activity):
-            print('InvestorActivityInvolvement.Manager.get_involvements_for_activity() TODO: fix (learn from history)!')
-            return InvestorActivityInvolvement.objects.filter(fk_activity=activity).\
-                filter(fk_investor__fk_status__name__in=("active", "overwritten"))
-
-            sql = """
+            def original_sql():
+                return """
 SELECT i.*
 FROM primary_investors pi
 JOIN status pi_st ON pi.fk_status = pi_st.id
@@ -93,6 +90,10 @@ WHERE
   AND pi_st.name IN ("active", "overwritten")
 """ % activity.id
 
+            print('InvestorActivityInvolvement.Manager.get_involvements_for_activity() TODO: fix (learn from history)!')
+            return InvestorActivityInvolvement.objects.filter(fk_activity=activity).\
+                filter(fk_investor__fk_status__name__in=("active", "overwritten"))
+
     fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"), db_index=True)
     fk_investor = models.ForeignKey("Investor", verbose_name=_("Investor"), db_index=True)
     percentage = models.FloatField(
@@ -105,3 +106,7 @@ WHERE
 
     objects = IAIManager()
 
+    def __str__(self):
+        return "Activity: %i Investor: %i Percentage: %s comment: '%s'" % (
+            self.fk_activity_id, self.fk_investor_id, str(self.percentage), str(self.comment)[:40]
+        )
