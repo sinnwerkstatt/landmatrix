@@ -2,10 +2,11 @@
 {% load i18n custom_tags %}
 
 {% block breadcrumb_inner %}
-<li>{% trans "Manage deals " %}</li>
+    <li><a href="/editor">{% trans "Dashboard" %}</a></li>
+    <li>{% trans "Manage deals " %}</li>
 {% endblock %}
 
-{% block Page_title %}{% trans "Manage deals" %}{% endblock %}
+{% block page_title %}{% trans "Manage deals" %}{% endblock %}
 {% block title %}{% trans "Manage deals" %}{% endblock %}
 
 {% block content %}
