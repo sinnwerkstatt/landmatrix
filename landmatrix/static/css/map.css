@@ -109,8 +109,7 @@ p {
     top: 3em;
 }
 
-.map > .panel,li,ul,.group  {
-    line-height: 0.5em !important;
+.map {
     font-size: 12px !important;
 }
 
@@ -119,8 +118,8 @@ table .map {
     width: 100%;
     top: 15px;
     overflow: hidden;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
+    /*-moz-border-radius: 8px;
+    border-radius: 8px; */
     /* border: 1px solid black; */
 }
 
