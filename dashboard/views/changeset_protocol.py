@@ -155,7 +155,7 @@ class ChangesetProtocol(View):
         ap = ActivityProtocol()
         if len(involvements) > 0:
             self._conditionally_update_stakeholders(activity, ap, involvements, request)
-        ap.fill_lookup_table(activity.activity_identifier)
+
         ap.prepare_deal_for_public_interface(activity.activity_identifier)
 
     def _conditionally_update_stakeholders(self, activity, ap, involvements, request):
