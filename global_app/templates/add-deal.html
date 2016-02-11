@@ -35,72 +35,7 @@
 
         <div class="panel-group" id="accordion">
 
-            {% if forms %}
-
-                {% for form in forms %}
-
-                    <div class="panel panel-default">
-
-
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion"
-                                   href="#collapse_{{ forloop.counter }}">
-                                    {{ form.form_title }}
-                                    <span id="collapsebtn_{{ forloop.counter }}"
-                                          class="lm-chevron-circle-up pull-right"></span>
-                                </a>
-                            </h4>
-                        </div>
-
-                        <div id="collapse_{{ forloop.counter }}" class="panel-collapse collapse in">
-                            <div class="panel-body">
-                                <table>
-                                    {% if form.forms %}
-
-                                        {% if form.forms.0.has_investor %}
-                                            {{ form }}
-
-                                            {% comment %}
-                            <tr>
-                              <td>Primary investor:</td>
-                              <td>{{ investor.primary_investor.name }}</td>
-                            </tr>
-                            {% for i in investor.secondary_investors %}
-                              <tr>
-                                <td>Secondary investor:</td>
-                                <td>{{i.tags.investor_name}} - {{i.tags.country}}, {{i.tags.classification}} ({{i.investment_ratio}}%)</td>
-                                <td>{{i.comment}}</td>
-                              </tr>
-                            {% endfor %}
-                            {% endcomment %}
-
-                                        {% else %}    {# form.forms.0.has_investor #}
-
-                                            {{ form }}
-
-                                        {% endif %}   {# form.forms.0.has_investor #}
-                                    {% else %}      {# form.forms #}
-                                        {{ form.as_table }}
-                                    {% endif %}     {# form.forms #}
-                                </table>
-                            </div>
-                        </div>
-                    </div>            {# class="panel panel-default" #}
-
-                    <script>
-                        var collapsename = "#collapse_{{forloop.counter}}";
-                        $(collapsename).on("hidden.bs.collapse", function () {
-                            $("#collapsebtn_{{forloop.counter}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
-                        });
-                        $(collapsename).on("shown.bs.collapse", function () {
-                            $("#collapsebtn_{{forloop.counter}}").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
-                        });
-                    </script>
-
-                {% endfor %}
-
-            {% endif %}           {# forms #}
+        {% include "includes/dealpanels.html" %}
 
         </div>
 
