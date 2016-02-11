@@ -36,12 +36,15 @@ class ActivityProtocol:
         # order of execution is important, is_public_deal relies on calculated deal size
         pi_values = self.calculate_public_interface_values(activity_identifier)
 
+        print('prepare_deal_for_public_interface(%i)'%activity_identifier, pi_values)
+
+
         PublicInterfaceCache.objects.filter(fk_activity__activity_identifier=activity_identifier).delete()
         PublicInterfaceCache.objects.create(
-            fk_activity=0,
+            fk_activity=Activity.get_latest_activity(activity_identifier),
             is_deal=self.is_public_deal(activity_identifier),
-            negotiation_status=pi_values['negotiation_status'],
-            implementation_status=pi_values['implementation_status'],
+            negotiation_status=pi_values['negotiation_status'].attributes['negotiation_status'],
+            implementation_status=pi_values['implementation_status'].attributes['implementation_status'],
             deal_size=pi_values['deal_size']
         )
 
@@ -63,8 +66,6 @@ class ActivityProtocol:
                 activity_identifier, pi_values['negotiation_status'].attributes['negotiation_status']
             )
 
-        print('calculate_public_interface_values(%i)'%activity_identifier, pi_values)
-
         # check if deal is domestic or transnational
         pi_values['deal_scope'] = _calculate_deal_scope(activity_identifier)
 
@@ -84,75 +85,33 @@ class ActivityProtocol:
 
     def is_public_deal(self, activity_identifier, logger=None):
         """
-            Detects if the deal is shown at the public interface
             Important: relies on calculate_public_interface_values result, calculate_public_interface_values should allways be executed first.
         """
-        activity = Activity.objects._get_latest_active_activity(activity_identifier)
+        activity = Activity.get_latest_active_activity(activity_identifier)
         if not activity:
-            # if no active activity it could never be a public deal
             return False
-        # Filter B3 Only drop a deal if we have information that initiation years are < 2000. Deals with missing year values have to cross the filter to the PI)
-        negotiation_stati = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="negotiation_status", value__in=("Intended (Expression of interest)", "Intended (Under negotiation)", "Concluded (Oral Agreement)", "Concluded (Contract signed)"), year__lt=2000)
-        implementation_stati = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="implementation_status", value__in=("Startup phase (no production)", "In operation (production)"), year__lt=2000)
-        if len(negotiation_stati) > 0 or len(implementation_stati) > 0:
-            self._public_deal_logger(logger, "B3-initiation-year", False, activity_identifier)
-            #raise Exception, (negotiation_stati, negotiation_status, negotiation_status_year, implementation_stati, implementation_status, implementation_status_year)
+
+        if _is_deal_older_y2k(activity_identifier):
             return False
-        else:
-            self._public_deal_logger(logger, "B3-initiation-year", True, activity_identifier)
-            pass
-        # Filter B1 (flag is unreliable not set):
-        not_public = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="not_public")
-        not_public = len(not_public) > 0 and not_public[0].value or None
-        if (not not_public) or (not_public in ("False", "off")):
-            self._public_deal_logger(logger, "B1-is-unreliable", True, activity_identifier)
-            pass
-        else:
-            self._public_deal_logger(logger, "B1-is-unreliable", False, activity_identifier)
+
+        if not _is_flag_not_public_off(activity_identifier):
             return False
-        intended_size = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intended_size", value__isnull=False).order_by("-year")
-        intended_size = len(intended_size) > 0 and intended_size[0].value or None
-        contract_size = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="contract_size", value__isnull=False).order_by("-year")
-        contract_size = len(contract_size) > 0 and contract_size[0].value or None
-        production_size = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="production_size", value__isnull=False).order_by("-year")
-        production_size = len(production_size) > 0 and production_size[0].value or None
-        #Filter B2 (area size >= 200ha AND at least one area size is given)
-        if (not intended_size and not contract_size and not production_size):
-            self._public_deal_logger(logger, "B2-area-size-not-given", False, activity_identifier)
+
+        if _is_size_invalid(activity_identifier):
             return False
-        else:
-            self._public_deal_logger(logger, "B2-area-size-not-given", True, activity_identifier)
-            pass
-        intended_size = intended_size or 0
-        contract_size = contract_size or 0
-        production_size = production_size or 0
-        if int(intended_size) < 200 and int(contract_size) < 200 and int(production_size) < 200:
-            self._public_deal_logger(logger, "B2-area-size-small", False, activity_identifier)
+
+        if not _is_minimum_information_requirement_satisfied(activity_identifier):
             return False
-        else:
-            self._public_deal_logger(logger, "B2-area-size-small", True, activity_identifier)
-            pass
-        # Filter B4 (minimum information requirements)
-        target_country = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="target_country")
-        ds_type = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="type")
-        if len(target_country) > 0 and len(ds_type) > 0:
-            self._public_deal_logger(logger, "B4-minimum-information-country-ds", True, activity_identifier)
-            pass
-        else:
-            self._public_deal_logger(logger, "B4-minimum-information-country-ds", False, activity_identifier)
-            return False
+
         has_investor = False
-        involvements = []
         involvements = Involvement.objects.get_involvements_for_activity(activity)
         if len(involvements) == 1 and not involvements[0].fk_stakeholder:
-            self._public_deal_logger(logger, "B4-minimum-information-no-involvement", False, activity_identifier)
             return False
         elif len(involvements) > 0:
-            self._public_deal_logger(logger, "B4-minimum-information-no-involvement", True, activity_identifier)
             pass
         else:
-            self._public_deal_logger(logger, "B4-minimum-information-no-involvement", False, activity_identifier)
             return False
+
         for i in involvements:
             if not i.fk_stakeholder:
                 continue
@@ -165,32 +124,75 @@ class ActivityProtocol:
         # filter Unknown (Unnamed Investor, Unnamed Investor 32)
         invalid_primary_investor_name = re.match("^(unknown|unnamed)( \(([, ]*(unnamed investor [0-9]+)*)+\))?$", primary_investor_name.lower())
         if has_investor or (primary_investor_name and not invalid_primary_investor_name):
-            self._public_deal_logger(logger, "B4-minimum-information-no-investor-name", True, activity_identifier)
             pass
         else:
-            self._public_deal_logger(logger, "B4-minimum-information-no-investor-name", False, activity_identifier)
             return False
+
         #Filter B5 deals with intention mining
         mining = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention", value="Mining")
         intentions = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention")
         if len(mining) > 0 and len(intentions) == 1:
             # deal has only intention mining (pure mining)
-            self._public_deal_logger(logger, "B5-pure-mining", False, activity_identifier)
             return False
         else:
-            self._public_deal_logger(logger, "B5-pure-mining", True, activity_identifier)
             pass
+
         #Filter B6 (high income countries)
-        for tc in target_country:
+        for tc in attributes_for_activity(activity_identifier, "target_country"):
             country = Country.objects.get(id=tc.value)
             if country.high_income == False:
-                self._public_deal_logger(logger, "B7-high-income", True, activity_identifier)
                 pass
             else:
-                self._public_deal_logger(logger, "B7-high-income", False, activity_identifier)
                 return False
-        self._public_deal_logger(logger, "passed", True, activity_identifier)
+
         return True
+
+
+def _is_minimum_information_requirement_satisfied(activity_identifier):
+    target_country = attributes_for_activity(activity_identifier, "target_country")
+    ds_type = attributes_for_activity(activity_identifier, "type")
+    return len(target_country) > 0 and len(ds_type) > 0
+
+
+def _is_size_invalid(activity_identifier):
+    intended_size = latest_attribute_value_for_activity(activity_identifier, "intended_size") or 0
+    contract_size = latest_attribute_value_for_activity(activity_identifier, "contract_size") or 0
+    production_size = latest_attribute_value_for_activity(activity_identifier, "production_size") or 0
+    # Filter B2 (area size >= 200ha AND at least one area size is given)
+    no_size_set = (not intended_size and not contract_size and not production_size)
+    size_too_small = int(intended_size) < 200 and int(contract_size) < 200 and int(production_size) < 200
+    return no_size_set or size_too_small
+
+
+def _is_flag_not_public_off(activity_identifier):
+    # Filter B1 (flag is unreliable not set):
+    not_public = attributes_for_activity(activity_identifier, "not_public")
+    not_public = len(not_public) > 0 and not_public[0].attributes['not_public'] or None
+    return (not not_public) or (not_public in ("False", "off"))
+
+
+def _is_deal_older_y2k(activity_identifier):
+    """
+    Filter B3
+    Only drop a deal if we have information that initiation years are < 2000.
+    Deals with missing year values have to cross the filter to the PI
+    """
+    negotiation_stati = attributes_for_activity(activity_identifier, "negotiation_status"). \
+        filter(attributes__contains={
+                'negotiation_status': [
+                    "Intended (Expression of interest)", "Intended (Under negotiation)", "Concluded (Oral Agreement)",
+                    "Concluded (Contract signed)"
+                ]
+            }
+        ). \
+        filter(date__lt='2000-01-01')
+
+    implementation_stati = attributes_for_activity(activity_identifier, "implementation_status"). \
+        filter(attributes__contains={
+            'implementation_status': ["Startup phase (no production)", "In operation (production)"]}
+        ). \
+        filter(date__lt='2000-01-01')
+    return len(negotiation_stati) > 0 or len(implementation_stati) > 0
 
 
 def _calculate_deal_scope(activity_identifier):
@@ -286,6 +288,10 @@ def attributes_without_date(activity_identifier, attribute):
     return attributes_for_activity(activity_identifier, attribute).filter(date__isnull=True)
 
 
+def latest_attribute_value_for_activity(activity_identifier, attribute):
+        attributes = nonnull_attributes_for_activity(activity_identifier, attribute).order_by("-date")
+        return len(attributes) > 0 and attributes[0].attributes[attribute] or None
+
 def nonnull_attributes_for_activity(activity_identifier, attribute):
     return attributes_for_activity(activity_identifier, attribute).filter(attributes__isnull={attribute: True})
 
@@ -330,13 +336,13 @@ def _skipped_activity_identifiers(activity, operational_stakeholder):
 
 def _update_stakeholders_for_activity(activity_identifier, involvement_stakeholders, operational_stakeholder):
 
-    latest = Activity.objects._get_latest_active_activity(activity_identifier)
+    latest = Activity.get_latest_active_activity(activity_identifier)
     if not latest:
         return
 
-    existing_investors = set(
-        [i.fk_investor.id for i in InvestorActivityInvolvement.objects.get_involvements_for_activity(latest)]
-    )
+    existing_investors = {
+        i.fk_investor.id for i in InvestorActivityInvolvement.objects.get_involvements_for_activity(latest)
+    }
 
     for involved_stakeholder in involvement_stakeholders:
         _create_venture_involvement_or_update_investor_list(
