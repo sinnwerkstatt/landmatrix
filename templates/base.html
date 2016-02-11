@@ -26,8 +26,12 @@
 
 
 
+
+
             {% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
     <meta name="keywords" content="
+
+
 
 
 
@@ -93,11 +97,11 @@
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="/global"><span class="lm-spacer lm-globe"></span>Global</a></li>
+                    <li><a href="/global"><span class="lm-nav lm-globe"></span><span>Global</span></a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><span class="lm-spacer lm-regions"></span>Regions <span
-                                class="caret"></span></a>
+                           aria-expanded="false"><span class="lm-nav lm-regions"></span><span>Regions <span
+                                class="caret"></span></span></a>
                         <ul class="dropdown-menu">
                             <li>
                                 <form role="form">
@@ -123,8 +127,8 @@
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><span class="lm-spacer lm-flag"></span>Countries <span
-                                class="caret"></span></a>
+                           aria-expanded="false"><span class="lm-nav lm-flag"></span><span class="lm-navlink">Countries <span
+                                class="caret"></span></span></a>
                         <ul class="dropdown-menu">
                             <li>
                                 <form role="form">
@@ -145,8 +149,8 @@
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><span class="lm-spacer lm-plus-circle"></span>Get Involved <span
-                                class="caret"></span></a>
+                           aria-expanded="false"><span class="lm-nav lm-plus-circle"></span><span class="lm-navlink">Get Involved <span
+                                class="caret"></span></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="add-deal">Report a deal</a></li>
                             <li role="separator" class="divider"></li>
@@ -192,8 +196,10 @@
         {% block subnav %}{% endblock %}
         {% block breadcrumb %}
             <ul class="breadcrumb">
-                <li><a href="/">Home</a> <span class="divider"></span></li>
-                <li>{% page_attribute "title" %}</li>
+                <li><a href="/">Home</a></li>
+                <!-- <li>{% page_attribute "title" %}</li> -->
+                {% block breadcrumb_inner %}
+                {%  endblock %}
             </ul>
         {% endblock %}
         {% block title_section %}
@@ -258,17 +264,18 @@
         <div class="row">
             <div class="col-md-4">
                 <h4>Spread the word and share land matrix</h4>
-                <a href="https://twitter.com/Land_Matrix"><span class="lm-twitter-square"></span></a>
-                <a href="https://www.facebook.com/LandMatrix"><span class="lm-facebook-square"></span></a>
+                <a href="https://twitter.com/Land_Matrix"><span class="lm-footer lm-twitter-square"></span></a>
+                <a href="https://www.facebook.com/LandMatrix"><span class="lm-footer lm-facebook-square"></span></a>
             </div>
             <div class="col-md-4 center">
                 <h4>Share and adapt</h4>
-                <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span class="lm-creative-commons"></span></a>
-                <a href="https://github.com/sinnwerkstatt/landmatrix"><span class="lm-github"></span></a>
+                <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span
+                        class="lm-footer lm-creative-commons"></span></a>
+                <a href="https://github.com/sinnwerkstatt/landmatrix"><span class="lm-footer lm-github"></span></a>
             </div>
             <div class="col-md-4 right">
                 <h4>Sign up to receive updates</h4>
-                <a href="http://eepurl.com/AHK0r"><span class="lm-envelope"></span></a>
+                <a href="http://eepurl.com/AHK0r"><span class="lm-footer lm-envelope"></span></a>
             </div>
         </div>
     </div>
