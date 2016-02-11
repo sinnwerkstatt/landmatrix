@@ -4,56 +4,63 @@
 {% block body_class %}dashboard{% endblock %}
 
 {% block breadcrumb_inner %}
-<li>{% trans "Dashboard" %}</li>
+    <li>{% trans "Dashboard" %}</li>
 {% endblock %}
 
 {% block page_title %}{% trans "Dashboard" %}{% endblock %}
 {% block title %}{% trans "Dashboard" %}{% endblock %}
 
 {% block content %}
-{% if statistics %}
-<div class="row stats">
-    <div class="span3">{% trans "Overall deals" %}:<br><span class="number">{{ statistics.overall_deal_count }}</span></div>
-    <div class="span3">{% trans "Public deals"%}:<br><span class="number">{{ statistics.public_deal_count }}</span></div>
-</div>
-<p>&nbsp;</p>
-{% endif %}
 
-{% if user %}
-    <p>{{user}}</p>
-{% else %}
-    <p>Oh noes! There is no user!!eleventy!</p>
-{% endif %}
+    <div class="dashboard">
+        <div class="row stats">
+            {% if user %}
+                <div class="col-md-8">{% trans "Logged in as" %}: <span class="user">{{ user }}</span></div>
+            {% else %}
+                <div class="danger">Oh noes! There is no user!!eleventy!</div>
+            {% endif %}
 
-<ul class="thumbnails">
-  <li class="span6">
-    <div class="alert alert-success">
-    <a class="close" data-dismiss="alert">&times;</a>
-    <h3>{% trans "Latest added" %}</h3>
-    {% if latest_added.cs %}
-    <table class="table table-condensed">
-      <thead>
-        <th class="deal">{% trans "Deal #" %}</th>
-        <th class="user">{% trans "Added by" %}</th>
-        <th class="comment">{% trans "Comment" %}</th>
-        <th class="date">{% trans "Added" %}</th>
-      </thead>
-      <tbody>
-        {% for changeset in latest_added.cs %}
-        <tr>
-          <td class="deal"> <a href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a></td>
-          <td class="user">{{ changeset.user }}</td>
-          <td class="comment" title="{{ changeset.comment }}"><span class="truncate">{{ changeset.comment }}</span></td>
-          {% if changeset.timestamp %}
-            <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
-          {% else %}
-            <td class="date">-</td>
-          {% endif %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-      {% comment %}
+            {% if statistics %}
+
+                <div class="col-md-2 pull-right">{% trans "Overall deals" %}:<br><span
+                        class="number">{{ statistics.overall_deal_count }}</span></div>
+                <div class="col-md-2 pull-right">{% trans "Public deals" %}:<br><span
+                        class="number">{{ statistics.public_deal_count }}</span></div>
+            {% endif %}
+        </div>
+
+        <ul class="thumbnails">
+            <li class="col-md-6">
+                <div class="alert alert-success">
+                    <a class="close hidden" data-dismiss="alert">&times;</a>
+                    <h3>{% trans "Latest added" %}</h3>
+                    {% if latest_added.cs %}
+                        <table class="table table-condensed">
+                            <thead>
+                            <th class="deal">{% trans "Deal #" %}</th>
+                            <th class="user">{% trans "Added by" %}</th>
+                            <th class="comment">{% trans "Comment" %}</th>
+                            <th class="date">{% trans "Added" %}</th>
+                            </thead>
+                            <tbody>
+                            {% for changeset in latest_added.cs %}
+                                <tr>
+                                    <td class="deal"><a
+                                            href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                    </td>
+                                    <td class="user">{{ changeset.user }}</td>
+                                    <td class="comment" title="{{ changeset.comment }}"><span
+                                            class="truncate">{{ changeset.comment }}</span></td>
+                                    {% if changeset.timestamp %}
+                                        <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
+                                    {% else %}
+                                        <td class="date">-</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% comment %}
       PAGINATION DISABLED AS PER ORALLY AGREED SPEC
     <div class="pagination">
       <ul>
@@ -69,39 +76,42 @@
       </ul>
     </div>
       {% endcomment %}
-    {% else %}
-    <p>{% trans "No deals have been added lately." %}</p>
-    {% endif %}
-  </div>
-  </li>
-  <li class="span6">
-    <div class="alert alert-warning">
-    <a class="close" data-dismiss="alert">&times;</a>
-    <h3>{% trans "Latest modified" %}</h3>
-    {% if latest_modified.cs %}
-    <table class="table table-condensed">
-      <thead>
-        <th class="deal">{% trans "Deal #" %}</th>
-        <th class="user">{% trans "Modified by" %}</th>
-        <th class="comment">{% trans "Comment" %}</th>
-        <th class="date">{% trans "Modified" %}</th>
-      </thead>
-      <tbody>
-        {% for changeset in latest_modified.cs %}
-        <tr>
-          <td class="deal"><a href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a></td>
-          <td class="user">{{ changeset.user }}</td>
-          <td class="comment" title="{{ changeset.comment }}"><span class="truncate">{{ changeset.comment }}</span></td>
-          {% if changeset.timestamp %}
-            <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
-          {% else %}
-            <td class="date">-</td>
-          {% endif %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-      {% comment %}
+                    {% else %}
+                        <p>{% trans "No deals have been added lately." %}</p>
+                    {% endif %}
+                </div>
+            </li>
+            <li class="col-md-6">
+                <div class="alert alert-warning">
+                    <a class="close hidden" data-dismiss="alert">&times;</a>
+                    <h3>{% trans "Latest modified" %}</h3>
+                    {% if latest_modified.cs %}
+                        <table class="table table-condensed">
+                            <thead>
+                            <th class="deal">{% trans "Deal #" %}</th>
+                            <th class="user">{% trans "Modified by" %}</th>
+                            <th class="comment">{% trans "Comment" %}</th>
+                            <th class="date">{% trans "Modified" %}</th>
+                            </thead>
+                            <tbody>
+                            {% for changeset in latest_modified.cs %}
+                                <tr>
+                                    <td class="deal"><a
+                                            href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                    </td>
+                                    <td class="user">{{ changeset.user }}</td>
+                                    <td class="comment" title="{{ changeset.comment }}"><span
+                                            class="truncate">{{ changeset.comment }}</span></td>
+                                    {% if changeset.timestamp %}
+                                        <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
+                                    {% else %}
+                                        <td class="date">-</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% comment %}
       PAGINATION DISABLED AS PER ORALLY AGREED SPEC
     <div class="pagination">
       <ul>
@@ -117,39 +127,42 @@
       </ul>
     </div>
       {% endcomment %}
-    {% else %}
-    <p>{% trans "No deals have been modified lately." %}</p>
-    {% endif %}
-  </div>
-  </li>
-  <li class="span6">
-    <div class="alert alert-error">
-    <a class="close" data-dismiss="alert">&times;</a>
-    <h3>{% trans "Latest deleted" %}</h3>
-    {% if latest_deleted.cs %}
-    <table class="table table-condensed">
-      <thead>
-        <th class="deal">{% trans "Deal #" %}</th>
-        <th class="user">{% trans "Deleted by" %}</th>
-        <th class="comment">{% trans "Comment" %}</th>
-        <th class="date">{% trans "Deleted" %}</th>
-      </thead>
-      <tbody>
-        {% for changeset in latest_deleted.cs %}
-        <tr>
-          <td class="deal"><a href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a></td>
-          <td class="user">{{ changeset.user }}</td>
-          <td class="comment" title="{{ changeset.comment }}"><span class="truncate">{{ changeset.comment }}</span></td>
-          {% if changeset.timestamp %}
-            <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
-          {% else %}
-            <td class="date">-</td>
-          {% endif %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-      {% comment %}
+                    {% else %}
+                        <p>{% trans "No deals have been modified lately." %}</p>
+                    {% endif %}
+                </div>
+            </li>
+            <li class="col-md-6">
+                <div class="alert alert-danger">
+                    <a class="close hidden" data-dismiss="alert">&times;</a>
+                    <h3>{% trans "Latest deleted" %}</h3>
+                    {% if latest_deleted.cs %}
+                        <table class="table table-condensed">
+                            <thead>
+                            <th class="deal">{% trans "Deal #" %}</th>
+                            <th class="user">{% trans "Deleted by" %}</th>
+                            <th class="comment">{% trans "Comment" %}</th>
+                            <th class="date">{% trans "Deleted" %}</th>
+                            </thead>
+                            <tbody>
+                            {% for changeset in latest_deleted.cs %}
+                                <tr>
+                                    <td class="deal"><a
+                                            href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                    </td>
+                                    <td class="user">{{ changeset.user }}</td>
+                                    <td class="comment" title="{{ changeset.comment }}"><span
+                                            class="truncate">{{ changeset.comment }}</span></td>
+                                    {% if changeset.timestamp %}
+                                        <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
+                                    {% else %}
+                                        <td class="date">-</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% comment %}
       PAGINATION DISABLED AS PER ORALLY AGREED SPEC
     <div class="pagination">
       <ul>
@@ -167,107 +180,130 @@
       </ul>
     </div>
       {% endcomment %}
-    {% else %}
-    <p>{% trans "No deals have been deleted lately." %}</p>
-    {% endif %}
-  </div>
-  </li>
+                    {% else %}
+                        <p>{% trans "No deals have been deleted lately." %}</p>
+                    {% endif %}
+                </div>
+            </li>
+        </ul>
+        <ul class="thumbnails">
+        {% if perms.editor.change_activity %}
+                <li class="col-md-6">
+                    <div class="alert alert-info">
+                        <a class="close hidden" data-dismiss="alert">&times;</a>
+                        <h3>{% trans "Needs your attention" %}</h3>
+                        {% if manage.a_changesets or manage.sh_changesets %}
+                            <table class="table table-condensed">
+                                <thead>
+                                <th class="deal">{% trans "Deal #" %}</th>
+                                <th class="user">{% trans "Last revision" %}</th>
+                                <th class="state">{% trans "State" %}</th>
+                                <th class="action">{% trans "Actions" %}</th>
+                                </thead>
+                                <tbody>
+                                {% for changeset in manage.a_changesets.updates.cs %}
+                                    <tr class="update">
+                                        <td class="deal"><a
+                                                href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                        </td>
+                                        <td class="user">{{ changeset.user }}</td>
+                                        <td class="state">{% trans "Update" %}</td>
+                                        <td class="action">
+                                            <a href="/manage/deal/approve/{{ changeset.id }}/"
+                                               class="approve">{% trans "Approve" %}</a>
+                                            <a href="/manage/deal/reject/{{ changeset.id }}/"
+                                               class="reject">{% trans "Reject" %}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                {% for changeset in manage.a_changesets.deletes.cs %}
+                                    <tr class="delete">
+                                        <td class="deal"><a
+                                                href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                        </td>
+                                        <td class="user">{{ changeset.user }}</td>
+                                        <td class="state">{% trans "Delete" %}</td>
+                                        <td class="action">
+                                            <a href="/manage/deal/approve/{{ changeset.id }}/"
+                                               class="approve">{% trans "Approve" %}</a>
+                                            <a href="/manage/deal/reject/{{ changeset.id }}/"
+                                               class="reject">{% trans "Reject" %}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                {% for changeset in manage.a_changesets.inserts.cs %}
+                                    <tr class="insert">
+                                        <td class="deal"><a
+                                                href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                        </td>
+                                        <td class="user">{{ changeset.user }}</td>
+                                        <td class="state">{% trans "Add" %}</td>
+                                        <td class="action">
+                                            <a href="/manage/deal/approve/{{ changeset.id }}/"
+                                               class="approve">{% trans "Approve" %}</a>
+                                            <a href="/manage/deal/reject/{{ changeset.id }}/"
+                                               class="reject">{% trans "Reject" %}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                {% for changeset in manage.sh_changesets.deletes.cs %}
+                                    <tr class="deletes">
+                                        <td class="investor"><a
+                                                href="/browse/investor/{{ changeset.investor_id }}/">#{{ changeset.investor_id }}</a>
+                                        </td>
+                                        <td class="user">{{ changeset.user }}</td>
+                                        <td class="state">{% trans "Delete" %}</td>
+                                        <td class="action">
+                                            <a href="/manage/investor/approve/{{ changeset.id }}/"
+                                               class="approve">{% trans "Approve" %}</a>
+                                            <a href="/manage/investor/reject/{{ changeset.id }}/"
+                                               class="reject">{% trans "Reject" %}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <a href="/manage/">Show all</a>
+                        {% else %}
+                            <p>{% trans "No pending changesets require your attention." %}</p>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endif %}
 
-{% if perms.editor.change_activity %}
-  <li class="span6">
-    <div class="alert alert-info">
-    <a class="close" data-dismiss="alert">&times;</a>
-    <h3>{% trans "Needs your attention" %}</h3>
-    {% if manage.a_changesets or manage.sh_changesets %}
-    <table class="table table-condensed">
-      <thead>
-        <th class="deal">{% trans "Deal #" %}</th>
-        <th class="user">{% trans "Last revision" %}</th>
-        <th class="state">{% trans "State" %}</th>
-        <th class="action">{% trans "Actions" %}</th>
-      </thead>
-      <tbody>
-        {% for changeset in manage.a_changesets.updates.cs %}
-        <tr class="update">
-          <td class="deal"><a href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a></td>
-          <td class="user">{{ changeset.user }}</td>
-          <td class="state">{% trans "Update" %}</td>
-          <td class="action">
-            <a href="/manage/deal/approve/{{ changeset.id }}/" class="approve">{% trans "Approve" %}</a>
-            <a href="/manage/deal/reject/{{ changeset.id }}/" class="reject">{% trans "Reject" %}</a>
-          </td>
-        </tr>
-        {% endfor %}
-        {% for changeset in manage.a_changesets.deletes.cs %}
-        <tr class="delete">
-          <td class="deal"><a href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a></td>
-          <td class="user">{{ changeset.user }}</td>
-          <td class="state">{% trans "Delete" %}</td>
-          <td class="action">
-            <a href="/manage/deal/approve/{{ changeset.id }}/" class="approve">{% trans "Approve" %}</a>
-            <a href="/manage/deal/reject/{{ changeset.id }}/" class="reject">{% trans "Reject" %}</a>
-          </td>
-        </tr>
-        {% endfor %}
-        {% for changeset in manage.a_changesets.inserts.cs %}
-        <tr class="insert">
-          <td class="deal"><a href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a></td>
-          <td class="user">{{ changeset.user }}</td>
-          <td class="state">{% trans "Add" %}</td>
-          <td class="action">
-            <a href="/manage/deal/approve/{{ changeset.id }}/" class="approve">{% trans "Approve" %}</a>
-            <a href="/manage/deal/reject/{{ changeset.id }}/" class="reject">{% trans "Reject" %}</a>
-          </td>
-        </tr>
-        {% endfor %}
-        {% for changeset in manage.sh_changesets.deletes.cs %}
-        <tr class="deletes">
-          <td class="investor"><a href="/browse/investor/{{ changeset.investor_id }}/">#{{ changeset.investor_id }}</a></td>
-          <td class="user">{{ changeset.user }}</td>
-          <td class="state">{% trans "Delete" %}</td>
-          <td class="action">
-            <a href="/manage/investor/approve/{{ changeset.id }}/" class="approve">{% trans "Approve" %}</a>
-            <a href="/manage/investor/reject/{{ changeset.id }}/" class="reject">{% trans "Reject" %}</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <a href="/manage/">Show all</a>
-    {% else %}
-    <p>{% trans "No pending changesets require your attention." %}</p>
-    {% endif %}
-  </div>
-  </li>
-{% endif %}
-  <li class="span6">
-    <div class="alert alert-info">
-    <a class="close" data-dismiss="alert">&times;</a>
-    <h3>{% trans "Feedback requests" %}</h3>
-    {% if feedbacks.feeds %}
-    <table class="table table-condensed">
-      <thead>
-        <th class="deal">{% trans "Deal #" %}</th>
-        <th class="user">{% trans "Request from" %}</th>
-        <th class="comment">{% trans "Comment" %}</th>
-        <th class="date">{% trans "Requested" %}</th>
-      </thead>
-      <tbody>
-        {% for feedback in feedbacks.feeds %}
-        <tr>
-          <td class="deal"><a href="/browse/deal/{{ feedback.deal_id }}/">#{{ feedback.deal_id }}</a></td>
-          <td class="user">{{ feedback.from_user }}</td>
-          <td class="comment" title="{{ feedback.comment }}"><span class="truncate">{{ feedback.comment }}</span></td>
-          <td class="date">{{ feedback.timestamp|naturaltime_from_string  }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <a href="/manage/">Show all</a>
-    {% else %}
-    <p>{% trans "No feedback requests lately." %}</p>
-    {% endif %}
-  </div>
-  </li>
-</ul>
+            <li class="col-md-6">
+                <div class="alert alert-info">
+                    <a class="close hidden" data-dismiss="alert">&times;</a>
+                    <h3>{% trans "Feedback requests" %}</h3>
+                    {% if feedbacks.feeds %}
+                        <table class="table table-condensed">
+                            <thead>
+                            <th class="deal">{% trans "Deal #" %}</th>
+                            <th class="user">{% trans "Request from" %}</th>
+                            <th class="comment">{% trans "Comment" %}</th>
+                            <th class="date">{% trans "Requested" %}</th>
+                            </thead>
+                            <tbody>
+                            {% for feedback in feedbacks.feeds %}
+                                <tr>
+                                    <td class="deal"><a
+                                            href="/browse/deal/{{ feedback.deal_id }}/">#{{ feedback.deal_id }}</a></td>
+                                    <td class="user">{{ feedback.from_user }}</td>
+                                    <td class="comment" title="{{ feedback.comment }}"><span
+                                            class="truncate">{{ feedback.comment }}</span></td>
+                                    <td class="date">{{ feedback.timestamp|naturaltime_from_string }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <a href="/manage/">Show all</a>
+                    {% else %}
+                        <p>{% trans "No feedback requests lately." %}</p>
+                    {% endif %}
+                </div>
+            </li>
+        </ul>
+
+    </div>
+
 {% endblock %}
