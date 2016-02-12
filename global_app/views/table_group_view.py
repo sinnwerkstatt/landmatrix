@@ -108,7 +108,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     def _load_more(self):
         load_more = int(self.GET.get("more", 50))
-        if not self._filter_set() and self.group == "database":
+        if not self._filter_set(self.GET) and self.group == "database":
             load_more = None
         if not self._limit_query():
             load_more = None
@@ -140,11 +140,8 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             self.group = self.group.split(".")[0]
         # map url to group variable, cut possible .csv suffix
         self.group = self.group.replace("by-", "").replace("-", "_")
-        if not self._filter_set() and self.group == "database":
+        if not self._filter_set(self.GET) and self.group == "database":
             self.group = "all"
-
-    def _filter_set(self):
-        return self.GET and self.GET.get("filtered") and not self.GET.get("reset", None)
 
     def _set_columns(self):
         if self.is_download() and (self.group_value or self.group == "all"):
@@ -156,7 +153,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     def _set_filters(self):
         self.current_formset_conditions = self.get_formset_conditions(
-            self._filter_set(), self.GET, self.group, self.rules
+            self._filter_set(self.GET), self.GET, self.group, self.rules
         )
 
         self.filters = self.get_filter_context(
