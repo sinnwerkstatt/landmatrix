@@ -24,11 +24,9 @@
 {% block page_title %}Deal details{% endblock %}
 {% block title %}Deal details{% endblock %}
 
-{% block breadcrumb %}
-    <ul class="breadcrumb">
-        <li><a href="/">Home</a> <span class="divider"></span></li>
-        <li><a href="/get-the-detail/">Get the detail</a> <span class="divider"></span></li>
-    </ul>
+{% block breadcrumb_inner %}
+    <li><a href="/global/">Global</a> <span class="divider"></span></li>
+    <li>{% trans "Deal" %} #{{ deal.id }}</li>
 {% endblock %}
 
 {% block content %}
@@ -42,72 +40,7 @@
         </div>
         <div class="panel-group" id="accordion">
 
-            {% if forms %}
-                {% for form in forms %}
-
-                    <div class="panel panel-default">
-
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-target="#collapse_{{ forloop.counter }}"
-                                   data-parent="#accordion" href="#collapse_{{ forloop.counter }}">
-                                    {{ form.form_title }}
-
-                                    <span id="collapsebtn_{{ forloop.counter }}"
-                                          class="lm-chevron-circle-down pull-right"></span>
-                                </a>
-                            </h4>
-                        </div>
-
-                        <div id="collapse_{{ forloop.counter }}" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <table class="i-dont-know-how-to-do-this-in-css-yes-i-know-booh">
-                                    {% if form.forms %}
-
-                                        {% if form.forms.0.has_investor %}
-
-                                            <tr>
-                                                <td>Primary investor:</td>
-                                                <td>{{ investor.primary_investor.name }}</td>
-                                            </tr>
-                                            {% for i in investor.secondary_investors %}
-                                                <tr>
-                                                    <td>Secondary investor:</td>
-                                                    <td>{{ i.tags.investor_name }}
-                                                        - {{ i.tags.country }}, {{ i.tags.classification }}
-                                                        ({{ i.investment_ratio }}%)
-                                                    </td>
-                                                    <td>{{ i.comment }}</td>
-                                                </tr>
-                                            {% endfor %}
-
-                                        {% else %}    {# form.forms.0.has_investor #}
-
-                                            {{ form }}
-
-                                        {% endif %}   {# form.forms.0.has_investor #}
-                                    {% else %}
-                                        {{ form.as_table }}
-                                    {% endif %}
-                                </table>
-                            </div>
-                        </div>
-
-                    </div>            {# class="panel panel-default" #}
-
-                    <script>
-                        var collapsename = "#collapse_{{forloop.counter}}";
-                        $(collapsename).on("hidden.bs.collapse", function () {
-                            $("#collapsebtn_{{forloop.counter}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
-                        });
-                        $(collapsename).on("shown.bs.collapse", function () {
-                            $("#collapsebtn_{{forloop.counter}}").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
-                        });
-                    </script>
-
-                {% endfor %}
-
-            {% endif %}           {# forms #}
+            {% include "includes/dealpanels.html" %}
 
             {% if history|length > 1 %}
                 <div class="panel panel-default">
@@ -125,11 +58,12 @@
                         <div class="panel-body">
 
                             <table>
+                                <col width="23%">
                                 {% for changedate, item in history.items %}
                                     <tr>
                                         <td>
                                             {% if forloop.counter == 1 %}<strong>{% endif %}
-                                                {{ changedate|timestamp_from_epoch }}
+                                            {{ changedate|timestamp_from_epoch }}
                                             {% if forloop.counter == 1 %}</strong>{% endif %}
                                         </td>
                                         <!-- <td>{{ item.activity_changed_by }}</td>
@@ -139,14 +73,17 @@
                                         -->
 
                                         <td>
-                                            {% if not forloop.last %}
-                                                {# TODO: include as AJAX call #}
-                                                <a type="button" class="btn" href="/global/compare/{{ item.activity.activity_identifier }}_{{ item.date }}">
-                                                    Compare with previous version
-                                                </a>
-                                            {% else %}
-                                                first version
-                                            {% endif %}
+                                            {# TODO: include as AJAX call #}
+                                            <a type="button" class="btn"
+                                                    {% if not forloop.last %}
+                                               href="/global/compare/{{ item.activity.activity_identifier }}_{{ changedate }}"
+                                                        >
+                                                        {% trans "Compare with previous version" %}
+                                                    {% else %}
+                                                        disabled>
+                                                        {% trans "First version" %}
+                                                    {% endif %}
+                                            </a>
                                         </td>
                                     </tr>
                                 {% endfor %}

@@ -10,6 +10,7 @@ from django.utils.dateformat import DateFormat
 from django.contrib.auth.models import User
 
 class AddDealActionCommentForm(BaseForm):
+    form_title = _('Action Comment')
     tg_action = TitleField(required=False, label="", initial=_("Action comment"))
     tg_action_comment = forms.CharField(required=False, label="", widget=CommentInput)
     fully_updated = forms.BooleanField(required=False, label=_("Fully updated"))
