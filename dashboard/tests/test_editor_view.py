@@ -62,10 +62,12 @@ class TestEditorView(TestCase):
         self.assertEqual(self.SUPER_USER, self.user.userregionalinfo.super_user.username)
 
     def test_get_overall_deal_count(self):
-        print(get_overall_deal_count())
+        self.assertEqual(0, get_overall_deal_count())
+        # todo: test against actual data
 
     def test_get_public_deal_count(self):
-        print(get_public_deal_count())
+        self.assertEqual(0, get_public_deal_count())
+        # todo: test against actual data
 
 
     def _add_superuser(self, region_info):
