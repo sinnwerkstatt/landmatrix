@@ -6,16 +6,16 @@ from djangocms_text_ckeditor.utils import plugin_tags_to_user_html
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from global_app.views.filter_widget_mixin import FilterWidgetMixin
 from .models import GetTheIdea
 
 
-class GetTheIdeaPlugin(CMSPluginBase):
+class GetTheIdeaPlugin(CMSPluginBase, FilterWidgetMixin):
 
     module = "Get the idea"
     model = GetTheIdea
     name = _("Text")
     form = TextForm
-    render_template = "cms/plugins/text.html"
     change_form_template = "cms/plugins/text_plugin_change_form.html"
 
 
@@ -25,9 +25,7 @@ class GetTheIdeaPlugin(CMSPluginBase):
         return TextEditorWidget()
 
     def get_form_class(self, request, plugins):
-        """
-        Returns a subclass of Form to be used by this plugin
-        """
+        """ Returns a subclass of Form to be used by this plugin """
         # We avoid mutating the Form declared above by subclassing
         class AbstractTextPluginForm(self.form):
             pass
@@ -39,13 +37,16 @@ class GetTheIdeaPlugin(CMSPluginBase):
         plugins = plugin_pool.get_text_enabled_plugins(self.placeholder, self.page)
         form = self.get_form_class(request, plugins)
         kwargs['form'] = form # override standard form
-        return super(GetTheIdeaPlugin, self).get_form(request, obj, **kwargs)
+        return super().get_form(request, obj, **kwargs)
 
     def render(self, context, instance, placeholder):
+        self._set_filters(context['request'].GET)
         context.update({
             'body': plugin_tags_to_user_html(instance.body, context, placeholder),
             'placeholder': placeholder,
-            'object': instance
+            'object': instance,
+            'filters': self.filters,
+            'empty_form_conditions': self.current_formset_conditions
         })
         return context
 
@@ -53,13 +54,16 @@ class GetTheIdeaPlugin(CMSPluginBase):
         obj.clean_plugins()
         super(GetTheIdeaPlugin, self).save_model(request, obj, form, change)
 
+    def _set_filters(self, GET):
+        self.current_formset_conditions = self.get_formset_conditions(self._filter_set(GET), GET, None, self.rules)
+        self.filters = self.get_filter_context(self.current_formset_conditions, None, None, None, GET.get("starts_with"))
+
 
 class OverviewPlugin(GetTheIdeaPlugin):
     module = _("Get the idea")
     name = _("Overview")
     render_template = "plugins/overview.html"
     model = GetTheIdea
-
 plugin_pool.register_plugin(OverviewPlugin)
 
 

@@ -13,7 +13,7 @@ class FilterWidgetMixin:
 
     def example_set_filters(self):
         self.current_formset_conditions = self.get_formset_conditions(
-            self._filter_set(), self.GET, self.group, self.rules
+            self._filter_set(self.GET), self.GET, self.group, self.rules
         )
 
         self.filters = self.get_filter_context(
@@ -38,6 +38,9 @@ class FilterWidgetMixin:
                 return None
             else:
                 return ConditionFormset(self._get_filter_dict(browse_rules), prefix="conditions_empty")
+
+    def _filter_set(self, GET):
+        return GET and GET.get("filtered") and not GET.get("reset", None)
 
     def _get_filter_dict(self, browse_rules):
         filter_dict = MultiValueDict()

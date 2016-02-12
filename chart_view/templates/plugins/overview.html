@@ -1,5 +1,12 @@
 {% extends "plugins/base.html" %}{% load i18n %}
 
+{% comment %}
+get the filters that are active with {{ filters }}
+the filter formset/widget is in {{ empty_form_conditions }}
+or {% include "filters.html" %}, if the downloads are removed from filters.html
+
+{% endcomment %}
+
 {% block before %}
 <div class="row">
     <div class="span12">
@@ -14,6 +21,7 @@
 {% endblock %}
 
 {% block description %}
+
 <div class="desc">
     <p class="negotiation_status">Deals divided by negotiation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately. <a href="/about/#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left" title="The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark."><i class="icon icon-question-sign"> </i></a></p>
     <p class="implementation_status" style="display: none">Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately. <a href="/about/#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left" title="The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark."><i class="icon icon-question-sign"> </i></a></p>
