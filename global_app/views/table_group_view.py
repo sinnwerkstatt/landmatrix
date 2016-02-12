@@ -1,3 +1,5 @@
+from global_app.views.filter_widget_mixin import FilterWidgetMixin
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from .view_aux_functions import create_condition_formset, render_to_response
@@ -14,7 +16,7 @@ from django.template import RequestContext
 import json, numbers
 
 
-class TableGroupView(TemplateView):
+class TableGroupView(TemplateView, FilterWidgetMixin):
 
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = [
@@ -153,40 +155,14 @@ class TableGroupView(TemplateView):
             self.columns = self._columns()
 
     def _set_filters(self):
-        self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
-        ConditionFormset = create_condition_formset()
-        if self._filter_set():
-            # set given filters
-            self.current_formset_conditions = ConditionFormset(self.GET, prefix="conditions_empty")
-        else:
-            if self.group == "database":
-                self.current_formset_conditions = None
-            else:
-                self.current_formset_conditions = ConditionFormset(self._get_filter_dict(), prefix="conditions_empty")
+        self.current_formset_conditions = self.get_formset_conditions(
+            self._filter_set(), self.GET, self.group, self.rules
+        )
 
-        self.filters = BrowseFilterConditions(self.current_formset_conditions, [self._order_by()], 0).parse()
-
-        self.filters["group_by"] = self.group
-        self.filters["group_value"] = self.group_value
-        self.filters["starts_with"] = self.GET.get("starts_with", None)
-
-    def _get_filter_dict(self):
-        filter_dict = MultiValueDict()
-        for record, c in enumerate(self.rules):
-            rule_dict = MultiValueDict({
-                "conditions_empty-%i-variable" % record: [c.variable],
-                "conditions_empty-%i-operator" % record: [c.operator]
-            })
-            # pass comma separated list as multiple values for operators in/not in
-            if c.operator in ("in", "not_in"):
-                rule_dict.setlist("conditions_empty-%i-value" % record, c.value.split(","))
-            else:
-                rule_dict["conditions_empty-%i-value" % record] = c.value
-            filter_dict.update(rule_dict)
-        filter_dict["conditions_empty-INITIAL_FORMS"] = len(self.rules)
-        filter_dict["conditions_empty-TOTAL_FORMS"] = len(self.rules)
-        filter_dict["conditions_empty-MAX_NUM_FORMS"] = ""
-        return filter_dict
+        self.filters = self.get_filter_context(
+            self.current_formset_conditions, self._order_by(), self.group, self.group_value,
+            self.GET.get("starts_with", None)
+        )
 
     def _get_download(self, items):
         download = Download(self.download_format(), self.columns, self.group)
@@ -276,13 +252,10 @@ class TableGroupView(TemplateView):
         columns = {
             "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
             "target_region": ["target_region", "intention", "deal_count", "availability"],
-#            "investor_name": ["investor_name", "investor_country", "intention", "deal_count", "availability"],
             "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
-#            "investor_country": ["investor_country", "investor_region", "intention", "deal_count", "availability"],
 # stakeholder_region temporarily disabled until a more intelligent caching for the public interface variables is implemented
 #            "stakeholder_country": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
             "stakeholder_country": ["stakeholder_country", "intention", "deal_count", "availability"],
-#            "investor_region": ["investor_region", "intention", "deal_count", "availability"],
 # intention temporarily disabled until a more intelligent caching for the public interface variables is implemented
 #            "stakeholder_region": ["stakeholder_region", "intention", "deal_count", "availability"],
             "stakeholder_region": ["stakeholder_region", "deal_count", "availability"],

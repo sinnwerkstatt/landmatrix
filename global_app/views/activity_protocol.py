@@ -20,7 +20,6 @@ class ActivityProtocol:
         res = queryset.all()
         output = json.dumps(res)
 
-        # return HttpResponse(json.dumps(res,encoding="cp1251"), mimetype="application/json")#FIXME, utf-8 breaks for get-the-detail view
         return HttpResponse(output, content_type="application/json")
 
     def update_secondary_investors(self, activity, operational_stakeholder, involvement_stakeholders, request=None):
@@ -36,13 +35,10 @@ class ActivityProtocol:
         # order of execution is important, is_public_deal relies on calculated deal size
         pi_values = self.calculate_public_interface_values(activity_identifier)
 
-        print('prepare_deal_for_public_interface(%i)'%activity_identifier, pi_values)
-
-
         PublicInterfaceCache.objects.filter(fk_activity__activity_identifier=activity_identifier).delete()
         PublicInterfaceCache.objects.create(
             fk_activity=Activity.get_latest_activity(activity_identifier),
-            is_deal=self.is_public_deal(activity_identifier),
+            is_deal=is_public_deal(activity_identifier),
             negotiation_status=pi_values['negotiation_status'].attributes['negotiation_status'],
             implementation_status=pi_values['implementation_status'].attributes['implementation_status'],
             deal_size=pi_values['deal_size']
@@ -51,12 +47,15 @@ class ActivityProtocol:
     def remove_from_lookup_table(self, activity_identifier):
         PublicInterfaceCache.objects.filter(fk_activity__activity_identifier=activity_identifier).delete()
 
+    NEGOTIATION_STATUS_ORDER = dict([(str(c[1]), c[0]) for c in AddDealGeneralForm().fields["negotiation_status"].choices])
+    IMPLEMENTATION_STATUS_ORDER = dict([(str(c[1]), c[0]) for c in AddDealGeneralForm().fields["implementation_status"].choices])
+
     def calculate_public_interface_values(self, activity_identifier):
         pi_values = {
-            'implementation_status': self._most_current_state(
+            'implementation_status': _most_current_state(
                 activity_identifier, 'implementation_status', self.IMPLEMENTATION_STATUS_ORDER
             ),
-            'negotiation_status': self._most_current_state(
+            'negotiation_status': _most_current_state(
                 activity_identifier, 'negotiation_status', self.NEGOTIATION_STATUS_ORDER
             )
         }
@@ -71,81 +70,89 @@ class ActivityProtocol:
 
         return pi_values
 
-    def _most_current_state(self, activity_identifier, attribute, order):
-        states_without_year = attributes_without_date(activity_identifier, attribute)
-        states_sorted_by_year = attributes_sorted_by_date(activity_identifier, attribute)
-        return get_most_current_state(states_without_year, states_sorted_by_year, order, attribute)
 
-    NEGOTIATION_STATUS_ORDER = dict([(str(c[1]), c[0]) for c in AddDealGeneralForm().fields["negotiation_status"].choices])
-    IMPLEMENTATION_STATUS_ORDER = dict([(str(c[1]), c[0]) for c in AddDealGeneralForm().fields["implementation_status"].choices])
-
+def is_public_deal(activity_identifier):
     """
-        Returns the relevant state for the deal. Prefers states without a year but a higher ranking.
+        Important: relies on calculate_public_interface_values result, calculate_public_interface_values should always be executed first.
     """
+    activity = Activity.get_latest_active_activity(activity_identifier)
+    if not activity:
+        return False
 
-    def is_public_deal(self, activity_identifier, logger=None):
-        """
-            Important: relies on calculate_public_interface_values result, calculate_public_interface_values should allways be executed first.
-        """
-        activity = Activity.get_latest_active_activity(activity_identifier)
-        if not activity:
-            return False
+    if _is_deal_older_y2k(activity_identifier):
+        return False
 
-        if _is_deal_older_y2k(activity_identifier):
-            return False
+    if not _is_flag_not_public_off(activity_identifier):
+        return False
 
-        if not _is_flag_not_public_off(activity_identifier):
-            return False
+    if _is_size_invalid(activity_identifier):
+        return False
 
-        if _is_size_invalid(activity_identifier):
-            return False
+    if not _is_minimum_information_requirement_satisfied(activity_identifier):
+        return False
 
-        if not _is_minimum_information_requirement_satisfied(activity_identifier):
-            return False
+    involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity)
 
-        has_investor = False
-        involvements = Involvement.objects.get_involvements_for_activity(activity)
-        if len(involvements) == 1 and not involvements[0].fk_stakeholder:
-            return False
-        elif len(involvements) > 0:
-            pass
-        else:
-            return False
+    if not _has_subinvestors(involvements):
+        return False
 
-        for i in involvements:
-            if not i.fk_stakeholder:
-                continue
-            investor = SH_Key_Value_Lookup.objects.filter(stakeholder_identifier=i.fk_stakeholder.stakeholder_identifier, key="investor_name")
-            if len(investor) > 0:
-                investor_name = investor[0].value
-                if investor_name and ("Unnamed" not in investor_name and "Unknown" not in investor_name):
-                    has_investor = True
-        primary_investor_name = involvements[0].fk_primary_investor.name or ""
-        # filter Unknown (Unnamed Investor, Unnamed Investor 32)
-        invalid_primary_investor_name = re.match("^(unknown|unnamed)( \(([, ]*(unnamed investor [0-9]+)*)+\))?$", primary_investor_name.lower())
-        if has_investor or (primary_investor_name and not invalid_primary_investor_name):
-            pass
-        else:
-            return False
+    if not _has_valid_investors(involvements):
+        return False
 
-        #Filter B5 deals with intention mining
-        mining = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention", value="Mining")
-        intentions = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention")
-        if len(mining) > 0 and len(intentions) == 1:
-            # deal has only intention mining (pure mining)
-            return False
-        else:
-            pass
+    if _is_mining_deal(activity_identifier):
+        return False
 
-        #Filter B6 (high income countries)
+    if _is_high_income_target_country(activity_identifier):
+        return False
+
+    return True
+
+
+def _most_current_state(activity_identifier, attribute, order):
+    states_without_year = attributes_without_date(activity_identifier, attribute)
+    states_sorted_by_year = attributes_sorted_by_date(activity_identifier, attribute)
+    return get_most_current_state(states_without_year, states_sorted_by_year, order, attribute)
+
+
+def _is_high_income_target_country(activity_identifier):
         for tc in attributes_for_activity(activity_identifier, "target_country"):
             country = Country.objects.get(id=tc.value)
-            if country.high_income == False:
-                pass
-            else:
-                return False
+            if country.high_income:
+                return True
+        return False
 
-        return True
+
+def _is_mining_deal(activity_identifier):
+    mining = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention",
+                                               value="Mining")
+    intentions = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention")
+    is_mining_deal = len(mining) > 0 and len(intentions) == 1
+    return is_mining_deal
+
+
+def _has_valid_investors(involvements):
+    has_investor = False
+    for i in involvements:
+        if not i.fk_stakeholder:
+            continue
+        investor = SH_Key_Value_Lookup.objects.filter(
+            stakeholder_identifier=i.fk_stakeholder.stakeholder_identifier, key="investor_name")
+        if len(investor) > 0:
+            investor_name = investor[0].value
+            if investor_name and ("Unnamed" not in investor_name and "Unknown" not in investor_name):
+                has_investor = True
+    primary_investor_name = involvements[0].fk_primary_investor.name or ""
+    # filter Unknown (Unnamed Investor, Unnamed Investor 32)
+    invalid_primary_investor_name = re.match("^(unknown|unnamed)( \(([, ]*(unnamed investor [0-9]+)*)+\))?$",
+                                             primary_investor_name.lower())
+    return has_investor or (primary_investor_name and not invalid_primary_investor_name)
+
+
+def _has_subinvestors(involvements):
+        if len(involvements) == 1 and not involvements[0].get_subinvestors():
+            return False
+
+        return len(involvements) > 0
 
 
 def _is_minimum_information_requirement_satisfied(activity_identifier):
