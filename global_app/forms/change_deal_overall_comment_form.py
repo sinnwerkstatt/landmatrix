@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class ChangeDealOverallCommentForm(BaseForm):
-
+    form_title = _('Overall Comment')
     # Coordinators and reviewers overall comments
     tg_overall = TitleField(required=False, label="", initial=_("Overall comment"))
     tg_overall_comment = forms.CharField(required=False, label="", widget=CommentInput)
