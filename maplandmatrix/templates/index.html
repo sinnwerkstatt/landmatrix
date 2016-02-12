@@ -16,6 +16,11 @@
     <link rel="stylesheet" href="{% static "css/map.css" %}"/>
 {% endblock %}
 
+
+{% block breadcrumb_inner %}
+    <li>{% trans "Map" %}</li>
+{% endblock %}
+
 {% block content %}
     {% include "filters.html" %}
     <div id="alert_placeholder"></div>
