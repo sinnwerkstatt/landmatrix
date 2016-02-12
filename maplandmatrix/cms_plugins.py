@@ -1,4 +1,4 @@
-from api.query_sets.deals_query_set import DealsQuerySet
+from global_app.views.filter_widget_mixin import FilterWidgetMixin
 from .models import MapPluginModel
 
 from cms.plugin_pool import plugin_pool
@@ -8,12 +8,11 @@ from djangocms_text_ckeditor.forms import TextForm
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-import requests
-
 
 MAX_NUM_DEALS = 500
 
-class MapPlugin(CMSPluginBase):
+
+class MapPlugin(CMSPluginBase, FilterWidgetMixin):
 
     module = "Map"
     model = MapPluginModel
@@ -44,13 +43,19 @@ class MapPlugin(CMSPluginBase):
         return super().get_form(request, obj, **kwargs)
 
     def render(self, context, instance, placeholder):
-        #deals = requests.get('http://127.0.0.1:8000/en/api/deals.json?limit=%s' % MAX_NUM_DEALS).json()
-        #print('RESPONSE: %s DEALS' % len(deals))
-        #context['ActivityAttribute_list'] = deals
+        self._set_filters(context['request'].GET)
+        context.update({
+            'filters': self.filters,
+            'empty_form_conditions': self.current_formset_conditions
+        })
         return context
 
     def save_model(self, request, obj, form, change):
         obj.clean_plugins()
         super().save_model(request, obj, form, change)
+
+    def _set_filters(self, GET):
+        self.current_formset_conditions = self.get_formset_conditions(self._filter_set(GET), GET, None, self.rules)
+        self.filters = self.get_filter_context(self.current_formset_conditions, None, None, None, GET.get("starts_with"))
 
 plugin_pool.register_plugin(MapPlugin)
