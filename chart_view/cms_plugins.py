@@ -1,3 +1,6 @@
+from global_app.views.filter_widget_mixin import FilterWidgetMixin
+from .models import GetTheIdea
+
 from cms.plugin_pool import plugin_pool
 from cms.plugin_base import CMSPluginBase
 from djangocms_text_ckeditor.forms import TextForm
@@ -5,9 +8,6 @@ from djangocms_text_ckeditor.utils import plugin_tags_to_user_html
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-
-from global_app.views.filter_widget_mixin import FilterWidgetMixin
-from .models import GetTheIdea
 
 
 class GetTheIdeaPlugin(CMSPluginBase, FilterWidgetMixin):
@@ -26,9 +26,11 @@ class GetTheIdeaPlugin(CMSPluginBase, FilterWidgetMixin):
 
     def get_form_class(self, request, plugins):
         """ Returns a subclass of Form to be used by this plugin """
-        # We avoid mutating the Form declared above by subclassing
+
         class AbstractTextPluginForm(self.form):
+            """ We avoid mutating the Form declared above by subclassing """
             pass
+
         widget = self.get_editor_widget(request, plugins)
         AbstractTextPluginForm.declared_fields["body"] = forms.CharField(widget=widget, required=False)
         return AbstractTextPluginForm
