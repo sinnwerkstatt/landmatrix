@@ -45,17 +45,20 @@ class DealsTestData:
         )
         investor_activity_involvement.save()
 
-    def create_data(self):
+    def create_data(self, additional_attributes=None):
         self.make_involvement()
         self.create_country()
+        attributes = {
+            'intention': self.INTENTION,
+            'target_country': Country.objects.last().id
+        }
+        if additional_attributes:
+            attributes.update(additional_attributes)
         ActivityAttributeGroup(
             fk_activity=Activity.objects.last(),
             fk_language=Language.objects.last(),
             date=date.today(),
-            attributes={
-                'intention': self.INTENTION,
-                'target_country': Country.objects.last().id
-            }
+            attributes=attributes
         ).save()
         PublicInterfaceCache(
             fk_activity=Activity.objects.last(),
