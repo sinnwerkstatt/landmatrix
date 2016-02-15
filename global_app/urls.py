@@ -34,5 +34,6 @@ urlpatterns = patterns('globalapp.views',
     url(r'^change/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
     url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
     url(r'^(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
+    url(r'^(?P<deal_id>[\d_\.]+)/$', DealDetailView.as_view(), name='deal_detail'),
 
 )
