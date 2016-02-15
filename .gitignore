@@ -2,7 +2,10 @@
 settings.py
 
 # Collected(!) statics
-./static/
+static/
+
+node_modules
+media/js
 
 # Ignore global javascript vendor packages
 landmatrix/static/vendor/
