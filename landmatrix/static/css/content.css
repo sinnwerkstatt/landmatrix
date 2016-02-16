@@ -15,6 +15,10 @@ body {
     padding: 0;
 }
 
+.mgrey1 {
+    color: #919191;
+}
+
 .wrap h1 {
     position: relative;
     text-align: center;
@@ -89,8 +93,6 @@ body {
     margin-right: 0px;
     padding-bottom: 5px;
 }
-
-
 
 /* ==========================================================================
  *    BUTTONS
@@ -209,7 +211,7 @@ body {
 
 @font-face {
     font-family: Open Sans;
-     src: url(/static/fonts/OpenSans-Light.ttf);
+    src: url(/static/fonts/OpenSans-Light.ttf);
     font-weight: 200;
 }
 
@@ -250,6 +252,7 @@ h4 {
 h4 {
     font-size: 18px;
 }
+
 h5,
 h6 {
     font-size: 18px !important;
@@ -327,11 +330,11 @@ a:focus {
 
 */
 .navbar-right {
-/*    margin-right: 8vw; */
+    /*    margin-right: 8vw; */
     color: #c1c1c1;
 }
 
-.navbar-right > li > span{
+.navbar-right > li > span {
     color: #c1c1c1;
 }
 
@@ -346,7 +349,7 @@ a:focus {
     background: url(/static/img/lm-logo.png) no-repeat;
     display: block;
     padding: 5px;
- /*   margin-left: 8vw; */
+    /*   margin-left: 8vw; */
     margin-top: 15px;
     margin-right: 40px;
     width: 180px;
@@ -362,13 +365,44 @@ a:focus {
 .navbar > a, a.btn, .nav a {
     text-decoration: none;
     font-weight: 200;
-    font-size: 24px;
+    font-size: 22px;
     line-height: 20px;
 }
 
 .navbar .nav > li > a {
-/*    min-height: 100%;*/
+    /*    min-height: 100%;*/
     color: #4a4a4a;
+}
+
+.messages {
+    color: #919191;
+    margin-top: 2px;
+    display: block;
+    font-size: 24px
+}
+
+.nav-text {
+    display: block;
+    float: right;
+    top-margin: -1px;
+}
+
+.nav-circle {
+    width: 1.8em;
+    height: 1.8em;
+    font-size: 12px;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 2px;
+    border-radius: 50%;
+    color: #ebebeb;
+    text-align: center;
+    background: #919191;
+    font-weight: 700;
+}
+
+.language {
+    font-size: 0.5em;
 }
 
 .navbar-default .navbar-nav > .open > a:focus,
@@ -422,10 +456,12 @@ a:focus {
     margin: 36px 0 18px
 }
 
+
 .panel {
     border: 0px none;
-    border-bottom: solid 2px #c1c1c1 !important;
-    border-top: solid 1px #c1c1c1 !important;
+    border-top: solid 2px #c1c1c1 !important;
+    border-bottom: 0px none;
+    box-shadow: none;
     border-radius: 0px !important;
     background: none !important;
     width: 100%;
@@ -455,6 +491,10 @@ div.panel > div > h4 > a {
     border-left: 0px none !important;
     border-right: 0px none !important;
 
+}
+
+div.panel.panel-default:last-child {
+    border-bottom: solid 2px #c1c1c1;
 }
 
 
@@ -616,25 +656,23 @@ footer {
     font-size: 14px;
 }
 
-
 footer > .container {
     padding-top: 10px;
     padding-bottom: 10px;
 }
 
-
-footer > .col-md-3, .col-md-4 {
+footer .col-md-3,
+footer .col-md-4 {
     padding-left: 0px;
     padding-right: 0px;
 }
-
 
 .wrap {
     margin-bottom: 20px;
 }
 
 .push {
-/*    height: 50px; /* .push must be the same height as footer */
+    /*    height: 50px; /* .push must be the same height as footer */
 }
 
 footer {
@@ -660,7 +698,7 @@ footer > a:hover {
 }
 
 .lm-twitter-square:hover {
-   color: #55acee;
+    color: #55acee;
 }
 
 .lm-facebook-square:hover {
@@ -876,7 +914,6 @@ i.big.get-involved {
 .alert-info p {
     display: inline; /* start page */
 }
-
 
 .dashboard > ul li {
     list-style: none;
@@ -1173,7 +1210,7 @@ ul.form.empty {
     display: none;
 }
 
-.form ul  {
+.form ul {
     margin: 0;
 }
 
@@ -1221,14 +1258,16 @@ label[for=id_honeypot] {
     display: none;
 }
 
-input,
-select,
-textarea {
-    -webkit-border-radius: 5px !important;
-    -moz-border-radius: 5px !important;
-    border-radius: 5px !important;
+
+table input,
+table select,
+table textarea {
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
     border: 1px solid;
     border-color: #4a4a4a;
+
     background-color: #fff;
     box-shadow: none !important;
     color: #4a4a4a;
@@ -1245,7 +1284,6 @@ textarea {
 .form-control:focus {
     border-color: #B9D635;
 }
-
 
 .get-the-detail .input-append .value-wrapper > ul {
     display: block;
@@ -1322,7 +1360,7 @@ textarea {
     background: #fc941f;
 }
 
-.public .deal-detail.nav.nav-list > li > button:hover,button:focus {
+.public .deal-detail.nav.nav-list > li > button:hover, button:focus {
     color: #fc941f;
 }
 
@@ -1348,7 +1386,6 @@ textarea {
     width: 400px;
     height: 300px;
 }
-
 
 /** OLD CRUFT (PRE OPENLAYERS)
 .map img {
@@ -1486,7 +1523,7 @@ table a.btn {
     font-size: 14px;
     box-shadow: none;
     text-shadow: none;
-    padding: 0px;
+    padding: 2px 5px;
     margin-left: 5px;
 
     margin-bottom: 2px;
