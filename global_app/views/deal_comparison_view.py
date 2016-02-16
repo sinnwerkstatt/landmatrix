@@ -55,20 +55,39 @@ def deal_from_activity_id(history_id):
     raise RuntimeError('Bad activity history id: ' + history_id)
 
 
+# def deal_from_activity_id_and_timestamp(id_and_timestamp):
+#     from datetime import datetime
+#     if '_' in id_and_timestamp:
+#         activity_identifier, timestamp = id_and_timestamp.split('_')
+#
+#         activity = Activity.objects.filter(activity_identifier=activity_identifier, fk_status_id__in=(2, 3)).order_by('id').last()
+#
+#         if activity is None:
+#             raise ObjectDoesNotExist('activity_identifier %s' % activity_identifier)
+#         history = activity.history.filter(history_date__lte=datetime.fromtimestamp(float(timestamp))).last()
+#         if history is None:
+#             raise ObjectDoesNotExist('activity_identifier %s, timestamp %s' % (activity_identifier, timestamp))
+#
+#         return DealHistoryItem.from_activity(history)
+#
+#     raise RuntimeError('should contain _ separating activity id and timestamp: ' + id_and_timestamp)
+
 def deal_from_activity_id_and_timestamp(id_and_timestamp):
     from datetime import datetime
+    from dateutil.tz import tzlocal
     if '_' in id_and_timestamp:
         activity_identifier, timestamp = id_and_timestamp.split('_')
 
-        activity = Activity.objects.filter(activity_identifier=activity_identifier, fk_status_id__in=(2, 3)).order_by('id').last()
-
+        activity = Activity.objects.filter(activity_identifier=activity_identifier).order_by('id').last()
         if activity is None:
             raise ObjectDoesNotExist('activity_identifier %s' % activity_identifier)
-        history = activity.history.filter(history_date__lte=datetime.fromtimestamp(float(timestamp))).last()
-        if history is None:
-            raise ObjectDoesNotExist('activity_identifier %s, timestamp %s' % (activity_identifier, timestamp))
 
-        return DealHistoryItem.from_activity(history)
+        history = activity.history.filter(history_date__lte=datetime.fromtimestamp(float(timestamp), tz=tzlocal())).\
+            filter(fk_status_id__in=(2, 3)).last()
+        if history is None:
+            raise ObjectDoesNotExist('Public deal with activity_identifier %s as of timestamp %s' % (activity_identifier, timestamp))
+
+        return DealHistoryItem.from_activity_with_date(history, datetime.fromtimestamp(float(timestamp), tz=tzlocal()))
 
     raise RuntimeError('should contain _ separating activity id and timestamp: ' + id_and_timestamp)
 
