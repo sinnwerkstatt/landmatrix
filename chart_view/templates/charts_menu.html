@@ -1,9 +1,9 @@
-{% load i18n menu_tags cms_tags %}
+{% load i18n menu_tags cms_tags static %}
 <!-- idea menu -->
 {% for child in children %}
   <li class="span2 {% if forloop.first %}first{% elif forloop.last %}last{% endif %}">
   	<div class="thumbnail">
-    	<a href="{{ child.attr.redirect_url|default:child.get_absolute_url }}" class="image"><img src="/media/img/get-the-idea/{{ child.get_menu_title|slugify }}-thumb.png" alt="{{ child.get_menu_title }}"></img></a>
+    	<a href="{{ child.attr.redirect_url|default:child.get_absolute_url }}" class="image"><img src="{% static "img/get-the-idea/{{ child.get_menu_title|slugify }}-thumb.png" %}" alt="{{ child.get_menu_title }}"></img></a>
     	<p>{{ child.get_menu_title }}</p>
 	</div>
   </li>
