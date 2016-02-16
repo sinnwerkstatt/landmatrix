@@ -28,8 +28,16 @@
 
 
 
+
+
+
+
             {% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
     <meta name="keywords" content="
+
+
+
+
 
 
 
@@ -76,13 +84,12 @@
 
 {% cms_toolbar %}
 
-
+{% block header %}
 <div class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
 
         <!-- Collect the nav links, forms, and other content for toggling -->
 
-        {% block header %}
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
@@ -97,10 +104,11 @@
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="/global"><span class="lm-nav lm-globe"></span><span>Global</span></a></li>
+                    <li><a href="/global"><span class="lm-nav lm-globe"></span><span class="nav-text">Global</span></a>
+                    </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><span class="lm-nav lm-regions"></span><span>Regions <span
+                           aria-expanded="false"><span class="lm-nav lm-regions"></span><span class="nav-text">Regions <span
                                 class="caret"></span></span></a>
                         <ul class="dropdown-menu">
                             <li>
@@ -127,7 +135,8 @@
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><span class="lm-nav lm-flag"></span><span>Countries <span
+                           aria-expanded="false"><span class="lm-nav lm-flag"></span><span
+                                class="nav-text">Countries <span
                                 class="caret"></span></span></a>
                         <ul class="dropdown-menu">
                             <li>
@@ -149,7 +158,7 @@
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><span class="lm-nav lm-plus-circle"></span><span>Get Involved <span
+                           aria-expanded="false"><span class="lm-nav lm-plus-circle"></span><span class="nav-text">Get Involved <span
                                 class="caret"></span></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="add-deal">Report a deal</a></li>
@@ -161,17 +170,16 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/help" role="button"><span class="badge">?</span></a></li>
-                    <li><a href="/editor" role="button"><span class="badge"><span
-                            class="fa lm-envelope"></span></span></a>
-                    </li>
+                    <li><a href="/help" role="button"><span class="nav-circle">?</span></a></li>
+                    <li><a href="/editor" role="button"><span class="fa lm-envelope messages"></span></a></li>
                     {% language_chooser "language_chooser.html" %}
                 </ul>
             </div>
             {% block user_tools %}{% endblock %}
-        {% endblock %}
     </div>
 </div>
+
+{% endblock %}
 
 <div class="wrap">
     <!--[if lt IE 7]>
@@ -183,25 +191,45 @@
 
     <div class="container">
 
-        {% block messages %}
-            <ul class="unstyled messages">
-                {% for message in messages %}
-                    <li class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">
-                        <strong>{{ message.tags|capfirst }}:</strong> {{ message|safe }}</li>
-                {% endfor %}
-                {% block extra_messages %}{% endblock %}
-            </ul>
+        {% block navutils %}
+
+            {% block messages %}
+                <ul class="unstyled messages">
+                    {% for message in messages %}
+                        <li class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">
+                            <strong>{{ message.tags|capfirst }}:</strong> {{ message|safe }}</li>
+                    {% endfor %}
+                    {% block extra_messages %}{% endblock %}
+                </ul>
+            {% endblock %}
+
+            <div class="row">
+                <div class="col-md-4">
+
+                    {% block breadcrumb %}
+                        <ul class="breadcrumb">
+                            <li><a href="/">Home</a></li>
+                            <!-- <li>{% page_attribute "title" %}</li> -->
+                            {% block breadcrumb_inner %}
+                            {% endblock %}
+                        </ul>
+                    {% endblock %}
+                </div>
+                <div class="col-md-2 col-md-offset-6">
+
+                    {% block subnav %}
+                        <div class="kbd subnav right">
+                            {% block subnav_inner %}
+                            {% endblock %}
+
+                            <a href="#/share"><span class="lm lm-share-square-o"></span>Share</a>
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+
         {% endblock %}
 
-        {% block subnav %}{% endblock %}
-        {% block breadcrumb %}
-            <ul class="breadcrumb">
-                <li><a href="/">Home</a></li>
-                <!-- <li>{% page_attribute "title" %}</li> -->
-                {% block breadcrumb_inner %}
-                {%  endblock %}
-            </ul>
-        {% endblock %}
         {% block title_section %}
             <div class="row">
                 <h1><span>{% block title %}{% page_attribute "title" %}{% endblock %}</span></h1>
@@ -215,71 +243,73 @@
     <div class="push"></div>
 </div>
 
-<footer>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <ul class="list-unstyled">
-                    <li><h4>Explore</h4></li>
-                    <li><a href="global">Global Web of transn. deals</a></li>
-                    <li><a href="">Global map of investments</a></li>
-                    <li><a href="">Interactive Map</a></li>
-                    <li><a href="">Grid of deals by country</a></li>
-                    <li><a href="">Download Data</a></li>
-                </ul>
-            </div>
-            <div class="col-md-3">
-                <ul class="list-unstyled">
-                    <li><h4>Get Involved</h4></li>
-                    <li><a href="">Add a deal</a></li>
-                    <li><a href="">Report a deal</a></li>
-                    <li><a href="">Develop your own app</a></li>
-                    <li><a href="">Provide Feedback</a></li>
-                    <li><a href="">Help improve translations</a></li>
-                </ul>
+{% block footer %}
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <ul class="list-unstyled">
+                        <li><h4>Explore</h4></li>
+                        <li><a href="global">Global Web of transn. deals</a></li>
+                        <li><a href="">Global map of investments</a></li>
+                        <li><a href="">Interactive Map</a></li>
+                        <li><a href="">Grid of deals by country</a></li>
+                        <li><a href="">Download Data</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <ul class="list-unstyled">
+                        <li><h4>Get Involved</h4></li>
+                        <li><a href="">Add a deal</a></li>
+                        <li><a href="">Report a deal</a></li>
+                        <li><a href="">Develop your own app</a></li>
+                        <li><a href="">Provide Feedback</a></li>
+                        <li><a href="">Help improve translations</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <ul class="list-unstyled">
+                        <li><h4>Stay Informed</h4></li>
+                        <li><a href="">Blog</a></li>
+                        <li><a href="">Newsletter</a></li>
+                        <li><a href="">Publications</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <ul class="list-unstyled">
+                        <li><h4>About</h4></li>
+                        <li><a href="">About Land Matrix</a></li>
+                        <li><a href="">The ILC Partnership</a></li>
+                        <li><a href="">Data policy</a></li>
+                        <li><a href="">Get in touch</a></li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="col-md-3">
-                <ul class="list-unstyled">
-                    <li><h4>Stay Informed</h4></li>
-                    <li><a href="">Blog</a></li>
-                    <li><a href="">Newsletter</a></li>
-                    <li><a href="">Publications</a></li>
-                </ul>
-            </div>
+            <hr/>
 
-            <div class="col-md-3">
-                <ul class="list-unstyled">
-                    <li><h4>About</h4></li>
-                    <li><a href="">About Land Matrix</a></li>
-                    <li><a href="">The ILC Partnership</a></li>
-                    <li><a href="">Data policy</a></li>
-                    <li><a href="">Get in touch</a></li>
-                </ul>
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Spread the word and share land matrix</h4>
+                    <a href="https://twitter.com/Land_Matrix"><span class="lm-footer lm-twitter-square"></span></a>
+                    <a href="https://www.facebook.com/LandMatrix"><span class="lm-footer lm-facebook-square"></span></a>
+                </div>
+                <div class="col-md-4 center">
+                    <h4>Share and adapt</h4>
+                    <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span
+                            class="lm-footer lm-creative-commons"></span></a>
+                    <a href="https://github.com/sinnwerkstatt/landmatrix"><span class="lm-footer lm-github"></span></a>
+                </div>
+                <div class="col-md-4 right">
+                    <h4>Sign up to receive updates</h4>
+                    <a href="http://eepurl.com/AHK0r"><span class="lm-footer lm-envelope"></span></a>
+                </div>
             </div>
         </div>
-
-        <hr/>
-
-        <div class="row">
-            <div class="col-md-4">
-                <h4>Spread the word and share land matrix</h4>
-                <a href="https://twitter.com/Land_Matrix"><span class="lm-footer lm-twitter-square"></span></a>
-                <a href="https://www.facebook.com/LandMatrix"><span class="lm-footer lm-facebook-square"></span></a>
-            </div>
-            <div class="col-md-4 center">
-                <h4>Share and adapt</h4>
-                <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span
-                        class="lm-footer lm-creative-commons"></span></a>
-                <a href="https://github.com/sinnwerkstatt/landmatrix"><span class="lm-footer lm-github"></span></a>
-            </div>
-            <div class="col-md-4 right">
-                <h4>Sign up to receive updates</h4>
-                <a href="http://eepurl.com/AHK0r"><span class="lm-footer lm-envelope"></span></a>
-            </div>
-        </div>
-    </div>
-</footer>
+    </footer>
+{% endblock %}
 
 {% block footer_scripts %}
     <script src="{% static "vendor/bootstrap/dist/js/bootstrap.min.js" %}"></script>
