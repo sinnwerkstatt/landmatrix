@@ -3,7 +3,7 @@
 {% block description %}
 {{ block.super }}
 <div class="btn-group">
-    <input class="location span2" name="location" type="text" value="" placeholder="Enter location..."/>
+    <input class="location col-md-2" name="location" type="text" value="" placeholder="Enter location..."/>
     <button type="submit" class="btn">{% trans "Go" %}</button>
 </div>
 {% endblock %}
@@ -17,7 +17,7 @@
 
 {% block data %}
 <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
         <div class="gmap" style="width:960px; height:600px; margin: 20px auto;"></div>
     </div>
 </div>

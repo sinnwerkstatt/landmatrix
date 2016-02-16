@@ -1,4 +1,4 @@
-{% extends "plugins/base.html" %}{% load i18n %}
+{% extends "plugins/base.html" %}{% load i18n static %}
 
 {% comment %}
 get the filters that are active with {{ filters }}
@@ -9,7 +9,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 
 {% block before %}
 <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
         <ul class="nav nav-tabs">
             <li class="active"><a href="?variable=negotiation_status">Negotiation status</a></li>
             <li><a href="?variable=implementation_status">Implementation status</a></li>
@@ -40,7 +40,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 
 {% block data %}
 <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
         <canvas id="bar" width="1200" height="390"></canvas>
 
     </div>
@@ -49,12 +49,12 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 
 {% block after %}
 {{ block.super }}
-<script type="text/javascript" src="/media/js/legacy/vendor/RGraph.pie.js"></script>
-<script type="text/javascript" src="/media/js/legacy/vendor/RGraph.bar.js"></script>
-<script type="text/javascript" src="/media/js/legacy/vendor/RGraph.common.core.js"></script>
-<script type="text/javascript" src="/media/js/legacy/vendor/RGraph.common.effects.js"></script>
-<script type="text/javascript" src="/media/js/legacy/vendor/RGraph.common.dynamic.js"></script>
-<script type="text/javascript" src="/media/js/legacy/vendor/RGraph.common.tooltips.js"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.pie.js" %}"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.bar.js" %}"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.core.js" %}"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.effects.js" %}"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.dynamic.js" %}"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.tooltips.js" %}"></script>
 <script type="text/javascript">
 $(document).ready(function () {
 //    alert('ready!');
