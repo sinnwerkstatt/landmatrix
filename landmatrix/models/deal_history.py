@@ -1,3 +1,5 @@
+import traceback
+
 from django.core.exceptions import ObjectDoesNotExist
 
 from landmatrix.models.activity import Activity
@@ -6,6 +8,7 @@ from landmatrix.models.deal import Deal, aggregate_activity_attributes
 
 from collections import OrderedDict
 from datetime import datetime, time, tzinfo
+from dateutil.tz import tzlocal
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -29,7 +32,7 @@ class DealHistoryItem(Deal):
     def get_history_for(cls, deal):
         tmp_use_rounded_dates = cls.use_rounded_dates
         cls.use_rounded_dates = False
-        my_deal = cls.from_activity_with_date(deal.activity, datetime.now())
+        my_deal = cls.from_activity_with_date(deal.activity, datetime.now(tzlocal()))
         cls.use_rounded_dates = tmp_use_rounded_dates
         return my_deal.get_history()
 

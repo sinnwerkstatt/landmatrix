@@ -1,3 +1,6 @@
+from django.core.exceptions import ObjectDoesNotExist
+from django.http.response import HttpResponse
+
 from global_app.forms.change_deal_employment_form import ChangeDealEmploymentForm
 from global_app.forms.change_deal_general_form import ChangeDealGeneralForm
 from global_app.forms.deal_data_source_form import PublicViewDealDataSourceFormSet, DealDataSourceForm
@@ -44,7 +47,14 @@ class DealDetailView(TemplateView):
     template_name = 'deal-detail.html'
 
     def dispatch(self, request, *args, **kwargs):
-        deal = Deal(kwargs["deal_id"])
+        deal_id = kwargs["deal_id"]
+        try:
+            if '_' in deal_id:
+                deal = deal_from_activity_id_and_timestamp(deal_id)
+            else:
+                deal = Deal(deal_id)
+        except ObjectDoesNotExist:
+            return HttpResponse('Deal %s does not exist' % deal_id, status=404)
         return self.render_forms(request, self.get_context(deal, kwargs))
 
     def get_context(self, deal, kwargs):
@@ -58,7 +68,10 @@ class DealDetailView(TemplateView):
         }
         context['forms'] = get_forms(deal)
         context['investor'] = deal.stakeholders
-        context['history'] = DealHistoryItem.get_history_for(deal)
+        try:
+            context['history'] = DealHistoryItem.get_history_for(deal)
+        except AttributeError:
+            pass
         return context
 
     def render_forms(self, request, context):
@@ -114,3 +127,22 @@ def get_form(deal, form_class):
     data = form_class[1].get_data(deal)
     return form_class[1](initial=data)
 
+
+def deal_from_activity_id_and_timestamp(id_and_timestamp):
+    from datetime import datetime
+    from dateutil.tz import tzlocal
+    if '_' in id_and_timestamp:
+        activity_identifier, timestamp = id_and_timestamp.split('_')
+
+        activity = Activity.objects.filter(activity_identifier=activity_identifier).order_by('id').last()
+        if activity is None:
+            raise ObjectDoesNotExist('activity_identifier %s' % activity_identifier)
+
+        history = activity.history.filter(history_date__lte=datetime.fromtimestamp(float(timestamp), tz=tzlocal())).\
+            filter(fk_status_id__in=(2, 3)).last()
+        if history is None:
+            raise ObjectDoesNotExist('Public deal with activity_identifier %s as of timestamp %s' % (activity_identifier, timestamp))
+
+        return DealHistoryItem.from_activity_with_date(history, datetime.fromtimestamp(float(timestamp), tz=tzlocal()))
+
+    raise RuntimeError('should contain _ separating activity id and timestamp: ' + id_and_timestamp)
