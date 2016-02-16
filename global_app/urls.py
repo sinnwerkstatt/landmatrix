@@ -4,6 +4,7 @@ from .views.all_deals_view import AllDealsView
 from .views.table_group_view import TableGroupView
 from .views.deal_detail_view import DealDetailView
 from global_app.views.add_deal_view import AddDealView
+from global_app.views.stakeholder_view import StakeholderView
 
 from django.conf.urls import url, patterns
 
@@ -31,6 +32,7 @@ urlpatterns = patterns('globalapp.views',
     url(r'^compare/(?P<activity_1>[\d_\.]+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^add/$', AddDealView.as_view(), name='add_deal'),
+    url(r'^stakeholder/$', StakeholderView.as_view(), name='stakeholder_form'),
     url(r'^change/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
     url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
     url(r'^(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
