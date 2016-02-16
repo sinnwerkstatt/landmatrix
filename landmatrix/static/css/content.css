@@ -222,11 +222,9 @@ dl dd,
 table th,
 table td,
 blockquote,
-h5,
-h6,
 label {
     font-family: 'Open Sans', sans-serif;
-    font-size: 14px;
+    /* font-size: 14px; */
     line-height: 1.5em;
     color: #4a4a4a;
 }
@@ -236,7 +234,7 @@ h1 {
     font-weight: 600;
     font-size: 28px;
     text-transform: uppercase;
-    /*line-height: 32px;*/
+    line-height: 32px;
     color: #fc941f;
 }
 
@@ -250,16 +248,22 @@ h4 {
 }
 
 h4 {
-    font-size: 16px;
+    font-size: 18px;
 }
-
+h5,
 h6 {
+    font-size: 18px !important;
     margin: 0;
 }
 
 a:hover {
     color: #fc941f;
     text-decoration: underline;
+}
+
+a:focus {
+    color: #b9d635;
+    text-decoration: none;
 }
 
 ::-moz-selection {
@@ -355,12 +359,10 @@ a:hover {
     display: block;
 }
 
-.navbar a,
-a.btn,
-.nav a {
+.navbar > a, a.btn, .nav a {
     text-decoration: none;
     font-weight: 200;
-    font-size: 16px;
+    font-size: 24px;
     line-height: 20px;
 }
 
@@ -372,7 +374,7 @@ a.btn,
 .navbar-default .navbar-nav > .open > a:focus,
 .navbar-default .navbar-nav > .open > a:hover {
     background: #fff none;
-    color: #44c42d;
+    color: #b9d635;
     z-index: 99;
 }
 
@@ -423,7 +425,7 @@ a.btn,
 .panel {
     border: 0px none;
     border-bottom: solid 2px #c1c1c1 !important;
-    border-top: solid 2px #c1c1c1 !important;
+    border-top: solid 1px #c1c1c1 !important;
     border-radius: 0px !important;
     background: none !important;
     width: 100%;
@@ -432,13 +434,12 @@ a.btn,
 
 .panel-heading, .panel-title {
     background: none !important;
-    padding-bottom: 5px;
+    display: block;
+    padding-top: 0.8em;
+    padding-bottom: 0.5em;
     margin-bottom: 5px;
     width: 100%;
     height: 100%;
-}
-
-.panel-heading {
 }
 
 div.panel > div > h4 > a {
@@ -450,17 +451,30 @@ div.panel > div > h4 > a {
 }
 
 .panel-collapse, .collapse, .panel-body {
-    border: 0px none !important;
+    border-top: 0px none !important;
+    border-left: 0px none !important;
+    border-right: 0px none !important;
+
 }
 
 
 .in {
     border-top: dashed 2px #c1c1c1 !important;
+    border-top-width: 2px !important;
 }
 
 /* ==========================================================================
  *    SUBNAVIGATION
  * ========================================================================== */
+.subnav {
+    clear: both;
+    background: none;
+    margin: 0;
+    margin-bottom: 10px;
+    padding: 0;
+    list-style: none;
+}
+
 .subnav a {
     color: #4a4a4a;
 }
@@ -603,13 +617,13 @@ footer {
 }
 
 
-footer .container {
+footer > .container {
     padding-top: 10px;
     padding-bottom: 10px;
 }
 
 
-footer .col-md-3, .col-md-4 {
+footer > .col-md-3, .col-md-4 {
     padding-left: 0px;
     padding-right: 0px;
 }
@@ -687,10 +701,6 @@ a.about {
     height: 34px;
     background: url(/static/img/nav-icons.png) no-repeat;
     text-indent: -99999px;
-}
-
-.navbar .nav > li {
-    margin: 8px 0 8px 20px;
 }
 
 .nav > li.active > a.get-the-idea,
@@ -1174,6 +1184,17 @@ form ul li,
     list-style: none;
 }
 
+.helptext {
+    padding-left: 5px;
+}
+
+#id_crops, #id_animals, #id_minerals {
+    max-height: 30vh;
+    max-width: 66%;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
 ul.form.condition li.field label {
     display: none;
 }
@@ -1208,9 +1229,13 @@ textarea {
     border-radius: 5px !important;
     border: 1px solid;
     border-color: #4a4a4a;
+    background-color: #fff;
     box-shadow: none !important;
     color: #4a4a4a;
-    max-width: 90%;
+    max-width: 75%;
+    margin-left: 5px !important;
+    margin-bottom: 2px;
+    padding: 2px 5px;
 }
 
 .formcontrol {
@@ -1461,9 +1486,9 @@ table a.btn {
     font-size: 14px;
     box-shadow: none;
     text-shadow: none;
-    display: block;
     padding: 0px;
-    margin-top: 2px;
+    margin-left: 5px;
+
     margin-bottom: 2px;
     vertical-align: inherit;
 }
@@ -1609,19 +1634,6 @@ form .panel-body {
 .filters .btn-group {
     clear: both;
     display: block;
-}
-
-.container select {
-    color: #4a4a4a;
-    background: #e5e5e5 url(/static/img/select-arrow.png) no-repeat right 12px;
-    border: 1px solid #bcbcbc;
-    -webkit-appearance: none;
-    padding: 0 4px;
-}
-
-/* UNSET BOOTSTRAP STYLES FOR MAP (https://github.com/twitter/bootstrap/issues/1552) */
-.gmap img {
-    max-width: none;
 }
 
 /* ==========================================================================
