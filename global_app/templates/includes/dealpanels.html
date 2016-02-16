@@ -6,17 +6,20 @@
 
 
             <div class="panel-heading">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion"
-                       href="#collapse_{{ forloop.counter }}">
+
+                <a data-toggle="collapse" data-parent="#accordion"
+                   href="#collapse_{{ forloop.counter }}">
+                    <h5 class="panel-title">
                         {{ form.form_title }}
-                                <span id="collapsebtn_{{ forloop.counter }}"
-                                      class="lm-chevron-circle-up pull-right"></span>
-                    </a>
-                </h4>
+                        <span id="collapsebtn_{{ forloop.counter }}"
+                              class="lm-chevron-circle-up pull-right"></span>
+                    </h5>
+                </a>
+
             </div>
 
-            <div id="collapse_{{ forloop.counter }}" class="panel-collapse collapse in">
+            <div id="collapse_{{ forloop.counter }}"
+                 class="panel-collapse collapse{% if forloop.first %} in {% endif %}">
                 <div class="panel-body">
                     <table>
                         <col width="23%"
