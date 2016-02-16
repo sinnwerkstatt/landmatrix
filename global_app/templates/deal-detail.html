@@ -43,16 +43,16 @@
             {% if history|length > 1 %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ forloop.counter }}">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse_history">
                             <h5 class="panel-title">
                                 History
-                                <span id="collapsebtn_{{ forloop.counter }}"
-                                      class="lm-chevron-circle-down pull-right"></span>
+                                <span id="collapsebtn_history"
+                                      class="lm-chevron-circle-down pull-right mgrey1"></span>
                             </h5>
                         </a>
                     </div>
 
-                    <div id="collapse_{{ forloop.counter }}" class="panel-collapse collapse">
+                    <div id="collapse_history" class="panel-collapse collapse">
                         <div class="panel-body">
 
                             <table>
@@ -88,6 +88,15 @@
                             </table>
                         </div>
                     </div>
+                    <script>
+                        var collapsename = "#collapse_history";
+                        $(collapsename).on("hidden.bs.collapse", function () {
+                            $("#collapsebtn_history}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
+                        });
+                        $(collapsename).on("shown.bs.collapse", function () {
+                            $("#collapsebtn_history").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
+                        });
+                    </script>
                 </div>
             {% endif %}
         </div>
