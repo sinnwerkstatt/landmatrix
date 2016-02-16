@@ -38,8 +38,7 @@ if FRONTENDDEV:
     # Needs to be added in this order.
     INSTALLED_APPS += (
         'django_gulp',
-        'livereload',
-        'template_debug'
+        'livereload'
     )
 
 # Rest of the pack
