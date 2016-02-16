@@ -34,9 +34,7 @@
     {% if deal %}
 
         <div class="row">
-            <h5>Activity</h5>
-            <a href="#_" class="expandcollapse btn btn-mini btn-primary pull-right"><i
-                    class='icon-white icon-plus-sign'></i> Expand All</a>
+            <h4>Activity</h4>
         </div>
         <div class="panel-group" id="accordion">
 
@@ -45,16 +43,16 @@
             {% if history|length > 1 %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ forloop.counter }}">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ forloop.counter }}">
+                            <h5 class="panel-title">
                                 History
                                 <span id="collapsebtn_{{ forloop.counter }}"
                                       class="lm-chevron-circle-down pull-right"></span>
-                            </a>
-                        </h4>
+                            </h5>
+                        </a>
                     </div>
 
-                    <div id="collapse_{{ forloop.counter }}" class="panel-collapse collapse in">
+                    <div id="collapse_{{ forloop.counter }}" class="panel-collapse collapse">
                         <div class="panel-body">
 
                             <table>
@@ -93,6 +91,20 @@
                 </div>
             {% endif %}
         </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                console.log("Locking buttons");
+                $('.add-row').each(function (i) {
+                    this.remove();
+                });
+
+                $('.delete-row').each(function (i) {
+                    this.remove();
+                });
+            });
+
+        </script>
 
     {% else %}
 
