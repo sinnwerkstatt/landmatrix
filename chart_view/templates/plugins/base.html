@@ -4,12 +4,12 @@
 {% endblock %}
 
 <div class="row">
-    <div class="span4">
+    <div class="col-md-4">
         <div class="well-square">
             {% block description %}{{ body|safe }}{% endblock %}
         </div>
     </div>
-    <div class="span4">
+    <div class="col-md-4">
         <div class="well-square data-availability">
         	{% block data_availability %}
             <h5>Data availability <a href="/about/#what-does-data-availability-mean" class="toggle-tooltip" title="The infographics show information about deals for which relevant data is available in our dataset. The small pie chart below shows percentage of deals represented. Click to read more."><i class="icon icon-question-sign"> </i></a></h5>
@@ -32,12 +32,12 @@
             {% endblock %}
         </div>
     </div>
-    <div class="span4">
+    <div class="col-md-4">
         <div class="row">
-            <div class="span4 filters">
+            <div class="col-md-4 filters">
             	{% block filters %}
                 <div class="row">
-                    <div class="btn-group span4 negotiation_status">
+                    <div class="btn-group col-md-4 negotiation_status">
                       <button type="submit" class="btn active" name="negotiation_status" value="concluded">{% trans "Concluded deals" %}</button>
                       <button type="submit" class="btn" name="negotiation_status" value="intended">{% trans "Intended deals" %}</button>
                       <button type="submit" class="btn failed" name="negotiation_status" value="failed">{% trans "Failed deals" %}</button>
@@ -45,14 +45,14 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="btn-group span4 deal_scope form-inline">
+                    <div class="btn-group col-md-4 deal_scope form-inline">
                       <button type="submit" class="btn active" name="deal_scope" value="transnational">{% trans "Transnational deals" %}</button>
                       <button type="submit" class="btn" name="filter" value="domestic">{% trans "Domestic deals" %}</button>
                         <a href="/about/#are-there-biases-in-the-data" class="toggle-tooltip left" title="Please note that purely domestic deals are largely underrepresented in the Land Matrix. For further information press the question mark."><i class="icon icon-question-sign"> </i></a>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="btn-group span4 data_source_type">
+                    <div class="btn-group col-md-4 data_source_type">
                       <button type="submit" class="btn" name="data_source_type" value="exclude-media-reports">{% trans "Exclude media reports" %}</button>
                     </div>
                 </div>
