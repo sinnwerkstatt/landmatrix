@@ -23,6 +23,12 @@
 </ul>
 {% endblock %}
 
+{% block subnav_inner %}
+    <a h6ref="foobar/map"><span class="lm-map-marker"></span>Map</a>
+    <a href="foobar/grid"><span class="lm-table"></span>Data</a>
+    <a href="foobar/charts"><span class="lm-bar-chart"></span>Charts</a>
+{% endblock %}
+
 {% block content %}
 {% include "filters.html" %}
 
