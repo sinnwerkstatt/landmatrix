@@ -1,6 +1,5 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-
 from global_app.forms.base_form import BaseForm
 from global_app.widgets import TitleField, NumberInput, CommentInput, YearBasedIntegerField
 

@@ -23,12 +23,31 @@ from copy import copy
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
+class InvestorChoicesMixin:
 
-class InvestorForm(BaseForm):
+    def __init__(self, *args, **kwargs):
+        investor = kwargs.pop("investor", None)
+        self.fields["investor"].initial = investor
+        self._fill_investor_choices()
+
+    def _fill_investor_choices(self):
+        self.investor_choices = [
+            (investor.id, _investor_description(investor))
+            for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
+        ]
+        self.fields["investor"].choices = list(self.fields["investor"].choices)[:1]
+        self.fields["investor"].choices.extend(self.investor_choices)
+
+
+# Change this to a livesearch widget once you got a working one
+InvestorField = forms.ChoiceField
+
+
+class InvestorForm(BaseForm, InvestorChoicesMixin):
 
     # Investor
     tg_investor = TitleField(required=False, label="", initial=_("Investor"))
-    investor = forms.ChoiceField(required=False, label=_("Existing investor"), choices=())#, widget=LivesearchSelect)
+    investor = InvestorField(required=False, label=_("Existing investor"), choices=())#, widget=LivesearchSelect)
     investor_name = forms.CharField(required=False, label=_("Name"), max_length=255)
     country = forms.ChoiceField(required=False, label=_("Country"), choices=())
     region = forms.ModelChoiceField(required=False, label=_("Region"), widget=forms.HiddenInput, queryset=Region.objects.all().order_by('name'))
@@ -67,14 +86,6 @@ class InvestorForm(BaseForm):
             return True
         return False
 
-    def _fill_investor_choices(self):
-        self.investor_choices = [
-            (investor.id, _investor_description(investor))
-            for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
-        ]
-        self.fields["investor"].choices = list(self.fields["investor"].choices)[:1]
-        self.fields["investor"].choices.extend(self.investor_choices)
-
     def _fill_country_choices(self):
         self.fields["country"].choices = [
             ("", str(_("---------"))),
@@ -83,6 +94,28 @@ class InvestorForm(BaseForm):
         self.fields["country"].choices.extend([(c.id, c.name) for c in Country.objects.all().order_by("name")])
 
 
+class ParentStakeholderForm(BaseForm, InvestorChoicesMixin):
+
+    stakeholder = InvestorField(required=False, label=_("Existing investor"), choices=())
+    percentage = forms.DecimalField(
+        max_digits=5, decimal_places=2, required=False, label=_("Percentage of investment"), help_text=_("%")
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        investor = kwargs.pop("stakeholder", None)
+        self.fields["stakeholder"].initial = investor
+        self._fill_investor_choices()
+
+    def _fill_investor_choices(self):
+        self.investor_choices = [
+            (investor.id, _investor_description(investor))
+            for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
+        ]
+        self.fields["stakeholder"].choices = list(self.fields["stakeholder"].choices)[:1]
+        self.fields["stakeholder"].choices.extend(self.investor_choices)
+
+ParentStakeholderFormSet = formset_factory(ParentStakeholderForm, extra=1)
 
 BaseInvestorFormSet = formset_factory(InvestorForm, extra=1)
 
