@@ -9,6 +9,7 @@ from global_app.forms.deal_local_communities_form import DealLocalCommunitiesFor
 from global_app.forms.deal_produce_info_form import DealProduceInfoForm
 from global_app.forms.deal_spatial_form import AddDealSpatialFormSet
 from global_app.forms.deal_water_form import DealWaterForm
+from global_app.forms.investor_formset import InvestorFormSet
 from global_app.forms.operational_stakeholder_form import OperationalStakeholderForm
 
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
@@ -33,7 +34,8 @@ FORMS = [
     ("spatial_data", AddDealSpatialFormSet),            #
     ("general_information", AddDealGeneralForm),        #
     ("employment", AddDealEmploymentForm),              #
-    ("investor_info", OperationalStakeholderForm),
+    ("investor_info", InvestorFormSet),
+    # ("investor_info", OperationalStakeholderForm),
     ("data_sources", AddDealDataSourceFormSet),         #
     ("local_communities", DealLocalCommunitiesForm),    #
     ("former_use", DealFormerUseForm),                  #
