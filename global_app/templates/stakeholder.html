@@ -13,16 +13,12 @@
 
 {% block content %}
 
-<form>
-  <div class="form-group">
-    <label for="exampleInputName1">Name address</label>
-    <input type="name" class="form-control" id="exampleInputName1" placeholder="Name">
-  </div>
-  <div class="form-group">
-    <label for="exampleInputCountry1">Country</label>
-    <input type="country" class="form-control" id="exampleInputCountry1" placeholder="Country">
-  </div>
-  <button type="submit" class="btn btn-default">Submit</button>
-</form>
+{{ investor_form }}
+
+<h3>Parent stakeholders</h3>
+{{ parent_stakeholders }}
+
+<h3>Investors</h3>
+{{ parent_investors }}
 
 {% endblock %}
