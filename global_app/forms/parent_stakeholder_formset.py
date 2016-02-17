@@ -36,28 +36,12 @@ class ParentStakeholderForm(BaseForm):
 class ParentStakeholderFormSet(formset_factory(ParentStakeholderForm, extra=1)):
 
     @classmethod
-    def get_data(cls, investor):
-        data = []
-        return data
+    def get_data(cls, deal):
+        if not deal:
+            return {}
 
-        involvements = deal.involvement_set().all() #get_involvements_for_activity(activity)
-        for i, involvement in enumerate(involvements):
-            if not involvement.fk_stakeholder:
-                continue
-
-            comments = Comment.objects.filter(
-                fk_stakeholder_attribute_group__fk_stakeholder=involvement.fk_stakeholder,
-                fk_stakeholder_attribute_group__attributes__contains={"name": "General" }
-            ).order_by("-id")
-            if comments:
-                print('Whoa, look, comments:', comments)
-
-            comment = comments[0].comment if comments and len(comments) > 0 else ''
-            investor = {
-                "investor": involvement.fk_stakeholder.id,
-                "tg_general_comment": comment,
-                "investment_ratio": involvement.investment_ratio,
-            }
-            data.append(investor)
-
+        taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
+        data = {}
+        for i, taggroup in enumerate(taggroups):
+            data[i] = ParentStakeholderForm.get_data(deal, taggroup=taggroup)
         return data
