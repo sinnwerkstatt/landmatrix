@@ -24,14 +24,8 @@ class InvestorForm(BaseForm):
     investor = InvestorField(required=False, label=_("Existing investor"), choices=())#, widget=LivesearchSelect)
     investor_name = forms.CharField(required=False, label=_("Name"), max_length=255)
     country = forms.ChoiceField(required=False, label=_("Country"), choices=())
-    region = forms.ModelChoiceField(
-        required=False, label=_("Region"), widget=forms.HiddenInput, queryset=Region.objects.all().order_by('name')
-    )
     classification = forms.ChoiceField(
             required=False, label=_("Classification"), choices=Investor.classification_choices, widget=forms.RadioSelect
-    )
-    investment_ratio = forms.DecimalField(
-        max_digits=19, decimal_places=2, required=False, label=_("Percentage of investment"), help_text=_("%")
     )
     tg_general_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
@@ -41,6 +35,15 @@ class InvestorForm(BaseForm):
         self.fields["investor"].initial = investor
         self._fill_investor_choices()
         self._fill_country_choices()
+
+    @classmethod
+    def get_data(cls, investor, _=None, __=None):
+        data = super().get_data(investor)
+        if investor:
+            data['investor'] = investor.id
+            data['country'] = investor.fk_country_id
+            data['classification'] = investor.classification
+        return data
 
     def clean_investor(self):
         investor = int(self.cleaned_data["investor"] or 0)
