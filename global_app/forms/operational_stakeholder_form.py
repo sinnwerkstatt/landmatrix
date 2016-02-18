@@ -1,7 +1,10 @@
 from django.core.exceptions import ValidationError
 from django.forms import CharField
-from django.forms.models import ModelChoiceField
+from django.forms.fields import ChoiceField
+from django.forms.models import ModelChoiceField, ModelForm
 from django.utils.translation import ugettext_lazy as _
+
+from django_select2.forms import ModelSelect2Widget
 
 from global_app.forms.base_form import BaseForm
 from global_app.widgets.title_field import TitleField
@@ -26,16 +29,20 @@ class OperationalStakeholderChoiceField(ModelChoiceField):
 
 class OperationalStakeholderForm(BaseForm):
 
-    form_title = _('Investor info')
+        form_title = _('Investor info')
 
-    tg_operational_stakeholder = TitleField(required=False, label="", initial=_("Operational Stakeholder"))
-    operational_stakeholder = OperationalStakeholderChoiceField(
-            required=True, label=_("Existing Operational Stakeholder"),
-            queryset=Investor.objects.filter(
-                    pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
-            ).order_by('name')
-    )  # , widget=LivesearchSelect)
-    project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)
+        tg_operational_stakeholder = TitleField(required=False, label="", initial=_("Operational Stakeholder"))
+        operational_stakeholder = ModelChoiceField(
+                required=True, label=_("Existing Operational Stakeholder"),
+                queryset=Investor.objects.filter(
+                        pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
+                ).order_by('name'),
+                widget=ModelSelect2Widget(
+                    model=Investor,
+                    search_fields=['name__icontains']
+                )
+        )
+        project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)
 
 
 def _investor_description(investor):

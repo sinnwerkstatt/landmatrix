@@ -40,6 +40,9 @@ class Investor(DefaultStringRepresentation, models.Model):
             values_list('fk_investor_id', flat=True).distinct()
         return Investor.objects.filter(pk__in=investor_ids)
 
+    def __str__(self):
+        return self.name
+
 
 class InvestorVentureInvolvement(models.Model):
     fk_venture = models.ForeignKey("Investor", db_index=True, related_name='+')
