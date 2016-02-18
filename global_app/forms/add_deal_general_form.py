@@ -52,6 +52,8 @@ class AddDealGeneralForm(BaseForm):
     tg_nature_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
     # Negotiation status,
     tg_negotiation_status = TitleField(required=False, label="", initial=_("Negotiation status"))
+
+
     negotiation_status = YearBasedChoiceField(required=False, label=_("Negotiation status"), choices=(
         (0, _("---------")),
         (30, _("Concluded (Oral Agreement)")),
@@ -61,7 +63,7 @@ class AddDealGeneralForm(BaseForm):
         (50, _("Failed (Negotiations failed)")),
         (60, _("Failed (Contract canceled)")),
     ))
-    contract_number = forms.IntegerField(required=False, label=_("Contract number"));
+    contract_number = forms.IntegerField(required=False, label=_("Contract number"))
     contract_date = forms.DateField(required=False, label=_("Contract date"), help_text="[dd:mm:yyyy]", input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"])
     tg_negotiation_status_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
     # Duration of the agreement
