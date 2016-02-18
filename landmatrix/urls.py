@@ -36,4 +36,5 @@ urlpatterns = i18n_patterns('',
     url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
     url(r'^chart_view/', include(chart_urls)),
     url(r'^', include('cms.urls')),
+    url(r'^select2/', include('django_select2.urls')),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
