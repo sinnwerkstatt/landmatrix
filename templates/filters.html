@@ -3,218 +3,425 @@
 
 {% block filters %}
 
-<div id="filters" class="{% if not debug %} hidden{% endif %}">
+    <div id="filters_old" class="hidden">
 
-<script type="text/javascript">
-function init_form_condition (el) {
-  // variable
-  el.change(function () {
-    var form = $(this).parents("ul.form");
-    update_widget(form.find(".field:last .value-wrapper"), $(this).find("option:selected").val(), form);
-  }).change();
-  // operator
-  el.parents("ul.form").find(".operator").change(function() {
-    el.change();
-  });
-  // delete button
-  el.parents("ul.form").find(".delete-row").click(function() {
-    var form = $(this).parents("form"),
-        conditions = form.find(".condition:visible");
-    $(this).parents("ul.form.condition").remove();
-    var count = $("#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS").val()-1;
-    $("#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS").val(count);
-    // reset row counters
-    var new_name;
-    for (var i = 0; i < count; i++) {
-      $(conditions[i]).find(":input").each(function () {
-        $(this).attr("id") && $(this).attr("id", $(this).attr("id").replace(/{{ empty_form_conditions.prefix }}-[0-9]+/, "{{ empty_form_conditions.prefix }}-" + i));
-        $(this).attr("name") && $(this).attr("name", $(this).attr("name").replace(/{{ empty_form_conditions.prefix }}-[0-9]+/, "{{ empty_form_conditions.prefix }}-" + i));
-      })
-      //el.parents("ul.form").find("li.field")
-    }
-  });
-};
+        <script type="text/javascript">
+            function init_form_condition(el) {
+                // variable
+                el.change(function () {
+                    var form = $(this).parents("ul.form");
+                    update_widget(form.find(".field:last .value-wrapper"), $(this).find("option:selected").val(), form);
+                }).change();
+                // operator
+                el.parents("ul.form").find(".operator").change(function () {
+                    el.change();
+                });
+                // delete button
+                el.parents("ul.form").find(".delete-row").click(function () {
+                    var form = $(this).parents("form"),
+                            conditions = form.find(".condition:visible");
+                    $(this).parents("ul.form.condition").remove();
+                    var count = $("#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS").val() - 1;
+                    $("#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS").val(count);
+                    // reset row counters
+                    var new_name;
+                    for (var i = 0; i < count; i++) {
+                        $(conditions[i]).find(":input").each(function () {
+                            $(this).attr("id") && $(this).attr("id", $(this).attr("id").replace(/{{ empty_form_conditions.prefix }}-[0-9]+/, "{{ empty_form_conditions.prefix }}-" + i));
+                            $(this).attr("name") && $(this).attr("name", $(this).attr("name").replace(/{{ empty_form_conditions.prefix }}-[0-9]+/, "{{ empty_form_conditions.prefix }}-" + i));
+                        });
+                        //el.parents("ul.form").find("li.field")
+                    }
+                });
+            }
 
-$(document).ready(function () {
-  // add sticky header to table
-  var offset = $('.navbar').height();
-  //$("#summary").stickyTableHeaders({fixedOffset: offset});
-  // enable popover for intention of investment
-  $('a.intention-icon').popover({trigger: "hover", placement: "top"});
-  init_form_condition($("ul.form:not(.empty) .field:first-child select"));
-  // collapsible filters
-  $(".toggle-filter").click(function (e) {
-    e.preventDefault();
-    $(".collapsible .collapsible-form").toggle();
-    var container = $(".collapsible .collapsible-tags"),
-        tags = container.find("ul");
-    if (container.hasClass("collapsed")) {
-      tags.empty();
-      $(".form.condition:not(.empty)").each(function (index) {
-        var tag = "";
-        $(this).find(":input").each(function (index) {
-          var el = $(this),
-            name = el.attr("name");
-          if (name.indexOf("variable") > -1) {
-              // variable
-              tag += el.find(":selected").text();
-          }/* requires update_widget to be executed before
-           else if (name.indexOf("operator") > -1) {
-              // operator
-              tag += " " + el.val();
-          // value (select)
-          } else if (el.is("select")) {
-              tag += " " + el.find(":selected").text();
-          // value (radio buttons)
-          } else if (el.is("[type=checkbox]")) {
-              tag += (tag.indexOf(",") > -1) && (" " + el.parent().text()) || ", " + el.parent().text();
-          // value (other)
-          } else if (!el.is("[type=hidden]")) {
-              tag += " " + el.val();
-          }*/
-        });
-        tag = "<li><span class=\"label\">" + tag + "</span></li>";
-        $(tag).appendTo(tags);
-      });
-      container.removeClass("collapsed");
-      container.find(".toggle-filter").text("Manage filters");
-      container.find(".toggle-tooltip").show();
-    } else {
-      container.addClass("collapsed");
-      container.find(".toggle-filter").text("Hide filters");
-      container.find(".toggle-tooltip").hide();
-    }
-    return false;
-  }).click();
-});
-</script>
-<div class="row">
-    <div class="span7">
-        <div class="collapsible">
-            <div class="collapsible-form">
-                <form method="GET" class="form-inline filters">
-                    <div id="empty" class="rules row">
-                        <div class="span8">
-                            <input type="hidden" name="filtered" value="true" />
-                            <input type="hidden" name="limit" value="{{ limit }}"/>
-                            <input type="hidden" name="order_by" value="{{  data.order_by }}" />
-                            <input type="submit" class="submit" value="Apply Filters" style="display: none" />
-                            {% if empty_form_conditions %}
-                                <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
-                                {{ empty_form_conditions.management_form }}
-                                {% for empty_form in empty_form_conditions.forms %}
-                                <ul class="form clearfix condition">
-                                  {{ empty_form.as_ul }}
-                                  <li>&nbsp;<a class="delete-row" href="javascript:void(0)"><i class="icon icon-remove"></i></a></li>
-                                </ul>
-                                {% endfor %}
-                            {% endif %}
-                            <ul class="form clearfix condition empty">
-                                {{ empty_form_conditions.empty_form.as_ul }}
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span8">
-                            <script type="text/javascript">
-                            $(document).ready(function () {
-                              //
-                              $(".subnav li.limit a").click(function(e){
-                                  e.preventDefault();
-                                  $("input[name=limit]").val($(this).attr("href").split("/")[1]);
-                                  $("form").submit();
-                              });
-                              //
-                              $('.reset-filter').click(function(){
-                                $('.rules').find('ul:gt(0)').remove();
-                                $('#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS').val(0);
-                              });
-                              //
-                              $('#empty ul.form.empty :input, #empty ul.form.empty label').each(function () {
-                                  var id = $(this).attr("id");
-                                  var name = $(this).attr("name");
-                                  var value = $(this).attr("value");
-                                  var for_str = $(this).attr("for");
-                                  if (id != undefined) {
-                                    $(this).attr("id", id.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                  }
-                                  if (name != undefined) {
-                                    $(this).attr("name", name.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""))  ;
-                                  }
-                                  if (value != undefined) {
-                                    $(this).attr("value", value.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""  ));
-                                  }
-                                  if (for_str != undefined) {
-                                    $(this).attr("for", for_str.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-" , ""));
-                                  }
-                              });
-                              //
-                              $("ul.form.empty").formset({
-                                  prefix: '{{ empty_form_conditions.prefix }}',
-                                  addText: '{% trans "Add filter" %}',
-                                  deleteText: '<i class="icon icon-remove"></i>',
-                                  added: function (row) {
-                                    // FIXME: Move row out of button group, this should be handled by the formset
-                                            row.remove();
-                                    row.insertBefore($(".add-row:visible").parent().parent().find(".btn-group"))
-                                    init_form_condition($("ul.form.condition:last .field:first-child select"));
-                                  }
-                              });
-                              // FIXME: Move add-row button into the button group, don't use javascript for that
-                                var b = $(".add-row").addClass("btn").hide();
-                                $(".filters .btn-group").prepend(b.show());
-                            })
-                            </script>
-                            <div class="btn-group">
-                                <button type="submit" class="btn" name="reset" value="reset">{% trans "Reset" %}</button>
-                                <button type="submit" class="btn">{% trans "Go" %}</button>
+            $(document).ready(function () {
+                // add sticky header to table
+                var offset = $('.navbar').height();
+                //$("#summary").stickyTableHeaders({fixedOffset: offset});
+                // enable popover for intention of investment
+                $('a.intention-icon').popover({trigger: "hover", placement: "top"});
+                init_form_condition($("ul.form:not(.empty) .field:first-child select"));
+                // collapsible filters
+                $(".toggle-filter").click(function (e) {
+                    e.preventDefault();
+                    $(".collapsible .collapsible-form").toggle();
+                    var container = $(".collapsible .collapsible-tags"),
+                            tags = container.find("ul");
+                    if (container.hasClass("collapsed")) {
+                        tags.empty();
+                        $(".form.condition:not(.empty)").each(function (index) {
+                            var tag = "";
+                            $(this).find(":input").each(function (index) {
+                                var el = $(this),
+                                        name = el.attr("name");
+                                if (name.indexOf("variable") > -1) {
+                                    // variable
+                                    tag += el.find(":selected").text();
+                                }
+                                /* requires update_widget to be executed before
+                                 else if (name.indexOf("operator") > -1) {
+                                 // operator
+                                 tag += " " + el.val();
+                                 // value (select)
+                                 } else if (el.is("select")) {
+                                 tag += " " + el.find(":selected").text();
+                                 // value (radio buttons)
+                                 } else if (el.is("[type=checkbox]")) {
+                                 tag += (tag.indexOf(",") > -1) && (" " + el.parent().text()) || ", " + el.parent().text();
+                                 // value (other)
+                                 } else if (!el.is("[type=hidden]")) {
+                                 tag += " " + el.val();
+                                 }*/
+                            });
+                            tag = "<li><span class=\"label\">" + tag + "</span></li>";
+                            $(tag).appendTo(tags);
+                        });
+                        container.removeClass("collapsed");
+                        container.find(".toggle-filter").text("Manage filters");
+                        container.find(".toggle-tooltip").show();
+                    } else {
+                        container.addClass("collapsed");
+                        container.find(".toggle-filter").text("Hide filters");
+                        container.find(".toggle-tooltip").hide();
+                    }
+                    return false;
+                }).click();
+            });
+        </script> <!-- old filter javascript voodoo -->
+
+        <div class="row">
+            <div class="col-md-7">
+                <div class="collapsible">
+                    <div class="collapsible-form">
+                        <form method="GET" class="form-inline filters">
+                            <div id="empty" class="rules row">
+                                <div class="col-md-8">
+                                    <input type="hidden" name="filtered" value="true"/>
+                                    <input type="hidden" name="limit" value="{{ limit }}"/>
+                                    <input type="hidden" name="order_by" value="{{ data.order_by }}"/>
+                                    <input type="submit" class="submit" value="Apply Filters" style="display: none"/>
+                                    {% if empty_form_conditions %}
+                                        <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
+                                        {{ empty_form_conditions.management_form }}
+                                        {% for empty_form in empty_form_conditions.forms %}
+                                            <ul class="form clearfix condition">
+                                                {{ empty_form.as_ul }}
+                                                <li>&nbsp;<a class="delete-row" href="javascript:void(0)"><i
+                                                        class="icon icon-remove"></i></a></li>
+                                            </ul>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <ul class="form clearfix condition empty">
+                                        {{ empty_form_conditions.empty_form.as_ul }}
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            //
+                                            $(".subnav li.limit a").click(function (e) {
+                                                e.preventDefault();
+                                                $("input[name=limit]").val($(this).attr("href").split("/")[1]);
+                                                $("form").submit();
+                                            });
+                                            //
+                                            $('.reset-filter').click(function () {
+                                                $('.rules').find('ul:gt(0)').remove();
+                                                $('#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS').val(0);
+                                            });
+                                            //
+                                            $('#empty ul.form.empty :input, #empty ul.form.empty label').each(function () {
+                                                var id = $(this).attr("id");
+                                                var name = $(this).attr("name");
+                                                var value = $(this).attr("value");
+                                                var for_str = $(this).attr("for");
+                                                if (id != undefined) {
+                                                    $(this).attr("id", id.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                                }
+                                                if (name != undefined) {
+                                                    $(this).attr("name", name.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                                }
+                                                if (value != undefined) {
+                                                    $(this).attr("value", value.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                                }
+                                                if (for_str != undefined) {
+                                                    $(this).attr("for", for_str.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                                }
+                                            });
+                                            //
+                                            $("ul.form.empty").formset({
+                                                prefix: '{{ empty_form_conditions.prefix }}',
+                                                addText: '{% trans "Add filter" %}',
+                                                deleteText: '<i class="icon icon-remove"></i>',
+                                                added: function (row) {
+                                                    // FIXME: Move row out of button group, this should be handled by the formset
+                                                    row.remove();
+                                                    row.insertBefore($(".add-row:visible").parent().parent().find(".btn-group"));
+                                                    init_form_condition($("ul.form.condition:last .field:first-child select"));
+                                                }
+                                            });
+                                            // FIXME: Move add-row button into the button group, don't use javascript for that
+                                            var b = $(".add-row").addClass("btn").hide();
+                                            $(".filters .btn-group").prepend(b.show());
+                                        })
+                                    </script>
+                                    <div class="btn-group">
+                                        <button type="submit" class="btn" name="reset"
+                                                value="reset">{% trans "Reset" %}</button>
+                                        <button type="submit" class="btn">{% trans "Go" %}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </form>
-        </div>
-        <div class="collapsible-tags collapsed">
-          <h5>Active filters:</h5>
-          <ul class="unstyled"></ul>
-          <a href="javascript:;" class="toggle-filter">Manage filters</a>
-          <a href="#" class="toggle-tooltip" title="You can create custom filters here. However, please note that filters are reset when changing entry point."> <i class="icon icon-question-sign"> </i></a>
-          {% if data.count %}<p style="clear: both">Showing {% if data.items|length != data.count %}{{ data.items|length }} of {% endif %}{{ data.count }} row{{ data.count|pluralize }}.</p>{% endif %}
-        </div>
+                    <div class="collapsible-tags collapsed">
+                        <h5>Active filters:</h5>
+                        <ul class="unstyled"></ul>
+                        <a href="javascript:;" class="toggle-filter">Manage filters</a>
+                        <a href="#" class="toggle-tooltip"
+                           title="You can create custom filters here. However, please note that filters are reset when changing entry point.">
+                            <i class="icon icon-question-sign"> </i></a>
+                        {% if data.count %}<p style="clear: both">Showing
+                            {% if data.items|length != data.count %}{{ data.items|length }}
+                                of {% endif %}{{ data.count }} row{{ data.count|pluralize }}.</p>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div> <!-- old filter html -->
+
+        <div>
+            <div class="col-md-5">
+                <div class="actions btn-group pull-right">
+                    <button data-toggle="dropdown" class="btn dropdown-toggle">Download whole database <span
+                            class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li><a href="/{{ cms_page }}/all.csv">as Comma Separated Values (.csv)</a></li>
+                        <li><a href="/{{ cms_page }}/all.xls">as Excel (.xls)</a></li>
+                        <li><a href="/{{ cms_page }}/all.xml">as XML (.xml)</a></li>
+                    </ul>
+                </div>
+                {% if group_value %}
+                    <div class="actions btn-group pull-right">
+                        <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="/{{ cms_page }}/{{ group_slug }}/{{ group_value }}.csv">as Comma Separated
+                                Values (.csv)</a></li>
+                            <li><a href="/{{ cms_page }}/{{ group_slug }}/{{ group_value }}.xls">as Excel (.xls)</a>
+                            </li>
+                            <li><a href="/{{ cms_page }}/{{ group_slug }}/{{ group_value }}.xml">as XML (.xml)</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <div class="actions btn-group pull-right">
+                        <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="/{{ cms_page }}/{{ group_slug }}.csv">as Comma Separated Values (.csv)</a></li>
+                            <li><a href="/{{ cms_page }}/{{ group_slug }}.xls">as Excel (.xls)</a></li>
+                            <li><a href="/{{ cms_page }}/{{ group_slug }}.xml">as XML (.xml)</a></li>
+                        </ul>
+                    </div>
+                {% endif %}
+                <a href="#" class="toggle-tooltip pull-right download-hint"
+                   title="Due to ongoing server optimization, we momentarily disabled download of filtered datasets. We apologize for the inconvenience.">
+                    <i class="icon icon-question-sign"> </i></a>
+            </div>
+        </div>  <!-- download section -->
+
+    </div> <!-- old filter section -->
+
+    <div id="filternavbar" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#filter-navbar-collapse" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+
+            <div class="collapse navbar-collapse" id="filter-navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false"><span>By Target<span class="caret"></span></span></a>
+                        <ul class="dropdown-menu">
+                            <li>By Region</li>
+                            <li>By Country</li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false"><span>By Investor <span class="caret"></span></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Foobar</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false"><span>By Data Source <span class="caret"></span></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Barqux</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false"><span>By Intention <span class="caret"></span></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">SpamHam</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false"><span>By Crop <span class="caret"></span></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Eggs</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" role="button"><span>All deals</span></a></li>
+                </ul>
+            </div>
         </div>
     </div>
-    <div class="span5">
-        <div class="actions btn-group pull-right">
-            <button data-toggle="dropdown" class="btn dropdown-toggle">Download whole database <span class="caret"></span></button>
-            <ul class="dropdown-menu">
-              <li><a href="/{{ cms_page }}/all.csv">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/{{ cms_page }}/all.xls">as Excel (.xls)</a></li>
-              <li><a href="/{{ cms_page }}/all.xml">as XML (.xml)</a></li>
-            </ul>
-        </div>
-        {% if group_value %}
-        <div class="actions btn-group pull-right">
-            <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span class="caret"></span></button>
-            <ul class="dropdown-menu">
-              <li><a href="/{{ cms_page }}/{{ group_slug }}/{{group_value}}.csv">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/{{ cms_page }}/{{ group_slug }}/{{group_value}}.xls">as Excel (.xls)</a></li>
-              <li><a href="/{{ cms_page }}/{{ group_slug }}/{{group_value}}.xml">as XML (.xml)</a></li>
-            </ul>
-        </div>
-        {% else %}
-        <div class="actions btn-group pull-right">
-            <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span class="caret"></span></button>
-            <ul class="dropdown-menu">
-              <li><a href="/{{ cms_page }}/{{ group_slug }}.csv">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/{{ cms_page }}/{{ group_slug }}.xls">as Excel (.xls)</a></li>
-              <li><a href="/{{ cms_page }}/{{ group_slug }}.xml">as XML (.xml)</a></li>
-            </ul>
-        </div>
-        {% endif %}
-          <a href="#" class="toggle-tooltip pull-right download-hint" title="Due to ongoing server optimization, we momentarily disabled download of filtered datasets. We apologize for the inconvenience."> <i class="icon icon-question-sign"> </i></a>
+
+    <div id="filters">
+        <form>
+            <div class="row">
+                <div class="col-md-3 filterbox checkboxes">
+                    <ul>
+                        <li class="checkbox">
+                            <input id="checkbox1" name="data1" type="checkbox">
+                            <label for="checkbox1">Concluded Deals</label>
+                        </li>
+                        <li class="checkbox">
+                            <input id="checkbox2" name="data2" type="checkbox">
+                            <label for="checkbox2">Intended Deals</label>
+                        </li>
+                        <li class="checkbox">
+                            <input id="checkbox3" name="data3" type="checkbox">
+                            <label for="checkbox3">Failed Deals</label>
+                        </li>
+                        <li class="checkbox">
+                            <input id="checkbox4" name="data4" type="checkbox">
+                            <label for="checkbox4">Exclude Media Reports</label>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-3 filterbox no-pad">
+                    <!-- <select id="filterselect" size="6" class="formcontrol">
+                        <option value=""><strong style="backgroud-color: blue;">Spatial Data</strong></option>
+                        <option value="">Location</option>
+                        <option value=""><strong style="backgroud-color: blue;">General Info</strong></option>
+                        <option value="">Current size under contract</option>
+                        <option value="">Intention of the Investment</option>
+                        <option value="">Nature of the deal</option>
+                        <option value="">Negotiation Status</option>
+                        <option value="">Implementation Status</option>
+                    </select> -->
+
+                    <ul>
+                        <li>
+                            Spatial Data
+                        </li>
+                        <li>
+                            <small>
+                                Location
+                            </small>
+                        </li>
+                        <li style="background-color: #ebebeb;">
+                            <div>
+                                General Info
+                            </div>
+                        </li>
+                        <li>
+                            <small>
+                                Current size under contract
+                            </small>
+                        </li>
+                        <li>
+                            <small>
+                                Intention of the Investment
+                            </small>
+                        </li>
+                        <li>
+                            <small>
+                                Nature of the deal
+                            </small>
+                        </li>
+                        <li>
+                            <small>
+                                Negotiation Status
+                            </small>
+                        </li>
+                        <li>
+                            <small>
+                                Implementation Status
+                            </small>
+                        </li>
+                        <li class="bg-danger">
+                            <small class="small">
+                                Foobar - i should be unseen!
+                            </small>
+                        </li>
+                    </ul>
+
+                </div>
+                <div class="col-md-6 filterbox">
+                    <div class="input-group">
+                        <select id="condition" value="Contains" class="select-inline">
+                            <option>Contains not</option>
+                            <option>Equals</option>
+                            <option>Equals not</option>
+                            <option>Starts with</option>
+                            <option>Ends with</option>
+                        </select>
+                        <input type="text" value="Foobar" class="inline">
+                        <a href="#"><i class="lm lm-times"></i></a>
+                    </div>
+                    <div class="input-group">
+                        <select id="condition" value="Contains" class="select-inline">
+                            <option>Contains not</option>
+                            <option>Equals</option>
+                            <option>Equals not</option>
+                            <option>Starts with</option>
+                            <option>Ends with</option>
+                        </select>
+                        <input type="text" value="Foobar" class="inline">
+                        <a href="#"><i class="lm lm-times"></i></a>
+                    </div>
+                    <div class="input-group">
+                        <select id="condition" value="Contains" class="select-inline">
+                            <option>Contains not</option>
+                            <option>Equals</option>
+                            <option>Equals not</option>
+                            <option>Starts with</option>
+                            <option>Ends with</option>
+                        </select>
+                        <input type="text" value="Foobar" class="inline">
+                        <a href="#"><i class="lm lm-times"></i></a>
+                    </div>
+                    <div class="input-group">
+                        <button class="btn"><i class="lm lm-plus"></i> Add condition</button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
     </div>
-</div>
-
-
-</div>
 
 {% endblock %}

@@ -103,7 +103,7 @@ body {
     color: #fc941f;
     border-color: #fc941f;
     border-width: 2px;
-    background: white;
+    background: #fcfcfc;
     font-weight: bold;
     /*opacity: 0.5; */
     font-size: 14px;
@@ -269,6 +269,12 @@ a:focus {
     text-decoration: none;
 }
 
+i:before {
+    content: '{icon}';
+    display: inline-block;
+    /*padding-left: 1em;*/
+}
+
 ::-moz-selection {
     background: #fc941f;
     color: #fcfcfc;
@@ -362,10 +368,12 @@ a:focus {
     display: block;
 }
 
-.navbar > a, a.btn, .nav a {
+#main-navbar-collapse > a,
+#main-navbar-collapse > a.btn,
+#main-navbar-collapse > .nav a {
     text-decoration: none;
     font-weight: 200;
-    font-size: 22px;
+    font-size: 18px;
     line-height: 20px;
 }
 
@@ -407,7 +415,7 @@ a:focus {
 
 .navbar-default .navbar-nav > .open > a:focus,
 .navbar-default .navbar-nav > .open > a:hover {
-    background: #fff none;
+    background: # none;
     color: #b9d635;
     z-index: 99;
 }
@@ -437,7 +445,7 @@ a:focus {
 .lm-lang {
     margin-top: -5px;
     margin-left: -15px;
-    color: white;
+    color: #fcfcfc;
 }
 
 .right {
@@ -455,7 +463,6 @@ a:focus {
 .section {
     margin: 36px 0 18px
 }
-
 
 .panel {
     border: 0px none;
@@ -496,7 +503,6 @@ div.panel > div > h4 > a {
 div.panel.panel-default:last-child {
     border-bottom: solid 2px #c1c1c1;
 }
-
 
 .in {
     border-top: dashed 2px #c1c1c1 !important;
@@ -662,7 +668,8 @@ footer > .container {
 }
 
 footer .col-md-3,
-footer .col-md-4 {
+footer .col-md-4,
+footer .col-md-5 {
     padding-left: 0px;
     padding-right: 0px;
 }
@@ -1206,6 +1213,43 @@ h4 .icon {
 /* ==========================================================================
  *    FORMS
  * ========================================================================== */
+
+.checkboxes input[type=checkbox] {
+    display: none;
+}
+
+.checkboxes label:before {
+    font-weight: normal;
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height:16px;
+    margin-right: 10px;
+    position: absolute;
+    left: 0;
+    bottom: 2px;
+    background-color: #fcfcfc;
+    border: solid 1px #4a4a4a;
+}
+
+.checkboxes .checkbox label:before {
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.checkboxes input[type=checkbox]:checked + label:before {
+    content: '\f00d';
+    font-size: 13px;
+    color: #4a4a4a;
+    text-align: center;
+    line-height: 13px;
+}
+
+.checkboxes label {
+    padding: 0px 25px !important;
+}
+
 ul.form.empty {
     display: none;
 }
@@ -1258,23 +1302,22 @@ label[for=id_honeypot] {
     display: none;
 }
 
-
-table input,
-table select,
-table textarea {
+input,
+select,
+textarea {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
     border: 1px solid;
-    border-color: #4a4a4a;
+    border-color: #919191;
 
-    background-color: #fff;
+    background-color: #fcfcfc;
     box-shadow: none !important;
     color: #4a4a4a;
     max-width: 75%;
     margin-left: 5px !important;
     margin-bottom: 2px;
-    padding: 2px 5px;
+    padding: 5px 5px;
 }
 
 .formcontrol {
@@ -1377,6 +1420,66 @@ table textarea {
  *    MAPS
  * ========================================================================== */
 
+#filters {
+    border: solid 1px #919191;
+    margin-bottom: 20px;
+}
+
+#filternavbar {
+    border: solid 1px #919191;
+    border-bottom: none;
+    border-radius: 0px;
+    font-weight: 700;
+    height: 30px;
+    margin-bottom: 0px !important;
+}
+
+#filters .row {
+    padding-bottom: 0px;
+}
+
+#filters .btn {
+    background-color: #919191;
+    border-color: #919191;
+    color: #fcfcfc;
+
+}
+
+.filterbox {
+    color: #c6c6c6 !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 200px;
+    border-right: solid 1px #919191;
+    padding: 0px 0px;
+}
+
+.filterbox label {
+    width: 100%;
+    padding: 5px 15px;
+}
+
+.filterbox > ul {
+    padding: 5px 15px;
+    width: 100%;
+}
+
+.filterbox > .input-group {
+    padding: 10px 5px;
+}
+
+.filterbox.no-pad > ul {
+    padding: 10px 0px !important;
+}
+
+.filterbox.no-pad > ul > li {
+    padding: 5px 15px;
+}
+
+/* ==========================================================================
+ *    MAPS
+ * ========================================================================== */
+
 /*.map {
     font-size: 12px !important;
     line-height: 1em !important;
@@ -1438,7 +1541,7 @@ table textarea {
 .nav-list > .active > a:hover,
 .nav-list > .active > a:focus {
     background-color: #fc941f;
-    color: #fff;
+    color: #;
     text-shadow: none;
 }
 
@@ -1515,7 +1618,7 @@ table td {
 
 table button,
 table a.btn {
-    color: white !important;
+    color: #fcfcfc !important;
     border-color: #fc941f !important;
     border-width: 2px !important;
     background: #fc941f !important;

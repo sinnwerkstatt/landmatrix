@@ -104,11 +104,11 @@
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="/global"><span class="lm-nav lm-globe"></span><span class="nav-text">Global</span></a>
+                    <li><a href="/global"><i class="lm-nav lm-globe"></i><span class="nav-text">Global</span></a>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><span class="lm-nav lm-regions"></span><span class="nav-text">Regions <span
+                           aria-expanded="false"><i class="lm-nav lm-regions"></i><span class="nav-text">Regions <span
                                 class="caret"></span></span></a>
                         <ul class="dropdown-menu">
                             <li>
@@ -135,7 +135,7 @@
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><span class="lm-nav lm-flag"></span><span
+                           aria-expanded="false"><i class="lm-nav lm-flag"></i><span
                                 class="nav-text">Countries <span
                                 class="caret"></span></span></a>
                         <ul class="dropdown-menu">
@@ -158,7 +158,7 @@
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><span class="lm-nav lm-plus-circle"></span><span class="nav-text">Get Involved <span
+                           aria-expanded="false"><i class="lm-nav lm-plus-circle"></i><span class="nav-text">Get Involved <span
                                 class="caret"></span></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="add-deal">Report a deal</a></li>
@@ -222,7 +222,7 @@
                             {% block subnav_inner %}
                             {% endblock %}
 
-                            <a href="#/share"><span class="lm lm-share-square-o"></span>Share</a>
+                            <a href="#/share"><i class="lm lm-share-square-o"></i>Share</a>
                         </div>
                     {% endblock %}
                 </div>
@@ -235,6 +235,8 @@
                 <h1><span>{% block title %}{% page_attribute "title" %}{% endblock %}</span></h1>
             </div>
         {% endblock %}
+
+        {% include 'filters.html' %}
 
         {% block content %}{% endblock %}
 
@@ -291,20 +293,20 @@
             <hr/>
 
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <h4>Spread the word and share land matrix</h4>
-                    <a href="https://twitter.com/Land_Matrix"><span class="lm-footer lm-twitter-square"></span></a>
-                    <a href="https://www.facebook.com/LandMatrix"><span class="lm-footer lm-facebook-square"></span></a>
+                    <a href="https://twitter.com/Land_Matrix"><i class="lm-footer lm-twitter-square"></i></a>
+                    <a href="https://www.facebook.com/LandMatrix"><i class="lm-footer lm-facebook-square"></i></a>
                 </div>
-                <div class="col-md-4 center">
+                <div class="col-md-3 center">
                     <h4>Share and adapt</h4>
                     <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span
                             class="lm-footer lm-creative-commons"></span></a>
-                    <a href="https://github.com/sinnwerkstatt/landmatrix"><span class="lm-footer lm-github"></span></a>
+                    <a href="https://github.com/sinnwerkstatt/landmatrix"><i class="lm-footer lm-github"></i></a>
                 </div>
                 <div class="col-md-4 right">
                     <h4>Sign up to receive updates</h4>
-                    <a href="http://eepurl.com/AHK0r"><span class="lm-footer lm-envelope"></span></a>
+                    <a href="http://eepurl.com/AHK0r"><i class="lm-footer lm-envelope"></i></a>
                 </div>
             </div>
         </div>
