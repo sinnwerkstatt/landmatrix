@@ -303,7 +303,7 @@ class BaseForm(forms.Form):
             else:
                 tags, taggroup = cls.get_tags(field_name, deal, taggroup)
 
-                if len(tags) > 0:
+                if tags and len(tags) > 0:
                     if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
                         cls.get_multiple_choice_data(data, field, field_name, prefixed_name, taggroup)
                     else:
@@ -405,8 +405,10 @@ class BaseForm(forms.Form):
             tags = deal.attributes
             if not taggroup:
                 taggroup = list(deal.attribute_groups())
-        elif isinstance(taggroup, SH_Tag_Group):
-            tags = taggroup.sh_tag_set.filter(fk_sh_key__key=str(field_name))
+        # elif isinstance(taggroup, SH_Tag_Group):
+        #     tags = taggroup.sh_tag_set.filter(fk_sh_key__key=str(field_name))
+        elif taggroup is None:
+            return None, None
         else:
             tags = taggroup.a_tag_set.filter(fk_a_key__key=str(field_name))
         return tags, taggroup
