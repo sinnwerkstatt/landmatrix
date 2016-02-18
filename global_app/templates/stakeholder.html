@@ -13,12 +13,19 @@
 
 {% block content %}
 
-{{ investor_form }}
+    <form action="." method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table>
+            {{ investor_form }}
 
-<h3>Parent stakeholders</h3>
-{{ parent_stakeholders }}
+            <tr><td><h3>Parent stakeholders</h3></td></tr>
+            {{ parent_stakeholders }}
 
-<h3>Investors</h3>
-{{ parent_investors }}
+            <tr><td><h3>Investors</h3></td></tr>
+            {{ parent_investors }}
 
+
+            <tr><td><input type="submit" value="Submit"/></td></tr>
+        </table>
+    </form>
 {% endblock %}
