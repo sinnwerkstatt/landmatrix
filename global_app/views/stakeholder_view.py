@@ -11,6 +11,9 @@ from django.views.generic.base import TemplateView
 from landmatrix.models.status import Status
 
 
+VERBOSE = True
+
+
 class StakeholderView(TemplateView):
 
     template_name = 'stakeholder.html'
@@ -30,65 +33,85 @@ class StakeholderView(TemplateView):
 
 
 def save_from_post(POST):
-    print('POST:', POST)
     investor = investor_from_id(POST['investor'])
     if not investor:
         return
+
+    save_investor_changes(investor, POST)
+    save_involvement_changes(investor, POST)
+
+
+def extract_formset_data(POST):
+    return {key: POST[key] for key in POST.keys() if key.startswith('form-') and not key[5].istitle()}
+
+
+def save_investor_changes(investor, POST):
     investor_form = InvestorForm(POST)
+    if investor_form.is_valid():
+        classification = investor_form.cleaned_data['classification']
+        investor_name = investor_form.cleaned_data['investor_name']
+        country_id = investor_form.cleaned_data['country']
+        if investor_name != investor.name:
+            investor.name = investor_name
+        if classification != investor.classification:
+            investor.classification = classification
+        if investor.fk_country_id != country_id:
+            investor.fk_country_id = country_id
 
-    print('investor_form.is_valid', investor_form.is_valid())
-    print('investor_form.cleaned_data',investor_form.cleaned_data)
+        investor.save()
+        # TODO create changeset
 
-    classification = investor_form.cleaned_data['classification']
-    investor_name = investor_form.cleaned_data['investor_name']
-    country_id =  investor_form.cleaned_data['country']
 
-    formset_post = {key: POST[key] for key in POST.keys() if key.startswith('form-') and not key[5].istitle()}
-    print(formset_post)
-    stakeholder_data = get_separate_form_data(formset_post)
+def save_involvement_changes(investor, POST):
+    stakeholder_data = get_separate_form_data(extract_formset_data(POST))
 
-    # stakeholder_formset = ParentStakeholderFormSet(POST)
-    #
-    # print('stakeholder_formset.is_valid', stakeholder_formset.is_valid())
-    # print('stakeholder_formset.cleaned_data', stakeholder_formset.cleaned_data)
+    delete_involvements_removed_in_frontend(investor, stakeholder_data)
 
-    if investor_name != investor.name:
-        investor.name = investor_name
-        print(investor_name)
-    if classification != investor.classification:
-        investor.classification = classification
-        print(classification)
-    if investor.fk_country_id != country_id:
-        investor.fk_country_id = country_id
-        print(country_id)
+    involvements = get_active_involvements(investor)
 
-    involvements = InvestorVentureInvolvement.objects.filter(fk_venture=investor)
-    for involvement in involvements:
-        if involvement.fk_investor_id not in [stakeholder['stakeholder'] for stakeholder in stakeholder_data]:
-            print(str(involvement)[:51], 'not in', stakeholder_data)
-            involvement.delete()
-            continue
     for stakeholder in stakeholder_data:
-        corresponding_involvements = InvestorVentureInvolvement.objects.filter(fk_venture=investor).\
-            filter(fk_investor_id=stakeholder['stakeholder'])
+        corresponding_involvements = involvements.filter(fk_investor_id=stakeholder['stakeholder'])
         if not len(corresponding_involvements):
-            print(stakeholder, 'not in', [i.id for i in involvements])
+            if VERBOSE:
+                print('CREATING involvement for ', stakeholder, ', not in', [i.id for i in involvements])
             InvestorVentureInvolvement.objects.create(
                 fk_venture=investor, fk_investor_id=stakeholder['stakeholder'], percentage=stakeholder['percentage'],
                 fk_status=Status.objects.get(name='pending')
             )
         else:
             for involvement in corresponding_involvements:
-                print('updating stakeholder %i percentage from %f to %f' % (involvement.id, involvement.percentage, stakeholder['percentage']))
+                if VERBOSE:
+                    print(
+                        'UPDATING stakeholder %i percentage from %f to %f' % (
+                            involvement.id, float(involvement.percentage), float(stakeholder['percentage'])
+                        )
+                    )
                 involvement.percentage = stakeholder['percentage']
-                involvement.fk_status=Status.objects.get(name='pending')
+                involvement.fk_status = Status.objects.get(name='pending')
                 involvement.save()
+
     # TODO create changeset
+
+
+def delete_involvements_removed_in_frontend(investor, stakeholder_data):
+    involvements = get_active_involvements(investor)
+    for involvement in involvements:
+        if int(involvement.fk_investor_id) not in [int(stakeholder['stakeholder']) for stakeholder in stakeholder_data]:
+            if VERBOSE:
+                print('DELETING |', str(involvement)[:51], '|, not in', stakeholder_data)
+            involvement.fk_status = Status.objects.get(name='deleted')
+            involvement.save()
+    # TODO create changeset
+
+
+def get_active_involvements(investor):
+    return InvestorVentureInvolvement.objects.filter(fk_venture=investor). \
+        filter(fk_status__name__in=('pending', 'active', 'overwritten'))
 
 
 def get_separate_form_data(formset_post):
     # in:  { form-0-key: value, form-1-key: value }
-    # out: [{key: value}, {key: value}
+    # out: [{key: value}, {key: value}]
     i = 0
     out = []
     while True:
@@ -100,6 +123,7 @@ def get_separate_form_data(formset_post):
         i += 1
         if i > 1000:
             return out
+
 
 def get_investor(request):
     return investor_from_id(request.GET.get('investor_id', 0))
