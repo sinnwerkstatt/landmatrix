@@ -25,6 +25,7 @@ from global_app import urls as global_urls
 from global_app.views.filter_widget_ajax_view import FilterWidgetAjaxView
 from chart_view import urls as chart_urls
 from dashboard import urls as editor_urls
+from landmatrix.views.start_view import StartView
 
 
 urlpatterns = i18n_patterns('',
@@ -35,5 +36,6 @@ urlpatterns = i18n_patterns('',
     url(r'^editor/', include(editor_urls)),
     url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
     url(r'^chart_view/', include(chart_urls)),
+    url(r'^start/', StartView.as_view(), name='start'),
     url(r'^', include('cms.urls')),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

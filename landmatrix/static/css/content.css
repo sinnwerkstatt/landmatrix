@@ -82,6 +82,12 @@ body {
     background-color: #fc941f;
 }
 
+.label-filter {
+    background-color: #44c42d;
+    padding-right: 0px;
+    margin-left: 10px;
+}
+
 /* ==========================================================================
  *    LAYOUT
  * ========================================================================== */
@@ -92,6 +98,33 @@ body {
     margin-left: 0px;
     margin-right: 0px;
     padding-bottom: 5px;
+}
+
+hr {
+    margin-bottom: 2em;
+}
+
+.wrap {
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.wrap.fullwidth {
+    margin-top: 40px;
+    padding-top: 30px;
+    padding-bottom: 40px;
+    border-top: solid 1px #c6c6c6;
+    background: #ebebeb;
+}
+
+#news .thumb {
+    float: left;
+    height: 150px;
+    width: 80px;
+}
+
+#news p {
+    margin-top: 0.5em;
 }
 
 /* ==========================================================================
@@ -112,7 +145,10 @@ body {
 }
 
 .container a.btn-large {
-    padding: 15px 3vw;
+    padding: 1em 3.5vw;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    text-transform: capitalize;
 }
 
 .container button:focus,
@@ -169,11 +205,13 @@ body {
 }
 
 .dropdown-menu {
+    background: #fcfcfc;
     padding: 15px;
     border-style: none;
     box-shadow: 1px 1px 3px #dadada !important;
     border-radius: 0px !important;
-    z-index: 98
+    z-index: 98;
+    min-width: 12vw;
 }
 
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
@@ -226,9 +264,19 @@ table td,
 blockquote,
 label {
     font-family: 'Open Sans', sans-serif;
-    /* font-size: 14px; */
+    color: #919191;
+}
+
+body,
+p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
     line-height: 1.5em;
-    color: #4a4a4a;
+}
+
+.lead {
+    font-weight: 400;
+    line-height: 2em;
 }
 
 h1 {
@@ -244,19 +292,32 @@ h2,
 h3,
 h4 {
     font-family: 'Open Sans', sans-serif;
-    text-transform: uppercase;
     font-weight: bold;
     color: #4a4a4a;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+h2,
+h4 {
+    text-transform: uppercase;
+}
+
+h2,
+h3 {
+    font-size: 22px;
 }
 
 h4 {
-    font-size: 18px;
+    font-size: 22px;
+    color: #919191;
 }
 
 h5,
 h6 {
     font-size: 18px !important;
     margin: 0;
+    font-weight: 600;
 }
 
 a:hover {
@@ -267,6 +328,16 @@ a:hover {
 a:focus {
     color: #b9d635;
     text-decoration: none;
+}
+
+p a {
+    color: #fc941f;
+    vertical-align: bottom;
+}
+
+p a:after {
+    content: '\f105';
+    padding-left: 0.5em;
 }
 
 i:before {
@@ -302,7 +373,7 @@ i:before {
 }
 
 .navbar-default {
-    background-color: rgba(156, 156, 156, 0.26);
+    background-color: #ebebeb; /*  rgba(156, 156, 156, 0.26); */
 }
 
 .navbar-default .navbar-inner {
@@ -374,7 +445,7 @@ i:before {
     text-decoration: none;
     font-weight: 200;
     font-size: 18px;
-    line-height: 20px;
+    line-height: 40px;
 }
 
 .navbar .nav > li > a {
@@ -396,26 +467,35 @@ i:before {
 }
 
 .nav-circle {
-    width: 1.8em;
-    height: 1.8em;
+    width: 20px;
+    height: 20px;
     font-size: 12px;
     text-transform: uppercase;
     display: block;
-    margin-top: 2px;
+    margin-top: 13px;
     border-radius: 50%;
     color: #ebebeb;
     text-align: center;
     background: #919191;
-    font-weight: 700;
+    font-weight: 600;
+    vertical-align: middle;
+    line-height: 19px;
+}
+
+.nav-help {
+    line-height: 20px;
+    font-weight: 600;
+    font-size: 18px;
 }
 
 .language {
-    font-size: 0.5em;
+    font-size: 0.8em;
 }
 
 .navbar-default .navbar-nav > .open > a:focus,
 .navbar-default .navbar-nav > .open > a:hover {
-    background: # none;
+    background: #fcfcfc;
+    opacity: 1;
     color: #b9d635;
     z-index: 99;
 }
@@ -443,9 +523,12 @@ i:before {
 }
 
 .lm-lang {
-    margin-top: -5px;
-    margin-left: -15px;
-    color: #fcfcfc;
+
+}
+
+.container .lm {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 }
 
 .right {
@@ -504,7 +587,7 @@ div.panel.panel-default:last-child {
     border-bottom: solid 2px #c1c1c1;
 }
 
-.in {
+form >.in {
     border-top: dashed 2px #c1c1c1 !important;
     border-top-width: 2px !important;
 }
@@ -519,11 +602,18 @@ div.panel.panel-default:last-child {
     margin-bottom: 10px;
     padding: 0;
     list-style: none;
+    font-size: 14px;
 }
 
-.subnav a {
-    color: #4a4a4a;
+.subnav.nav > li > a > i {
+    vertical-align: middle;
 }
+
+.subnav.nav > li > a {
+    padding: 2px 5px;
+    border-radius: 5px;
+}
+
 
 .subnav a:hover {
     text-decoration: underline;
@@ -546,6 +636,17 @@ div.panel.panel-default:last-child {
 .subnav.nav > li:focus .thumbnail,
 .subnav.nav > .active .thumbnail {
     opacity: 1;
+}
+
+.subnav-active > a {
+    color: #fcfcfc;
+    background-color: #4a4a4a;
+    border-radius: 5px;
+}
+
+.subnav.nav > li.divider {
+    margin-right: 23px;
+    border: 1px solid #fcfcfc; /* It'll get squished otherwise */
 }
 
 /*
@@ -674,10 +775,6 @@ footer .col-md-5 {
     padding-right: 0px;
 }
 
-.wrap {
-    margin-bottom: 20px;
-}
-
 .push {
     /*    height: 50px; /* .push must be the same height as footer */
 }
@@ -686,6 +783,12 @@ footer {
     background-color: #c1c1c1;
     padding: 10px;
     display: block;
+}
+
+footer h4 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #4a4a4a;
 }
 
 footer p,
@@ -809,6 +912,23 @@ i.big.get-involved {
 
 .active .big.get-involved {
     background-position: -80px -116px;
+}
+
+.whitecircle {
+    width: 80px;
+    height: 80px;
+    font-size: 42px;
+    line-height: 80px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-top: 40px;
+    margin-bottom: 30px;
+    border-radius: 50%;
+    color: #4bbb87;
+    text-align: center;
+    padding-left: 5px;
+    background: #fcfcfc;
+    font-weight: 700;
 }
 
 /* ==========================================================================
@@ -1031,10 +1151,10 @@ h4 .icon {
     float: left;
 }
 
+
 .carousel-control {
     position: absolute;
     top: 50%;
-    left: -22px;
     width: 40px;
     height: 40px;
     margin-top: -20px;
@@ -1045,9 +1165,9 @@ h4 .icon {
     text-align: center;
     background: none;
     border: 0;
-    -webkit-border-radius: 23px;
+    /*-webkit-border-radius: 23px;
     -moz-border-radius: 23px;
-    border-radius: 23px;
+    border-radius: 23px;*/
     opacity: 0.5;
     filter: alpha(opacity=50);
     text-decoration: none;
@@ -1059,27 +1179,33 @@ h4 .icon {
 
 .carousel-control.right {
     left: auto;
-    right: -22px;
+    background: none;
+}
+
+.carousel-control.left {
+    background: none;
 }
 
 .carousel {
-    margin-bottom: 0;
+    margin-bottom: 50px;
 }
 
 .carousel-indicators {
-    bottom: -30px;
+    bottom: -42px;
     top: auto;
     right: auto;
 }
 
 .carousel-indicators li {
-    background-color: #4a4a4a;
-    border-radius: 3px;
-    margin-left: 10px;
+    background-color: #c6c6c6;
 }
 
 .carousel-indicators .active {
-    background-color: #9b9b9b;
+    background-color: #fc941f;
+}
+
+.carousel-inner > .item > img {
+    margin: 0 auto;
 }
 
 .blog-entry {
@@ -1152,6 +1278,7 @@ h4 .icon {
     }
 }
 
+/*
 .carousel-fade .carousel-inner .item.prev.right,
 .carousel-fade .carousel-inner .item.active.right {
     text-align: left;
@@ -1184,6 +1311,8 @@ h4 .icon {
 .carousel-fade .carousel-inner .prev.right {
     opacity: 1;
 }
+
+*/
 
 .well-square.social {
     margin-top: 27px;
@@ -1223,7 +1352,7 @@ h4 .icon {
     content: '';
     display: inline-block;
     width: 16px;
-    height:16px;
+    height: 16px;
     margin-right: 10px;
     position: absolute;
     left: 0;
@@ -1473,7 +1602,7 @@ textarea {
 }
 
 .filterbox.no-pad > ul > li {
-    padding: 5px 15px;
+    padding: 5px 30px;
 }
 
 /* ==========================================================================
@@ -1611,9 +1740,18 @@ ul.legend.offset li > span {
  * ========================================================================== */
 table th,
 table td {
-    padding: 16px 8px 8px !important;
+    padding: 10px 20px 8px !important;
     /*border-bottom: 1px solid #c1c1c1; */
     border: 0px none;
+}
+
+.table > tbody > tr > td,
+.table > tbody > tr > th,
+.table > tfoot > tr > td,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > thead > tr > th {
+    border-top: none;
 }
 
 table button,
@@ -1641,6 +1779,10 @@ table tbody {
     width: 100%;
 }
 
+.table-striped > tbody > tr:nth-of-type(2n+1) {
+    background-color: #ebebeb;
+}
+
 .table-condensed th,
 .table-condensed td {
     padding: 4px 5px;
@@ -1655,7 +1797,9 @@ table tbody {
 table th,
 .container table th a {
     font-weight: bold;
-    color: #4a4a4a;
+    padding-left: 10px;
+    color: #fcfcfc;
+    background-color: #919191;
 }
 
 table th a {
