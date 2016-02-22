@@ -234,194 +234,193 @@
 
     </div> <!-- old filter section -->
 
-    <div id="filternavbar" class="navbar navbar-default" role="navigation">
-        <div class="container-fluid">
-
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                        data-target="#filter-navbar-collapse" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div>
-
-            <div class="collapse navbar-collapse" id="filter-navbar-collapse">
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-haspopup="true"
-                           aria-expanded="false"><span>By Target<span class="caret"></span></span></a>
-                        <ul class="dropdown-menu">
-                            <li>By Region</li>
-                            <li>By Country</li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-haspopup="true"
-                           aria-expanded="false"><span>By Investor <span class="caret"></span></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Foobar</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-haspopup="true"
-                           aria-expanded="false"><span>By Data Source <span class="caret"></span></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Barqux</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-haspopup="true"
-                           aria-expanded="false"><span>By Intention <span class="caret"></span></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">SpamHam</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-haspopup="true"
-                           aria-expanded="false"><span>By Crop <span class="caret"></span></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Eggs</a></li>
-                        </ul>
-                    </li>
-
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#" role="button"><span>All deals</span></a></li>
-                </ul>
-            </div>
+    <div class="row">
+        <div class="col-md-10">
+            <label>Active Filters:</label>
+            <span class="label label-filter">Negotiation Status <i class="lm lm-times"></i></span>
+            <span class="label label-filter">Deal scope <i class="lm lm-times"></i></span>
+            <span class="label label-filter">Crops <i class="lm lm-times"></i></span>
+        </div>
+        <div class="col-md-2 right">
+            <a class="right" role="button" data-toggle="collapse" href="#filter-collapse" aria-expanded="true"
+               aria-controls="filter-collapse">
+                Hide Filters
+            </a>
         </div>
     </div>
 
-    <div id="filters">
-        <form>
-            <div class="row">
-                <div class="col-md-3 filterbox checkboxes">
-                    <ul>
-                        <li class="checkbox">
-                            <input id="checkbox1" name="data1" type="checkbox">
-                            <label for="checkbox1">Concluded Deals</label>
+    <div id="filter-collapse" class="collapse in">
+
+        <div id="filternavbar" class="navbar navbar-default" role="navigation">
+            <div class="container-fluid">
+
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#filter-navbar-collapse" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse" id="filter-navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false"><span>By Target<span class="caret"></span></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#region">By Region</a></li>
+                                <li><a href="#country">By Country</a></li>
+                            </ul>
                         </li>
-                        <li class="checkbox">
-                            <input id="checkbox2" name="data2" type="checkbox">
-                            <label for="checkbox2">Intended Deals</label>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false"><span>By Investor <span class="caret"></span></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Foobar</a></li>
+                            </ul>
                         </li>
-                        <li class="checkbox">
-                            <input id="checkbox3" name="data3" type="checkbox">
-                            <label for="checkbox3">Failed Deals</label>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false"><span>By Data Source <span class="caret"></span></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Barqux</a></li>
+                            </ul>
                         </li>
-                        <li class="checkbox">
-                            <input id="checkbox4" name="data4" type="checkbox">
-                            <label for="checkbox4">Exclude Media Reports</label>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false"><span>By Intention <span class="caret"></span></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">SpamHam</a></li>
+                            </ul>
                         </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false"><span>By Crop <span class="caret"></span></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Eggs</a></li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#" role="button"><span>All deals</span></a></li>
                     </ul>
                 </div>
-                <div class="col-md-3 filterbox no-pad">
-                    <!-- <select id="filterselect" size="6" class="formcontrol">
-                        <option value=""><strong style="backgroud-color: blue;">Spatial Data</strong></option>
-                        <option value="">Location</option>
-                        <option value=""><strong style="backgroud-color: blue;">General Info</strong></option>
-                        <option value="">Current size under contract</option>
-                        <option value="">Intention of the Investment</option>
-                        <option value="">Nature of the deal</option>
-                        <option value="">Negotiation Status</option>
-                        <option value="">Implementation Status</option>
-                    </select> -->
-
-                    <ul>
-                        <li>
-                            Spatial Data
-                        </li>
-                        <li>
-                            <small>
-                                Location
-                            </small>
-                        </li>
-                        <li style="background-color: #ebebeb;">
-                            <div>
-                                General Info
-                            </div>
-                        </li>
-                        <li>
-                            <small>
-                                Current size under contract
-                            </small>
-                        </li>
-                        <li>
-                            <small>
-                                Intention of the Investment
-                            </small>
-                        </li>
-                        <li>
-                            <small>
-                                Nature of the deal
-                            </small>
-                        </li>
-                        <li>
-                            <small>
-                                Negotiation Status
-                            </small>
-                        </li>
-                        <li>
-                            <small>
-                                Implementation Status
-                            </small>
-                        </li>
-                        <li class="bg-danger">
-                            <small class="small">
-                                Foobar - i should be unseen!
-                            </small>
-                        </li>
-                    </ul>
-
-                </div>
-                <div class="col-md-6 filterbox">
-                    <div class="input-group">
-                        <select id="condition" value="Contains" class="select-inline">
-                            <option>Contains not</option>
-                            <option>Equals</option>
-                            <option>Equals not</option>
-                            <option>Starts with</option>
-                            <option>Ends with</option>
-                        </select>
-                        <input type="text" value="Foobar" class="inline">
-                        <a href="#"><i class="lm lm-times"></i></a>
-                    </div>
-                    <div class="input-group">
-                        <select id="condition" value="Contains" class="select-inline">
-                            <option>Contains not</option>
-                            <option>Equals</option>
-                            <option>Equals not</option>
-                            <option>Starts with</option>
-                            <option>Ends with</option>
-                        </select>
-                        <input type="text" value="Foobar" class="inline">
-                        <a href="#"><i class="lm lm-times"></i></a>
-                    </div>
-                    <div class="input-group">
-                        <select id="condition" value="Contains" class="select-inline">
-                            <option>Contains not</option>
-                            <option>Equals</option>
-                            <option>Equals not</option>
-                            <option>Starts with</option>
-                            <option>Ends with</option>
-                        </select>
-                        <input type="text" value="Foobar" class="inline">
-                        <a href="#"><i class="lm lm-times"></i></a>
-                    </div>
-                    <div class="input-group">
-                        <button class="btn"><i class="lm lm-plus"></i> Add condition</button>
-                    </div>
-                </div>
-
             </div>
-        </form>
+        </div>
+
+        <div id="filters">
+            <form>
+                <div class="row">
+                    <div class="col-md-3 filterbox checkboxes">
+                        <ul>
+                            <li class="checkbox">
+                                <input id="checkbox1" name="data1" type="checkbox">
+                                <label for="checkbox1">Concluded Deals</label>
+                            </li>
+                            <li class="checkbox">
+                                <input id="checkbox2" name="data2" type="checkbox">
+                                <label for="checkbox2">Intended Deals</label>
+                            </li>
+                            <li class="checkbox">
+                                <input id="checkbox3" name="data3" type="checkbox">
+                                <label for="checkbox3">Failed Deals</label>
+                            </li>
+                            <li class="checkbox">
+                                <input id="checkbox4" name="data4" type="checkbox">
+                                <label for="checkbox4">Exclude Media Reports</label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 filterbox no-pad">
+                        <!-- <select id="filterselect" size="6" class="formcontrol">
+                            <option value=""><strong style="backgroud-color: blue;">Spatial Data</strong></option>
+                            <option value="">Location</option>
+                            <option value=""><strong style="backgroud-color: blue;">General Info</strong></option>
+                            <option value="">Current size under contract</option>
+                            <option value="">Intention of the Investment</option>
+                            <option value="">Nature of the deal</option>
+                            <option value="">Negotiation Status</option>
+                            <option value="">Implementation Status</option>
+                        </select> -->
+
+                        <ul>
+                            <li style="padding-left: 15px;">
+                                Spatial Data
+                            </li>
+                            <li>
+                                Location
+                            </li>
+                            <li style="padding-left: 15px; background-color: #ebebeb;">
+                                General Info
+                            </li>
+                            <li>
+                                Current size under contract
+                            </li>
+                            <li>
+                                Intention of the Investment
+                            </li>
+                            <li>
+                                Nature of the deal
+                            </li>
+                            <li>
+                                Negotiation Status
+                            </li>
+                            <li>
+                                Implementation Status
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div class="col-md-6 filterbox">
+                        <div class="input-group">
+                            <select id="condition" value="Contains" class="select-inline">
+                                <option>Contains not</option>
+                                <option>Equals</option>
+                                <option>Equals not</option>
+                                <option>Starts with</option>
+                                <option>Ends with</option>
+                            </select>
+                            <input type="text" value="Foobar" class="inline">
+                            <a href="#"><i class="lm lm-times"></i></a>
+                        </div>
+                        <div class="input-group">
+                            <select id="condition" value="Contains" class="select-inline">
+                                <option>Contains not</option>
+                                <option>Equals</option>
+                                <option>Equals not</option>
+                                <option>Starts with</option>
+                                <option>Ends with</option>
+                            </select>
+                            <input type="text" value="Foobar" class="inline">
+                            <a href="#"><i class="lm lm-times"></i></a>
+                        </div>
+                        <div class="input-group">
+                            <select id="condition" value="Contains" class="select-inline">
+                                <option>Contains not</option>
+                                <option>Equals</option>
+                                <option>Equals not</option>
+                                <option>Starts with</option>
+                                <option>Ends with</option>
+                            </select>
+                            <input type="text" value="Foobar" class="inline">
+                            <a href="#"><i class="lm lm-times"></i></a>
+                        </div>
+                        <div class="input-group">
+                            <button class="btn"><i class="lm lm-plus"></i> Add condition</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
     </div>
 
 {% endblock %}
