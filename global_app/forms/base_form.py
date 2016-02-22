@@ -292,10 +292,10 @@ class BaseForm(forms.Form):
         """
         data = MultiValueDict()
         if cls.DEBUG: print('get_data', str(deal)[:140], '...', taggroup)
-        for i, (field_name, field) in enumerate(cls().fields.items()):
+        for (field_name, field) in cls().fields.items():
             prefixed_name = prefix and "%s-%s"%(prefix, field_name) or field_name
 
-            if cls.DEBUG: print('    field', i, field_name, field, prefix)
+            if cls.DEBUG: print('    field', field_name, field, prefix)
 
             if field_name.startswith('tg_'):
                 taggroup = cls.get_data_for_tg_field(data, field_name, deal, prefixed_name, taggroup)

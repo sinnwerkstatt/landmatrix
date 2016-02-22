@@ -1,13 +1,15 @@
 from django.core.exceptions import ValidationError
 from django.forms import CharField
-from django.forms.models import ModelChoiceField
+from django.forms.fields import ChoiceField
+from django.forms.models import ModelChoiceField, ModelForm
 from django.utils.translation import ugettext_lazy as _
+
+from django_select2.forms import ModelSelect2Widget
 
 from global_app.forms.base_form import BaseForm
 from global_app.widgets.title_field import TitleField
 from landmatrix.models.country import Country
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
-#from widgets.stakeholder_tree import StakeholderTree, HosenWidget
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -24,37 +26,22 @@ class OperationalStakeholderChoiceField(ModelChoiceField):
         return value
 
 
-class stakeholdermock():
-    def __init__(self, name="Unknown", variant="stakeholder", percentage=50):
-        self.name = name
-        self.variant = variant
-        self.percentage = percentage
-
 class OperationalStakeholderForm(BaseForm):
+
     form_title = _('Investor info')
 
     tg_operational_stakeholder = TitleField(required=False, label="", initial=_("Operational Stakeholder"))
-    operational_stakeholder = OperationalStakeholderChoiceField(
+    operational_stakeholder = ModelChoiceField(
             required=True, label=_("Existing Operational Stakeholder"),
             queryset=Investor.objects.filter(
                     pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
-            ).order_by('name')
-    )  # , widget=LivesearchSelect)
+            ).order_by('name'),
+            widget=ModelSelect2Widget(
+                model=Investor,
+                search_fields=['name__icontains']
+            )
+    )
     project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)
-
-    stakeholders = [stakeholdermock('Nestlé', 'Parent stakeholder', 25),
-                    stakeholdermock('Fruit Company', 'Parent stakeholder', 50),
-                    stakeholdermock('Example Investor', 'Investor', 100)
-
-    ]
-
-    #hosenwidget = HosenWidget()
-
-
-    #stakeholder_tree = StakeholderTree(stakeholders=stakeholders)
-    #print(stakeholder_tree.render(name="Hello", value=23))
-    foo = CharField(required=False, label="Hello Foo")
-
 
 
 
