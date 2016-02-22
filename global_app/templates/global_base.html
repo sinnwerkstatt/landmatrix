@@ -18,8 +18,8 @@
 -->
 {% endblock %}
 
-
-{% block subnav %}
+{% comment %}
+{% block subnav_inner %}
 <!--
 
     <div class="row title entry-point">
@@ -60,10 +60,11 @@
 
 -->
 {% endblock %}
+{% endcomment %}
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-	<li><a href="/">Home</a> <span class="divider"></span></li>
+	<li><a href="/">Home</a></li>
 	<li>Global</li>
 </ul>
 {% endblock %}

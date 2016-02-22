@@ -11,7 +11,7 @@
 {% block breadcrumb %}
 <ul class="breadcrumb">
   <li><a href="/">Home</a> <span class="divider"></span></li>
-  <li><a href="/{{ cms_page }}/">Get the detail</a> <span class="divider"></span></li>
+  <li><a href="/{{ cms_page }}/">Global</a> <span class="divider"></span></li>
   {% if group == "all" %}
   <li>{{ name|capfirst }}</li>
   {% elif filters.group_value %}
@@ -24,9 +24,9 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    <a href="foobar/map"><i class="lm-map-marker"></i>Map</a>
-    <a href="foobar/grid"><i class="lm-table"></i>Data</a>
-    <a href="foobar/charts"><i class="lm-bar-chart"></i>Charts</a>
+    <a href="foobar/map"><i class="lm lm-map-marker"></i>Map</a>
+    <a href="foobar/grid"><i class="lm lm-table"></i>Data</a>
+    <a href="foobar/charts"><i class="lm lm-bar-chart"></i>Charts</a>
 {% endblock %}
 
 {% block content %}
