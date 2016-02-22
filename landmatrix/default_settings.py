@@ -62,6 +62,7 @@ INSTALLED_APPS += (
     'mptt',
     'menus',
     'treebeard',
+
     'djangocms_admin_style',  # for the admin skin. You **must** add 'djangocms_admin_style' in the list **before** 'django.contrib.admin'.
     'django.contrib.admin',
     'django.contrib.sites',
@@ -75,6 +76,11 @@ INSTALLED_APPS += (
 
     'simple_history',
     'django_extensions',
+
+    'django_select2',
+
+    # 'debug_toolbar',
+    # 'debug_toolbar_line_profiler',
 
 #   apps of the actual landmatrix project
     'landmatrix',
@@ -212,3 +218,20 @@ CKEDITOR_SETTINGS = {
         {'name': 'Panel', 'element': 'div', 'class': 'panel-lm'}
     ]
 }
+
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    # 'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    # 'debug_toolbar.panels.redirects.RedirectsPanel',
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+    'debug_toolbar_line_profiler.panel.ProfilingPanel'
+]

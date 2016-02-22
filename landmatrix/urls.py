@@ -38,4 +38,5 @@ urlpatterns = i18n_patterns('',
     url(r'^chart_view/', include(chart_urls)),
     url(r'^start/', StartView.as_view(), name='start'),
     url(r'^', include('cms.urls')),
+    url(r'^select2/', include('django_select2.urls')),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
