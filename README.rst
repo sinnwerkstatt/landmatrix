@@ -27,10 +27,11 @@ $ bower install
 If you intend to develop on the frontend, you'll probably want livereload:
 $ npm install gulp gulp-livereload  gulp-watch
 
-$ mkvirtualenv landmatrix
-
+Setup a virtual environment for Python3.4 including the postgres driver:
+$ mkvirtualenv landmatrix --system-site-packges -p /usr/bin/python3.4
 $ workon landmatrix
 
+Install Django requirements via pip:
 If you intend to do ANY development on the frontend/backend, use the requirements-dev.txt in the next step, it will
 include the default requirements.txt:
 $ pip install -r requirements.txt
