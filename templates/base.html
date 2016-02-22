@@ -32,8 +32,14 @@
 
 
 
+
+
+
             {% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
     <meta name="keywords" content="
+
+
+
 
 
 
@@ -85,10 +91,10 @@
 {% cms_toolbar %}
 
 {% block header %}
-<div class="navbar navbar-default" role="navigation">
-    <div class="container-fluid">
+    <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
+            <!-- Collect the nav links, forms, and other content for toggling -->
 
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -170,14 +176,14 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/help" role="button"><span class="nav-circle">?</span></a></li>
+                    <li><a href="/help" role="button"><span class="nav-circle nav-help">?</span></a></li>
                     <li><a href="/editor" role="button"><span class="fa lm-envelope messages"></span></a></li>
                     {% language_chooser "language_chooser.html" %}
                 </ul>
             </div>
             {% block user_tools %}{% endblock %}
+        </div>
     </div>
-</div>
 
 {% endblock %}
 
@@ -215,15 +221,16 @@
                         </ul>
                     {% endblock %}
                 </div>
-                <div class="col-md-2 col-md-offset-6">
+                <div class="col-md-4 col-md-offset-4">
 
                     {% block subnav %}
-                        <div class="kbd subnav right">
+                        <ul class="subnav nav nav-pills right">
+                            <li role="presentation" class="subnav-active"><a href="#/share"><i class="lm lm-spacer lm-share-square-o"></i>Share</a></li>
+                            <li class="divider"> </li>
                             {% block subnav_inner %}
                             {% endblock %}
-
-                            <a href="#/share"><i class="lm lm-share-square-o"></i>Share</a>
-                        </div>
+                            <li role="presentation"><a href="#/download"><i class="lm lm-download"></i>Download this</a></li>
+                        </ul>
                     {% endblock %}
                 </div>
             </div>
@@ -235,8 +242,6 @@
                 <h1><span>{% block title %}{% page_attribute "title" %}{% endblock %}</span></h1>
             </div>
         {% endblock %}
-
-        {% include 'filters.html' %}
 
         {% block content %}{% endblock %}
 
@@ -298,13 +303,13 @@
                     <a href="https://twitter.com/Land_Matrix"><i class="lm-footer lm-twitter-square"></i></a>
                     <a href="https://www.facebook.com/LandMatrix"><i class="lm-footer lm-facebook-square"></i></a>
                 </div>
-                <div class="col-md-3 center">
+                <div class="col-md-2 center">
                     <h4>Share and adapt</h4>
                     <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span
                             class="lm-footer lm-creative-commons"></span></a>
                     <a href="https://github.com/sinnwerkstatt/landmatrix"><i class="lm-footer lm-github"></i></a>
                 </div>
-                <div class="col-md-4 right">
+                <div class="col-md-5 right">
                     <h4>Sign up to receive updates</h4>
                     <a href="http://eepurl.com/AHK0r"><i class="lm-footer lm-envelope"></i></a>
                 </div>
