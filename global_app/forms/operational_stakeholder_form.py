@@ -7,12 +7,12 @@ from global_app.forms.base_form import BaseForm
 from global_app.widgets.title_field import TitleField
 from landmatrix.models.country import Country
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
+#from widgets.stakeholder_tree import StakeholderTree, HosenWidget
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class OperationalStakeholderChoiceField(ModelChoiceField):
-
     def label_from_instance(self, obj):
         return _investor_description(obj)
 
@@ -24,8 +24,13 @@ class OperationalStakeholderChoiceField(ModelChoiceField):
         return value
 
 
-class OperationalStakeholderForm(BaseForm):
+class stakeholdermock():
+    def __init__(self, name="Unknown", variant="stakeholder", percentage=50):
+        self.name = name
+        self.variant = variant
+        self.percentage = percentage
 
+class OperationalStakeholderForm(BaseForm):
     form_title = _('Investor info')
 
     tg_operational_stakeholder = TitleField(required=False, label="", initial=_("Operational Stakeholder"))
@@ -37,9 +42,25 @@ class OperationalStakeholderForm(BaseForm):
     )  # , widget=LivesearchSelect)
     project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)
 
+    stakeholders = [stakeholdermock('Nestlé', 'Parent stakeholder', 25),
+                    stakeholdermock('Fruit Company', 'Parent stakeholder', 50),
+                    stakeholdermock('Example Investor', 'Investor', 100)
+
+    ]
+
+    #hosenwidget = HosenWidget()
+
+
+    #stakeholder_tree = StakeholderTree(stakeholders=stakeholders)
+    #print(stakeholder_tree.render(name="Hello", value=23))
+    foo = CharField(required=False, label="Hello Foo")
+
+
+
 
 def _investor_description(investor):
-    return _investor_name(investor) + ' (' + _investor_country_name(investor) + ')' + ' ' + _investor_classification(investor)
+    return _investor_name(investor) + ' (' + _investor_country_name(investor) + ')' + ' ' + _investor_classification(
+        investor)
 
 
 def _investor_name(investor):
@@ -52,4 +73,3 @@ def _investor_country_name(investor):
 
 def _investor_classification(investor):
     return investor.get_classification_display() if investor.classification else '-'
-
