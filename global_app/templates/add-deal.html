@@ -4,7 +4,7 @@
 {% block head %}
 
     <script src="{% static "js/editor/year-based-fields.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script src="{% static "js/editor/livesearch.js" %}" type="text/javascript" charset="utf-8"></script>
+{#     <script src="{% static "js/editor/livesearch.js" %}" type="text/javascript" charset="utf-8"></script> #}
     <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
 
     {# map #}
@@ -13,8 +13,16 @@
 
     <script src="{% static "vendor/openlayers/ol.js" %}" type="text/javascript"></script>
     <script src="{% static "js/editor/detail.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script src="{% static "js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script>unlockMaps()</script>
+{# DISABLED because it interferes with django_select2 (causes TypeError: maps[mapId] is undefined) #}
+{#      <script src="{% static "js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>  #}
+{#      <script>unlockMaps()</script>  #}
+
+    {# include django_select2 CSS; must be done in form loop because it's a property of form.media #}
+    {% if forms %}
+        {% for form in forms %}
+            {{ form.media.css }}
+        {%  endfor %}
+    {%  endif %}
 
 {% endblock %}
 
@@ -44,3 +52,4 @@
     </form>
 
 {% endblock %}
+

@@ -34,8 +34,8 @@ FORMS = [
     ("spatial_data", AddDealSpatialFormSet),            #
     ("general_information", AddDealGeneralForm),        #
     ("employment", AddDealEmploymentForm),              #
-    ("investor_info", InvestorFormSet),
-    # ("investor_info", OperationalStakeholderForm),
+    # ("investor_info", InvestorFormSet),
+    ("investor_info", OperationalStakeholderForm),
     ("data_sources", AddDealDataSourceFormSet),         #
     ("local_communities", DealLocalCommunitiesForm),    #
     ("former_use", DealFormerUseForm),                  #

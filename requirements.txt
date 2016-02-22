@@ -36,3 +36,6 @@ requests
 
 django-simple-history
 django-extensions
+
+django-debug-toolbar
+django_select2 >= 5.8
