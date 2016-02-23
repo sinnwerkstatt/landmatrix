@@ -24,7 +24,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 
-CACHE_TIMEOUT = 3600
+CACHE_TIMEOUT = 24*3600
 
 urlpatterns = patterns('globalapp.views',
     url(r'^$', cache_page(CACHE_TIMEOUT)(AllDealsView.as_view()), name='app_main'),
