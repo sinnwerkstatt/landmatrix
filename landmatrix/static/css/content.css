@@ -294,6 +294,12 @@ h4 {
     font-family: 'Open Sans', sans-serif;
     font-weight: bold;
     color: #4a4a4a;
+
+}
+
+.wrap > h2,
+.wrap > h3,
+.wrap > h4 {
     margin-top: 2em;
     margin-bottom: 2em;
 }
@@ -488,6 +494,27 @@ i:before {
     font-size: 18px;
 }
 
+.navbar-form {
+    padding-top: 10px;
+}
+
+.select2-container--default .select2-selection--single,
+.select2-container--default,
+.select2-selection--single,
+.select2-container,
+.select2-selection {
+    border: none !important;
+    background-color: inherit !important;
+    font-size: 16px;
+    font-weight: 300;
+}
+
+.select2-dropdown {
+    min-width: 15vw;
+    max-weight: 15vw;
+    padding: 5px !important;
+}
+
 .language {
     font-size: 0.8em;
 }
@@ -561,19 +588,15 @@ i:before {
 .panel-heading, .panel-title {
     background: none !important;
     display: block;
-    padding-top: 0.8em;
-    padding-bottom: 0.5em;
-    margin-bottom: 5px;
     width: 100%;
     height: 100%;
+    padding: 0 0;
 }
 
-div.panel > div > h4 > a {
-    font-size: 16px !important;
-    color: #4a4a4a;
+.panel-heading a {
+    padding: 1.5em 1em;
     display: block;
-    width: 100%;
-    height: 100%;
+    margin: 0;
 }
 
 .panel-collapse, .collapse, .panel-body {
@@ -1046,6 +1069,11 @@ i.big.get-involved {
     list-style: none;
 }
 
+.dashboard table {
+    font-size: 14px;
+}
+
+
 .icon-info {
     background: url(/static/img/icons.png) no-repeat;
 }
@@ -1443,9 +1471,9 @@ textarea {
     background-color: #fcfcfc;
     box-shadow: none !important;
     color: #4a4a4a;
-    max-width: 75%;
-    margin-left: 5px !important;
-    margin-bottom: 2px;
+    max-width: 100%;
+    /*margin: 5px !important;
+     margin-bottom: 2px; */
     padding: 5px 5px;
 }
 
@@ -1810,6 +1838,10 @@ table th a {
 form .panel-body {
     padding: 0px;
     padding-top: 5px;
+}
+
+.panel-body table th {
+    background-color: inherit;
 }
 
 .get-the-detail table th a {
