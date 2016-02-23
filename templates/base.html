@@ -73,7 +73,7 @@
                 <ul class="nav navbar-nav">
                     <li><a href="/global/map"><i class="lm-nav lm-globe"></i><span class="nav-text">Global</span></a>
                     </li>
-                    <li>
+                    <li class="hidden">
                         <form class="navbar-form">
                             <div class="form-group">
                                 <span>
@@ -211,9 +211,9 @@
                                     class="lm lm-spacer lm-share-square-o"></i>Share</a></li>
                             <li class="divider"></li>
                             {% block subnav_inner %}
+                                <li role="presentation"><a href="#/download"><i class="lm lm-download"></i>Download this</a>
+                                </li>
                             {% endblock %}
-                            <li role="presentation"><a href="#/download"><i class="lm lm-download"></i>Download this</a>
-                            </li>
                         </ul>
                     {% endblock %}
                 </div>
@@ -237,7 +237,7 @@
 {% block footer %}
     <footer>
         <div class="container">
-            <div class="row">
+            <div id="footer-nav" class="row">
                 <div class="col-md-3">
                     <ul class="list-unstyled">
                         <li><h4>Explore</h4></li>
@@ -281,9 +281,10 @@
 
             <hr/>
 
-            <div class="row">
+            <div id="footer-etc" class="row">
                 <div class="col-md-5">
-                    <h4>Spread the word and share land matrix</h4>
+                    <h4 class="toosmalltofail">Spread and share LM</h4>
+                    <h4 class="toobigtofail">Spread the word and share land matrix</h4>
                     <a href="https://twitter.com/Land_Matrix"><i class="lm-footer lm-twitter-square"></i></a>
                     <a href="https://www.facebook.com/LandMatrix"><i class="lm-footer lm-facebook-square"></i></a>
                 </div>
@@ -294,7 +295,8 @@
                     <a href="https://github.com/sinnwerkstatt/landmatrix"><i class="lm-footer lm-github"></i></a>
                 </div>
                 <div class="col-md-5 right">
-                    <h4>Sign up to receive updates</h4>
+                    <h4 class="toobigtofail">Sign up to receive updates</h4>
+                    <h4 class="toosmalltofail">Stay updated</h4>
                     <a href="http://eepurl.com/AHK0r"><i class="lm-footer lm-envelope"></i></a>
                 </div>
             </div>
