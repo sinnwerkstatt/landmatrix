@@ -5,5 +5,8 @@ from django import forms
 
 class NumberInput(forms.TextInput):
     def render(self, name, value, attrs={}):
-        attrs.update({'type': 'number'})
+        attrs.update({
+            'type': 'number',
+            'class': 'form-control'
+        })
         return super(NumberInput, self).render(name, value, attrs)
