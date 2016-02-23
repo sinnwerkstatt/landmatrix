@@ -131,3 +131,23 @@ table .map {
     text-align: center;
     width: 1.2em;
 }
+
+.layer-switcher .panel,
+#legend .panel {
+    background-color: #fcfcfc;
+    border: none !important;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+.ol-control,
+.ol-control:focus,
+.ol-control:hover {
+    background-color: #fcfcfc;
+}
+
+#search-location > form > div > i {
+    font-size: 16px;
+    top: 5px;
+    right: 5px;
+}
