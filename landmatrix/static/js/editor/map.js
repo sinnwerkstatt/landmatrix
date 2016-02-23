@@ -11,16 +11,15 @@ $(document).ready(function () {
     $(".maptemplate").each(function (index) {
         $(this).attr('id', 'map' + (index + 1)).removeClass("maptemplate").addClass("map");
         initializeMap(index + 1);
-        console.log("Ham: ", this);
-
     });
-    console.log('Hamlist', maps);
 
     $('#accordion').on("shown.bs.collapse", function(things) {
         var mapId = String(things.target.id).split("_")[1];
-        console.log("collapsehandler: ", mapId, maps);
-
-        maps[mapId].updateSize()
+        //console.log("collapsehandler: ", mapId, maps);
+        var map = maps[mapId];
+        if (typeof map !== 'undefined') {
+            map.updateSize();
+        }
     });
 });
 
