@@ -24,9 +24,12 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    <a href="foobar/map"><i class="lm lm-map-marker"></i>Map</a>
-    <a href="foobar/grid"><i class="lm lm-table"></i>Data</a>
-    <a href="foobar/charts"><i class="lm lm-bar-chart"></i>Charts</a>
+    <li role="presentation"><a href="global/map"><i class="lm lm-map-marker"></i>Download this</a>
+    </li>
+    <li role="presentation"><a href="global/grid"><i class="lm lm-table"></i>Download this</a>
+    </li>
+    <li role="presentation"><a href="global/charts"><i class="lm lm-bar-chart"></i>Download this</a>
+    </li>
 {% endblock %}
 
 {% block content %}
@@ -71,6 +74,7 @@
 </div>
 {% endif %}
 {% endif %}
+<div class="summary-wrap">
 <table id="summary" class="table table-striped">
   <thead>
     <tr>
@@ -279,13 +283,15 @@
         {% endfor %}
     {% if "deal_id" in columns %}
     <td>
-        <a href="/{{ cms_page }}/{{ item.deal_id }}/" class="btn btn-small">Details</a>
+    <!-- TODO: This one is only hidden.-->
+        <a href="/{{ cms_page }}/{{ item.deal_id }}/" class="hidden btn btn-small">Details</a>
     </td>
     {% endif %}
     </tr>
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% if load_more %}
 <a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn">{% trans "More..." %}</a>
 {% endif %}
