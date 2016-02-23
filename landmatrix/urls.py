@@ -22,17 +22,36 @@ from django.contrib import admin
 
 from api import urls as api_urls
 from global_app import urls as global_urls
+from global_app.views.add_deal_view import AddDealView
+from global_app.views.change_deal import ChangeDealView
+from global_app.views.deal_comparison_view import DealComparisonView
+from global_app.views.deal_detail_view import DealDetailView
 from global_app.views.filter_widget_ajax_view import FilterWidgetAjaxView
 from chart_view import urls as chart_urls
 from dashboard import urls as editor_urls
 from landmatrix.views.start_view import StartView
-
+from global_app.views.stakeholder_view import StakeholderView
 
 urlpatterns = i18n_patterns('',
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(api_urls)),
+    # for unit tests to run without django-cms
     url(r'^global_app/', include(global_urls)),
+    # url(r'^global/map/', include(global_urls)),
+    url(r'^global/grid/', include(global_urls)),
+    # url(r'^global/chart/', include(chart_urls)),
+
+    url(r'^deal/(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
+    url(r'^deal/(?P<deal_id>[\d_\.]+)/$', DealDetailView.as_view(), name='deal_detail'),
+    url(r'^deal/add/$', AddDealView.as_view(), name='add_deal'),
+    url(r'^deal/compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$', DealComparisonView.as_view(), name='compare_deals'),
+    url(r'^deal/compare/(?P<activity_1>[\d_\.]+)/$', DealComparisonView.as_view(), name='compare_deals'),
+    url(r'^deal/compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
+    url(r'^deal/edit/(?P<deal_id>[\d]+)$', ChangeDealView.as_view(), name='change_deal'),
+
+    url(r'^stakeholder/$', StakeholderView.as_view(), name='stakeholder_form'),
+
     url(r'^editor/', include(editor_urls)),
     url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
     url(r'^chart_view/', include(chart_urls)),

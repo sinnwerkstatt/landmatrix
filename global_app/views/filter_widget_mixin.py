@@ -1,3 +1,7 @@
+from time import time
+
+from django.db import connection
+
 from global_app.views.browse_filter_conditions import BrowseFilterConditions
 from global_app.views.view_aux_functions import create_condition_formset
 from landmatrix.models.browse_condition import BrowseCondition
@@ -22,22 +26,29 @@ class FilterWidgetMixin:
         )
 
     def get_filter_context(self, formset_conditions, order_by, group_by, group_value, starts_with):
+        start = time()
+        num_queries_old = len(connection.queries)
         filters = BrowseFilterConditions(formset_conditions, [order_by] if order_by else [], 0).parse()
         filters["group_by"] = group_by
         filters["group_value"] = group_value
         filters["starts_with"] = starts_with
+        # print(type(self).__name__, 'get_filter_context()', time()-start, 's', len(connection.queries)-num_queries_old, 'queries')
         return filters
 
     def get_formset_conditions(self, filter_set, GET, group_by, browse_rules):
+        start = time()
+        num_queries_old = len(connection.queries)
         ConditionFormset = create_condition_formset()
         if filter_set:
             # set given filters
-            return ConditionFormset(GET, prefix="conditions_empty")
+            result = ConditionFormset(GET, prefix="conditions_empty")
         else:
             if group_by == "database":
-                return None
+                result = None
             else:
-                return ConditionFormset(self._get_filter_dict(browse_rules), prefix="conditions_empty")
+                result = ConditionFormset(self._get_filter_dict(browse_rules), prefix="conditions_empty")
+        # print(type(self).__name__, 'get_formset_conditions()', time()-start, 's', len(connection.queries)-num_queries_old, 'queries')
+        return result
 
     def _filter_set(self, GET):
         return GET and GET.get("filtered") and not GET.get("reset", None)
