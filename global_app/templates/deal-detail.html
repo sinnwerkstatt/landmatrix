@@ -21,8 +21,8 @@
     <script src="{% static "js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
-{% block page_title %}Deal details{% endblock %}
-{% block title %}Deal details{% endblock %}
+{% block page_title %}Deal #{{ deal.id }}{% endblock %}
+{% block title %}Deal #{{ deal.id }}{% endblock %}
 
 {% block breadcrumb_inner %}
     <li><a href="/global/">Global</a> <span class="divider"></span></li>
@@ -56,7 +56,7 @@
                         <div class="panel-body">
 
                             <table>
-                                <col width="23%">
+                                <col width="33%">
                                 {% for changedate, item in history.items %}
                                     <tr>
                                         <td>
@@ -69,6 +69,13 @@
                                         <td>availability: {{ item.activity.availability }}</td>
                                         <td>history id: {{ item.activity.history_id }}</td>
                                         -->
+                                        <td>
+                                            {# TODO: Insert correct link and maybe disable button for currently version displayed  #}
+                                            <a type="button" class="btn"
+                                               href="/global/version/{{ item.activity.activity_identifier }}_{{ changedate }}">
+                                                {% trans "Show this version" %}
+                                            </a>
+                                        </td>
 
                                         <td>
                                             {# TODO: include as AJAX call #}
