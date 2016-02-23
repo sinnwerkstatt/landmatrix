@@ -235,3 +235,7 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.profiling.ProfilingPanel',
     'debug_toolbar_line_profiler.panel.ProfilingPanel'
 ]
+
+# enable persistent database connections
+# (https://docs.djangoproject.com/en/1.9/ref/databases/#persistent-database-connections)
+CONN_MAX_AGE = 0
