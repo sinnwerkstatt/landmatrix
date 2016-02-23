@@ -8,7 +8,8 @@ node_modules
 media/js
 
 # Ignore global javascript vendor packages
-landmatrix/static/vendor/
+# no, don't, we dont want to add them manually on server
+#landmatrix/static/vendor/
 
 # IDE files and files from my personal environment
 dir.sh
