@@ -3,11 +3,9 @@ from global_app.views.filter_widget_mixin import FilterWidgetMixin
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .view_aux_functions import create_condition_formset, render_to_response
-from .browse_filter_conditions import BrowseFilterConditions
+from .view_aux_functions import render_to_response
 from .intention_map import IntentionMap
 from .download import Download
-from landmatrix.models import BrowseCondition
 from global_app.views.activity_protocol import ActivityProtocol
 
 from django.views.generic import TemplateView
@@ -77,7 +75,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
         items = self._get_items(query_result)
         render = self.render(items, kwargs)
-        timer.touch()
+
         return render
 
     def render(self, items, kwargs):
