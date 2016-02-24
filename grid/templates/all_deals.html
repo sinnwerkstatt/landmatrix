@@ -24,12 +24,15 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation"><a href="global/map"><i class="lm lm-map-marker"></i>Map</a>
-    </li>
-    <li role="presentation" class="active"><a href="global/grid"><i class="lm lm-table"></i>Grid</a>
-    </li>
-    <li role="presentation"><a href="global/charts"><i class="lm lm-bar-chart"></i>Chart</a>
-    </li>
+    <li role="presentation" class="active"><a href="../map/">
+        <i class="lm lm-map-marker"></i>{% trans "Map" %}
+    </a></li>
+    <li role="presentation"><span>
+        <i class="lm lm-table"></i>{% trans "Data" %}
+    </span></li>
+    <li role="presentation"><a href="../charts/">
+        <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+    </a></li>
 {% endblock %}
 
 {% block content %}
