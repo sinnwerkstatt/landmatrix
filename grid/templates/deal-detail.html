@@ -21,12 +21,12 @@
     <script src="{% static "js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
-{% block page_title %}Deal #{{ deal.id }}{% endblock %}
-{% block title %}Deal #{{ deal.id }}{% endblock %}
+{% block page_title %}Deal #{{ deal.activity_identifier }}{% endblock %}
+{% block title %}Deal #{{ deal.activity_identifier }}{% endblock %}
 
 {% block breadcrumb_inner %}
     <li><a href="/global/">Global</a> <span class="divider"></span></li>
-    <li>{% trans "Deal" %} #{{ deal.id }}</li>
+    <li>{% trans "Deal" %} #{{ deal.activity_identifier }}</li>
 {% endblock %}
 
 {% block content %}
