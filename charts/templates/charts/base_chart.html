@@ -22,42 +22,10 @@
 {% endblock %}
 
 {% block content %}
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="dropdown{% if chart == "chart_overview" %} active{% endif %}">
-          <a href="{% url "chart_overview" %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            {% trans "Dynamics Overview" %}
-            <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="?variable=negotiation_status">{% trans "Negotiation status" %}</a></li>
-            <li><a href="?variable=implementation_status">{% trans "Implementation status" %}</a></li>
-            <li><a href="?variable=intention_of_investment">{% trans "Intention of investment" %}</a></li>
-            <li><a href="?variable=investment_in_agriculture">{% trans "Investment in Agriculture" %}</a></li>
-          </ul>
-        </li>
-        <li{% if chart == "chart_transnational_deals" %} class="active"{% endif %}><a href="{% url "chart_transnational_deals" %}">{% trans "Web of transnational deals" %}</a></li>
-        <li{% if chart == "chart_map_of_investments" %} class="active"{% endif %}><a href="{% url "chart_map_of_investments" %}">{% trans "Global map of investments" %}</a></li>
-        <li{% if chart == "chart_agricultural_drivers" %} class="active"{% endif %}><a href="{% url "chart_agricultural_drivers" %}">{% trans "Agricultural drivers" %}</a></li>
-        <li{% if chart == "chart_perspective" %} class="active"{% endif %}><a href="{% url "chart_perspective" %}">{% trans "It's a big deal" %}</a></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
-
 {% block before %}
 {% endblock %}
-{%  include "filters.html" %}
+{% include "charts/subnav.html" %}
+{% include "filters.html" %}
 
 <div class="row">
     <div class="col-md-4">

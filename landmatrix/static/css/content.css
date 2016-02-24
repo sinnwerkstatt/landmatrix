@@ -123,7 +123,7 @@ h6 {
     font-size: 24px
 }
 .nav-circle {
-    font-size: 12px;
+    font-size: 10px;
     line-height: 19px;
 }
 .nav-help {
@@ -485,40 +485,11 @@ i:before {
     border-bottom-right-radius: 0px;
 }
 
-/*
-.navbar-brand {
-    margin-left: 8vw; 
-}
-
-@media (min-width: 768px) {
-    .navbar > .container .navbar-brand,
-    .navbar > .container-fluid .navbar-brand {
-        margin-left: 8vw;
-    }
-}
-
-*/
-.navbar-right {
-    /*    margin-right: 8vw; */
-    color: #c1c1c1;
-}
-
-.navbar-right > li > span {
-    color: #c1c1c1;
-}
-
-@media (max-width: 767px) {
-    .navbar-right > li,
-    .navbar-right > li > a {
-        display: inline-block;
-    }
-}
-
 .navbar .brand {
     background: url(/static/img/lm-logo.png) no-repeat;
     display: block;
     padding: 5px;
-    /*   margin-left: 8vw; */
+    margin-left: 0px !important;
     margin-top: 15px;
     margin-right: 40px;
     width: 180px;
@@ -659,13 +630,6 @@ i:before {
     padding: 1.5em 1em;
     display: block;
     margin: 0;
-}
-
-.panel-collapse, .collapse, .panel-body {
-    border-top: 0px none !important;
-    border-left: 0px none !important;
-    border-right: 0px none !important;
-
 }
 
 div.panel.panel-default:last-child {
@@ -828,6 +792,19 @@ form >.in {
 
 }
 
+.navbar-subnav {
+    border: 1px solid #bebebe;
+    border-radius: 0;
+}
+
+.navbar-subnav .navbar-nav>li:hover,
+.navbar-subnav .navbar-nav>.active>a,
+.navbar-subnav .navbar-nav>.active:hover>a,
+.navbar-subnav .navbar-nav>li>a:hover {
+    background-color: #fff;
+    color: #4a4a4a;
+}
+
 /* ==========================================================================
  *    FOOTER (including Sticky Footer by Ryan Fait http://ryanfait.com/)
  * ========================================================================== */
@@ -849,13 +826,6 @@ footer {
 footer > .container {
     padding-top: 10px;
     padding-bottom: 10px;
-}
-
-footer .col-md-3,
-footer .col-md-4,
-footer .col-md-5 {
-    padding-left: 0px;
-    padding-right: 0px;
 }
 
 .push {
@@ -1556,8 +1526,9 @@ textarea {
 
 select,
 input[type=number],
-input[type=text] {
-    height: 3em !important;
+input[type=text],
+input[type=password] {
+    height: 3em;
 }
 
 input:focus,
@@ -1675,15 +1646,6 @@ textarea:focus {
     font-weight: 300;
 }
 
-#filternavbar {
-    border: solid 1px #919191;
-    border-bottom: none;
-    border-radius: 0px;
-    font-weight: 700;
-    height: 30px;
-    margin-bottom: 0px !important;
-}
-
 #filters .row {
     padding-bottom: 0px;
 }
@@ -1692,7 +1654,6 @@ textarea:focus {
     background-color: #919191;
     border-color: #919191;
     color: #fcfcfc;
-
 }
 
 .filterbox {
@@ -1700,9 +1661,13 @@ textarea:focus {
     overflow-y: auto;
     overflow-x: hidden;
     height: 200px;
-    border-right: solid 1px #919191;
+    border-left: solid 1px #919191;
     padding: 0;
     padding: 15px 15px;
+}
+
+.filterbox:first-child {
+    border-left: none;
 }
 
 .filterbox label {
@@ -1715,19 +1680,32 @@ textarea:focus {
 }
 
 .filterbox.no-pad {
+    padding: 19px 0 15px;
+}
+
+#filters ul.variables,
+#filters ul.variables ul {
     padding: 0;
+    margin: 0;
 }
 
-.filterbox.no-pad > ul {
-    padding: 10px 0px !important;
+#filters ul.variables h4 {
+    font-size: 14px;
+    text-transform: none;
+    font-weight: normal;
+    background-color: #ebebeb;
+    color: #4a4a4a;
+    padding: 10px 15px;
+    margin: 0;
 }
 
-.filterbox.no-pad > ul > li {
-    padding: 5px 30px;
+#filters ul.variables ul li a {
+    display: block;
+    padding: 10px 15px 10px 30px;
 }
 
-.filterbox.no-pad > ul > li:hover {
-    background-color: #c6c6c6;
+#filters ul.variables > li > ul > li:hover > a {
+    background-color: #ebebeb;
     color: #4a4a4a;
 }
 

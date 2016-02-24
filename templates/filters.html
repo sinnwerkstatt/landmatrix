@@ -1,7 +1,93 @@
 {% load i18n custom_tags %}
 {% load humanize %}
 
-{% block filters %}
+    <div class="row">
+        <div class="col-md-10">
+            <label>{% trans "Active Filters" %}:</label>
+            <span class="label label-filter">{% trans "Negotiation status" %} <i class="lm lm-times"></i></span>
+            <span class="label label-filter">{% trans "Deal scope" %} <i class="lm lm-times"></i></span>
+            <span class="label label-filter">{% trans "Crops" %} <i class="lm lm-times"></i></span>
+        </div>
+        <div class="col-md-2 right">
+            <a class="right toggle-filters" role="button" data-toggle="collapse" href="#filters" aria-expanded="true" data-toggle-text="{% trans "Hide filters" %}"
+               aria-controls="filter-collapse">
+                {% trans "Manage filters" %}
+            </a>
+        </div>
+    </div>
+
+    <div id="filters" class="clearfix collapse">
+        <form>
+            <div class="row">
+                <div class="col-md-3 filterbox checkboxes">
+                    <ul>
+                        <li class="checkbox">
+                            <input id="checkbox1" name="data1" type="checkbox">
+                            <label for="checkbox1">{% trans "Concluded Deals" %}</label>
+                        </li>
+                        <li class="checkbox">
+                            <input id="checkbox2" name="data2" type="checkbox">
+                            <label for="checkbox2">{% trans "Intended Deals" %}</label>
+                        </li>
+                        <li class="checkbox">
+                            <input id="checkbox3" name="data3" type="checkbox">
+                            <label for="checkbox3">{% trans "Failed Deals" %}</label>
+                        </li>
+                        <li class="checkbox">
+                            <input id="checkbox4" name="data4" type="checkbox">
+                            <label for="checkbox4">{% trans "Exclude Media Reports" %}</label>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-3 filterbox no-pad">
+                    <!-- <select id="filterselect" size="6" class="formcontrol">
+                        <option value=""><strong style="backgroud-color: blue;">Spatial Data</strong></option>
+                        <option value="">Location</option>
+                        <option value=""><strong style="backgroud-color: blue;">General Info</strong></option>
+                        <option value="">Current size under contract</option>
+                        <option value="">Intention of the Investment</option>
+                        <option value="">Nature of the deal</option>
+                        <option value="">Negotiation Status</option>
+                        <option value="">Implementation Status</option>
+                    </select> -->
+                    <ul class="variables">
+                        <li>
+                            <h4>{% trans "Spatial Data" %}</h4>
+                            <ul>
+                                <li><a href="#">{% trans "Location" %}</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h4>{% trans "General Info" %}</h4>
+                            <ul>
+                                <li><a href="#">{% trans "Current size under contract" %}</a></li>
+                                <li><a href="#">{% trans "Intention of the Investment" %}</a></li>
+                                <li><a href="#">{% trans "Nature of the deal" %}</a></li>
+                                <li><a href="#">{% trans "Negotiation Status" %}</a></li>
+                                <li><a href="#">{% trans "Implementation Status" %}</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                </div>
+                <div class="col-md-6 filterbox">
+                    <div class="input-group condition">
+                        <select class="operator select-inline" value="Contains">
+                            <option>Contains not</option>
+                            <option>Equals</option>
+                            <option>Equals not</option>
+                            <option>Starts with</option>
+                            <option>Ends with</option>
+                        </select>
+                        <input class="field" type="text" value="Foobar" class="inline">
+                    </div>
+                    <div class="input-group">
+                        <button class="btn"><i class="lm lm-plus"></i> Add condition</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 
     <div id="filters_old" class="hidden">
 
@@ -94,328 +180,4 @@
             });
         </script> <!-- old filter javascript voodoo -->
 
-        <div class="row">
-            <div class="col-md-7">
-                <div class="collapsible">
-                    <div class="collapsible-form">
-                        <form method="GET" class="form-inline filters">
-                            <div id="empty" class="rules row">
-                                <div class="col-md-8">
-                                    <input type="hidden" name="filtered" value="true"/>
-                                    <input type="hidden" name="limit" value="{{ limit }}"/>
-                                    <input type="hidden" name="order_by" value="{{ data.order_by }}"/>
-                                    <input type="submit" class="submit" value="Apply Filters" style="display: none"/>
-                                    {% if empty_form_conditions %}
-                                        <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
-                                        {{ empty_form_conditions.management_form }}
-                                        {% for empty_form in empty_form_conditions.forms %}
-                                            <ul class="form clearfix condition">
-                                                {{ empty_form.as_ul }}
-                                                <li>&nbsp;<a class="delete-row" href="javascript:void(0)"><i
-                                                        class="icon icon-remove"></i></a></li>
-                                            </ul>
-                                        {% endfor %}
-                                    {% endif %}
-                                    <ul class="form clearfix condition empty">
-                                        {{ empty_form_conditions.empty_form.as_ul }}
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <script type="text/javascript">
-                                        $(document).ready(function () {
-                                            //
-                                            $(".subnav li.limit a").click(function (e) {
-                                                e.preventDefault();
-                                                $("input[name=limit]").val($(this).attr("href").split("/")[1]);
-                                                $("form").submit();
-                                            });
-                                            //
-                                            $('.reset-filter').click(function () {
-                                                $('.rules').find('ul:gt(0)').remove();
-                                                $('#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS').val(0);
-                                            });
-                                            //
-                                            $('#empty ul.form.empty :input, #empty ul.form.empty label').each(function () {
-                                                var id = $(this).attr("id");
-                                                var name = $(this).attr("name");
-                                                var value = $(this).attr("value");
-                                                var for_str = $(this).attr("for");
-                                                if (id != undefined) {
-                                                    $(this).attr("id", id.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                                }
-                                                if (name != undefined) {
-                                                    $(this).attr("name", name.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                                }
-                                                if (value != undefined) {
-                                                    $(this).attr("value", value.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                                }
-                                                if (for_str != undefined) {
-                                                    $(this).attr("for", for_str.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                                }
-                                            });
-                                            //
-                                            $("ul.form.empty").formset({
-                                                prefix: '{{ empty_form_conditions.prefix }}',
-                                                addText: '{% trans "Add filter" %}',
-                                                deleteText: '<i class="icon icon-remove"></i>',
-                                                added: function (row) {
-                                                    // FIXME: Move row out of button group, this should be handled by the formset
-                                                    row.remove();
-                                                    row.insertBefore($(".add-row:visible").parent().parent().find(".btn-group"));
-                                                    init_form_condition($("ul.form.condition:last .field:first-child select"));
-                                                }
-                                            });
-                                            // FIXME: Move add-row button into the button group, don't use javascript for that
-                                            var b = $(".add-row").addClass("btn").hide();
-                                            $(".filters .btn-group").prepend(b.show());
-                                        })
-                                    </script>
-                                    <div class="btn-group">
-                                        <button type="submit" class="btn" name="reset"
-                                                value="reset">{% trans "Reset" %}</button>
-                                        <button type="submit" class="btn">{% trans "Go" %}</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="collapsible-tags collapsed">
-                        <h5>Active filters:</h5>
-                        <ul class="unstyled"></ul>
-                        <a href="#" class="toggle-tooltip"
-                           title="You can create custom filters here. However, please note that filters are reset when changing entry point.">
-                            <i class="icon icon-question-sign"> </i></a>
-                        {% if data.count %}<p style="clear: both">Showing
-                            {% if data.items|length != data.count %}{{ data.items|length }}
-                                of {% endif %}{{ data.count }} row{{ data.count|pluralize }}.</p>{% endif %}
-                    </div>
-                </div>
-            </div>
-        </div> <!-- old filter html -->
-
-        <div>
-            <div class="col-md-5">
-                <div class="actions btn-group pull-right">
-                    <button data-toggle="dropdown" class="btn dropdown-toggle">Download whole database <span
-                            class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="/{{ cms_page }}/all.csv">as Comma Separated Values (.csv)</a></li>
-                        <li><a href="/{{ cms_page }}/all.xls">as Excel (.xls)</a></li>
-                        <li><a href="/{{ cms_page }}/all.xml">as XML (.xml)</a></li>
-                    </ul>
-                </div>
-                {% if group_value %}
-                    <div class="actions btn-group pull-right">
-                        <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span
-                                class="caret"></span></button>
-                        <ul class="dropdown-menu">
-                            <li><a href="/{{ cms_page }}/{{ group_slug }}/{{ group_value }}.csv">as Comma Separated
-                                Values (.csv)</a></li>
-                            <li><a href="/{{ cms_page }}/{{ group_slug }}/{{ group_value }}.xls">as Excel (.xls)</a>
-                            </li>
-                            <li><a href="/{{ cms_page }}/{{ group_slug }}/{{ group_value }}.xml">as XML (.xml)</a></li>
-                        </ul>
-                    </div>
-                {% else %}
-                    <div class="actions btn-group pull-right">
-                        <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span
-                                class="caret"></span></button>
-                        <ul class="dropdown-menu">
-                            <li><a href="/{{ cms_page }}/{{ group_slug }}.csv">as Comma Separated Values (.csv)</a></li>
-                            <li><a href="/{{ cms_page }}/{{ group_slug }}.xls">as Excel (.xls)</a></li>
-                            <li><a href="/{{ cms_page }}/{{ group_slug }}.xml">as XML (.xml)</a></li>
-                        </ul>
-                    </div>
-                {% endif %}
-                <a href="#" class="toggle-tooltip pull-right download-hint"
-                   title="Due to ongoing server optimization, we momentarily disabled download of filtered datasets. We apologize for the inconvenience.">
-                    <i class="icon icon-question-sign"> </i></a>
-            </div>
-        </div>  <!-- download section -->
-
     </div> <!-- old filter section -->
-
-    <div class="row">
-        <div class="col-md-10">
-            <label>{% trans "Active Filters" %}:</label>
-            <span class="label label-filter">{% trans "Negotiation status" %} <i class="lm lm-times"></i></span>
-            <span class="label label-filter">{% trans "Deal scope" %} <i class="lm lm-times"></i></span>
-            <span class="label label-filter">{% trans "Crops" %} <i class="lm lm-times"></i></span>
-        </div>
-        <div class="col-md-2 right">
-            <a class="right toggle-filters" role="button" data-toggle="collapse" href="#filter-collapse" aria-expanded="true" data-toggle-text="{% trans "Hide filters" %}"
-               aria-controls="filter-collapse">
-                {% trans "Manage filters" %}
-            </a>
-        </div>
-    </div>
-
-    <div id="filter-collapse" class="collapse">
-
-        <div id="filternavbar" class="navbar navbar-default" role="navigation">
-            <div class="container-fluid">
-
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                            data-target="#filter-navbar-collapse" aria-expanded="false">
-                        <span class="sr-only">{% trans "Toggle navigation" %}</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                </div>
-
-                <div class="collapse navbar-collapse" id="filter-navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                               aria-haspopup="true"
-                               aria-expanded="false"><span>{% trans "By Target" %}<span class="caret"></span></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#region">{% trans "By Region" %}</a></li>
-                                <li><a href="#country">{% trans "By Country" %}</a></li>
-                            </ul>
-                        </li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                               aria-haspopup="true"
-                               aria-expanded="false"><span>{% trans "By Investor" %} <span class="caret"></span></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">{% trans "By Investor country" %}</a></li>
-                                <li><a href="#">{% trans "By Investor region" %}</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#" role="button">
-                                <span>{% trans "By Data Source" %} <span class="caret"></span></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" role="button">
-                               <span>{% trans "By Intention" %} <span class="caret"></span></span>
-                           </a>
-                        </li>
-                        <li class="dropdown">
-                            <a href="#" role="button"><span>{% trans "By Crop" %} <span class="caret"></span></span></a>
-                        </li>
-
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" role="button"><span>{% trans "All deals" %}</span></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div id="filters">
-            <form>
-                <div class="row">
-                    <div class="col-md-3 filterbox checkboxes">
-                        <ul>
-                            <li class="checkbox">
-                                <input id="checkbox1" name="data1" type="checkbox">
-                                <label for="checkbox1">{% trans "Concluded Deals" %}</label>
-                            </li>
-                            <li class="checkbox">
-                                <input id="checkbox2" name="data2" type="checkbox">
-                                <label for="checkbox2">{% trans "Intended Deals" %}</label>
-                            </li>
-                            <li class="checkbox">
-                                <input id="checkbox3" name="data3" type="checkbox">
-                                <label for="checkbox3">{% trans "Failed Deals" %}</label>
-                            </li>
-                            <li class="checkbox">
-                                <input id="checkbox4" name="data4" type="checkbox">
-                                <label for="checkbox4">{% trans "Exclude Media Reports" %}</label>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-3 filterbox no-pad">
-                        <!-- <select id="filterselect" size="6" class="formcontrol">
-                            <option value=""><strong style="backgroud-color: blue;">Spatial Data</strong></option>
-                            <option value="">Location</option>
-                            <option value=""><strong style="backgroud-color: blue;">General Info</strong></option>
-                            <option value="">Current size under contract</option>
-                            <option value="">Intention of the Investment</option>
-                            <option value="">Nature of the deal</option>
-                            <option value="">Negotiation Status</option>
-                            <option value="">Implementation Status</option>
-                        </select> -->
-
-                        <ul>
-                            <li>
-                                {% trans "Spatial Data" %}
-                            </li>
-                            <li>
-                                <a href="#">{% trans "Location" %}</a>
-                            </li>
-                            <li style="background-color: #ebebeb;">
-                                {% trans "General Info" %}
-                            </li>
-                            <li>
-                                <a href="#">{% trans "Current size under contract" %}</a>
-                            </li>
-                            <li>
-                                <a href="#">{% trans "Intention of the Investment" %}</a>
-                            </li>
-                            <li>
-                                <a href="#">{% trans "Nature of the deal" %}</a>
-                            </li>
-                            <li>
-                                <a href="#">{% trans "Negotiation Status" %}</a>
-                            </li>
-                            <li>
-                                <a href="#">{% trans "Implementation Status" %}</a>
-                            </li>
-                        </ul>
-
-                    </div>
-                    <div class="col-md-6 filterbox">
-                        <div class="input-group condition">
-                            <select class="operator select-inline" value="Contains">
-                                <option>Contains not</option>
-                                <option>Equals</option>
-                                <option>Equals not</option>
-                                <option>Starts with</option>
-                                <option>Ends with</option>
-                            </select>
-                            <input class="field" type="text" value="Foobar" class="inline">
-                            <a href="#"><i class="lm lm-times"></i></a>
-                        </div>
-                        <div class="input-group condition">
-                            <select class="operator select-inline" value="Contains">
-                                <option>Contains not</option>
-                                <option>Equals</option>
-                                <option>Equals not</option>
-                                <option>Starts with</option>
-                                <option>Ends with</option>
-                            </select>
-                            <input class="field" type="text" value="Foobar" class="inline">
-                            <a href="#"><i class="lm lm-times"></i></a>
-                        </div>
-                        <div class="input-group condition">
-                            <select class="operator select-inline" value="Contains">
-                                <option>Contains not</option>
-                                <option>Equals</option>
-                                <option>Equals not</option>
-                                <option>Starts with</option>
-                                <option>Ends with</option>
-                            </select>
-                            <input class="field" type="text" value="Foobar" class="inline">
-                            <a href="#"><i class="lm lm-times"></i></a>
-                        </div>
-                        <div class="input-group">
-                            <button class="btn"><i class="lm lm-plus"></i> Add condition</button>
-                        </div>
-                    </div>
-
-                </div>
-            </form>
-        </div>
-    </div>
-
-{% endblock %}
