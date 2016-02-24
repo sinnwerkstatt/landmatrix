@@ -6,7 +6,7 @@ from django.template import RequestContext
 
 
 class ChartView(TemplateView):
-    template_name = "plugins/overview.html"
+    template_name = "chart/overview.html"
 
     def dispatch(self, request, *args, **kwargs):
         context = {
