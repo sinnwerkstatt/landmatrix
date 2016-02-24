@@ -1,7 +1,43 @@
 {% extends "base.html" %}
 {% load i18n %}
 
+{% block page_title %}{% trans "Chart" %}{% endblock %}
+{% block title %}{% trans "Chart" %}{% endblock %}
+
 {% block content %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="dropdown active">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            {% trans "Dynamics Overview" %}
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#">{% trans "Negotiation status" %}</a></li>
+            <li><a href="#">{% trans "Implementation status" %}</a></li>
+            <li><a href="#">{% trans "Intention of investment" %}</a></li>
+            <li><a href="#">{% trans "Investment in Agriculture" %}</a></li>
+          </ul>
+        </li>
+        <li><a href="#">{% trans "Web of transnational deals" %}</a></li>
+        <li><a href="#">{% trans "Global map of investments" %}</a></li>
+        <li><a href="#">{% trans "Agricultural drivers" %}</a></li>
+        <li><a href="#">{% trans "It's a big deal" %}</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
 {% block before %}
 {% endblock %}
 {%  include "filters.html" %}
@@ -113,11 +149,8 @@ function get_filter() {
 
 $(document).ready(function () {
 
-//    alert('ready jetz aba echt');
-
     $(".filters .btn").click(function (e) {
         var c_self = $(this);
-//        c_self.button('loading');
         // only combine concluded and intended
         if (c_self.parent().is(".negotiation_status")) {
             if (c_self.val() == "failed") {

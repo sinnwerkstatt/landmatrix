@@ -15,34 +15,34 @@ class TestDealComparisonView(TestCase):
         self.history_ids = []
 
     def test_how_to_call_a_view_that_works(self):
-        response = self._get_url_following_redirects('/en/grid/all')
+        response = self._get_url_following_redirects('/global/grid/all')
         self.assertEqual(200, response.status_code)
 
     def test_view_nonexistent_activity_history_id(self):
         with self.assertRaises(ObjectDoesNotExist):
-            self._get_url_following_redirects('/grid/compare/1/2/')
+            self._get_url_following_redirects('/global/grid/compare/1/2/')
 
     def test_view_invalid_parameter(self):
         with self.assertRaises(RuntimeError):
-            self._get_url_following_redirects('/grid/compare/1x2/')
+            self._get_url_following_redirects('/global/grid/compare/1x2/')
 
     def test_history_gets_called_with_activity_history_ids(self):
         self._create_activity_history()
         response = self._get_url_following_redirects(
-                '/grid/compare/%i/%i/' % (self.history_ids[0], self.history_ids[1])
+                '/global/grid/compare/%i/%i/' % (self.history_ids[0], self.history_ids[1])
         )
         self.assertEqual(200, response.status_code)
 
     def test_history_with_activity_history_ids_content(self):
         self._create_activity_history()
         response = self._get_url_following_redirects(
-                '/grid/compare/%i/%i/' % (self.history_ids[0], self.history_ids[1])
+                '/global/grid/compare/%i/%i/' % (self.history_ids[0], self.history_ids[1])
         )
         # nothing to test here really unless you got to the trouble of creating activities with data
 
     def test_view_nonexistent_activity_identifier_and_timestamp(self):
         with self.assertRaises(ObjectDoesNotExist):
-            self._get_url_following_redirects('/grid/compare/1_2/')
+            self._get_url_following_redirects('/global/grid/compare/1_2/')
 
     def test_view_with_activity_identifier_and_timestamp(self):
         self._create_activity_history()
@@ -50,7 +50,7 @@ class TestDealComparisonView(TestCase):
         activity_identifier = activity.activity_identifier
         timestamp = date_string_to_timestamp(activity.history_date)
         response = self._get_url_following_redirects(
-                '/grid/compare/%i_%s/' % (activity_identifier, timestamp)
+                '/global/grid/compare/%i_%s/' % (activity_identifier, timestamp)
         )
         self.assertEqual(200, response.status_code)
         # nothing to test here really unless you got to the trouble of creating activities with data
@@ -63,7 +63,7 @@ class TestDealComparisonView(TestCase):
         timestamp = date_string_to_timestamp(activity.history_date-timedelta(seconds=1))
         with self.assertRaises(ObjectDoesNotExist):
             self._get_url_following_redirects(
-                '/grid/compare/%i_%s/' % (activity_identifier, timestamp)
+                '/global/grid/compare/%i_%s/' % (activity_identifier, timestamp)
             )
 
     def _get_url_following_redirects(self, url):
