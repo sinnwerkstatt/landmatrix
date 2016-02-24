@@ -2,7 +2,7 @@
 settings.py
 
 # Collected(!) statics
-static/
+./static/
 
 node_modules
 media/js
