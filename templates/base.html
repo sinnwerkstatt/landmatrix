@@ -60,73 +60,47 @@
                 <ul class="nav navbar-nav">
                     <li><a href="/global/map/"><i class="lm-nav lm-globe"></i><span class="nav-text">Global</span></a>
                     </li>
-                    <li class="hidden">
+                    <li>
                         <form class="navbar-form">
                             <div class="form-group">
                                 <span>
                                 <i class="lm-nav lm-regions"></i>
-                                <select class="nav-select" id="nav-region-select">
-                                    <option></option>
-                                    <optgroup label="Region observatories">
-                                        <option label="Regions" value="de_o">Germany</option>
-                                        <option label="Regions" value="ru_o">Russia</option>
-                                    </optgroup>
-                                    <optgroup label="Regions">
-                                        <option label="Regions" value="de">Germany</option>
-                                        <option label="Regions" value="ru">Russia</option>
-                                        <option label="Regions" value="si">Siberia</option>
-                                    </optgroup>
-                                </select>
-                                    </span>
+                                    <select class="nav-select" id="nav-region-select">
+                                        <option></option>
+                                        <optgroup label="Region observatories">
+                                            <option label="Regions" value="de_o">Europe</option>
+                                            <option label="Regions" value="ru_o">Russia</option>
+                                        </optgroup>
+                                        <optgroup label="Regions">
+                                            <option label="Regions" value="de">Europe</option>
+                                            <option label="Regions" value="ru">Russia</option>
+                                            <option label="Regions" value="sa">South Africa</option>
+                                        </optgroup>
+                                    </select>
+                                </span>
                             </div>
                         </form>
                     </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><i class="lm-nav lm-regions"></i><span class="nav-text">Regions <span
-                                class="caret"></span></span></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <form role="form">
-                                    <div class="form-group has-feedback">
-                                        <input type="text" class="form-control" placeholder="Search"/>
-                                        <i class="form-control-feedback glyphicon glyphicon-search"></i>
-                                    </div>
-                                </form>
-                            </li>
-                            <ul class="dropdown-menu">
-                                {% block nav %}
-                                {% endblock %}
-                            </ul>
-                            <li><a href="#">Region 1</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Region 2</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Region 3</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><i class="lm-nav lm-flag"></i><span
-                                class="nav-text">Countries <span
-                                class="caret"></span></span></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <form role="form">
-                                    <div class="form-group has-feedback">
-                                        <input type="text" class="form-control" placeholder="Search"/>
-                                        <i class="form-control-feedback glyphicon glyphicon-search"></i>
-                                    </div>
-                                </form>
-                            </li>
-                            <li><a href="#">Observatory 1</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Observatory 2</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Country 1</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Country 2</a></li>
-                        </ul>
+                    <li>
+                        <form class="navbar-form">
+                            <div class="form-group">
+                                <span>
+                                <i class="lm-nav lm-flag"></i>
+                                    <select class="nav-select" id="nav-country-select">
+                                        <option></option>
+                                        <optgroup label="Country observatories">
+                                            <option label="Countries" value="de_o">Germany</option>
+                                            <option label="Countries" value="ru_o">Russia</option>
+                                        </optgroup>
+                                        <optgroup label="Countries">
+                                            <option label="Countries" value="de">Germany</option>
+                                            <option label="Countries" value="ru">Russia</option>
+                                            <option label="Countries" value="si">Siberia</option>
+                                        </optgroup>
+                                    </select>
+                                </span>
+                            </div>
+                        </form>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -302,6 +276,9 @@
     <script type="text/javascript">
         $('#nav-region-select').select2({
             placeholder: "Regions"
+        });
+        $('#nav-country-select').select2({
+            placeholder: "Countries"
         });
     </script>
     <!-- Piwik -->
