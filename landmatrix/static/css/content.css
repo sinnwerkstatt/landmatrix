@@ -139,7 +139,7 @@ hr {
     background: #fcfcfc;
     font-weight: bold;
     /*opacity: 0.5; */
-    font-size: 14px;
+    font-size: 16px;
     box-shadow: none;
     text-shadow: none;
 }
@@ -264,13 +264,14 @@ table td,
 blockquote,
 label {
     font-family: 'Open Sans', sans-serif;
-    color: #919191;
+    color: #4a4a4a;
+    font-weight: 400;
 }
 
 body,
 p {
     font-family: 'Open Sans', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.5em;
 }
 
@@ -290,10 +291,17 @@ h1 {
 
 h2,
 h3,
-h4 {
+.wrap h4 {
     font-family: 'Open Sans', sans-serif;
     font-weight: bold;
     color: #4a4a4a;
+    font-size:20px
+
+}
+
+.wrap > h2,
+.wrap > h3,
+.wrap > h4 {
     margin-top: 2em;
     margin-bottom: 2em;
 }
@@ -303,13 +311,7 @@ h4 {
     text-transform: uppercase;
 }
 
-h2,
-h3 {
-    font-size: 22px;
-}
-
 h4 {
-    font-size: 22px;
     color: #919191;
 }
 
@@ -317,7 +319,7 @@ h5,
 h6 {
     font-size: 18px !important;
     margin: 0;
-    font-weight: 600;
+    font-weight: 400;
 }
 
 a:hover {
@@ -488,6 +490,27 @@ i:before {
     font-size: 18px;
 }
 
+.navbar-form {
+    padding-top: 10px;
+}
+
+.select2-container--default .select2-selection--single,
+.select2-container--default,
+.select2-selection--single,
+.select2-container,
+.select2-selection {
+    border: none !important;
+    background-color: inherit !important;
+    font-size: 16px;
+    font-weight: 300;
+}
+
+.select2-dropdown {
+    min-width: 15vw;
+    max-weight: 15vw;
+    padding: 5px !important;
+}
+
 .language {
     font-size: 0.8em;
 }
@@ -561,19 +584,15 @@ i:before {
 .panel-heading, .panel-title {
     background: none !important;
     display: block;
-    padding-top: 0.8em;
-    padding-bottom: 0.5em;
-    margin-bottom: 5px;
     width: 100%;
     height: 100%;
+    padding: 0 0;
 }
 
-div.panel > div > h4 > a {
-    font-size: 16px !important;
-    color: #4a4a4a;
+.panel-heading a {
+    padding: 1.5em 1em;
     display: block;
-    width: 100%;
-    height: 100%;
+    margin: 0;
 }
 
 .panel-collapse, .collapse, .panel-body {
@@ -602,7 +621,7 @@ form >.in {
     margin-bottom: 10px;
     padding: 0;
     list-style: none;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .subnav.nav > li > a > i {
@@ -759,8 +778,9 @@ body {
 }
 
 footer {
+    background-color: hotpink;
     height: auto !important;
-    font-size: 14px;
+    font-size: 16px !important;
 }
 
 footer > .container {
@@ -788,6 +808,7 @@ footer {
 footer h4 {
     margin-top: 10px;
     margin-bottom: 10px;
+    font-weight: 600;
     color: #4a4a4a;
 }
 
@@ -805,6 +826,26 @@ footer hr {
 
 footer > a:hover {
     text-decoration: none;
+}
+
+@media (max-width: 1200px) {
+    .toobigtofail {
+        display: none;
+    }
+
+    .toosmalltofail {
+        display: block;
+    }
+}
+
+@media (min-width: 1200px) {
+    .toobigtofail {
+        display: block;
+    }
+
+    .toosmalltofail {
+        display: none;
+    }
 }
 
 .lm-twitter-square:hover {
@@ -1046,6 +1087,15 @@ i.big.get-involved {
     list-style: none;
 }
 
+.dashboard table {
+    font-size: 12px;
+}
+
+.dashboard td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
 .icon-info {
     background: url(/static/img/icons.png) no-repeat;
 }
@@ -1179,6 +1229,7 @@ h4 .icon {
 
 .carousel-control.right {
     left: auto;
+    right: 23px;
     background: none;
 }
 
@@ -1335,7 +1386,7 @@ h4 .icon {
 .icon-twitter {
     display: inline-block;
     vertical-align: text-top;
-    background-image: url("/static/img/icon-twitter.png");
+    background-image: url("/static/img/twitter-icon.png");
     background-repeat: no-repeat;
 }
 
@@ -1351,12 +1402,12 @@ h4 .icon {
     font-weight: normal;
     content: '';
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     margin-right: 10px;
     position: absolute;
     left: 0;
-    bottom: 2px;
+    bottom: 6px;
     background-color: #fcfcfc;
     border: solid 1px #4a4a4a;
 }
@@ -1368,11 +1419,11 @@ h4 .icon {
 }
 
 .checkboxes input[type=checkbox]:checked + label:before {
-    content: '\f00d';
-    font-size: 13px;
+    content: 'x';
+    font-size: 12px;
     color: #4a4a4a;
     text-align: center;
-    line-height: 13px;
+    line-height: 12px;
 }
 
 .checkboxes label {
@@ -1443,14 +1494,28 @@ textarea {
     background-color: #fcfcfc;
     box-shadow: none !important;
     color: #4a4a4a;
-    max-width: 75%;
-    margin-left: 5px !important;
-    margin-bottom: 2px;
+    max-width: 100%;
+    margin: 5px 2px 0px 0px !important;
     padding: 5px 5px;
+
+}
+
+select,
+input[type=number],
+input[type=text] {
+    height: 3em !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #B9D635;
 }
 
 .formcontrol {
-    border-color: #4a4a4a;
+    border-color: #919191;
+    color: #919191;
+    border-color: #919191;
 }
 
 .form-control:focus {
@@ -1552,6 +1617,9 @@ textarea {
 #filters {
     border: solid 1px #919191;
     margin-bottom: 20px;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 300;
 }
 
 #filternavbar {
@@ -1588,13 +1656,14 @@ textarea {
     padding: 5px 15px;
 }
 
+
 .filterbox > ul {
     padding: 5px 15px;
     width: 100%;
 }
 
 .filterbox > .input-group {
-    padding: 10px 5px;
+    padding: 5px 5px;
 }
 
 .filterbox.no-pad > ul {
@@ -1603,6 +1672,11 @@ textarea {
 
 .filterbox.no-pad > ul > li {
     padding: 5px 30px;
+}
+
+.filterbox.no-pad > ul > li:hover {
+    background-color: #c6c6c6;
+    color: #4a4a4a;
 }
 
 /* ==========================================================================
@@ -1670,7 +1744,7 @@ textarea {
 .nav-list > .active > a:hover,
 .nav-list > .active > a:focus {
     background-color: #fc941f;
-    color: #;
+    color: #c6c6c6;
     text-shadow: none;
 }
 
@@ -1728,6 +1802,7 @@ ul.legend.offset li > span {
     margin: 0;
     margin-bottom: 10px;
     padding: 0;
+    font-size: 12px;
 }
 
 .breadcrumb > li,
@@ -1738,6 +1813,16 @@ ul.legend.offset li > span {
 /* ==========================================================================
  *    TABLES
  * ========================================================================== */
+#summary,
+#summary .btn{
+    font-size: 12px;
+}
+
+.summary-wrap {
+    max-width: 100%;
+    overflow-x: auto
+}
+
 table th,
 table td {
     padding: 10px 20px 8px !important;
@@ -1761,12 +1846,12 @@ table a.btn {
     border-width: 2px !important;
     background: #fc941f !important;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 12px;
     box-shadow: none;
     text-shadow: none;
     padding: 2px 5px;
     margin-left: 5px;
-
+    margin-top: 5px;
     margin-bottom: 2px;
     vertical-align: inherit;
 }
@@ -1810,6 +1895,10 @@ table th a {
 form .panel-body {
     padding: 0px;
     padding-top: 5px;
+}
+
+.panel-body table th {
+    background-color: inherit;
 }
 
 .get-the-detail table th a {
@@ -2248,17 +2337,17 @@ th .toggle-tooltip {
 }
 
 .twitter-timeline {
-    float: right;
+    float: left;
     background: #fff;
     border: 1px solid #ddd !important;
     margin-bottom: 14px;
 }
 
-@media (max-width: 767px) {
+/*@media (max-width: 767px) {
     .twitter-timeline {
         width: 716px;
     }
-}
+}*/
 
 .fancybox > img {
     margin: 0;

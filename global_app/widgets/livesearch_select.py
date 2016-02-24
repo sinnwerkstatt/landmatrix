@@ -12,7 +12,7 @@ class LivesearchSelect(forms.RadioSelect):
 
     def render(self, name, value, attrs={}, choices=()):
         output = [
-            '<a href="#" class="livesearch"><i class="icon-search"></i></a>',
+            '<a href="#" class="livesearch"><i class="lm lm-search"></i></a>',
             '<p class="livesearch-active"></p>',
             '<input type="hidden" name="%s" value="%s">' % (name, value)]
         if value is None: value = []
