@@ -11,18 +11,8 @@
     <title>{% block page_title %}{% page_attribute "title" %}{% endblock %} - LAND MATRIX</title>
 
     {% page_attribute "meta_description" as meta_description %}{% page_attribute "meta_keywords" as meta_keywords %}
-    <meta name="description" content="
-
-
-
-
-            {% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
-    <meta name="keywords" content="
-
-
-
-
-            {% if meta_keywords %}{{ meta_keywords }}{% else %}{% trans "Landmatrix" %}{% trans 'Default keywords' %}{% endif %}"/>
+    <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
+    <meta name="keywords" content="{% if meta_keywords %}{{ meta_keywords }}{% else %}{% trans "Landmatrix" %}{% trans 'Default keywords' %}{% endif %}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="{% static "vendor/bootstrap/dist/css/bootstrap.min.css" %}">
@@ -207,7 +197,7 @@
 
                     {% block subnav %}
                         <ul class="subnav nav nav-pills right">
-                            <li role="presentation" class="subnav-active"><a href="#/share"><i
+                            <li role="presentation"><a href="#/share"><i
                                     class="lm lm-spacer lm-share-square-o"></i>Share</a></li>
                             <li class="divider"></li>
                             {% block subnav_inner %}
@@ -223,7 +213,9 @@
 
         {% block title_section %}
             <div class="row">
-                <h1><span>{% block title %}{% page_attribute "title" %}{% endblock %}</span></h1>
+                <div class="col-md-12">
+                    <h1><span>{% block title %}{% page_attribute "title" %}{% endblock %}</span></h1>
+                </div>
             </div>
         {% endblock %}
 

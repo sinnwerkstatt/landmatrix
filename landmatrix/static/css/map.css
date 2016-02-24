@@ -18,7 +18,6 @@
     background-color: #f7f7f7;
     border-bottom: 1px solid #ebebeb;
     border-radius: 5px 5px 0 0;
-    font-size: 14px;
     margin: 0;
     padding: 8px 14px;
     text-align: center;
@@ -109,10 +108,6 @@ p {
     top: 3em;
 }
 
-.map {
-    font-size: 12px !important;
-}
-
 table .map {
     position: relative;
     width: 100%;
@@ -147,7 +142,6 @@ table .map {
 }
 
 #search-location > form > div > i {
-    font-size: 16px;
     top: 5px;
     right: 5px;
 }
