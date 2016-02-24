@@ -89,13 +89,6 @@ class TestForms(TestCase):
         form = form_class({'investor_name': '', 'country': '', 'classification': ''})
         self.assertTrue(form.is_valid())
 
-    def test_add_primaryinvestor_form_instantiates(self):
-        self._test_form_instantiates(AddPrimaryInvestorForm)
-
-    def test_add_primaryinvestor_form_data(self):
-        self.skipTest('primary investor form obsolete and not yet rewritten')
-        self._test_primary_investor_form(AddPrimaryInvestorForm)
-
     def _test_primary_investor_form(self, form_class):
         form = form_class({'primary_investor_name': 'horst'})
         if form.errors: print(form.errors)
@@ -186,7 +179,3 @@ class TestForms(TestCase):
         id = Crop.objects.first().pk
         form = DealProduceInfoForm({'crops': (id,)})
         self.assertTrue(form.is_valid())
-
-
-
-
