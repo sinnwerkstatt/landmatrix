@@ -2,6 +2,10 @@
 
 {% block page_title %}{% trans "Web of transnational deals" %}{% endblock %}
 {% block title %}{% trans "Web of transnational deals" %}{% endblock %}
+{% block breadcrumb_inner %}
+{{ block.super }}
+<li>{% trans "Web of transnational deals" %}</li>
+{% endblock %}
 
 {% block description %}
 {{ block.super }}

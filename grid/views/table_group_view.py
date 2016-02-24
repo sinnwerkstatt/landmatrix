@@ -217,6 +217,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             # iterate over columns relevant for view or download
             value = record[j+1]
             row[c] = self._process_value(c, value)
+
         return row
 
     def _process_intention(self, value):
@@ -242,7 +243,10 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     def _process_stakeholder_name(self, value):
         if not isinstance(value, list):
             value = [value]
-        result = [{"name": inv} for inv in value]
+        result = [
+            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
+            for inv in value
+        ]
         return result
 
     def _process_stitched_together_field(self, value):
@@ -251,7 +255,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         return [field.split("#!#")[0] for field in value]
 
     def _process_name_and_year(self, value):
-        return [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]} for n in value]
+        return [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]or 0} for n in value]
 
     def _process_value(self, c, value):
         if not value: return None
