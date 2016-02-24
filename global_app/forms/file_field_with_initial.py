@@ -2,12 +2,15 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django import forms
 from django.core.files.uploadedfile import UploadedFile, SimpleUploadedFile
+from django.utils.translation import ugettext_lazy as _
 
 class FileInputWithInitial(forms.ClearableFileInput):
     def __init__(self, *args, **kwargs):
         super(FileInputWithInitial, self).__init__(*args, **kwargs)
 
-    def render(self, name, value, attrs={}):
+    def render(self, name, value, attrs=None):
+        if attrs is None:
+            attrs = {}
         output = []
         if value:
             value = isinstance(value, UploadedFile) and value.name or value
