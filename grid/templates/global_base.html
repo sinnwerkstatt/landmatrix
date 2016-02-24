@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block head %}
-<script src="/media/js/legacy/vendor/jquery.formset.custom.js" type="text/javascript" charset="utf-8"></script>
-<script src="/media/js/legacy/vendor/jquery.stickytableheaders.js" type="text/javascript" charset="utf-8"></script>
-<script src="/media/legacy/js/script.js" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "js/legacy/vendor/jquery.formset.custom.js"  %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "js/legacy/vendor/jquery.stickytableheaders.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "js/legacy/js/script.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 {% block body_class %}get-the-detail{% endblock %}
 
@@ -67,4 +67,8 @@
 	<li><a href="/">Home</a></li>
 	<li>Global</li>
 </ul>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static "js/editor/detail.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
