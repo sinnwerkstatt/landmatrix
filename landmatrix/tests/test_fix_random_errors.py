@@ -23,7 +23,7 @@ class TestFixRandomErrors(TestCase):
         )
 
     def _get_string_filter_by_lt(self, field):
-        return '/en/global_app/all/' +\
+        return '/en/grid/all/' +\
                '?filtered=true&limit=&order_by=deal_id&prefix=conditions_empty&' +\
                'conditions_empty-TOTAL_FORMS=1&conditions_empty-INITIAL_FORMS=2&' +\
                'conditions_empty-0-variable=' + field +\

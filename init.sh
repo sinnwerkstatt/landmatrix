@@ -41,7 +41,7 @@ createdb -U $PG_USER $PG_DB -e && \
 psql -U $PG_USER -d $PG_DB -c "DROP DATABASE IF EXISTS test_$PG_DB;"
 
 ######### PostGIS setup #########
-# The postgis extension to PostgreSQL needs to be configured for the maplandmatrix app to run.
+# The postgis extension to PostgreSQL needs to be configured for the map app to run.
 
 ## Installing postgis on your Postgres DB
 sudo -u postgres psql $PG_DB -c 'create extension postgis;'

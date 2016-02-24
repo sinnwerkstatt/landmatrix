@@ -9,7 +9,7 @@ gulp.task('watch', function () {
     gulp.watch('**/templates/**', { interval: 1000 }).on('change', livereload.changed);
     gulp.watch('**/landmatrix/static/css/**', { interval: 1000 }).on('change', livereload.changed);
     gulp.watch('**/landmatrix/static/js/**', { interval: 1000 }).on('change', livereload.changed);
-    gulp.watch('**/maplandmatrix/**', { interval: 1000 }).on('change', livereload.changed);
+    gulp.watch('**/map/**', { interval: 1000 }).on('change', livereload.changed);
 
 });
 
