@@ -586,5 +586,3 @@ $(document).ready(function () {
     $('.toggle-tooltip.left').tooltip({placement: "left", html: true});
     $('.toggle-tooltip.bottom').tooltip({placement: "bottom", html: true});
 });
-
-console.log("Yo, i'm with stupid.");

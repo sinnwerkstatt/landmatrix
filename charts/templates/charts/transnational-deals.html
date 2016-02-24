@@ -1,0 +1,206 @@
+{% extends "charts/base_chart.html" %}{% load static i18n custom_tags humanize %}
+
+{% block page_title %}{% trans "Web of transnational deals" %}{% endblock %}
+{% block title %}{% trans "Web of transnational deals" %}{% endblock %}
+
+{% block description %}
+{{ block.super }}
+<a class="btn show-all" href="#" class="disabled">Reset</a>
+{% endblock %}
+
+{% block data_availability %}{% endblock %}
+
+{% block legend %}
+<ul class="media-list legend">
+    <li><i class="icon icon-none" style="background-color: #6cc9d3;"></i> Investor Countries</li>
+    <li><i class="icon icon-none" style="background-color: #ed881b;"></i> Target Countries</li>
+</ul>
+{% endblock %}
+
+{% block data %}
+<div class="row">
+    <!--[if lte IE 8]>
+        <ul class="span12 messages">
+            <li class="alert alert-error"<strong>Visualisation not available in your browser:</strong> Unfortunately this data visualisation uses modern technologies and is therefor not available for old browsers (lower than Internet Explorer 8). Please update your browser.</li>
+        </ul>
+    <![endif]-->
+    <div class="row canvas-container">
+        <div class="span4 well top-10-countries">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Top 10 Countries</h3>
+            </div>
+            <div class="row">
+                <div class="span4">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a style="color: #6cc9d3" href="#investor-countries">Investor countries</a></li>
+                        <li><a style="color: #ed881b" href="#target-countries">Target countries</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="investor-countries" class="tab-pane active">
+                            <table class="table">
+                            </table>
+                        </div>
+                        <div id="target-countries" class="tab-pane">
+                            <table class="table">
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="span4 well country-info" style="display: none">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="country">Country</h3>
+            </div>
+            <div class="row">
+                <div class="span4">
+                    <div class="target-regions">
+                        <h4 style="color: #6cc9d3">Regions investing in <span class="country">Country</span></h4>
+                        <table class="table">
+                        </table>
+                        <a href="" class="inbound">Show all inbound deals</a>
+                    </div>
+                    <div class="investor-regions">
+                        <h4 style="color: #ed881b">Regions <span class="country">Country</span> invests in</h4>
+                        <table class="table">
+                        </table>
+                        <a href="" class="outbound">Show all outbound deals</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="span12 canvas"></div>
+    </div>
+
+     <div class="current-country" style="display: none">
+          <h3>Country</h3>
+        <p>
+          <span class="total-hectares">0 acquisitions/targets</span>
+          <span class="relation-type">to/from</span>
+          <span class="related-regions">Region A: 0 hectares<br/>Region B: 0 hectares</span><br/><br/>
+          <a href="#">Go to Table</a>
+        </p>
+     </div>
+</div>
+{% endblock %}
+
+{% block after %}
+{{ block.super }}
+<style>
+path.arc {
+  cursor: move;
+  fill: transparent;
+}
+.node {
+  font-size: 13px;
+  font-family: "Open Sans", sans-serif;
+  cursor: pointer;
+  color: #3b3b3b;
+}
+.node.active,
+.node:hover {
+  fill: #3b3b3b;
+  font-weight: bold;
+}
+.link {
+  fill: none;
+  stroke: #3b3b3b;
+  stroke-opacity: .4;
+  pointer-events: none;
+}
+.link.source,
+.link.target {
+  stroke-opacity: 1;
+  stroke-width: 2px;
+}
+.node.target {
+  fill: #6cc9d3 !important;
+}
+.link.source {
+  stroke: #6cc9d3;
+}
+.node.source {
+  fill: #ed881b !important;
+}
+.link.target {
+  stroke: #ed881b;
+}
+.canvas-container {
+    position: relative;
+}
+.canvas-container .well {
+    position: absolute;
+    top: 330px;
+    left: 380px;
+}
+.canvas-container .well button {
+    font-size: 20px !important;
+    background: none;
+    border: none;
+}
+.country-info{
+    opacity: 0.8;
+}
+</style>
+<!--[if lte IE 8]><script src="/media/js/vendor/r2d3.js" charset="utf-8"></script><![endif]-->
+    <!--[if gte IE 9]><!-->
+    <script type="text/javascript" src="{% static "vendor/d3/d3.js" %}"></script>
+
+    <!-- <script type="text/javascript" src="{% static "js/legacy/vendor/d3.layout.js" %}"></script> -->
+    <!--<![endif]-->
+    <script type="text/javascript" src="{% static "js/packages.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/transnational-deals.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/main.js" %}"></script>
+<script type="text/javascript">
+$("button.close").click(function() {
+    $(this).parents("div.well").hide();
+});
+function get_top_10() {
+    $(".top-10-countries .table").empty();
+    var query_params = get_query_params(get_base_filter(), "");
+    var json_query = "/api/top-10-countries.json" + query_params;
+    jQuery.getJSON(json_query, function(data) {
+        var investor_countries = $(".top-10-countries #investor-countries .table");
+        for (var i = 0; i < data.investor_country.length; i++) {
+            investor_countries.append('<tr><td><a href="/get-the-detail/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + '</td></tr>');
+        };
+        var target_countries = $(".top-10-countries #target-countries .table");
+        for (var i = 0; i < data.target_country.length; i++) {
+            target_countries.append('<tr><td><a href="/get-the-detail/by-target-country/' + data.target_country[i]["slug"] + '/">' + data.target_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.target_country[i]["hectares"]) + ' ha</td></tr>');
+        };
+    });
+};
+var clicked = false;
+function draw(callback) {
+    init_canvas(960, 960);
+    get_top_10();
+    var query_params = get_query_params(get_base_filter(), "");
+    var json_query = "/api/transnational_deals.json" + query_params;
+    d3.json(json_query, function(classes) {
+      draw_transnational_deals(callback, classes, 650);
+    });
+    d3.select("div.canvas")
+        .on("mousemove", mousemove)
+        .on("mouseup", mouseup);
+
+}
+$(".show-all").click(function (e) {
+    e.preventDefault();
+    draw(function () {});
+    $(".show-all").addClass("disabled");
+    return false;
+});
+$(".top-10-countries .nav-tabs a").click(function (e) {
+    e.preventDefault();
+    $(this).tab("show");
+    $(this).parents("li").addClass("active").siblings().removeClass("active");
+    return false;
+});
+$(document).ready(function () {
+    draw(function() {});
+    $(".deal_scope").hide();
+});
+</script>
+{% endblock %}
