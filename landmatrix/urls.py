@@ -55,7 +55,6 @@ urlpatterns = i18n_patterns('',
 
     url(r'^editor/', include(editor_urls)),
     url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
-    url(r'^chart/', include(chart_urls)),
     url(r'^$', StartView.as_view(), name='start'),
     #url(r'^', include('cms.urls')),
     url(r'^select2/', include('django_select2.urls')),
