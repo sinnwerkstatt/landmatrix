@@ -1,5 +1,7 @@
+{% extends "base.html" %}
 {% load i18n %}
 
+{% block content %}
 {% block before %}
 {% endblock %}
 {%  include "filters.html" %}
@@ -134,4 +136,5 @@ $(document).ready(function () {
     $(".actions .action2 .btn.active").click();
 });
 </script>
+{% endblock %}
 {% endblock %}
