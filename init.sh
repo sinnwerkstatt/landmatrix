@@ -15,10 +15,6 @@ which psql >/dev/null || \
     sudo apt-get install postgresql postgresql-contrib postgresql-client postgresql-server-dev-9.4 libpq-dev \
                          postgresql-9.4-postgis-scripts
 
-# ensure same for virtualenvwrapper
-which mkvirtualenv >/dev/null || \
-    sudo apt-get install virtualenvwrapper
-
 ######### User checks #########
 # ensure Postgres user exists
 sudo 2>/dev/null -u postgres psql -d postgres -c \\du | grep -q "${PG_USER}" || \
