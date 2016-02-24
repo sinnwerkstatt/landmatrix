@@ -58,16 +58,16 @@ INSTALLED_APPS += (
     # 'debug_toolbar',
 
 #   django-cms and dependencies
-    'cms',
-    'mptt',
-    'menus',
-    'treebeard',
+#    'cms',
+#    'mptt',
+#    'menus',
+#    'treebeard',
 
-    'djangocms_admin_style',  # for the admin skin. You **must** add 'djangocms_admin_style' in the list **before** 'django.contrib.admin'.
+#    'djangocms_admin_style',  # for the admin skin. You **must** add 'djangocms_admin_style' in the list **before** 'django.contrib.admin'.
     'django.contrib.admin',
     'django.contrib.sites',
-    'sekizai',
-    'djangocms_text_ckeditor',
+#    'sekizai',
+#    'djangocms_text_ckeditor',
 
 #   to check test coverage
     'coverage',
@@ -84,10 +84,10 @@ INSTALLED_APPS += (
 
 #   apps of the actual landmatrix project
     'landmatrix',
-    'global_app',
-    'maplandmatrix',
-    'chart_view',
-    'dashboard',
+    'grid',
+    'map',
+    'chart',
+    'editor',
     'api',
 )
 
@@ -239,3 +239,9 @@ DEBUG_TOOLBAR_PANELS = [
 # enable persistent database connections
 # (https://docs.djangoproject.com/en/1.9/ref/databases/#persistent-database-connections)
 CONN_MAX_AGE = 0
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}

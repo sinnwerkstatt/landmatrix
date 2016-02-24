@@ -1,0 +1,9 @@
+{% load i18n %}
+  {% for child in nodes %}
+  <li class="span2 -{{ child.id }}-{{ current_page.id }}- {% if forloop.first %}first {% elif forloop.last %}last {% endif %}{% if child.id = current_page.id %}active{% endif %}">
+  	  <div class="thumbnail">
+          <a href="{{ child.redirect_url|default:child.get_absolute_url }}" class="image"><img src="/media/img/get-the-idea/{{ child.get_menu_title|slugify }}-thumb.png" alt="{{ child.get_menu_title }}"></img></a>
+  		  <a href="{{ child.redirect_url|default:child.get_absolute_url }}" >{{ child.get_menu_title }}</a>
+  	  </div>
+  </li>
+  {% endfor %}
