@@ -16,6 +16,9 @@ dir.sh
 .idea
 \#*\#
 *~
+ProfilingResults
+errors.txt
+landmatrix*.sql
 
 # default sqlite db used only for basic development
 db.sqlite3
