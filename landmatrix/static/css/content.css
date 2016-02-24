@@ -125,6 +125,10 @@ h6 {
     font-size: 18px;
     line-height: 40px;
 }
+#main-navbar-collapse > .nav ul li a {
+    font-size: 16px;
+    line-height: 36px;
+}
 .messages {
     font-size: 24px
 }
@@ -522,6 +526,10 @@ p a {
     display: block;
 }
 
+#main-navbar-collapse > .nav ul {
+    padding-top: 0;
+}
+
 #main-navbar-collapse > a,
 #main-navbar-collapse > a.btn,
 #main-navbar-collapse > .nav a {
@@ -581,7 +589,7 @@ p a {
 .select2-dropdown {
     min-width: 15vw;
     max-weight: 15vw;
-    padding: 5px !important;
+    padding: 0 15px !important;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__placeholder {
@@ -618,6 +626,8 @@ p a {
     position: absolute;
 }
 
+.dropdown-menu>.active>a,
+.dropdown-menu>.active>a:focus, .dropdown-menu>.active>a:hover,
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
     background: #44c42d !important;
     color: #fff !important;
@@ -2556,4 +2566,9 @@ body.africa .wrap {
 
 img {
     max-width: 100%;
+}
+
+:focus {
+  outline-color: transparent;
+  outline-style: none;
 }
