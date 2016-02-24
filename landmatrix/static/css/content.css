@@ -88,13 +88,17 @@ body {
     margin-left: 10px;
 }
 
+.label {
+    font-size: 100%;
+}
+
 /* ==========================================================================
  *    FONT-SIZES
  * ========================================================================== */
+
 .container button,
 .container a.btn {
-    font-size: 16px;
-
+    font-size: 14px;
 }
 
 body,
@@ -236,8 +240,8 @@ hr {
  *    BUTTONS
  * ========================================================================== */
 
-.container button,
-.container a.btn {
+button,
+a.btn {
     color: #fc941f;
     border-color: #fc941f;
     border-width: 2px;
@@ -248,19 +252,25 @@ hr {
     text-shadow: none;
 }
 
-.container a.btn-large {
+a.btn-large {
     padding: 1em 3.5vw;
     margin-top: 1.5em;
     margin-bottom: 1.5em;
     text-transform: capitalize;
 }
 
-.container button:focus,
-.container button.active,
-.container button:hover,
-.container a.btn:focus,
-.container a.btn.active,
-.container a.btn:hover {
+.btn-default {
+    background-color: #919191;
+    color: #fff;
+    border: none;
+}
+
+button:focus,
+button.active,
+button:hover,
+a.btn:focus,
+a.btn.active,
+a.btn:hover {
     opacity: 1;
 }
 
@@ -434,10 +444,11 @@ p a {
     vertical-align: bottom;
 }
 
-i:before {
-    content: '{icon}';
+.icon-none {
+    width: 14px;
+    height: 14px;
     display: inline-block;
-    /*padding-left: 1em;*/
+    border: 1px solid #c1c1c1;
 }
 
 ::-moz-selection {
@@ -470,6 +481,10 @@ i:before {
     background-color: #ebebeb; /*  rgba(156, 156, 156, 0.26); */
 }
 
+.navbar-main {
+    border-bottom: 1px solid #bebebe;
+}
+
 .navbar-default .navbar-inner {
     background-color: #1d1d1d;
     background-image: none;
@@ -488,11 +503,10 @@ i:before {
 }
 
 .navbar .brand {
-    background: url(/static/img/lm-logo.png) no-repeat;
     display: block;
     padding: 5px;
     margin-left: 0px !important;
-    margin-top: 15px;
+    margin-top: 8px;
     margin-right: 40px;
     width: 180px;
 }
@@ -593,14 +607,6 @@ i:before {
     padding-right: 0.5em;
 }
 
-.right {
-    text-align: right;
-}
-
-.right li {
-    float: right;
-}
-
 .center {
     text-align: center;
 }
@@ -611,13 +617,18 @@ i:before {
 
 .panel {
     border: 0px none;
-    border-top: solid 2px #c1c1c1 !important;
+    border-top: solid 2px #c1c1c1;
     border-bottom: 0px none;
     box-shadow: none;
     border-radius: 0px !important;
     background: none !important;
     width: 100%;
     height: 100%;
+}
+
+.panel-group .panel-heading+.panel-collapse>.list-group,
+.panel-group .panel-heading+.panel-collapse>.panel-body {
+    border-top: 2px dashed #c1c1c1;
 }
 
 .panel-heading, .panel-title {
@@ -1411,6 +1422,11 @@ h4 .icon {
     opacity: 1;
 }
 
+.well {
+    border-radius: 0;
+    box-shadow: 1px 1px 3px #dadada !important;
+}
+
 .icon-twitter {
     display: inline-block;
     vertical-align: text-top;
@@ -1523,7 +1539,6 @@ textarea {
     max-width: 100%;
     margin: 5px 2px 0px 0px;
     padding: 5px 5px;
-
 }
 
 select,
@@ -1648,19 +1663,12 @@ textarea:focus {
  * ========================================================================== */
 
 #filters {
-    border: solid 1px #919191;
     margin-bottom: 20px;
+}
+
+#manage-filters {
+    border: solid 1px #919191;
     font-weight: 300;
-}
-
-#filters .row {
-    padding-bottom: 0px;
-}
-
-#filters .btn {
-    background-color: #919191;
-    border-color: #919191;
-    color: #fcfcfc;
 }
 
 .filterbox {
@@ -1708,7 +1716,7 @@ textarea:focus {
 
 #filters ul.variables ul li a {
     display: block;
-    padding: 10px 15px 10px 30px;
+    padding: 0 15px 0 30px;
 }
 
 #filters ul.variables > li > ul > li:hover > a {
@@ -1904,8 +1912,7 @@ table tbody {
     margin-bottom: 4px;
 }
 
-.container table th,
-.container table th a {
+.container table th {
     font-weight: bold;
     padding-left: 10px;
     color: #fcfcfc;

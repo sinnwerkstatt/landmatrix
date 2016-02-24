@@ -21,8 +21,8 @@
     <script src="{% static "js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
-{% block page_title %}Deal #{{ deal.activity_identifier }}{% endblock %}
-{% block title %}Deal #{{ deal.activity_identifier }}{% endblock %}
+{% block page_title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
+{% block title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
 
 {% block breadcrumb_inner %}
     <li><a href="/global/">Global</a> <span class="divider"></span></li>
@@ -32,10 +32,6 @@
 {% block content %}
 
     {% if deal %}
-
-        <div class="row">
-            <h4>Activity</h4>
-        </div>
         <div class="panel-group" id="accordion">
 
             {% include "includes/dealpanels.html" %}
@@ -73,7 +69,7 @@
                                             {# TODO: Insert correct link and maybe disable button for currently version displayed  #}
                                             <a type="button" class="btn"
                                                href="/deal/{{ item.activity.activity_identifier }}_{{ changedate }}">
-                                                {% trans "Show this version" %}
+                                                <i class="glyphicon glyphicon-eye-open"></i> {% trans "Show this version" %}
                                             </a>
                                         </td>
 
@@ -83,9 +79,11 @@
                                                     {% if not forloop.last %}
                                                href="/deal/compare/{{ item.activity.activity_identifier }}_{{ changedate }}"
                                                         >
+                                                        <i class="glyphicon glyphicon-transfer"></i>
                                                         {% trans "Compare with previous version" %}
                                                     {% else %}
                                                         disabled>
+                                                        <i class="glyphicon glyphicon-transfer"></i>
                                                         {% trans "First version" %}
                                                     {% endif %}
                                             </a>
