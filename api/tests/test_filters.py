@@ -4,7 +4,7 @@ from django.db.utils import ProgrammingError
 from django.test.testcases import TestCase
 
 from api.query_sets.fake_query_set import FakeQuerySet
-from global_app.views.view_aux_functions import FILTER_VAR_ACT, FILTER_VAR_INV
+from grid.views.view_aux_functions import FILTER_VAR_ACT, FILTER_VAR_INV
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 

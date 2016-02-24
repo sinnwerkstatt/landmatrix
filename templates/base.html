@@ -1,4 +1,4 @@
-{% load i18n cms_tags %}{% load cms_tags sekizai_tags %}{% load menu_tags %}{% load static %}<!DOCTYPE html>
+{% load i18n static %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -8,9 +8,7 @@
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>{% block page_title %}{% page_attribute "title" %}{% endblock %} - LAND MATRIX</title>
-
-    {% page_attribute "meta_description" as meta_description %}{% page_attribute "meta_keywords" as meta_keywords %}
+    <title>{% block page_title %}{% endblock %} - LAND MATRIX</title>
     <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
     <meta name="keywords" content="{% if meta_keywords %}{{ meta_keywords }}{% else %}{% trans "Landmatrix" %}{% trans 'Default keywords' %}{% endif %}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,7 +23,8 @@
     <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
     {% if is_pdf_export %}
         <link rel="stylesheet" href="{% static "css/htmltopdf.css" %}" type="text/css" media="screen"
-              title="no title" charset="utf-8">{% endif %}
+              title="no title" charset="utf-8">
+    {% endif %}
 
     <!-- <script src="{% static "js/legacy/vendor/modernizr-2.6.2-respond-1.1.0.min.js" %}"></script>-->
 
@@ -33,13 +32,11 @@
     <script>window.jQuery || document.write('<script src="{% static "vendor/jquery/dist/jquery.min.js" %}"><\/script>')</script>
     {% block head %}
     {% endblock %}
-    {% render_block "css" %}
+    {% block css %}
+    {% endblock %}
 
 </head>
-<body class="{% if popup %}popup {% endif %}{% block body_class %}{% page_attribute "slug" %}{% endblock %}">
-
-
-{% cms_toolbar %}
+<body class="{% if popup %}popup {% endif %}">
 
 {% block header %}
     <div class="navbar navbar-default" role="navigation">
@@ -61,7 +58,7 @@
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="/global/map"><i class="lm-nav lm-globe"></i><span class="nav-text">Global</span></a>
+                    <li><a href="/global/map/"><i class="lm-nav lm-globe"></i><span class="nav-text">Global</span></a>
                     </li>
                     <li class="hidden">
                         <form class="navbar-form">
@@ -99,9 +96,6 @@
                             </li>
                             <ul class="dropdown-menu">
                                 {% block nav %}
-
-                                    {% show_menu 1 1 0 0 "menu.html" %}
-
                                 {% endblock %}
                             </ul>
                             <li><a href="#">Region 1</a></li>
@@ -150,7 +144,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="/help" role="button"><span class="nav-circle nav-help">?</span></a></li>
                     <li><a href="/editor" role="button"><span class="fa lm-envelope messages"></span></a></li>
-                    {% language_chooser "language_chooser.html" %}
+                    {% include "language_chooser.html" %}
                 </ul>
             </div>
             {% block user_tools %}{% endblock %}
@@ -187,7 +181,6 @@
                     {% block breadcrumb %}
                         <ul class="breadcrumb">
                             <li><a href="/">Home</a></li>
-                            <!-- <li>{% page_attribute "title" %}</li> -->
                             {% block breadcrumb_inner %}
                             {% endblock %}
                         </ul>
@@ -214,7 +207,7 @@
         {% block title_section %}
             <div class="row">
                 <div class="col-md-12">
-                    <h1><span>{% block title %}{% page_attribute "title" %}{% endblock %}</span></h1>
+                    <h1><span>{% block title %}{% endblock %}</span></h1>
                 </div>
             </div>
         {% endblock %}
@@ -327,7 +320,8 @@
     <noscript><p><img src="http://stats.landmatrix.org/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
     <!-- End Piwik Code -->
 {% endblock %}
-{% render_block "js" %}
+{% block js %}
+{% endblock %}
 
 </body>
 </html>
