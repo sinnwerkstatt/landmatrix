@@ -2,14 +2,15 @@ from grid.forms.base_form import BaseForm
 from grid.widgets import CommentInput, TitleField
 from landmatrix.models.country import Country
 
-from landmatrix.models.investor import Investor
-from landmatrix.models.region import Region
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 
 from grid.forms.operational_stakeholder_form import _investor_description
 
+from django_select2.forms import ModelSelect2Widget
+
 from django.utils.translation import ugettext_lazy as _
 from django import forms
-
+from django.forms.models import ModelChoiceField
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -24,7 +25,17 @@ class InvestorForm(BaseForm):
 
     # Investor
     tg_investor = TitleField(required=False, label="", initial=_("Investor"))
-    investor = InvestorField(required=False, label=_("Existing investor"), choices=())#, widget=LivesearchSelect)
+    # investor = InvestorField(required=False, label=_("Existing investor"), choices=())#, widget=LivesearchSelect)
+    investor = ModelChoiceField(
+            required=True, label=_("Existing investor"),
+            queryset=Investor.objects.filter(
+                    pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
+            ).order_by('name'),
+            widget=ModelSelect2Widget(
+                model=Investor,
+                search_fields=['name__icontains']
+            )
+    )
     investor_name = forms.CharField(required=False, label=_("Name"), max_length=255)
     country = forms.ChoiceField(required=False, label=_("Country"), choices=())
     classification = forms.ChoiceField(
@@ -49,7 +60,10 @@ class InvestorForm(BaseForm):
         return data
 
     def clean_investor(self):
-        investor = int(self.cleaned_data["investor"] or 0)
+        if isinstance(self.cleaned_data['investor'], Investor):
+            investor = self.cleaned_data['investor'].id
+        else:
+            investor = int(self.cleaned_data["investor"] or 0)
         if investor and (investor not in [s[0] for s in self.investor_choices]):
             raise forms.ValidationError("%s is no valid investor." % investor)
         return investor

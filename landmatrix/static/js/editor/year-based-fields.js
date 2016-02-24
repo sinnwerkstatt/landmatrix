@@ -17,13 +17,11 @@ function cloneYBDfield(link) {
   input_year.removeClass('form-control');
   remove_link.css("display", "inline-block");
   remove_link.click(function () { removeYBDfield($(this)); });
-  var button_wrap = $("<span class=\"input-group-btn\">");
-  button_wrap.append(remove_link);
   var new_wrap = $("<div class=\"input-group\"></div>");
   new_wrap.append(input_data);
   new_wrap.append(input_year);
   new_wrap.append(helptext);
-  new_wrap.append(button_wrap);
+  new_wrap.append(remove_link);;
   link.parents(".field").find("td").append(new_wrap);
   //link.next().show();
 }
