@@ -1862,7 +1862,7 @@ ul.legend.offset li > span {
 
 table th,
 table td {
-    padding: 10px 20px 8px !important;
+    padding: 10px 20px 8px;
     /*border-bottom: 1px solid #c1c1c1; */
     border: 0px none;
 }
