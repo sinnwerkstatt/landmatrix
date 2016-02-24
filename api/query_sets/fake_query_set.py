@@ -1,6 +1,6 @@
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
-from global_app.views.browse_filter_conditions import BrowseFilterConditions
-from global_app.views.view_aux_functions import create_condition_formset
+from grid.views.browse_filter_conditions import BrowseFilterConditions
+from grid.views.view_aux_functions import create_condition_formset
 from landmatrix.models.browse_condition import BrowseCondition
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
