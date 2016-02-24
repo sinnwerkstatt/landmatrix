@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, patterns
 from .views import ChartView
 
-urlpatterns = patterns('chartview.views',
+urlpatterns = patterns('chart.views',
     url(r'^$', ChartView.as_view(), name='app_main'),
     url(r'^all(?P<type>\.csv)?/$', ChartView.as_view(), name='all_charts'),
 
