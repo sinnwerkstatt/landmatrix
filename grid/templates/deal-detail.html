@@ -72,7 +72,7 @@
                                         <td>
                                             {# TODO: Insert correct link and maybe disable button for currently version displayed  #}
                                             <a type="button" class="btn"
-                                               href="/global/version/{{ item.activity.activity_identifier }}_{{ changedate }}">
+                                               href="/deal/{{ item.activity.activity_identifier }}_{{ changedate }}">
                                                 {% trans "Show this version" %}
                                             </a>
                                         </td>
@@ -81,7 +81,7 @@
                                             {# TODO: include as AJAX call #}
                                             <a type="button" class="btn"
                                                     {% if not forloop.last %}
-                                               href="/global/compare/{{ item.activity.activity_identifier }}_{{ changedate }}"
+                                               href="/deal/compare/{{ item.activity.activity_identifier }}_{{ changedate }}"
                                                         >
                                                         {% trans "Compare with previous version" %}
                                                     {% else %}
