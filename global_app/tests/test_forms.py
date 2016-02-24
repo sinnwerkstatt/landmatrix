@@ -7,7 +7,6 @@ from global_app.forms.add_deal_general_form import AddDealGeneralForm
 from global_app.forms.add_deal_general_public_form import AddDealGeneralPublicForm
 from global_app.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
 from global_app.forms.add_investor_form import AddInvestorForm
-from global_app.forms.add_primary_investor_form import AddPrimaryInvestorForm
 from global_app.forms.base_form import BaseForm
 from global_app.forms.change_deal_action_comment_form import ChangeDealActionCommentForm
 from global_app.forms.change_deal_employment_form import ChangeDealEmploymentForm
@@ -88,13 +87,6 @@ class TestForms(TestCase):
     def _test_investor_form(self, form_class):
         form = form_class({'investor_name': '', 'country': '', 'classification': ''})
         self.assertTrue(form.is_valid())
-
-    def test_add_primaryinvestor_form_instantiates(self):
-        self._test_form_instantiates(AddPrimaryInvestorForm)
-
-    def test_add_primaryinvestor_form_data(self):
-        self.skipTest('primary investor form obsolete and not yet rewritten')
-        self._test_primary_investor_form(AddPrimaryInvestorForm)
 
     def _test_primary_investor_form(self, form_class):
         form = form_class({'primary_investor_name': 'horst'})
