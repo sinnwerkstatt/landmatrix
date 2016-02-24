@@ -20,13 +20,14 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 
-from api import urls as api_urls
-from grid import urls as global_urls
 from grid.views.add_deal_view import AddDealView
 from grid.views.change_deal import ChangeDealView
 from grid.views.deal_comparison_view import DealComparisonView
 from grid.views.deal_detail_view import DealDetailView
 from grid.views.filter_widget_ajax_view import FilterWidgetAjaxView
+from api import urls as api_urls
+from grid import urls as grid_urls
+from map import urls as map_urls
 from chart import urls as chart_urls
 from editor import urls as editor_urls
 from landmatrix.views.start_view import StartView
@@ -37,10 +38,10 @@ urlpatterns = i18n_patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(api_urls)),
     # for unit tests to run without django-cms
-    url(r'^grid/', include(global_urls)),
-    # url(r'^global/map/', include(global_urls)),
-    url(r'^global/grid/', include(global_urls)),
-    # url(r'^global/chart/', include(chart_urls)),
+    #url(r'^grid/', include(global_urls)),
+    url(r'^global/grid/', include(grid_urls)),
+    url(r'^global/map/', include(map_urls)),
+    url(r'^global/chart/', include(chart_urls)),
 
     url(r'^deal/(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
     url(r'^deal/(?P<deal_id>[\d_\.]+)/$', DealDetailView.as_view(), name='deal_detail'),
@@ -56,6 +57,6 @@ urlpatterns = i18n_patterns('',
     url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
     url(r'^chart/', include(chart_urls)),
     url(r'^start/', StartView.as_view(), name='start'),
-    url(r'^', include('cms.urls')),
+    #url(r'^', include('cms.urls')),
     url(r'^select2/', include('django_select2.urls')),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
