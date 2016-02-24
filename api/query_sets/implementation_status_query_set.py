@@ -2,7 +2,7 @@ from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from global_app.forms.add_deal_general_form import AddDealGeneralForm
+from grid.forms.add_deal_general_form import AddDealGeneralForm
 
 
 class ImplementationStatusQuerySet(FakeQuerySetWithSubquery):
