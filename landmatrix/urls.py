@@ -28,7 +28,7 @@ from grid.views.filter_widget_ajax_view import FilterWidgetAjaxView
 from api import urls as api_urls
 from grid import urls as grid_urls
 from map import urls as map_urls
-from chart import urls as chart_urls
+from charts import urls as charts_urls
 from editor import urls as editor_urls
 from landmatrix.views.start_view import StartView
 from grid.views.stakeholder_view import StakeholderView
@@ -39,9 +39,9 @@ urlpatterns = i18n_patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^api/', include(api_urls)),
-    url(r'^global/grid/', include(grid_urls)),
+    url(r'^global/data/', include(grid_urls)),
     url(r'^global/map/', include(map_urls)),
-    url(r'^global/chart/', include(chart_urls)),
+    url(r'^global/charts/', include(charts_urls)),
 
     url(r'^deal/(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
     url(r'^deal/(?P<deal_id>[\d_\.]+)/$', DealDetailView.as_view(), name='deal_detail'),
