@@ -83,6 +83,7 @@ class SaveDealView(TemplateView):
         context['forms'] = forms
         context['kwargs'] = kwargs
         context['deal_id'] = kwargs.get('deal_id')
+        print('context:', context)
         return render_to_response(self.template_name, context, RequestContext(request))
 
     @transaction.atomic

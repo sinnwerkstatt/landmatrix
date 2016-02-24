@@ -1,3 +1,7 @@
+from time import time
+
+from django.db import connection
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from global_app.forms.deal_produce_info_form import DealProduceInfoForm
@@ -33,6 +37,8 @@ class BrowseFilterConditions:
         self.limit = limit
 
     def parse(self):
+        start = time()
+        num_queries_old = len(connection.queries)
         self.data = {
             "activity": {},
             "deal_scope": "",
@@ -45,10 +51,13 @@ class BrowseFilterConditions:
             self.read_formset()
         self.set_order_by()
         self.set_limit()
+        # print(type(self).__name__, 'parse()', time()-start, 's', len(connection.queries)-num_queries_old, 'queries')
 
         return self.data
 
     def read_formset(self):
+        start = time()
+        num_queries_old = len(connection.queries)
         filters_act, filters_inv = {"tags": {}}, {"tags": {}}
         if not self.formset:
             self.data["activity"] = filters_act
@@ -111,6 +120,7 @@ class BrowseFilterConditions:
 
         self.data["activity"] = filters_act
         self.data["investor"] = filters_inv
+        # print(type(self).__name__, 'read_formset()', time()-start, 's', len(connection.queries)-num_queries_old, 'queries')
 
     def get_fl(self, form, i):
         fl = {}

@@ -66,7 +66,7 @@ class DealDataSourceForm(BaseForm):
         return 4
 
 
-DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=1)
+DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=0)
 
 
 class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
@@ -129,6 +129,8 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
         taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
         data = {}
         for i, taggroup in enumerate(taggroups):
+            print()
+            print(i)
             data[i] = DealDataSourceForm.get_data(deal, taggroup=taggroup)
         return data
 

@@ -31,10 +31,13 @@ class EditorView(TemplateView):
         request.POST = MultiValueDict({"data": [json.dumps(data)]})
         response = csp.dispatch(request, action="dashboard")
         response = json.loads(response.content.decode())
+        public = get_public_deal_count()
+        overall = get_overall_deal_count()
         data = {
             "statistics": {
-                "overall_deal_count": get_overall_deal_count(),
-                "public_deal_count": get_public_deal_count(),
+                "overall_deal_count": overall,
+                "public_deal_count": public,
+                "not_public_deal_count": overall-public
             },
             "view": "dashboard",
             "latest_added": response["latest_added"],
@@ -85,5 +88,6 @@ AND (
 """)
     row = cursor.fetchone()
     return row[0] if row else 0
+
 
 
