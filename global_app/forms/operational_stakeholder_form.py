@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.forms import CharField
 from django.forms.fields import ChoiceField
 from django.forms.models import ModelChoiceField, ModelForm
+from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext_lazy as _
 
 from django_select2.forms import ModelSelect2Widget
@@ -12,18 +13,6 @@ from landmatrix.models.country import Country
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-
-class OperationalStakeholderChoiceField(ModelChoiceField):
-    def label_from_instance(self, obj):
-        return _investor_description(obj)
-
-    def clean(self, value):
-        if not value:
-            value = 0
-        if not Investor.objects.filter(pk=int(value)).exists():
-            raise ValidationError('Investor %i does not exist' % value)
-        return value
 
 
 class OperationalStakeholderForm(BaseForm):
@@ -42,6 +31,21 @@ class OperationalStakeholderForm(BaseForm):
             )
     )
     project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)
+
+    @classmethod
+    def get_data(cls, deal, taggroup=None, prefix=""):
+        data = MultiValueDict()
+        if deal is None:
+            return data
+
+        if cls.DEBUG: print('get_data', str(deal)[:100].replace('\n', ' '), '...')
+        for (field_name, field) in cls().fields.items():
+            prefixed_name = prefix and "%s-%s"%(prefix, field_name) or field_name
+            if 'operational_stakeholder' == field_name:
+                data[prefixed_name] = deal.operational_stakeholder
+            elif 'project_name' in field_name:
+                data[prefixed_name] = deal.get_activity_attributes().get('project_name')
+        return data
 
 
 
