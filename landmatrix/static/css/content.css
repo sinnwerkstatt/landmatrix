@@ -1664,6 +1664,7 @@ textarea:focus {
     display: none;
 }
 
+
 /* ==========================================================================
  *    MAPS
  * ========================================================================== */
@@ -1915,7 +1916,7 @@ table tbody {
     margin-bottom: 4px;
 }
 
-table th,
+.container table th,
 .container table th a {
     font-weight: bold;
     padding-left: 10px;
@@ -1933,6 +1934,7 @@ form .panel-body {
     padding-top: 5px;
 }
 
+.popup table th,
 .panel-body table th {
     background-color: inherit;
 }
