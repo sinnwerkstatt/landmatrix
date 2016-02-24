@@ -2,6 +2,10 @@
 
 {% block page_title %}{% trans "Global map of investments" %}{% endblock %}
 {% block title %}{% trans "Global map of investments" %}{% endblock %}
+{% block breadcrumb_inner %}
+{{ block.super }}
+<li>{% trans "Global map of investments" %}</li>
+{% endblock %}
 
 {% block description %}
 <div style="height: 100px">
