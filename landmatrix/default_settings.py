@@ -86,7 +86,7 @@ INSTALLED_APPS += (
     'landmatrix',
     'grid',
     'map',
-    'chart',
+    'charts',
     'editor',
     'api',
 )

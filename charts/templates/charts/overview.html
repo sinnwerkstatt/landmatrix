@@ -1,4 +1,7 @@
-{% extends "chart/base_chart.html" %}{% load i18n static %}
+{% extends "charts/base_chart.html" %}{% load i18n static %}
+
+{% block page_title %}{% trans "Dynamics Overview" %}{% endblock %}
+{% block title %}{% trans "Dynamics Overview" %}{% endblock %}
 
 {% comment %}
 get the filters that are active with {{ filters }}
@@ -7,16 +10,6 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 {% endcomment %}
 
 {% block before %}
-<div class="row">
-    <div class="col-md-12">
-        <ul class="nav nav-tabs">
-            <li class="active"><a href="?variable=negotiation_status">Negotiation status</a></li>
-            <li><a href="?variable=implementation_status">Implementation status</a></li>
-            <li><a href="?variable=intention_of_investment">Intention of investment</a></li>
-            <li><a href="?variable=agriculture">Investment in agriculture</a></li>
-        </ul>
-    </div>
-</div>
 {% endblock %}
 
 {% block description %}
