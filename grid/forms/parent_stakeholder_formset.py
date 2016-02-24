@@ -1,3 +1,6 @@
+from django.forms.models import ModelChoiceField
+from django_select2.forms import ModelSelect2Widget
+
 from grid.forms.base_form import BaseForm
 from grid.forms.investor_form import InvestorField
 from grid.forms.operational_stakeholder_form import _investor_description
@@ -13,7 +16,17 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class ParentStakeholderForm(BaseForm):
 
-    stakeholder = InvestorField(required=False, label=_("Existing investor"), choices=())
+    # stakeholder = InvestorField(required=False, label=_("Existing investor"), choices=())
+    stakeholder = ModelChoiceField(
+            required=True, label=_("Existing stakeholder"),
+            queryset=Investor.objects.filter(
+                    pk__in=InvestorVentureInvolvement.objects.values('fk_investor_id').distinct()
+            ).order_by('name'),
+            widget=ModelSelect2Widget(
+                model=Investor,
+                search_fields=['name__icontains']
+            )
+    )
     percentage = forms.DecimalField(
         max_digits=5, decimal_places=2, required=False, label=_("Percentage of investment"), help_text=_("%")
     )
@@ -26,7 +39,6 @@ class ParentStakeholderForm(BaseForm):
         if isinstance(investor, list) and len(investor):
             investor = investor[0]
         self.fields["stakeholder"].initial = investor
-        self._fill_investor_choices()
 
     def _fill_investor_choices(self):
         self.investor_choices = [
@@ -45,7 +57,17 @@ class ParentStakeholderForm(BaseForm):
 
 class ParentInvestorForm(BaseForm):
 
-    parent_investor = InvestorField(required=False, label=_("Existing investor"), choices=())
+    # parent_investor = InvestorField(required=False, label=_("Existing investor"), choices=())
+    parent_investor = ModelChoiceField(
+            required=True, label=_("Existing investor"),
+            queryset=Investor.objects.filter(
+                    pk__in=InvestorVentureInvolvement.objects.values('fk_investor_id').distinct()
+            ).order_by('name'),
+            widget=ModelSelect2Widget(
+                model=Investor,
+                search_fields=['name__icontains']
+            )
+    )
     parent_investor_percentage = forms.DecimalField(
         max_digits=5, decimal_places=2, required=False, label=_("Percentage of investment"), help_text=_("%")
     )
@@ -88,8 +110,6 @@ class ParentStakeholderFormSet(formset_factory(ParentStakeholderForm, extra=0)):
         data = [None]*len(parent_investors)
         for i, parent_investor in enumerate(parent_investors):
             data[i] = ParentStakeholderForm.get_data(parent_investor)
-
-        print('ParentStakeholderFormSet.get_data():', data)
 
         return data
 

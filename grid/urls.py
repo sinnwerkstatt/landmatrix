@@ -27,10 +27,18 @@ Including another URLconf
 CACHE_TIMEOUT = 24*3600
 
 urlpatterns = patterns('grid.views',
+    # please leave them here, commented out, for quick cache de-/activation when developing
+    # url(r'^$', AllDealsView.as_view(), name='app_main'),
+    # url(r'^all(?P<type>\.csv)?/$', AllDealsView.as_view(), name='all_deal'),
+    # url(r'^all(?P<type>\.xml)?/$', AllDealsView.as_view(), name='all_deal'),
+    # url(r'^all(?P<type>\.xls)?/$', AllDealsView.as_view(), name='all_deal'),
+    # url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
+
     url(r'^$', cache_page(CACHE_TIMEOUT)(AllDealsView.as_view()), name='app_main'),
     url(r'^all(?P<type>\.csv)?/$', cache_page(CACHE_TIMEOUT)(AllDealsView.as_view()), name='all_deal'),
     url(r'^all(?P<type>\.xml)?/$', cache_page(CACHE_TIMEOUT)(AllDealsView.as_view()), name='all_deal'),
     url(r'^all(?P<type>\.xls)?/$', cache_page(CACHE_TIMEOUT)(AllDealsView.as_view()), name='all_deal'),
+    url(r'^(?P<group>.+)/(?P<list>.+)/$', cache_page(CACHE_TIMEOUT)(TableGroupView.as_view()), name='table_list'),
     url(
         r'^compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$',
         cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
@@ -49,7 +57,6 @@ urlpatterns = patterns('grid.views',
     url(r'^add/$', AddDealView.as_view(), name='add_deal'),
 
     url(r'^change/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
-    url(r'^(?P<group>.+)/(?P<list>.+)/$', cache_page(CACHE_TIMEOUT)(TableGroupView.as_view()), name='table_list'),
     url(r'^(?P<deal_id>[\d]+)/$', cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), name='deal_detail'),
     url(r'^(?P<deal_id>[\d_\.]+)/$', cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), name='deal_detail'),
 )
