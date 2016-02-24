@@ -43,50 +43,54 @@
                 $('a.intention-icon').popover({trigger: "hover", placement: "top"});
                 init_form_condition($("ul.form:not(.empty) .field:first-child select"));
                 // collapsible filters
-                $(".toggle-filter").click(function (e) {
-                    e.preventDefault();
-                    $(".collapsible .collapsible-form").toggle();
-                    var container = $(".collapsible .collapsible-tags"),
-                            tags = container.find("ul");
-                    if (container.hasClass("collapsed")) {
-                        tags.empty();
-                        $(".form.condition:not(.empty)").each(function (index) {
-                            var tag = "";
-                            $(this).find(":input").each(function (index) {
-                                var el = $(this),
-                                        name = el.attr("name");
-                                if (name.indexOf("variable") > -1) {
-                                    // variable
-                                    tag += el.find(":selected").text();
-                                }
-                                /* requires update_widget to be executed before
-                                 else if (name.indexOf("operator") > -1) {
-                                 // operator
-                                 tag += " " + el.val();
-                                 // value (select)
-                                 } else if (el.is("select")) {
-                                 tag += " " + el.find(":selected").text();
-                                 // value (radio buttons)
-                                 } else if (el.is("[type=checkbox]")) {
-                                 tag += (tag.indexOf(",") > -1) && (" " + el.parent().text()) || ", " + el.parent().text();
-                                 // value (other)
-                                 } else if (!el.is("[type=hidden]")) {
-                                 tag += " " + el.val();
-                                 }*/
-                            });
-                            tag = "<li><span class=\"label\">" + tag + "</span></li>";
-                            $(tag).appendTo(tags);
-                        });
-                        container.removeClass("collapsed");
-                        container.find(".toggle-filter").text("Manage filters");
-                        container.find(".toggle-tooltip").show();
-                    } else {
-                        container.addClass("collapsed");
-                        container.find(".toggle-filter").text("Hide filters");
-                        container.find(".toggle-tooltip").hide();
-                    }
-                    return false;
-                }).click();
+                //$(".toggle-filter").click(function (e) {
+                //    e.preventDefault();
+                //    $(".collapsible .collapsible-form").toggle();
+                //    var container = $(".collapsible .collapsible-tags"),
+                //            tags = container.find("ul");
+                //    if (container.hasClass("collapsed")) {
+                //        tags.empty();
+                //        $(".form.condition:not(.empty)").each(function (index) {
+                //            var tag = "";
+                //            $(this).find(":input").each(function (index) {
+                //                var el = $(this),
+                //                        name = el.attr("name");
+                //                if (name.indexOf("variable") > -1) {
+                //                    // variable
+                //                    tag += el.find(":selected").text();
+                //                }
+                //                /* requires update_widget to be executed before
+                //                 else if (name.indexOf("operator") > -1) {
+                //                 // operator
+                //                 tag += " " + el.val();
+                //                 // value (select)
+                //                 } else if (el.is("select")) {
+                //                 tag += " " + el.find(":selected").text();
+                //                 // value (radio buttons)
+                //                 } else if (el.is("[type=checkbox]")) {
+                //                 tag += (tag.indexOf(",") > -1) && (" " + el.parent().text//()) || ", " + el.parent().text();
+                //                 // value (other)
+                //                 } else if (!el.is("[type=hidden]")) {
+                //                 tag += " " + el.val();
+                //                 }*/
+                //            });
+                //            tag = "<li><span class=\"label\">" + tag + "</span></li>";
+                //            $(tag).appendTo(tags);
+                //        });
+                //        container.removeClass("collapsed");
+                //        container.find(".toggle-filter").text("Manage filters");
+                //        container.find(".toggle-tooltip").show();
+                //    } else {
+                //        container.addClass("collapsed");
+                //        container.find(".toggle-filter").text("Hide filters");
+                //        container.find(".toggle-tooltip").hide();
+                //    }
+                //    return false;
+                //}).click();
+                $('.toggle-filters').click(function () {
+                    var text = $(this).data('toggle-text');
+                    $(this).data('toggle-text', $(this).text()).text(text);
+                })
             });
         </script> <!-- old filter javascript voodoo -->
 
@@ -180,7 +184,6 @@
                     <div class="collapsible-tags collapsed">
                         <h5>Active filters:</h5>
                         <ul class="unstyled"></ul>
-                        <a href="javascript:;" class="toggle-filter">Manage filters</a>
                         <a href="#" class="toggle-tooltip"
                            title="You can create custom filters here. However, please note that filters are reset when changing entry point.">
                             <i class="icon icon-question-sign"> </i></a>
@@ -237,19 +240,19 @@
     <div class="row">
         <div class="col-md-10">
             <label>Active Filters:</label>
-            <span class="label label-filter">Negotiation Status <i class="lm lm-times"></i></span>
-            <span class="label label-filter">Deal scope <i class="lm lm-times"></i></span>
-            <span class="label label-filter">Crops <i class="lm lm-times"></i></span>
+            <span class="label label-filter">{% trans "Negotiation status" %} <i class="lm lm-times"></i></span>
+            <span class="label label-filter">{% trans "Deal scope" %} <i class="lm lm-times"></i></span>
+            <span class="label label-filter">{% trans "Crops" %} <i class="lm lm-times"></i></span>
         </div>
         <div class="col-md-2 right">
-            <a class="right" role="button" data-toggle="collapse" href="#filter-collapse" aria-expanded="true"
+            <a class="right toggle-filters" role="button" data-toggle="collapse" href="#filter-collapse" aria-expanded="true" data-toggle-text="{% trans "Hide filters" %}"
                aria-controls="filter-collapse">
-                Hide Filters
+                {% trans "Manage filters" %}
             </a>
         </div>
     </div>
 
-    <div id="filter-collapse" class="collapse in">
+    <div id="filter-collapse" class="collapse">
 
         <div id="filternavbar" class="navbar navbar-default" role="navigation">
             <div class="container-fluid">
@@ -257,7 +260,7 @@
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
                             data-target="#filter-navbar-collapse" aria-expanded="false">
-                        <span class="sr-only">Toggle navigation</span>
+                        <span class="sr-only">{% trans "Toggle navigation" %}</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -269,48 +272,40 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true"
-                               aria-expanded="false"><span>By Target<span class="caret"></span></span></a>
+                               aria-expanded="false"><span>{% trans "By Target" %}<span class="caret"></span></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#region">By Region</a></li>
-                                <li><a href="#country">By Country</a></li>
+                                <li><a href="#region">{% trans "By Region" %}</a></li>
+                                <li><a href="#country">{% trans "By Country" %}</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true"
-                               aria-expanded="false"><span>By Investor <span class="caret"></span></span></a>
+                               aria-expanded="false"><span>{% trans "By Investor" %} <span class="caret"></span></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Foobar</a></li>
+                                <li><a href="#">{% trans "By Investor country" %}</a></li>
+                                <li><a href="#">{% trans "By Investor region" %}</a></li>
                             </ul>
                         </li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                               aria-haspopup="true"
-                               aria-expanded="false"><span>By Data Source <span class="caret"></span></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Barqux</a></li>
-                            </ul>
+                        <li>
+                            <a href="#" role="button">
+                                <span>{% trans "By Data Source" %} <span class="caret"></span></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" role="button">
+                               <span>{% trans "By Intention" %} <span class="caret"></span></span>
+                           </a>
                         </li>
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                               aria-haspopup="true"
-                               aria-expanded="false"><span>By Intention <span class="caret"></span></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">SpamHam</a></li>
-                            </ul>
-                        </li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                               aria-haspopup="true"
-                               aria-expanded="false"><span>By Crop <span class="caret"></span></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Eggs</a></li>
-                            </ul>
+                            <a href="#" role="button"><span>{% trans "By Crop" %} <span class="caret"></span></span></a>
                         </li>
 
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#" role="button"><span>All deals</span></a></li>
+                        <li>
+                            <a href="#" role="button"><span>{% trans "All deals" %}</span></a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -323,19 +318,19 @@
                         <ul>
                             <li class="checkbox">
                                 <input id="checkbox1" name="data1" type="checkbox">
-                                <label for="checkbox1">Concluded Deals</label>
+                                <label for="checkbox1">{% trans "Concluded Deals" %}</label>
                             </li>
                             <li class="checkbox">
                                 <input id="checkbox2" name="data2" type="checkbox">
-                                <label for="checkbox2">Intended Deals</label>
+                                <label for="checkbox2">{% trans "Intended Deals" %}</label>
                             </li>
                             <li class="checkbox">
                                 <input id="checkbox3" name="data3" type="checkbox">
-                                <label for="checkbox3">Failed Deals</label>
+                                <label for="checkbox3">{% trans "Failed Deals" %}</label>
                             </li>
                             <li class="checkbox">
                                 <input id="checkbox4" name="data4" type="checkbox">
-                                <label for="checkbox4">Exclude Media Reports</label>
+                                <label for="checkbox4">{% trans "Exclude Media Reports" %}</label>
                             </li>
                         </ul>
                     </div>
@@ -353,28 +348,28 @@
 
                         <ul>
                             <li style="padding-left: 15px;">
-                                Spatial Data
+                                {% trans "Spatial Data" %}
                             </li>
                             <li>
-                                <a href="#">Location</a>
+                                <a href="#">{% trans "Location" %}</a>
                             </li>
                             <li style="padding-left: 15px; background-color: #ebebeb;">
-                                General Info
+                                {% trans "General Info" %}
                             </li>
                             <li>
-                                <a href="#">Current size under contract</a>
+                                <a href="#">{% trans "Current size under contract" %}</a>
                             </li>
                             <li>
-                                <a href="#">Intention of the Investment</a>
+                                <a href="#">{% trans "Intention of the Investment" %}</a>
                             </li>
                             <li>
-                                <a href="#">Nature of the deal</a>
+                                <a href="#">{% trans "Nature of the deal" %}</a>
                             </li>
                             <li>
-                                <a href="#">Negotiation Status</a>
+                                <a href="#">{% trans "Negotiation Status" %}</a>
                             </li>
                             <li>
-                                <a href="#">Implementation Status</a>
+                                <a href="#">{% trans "Implementation Status" %}</a>
                             </li>
                         </ul>
 
