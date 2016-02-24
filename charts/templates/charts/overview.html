@@ -2,6 +2,10 @@
 
 {% block page_title %}{% trans "Dynamics Overview" %}{% endblock %}
 {% block title %}{% trans "Dynamics Overview" %}{% endblock %}
+{% block breadcrumb_inner %}
+{{ block.super }}
+<li>{% trans "Dynamics Overview" %}</li>
+{% endblock %}
 
 {% comment %}
 get the filters that are active with {{ filters }}

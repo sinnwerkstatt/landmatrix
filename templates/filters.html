@@ -239,7 +239,7 @@
 
     <div class="row">
         <div class="col-md-10">
-            <label>Active Filters:</label>
+            <label>{% trans "Active Filters" %}:</label>
             <span class="label label-filter">{% trans "Negotiation status" %} <i class="lm lm-times"></i></span>
             <span class="label label-filter">{% trans "Deal scope" %} <i class="lm lm-times"></i></span>
             <span class="label label-filter">{% trans "Crops" %} <i class="lm lm-times"></i></span>
@@ -347,13 +347,13 @@
                         </select> -->
 
                         <ul>
-                            <li style="padding-left: 15px;">
+                            <li>
                                 {% trans "Spatial Data" %}
                             </li>
                             <li>
                                 <a href="#">{% trans "Location" %}</a>
                             </li>
-                            <li style="padding-left: 15px; background-color: #ebebeb;">
+                            <li style="background-color: #ebebeb;">
                                 {% trans "General Info" %}
                             </li>
                             <li>
@@ -375,37 +375,37 @@
 
                     </div>
                     <div class="col-md-6 filterbox">
-                        <div class="input-group">
-                            <select id="condition" value="Contains" class="select-inline">
+                        <div class="input-group condition">
+                            <select class="operator select-inline" value="Contains">
                                 <option>Contains not</option>
                                 <option>Equals</option>
                                 <option>Equals not</option>
                                 <option>Starts with</option>
                                 <option>Ends with</option>
                             </select>
-                            <input type="text" value="Foobar" class="inline">
+                            <input class="field" type="text" value="Foobar" class="inline">
                             <a href="#"><i class="lm lm-times"></i></a>
                         </div>
-                        <div class="input-group">
-                            <select id="condition" value="Contains" class="select-inline">
+                        <div class="input-group condition">
+                            <select class="operator select-inline" value="Contains">
                                 <option>Contains not</option>
                                 <option>Equals</option>
                                 <option>Equals not</option>
                                 <option>Starts with</option>
                                 <option>Ends with</option>
                             </select>
-                            <input type="text" value="Foobar" class="inline">
+                            <input class="field" type="text" value="Foobar" class="inline">
                             <a href="#"><i class="lm lm-times"></i></a>
                         </div>
-                        <div class="input-group">
-                            <select id="condition" value="Contains" class="select-inline">
+                        <div class="input-group condition">
+                            <select class="operator select-inline" value="Contains">
                                 <option>Contains not</option>
                                 <option>Equals</option>
                                 <option>Equals not</option>
                                 <option>Starts with</option>
                                 <option>Ends with</option>
                             </select>
-                            <input type="text" value="Foobar" class="inline">
+                            <input class="field" type="text" value="Foobar" class="inline">
                             <a href="#"><i class="lm lm-times"></i></a>
                         </div>
                         <div class="input-group">
