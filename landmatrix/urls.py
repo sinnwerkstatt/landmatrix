@@ -33,8 +33,10 @@ from landmatrix.views.start_view import StartView
 from global_app.views.stakeholder_view import StakeholderView
 
 urlpatterns = i18n_patterns('',
+
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
+
     url(r'^api/', include(api_urls)),
     # for unit tests to run without django-cms
     url(r'^global_app/', include(global_urls)),
@@ -56,6 +58,10 @@ urlpatterns = i18n_patterns('',
     url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
     url(r'^chart_view/', include(chart_urls)),
     url(r'^start/', StartView.as_view(), name='start'),
+
+    # django-cms
     url(r'^', include('cms.urls')),
+
+    # django-select2
     url(r'^select2/', include('django_select2.urls')),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

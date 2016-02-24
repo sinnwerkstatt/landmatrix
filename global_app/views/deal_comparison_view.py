@@ -36,7 +36,8 @@ class DealComparisonView(DealDetailView):
 
 
 def get_comparison(deal_1, deal_2):
-    forms_1, forms_2 = get_forms(deal_1), get_forms(deal_2)
+    forms_1 = get_forms(deal_1)
+    forms_2 = get_forms(deal_2)
     if len(forms_1) != len(forms_2):
         raise IndexError(
                 "Compared deals have different number of forms. Deal id(s): %i, %i. History IDs: %i, %i" %
