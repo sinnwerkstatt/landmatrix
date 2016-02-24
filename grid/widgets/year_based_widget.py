@@ -14,7 +14,7 @@ class YearBasedWidget(forms.MultiWidget):
     def get_widgets(self):
         return []
 
-    def render(self, name, value, attrs={'class':'form-'}):
+    def render(self, name, value, attrs={}):
         # update widgets
         if value:
             self.widgets = []
@@ -47,10 +47,10 @@ class YearBasedWidget(forms.MultiWidget):
                 output.append(helptext)
                 # Add "Add more" button to first row
                 if i == 1:
-                    output.append('<span class="input-group-btn"><a href="javascript:;" class="btn add-ybd add-row"><i class="lm lm-plus"></i> Add more</a></span>')
-                    output.append('<span class="input-group-btn"><a href="javascript:;" class="btn remove-ybd delete-row" style="display:none;"><i class="lm lm-minus"></i> Remove</a></span>')
+                    output.append('<a href="javascript:;" class="btn add-ybd add-row"><i class="lm lm-plus"></i> Add more</a>')
+                    output.append('<a href="javascript:;" class="btn remove-ybd delete-row" style="display:none;"><i class="lm lm-minus"></i> Remove</a>')
                 else:
-                    output.append('<span class="input-group-btn"><a href="javascript:;" class="btn remove-ybd delete-row"><i class="lm lm-minus"></i> Remove</a></span>')
+                    output.append('<a href="javascript:;" class="btn remove-ybd delete-row"><i class="lm lm-minus"></i> Remove</a>')
                 if (i+1) < widgets_count:
                     output.append('</div><div class="input-group">')
         return mark_safe(self.format_output(output))
