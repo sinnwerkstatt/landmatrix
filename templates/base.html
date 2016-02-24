@@ -1,4 +1,4 @@
-{% load i18n cms_tags %}{% load cms_tags sekizai_tags %}{% load menu_tags %}{% load static %}<!DOCTYPE html>
+{% load i18n static %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -8,9 +8,7 @@
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>{% block page_title %}{% page_attribute "title" %}{% endblock %} - LAND MATRIX</title>
-
-    {% page_attribute "meta_description" as meta_description %}{% page_attribute "meta_keywords" as meta_keywords %}
+    <title>{% block page_title %}{% endblock %} - LAND MATRIX</title>
     <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
     <meta name="keywords" content="{% if meta_keywords %}{{ meta_keywords }}{% else %}{% trans "Landmatrix" %}{% trans 'Default keywords' %}{% endif %}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,10 +31,11 @@
     <script>window.jQuery || document.write('<script src="{% static "vendor/jquery/dist/jquery.min.js" %}"><\/script>')</script>
     {% block head %}
     {% endblock %}
-    {% render_block "css" %}
+    {% block css %}
+    {% endblock %}
 
 </head>
-<body class="{% if popup %}popup {% endif %}{% block body_class %}{% page_attribute "slug" %}{% endblock %}">
+<body class="{% if popup %}popup {% endif %}">
 
 
 {% cms_toolbar %}
@@ -187,7 +186,6 @@
                     {% block breadcrumb %}
                         <ul class="breadcrumb">
                             <li><a href="/">Home</a></li>
-                            <!-- <li>{% page_attribute "title" %}</li> -->
                             {% block breadcrumb_inner %}
                             {% endblock %}
                         </ul>
@@ -214,7 +212,7 @@
         {% block title_section %}
             <div class="row">
                 <div class="col-md-12">
-                    <h1><span>{% block title %}{% page_attribute "title" %}{% endblock %}</span></h1>
+                    <h1><span>{% block title %}{% endblock %}</span></h1>
                 </div>
             </div>
         {% endblock %}
@@ -327,7 +325,8 @@
     <noscript><p><img src="http://stats.landmatrix.org/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
     <!-- End Piwik Code -->
 {% endblock %}
-{% render_block "js" %}
+{% block js %}
+{% endblock %}
 
 </body>
 </html>
