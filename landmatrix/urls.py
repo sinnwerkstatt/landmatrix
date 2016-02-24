@@ -39,8 +39,6 @@ urlpatterns = i18n_patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^api/', include(api_urls)),
-    # for unit tests to run without django-cms
-    #url(r'^grid/', include(global_urls)),
     url(r'^global/grid/', include(grid_urls)),
     url(r'^global/map/', include(map_urls)),
     url(r'^global/chart/', include(chart_urls)),
