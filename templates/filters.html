@@ -1,6 +1,7 @@
 {% load i18n custom_tags %}
 {% load humanize %}
 
+<div id="filters">
     <div class="row">
         <div class="col-md-10">
             <label>{% trans "Active Filters" %}:</label>
@@ -8,15 +9,15 @@
             <span class="label label-filter">{% trans "Deal scope" %} <i class="lm lm-times"></i></span>
             <span class="label label-filter">{% trans "Crops" %} <i class="lm lm-times"></i></span>
         </div>
-        <div class="col-md-2 right">
-            <a class="right toggle-filters" role="button" data-toggle="collapse" href="#filters" aria-expanded="true" data-toggle-text="{% trans "Hide filters" %}"
-               aria-controls="filter-collapse">
+        <div class="col-md-2 text-right">
+            <a class="toggle-filters" role="button" data-toggle="collapse" href="#manage-filters" aria-expanded="true" data-toggle-text="{% trans "Hide filters" %}"
+               aria-controls="manage-filters">
                 {% trans "Manage filters" %}
             </a>
         </div>
     </div>
 
-    <div id="filters" class="clearfix collapse">
+    <div id="manage-filters" class="clearfix collapse">
         <form>
             <div class="row">
                 <div class="col-md-3 filterbox checkboxes">
@@ -82,7 +83,7 @@
                         <input class="field" type="text" value="Foobar" class="inline">
                     </div>
                     <div class="input-group">
-                        <button class="btn"><i class="lm lm-plus"></i> Add condition</button>
+                        <button class="btn btn-default"><i class="lm lm-plus"></i> Add condition</button>
                     </div>
                 </div>
             </div>
@@ -181,3 +182,4 @@
         </script> <!-- old filter javascript voodoo -->
 
     </div> <!-- old filter section -->
+</div>

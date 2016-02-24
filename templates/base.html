@@ -39,7 +39,7 @@
 <body class="{% if popup %}popup {% endif %}">
 
 {% block header %}
-    <div class="navbar navbar-default" role="navigation">
+    <div class="navbar navbar-default navbar-main" role="navigation">
         <div class="container-fluid">
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -53,7 +53,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand brand" href="/"></a>
+                <a class="navbar-brand brand" href="/"><img src="{% static "img/lm-logo.png" %}"></a>
             </div>
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
@@ -189,14 +189,16 @@
                 <div class="col-md-4 col-md-offset-4">
 
                     {% block subnav %}
-                        <ul class="subnav nav nav-pills right">
-                            <li role="presentation"><a href="#/share"><i
-                                    class="lm lm-spacer lm-share-square-o"></i>Share</a></li>
-                            <li class="divider"></li>
+                        <ul class="subnav nav nav-pills pull-right">
                             {% block subnav_inner %}
-                                <li role="presentation"><a href="#/download"><i class="lm lm-download"></i>Download this</a>
-                                </li>
+                                <li role="presentation"><a href="#/download">
+                                    <i class="lm lm-download"></i>{% trans "Download this" %}
+                                </a></li>
                             {% endblock %}
+                            <li role="presentation"><a href="#/share">
+                                <i class="lm lm-spacer lm-share-square-o"></i>
+                                {% trans "Share" %}
+                            </a></li>
                         </ul>
                     {% endblock %}
                 </div>
@@ -273,19 +275,19 @@
                 <div class="col-md-5">
                     <h4 class="toosmalltofail">Spread and share LM</h4>
                     <h4 class="toobigtofail">Spread the word and share land matrix</h4>
-                    <a href="https://twitter.com/Land_Matrix"><i class="lm-footer lm-twitter-square"></i></a>
-                    <a href="https://www.facebook.com/LandMatrix"><i class="lm-footer lm-facebook-square"></i></a>
+                    <a target="_blank" href="https://twitter.com/Land_Matrix"><i class="lm-footer lm-twitter-square"></i></a>
+                    <a target="_blank" href="https://www.facebook.com/LandMatrix"><i class="lm-footer lm-facebook-square"></i></a>
                 </div>
                 <div class="col-md-2 center">
                     <h4>Share and adapt</h4>
-                    <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span
+                    <a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span
                             class="lm-footer lm-creative-commons"></span></a>
-                    <a href="https://github.com/sinnwerkstatt/landmatrix"><i class="lm-footer lm-github"></i></a>
+                    <a target="_blank" href="https://github.com/sinnwerkstatt/landmatrix"><i class="lm-footer lm-github"></i></a>
                 </div>
-                <div class="col-md-5 right">
+                <div class="col-md-5 text-right">
                     <h4 class="toobigtofail">Sign up to receive updates</h4>
                     <h4 class="toosmalltofail">Stay updated</h4>
-                    <a href="http://eepurl.com/AHK0r"><i class="lm-footer lm-envelope"></i></a>
+                    <a target="_blank" href="http://eepurl.com/AHK0r"><i class="lm-footer lm-envelope"></i></a>
                 </div>
             </div>
         </div>
