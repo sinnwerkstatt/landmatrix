@@ -23,7 +23,8 @@
     <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
     {% if is_pdf_export %}
         <link rel="stylesheet" href="{% static "css/htmltopdf.css" %}" type="text/css" media="screen"
-              title="no title" charset="utf-8">{% endif %}
+              title="no title" charset="utf-8">
+    {% endif %}
 
     <!-- <script src="{% static "js/legacy/vendor/modernizr-2.6.2-respond-1.1.0.min.js" %}"></script>-->
 
@@ -57,7 +58,7 @@
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="/global/map"><i class="lm-nav lm-globe"></i><span class="nav-text">Global</span></a>
+                    <li><a href="/global/map/"><i class="lm-nav lm-globe"></i><span class="nav-text">Global</span></a>
                     </li>
                     <li class="hidden">
                         <form class="navbar-form">
