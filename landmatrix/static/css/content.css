@@ -697,6 +697,7 @@ form >.in {
 .subnav.nav > li > a {
     padding: 2px 5px;
     border-radius: 5px;
+    display: inline-block;
 }
 
 .subnav a:hover {
@@ -1548,7 +1549,7 @@ textarea {
     box-shadow: none !important;
     color: #4a4a4a;
     max-width: 100%;
-    margin: 5px 2px 0px 0px !important;
+    margin: 5px 2px 0px 0px;
     padding: 5px 5px;
 
 }
@@ -1700,7 +1701,8 @@ textarea:focus {
     overflow-x: hidden;
     height: 200px;
     border-right: solid 1px #919191;
-    padding: 0px 0px;
+    padding: 0;
+    padding: 15px 15px;
 }
 
 .filterbox label {
@@ -1708,14 +1710,12 @@ textarea:focus {
     padding: 5px 15px;
 }
 
-
-.filterbox > ul {
-    padding: 5px 15px;
-    width: 100%;
-}
-
 .filterbox > .input-group {
     padding: 5px 5px;
+}
+
+.filterbox.no-pad {
+    padding: 0;
 }
 
 .filterbox.no-pad > ul {
@@ -2031,18 +2031,20 @@ form .panel-body {
  * ========================================================================== */
 .condition {
     clear: both;
+    width: 100%;
 }
 
 .condition .field {
-    margin: 0 6px 6px 0;
+    margin: 0 12px 6px 0;
+    width: 50%;
 }
 
 .condition .operator {
-    width: 80px;
+    margin-right: 20px;
+    width: 40%;
 }
 
 .condition li.field input {
-    width: 120px;
 }
 
 .filters .btn-group {
