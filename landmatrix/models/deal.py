@@ -53,7 +53,7 @@ class Deal:
             self._set_activity(get_latest_activity(deal_id))
 
     def __str__(self):
-        return str(
+        return 'Deal ' + str(self.activity.activity_identifier) + ': ' + str(
                 {
                     'activity': self.activity, 'attributes': self.attributes,
                     'operational stakeholder': self.operational_stakeholder, 'stakeholders': self.stakeholders
@@ -86,7 +86,7 @@ class Deal:
         return deal
 
     def get_activity_attributes(self):
-        attributes = ActivityAttributeGroup.objects.filter(fk_activity_id=self.activity.id).values('attributes')
+        attributes = self.attribute_groups().values('attributes')
         attributes_list = [a['attributes'] for a in attributes]
         return aggregate_activity_attributes(attributes_list, {})
 

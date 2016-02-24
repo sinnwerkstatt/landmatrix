@@ -13,9 +13,6 @@ class ChangeDealGeneralForm(BaseForm):
 
     form_title = _('General Info')
 
-    # Old reliability ranking
-    tg_reliability_ranking  = TitleField(required=False, label="", initial=_("Reliability ranking"))
-    old_reliability_ranking = forms.CharField(required=False, label=_("Old reliability ranking"), widget=forms.TextInput(attrs={"readonly": "readonly"}))
     # Land area
     tg_land_area = TitleField(required=False, label="", initial=_("Land area"))
     intended_size = forms.IntegerField(required=False, label=_("Intended size"), help_text=_("ha"), widget=NumberInput)
