@@ -14,7 +14,10 @@ from django import forms
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 # Change this to a livesearch widget once you got a working one
-InvestorField = forms.ChoiceField
+class InvestorField(forms.ChoiceField):
+    def widget_attrs(self, widget):
+        return {'class': 'investorfield'}
+
 
 
 class InvestorForm(BaseForm):
