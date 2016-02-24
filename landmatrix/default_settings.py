@@ -240,16 +240,8 @@ DEBUG_TOOLBAR_PANELS = [
 # (https://docs.djangoproject.com/en/1.9/ref/databases/#persistent-database-connections)
 CONN_MAX_AGE = 0
 
-if not DEBUG:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-            'LOCATION': '127.0.0.1:11211',
-        }
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
-else:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        }
-    }
+}
