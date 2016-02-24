@@ -1,5 +1,8 @@
 {% extends "chart/base_chart.html" %}{% load i18n static %}
 
+{% block page_title %}{% trans "Dynamics Overview" %}{% endblock %}
+{% block title %}{% trans "Dynamics Overview" %}{% endblock %}
+
 {% comment %}
 get the filters that are active with {{ filters }}
 the filter formset/widget is in {{ empty_form_conditions }}
