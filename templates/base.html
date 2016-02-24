@@ -37,9 +37,6 @@
 </head>
 <body class="{% if popup %}popup {% endif %}">
 
-
-{% cms_toolbar %}
-
 {% block header %}
     <div class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
@@ -98,9 +95,6 @@
                             </li>
                             <ul class="dropdown-menu">
                                 {% block nav %}
-
-                                    {% show_menu 1 1 0 0 "menu.html" %}
-
                                 {% endblock %}
                             </ul>
                             <li><a href="#">Region 1</a></li>
@@ -149,7 +143,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="/help" role="button"><span class="nav-circle nav-help">?</span></a></li>
                     <li><a href="/editor" role="button"><span class="fa lm-envelope messages"></span></a></li>
-                    {% language_chooser "language_chooser.html" %}
+                    {% include "language_chooser.html" %}
                 </ul>
             </div>
             {% block user_tools %}{% endblock %}
