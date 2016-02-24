@@ -1,4 +1,4 @@
-{% load i18n menu_tags cms_tags %}
+{% load i18n %}
   {% for child in nodes %}
   <li class="span2 -{{ child.id }}-{{ current_page.id }}- {% if forloop.first %}first {% elif forloop.last %}last {% endif %}{% if child.id = current_page.id %}active{% endif %}">
   	  <div class="thumbnail">
