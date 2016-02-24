@@ -12,20 +12,31 @@
 {% block title %}Add / edit Operational stakeholder{% endblock %}
 
 {% block content %}
+    <div class="popup">
+        <form action="." method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table>
+                {{ investor_form }}
 
-    <form action="." method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <table>
-            {{ investor_form }}
+                <tr>
+                    <td><h3>Parent stakeholders</h3></td>
+                </tr>
+                {{ parent_stakeholders }}
 
-            <tr><td><h3>Parent stakeholders</h3></td></tr>
-            {{ parent_stakeholders }}
+                <tr>
+                    <td><h3>Investors</h3></td>
+                </tr>
+                {{ parent_investors }}
 
-            <tr><td><h3>Investors</h3></td></tr>
-            {{ parent_investors }}
 
+                <tr>
+                    <td><input type="submit" value="Submit"/></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+{% endblock %}
 
-            <tr><td><input type="submit" value="Submit"/></td></tr>
-        </table>
-    </form>
+{% block js %}
+    <script type="text/javascript" src="{% static "js/editor/detail.js" %}"></script>
 {% endblock %}
