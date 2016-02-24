@@ -17,21 +17,21 @@ class ChartView(TemplateView):
         return context
 
 class OverviewChartView(ChartView):
-    template_name = "chart/overview.html"
+    template_name = "charts/overview.html"
     chart = "chart_overview"
 
 class TransnationalDealsChartView(ChartView):
-    template_name = "chart/transnational-deals.html"
+    template_name = "charts/transnational-deals.html"
     chart = "chart_transnational_deals"
 
 class MapOfInvestmentsChartView(ChartView):
-    template_name = "chart/investor-target-countries.html"
+    template_name = "charts/investor-target-countries.html"
     chart = "chart_map_of_investments"
 
 class AgriculturalDriversChartView(ChartView):
-    template_name = "chart/agricultural-produce.html"
+    template_name = "charts/agricultural-produce.html"
     chart = "chart_agricultural_drivers"
 
 class PerspectiveChartView(ChartView):
-    template_name = "chart/perspective.html"
+    template_name = "charts/perspective.html"
     chart = "chart_perspective"
