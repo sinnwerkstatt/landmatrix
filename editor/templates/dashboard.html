@@ -15,7 +15,7 @@
     <div class="dashboard">
         <div class="row stats">
             {% if user %}
-                <div class="col-md-8">{% trans "Logged in as" %}: <span class="user">{{ user }}</span></div>
+                <div class="col-md-3">{% trans "Logged in as" %}: <span class="user">{{ user }}</span></div>
             {% else %}
                 <div class="danger">Oh noes! There is no user!!eleventy!</div>
             {% endif %}
@@ -30,9 +30,8 @@
                         class="number">{{ statistics.not_public_deal_count }}</span></div>
             {% endif %}
         </div>
-
-        <ul class="thumbnails">
-            <li class="col-md-6">
+        <div class="row">
+            <div class="col-md-6">
                 <div class="alert alert-success">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Latest added" %}</h3>
@@ -82,8 +81,8 @@
                         <p>{% trans "No deals have been added lately." %}</p>
                     {% endif %}
                 </div>
-            </li>
-            <li class="col-md-6">
+            </div>
+            <div class="col-md-6">
                 <div class="alert alert-warning">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Latest modified" %}</h3>
@@ -133,8 +132,10 @@
                         <p>{% trans "No deals have been modified lately." %}</p>
                     {% endif %}
                 </div>
-            </li>
-            <li class="col-md-6">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
                 <div class="alert alert-danger">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Latest deleted" %}</h3>
@@ -186,11 +187,10 @@
                         <p>{% trans "No deals have been deleted lately." %}</p>
                     {% endif %}
                 </div>
-            </li>
-        </ul>
-        <ul class="thumbnails">
+            </div>
+
         {% if perms.editor.change_activity %}
-                <li class="col-md-6">
+                <div class="col-md-6">
                     <div class="alert alert-info">
                         <a class="close hidden" data-dismiss="alert">&times;</a>
                         <h3>{% trans "Needs your attention" %}</h3>
@@ -270,10 +270,10 @@
                             <p>{% trans "No pending changesets require your attention." %}</p>
                         {% endif %}
                     </div>
-                </li>
+                </div>
             {% endif %}
 
-            <li class="col-md-6">
+            <div class="col-md-6">
                 <div class="alert alert-info">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Feedback requests" %}</h3>
@@ -303,8 +303,8 @@
                         <p>{% trans "No feedback requests lately." %}</p>
                     {% endif %}
                 </div>
-            </li>
-        </ul>
+            </div>
+        </div>
 
     </div>
 

@@ -8,8 +8,9 @@ from django.template import RequestContext
 class ChartView(TemplateView):
     template_name = "chart/overview.html"
 
-    def dispatch(self, request, *args, **kwargs):
-        context = {
+    def get_context_data(self, **kwargs):
+        context = super(ChartView, self).get_context_data(**kwargs)
+        context.update({
             "view": "chart view",
-        }
-        return render_to_response(self.template_name, context, RequestContext(request))
+        })
+        return context
