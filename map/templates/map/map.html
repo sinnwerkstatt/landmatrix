@@ -16,17 +16,27 @@
     <link rel="stylesheet" href="{% static "css/map.css" %}"/>
 {% endblock %}
 
-
+{% block page_title %}{% trans "Map" %}{% endblock %}
+{% block title %}{% trans "Map" %}{% endblock %}
 {% block breadcrumb_inner %}
+    <li><a href="/global/">{% trans "Global" %}</a></li>
     <li>{% trans "Map" %}</li>
 {% endblock %}
 
-{% block page_title %}{% trans "Map" %}{% endblock %}
-{% block title %}{% trans "Map" %}{% endblock %}
+{% block subnav_inner %}
+    <li role="presentation" class="active"><span>
+        <i class="lm lm-map-marker"></i> {% trans "Map" %}
+    </span></li>
+    <li role="presentation"><a href="../data/">
+        <i class="lm lm-table"></i> {% trans "Data" %}
+    </a></li>
+    <li role="presentation"><a href="../charts/">
+        <i class="lm lm-bar-chart"></i> {% trans "Charts" %}
+    </a></li>
+{% endblock %}
 
 {% block content %}
     {% include "filters.html" %}
-    {# { filters } #}
     <div id="alert_placeholder"></div>
 
     <div id="map" class="map" title='All Deals'></div>

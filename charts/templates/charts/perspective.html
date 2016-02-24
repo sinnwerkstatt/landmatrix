@@ -2,6 +2,10 @@
 
 {% block page_title %}{% trans "It's a big deal" %}{% endblock %}
 {% block title %}{% trans "It's a big deal" %}{% endblock %}
+{% block breadcrumb_inner %}
+{{ block.super }}
+<li>{% trans "It's a big deal" %}</li>
+{% endblock %}
 
 {% block description %}
 {{ block.super }}
