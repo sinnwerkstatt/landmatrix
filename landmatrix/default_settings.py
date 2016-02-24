@@ -84,10 +84,10 @@ INSTALLED_APPS += (
 
 #   apps of the actual landmatrix project
     'landmatrix',
-    'global_app',
-    'maplandmatrix',
-    'chart_view',
-    'dashboard',
+    'grid',
+    'map',
+    'chart',
+    'editor',
     'api',
 )
 
