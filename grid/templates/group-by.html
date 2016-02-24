@@ -192,7 +192,7 @@ $(document).ready(function () {
         </div>
         <div class="collapsible-tags collapsed">
           <h5>Active filters:</h5>
-          <ul class="unstyled"></ul>
+          <ul class="list-unstyled"></ul>
           <a href="javascript:;" class="toggle-filter">Manage filters</a>
           <a href="#" class="toggle-tooltip" title="You can create custom filters here. However, please note that filters are reset when changing entry point."> <i class="icon icon-question-sign"> </i></a>
           {% if data.count %}<p style="clear: both">Showing {% if data.items|length != data.count %}{{ data.items|length }} of {% endif %}{{ data.count }} row{{ data.count|pluralize }}.</p>{% endif %}
@@ -342,7 +342,7 @@ $(document).ready(function () {
               </td>
           {% elif column == "intention" %}
               <td>
-              <ul class="unstyled">
+              <ul class="list-unstyled">
               {% if item.intention %}
                 {% for i in item.intention %}
                   <li><a href="/{{cms_page}}/by-intention/{{ i|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if group != "intention" %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a></li>
