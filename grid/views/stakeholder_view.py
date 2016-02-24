@@ -20,8 +20,13 @@ class StakeholderView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         print('dispatch')
-        context = super().get_context_data(**kwargs)
-        investor = get_investor(request)
+        try:
+            investor = investor_from_id(kwargs["investor_id"])
+        except KeyError:
+            investor = None
+
+        context = super(StakeholderView, self).get_context_data(**kwargs)
+        context['investor'] = investor
         context['investor_form'] = InvestorForm(InvestorForm.get_data(investor))
         context['parent_stakeholders'] = ParentStakeholderFormSet(initial=ParentStakeholderFormSet.get_data(investor, role='ST'))
         context['parent_investors'] = ParentInvestorFormSet(initial=ParentInvestorFormSet.get_data(investor, role='IN'))
