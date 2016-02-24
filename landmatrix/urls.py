@@ -34,8 +34,10 @@ from landmatrix.views.start_view import StartView
 from grid.views.stakeholder_view import StakeholderView
 
 urlpatterns = i18n_patterns('',
+
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
+
     url(r'^api/', include(api_urls)),
     # for unit tests to run without django-cms
     #url(r'^grid/', include(global_urls)),
