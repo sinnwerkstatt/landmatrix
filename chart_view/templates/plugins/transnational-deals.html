@@ -1,4 +1,4 @@
-{% extends "plugins/base.html" %}{% load i18n custom_tags menu_tags humanize %}
+{% extends "plugins/base.html" %}{% load static i18n custom_tags menu_tags humanize %}
 
 {% block description %}
 {{ block.super }}
@@ -143,11 +143,13 @@ path.arc {
 </style>
 <!--[if lte IE 8]><script src="/media/js/vendor/r2d3.js" charset="utf-8"></script><![endif]-->
     <!--[if gte IE 9]><!-->
-    <script type="text/javascript" src="/media/js/legacy/vendor/d3.js"></script>
-    <script type="text/javascript" src="/media/js/legacy/vendor/d3.layout.js"></script>
+    <script type="text/javascript" src="{% static "vendor/d3/d3.js" %}"></script>
+
+    <!-- <script type="text/javascript" src="{% static "js/legacy/vendor/d3.layout.js" %}"></script> -->
     <!--<![endif]-->
-<script type="text/javascript" src="/media/js/legacy/vendor/packages.js"></script>
-<script type="text/javascript" src="/media/js/legacy/transnational-deals.js"></script>
+    <script type="text/javascript" src="{% static "js/packages.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/transnational-deals.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/main.js" %}"></script>
 <script type="text/javascript">
 $("button.close").click(function() {
     $(this).parents("div.well").hide();

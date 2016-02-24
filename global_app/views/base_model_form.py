@@ -13,7 +13,7 @@ class BaseModelForm(forms.ModelForm):
 
     def as_ul(self):
         return self._html_output(
-                    normal_row = u'<li%(html_class_attr)s>%(label)s <div class="input-append clearfix">%(field)s%(help_text)s</div>%(errors)s</li>',
+                    normal_row = u'<li%(html_class_attr)s>%(label)s <div class="form-control input-append clearfix">%(field)s%(help_text)s</div>%(errors)s</li>',
                     error_row = u'<li>%s</li>',
                     row_ender = '</li>',
                     help_text_html = u' <span class="helptext add-on">%s</span>',
@@ -21,7 +21,7 @@ class BaseModelForm(forms.ModelForm):
 
     def as_table(self):
         return self._html_output(
-            normal_row = '<tr%(html_class_attr)s"><th>%(label)s</th><td><div class="input-append clearfix">%(field)s%(help_text)s</div>%(errors)s</td></tr>',
+            normal_row = '<tr%(html_class_attr)s"><th>%(label)s</th><td><div class="form-control input-append clearfix">%(field)s%(help_text)s</div>%(errors)s</td></tr>',
             error_row = '<tr><td colspan="2">%s</td></tr>',
             row_ender = '</td></tr>',
             help_text_html = '<span class="helptext add-on">%s</span>',

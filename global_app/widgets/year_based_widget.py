@@ -47,10 +47,10 @@ class YearBasedWidget(forms.MultiWidget):
                 output.append(helptext)
                 # Add "Add more" button to first row
                 if i == 1:
-                    output.append('<a href="javascript:;" class="btn add-ybd add-row"><i class="icon-plus"></i> Add more</a>')
-                    output.append('<a href="javascript:;" class="btn remove-ybd delete-row" style="display:none;"><i class="icon-remove"></i> Remove</a>')
+                    output.append('<a href="javascript:;" class="btn add-ybd add-row"><i class="lm lm-plus"></i> Add more</a>')
+                    output.append('<a href="javascript:;" class="btn remove-ybd delete-row" style="display:none;"><i class="lm lm-minus"></i> Remove</a>')
                 else:
-                    output.append('<a href="javascript:;" class="btn remove-ybd delete-row"><i class="icon-remove"></i> Remove</a>')
+                    output.append('<a href="javascript:;" class="btn remove-ybd delete-row"><i class="lm lm-minus"></i> Remove</a>')
                 if (i+1) < widgets_count:
                     output.append('</div><div class="input-append">')
         return mark_safe(self.format_output(output))
