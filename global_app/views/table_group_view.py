@@ -3,7 +3,8 @@ from global_app.views.filter_widget_mixin import FilterWidgetMixin
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .view_aux_functions import render_to_response
+from .view_aux_functions import create_condition_formset, render_to_response
+from .browse_filter_conditions import BrowseFilterConditions
 from .intention_map import IntentionMap
 from .download import Download
 from global_app.views.activity_protocol import ActivityProtocol
@@ -60,7 +61,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     def dispatch(self, request, *args, **kwargs):
 
-        timer = ExecutionTimer(type(self).__name__+'.dispatch()')
+        # timer = ExecutionTimer(type(self).__name__+'.dispatch()')
 
         self.request = request
         self.GET = request.GET
@@ -75,7 +76,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
         items = self._get_items(query_result)
         render = self.render(items, kwargs)
-
+        # timer.touch()
         return render
 
     def render(self, items, kwargs):

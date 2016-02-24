@@ -83,7 +83,7 @@ class SaveDealView(TemplateView):
         context['forms'] = forms
         context['kwargs'] = kwargs
         context['deal_id'] = kwargs.get('deal_id')
-        print('context:', context)
+
         return render_to_response(self.template_name, context, RequestContext(request))
 
     @transaction.atomic
@@ -127,7 +127,6 @@ class SaveDealView(TemplateView):
                 print('no data sent:', name_of_form(form))
 
         return groups
-
 
 
 def create_attribute_group(activity, form_data):
