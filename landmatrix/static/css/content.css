@@ -94,7 +94,9 @@ body {
 .container button,
 .container a.btn {
     font-size: 16px;
+
 }
+
 body,
 p {
     font-size: 16px;
@@ -1633,6 +1635,11 @@ textarea:focus {
 .public .change-investor,
 .public .add-investor {
     display: none;
+}
+
+.investorops {
+    float: right;
+    display: inline-block;
 }
 
 
