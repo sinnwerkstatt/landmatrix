@@ -28,15 +28,15 @@ class TestDealDetailView(DealsTestData, WithClientMixin, TestCase):
         super(WithClientMixin, self).setUp()
 
     def test_call_deal_detail_view(self):
-        response = self._get_url_following_redirects('/grid/%i/' % self.activity_identifier)
+        response = self._get_url_following_redirects('/global/grid/%i/' % self.activity_identifier)
         self.assertEqual(200, response.status_code)
 
     def test_call_deal_detail_view_with_wrong_activity_identifier(self):
-        response = self._get_url_following_redirects('/grid/%i/' % (self.activity_identifier+12345))
+        response = self._get_url_following_redirects('/global/grid/%i/' % (self.activity_identifier+12345))
         self.assertEqual(404, response.status_code)
 
     def test_deal_detail_view_content(self):
-        response = self._get_url_following_redirects('/grid/%i/' % self.activity_identifier)
+        response = self._get_url_following_redirects('/global/grid/%i/' % self.activity_identifier)
 
         content = response.content.decode('utf-8')
 
@@ -48,11 +48,11 @@ class TestDealDetailView(DealsTestData, WithClientMixin, TestCase):
         self.assertIn(str(self.PRODUCTION_SIZE['old']), grep_line(content, 'production_size')[0])
 
     def test_call_deal_detail_view_with_history(self):
-        response = self._get_url_following_redirects('/grid/%i_%f/' % (self.activity_identifier, time()))
+        response = self._get_url_following_redirects('/global/grid/%i_%f/' % (self.activity_identifier, time()))
         self.assertEqual(200, response.status_code)
 
     def test_deal_detail_view_with_history_content(self):
-        response = self._get_url_following_redirects('/grid/%i_%f/' % (self.activity_identifier, time()))
+        response = self._get_url_following_redirects('/global/grid/%i_%f/' % (self.activity_identifier, time()))
 
         content = response.content.decode('utf-8')
 
@@ -66,7 +66,7 @@ class TestDealDetailView(DealsTestData, WithClientMixin, TestCase):
     def test_deal_detail_view_with_history_changed(self):
         self._change_activity_attributes()
 
-        response = self._get_url_following_redirects('/grid/%i_%f/' % (self.activity_identifier, time()))
+        response = self._get_url_following_redirects('/global/grid/%i_%f/' % (self.activity_identifier, time()))
 
         content = response.content.decode('utf-8')
         self.assertIn(str(self.INTENDED_SIZE['new']), grep_line(content, 'intended_size')[0])
@@ -83,7 +83,7 @@ class TestDealDetailView(DealsTestData, WithClientMixin, TestCase):
         self.assertLess(old_timestamp, new_timestamp)
         hopefully_existing_timestamp = (new_timestamp+old_timestamp)/2.
 
-        response = self._get_url_following_redirects('/grid/%i_%f/' % (self.activity_identifier, hopefully_existing_timestamp))
+        response = self._get_url_following_redirects('/global/grid/%i_%f/' % (self.activity_identifier, hopefully_existing_timestamp))
 
         content = response.content.decode('utf-8')
         self.assertIn(str(self.INTENDED_SIZE['old']), grep_line(content, 'intended_size')[0])
