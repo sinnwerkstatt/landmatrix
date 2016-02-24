@@ -9,7 +9,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class TestTargetCountryGroupView(TestViewBase, TestCase):
 
-    VIEW_URL = '/en/grid/by-target-country/none/'
+    VIEW_URL = '/global/grid/by-target-country/none/'
     EXPECTED_VIEW_DATA = [ 'Agriculture' ]
     def setUp(self):
         TestViewBase.setUp(self)
@@ -17,7 +17,7 @@ class TestTargetCountryGroupView(TestViewBase, TestCase):
 
 class TestTargetRegionGroupView(TestViewBase, TestCase):
 
-    VIEW_URL = '/en/grid/by-target-region/none/'
+    VIEW_URL = '/global/grid/by-target-region/none/'
     EXPECTED_VIEW_DATA = [ 'Agriculture' ]
     def setUp(self):
         TestViewBase.setUp(self)
@@ -25,7 +25,7 @@ class TestTargetRegionGroupView(TestViewBase, TestCase):
 
 class TestStakeholderNameGroupView(TestViewBase, TestCase):
 
-    VIEW_URL = '/en/grid/by-stakeholder-name/none/'
+    VIEW_URL = '/global/grid/by-stakeholder-name/none/'
     EXPECTED_VIEW_DATA = [ 'Agriculture' ]
     def setUp(self):
         TestViewBase.setUp(self)
@@ -33,7 +33,7 @@ class TestStakeholderNameGroupView(TestViewBase, TestCase):
 
 class TestStakeholderCountryGroupView(TestViewBase, TestCase):
 
-    VIEW_URL = '/en/grid/by-stakeholder-country/none/'
+    VIEW_URL = '/global/grid/by-stakeholder-country/none/'
     EXPECTED_VIEW_DATA = [ 'Agriculture' ]
     def setUp(self):
         TestViewBase.setUp(self)
@@ -41,7 +41,7 @@ class TestStakeholderCountryGroupView(TestViewBase, TestCase):
 
 class TestStakeholderRegionGroupView(TestViewBase, TestCase):
 
-    VIEW_URL = '/en/grid/by-stakeholder-region/none/'
+    VIEW_URL = '/global/grid/by-stakeholder-region/none/'
     EXPECTED_VIEW_DATA = []
     def setUp(self):
         TestViewBase.setUp(self)
@@ -49,7 +49,7 @@ class TestStakeholderRegionGroupView(TestViewBase, TestCase):
 
 class TestIntentionGroupView(TestViewBase, TestCase):
 
-    VIEW_URL = '/en/grid/by-intention/none/'
+    VIEW_URL = '/global/grid/by-intention/none/'
     EXPECTED_VIEW_DATA = [ 'Livestock' ]
     def setUp(self):
         TestViewBase.setUp(self)
@@ -57,7 +57,7 @@ class TestIntentionGroupView(TestViewBase, TestCase):
 
 class TestCropGroupView(TestViewBase, TestCase):
 
-    VIEW_URL = '/en/grid/by-crop/none/'
+    VIEW_URL = '/global/grid/by-crop/none/'
     EXPECTED_VIEW_DATA = [ 'Agriculture' ]
     def setUp(self):
         TestViewBase.setUp(self)
@@ -65,7 +65,7 @@ class TestCropGroupView(TestViewBase, TestCase):
 
 class TestDataSourceTypeView(TestViewBase, TestCase):
 
-    VIEW_URL = '/en/grid/by-data-source-type/none/'
+    VIEW_URL = '/global/grid/by-data-source-type/none/'
     EXPECTED_VIEW_DATA = [ 'Agriculture' ]
     def setUp(self):
         TestViewBase.setUp(self)
@@ -73,7 +73,7 @@ class TestDataSourceTypeView(TestViewBase, TestCase):
 
 class TestYearGroupView(TestViewBase, TestCase):
 
-    VIEW_URL = '/en/grid/by-year/none/'
+    VIEW_URL = '/global/grid/by-year/none/'
     EXPECTED_VIEW_DATA = [ 'Agriculture' ]
     def setUp(self):
         TestViewBase.setUp(self)
