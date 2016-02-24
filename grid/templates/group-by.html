@@ -461,12 +461,12 @@ $(document).ready(function () {
           {% elif column == "implementation_status" %}
             <td>
               {% if item.implementation_status %}
-              {% for implementation_stati in item.implementation_status %}
-                {% if implementation_stati.year != "0" %}
-                [{{implementation_stati.year}}]
-                {% endif %}
-                {{implementation_stati.name}}
-              {% endfor %}
+                {% with item.implementation_status|last as implementation_stati %}
+                  {% if implementation_stati.year != 0 %}
+                    [{{implementation_stati.year}}]
+                  {% endif %}
+                  {{implementation_stati.name}}
+                {% endwith %}
               {% else %}
                 {% trans "unknown" %}
               {% endif %}
@@ -474,12 +474,12 @@ $(document).ready(function () {
           {% elif column == "negotiation_status" %}
             <td>
               {% if item.negotiation_status %}
-              {% for negotiation_stati in item.negotiation_status %}
-                {% if negotiation_stati.year != "0" %}
-                [{{negotiation_stati.year}}]
-                {% endif %}
-                {{negotiation_stati.name}}
-              {% endfor %}
+                {% with item.negotiation_status|last as negotiation_stati %}
+                  {% if negotiation_stati.year != 0 %}
+                    [{{negotiation_stati.year}}]
+                  {% endif %}
+                  {{negotiation_stati.name}}
+                {% endwith %}
               {% else %}
                 {% trans "unknown" %}
               {% endif %}

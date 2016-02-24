@@ -2,6 +2,10 @@
 
 {% block page_title %}{% trans "Agricultural drivers" %}{% endblock %}
 {% block title %}{% trans "Agricultural drivers" %}{% endblock %}
+{% block breadcrumb_inner %}
+{{ block.super }}
+<li>{% trans "Agricultural drivers" %}</li>
+{% endblock %}
 
 {% block legend %}
 <ul class="media-list legend offset">
