@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n custom_tags %}
+{% load humanize %}
+{% load static %}
+
+{% block head %}
+    <script type="text/javascript" src="{% static "vendor/openlayers/ol.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
+
+    <script type="text/javascript" src="{% static "js/map.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/layers.js" %}"></script>
+
+    <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
+
+    <link rel="stylesheet" href="{% static "css/map.css" %}"/>
+{% endblock %}
+
+
+{% block breadcrumb_inner %}
+    <li>{% trans "Map" %}</li>
+{% endblock %}
+
+{% block content %}
+    {% include "filters.html" %}
+    {# { filters } #}
+    <div id="alert_placeholder"></div>
+
+    <div id="map" class="map" title='All Deals'></div>
+
+    <script>
+    </script>
+
+    <div id="popup" class="ol-popup">
+        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+        <div id="popup-content"></div>
+    </div>
+
+{% endblock %}

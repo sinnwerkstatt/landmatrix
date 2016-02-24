@@ -193,6 +193,12 @@ table a.btn {
 #filters {
     font-size: 14px;
 }
+.popover-title {
+    font-size: 14px;
+}
+#search-location > form > div > i {
+    font-size: 16px;
+}
 
 /* ==========================================================================
  *    LAYOUT
@@ -424,11 +430,6 @@ a:focus {
 p a {
     color: #fc941f;
     vertical-align: bottom;
-}
-
-p a:after {
-    content: '\f105';
-    padding-left: 0.5em;
 }
 
 i:before {
@@ -1293,6 +1294,7 @@ h4 .icon {
 
 .carousel {
     margin-bottom: 50px;
+    clear: both;
 }
 
 .carousel-indicators {
@@ -2500,4 +2502,8 @@ body.africa .wrap {
     float: left;
     margin-top: 10px;
     margin-left: 30px;
+}
+
+img {
+    max-width: 100%;
 }

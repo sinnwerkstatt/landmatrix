@@ -17,7 +17,7 @@ from django.http.response import HttpResponse
 import json
 
 from django.views.generic.base import TemplateView
-from global_app.views.activity_protocol import ActivityQuerySet
+from grid.views.activity_protocol import ActivityQuerySet
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
