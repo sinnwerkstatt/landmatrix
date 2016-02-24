@@ -4,8 +4,8 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.test import TestCase
 
-from global_app.tests.deals_test_data import DealsTestData
-from global_app.tests.generate_old_sql import GenerateOldSQL
+from grid.tests.deals_test_data import DealsTestData
+from grid.tests.generate_old_sql import GenerateOldSQL
 
 null = None
 
