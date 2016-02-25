@@ -5,7 +5,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealsQuerySet(FakeQuerySetFlat):
-    DEBUG = True
+
     BASE_FILTER_MAP = {
         "concluded": ("concluded (oral agreement)", "concluded (contract signed)"),
         "intended": ("intended (expression of interest)", "intended (under negotiation)" ),
