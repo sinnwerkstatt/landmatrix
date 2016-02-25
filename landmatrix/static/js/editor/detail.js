@@ -1,7 +1,6 @@
 $(document).ready(function () {
     console.log('Deal Detail js loaded.');
-    $(".investorfield").each(function (index) {
-        var investorops = $('<span><a href="stakeholder/add" target="_blank"><i class="lm lm-plus"></i></a><a href="stakeholder/edit" target="_blank"><i class="lm lm-edit"></i></a></span>');
-        this.append(investorops);
-    });
+
+    // TODO: Get Investor ID from Select and replace edit url
+    $(".investorfield").parent().append('<span class="investorops"><a href="/stakeholder" target="_blank"><i class="lm lm-plus"></i></a><a href="/stakeholder/25" target="_blank"><i class="lm lm-pencil"></i></a></span>');
 });
