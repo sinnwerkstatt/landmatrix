@@ -70,16 +70,28 @@ class DealDataSourceForm(BaseForm):
     @classmethod
     def get_data(cls, deal, taggroup, next_taggroup):
         from django.db.models import Q
-        print('get_data', str(deal)[:8], taggroup.attributes['name'], taggroup.id)
         belongs_to_data_source = Q(attributes__contains=['file']) | \
                                  Q(attributes__contains=['url']) | \
                                  Q(attributes__contains=['type'])
-        print(ActivityAttributeGroup.objects.filter(fk_activity=deal.activity).
-              filter(pk__gte=taggroup.id).
-              filter(pk__lte=next_taggroup.id if next_taggroup else ActivityAttributeGroup.objects.order_by('pk').last().id).
-              filter(belongs_to_data_source).
-              values_list('id', 'attributes'))
-        print('WORK IN PROGRESS')
+
+        next_taggroup_id = next_taggroup.id if next_taggroup else ActivityAttributeGroup.objects.order_by('pk').last().id
+
+        tags = ActivityAttributeGroup.objects.filter(fk_activity=deal.activity).\
+            filter(pk__gte=taggroup.id).filter(pk__lte=next_taggroup_id).\
+            filter(belongs_to_data_source).values_list('attributes', flat=True)
+
+        attributes = {}
+        for tag in tags:
+            for key in tag.keys():
+                if key in attributes and attributes[key] != tag[key]:
+                    # raise RuntimeError()
+                    print(
+                        'ALERT: found different values under the same tag group. Deal ID {}, taggroup {}, tags {}'.format(
+                            deal.activity.activity_identifier, taggroup.id, str(tags)
+                        ))
+                attributes[key] = tag[key]
+
+        return attributes
 
 
 DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=0)
