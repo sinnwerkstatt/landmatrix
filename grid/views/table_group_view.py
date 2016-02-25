@@ -75,19 +75,19 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         query_result = self.get_records(request)
 
         items = self._get_items(query_result)
-        render = self.render(items, kwargs)
+        render = self.render(items, kwargs, request)
         # timer.touch()
         return render
 
-    def render(self, items, kwargs):
+    def render(self, items, kwargs, request):
 
         # timer = ExecutionTimer(type(self).__name__+'.render()')
 
         if self.is_download() and items:
             return self._get_download(items)
         context = {
+            'request': request,
             "view": "get-the-detail",
-            "cms_page": 'global',
             "data": {
                 "items": items,
                 "order_by": self._order_by(),
