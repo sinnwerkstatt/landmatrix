@@ -27,7 +27,7 @@
 {% block title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
 
 {% block breadcrumb_inner %}
-    <li><a href="/global/">Global</a> <span class="divider"></span></li>
+    <li><a href="/global/data">Global</a></li>
     <li>{% trans "Deal" %} #{{ deal.activity_identifier }}</li>
 {% endblock %}
 
@@ -37,6 +37,7 @@
         <div class="panel-group" id="accordion">
             {% if forms %}
                 {% for form in forms %}
+                    {% if form.get_fields_display %}
                     <div class="panel panel-default">
 
                         <div class="panel-heading">
@@ -53,18 +54,16 @@
                         <div id="collapse_{{ forloop.counter }}"
                              class="panel-collapse collapse{% if forloop.first %} in {% endif %}">
                             <div class="panel-body">
-                                {% for field in form %}
-                                    {% if field.value %}
+                                {% for field in form.get_fields_display %}
+                                    {% if field.0 == 'tg' %}
+                                    <h3>{{ field.1 }}</h3>
+                                    {% else %}
                                         <div class="row">
-                                            <div class="col-md-2">
-                                                {{ field.label }}
+                                            <div class="col-md-3">
+                                                {{ field.0 }}
                                             </div>
-                                            <div class="col-md-10">
-                                                {% if field.display_value %}
-                                                    {{ field.display_value }}
-                                                {% else %}
-                                                    {{ field.value }}
-                                                {% endif %}
+                                            <div class="col-md-9">
+                                                {{ field.1|safe }}
                                             </div>
                                         </div>
                                     {% endif %}
@@ -72,6 +71,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
 
