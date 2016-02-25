@@ -103,8 +103,9 @@ body {
 
 body,
 p,
-input,
-textarea {
+form input,
+form textarea,
+form select {
     font-size: 16px;
     line-height: 1.5em;
 }
@@ -206,7 +207,9 @@ table a.btn {
 .africa .brand {
     text-transform: uppercase;
 }
-#filters {
+#filters,
+.condition input,
+.condition select {
     font-size: 14px;
 }
 .popover-title {
@@ -528,13 +531,13 @@ p a {
     display: block;
 }
 
-#main-navbar-collapse > .nav ul {
+#navbar-main > .nav ul {
     padding-top: 0;
 }
 
-#main-navbar-collapse > a,
-#main-navbar-collapse > a.btn,
-#main-navbar-collapse > .nav a {
+#navbar-main > a,
+#navbar-main > a.btn,
+#navbar-main > .nav a {
     text-decoration: none;
     font-weight: 200;
 }
@@ -578,36 +581,46 @@ p a {
     padding-top: 10px;
 }
 
-#main-navbar-collapse .select2 .select2-container--default .select2-selection--single,
-#main-navbar-collapse .select2 .select2-container--default,
-#main-navbar-collapse .select2 .select2-selection--single,
-#main-navbar-collapse .select2 .select2-container,
-#main-navbar-collapse .select2 .select2-selection {
+.navbar-main .select2 .select2-container--default .select2-selection--single,
+.navbar-main .select2 .select2-container--default,
+.navbar-main .select2 .select2-selection--single,
+.navbar-main .select2 .select2-container,
+.navbar-main .select2 .select2-selection {
     border: none !important;
     background-color: inherit !important;
-    font-weight: 300;
+    font-weight: 400;
 }
 
-#main-navbar-collapse .select2 .select2-dropdown {
+.navbar-main .form-group {
+    height: 47px;
+}
+
+.navbar-main .select2 .select2-dropdown {
     min-width: 15vw;
     max-weight: 15vw;
     padding: 0 15px !important;
 }
-/*
-#main-navbar-collapse > .select2-container--default .select2-selection--single .select2-selection__placeholder {
+
+.navbar-main .select2-container--default .select2-selection--single .select2-selection__placeholder {
     color: #4e4e4e !important;
 }
-#main-navbar-collapse .select2-container--default .select2-selection--single .select2-selection__arrow b {
+.navbar-main .select2-container--default .select2-selection--single .select2-selection__arrow b {
     border-top-color: #4e4e4e !important;
 }
-#main-navbar-collapse .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+.navbar-main .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
     border-bottom-color: #4e4e4e !important;
 }
-*/
 
-#main-navbar-collapse .select2 .select2-container {
+.navbar-main .select2.select2-container {
     vertical-align: top !important;
     margin-top: 3px !important;
+}
+
+.select2-main {
+    position: relative;
+    top: 24px !important;
+    left: -53px !important;
+    width: 180px !important;
 }
 
 .select2-search {
@@ -638,7 +651,7 @@ p a {
 .select2-container--open .select2-selection--single .select2-selection__placeholder {
     color: #44c42d !important;
 }
-
+.navbar-default .navbar-nav > .open,
 .navbar-default .navbar-nav > .open > a:focus,
 .navbar-default .navbar-nav > .open > a:hover {
     background: #fcfcfc;
