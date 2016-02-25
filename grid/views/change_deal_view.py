@@ -26,13 +26,13 @@ FORMS = [
     ("general_information", AddDealGeneralForm),
     ("employment", AddDealEmploymentForm),
     ("investor_info", OperationalStakeholderForm),
-    # ("data_sources", AddDealDataSourceFormSet),
+    ("data_sources", AddDealDataSourceFormSet),
     ("local_communities", DealLocalCommunitiesForm),
     ("former_use", DealFormerUseForm),
     ("produce_info", DealProduceInfoForm),
     ("water", DealWaterForm),
     ("gender-related_info", DealGenderRelatedInfoForm),
-    ("overall_comment", AddDealOverallCommentForm),     
+    ("overall_comment", AddDealOverallCommentForm),
     ("action_comment", ChangeDealActionCommentForm),
 ]
 
