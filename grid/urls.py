@@ -1,5 +1,5 @@
 from grid.views.deal_comparison_view import DealComparisonView
-from grid.views.change_deal import ChangeDealView
+from grid.views.change_deal_view import ChangeDealView
 from .views.all_deals_view import AllDealsView
 from .views.table_group_view import TableGroupView
 from .views.deal_detail_view import DealDetailView
@@ -60,4 +60,5 @@ urlpatterns = patterns('grid.views',
     url(r'^(?P<deal_id>[\d_\.]+)/$', cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), name='deal_detail'),
     # needs to come last, regexp catches all expressions
     url(r'^(?P<group>.+)/$', cache_page(CACHE_TIMEOUT)(TableGroupView.as_view()), name='table_list'),
+    # url(r'^(?P<group>.+)/(?P<list>)/$', cache_page(CACHE_TIMEOUT)(TableGroupView.as_view()), name='table_list'),
 )

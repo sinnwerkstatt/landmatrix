@@ -415,7 +415,7 @@ class BaseForm(forms.Form):
         elif taggroup is None:
             return None, None
         else:
-            tags = taggroup.a_tag_set.filter(fk_a_key__key=str(field_name))
+            tags = {str(field_name): taggroup.attributes.get(str(field_name))}
         return tags, taggroup
 
     @classmethod
