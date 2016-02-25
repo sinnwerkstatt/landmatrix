@@ -10,6 +10,13 @@ from django import forms
 def force_unicode(string): return force_text(string)
 
 class BaseModelForm(forms.ModelForm):
+    def as_p(self):
+        return self._html_output(
+                    normal_row = u'<div%(html_class_attr)s>%(label)s <div class="form-control input-append clearfix">%(field)s%(help_text)s</div>%(errors)s</div>',
+                    error_row = u'<div>%s</div>',
+                    row_ender = '</div>',
+                    help_text_html = u' <span class="helptext add-on">%s</span>',
+                    errors_on_separate_row = False)
 
     def as_ul(self):
         return self._html_output(

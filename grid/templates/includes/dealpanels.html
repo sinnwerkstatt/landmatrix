@@ -1,13 +1,9 @@
-{% load crispy_forms_tags %}
+{% load %}
 {% if forms %}
-
     {% for form in forms %}
-        {% crispy form %}
         <div class="panel panel-default">
 
-
             <div class="panel-heading">
-
                 <a data-toggle="collapse" data-parent="#accordion"
                    href="#collapse_{{ forloop.counter }}">
                     <h5 class="panel-title">
@@ -16,17 +12,12 @@
                               class="lm-chevron-circle-down pull-right mgrey1"></span>
                     </h5>
                 </a>
-
             </div>
 
             <div id="collapse_{{ forloop.counter }}"
                  class="panel-collapse collapse{% if forloop.first %} in {% endif %}">
                 <div class="panel-body">
-                    <table>
-                        <col width="23%">
-
-                        {{ form.as_p }}
-                    </table>
+                    {{ form.as_p }}
                 </div>
             </div>
         </div>            {# class="panel panel-default" #}
