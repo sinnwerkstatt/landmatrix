@@ -58,7 +58,7 @@ urlpatterns = i18n_patterns('',
     url(r'^deal/compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^deal/compare/(?P<activity_1>[\d_\.]+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^deal/compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
-    url(r'^deal/edit/(?P<deal_id>[\d]+)$', ChangeDealView.as_view(), name='change_deal'),
+    url(r'^deal/edit/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
 
     url(r'^deal/comments/', include('django_comments.urls')),
 
