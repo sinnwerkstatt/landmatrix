@@ -5,7 +5,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealsQuerySet(FakeQuerySetFlat):
-
+    DEBUG = True
     BASE_FILTER_MAP = {
         "concluded": ("concluded (oral agreement)", "concluded (contract signed)"),
         "intended": ("intended (expression of interest)", "intended (under negotiation)" ),
@@ -13,6 +13,7 @@ class DealsQuerySet(FakeQuerySetFlat):
     }
 
     FIELDS = [
+        ('deal_id',   'a.activity_identifier'),
         ('point_lat', "location.attributes->'point_lat'"),
         ('point_lon', "location.attributes->'point_lon'"),
         ('intention', "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention'), ', '), '')")
@@ -22,7 +23,7 @@ class DealsQuerySet(FakeQuerySetFlat):
         "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'"
     ]
     ADDITIONAL_WHERES = ["location.attributes ? 'point_lat' AND location.attributes ? 'point_lon'"]
-    GROUP_BY = ['location.attributes']
+    GROUP_BY = ['location.attributes', 'a.activity_identifier']
 
     def __init__(self, get_data):
         if not 'deal_scope' in get_data:
