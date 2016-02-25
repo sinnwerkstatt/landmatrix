@@ -78,7 +78,7 @@ INSTALLED_APPS += (
     'django_extensions',
 
     'django_select2',
-    #'crispy_forms',
+    'crispy_forms',
 
     # 'debug_toolbar',
     # 'debug_toolbar_line_profiler',
