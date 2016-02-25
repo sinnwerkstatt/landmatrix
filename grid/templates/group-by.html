@@ -2,234 +2,27 @@
 {% load i18n custom_tags %}
 {% load humanize %}
 
-{% with cms_page='global' %}
-
 {% block page_title %}{% if group == "all" %}All deals{% elif filters.group_value %}{{ name }}{% else %}By {{ group }}{% endif %}{% endblock %}
 {% block title %}{% if group == "all" %}All deals{% elif filters.group_value %}{{ name }}{% else %}By {{ group }}{% endif %}{% endblock %}
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-  <li><a href="/">Home</a> <span class="divider">|</span></li>
-  <li><a href="/{{cms_page}}/">Get the detail</a> <span class="divider">|</span></li>
+  <li><a href="/">Home</a></li>
+  <li><a href="/global/data/">Global</a></li>
   {% if group == "all" %}
   <li>{{ name|capfirst }}</li>
   {% elif filters.group_value %}
-  <li><a href="/{{cms_page}}/{{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">By {{ group }}</a> <span class="divider">|</span></li>
+  <li><a href="/global/data/{{group_slug}}/?{% add_or_update_param request.GET 'order_by' '' %}">By {{ group }}</a></li>
   <li>{{ name }}</li>
   {% else %}
-  <li>By {{ group }}</li>
+  <li>By {{group}}</li>
   {% endif %}
 </ul>
 {% endblock %}
 
 {% block content %}
-<script type="text/javascript">
-function init_form_condition (el) {
-  // variable
-  el.change(function () {
-    var form = $(this).parents("ul.form");
-    update_widget(form.find(".field:last .value-wrapper"), $(this).find("option:selected").val(), form);
-  }).change();
-  // operator
-  el.parents("ul.form").find(".operator").change(function() {
-    el.change();
-  });
-  // delete button
-  el.parents("ul.form").find(".delete-row").click(function() {
-    var form = $(this).parents("form"),
-        conditions = form.find(".condition:visible");
-    $(this).parents("ul.form.condition").remove();
-    var count = $("#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS").val()-1;
-    $("#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS").val(count);
-    // reset row counters
-    var new_name;
-    for (var i = 0; i < count; i++) {
-      $(conditions[i]).find(":input").each(function () {
-        $(this).attr("id") && $(this).attr("id", $(this).attr("id").replace(/{{ empty_form_conditions.prefix }}-[0-9]+/, "{{ empty_form_conditions.prefix }}-" + i));
-        $(this).attr("name") && $(this).attr("name", $(this).attr("name").replace(/{{ empty_form_conditions.prefix }}-[0-9]+/, "{{ empty_form_conditions.prefix }}-" + i));
-      })
-      //el.parents("ul.form").find("li.field")
-    }
-  });
-};
-$(document).ready(function () {
-  // add sticky header to table
-  var offset = $('.navbar').height();
-  $("#summary").stickyTableHeaders({fixedOffset: offset});
-  // enable popover for intention of investment
-  $('a.intention-icon').popover({trigger: "hover", placement: "top"});
-  init_form_condition($("ul.form:not(.empty) .field:first-child select"));
-  // collapsible filters
-  $(".toggle-filter").click(function (e) {
-    e.preventDefault();
-    $(".collapsible .collapsible-form").toggle();
-    var container = $(".collapsible .collapsible-tags"),
-        tags = container.find("ul");
-    if (container.hasClass("collapsed")) {
-      tags.empty();
-      $(".form.condition:not(.empty)").each(function (index) {
-        var tag = "";
-        $(this).find(":input").each(function (index) {
-          var el = $(this),
-            name = el.attr("name");
-          if (name.indexOf("variable") > -1) {
-              // variable
-              tag += el.find(":selected").text();
-          }/* requires update_widget to be executed before
-           else if (name.indexOf("operator") > -1) {
-              // operator
-              tag += " " + el.val();
-          // value (select)
-          } else if (el.is("select")) {
-              tag += " " + el.find(":selected").text();
-          // value (radio buttons)
-          } else if (el.is("[type=checkbox]")) {
-              tag += (tag.indexOf(",") > -1) && (" " + el.parent().text()) || ", " + el.parent().text();
-          // value (other)
-          } else if (!el.is("[type=hidden]")) {
-              tag += " " + el.val();
-          }*/
-        });
-        tag = "<li><span class=\"label\">" + tag + "</span></li>";
-        $(tag).appendTo(tags);
-      });
-      container.removeClass("collapsed");
-      container.find(".toggle-filter").text("Manage filters");
-      container.find(".toggle-tooltip").show();
-    } else {
-      container.addClass("collapsed");
-      container.find(".toggle-filter").text("Hide filters");
-      container.find(".toggle-tooltip").hide();
-    }
-    return false;
-  }).click();
-});
-</script>
-<div class="row">
-    <div class="span7">
-        <div class="collapsible">
-            <div class="collapsible-form">
-                <form method="GET" class="form-inline filters">
-                    <div id="empty" class="rules row">
-                        <div class="span8">
-                            <input type="hidden" name="filtered" value="true" />
-                            <input type="hidden" name="limit" value="{{ limit }}"/>
-                            <input type="hidden" name="order_by" value="{{  data.order_by }}" />
-                            <input type="submit" class="submit" value="Apply Filters" style="display: none" />
-                            {% if empty_form_conditions %}
-                                <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
-                                {{ empty_form_conditions.management_form }}
-                                {% for empty_form in empty_form_conditions.forms %}
-                                <ul class="form clearfix condition">
-                                  {{ empty_form.as_ul }}
-                                  <li>&nbsp;<a class="delete-row" href="javascript:void(0)"><i class="icon icon-remove"></i></a></li>
-                                </ul>
-                                {% endfor %}
-                            {% endif %}
-                            <ul class="form clearfix condition empty">
-                                {{ empty_form_conditions.empty_form.as_ul }}
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span8">
-                            <script type="text/javascript">
-                            $(document).ready(function () {
-                              //
-                              $(".subnav li.limit a").click(function(e){
-                                  e.preventDefault();
-                                  $("input[name=limit]").val($(this).attr("href").split("/")[1]);
-                                  $("form").submit();
-                              });
-                              //
-                              $('.reset-filter').click(function(){
-                                $('.rules').find('ul:gt(0)').remove();
-                                $('#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS').val(0);
-                              });
-                              //
-                              $('#empty ul.form.empty :input, #empty ul.form.empty label').each(function () {
-                                  var id = $(this).attr("id");
-                                  var name = $(this).attr("name");
-                                  var value = $(this).attr("value");
-                                  var for_str = $(this).attr("for");
-                                  if (id != undefined) {
-                                    $(this).attr("id", id.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                  }
-                                  if (name != undefined) {
-                                    $(this).attr("name", name.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""))  ;
-                                  }
-                                  if (value != undefined) {
-                                    $(this).attr("value", value.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""  ));
-                                  }
-                                  if (for_str != undefined) {
-                                    $(this).attr("for", for_str.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-" , ""));
-                                  }
-                              });
-                              //
-                              $("ul.form.empty").formset({
-                                  prefix: '{{ empty_form_conditions.prefix }}',
-                                  addText: '{% trans "Add filter" %}',
-                                  deleteText: '<i class="icon icon-remove"></i>',
-                                  added: function (row) {
-                                    // FIXME: Move row out of button group, this should be handled by the formset
-				                            row.remove();
-                                    row.insertBefore($(".add-row:visible").parent().parent().find(".btn-group"))
-                                    init_form_condition($("ul.form.condition:last .field:first-child select"));
-                                  }
-                              });
-                              // FIXME: Move add-row button into the button group, don't use javascript for that
-                                var b = $(".add-row").addClass("btn").hide();
-                                $(".filters .btn-group").prepend(b.show());
-                            })
-                            </script>
-                            <div class="btn-group">
-                                <button type="submit" class="btn" name="reset" value="reset">{% trans "Reset" %}</button>
-                                <button type="submit" class="btn">{% trans "Go" %}</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-        </div>
-        <div class="collapsible-tags collapsed">
-          <h5>Active filters:</h5>
-          <ul class="list-unstyled"></ul>
-          <a href="javascript:;" class="toggle-filter">Manage filters</a>
-          <a href="#" class="toggle-tooltip" title="You can create custom filters here. However, please note that filters are reset when changing entry point."> <i class="icon icon-question-sign"> </i></a>
-          {% if data.count %}<p style="clear: both">Showing {% if data.items|length != data.count %}{{ data.items|length }} of {% endif %}{{ data.count }} row{{ data.count|pluralize }}.</p>{% endif %}
-        </div>
-        </div>
-    </div>
-    <div class="span5">
-        <div class="actions btn-group pull-right">
-            <button data-toggle="dropdown" class="btn dropdown-toggle">Download whole database <span class="caret"></span></button>
-            <ul class="dropdown-menu">
-              <li><a href="/{{ cms_page }}/all.csv">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/{{ cms_page }}/all.xls">as Excel (.xls)</a></li>
-              <li><a href="/{{ cms_page }}/all.xml">as XML (.xml)</a></li>
-            </ul>
-        </div>
-        {% if group_value %}
-        <div class="actions btn-group pull-right">
-            <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span class="caret"></span></button>
-            <ul class="dropdown-menu">
-              <li><a href="/{{ cms_page }}/{{ group_slug }}/{{group_value}}.csv">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/{{ cms_page }}/{{ group_slug }}/{{group_value}}.xls">as Excel (.xls)</a></li>
-              <li><a href="/{{ cms_page }}/{{ group_slug }}/{{group_value}}.xml">as XML (.xml)</a></li>
-            </ul>
-        </div>
-        {% else %}
-        <div class="actions btn-group pull-right">
-            <button class="btn dropdown-toggle " data-toggle="dropdown">Download this table <span class="caret"></span></button>
-            <ul class="dropdown-menu">
-              <li><a href="/{{ cms_page }}/{{ group_slug }}.csv">as Comma Separated Values (.csv)</a></li>
-              <li><a href="/{{ cms_page }}/{{ group_slug }}.xls">as Excel (.xls)</a></li>
-              <li><a href="/{{ cms_page }}/{{ group_slug }}.xml">as XML (.xml)</a></li>
-            </ul>
-        </div>
-        {% endif %}
-          <a href="#" class="toggle-tooltip pull-right download-hint" title="Due to ongoing server optimization, we momentarily disabled download of filtered datasets. We apologize for the inconvenience."> <i class="icon icon-question-sign"> </i></a>
-    </div>
-</div>
+{% include "grid/subnav.html" %}
+{% include "filters.html" %}
 
 {% if data.items %}
 {% if not group_value %}
@@ -329,13 +122,13 @@ $(document).ready(function () {
         {% for column in columns %}
           {% if column == "deal_id" %}
             <td class="deal-id">
-                <a href="/{{cms_page}}/{{ item.deal_id }}/">{{ item.deal_id }}</a>
+                <a href="/global/data/{{ item.deal_id }}/">{{ item.deal_id }}</a>
             </td>
           {% elif column == "crop" %}
               <td style="width:341px">
               {% if  item.crop %}
               {% for c in item.crop %}
-                <a href="/{{cms_page}}/by-crop/{{ c|slugify }}/">{{ c }}</a></br>
+                <a href="/global/data/by-crop/{{ c|slugify }}/">{{ c }}</a></br>
               {% endfor %}
               {% else %}{% trans "unknown" %}
               {% endif %}
@@ -345,7 +138,7 @@ $(document).ready(function () {
               <ul class="list-unstyled">
               {% if item.intention %}
                 {% for i in item.intention %}
-                  <li><a href="/{{cms_page}}/by-intention/{{ i|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if group != "intention" %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a></li>
+                  <li><a href="/global/data/by-intention/{{ i|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if group != "intention" %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a></li>
                 {% endfor %}
               {% else %}{% trans "unknown" %}
               {% endif %}
@@ -364,7 +157,7 @@ $(document).ready(function () {
             <td style="width:183px">
             {% if item.investor_name %}
                 {% for i in item.investor_name %}
-                  <a href="/{{cms_page}}/by-investor-name/{{i.id}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ i.name }}</a><br/>
+                  <a href="/global/data/by-investor-name/{{i.id}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ i.name }}</a><br/>
                 {% endfor %}
             {% else %}{% trans "unknown" %}
             {% endif %}
@@ -373,7 +166,7 @@ $(document).ready(function () {
             <td style="width:183px">
             {% if item.stakeholder_name %}
                 {% for i in item.stakeholder_name %}
-                  <a href="/{{cms_page}}/by-stakeholder-name/{{i.id}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ i.name }}</a><br/>
+                  <a href="/global/data/by-stakeholder-name/{{i.id}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ i.name }}</a><br/>
                 {% endfor %}
             {% else %}{% trans "unknown" %}
             {% endif %}
@@ -382,7 +175,7 @@ $(document).ready(function () {
             <td class="investor-country">
               {% if item.stakeholder_country %}
               {% for stakeholder_country  in item.stakeholder_country %}
-                <a href="/{{cms_page}}/by-investor-country/{{stakeholder_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ stakeholder_country }}</a><br/>
+                <a href="/global/data/by-investor-country/{{stakeholder_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ stakeholder_country }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown country" %}{% endif %}
             </td>
@@ -390,7 +183,7 @@ $(document).ready(function () {
             <td class="investor-region">
               {% if item.stakeholder_region %}
               {% for stakeholder_region  in item.stakeholder_region %}
-                <a href="/{{cms_page}}/by-investor-region/{{stakeholder_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ stakeholder_region }}</a><br/>
+                <a href="/global/data/by-investor-region/{{stakeholder_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ stakeholder_region }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown region" %}{% endif %}
             </td>
@@ -398,7 +191,7 @@ $(document).ready(function () {
             <td class="investor-country">
               {% if item.investor_country %}
               {% for investor_country  in item.investor_country %}
-                <a href="/{{cms_page}}/by-investor-country/{{investor_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_country }}</a><br/>
+                <a href="/global/data/by-investor-country/{{investor_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_country }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown country" %}{% endif %}
             </td>
@@ -406,7 +199,7 @@ $(document).ready(function () {
             <td class="investor-region">
               {% if item.investor_region %}
               {% for investor_region  in item.investor_region %}
-                <a href="/{{cms_page}}/by-investor-region/{{investor_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_region }}</a><br/>
+                <a href="/global/data/by-investor-region/{{investor_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_region }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown region" %}{% endif %}
             </td>
@@ -414,7 +207,7 @@ $(document).ready(function () {
             <td>
               {% if item.target_country %}
               {% for target_country  in item.target_country %}
-                <a href="/{{cms_page}}/by-target-country/{{target_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_country }}</a><br/>
+                <a href="/global/data/by-target-country/{{target_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_country }}</a><br/>
               {% endfor %}
               {% else %}
                 {% trans "unknown" %}
@@ -424,7 +217,7 @@ $(document).ready(function () {
             <td>
               {% if item.target_region %}
                 {% for target_region  in item.target_region %}
-                    <a href="/{{cms_page}}/by-target-region/{{target_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_region }}</a><br/>
+                    <a href="/global/data/by-target-region/{{target_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_region }}</a><br/>
                 {% endfor %}
               {% else %}
                 {% trans "unknown" %}
@@ -433,7 +226,7 @@ $(document).ready(function () {
           {% elif column == "year" %}
             <td>
               {% if item.year %}
-                <a href="/{{cms_page}}/by-year/{{item.year}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ item.year }}</a>
+                <a href="/global/data/by-year/{{item.year}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ item.year }}</a>
               {% else %}
                 {% trans "unknown" %}
               {% endif %}
@@ -442,7 +235,7 @@ $(document).ready(function () {
             <td>
               {% if item.data_source_type %}
               {% for data_source_type in item.data_source_type %}
-                <a href="/{{cms_page}}/by-data-source-type/{{data_source_type|slug_and_slash_to_plus}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ data_source_type }}</a>
+                <a href="/global/data/by-data-source-type/{{data_source_type|slug_and_slash_to_plus}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ data_source_type }}</a>
               {% endfor %}
               {% else %}
                 {% trans "unknown" %}
@@ -488,7 +281,7 @@ $(document).ready(function () {
         {% endfor %}
     {% if "deal_id" in columns %}
     <td>
-        <a href="/{{cms_page}}/{{ item.deal_id }}/" class="btn btn-small">Details</a>
+        <a href="/deal/{{ item.deal_id }}/" class="btn btn-small">Details</a>
     </td>
     {% endif %}
     </tr>
@@ -502,5 +295,3 @@ $(document).ready(function () {
 <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
 {% endif %}
 {% endblock %}
-
-{% endwith %}
