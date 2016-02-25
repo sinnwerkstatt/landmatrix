@@ -1,16 +1,21 @@
-from grid.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-from landmatrix.models.comment import Comment
-from landmatrix.models.deal import Deal
+from copy import copy, deepcopy
+import re
 
 from django.utils.datastructures import SortedDict, MultiValueDict
 from django import forms
 from django.utils.html import conditional_escape
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 
-from copy import copy, deepcopy
-import re
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.comment import Comment
+from landmatrix.models.deal import Deal
+from grid.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -447,8 +452,13 @@ class BaseForm(forms.Form):
         readonly_fields = ()
 
     def __init__(self, *args, **kwargs):
-
         super(BaseForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        #self.helper.form_method = 'post'
+        #self.helper.form_tag = False
+        self.helper.label_class = 'label-control col-lg-2'
+        self.helper.field_class = 'form-control col-lg-8'
+
         if self.DEBUG:
             print(self.__class__.__name__, args)
         if hasattr(self.Meta, "exclude"):
