@@ -10,7 +10,7 @@ from grid.forms.add_deal_employment_form import AddDealEmploymentForm
 from grid.forms.add_deal_general_form import AddDealGeneralForm
 from grid.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
 from grid.forms.change_deal_action_comment_form import ChangeDealActionCommentForm
-from grid.forms.deal_data_source_form import AddDealDataSourceFormSet, DealDataSourceForm
+from grid.forms.deal_data_source_form import AddDealDataSourceFormSet
 from grid.forms.deal_former_use_form import DealFormerUseForm
 from grid.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
 from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
@@ -22,17 +22,17 @@ from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 FORMS = [
-    ("spatial_data", ChangeDealSpatialFormSet),            #
-    ("general_information", AddDealGeneralForm),        #
-    ("employment", AddDealEmploymentForm),              #
+    ("spatial_data", ChangeDealSpatialFormSet),
+    ("general_information", AddDealGeneralForm),
+    ("employment", AddDealEmploymentForm),
     ("investor_info", OperationalStakeholderForm),
-    ("data_sources", AddDealDataSourceFormSet),         #
-    ("local_communities", DealLocalCommunitiesForm),    #
-    ("former_use", DealFormerUseForm),                  #
-    ("produce_info", DealProduceInfoForm),              #
-    ("water", DealWaterForm),                           #
-    ("gender-related_info", DealGenderRelatedInfoForm), #
-    ("overall_comment", AddDealOverallCommentForm),     #
+    # ("data_sources", AddDealDataSourceFormSet),
+    ("local_communities", DealLocalCommunitiesForm),
+    ("former_use", DealFormerUseForm),
+    ("produce_info", DealProduceInfoForm),
+    ("water", DealWaterForm),
+    ("gender-related_info", DealGenderRelatedInfoForm),
+    ("overall_comment", AddDealOverallCommentForm),     
     ("action_comment", ChangeDealActionCommentForm),
 ]
 
@@ -50,6 +50,7 @@ class ChangeDealView(SaveDealView):
 
 def get_form(deal, form_class):
     data = form_class[1].get_data(deal)
-    # if not isinstance(form_class[1](), Form):
-    #     print('get_form:', form_class[0], form_class[1].__name__)
+    if form_class[0] == 'data_sources':
+        print('get_form:', form_class[0], form_class[1].__name__)
+        # pprint(data)
     return form_class[1](initial=data)
