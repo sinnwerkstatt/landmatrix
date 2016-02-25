@@ -102,7 +102,9 @@ body {
 }
 
 body,
-p {
+p,
+input,
+textarea {
     font-size: 16px;
     line-height: 1.5em;
 }
@@ -1498,6 +1500,29 @@ h4 .icon {
 /* ==========================================================================
  *    FORMS
  * ========================================================================== */
+
+.control-group {
+    clear: both;
+}
+
+.control-group .control-label {
+    padding-top: 5px;
+}
+
+.form-control {
+    width: auto;
+    display: inline-block;
+    border: solid 1px #4a4a4a;
+}
+
+.controls > ul {
+    padding: 0;
+    margin: 0;
+}
+
+.help-block {
+    display: inline-block;
+}
 
 .checkboxes input[type=checkbox] {
     display: none;
