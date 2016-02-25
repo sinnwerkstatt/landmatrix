@@ -27,7 +27,7 @@ class BaseForm(forms.Form):
 
     def as_p(self):
         return self._html_output(
-                    normal_row = u'<div%(html_class_attr)s><div class="control-label col-md-2">%(label)s</div><div class="controls input-append col-md-10">%(field)s%(help_text)s</div>%(errors)s</div>',
+                    normal_row = u'<div%(html_class_attr)s><div class="control-label col-md-3">%(label)s</div><div class="controls input-append col-md-9">%(field)s%(help_text)s</div>%(errors)s</div>',
                     error_row = u'<div>%s</div>',
                     row_ender = '</div>',
                     help_text_html = u' <span class="helptext add-on">%s</span>',
@@ -266,6 +266,7 @@ class BaseForm(forms.Form):
                     if value and isinstance(f.choices,(list, tuple)) and int(f.choices[0][0]) != 0:
                         value = None
                 # Year based data?
+                # Year based data?
                 elif isinstance(f, forms.MultiValueField):
                     keys = filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n) ,o), self.data.keys())
                     keys.sort()
@@ -422,7 +423,7 @@ class BaseForm(forms.Form):
         elif taggroup is None:
             return None, None
         else:
-            tags = taggroup.a_tag_set.filter(fk_a_key__key=str(field_name))
+            tags = {str(field_name): taggroup.attributes.get(str(field_name))}
         return tags, taggroup
 
     @classmethod
@@ -452,6 +453,75 @@ class BaseForm(forms.Form):
     @classmethod
     def get_comments_from_taggroups(cls, groups):
         return dict([(k, v) for group in [g for g in groups if g] for (k, v) in group.attributes.items() if '_comment' in k])
+
+    def get_fields_display(self):
+        """Return fields for detail view"""
+        output = []
+        tg_title = ''
+        tg_items = []
+        for i, (n, f) in enumerate(self.fields.items()):
+            if n.startswith("tg_"):
+                if n.endswith("_comment"):
+                    data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n, []) 
+                    if data:
+                        tg_items.append((f.label, data))
+                    continue
+                if len(tg_items) > 0:
+                    output.append(('tg', tg_title))
+                    output.extend(tg_items)
+                tg_title = f.initial
+                tg_items = []
+                continue
+            if isinstance(f, NestedMultipleChoiceField):
+                data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
+                values = []
+                for v, l, c in f.choices:
+                    value = ''
+                    if str(v) in data:
+                        value = str(l)
+                    if c:
+                        choices = ', '.join([str(l) for v, l in c if str(v) in data])
+                        value = (value and '%s (%s)' % (value, choices)) or choices
+                    if value:
+                        values.append(value)
+                value = '<br>'.join(values)
+            elif isinstance(f, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
+                data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
+                value = '<br>'.join([str(l) for v, l in f.choices if str(v) in data])
+            elif isinstance(f, forms.ChoiceField):
+                data = self.initial.getlist(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
+                value = '<br>'.join([str(l) for v, l in f.choices if str(v) in data])
+            # Year based data?
+            elif isinstance(f, forms.MultiValueField):
+                #keys = filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n) ,o), self.initial.keys())
+                ##keys.sort()
+                #value = ''
+                #year = ''
+                #for i in range(len(keys)):
+                #    if i % 2 == 0:
+                #        value = self.initial.get(len(keys) > i and keys[i] or "-", "")
+                #        if value == "0" and isinstance(f.fields[0], forms.ChoiceField):
+                #            #filter default selection of choice fields
+                #            value = None
+                #        year = self.initial.get(len(keys) > i+1 and keys[i+1] or "-", "")
+                #        if value or year:
+                #            break
+                data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
+                value, year = data.split(':')
+                if value:
+                    if isinstance(f.fields[0], forms.ChoiceField):
+                        value = ', '.join([str(l) for v, l in f.fields[0].choices if str(v) == str(value)])
+                    value = '%s%s' % (value, year and ' (%s)'%year[:4] or '')
+            elif isinstance(f, forms.FileField):
+                value = self.is_valid() and self.cleaned_data.get(n) and hasattr(self.cleaned_data.get(n), "name") and self.cleaned_data.get(n).name or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+            else:
+                value = self.is_valid() and self.cleaned_data.get(n) or self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+            if value:
+                tg_items.append((f.label, '%s %s' % (value, f.help_text)))
+        if len(tg_items) > 0:
+            output.append(('tg', tg_title))
+            output.extend(tg_items)
+        return output
 
     class Meta:
         exclude = ()

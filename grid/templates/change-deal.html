@@ -1,16 +1,14 @@
 {% extends "base.html" %}
-{% load i18n custom_tags %}
+{% load i18n custom_tags static %}
 {% load humanize %}
 
 {% block head %}
     {# map #}
-  <script src="/media/js/editor/map.js" type="text/javascript" charset="utf-8"></script>
+  <script src="{% static "media/js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=en"></script>
-
-
-  <script src="/media/js/editor/year-based-fields.js" type="text/javascript" charset="utf-8"></script>
-  <script src="/media/js/editor/livesearch.js" type="text/javascript" charset="utf-8"></script>
-  <script src="/media/js/editor/add_change.js" type="text/javascript" charset="utf-8"></script>
+  <script src="{% static "js/editor/year-based-fields.js" %}" type="text/javascript" charset="utf-8"></script>
+  <!--script src="/media/js/editor/livesearch.js" type="text/javascript" charset="utf-8"></script-->
+  <!--script src="/media/js/editor/add_change.js" type="text/javascript" charset="utf-8"></script-->
 {% endblock %}
 
 {% block page_title %}{% trans "Change deal" %} #{{ deal_id }}{% endblock %}
