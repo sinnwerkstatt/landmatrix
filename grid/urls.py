@@ -54,7 +54,7 @@ urlpatterns = patterns('grid.views',
         name='compare_deals'
     ),
     url(r'^add/$', AddDealView.as_view(), name='add_deal'),
-    url(r'^stakeholder/$', StakeholderView.as_view(), name='stakeholder_form'),
+
     url(r'^change/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
     url(r'^(?P<deal_id>[\d]+)/$', cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), name='deal_detail'),
     url(r'^(?P<deal_id>[\d_\.]+)/$', cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), name='deal_detail'),

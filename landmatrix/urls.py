@@ -52,7 +52,7 @@ urlpatterns = i18n_patterns('',
     url(r'^deal/compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^deal/edit/(?P<deal_id>[\d]+)$', ChangeDealView.as_view(), name='change_deal'),
 
-    url(r'^stakeholder/$', StakeholderView.as_view(), name='stakeholder_form'),
+    url(r'^stakeholder/(?P<investor_id>[\d]+)/$', StakeholderView.as_view(), name='stakeholder_form'),
 
     url(r'^editor/', include(editor_urls)),
     url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
