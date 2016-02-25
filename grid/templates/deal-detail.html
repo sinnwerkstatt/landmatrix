@@ -2,6 +2,8 @@
 {% load i18n custom_tags static %}
 {% load humanize %}
 
+{% load threadedcomments_tags %}
+
 {% block head %}
 
     {# bootstrap #}
@@ -105,6 +107,11 @@
                 </div>
             {% endif %}
         </div>
+
+<h2>Comments:</h2>
+
+{% render_comment_list for deal.activity %}
+{% render_comment_form for deal.activity %}
 
         <script type="text/javascript">
             $(document).ready(function () {
