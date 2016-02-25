@@ -272,11 +272,24 @@
     <script src="{% static "legacy/main.js" %}"></script>
     <!-- Select2 init -->
     <script type="text/javascript">
-        $('#nav-region-select').select2({
-            placeholder: "Regions"
-        });
-        $('#nav-country-select').select2({
-            placeholder: "Countries"
+        function select2_open (e) {
+            $(this).parents("li").addClass("open")
+        } 
+        function select2_close (e) {
+            $(this).parents("li").removeClass("open")
+
+        } 
+        $(document).ready(function () {
+            $('#nav-region-select').select2({
+                placeholder: "Regions",
+                dropdownCssClass: "select2-main"
+            }).on('select2:open', select2_open)
+              .on('select2:close', select2_close);
+            $('#nav-country-select').select2({
+                placeholder: "Countries",
+                dropdownCssClass: "select2-main"
+            }).on('select2:open', select2_open)
+              .on('select2:close', select2_close);
         });
     </script>
     <!-- Piwik -->
