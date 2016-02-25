@@ -1,6 +1,5 @@
 {% load i18n %}
 
-{% if languages|length > 1 %}
 <li class="dropdown">
     <!--
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -8,21 +7,15 @@
         <span class="nav-circle">{{ current_language }}</span>
     </a>
     -->
-    <a href="#" class="" data-toggle="" role="button" aria-haspopup="true"
+    <a href="#" class="" data-toggle="dropdown" role="button" aria-haspopup="true"
        aria-expanded="false">
-        <span class="nav-circle">{{ current_language }}</span>
+        <span class="nav-circle">EN</span>
     </a>
-
-
     <ul class="dropdown-menu">
-        {% for language in languages %}
-        <li class="language{% if current_language == language.0 %} active{% endif %}">
-            <a href="{{ language.0 }}" title="{% trans "Change to language:" %} {{ language.1 }}"><span>{{ language.1 }}</span></a>
+        <li class="active">
+            <a href="/en/" title="{% trans "Change to language:" %} English">
+                <span>English</span>
+            </a>
         </li>
-        {% if not forloop.last %}
-        <li role="separator" class="divider"></li>
-        {% endif %}
-        {% endfor %}
     </ul>
 </li>
-{% endif %}
