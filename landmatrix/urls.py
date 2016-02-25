@@ -40,6 +40,7 @@ urlpatterns = i18n_patterns('',
 
     url(r'^api/', include(api_urls)),
     url(r'^global/data/', include(grid_urls)),
+    url(r'^global/grid/', include(grid_urls)),
     url(r'^global/map/', include(map_urls)),
     url(r'^global/charts/', include(charts_urls)),
 
