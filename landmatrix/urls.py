@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 from grid.views.add_deal_view import AddDealView
-from grid.views.change_deal import ChangeDealView
+from grid.views.change_deal_view import ChangeDealView
 from grid.views.deal_comparison_view import DealComparisonView
 from grid.views.deal_detail_view import DealDetailView
 from grid.views.filter_widget_ajax_view import FilterWidgetAjaxView
@@ -44,13 +44,21 @@ urlpatterns = i18n_patterns('',
     url(r'^global/map/', include(map_urls)),
     url(r'^global/charts/', include(charts_urls)),
 
+    # url(r'^region/(?P<region_slug>)/data/', include(grid_urls)),
+    # url(r'^region/(?P<region_slug>)/map/', include(map_urls)),
+    # url(r'^region/(?P<region_slug>)/charts/', include(charts_urls)),
+    #
+    # url(r'^country/(?P<country_slug>)/data/', include(grid_urls)),
+    # url(r'^country/(?P<country_slug>)/map/', include(map_urls)),
+    # url(r'^country/(?P<country_slug>)/charts/', include(charts_urls)),
+
     url(r'^deal/(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
     url(r'^deal/(?P<deal_id>[\d_\.]+)/$', DealDetailView.as_view(), name='deal_detail'),
     url(r'^deal/add/$', AddDealView.as_view(), name='add_deal'),
     url(r'^deal/compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^deal/compare/(?P<activity_1>[\d_\.]+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^deal/compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
-    url(r'^deal/edit/(?P<deal_id>[\d]+)$', ChangeDealView.as_view(), name='change_deal'),
+    url(r'^deal/edit/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
 
     url(r'^deal/comments/', include('django_comments.urls')),
 
