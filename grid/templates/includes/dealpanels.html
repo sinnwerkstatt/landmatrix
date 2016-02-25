@@ -1,7 +1,8 @@
+{% load crispy_forms_tags %}
 {% if forms %}
 
     {% for form in forms %}
-
+        {% crispy form %}
         <div class="panel panel-default">
 
 
