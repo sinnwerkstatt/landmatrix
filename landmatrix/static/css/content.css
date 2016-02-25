@@ -648,7 +648,8 @@ p a {
     background: #44c42d !important;
     color: #fff !important;
 }
-.select2-container--open .select2-selection--single .select2-selection__placeholder {
+
+.navbar-main .select2-container--open .select2-selection--single .select2-selection__placeholder {
     color: #44c42d !important;
 }
 .navbar-default .navbar-nav > .open,
