@@ -5,6 +5,7 @@ from django.utils.html import conditional_escape
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 
+from crispy_forms.helper import FormHelper
 
 class BaseModelForm(forms.ModelForm):
 
@@ -99,3 +100,10 @@ class BaseModelForm(forms.ModelForm):
                 output.append(str_hidden)
         return mark_safe(u'\n'.join(output))
 
+    def __init__(self, *args, **kwargs):
+        super(BaseModelForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        #self.helper.form_method = 'post'
+        #self.helper.form_tag = False
+        self.helper.label_class = 'control-label col-sm-2'
+        self.helper.field_class = 'form-control col-sm-8'

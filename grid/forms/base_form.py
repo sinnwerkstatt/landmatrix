@@ -9,7 +9,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
 
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.comment import Comment
@@ -25,6 +24,14 @@ class BaseForm(forms.Form):
     DEBUG = False
 
     error_css_class = "error"
+
+    def as_p(self):
+        return self._html_output(
+                    normal_row = u'<div%(html_class_attr)s><div class="control-label col-md-2">%(label)s</div><div class="controls input-append col-md-10">%(field)s%(help_text)s</div>%(errors)s</div>',
+                    error_row = u'<div>%s</div>',
+                    row_ender = '</div>',
+                    help_text_html = u' <span class="helptext add-on">%s</span>',
+                    errors_on_separate_row = False)
 
     def as_ul(self):
         return self._html_output(
@@ -455,9 +462,10 @@ class BaseForm(forms.Form):
         super(BaseForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         #self.helper.form_method = 'post'
-        #self.helper.form_tag = False
-        self.helper.label_class = 'label-control col-lg-2'
-        self.helper.field_class = 'form-control col-lg-8'
+        self.helper.form_tag = False
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-8'
 
         if self.DEBUG:
             print(self.__class__.__name__, args)
