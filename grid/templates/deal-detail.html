@@ -146,7 +146,7 @@
             {% endif %}
         </div>
 
-<h2>Comments:</h2>
+<h2>{% trans "Comments" %}</h2>
 
 {% render_comment_list for deal.activity %}
 {% render_comment_form for deal.activity %}
@@ -167,7 +167,7 @@
 
     {% else %}
 
-        <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
+        <p>{% trans "There are currently no deals matching your search criteria." %} <a href="/public/">{% trans "Add a deal" %}</a>.</p>
 
     {% endif %}
 
