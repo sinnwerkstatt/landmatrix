@@ -21,10 +21,10 @@
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="{% url "chart_overview" %}?variable=negotiation_status">{% trans "Negotiation status" %}</a></li>
-                                <li><a href="{% url "chart_overview" %}?variable=implementation_status">{% trans "Implementation status" %}</a></li>
-                                <li><a href="{% url "chart_overview" %}?variable=intention_of_investment">{% trans "Intention of investment" %}</a></li>
-                                <li><a href="{% url "chart_overview" %}?variable=investment_in_agriculture">{% trans "Investment in Agriculture" %}</a></li>
+                                <li><a class="change-variable" href="{% url "chart_overview" %}?variable=negotiation_status">{% trans "Negotiation status" %}</a></li>
+                                <li><a class="change-variable" href="{% url "chart_overview" %}?variable=implementation_status">{% trans "Implementation status" %}</a></li>
+                                <li><a class="change-variable" href="{% url "chart_overview" %}?variable=intention_of_investment">{% trans "Intention of investment" %}</a></li>
+                                <li><a class="change-variable" href="{% url "chart_overview" %}?variable=investment_in_agriculture">{% trans "Investment in Agriculture" %}</a></li>
                             </ul>
                         </li>
                         <li{% if chart == "chart_transnational_deals" %} class="active"{% endif %}><a href="{% url "chart_transnational_deals" %}">{% trans "Web of transnational deals" %}</a></li>
