@@ -2,10 +2,7 @@
 {% if forms %}
 
     {% for form in forms %}
-        {% crispy form %}
         <div class="panel panel-default">
-
-
             <div class="panel-heading">
 
                 <a data-toggle="collapse" data-parent="#accordion"
@@ -24,8 +21,7 @@
                 <div class="panel-body">
                     <table>
                         <col width="23%">
-
-                        {{ form.as_p }}
+                        {% crispy form %}
                     </table>
                 </div>
             </div>
