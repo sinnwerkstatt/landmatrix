@@ -2,20 +2,17 @@
 {% load i18n custom_tags %}
 {% load humanize %}
 
-
-{% with cms_page='global' %}
-
 {% block page_title %}{% if group == "all" %}All deals{% elif filters.group_value %}{{ name }}{% else %}By {{ group }}{% endif %}{% endblock %}
 {% block title %}{% if group == "all" %}All deals{% elif filters.group_value %}{{ name }}{% else %}By {{ group }}{% endif %}{% endblock %}
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
   <li><a href="/">Home</a> <span class="divider"></span></li>
-  <li><a href="/{{ cms_page }}/">Global</a> <span class="divider"></span></li>
+  <li><a href="/global/">Global</a> <span class="divider"></span></li>
   {% if group == "all" %}
   <li>{{ name|capfirst }}</li>
   {% elif filters.group_value %}
-  <li><a href="/{{ cms_page }}/{{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">By {{ group }}</a> <span class="divider"></span></li>
+  <li><a href="/global/{{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">By {{ group }}</a> <span class="divider"></span></li>
   <li>{{ name }}</li>
   {% else %}
   <li>By {{ group }}</li>
@@ -24,18 +21,20 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation" class="active"><a href="../map/">
+    <li role="presentation"><a href="../map/">
         <i class="lm lm-map-marker"></i>{% trans "Map" %}
     </a></li>
-    <li role="presentation"><span>
+    <li role="presentation" class="active"><span>
         <i class="lm lm-table"></i>{% trans "Data" %}
     </span></li>
     <li role="presentation"><a href="../charts/">
         <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
     </a></li>
+    <li class="divider"></li>
 {% endblock %}
 
 {% block content %}
+{% include "grid/subnav.html" %}
 {% include "filters.html" %}
 
 {% if data.items %}
@@ -135,23 +134,23 @@
         {% for column in columns %}
           {% if column == "deal_id" %}
             <td class="deal-id">
-                <a href="/{{ cms_page }}/{{ item.deal_id }}/">{{ item.deal_id }}</a>
+                <a href="/deal/{{ item.deal_id }}/">{{ item.deal_id }}</a>
             </td>
           {% elif column == "crop" %}
               <td style="width:341px">
               {% if  item.crop %}
               {% for c in item.crop %}
-                <a href="/{{ cms_page }}/by-crop/{{ c|slugify }}/">{{ c }}</a></br>
+                <a href="/global/data/by-crop/{{ c|slugify }}/">{{ c }}</a></br>
               {% endfor %}
               {% else %}{% trans "unknown" %}
               {% endif %}
               </td>
           {% elif column == "intention" %}
               <td>
-              <ul class="unstyled">
+              <ul class="list-unstyled">
               {% if item.intention %}
                 {% for i in item.intention %}
-                  <li><a href="/{{ cms_page }}/by-intention/{{ i|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if group != "intention" %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a></li>
+                  <li><a href="/global/data/by-intention/{{ i|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if group != "intention" %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a></li>
                 {% endfor %}
               {% else %}{% trans "unknown" %}
               {% endif %}
@@ -179,7 +178,7 @@
             <td style="width:183px">
             {% if item.stakeholder_name %}
                 {% for i in item.stakeholder_name %}
-                  <a href="/{{ cms_page }}/by-investor-name/{{i.id}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ i.name }}</a><br/>
+                  <a href="/global/data/by-investor-name/{{i.id}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ i.name }}</a><br/>
                 {% endfor %}
             {% else %}{% trans "unknown" %}
             {% endif %}
@@ -188,7 +187,7 @@
             <td class="investor-country">
               {% if item.stakeholder_country %}
               {% for stakeholder_country  in item.stakeholder_country %}
-                <a href="/{{ cms_page }}/by-investor-country/{{investor_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ stakeholder_country }}</a><br/>
+                <a href="/global/data/by-investor-country/{{investor_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ stakeholder_country }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown country" %}{% endif %}
             </td>
@@ -196,7 +195,7 @@
             <td class="investor-country">
               {% if item.investor_country %}
               {% for investor_country  in item.investor_country %}
-                <a href="/{{ cms_page }}/by-investor-country/{{investor_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_country }}</a><br/>
+                <a href="/global/data/by-investor-country/{{investor_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_country }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown country" %}{% endif %}
             </td>
@@ -204,7 +203,7 @@
             <td class="investor-region">
               {% if item.investor_region %}
               {% for investor_region  in item.investor_region %}
-                <a href="/{{ cms_page }}/by-investor-region/{{investor_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_region }}</a><br/>
+                <a href="/global/data/by-investor-region/{{investor_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_region }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown region" %}{% endif %}
             </td>
@@ -212,7 +211,7 @@
             <td>
               {% if item.target_country %}
                 {% for target_country  in item.target_country %}
-                  <a href="/{{ cms_page }}/by-target-country/{{target_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_country }}</a><br/>
+                  <a href="/global/data/by-target-country/{{target_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_country }}</a><br/>
                 {% endfor %}
               {% else %}
                 {% trans "unknown" %}
@@ -222,7 +221,7 @@
             <td>
               {% if item.target_region %}
                 {% for target_region  in item.target_region %}
-                    <a href="/{{ cms_page }}/by-target-region/{{target_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_region }}</a><br/>
+                    <a href="/global/data/by-target-region/{{target_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_region }}</a><br/>
                 {% endfor %}
               {% else %}
                 {% trans "unknown" %}
@@ -231,7 +230,7 @@
           {% elif column == "year" %}
             <td>
               {% if item.year %}
-                <a href="/{{ cms_page }}/by-year/{{item.year}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ item.year }}</a>
+                <a href="/global/data/by-year/{{item.year}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ item.year }}</a>
               {% else %}
                 {% trans "unknown" %}
               {% endif %}
@@ -240,7 +239,7 @@
             <td>
               {% if item.data_source_type %}
               {% for data_source_type in item.data_source_type %}
-                <a href="/{{ cms_page }}/by-data-source-type/{{data_source_type|slug_and_slash_to_plus}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ data_source_type }}</a>
+                <a href="/global/data/by-data-source-type/{{data_source_type|slug_and_slash_to_plus}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ data_source_type }}</a>
               {% endfor %}
               {% else %}
                 {% trans "unknown" %}
@@ -287,7 +286,7 @@
     {% if "deal_id" in columns %}
     <td>
     <!-- TODO: This one is only hidden.-->
-        <a href="/{{ cms_page }}/{{ item.deal_id }}/" class="hidden btn btn-small">Details</a>
+        <a href="/deal/{{ item.deal_id }}/" class="hidden btn btn-small">Details</a>
     </td>
     {% endif %}
     </tr>
@@ -299,7 +298,6 @@
 <a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn">{% trans "More..." %}</a>
 {% endif %}
 {% else %}
-<p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
+<p>{% trans "There are currently no deals matching your search criteria." %} <a href="/public/">{% trans "Add a deal" %}</a>.</p>
 {% endif %}
 {% endblock %}
-{% endwith %}

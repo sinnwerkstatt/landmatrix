@@ -24,11 +24,7 @@
                     <table>
                         <col width="23%">
 
-                        {% if form.forms %}
-                            {{ form }}
-                        {% else %}      {# form.forms #}
-                            {{ form.as_table }}
-                        {% endif %}     {# form.forms #}
+                        {{ form.as_p }}
                     </table>
                 </div>
             </div>
