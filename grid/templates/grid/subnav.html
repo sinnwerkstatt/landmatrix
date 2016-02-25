@@ -1,0 +1,62 @@
+{% load i18n custom_tags %}
+{% load humanize %}
+
+        <div class="navbar navbar-default navbar-subnav" role="navigation">
+            <div class="container-fluid">
+
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#subnav" aria-expanded="false">
+                        <span class="sr-only">{% trans "Toggle navigation" %}</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse" id="subnav">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false"><span>{% trans "By Target" %}<span class="caret"></span></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/global/data/by-target-region/">{% trans "By Target Region" %}</a></li>
+                                <li><a href="/global/data/by-target-country/">{% trans "By Target Country" %}</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false"><span>{% trans "By Investor" %} <span class="caret"></span></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/global/data/by-investor/">{% trans "By Investor" %}</a></li>
+                                <li><a href="/global/data/by-investor-region/">{% trans "By Investor Region" %}</a></li>
+                                <li><a href="/global/data/by-investor-country/">{% trans "By Investor Country" %}</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="/global/data/by-data-source/" role="button">
+                                {% trans "By Data Source" %}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/global/data/by-intention/" role="button">
+                               {% trans "By Intention" %}
+                           </a>
+                        </li>
+                        <li>
+                            <a href="/global/data/by-crop/" role="button">
+                                {% trans "By Crop" %}
+                            </a>
+                        </li>
+
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" role="button"><span>{% trans "All deals" %}</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
