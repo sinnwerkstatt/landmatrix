@@ -78,7 +78,7 @@ INSTALLED_APPS += (
     'django_extensions',
 
     'django_select2',
-    #'crispy_forms',
+    'crispy_forms',
 
     'threadedcomments',
     'django_comments',

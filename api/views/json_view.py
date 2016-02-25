@@ -18,6 +18,8 @@ import json
 
 from django.views.generic.base import TemplateView
 from grid.views.activity_protocol import ActivityQuerySet
+from landmatrix.models.country import Country
+from landmatrix.models.region import Region
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -56,6 +58,30 @@ HectaresJSONGenerator = json_get_generator(HectaresQuerySet)
 ActivitiesJSONGenerator = json_post_generator(ActivityQuerySet)
 
 
+class SimpleFakeQuerySet:
+    def __init__(self, get_data):
+        self.get_data = get_data
+
+
+class CountriesQuerySet(SimpleFakeQuerySet):
+    def all(self):
+        if self.get_data['region']:
+            countries = Country.objects.filter(fk_region__slug=self.get_data['region']).order_by('name')
+        else:
+            countries = Country.objects.all().order_by('name')
+        return [[country.slug, country.name] for country in countries]
+
+
+class RegionsQuerySet(SimpleFakeQuerySet):
+    def all(self):
+        regions = Region.objects.all().order_by('name')
+        return [[region.slug, region.name] for region in regions]
+
+
+RegionsJSONGenerator = json_get_generator(RegionsQuerySet)
+CountriesJSONGenerator = json_get_generator(CountriesQuerySet)
+
+
 class JSONView(TemplateView):
 
     template_name = 'plugins/overview.html'
@@ -73,6 +99,8 @@ class JSONView(TemplateView):
         'hectares.json':                        HectaresJSONGenerator,
         'deals.json':                           DealsJSONGenerator,
         'activities.json':                      ActivitiesJSONGenerator,
+        'regions.json':                         RegionsJSONGenerator,
+        'countries.json':                       CountriesJSONGenerator,
     }
 
     def dispatch(self, request, *args, **kwargs):
