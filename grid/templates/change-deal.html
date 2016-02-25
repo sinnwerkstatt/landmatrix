@@ -13,22 +13,18 @@
   <script src="/media/js/editor/add_change.js" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
-{% block page_title %}Change deal #{{ deal_id }}{% endblock %}
-{% block title %}Change deal #{{ deal_id }}{% endblock %}
+{% block page_title %}{% trans "Change deal" %} #{{ deal_id }}{% endblock %}
+{% block title %}{% trans "Change deal" %} #{{ deal_id }}{% endblock %}
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-  <li><a href="/editor">Editor</a> <span class="divider">|</span></li>
-  <li><a href="/global/change/{{ deal_id }}">Change deal #{{ deal_id }}</a> <span class="divider">|</span></li>
-  <li>Change deal  #{{ deal_id }}</li>
+  <li><a href="/editor">{% trans "Editor" %}</a> <span class="divider">|</span></li>
+  <li><a href="/global/change/{{ deal_id }}">{% trans "Change deal" %} #{{ deal_id }}</a> <span class="divider">|</span></li>
+  <li>{% trans "Change deal" %}  #{{ deal_id }}</li>
 </ul>
 {% endblock %}
 
 {% block content %}
-
-
-  <h5>Change deal #{{ deal_id }}</h5>
-
   <form action="." method="post" enctype="multipart/form-data">
 
     {% csrf_token %}
