@@ -61,6 +61,7 @@ class DealDetailView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['deal'] = {
             'id': deal.activity.id,
+            'activity': deal.activity,
             'activity_identifier': deal.activity.activity_identifier,
             'attributes': deal.attributes,
             'primary_investor': deal.operational_stakeholder,

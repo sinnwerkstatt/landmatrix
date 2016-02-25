@@ -19,65 +19,23 @@
     <li role="presentation" class="active"><span>
         <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
     </span></li>
+    <li class="divider"></li>
 {% endblock %}
 
 {% block content %}
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="dropdown{% if chart == "chart_overview" %} active{% endif %}">
-          <a href="{% url "chart_overview" %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            {% trans "Dynamics Overview" %}
-            <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="?variable=negotiation_status">{% trans "Negotiation status" %}</a></li>
-            <li><a href="?variable=implementation_status">{% trans "Implementation status" %}</a></li>
-            <li><a href="?variable=intention_of_investment">{% trans "Intention of investment" %}</a></li>
-            <li><a href="?variable=investment_in_agriculture">{% trans "Investment in Agriculture" %}</a></li>
-          </ul>
-        </li>
-        <li{% if chart == "chart_transnational_deals" %} class="active"{% endif %}><a href="{% url "chart_transnational_deals" %}">{% trans "Web of transnational deals" %}</a></li>
-        <li{% if chart == "chart_map_of_investments" %} class="active"{% endif %}><a href="{% url "chart_map_of_investments" %}">{% trans "Global map of investments" %}</a></li>
-        <li{% if chart == "chart_agricultural_drivers" %} class="active"{% endif %}><a href="{% url "chart_agricultural_drivers" %}">{% trans "Agricultural drivers" %}</a></li>
-        <li{% if chart == "chart_perspective" %} class="active"{% endif %}><a href="{% url "chart_perspective" %}">{% trans "It's a big deal" %}</a></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
-
 {% block before %}
 {% endblock %}
-{%  include "filters.html" %}
+{% include "charts/subnav.html" %}
+{% include "filters.html" %}
 
 <div class="row">
-    <div class="col-md-4">
-        <div class="well-square">
+    <div class="col-md-6">
+        <div class="well">
             {% block description %}{{ body|safe }}{% endblock %}
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="well-square data-availability">
-        	{% block data_availability %}
-            <h5>Data availability <a href="/about/#what-does-data-availability-mean" class="toggle-tooltip" title="The infographics show information about deals for which relevant data is available in our dataset. The small pie chart below shows percentage of deals represented. Click to read more."><i class="icon icon-question-sign"> </i></a></h5>
-            <a href="/get-the-detail/" class="pull-left">
-                <canvas id="pie-availability" width="36" height="36"></canvas>
-            </a>
-            <ul class="media-list legend pull-left">
-                <li style="color: #1e1e1e;">{% trans "Information" %}<span></span></li>
-                <li style="color: #828282;">{% trans "No information" %}<span></span></li>
-            </ul>
-            <p style="clear:both">&nbsp;</p>
-            {% endblock %}
+    <div class="col-md-6">
+        <div class="well">
             {% block legend %}
             <ul class="media-list legend offset">
                 <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span> {% trans "Food-Crop - Crops that be consumed by humans, even if also used as livestock feed" %}</span></li>
@@ -86,34 +44,6 @@
                 <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span> {% trans "Multiple Use - Several crops in different categories" %}</span></li>
             </ul>
             {% endblock %}
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="row">
-            <div class="col-md-4 filters">
-            	{% block filters %}
-                <div class="row">
-                    <div class="btn-group col-md-4 negotiation_status">
-                      <button type="submit" class="btn active" name="negotiation_status" value="concluded">{% trans "Concluded deals" %}</button>
-                      <button type="submit" class="btn" name="negotiation_status" value="intended">{% trans "Intended deals" %}</button>
-                      <button type="submit" class="btn failed" name="negotiation_status" value="failed">{% trans "Failed deals" %}</button>
-                      <a href="/about/#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left" title="The Land Matrix distinguishes between intended, concluded and failed deals. For further information press the question mark."><i class="icon icon-question-sign"> </i></a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="btn-group col-md-4 deal_scope form-inline">
-                      <button type="submit" class="btn active" name="deal_scope" value="transnational">{% trans "Transnational deals" %}</button>
-                      <button type="submit" class="btn" name="filter" value="domestic">{% trans "Domestic deals" %}</button>
-                        <a href="/about/#are-there-biases-in-the-data" class="toggle-tooltip left" title="Please note that purely domestic deals are largely underrepresented in the Land Matrix. For further information press the question mark."><i class="icon icon-question-sign"> </i></a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="btn-group col-md-4 data_source_type">
-                      <button type="submit" class="btn" name="data_source_type" value="exclude-media-reports">{% trans "Exclude media reports" %}</button>
-                    </div>
-                </div>
-                {% endblock %}
-            </div>
         </div>
     </div>
 </div>

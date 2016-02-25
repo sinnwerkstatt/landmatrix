@@ -78,9 +78,10 @@ INSTALLED_APPS += (
     'django_extensions',
 
     'django_select2',
+    #'crispy_forms',
 
-    # 'debug_toolbar',
-    # 'debug_toolbar_line_profiler',
+    'threadedcomments',
+    'django_comments',
 
 #   apps of the actual landmatrix project
     'landmatrix',
@@ -245,3 +246,5 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
+
+COMMENTS_APP = 'threadedcomments'
