@@ -1,3 +1,5 @@
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from grid.forms.base_form import BaseForm
@@ -14,9 +16,9 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.contrib import messages
 
-if False:
-    import urllib2
-    from wkhtmltopdf import wkhtmltopdf
+from wkhtmltopdf import wkhtmltopdf
+
+import urllib.request
 
 import os
 import re
@@ -65,6 +67,32 @@ class DealDataSourceForm(BaseForm):
     def get_availability_total(self):
         return 4
 
+    @classmethod
+    def get_data(cls, deal, taggroup, next_taggroup):
+        from django.db.models import Q
+        belongs_to_data_source = Q(attributes__contains=['file']) | \
+                                 Q(attributes__contains=['url']) | \
+                                 Q(attributes__contains=['type'])
+
+        next_taggroup_id = next_taggroup.id if next_taggroup else ActivityAttributeGroup.objects.order_by('pk').last().id
+
+        tags = ActivityAttributeGroup.objects.filter(fk_activity=deal.activity).\
+            filter(pk__gte=taggroup.id).filter(pk__lte=next_taggroup_id).\
+            filter(belongs_to_data_source).values_list('attributes', flat=True)
+
+        attributes = {}
+        for tag in tags:
+            for key in tag.keys():
+                if key in attributes and attributes[key] != tag[key]:
+                    # raise RuntimeError()
+                    print(
+                        'ALERT: found different values under the same tag group. Deal ID {}, taggroup {}, tags {}'.format(
+                            deal.activity.activity_identifier, taggroup.id, str(tags)
+                        ))
+                attributes[key] = tag[key]
+
+        return attributes
+
 
 DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=0)
 
@@ -85,11 +113,11 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
                         ds_url = t["value"]
                     elif t["key"] == "file":
                         ds_file = t["value"]
-                #if ds_file:
-                #    taggroup["tags"].append({
-                #            "key": "file",
-                #            "value": ds_file,
-                #        })
+                if ds_file:
+                    taggroup["tags"].append({
+                            "key": "file",
+                            "value": ds_file,
+                        })
                 if ds_url:
                     url_slug = "%s.pdf" % re.sub(r"http|https|ftp|www|", "", slugify(ds_url))
                     if not ds_file or url_slug != ds_file:
@@ -100,7 +128,7 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
                             try:
                                 # Check if URL changed and no file given
                                 if ds_url.endswith(".pdf"):
-                                    response = urllib2.urlopen(ds_url)
+                                    response = urllib.request.urlopen(ds_url)
                                     default_storage.save("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug), ContentFile(response.read()))
                                 else:
                                     # Create PDF from URL
@@ -127,11 +155,12 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
             return {}
 
         taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
+        print('taggroups: ', [t.attributes for t in taggroups])
         data = {}
         for i, taggroup in enumerate(taggroups):
-            print()
-            print(i)
-            data[i] = DealDataSourceForm.get_data(deal, taggroup=taggroup)
+            form_data = DealDataSourceForm.get_data(deal, taggroup, taggroups[i+1] if i < len(taggroups)-1 else None)
+            print('form', i, ':', form_data)
+            data[i] = form_data
         return data
 
 

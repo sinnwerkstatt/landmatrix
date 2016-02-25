@@ -1,4 +1,8 @@
+from pprint import pprint
+
 from landmatrix.models.activity import Activity
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.deal import Deal
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -10,8 +14,10 @@ from django import forms
 from django.forms.models import formset_factory
 from django.utils.translation import ugettext_lazy as _
 
+from django.forms.utils import ErrorDict, ErrorList, flatatt
 
 class DealSpatialForm(BaseForm):
+
     form_title = _('Location')
     tg_location = TitleField(required=False, label="", initial=_("Location"))
     level_of_accuracy = forms.TypedChoiceField(required=False, label=_("Level of accuracy"), choices=(
@@ -29,7 +35,22 @@ class DealSpatialForm(BaseForm):
     tg_location_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
 
-DealSpatialBaseFormSet = formset_factory(DealSpatialForm, extra=1)
+class DealSpatialBaseFormSet(formset_factory(DealSpatialForm, extra=0)):
+
+    @classmethod
+    def get_data(cls, activity):
+        if isinstance(activity, Deal):
+            activity = activity.activity
+        if isinstance(activity, Activity):
+            taggroups = ActivityAttributeGroup.objects.\
+                filter(fk_activity=activity).filter(attributes__contains=["location"])
+        else:
+            taggroups = []
+
+        data = []
+        for i, taggroup in enumerate(taggroups):
+            data.append(DealSpatialForm.get_data(activity, taggroup=taggroup))
+        return data
 
 
 class AddDealSpatialFormSet(DealSpatialBaseFormSet):
@@ -43,18 +64,6 @@ class AddDealSpatialFormSet(DealSpatialBaseFormSet):
                 taggroup["main_tag"]["value"] += "_" + str(i+1)
                 ds_taggroups.append(taggroup)
         return ds_taggroups
-
-    @classmethod
-    def get_data(cls, activity):
-        if isinstance(activity, Activity):
-            taggroups = activity.activityattributegroup_set.filter(fk_a_tag__fk_a_value__value__contains="location").order_by("fk_a_tag__fk_a_value__value")
-        else:
-            taggroups = []
-
-        data = []
-        for i, taggroup in enumerate(taggroups):
-            data.append(DealSpatialForm.get_data(activity, taggroup=taggroup))
-        return data
 
 
 class ChangeDealSpatialFormSet(AddDealSpatialFormSet):
