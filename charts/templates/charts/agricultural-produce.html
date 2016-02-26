@@ -1,4 +1,5 @@
-{% extends "charts/base_chart.html" %}{% load i18n custom_tags humanize %}
+{% extends "charts/base_chart.html" %}
+{% load i18n custom_tags humanize static %}
 
 {% block page_title %}{% trans "Agricultural drivers" %}{% endblock %}
 {% block title %}{% trans "Agricultural drivers" %}{% endblock %}
@@ -155,10 +156,11 @@
 
 {% block after %}
 {{ block.super }}
-<script type="text/javascript" src="/media/js/legacy/vendor/RGraph.pie.js"></script>
-<script type="text/javascript" src="/media/js/legacy/vendor/RGraph.common.core.js"></script>
-<script type="text/javascript" src="/media/js/legacy/vendor/RGraph.common.effects.js"></script>
-<script type="text/javascript" src="/media/js/legacy/vendor/RGraph.common.dynamic.js"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.pie.js" %}"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.core.js" %}"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.effects.js" %}"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.dynamic.js" %}"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.tooltips.js" %}"></script>
 <script type="text/javascript">
 function draw(callback) {
     RGraph.ObjectRegistry.Clear();

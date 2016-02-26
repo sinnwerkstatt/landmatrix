@@ -1,4 +1,5 @@
-{% extends "charts/base_chart.html" %}{% load i18n custom_tags humanize %}
+{% extends "charts/base_chart.html" %}
+{% load i18n custom_tags humanize static %}
 
 {% block page_title %}{% trans "Global map of investments" %}{% endblock %}
 {% block title %}{% trans "Global map of investments" %}{% endblock %}
@@ -46,10 +47,10 @@
 
 {% block after %}
 {{ block.super }}
-<script src="/media/js/legacy/vendor/raphael.min.js" type="text/javascript" charset="utf-8"></script>
-<script src="/media/js/legacy/vendor/raphael-svg-import.js" type="text/javascript" charset="utf-8"></script>
-<script src="/media/js/legacy/world.min.js" type="text/javascript" charset="utf-8"></script>
-<script src="/media/js/legacy/map.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="{% static "legacy/vendor/raphael.min.js" %}"></script>
+<script src="{% static "legacy/vendor/raphael-svg-import.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "legacy/world.min.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "legacy/map.js" %}" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 function get_base_filter() {
     var filters = "";
