@@ -58,49 +58,22 @@
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="/global/map/"><i class="lm-nav lm-globe"></i><span class="nav-text">Global</span></a>
+                    <li>
+                        <a href="/global/map/"><i class="lm-nav lm-globe"></i><span class="nav-text">Global</span></a>
                     </li>
                     <li>
-                        <form class="navbar-form">
-                            <div class="form-group">
-                                <span>
-                                <i class="lm-nav lm-regions"></i>
-                                    <select class="nav-select" id="nav-region-select">
-                                        <option></option>
-                                        <optgroup label="Region observatories">
-                                            <option label="Regions" value="de_o">Europe</option>
-                                            <option label="Regions" value="ru_o">Russia</option>
-                                        </optgroup>
-                                        <optgroup label="Regions">
-                                            <option label="Regions" value="de">Europe</option>
-                                            <option label="Regions" value="ru">Russia</option>
-                                            <option label="Regions" value="sa">South Africa</option>
-                                        </optgroup>
-                                    </select>
-                                </span>
-                            </div>
-                        </form>
+                        <span>
+                            <i class="lm-nav lm-regions"></i>
+                            <select class="nav-select" id="nav-region-select">
+                            </select>
+                        </span>
                     </li>
                     <li>
-                        <form class="navbar-form">
-                            <div class="form-group">
-                                <span>
-                                <i class="lm-nav lm-flag"></i>
-                                    <select class="nav-select" id="nav-country-select">
-                                        <option></option>
-                                        <optgroup label="Country observatories">
-                                            <option label="Countries" value="de_o">Germany</option>
-                                            <option label="Countries" value="ru_o">Russia</option>
-                                        </optgroup>
-                                        <optgroup label="Countries">
-                                            <option label="Countries" value="de">Germany</option>
-                                            <option label="Countries" value="ru">Russia</option>
-                                            <option label="Countries" value="si">Siberia</option>
-                                        </optgroup>
-                                    </select>
-                                </span>
-                            </div>
-                        </form>
+                        <span>
+                            <i class="lm-nav lm-flag"></i>
+                            <select class="nav-select" id="nav-country-select">
+                            </select>
+                        </span>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -277,17 +250,45 @@
         } 
         function select2_close (e) {
             $(this).parents("li").removeClass("open")
-
         } 
         $(document).ready(function () {
             $('#nav-region-select').select2({
                 placeholder: "Regions",
-                dropdownCssClass: "select2-main"
+                dropdownCssClass: "select2-main",
+                ajax: {
+                    url: "/api/regions.json",
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function (data, params) {
+                        items = [];
+                        data.forEach(function (d) {
+                            items.push({'id': d[0], 'text': d[1]});
+                        })
+                        return {
+                          results: items
+                        }
+                    },
+                    cache: true
+                }
             }).on('select2:open', select2_open)
               .on('select2:close', select2_close);
             $('#nav-country-select').select2({
                 placeholder: "Countries",
-                dropdownCssClass: "select2-main"
+                dropdownCssClass: "select2-main",
+                ajax: {
+                    url: "/api/countries.json?region=",
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function (data, params) {
+                        items = [];
+                        data.forEach(function (d) {
+                            items.push({'id': d[0], 'text': d[1]});
+                        })
+                        return {
+                          results: items
+                        }
+                    },
+                }
             }).on('select2:open', select2_open)
               .on('select2:close', select2_close);
         });
