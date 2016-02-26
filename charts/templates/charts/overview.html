@@ -44,7 +44,6 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 
 {% block after %}
 {{ block.super }}
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.pie.js" %}"></script>
 <script type="text/javascript" src="{% static "legacy/vendor/RGraph.bar.js" %}"></script>
 <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.core.js" %}"></script>
 <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.effects.js" %}"></script>
@@ -52,7 +51,6 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.tooltips.js" %}"></script>
 <script type="text/javascript">
 $(document).ready(function () {
-//    alert('ready!');
     $("a.change-variable").click(function (e) {
         e.preventDefault();
         var c_self = this;
@@ -114,35 +112,34 @@ function draw (callback, chart_data) {
         RGraph.Effects.Fade.In(bar, {'duration': 250});
 
         // show/hide data availability
-        var sum = 0;
-        $(chart_data).each(function (i) { sum += chart_data[i].deals; });
-        sum && $(".data-availability").show() || $(".data-availability").hide();
-
-        // availability pie chart
-        var pie_data = [], pie_labels = [];
-        var available = 0, not_available = 0, not_available_per = 0, available_per = 0;
-        sum = 0;
-        for (var i = 0; i < chart_data.length; i++) {
-            sum += chart_data[i][(show_deals && "deals" || "hectares")];
-            if (chart_data[i]["name"] !== "") {
-                available += chart_data[i][(show_deals && "deals" || "hectares")]
-            } else {
-                not_available += chart_data[i][(show_deals && "deals" || "hectares")];
-            }
-        }
-        not_available_per = Math.round(not_available/sum*100)
-        available_per = Math.round(available/sum*100)
-        pie_data.push(not_available_per);
-        pie_data.push(available_per);
-        var pie = new RGraph.Pie('pie-availability', pie_data);
-        pie.Set('chart.colors', ['#1e1e1e', '#828282']);
-        pie.Set('chart.radius', 15);
-        pie.Set('chart.strokestyle', '#bbb');
-        pie.Set('chart.text.font', 'Open Sans');
-        pie.Set('chart.text.size', '9');
-        RGraph.Effects.Fade.In(pie, {'duration': 250});
-        $("ul.legend li:first span").text(" (" + numberWithCommas(available) + (show_deals && " deals" || " hectares") + ", " + available_per + "%)");
-        $("ul.legend li:last span").text(" (" + numberWithCommas(not_available) + (show_deals && " deals" || " hectares") + ", " + not_available_per + "%)");
+        //var sum = 0;
+        //$(chart_data).each(function (i) { sum += chart_data[i].deals; });
+        //sum && $(".data-availability").show() || $(".data-availability").hide();
+        //// availability pie chart
+        //var pie_data = [], pie_labels = [];
+        //var available = 0, not_available = 0, not_available_per = 0, //available_per = 0;
+        //sum = 0;
+        //for (var i = 0; i < chart_data.length; i++) {
+        //    sum += chart_data[i][(show_deals && "deals" || "hectares")];
+        //    if (chart_data[i]["name"] !== "") {
+        //        available += chart_data[i][(show_deals && "deals" || "hectares")]
+        //    } else {
+        //        not_available += chart_data[i][(show_deals && "deals" || "hectares")];
+        //    }
+        //}
+        //not_available_per = Math.round(not_available/sum*100)
+        //available_per = Math.round(available/sum*100)
+        //pie_data.push(not_available_per);
+        //pie_data.push(available_per);
+        //var pie = new RGraph.Pie('pie-availability', pie_data);
+        //pie.Set('chart.colors', ['#1e1e1e', '#828282']);
+        //pie.Set('chart.radius', 15);
+        //pie.Set('chart.strokestyle', '#bbb');
+        //pie.Set('chart.text.font', 'Open Sans');
+        //pie.Set('chart.text.size', '9');
+        //RGraph.Effects.Fade.In(pie, {'duration': 250});
+        //$("ul.legend li:first span").text(" (" + numberWithCommas(available) + (//show_deals && " deals" || " hectares") + ", " + available_per + "%)");
+        //$("ul.legend li:last span").text(" (" + numberWithCommas(not_available) + (show_deals && " deals" || " hectares") + ", " + not_available_per + "%)");
         (typeof callback == "function") && callback();
     } else {
         var json_query = $(".navbar-subnav li .active a").attr("href").replace(/.*\?variable=/, "") + ".json";
