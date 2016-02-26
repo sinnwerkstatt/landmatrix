@@ -591,8 +591,14 @@ p a {
     font-weight: 400;
 }
 
-.navbar-main .form-group {
+.navbar-main li > span {
+    padding: 18px 15px 55px 15px;
     height: 47px;
+    display: inline-block;
+}
+
+.navbar-main .select2 {
+    width: auto !important;
 }
 
 .navbar-main .select2 .select2-dropdown {
