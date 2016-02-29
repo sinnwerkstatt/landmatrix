@@ -118,6 +118,11 @@ table .map {
     /* border: 1px solid black; */
 }
 
+
+.legend-entry {
+    margin-bottom: 1px;
+}
+
 .legend-symbol {
     float: left;
 /*    height: 1.2em; */

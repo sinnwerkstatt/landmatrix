@@ -1,4 +1,4 @@
-var openInvestorPopup = function(investorId) {
+var openInvestorPopup = function (investorId) {
     if (typeof investorId === 'undefined') {
         investorId = 'add';
     }
@@ -11,7 +11,7 @@ $(document).ready(function () {
     // TODO: Get Investor ID from Select and replace edit url
 
 
-    var generateButtons = function(field) {
+    var generateButtons = function (field) {
         var investorId = field.val();
         console.log("Heya:", field, investorId);
 
@@ -26,13 +26,23 @@ $(document).ready(function () {
 
     $(".investorfield").each(function () {
         var investorId = $(this).val();
-        $(this).select2({
+        $(this).djangoSelect2({
             placeholder: 'Select Investor'
         });
+        /*
+         var investorId = $(this).val();
+         $(this).select2({
+         placeholder: 'Select Investor',
+         ajax: {
+         url: '/api/investors.json',
+         cache: true
+         }
+         });
+         */
         console.log('Investor:', investorId);
         generateButtons($(this));
         $(this).on('change', function () {
-             generateButtons($(this));
+            generateButtons($(this));
         })
     });
 });
