@@ -310,7 +310,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
                     "intention", "negotiation_status", "implementation_status", "intended_size",
                     "contract_size", ]
         }
-        return columns[self.group]
+        return columns.get(self.group)
 
     def _map_values_of_group(self, value_list, format_string):
         """ Map different values of one group together. Ensures that values of a group are together.
