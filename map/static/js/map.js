@@ -250,7 +250,7 @@ $(document).ready(function () {
     });
 
     var vectorLayer = new ol.layer.Vector({
-        title: 'GeoJSON',
+        title: 'Deal area polygons',
         visible: true,
         source: vectorSource,
         style: styleFunction
@@ -265,7 +265,6 @@ $(document).ready(function () {
             new ol.layer.Group({
                 'title': 'Base Maps',
                 layers: [
-                    vectorLayer,
                     new ol.layer.Tile({
                         title: 'OpenStreetMap',
                         type: 'base',
@@ -279,11 +278,12 @@ $(document).ready(function () {
                         source: new ol.source.MapQuest({layer: 'sat'})
                     }),
                     new ol.layer.Tile({
-                        title: 'Toner',
+                        title: 'Watercolor',
                         type: 'base',
                         visible: false,
-                        source: new ol.source.Stamen({layer: 'toner'})
-                    })
+                        source: new ol.source.Stamen({layer: 'watercolor'})
+                    })/*,
+                    vectorLayer */
                 ]
             }),
             // Context Layers from the Landobservatory Geoserver.
@@ -420,12 +420,12 @@ $(document).ready(function () {
     legendHeader.innerHTML = "<strong>Deal Intentions</strong>";
     intentionLegend.appendChild(legendHeader);
 
-    for (intention in intentions) {
+    for (var intention in intentions) {
         var intentionItem = document.createElement('li');
         var intentionName = intentions[intention];
         var col = intentionColors[intentionName];
 
-        var innerHTML = '<div><span class="legend-symbol" style="color: ' + col + '; background-color: ' + col + ';">.</span>';
+        var innerHTML = '<div class="legend-entry"><span class="legend-symbol" style="color: ' + col + '; background-color: ' + col + ';">.</span>';
         innerHTML = innerHTML + intentionName + "</div>";
         intentionItem.innerHTML = innerHTML;
 
@@ -440,7 +440,8 @@ $(document).ready(function () {
             var features = feature.getProperties().features;
 
             if (features.length > 1) {
-                content.innerHTML = '<p>Cluster of investments:</p><code>' + features.length + '</code>';
+                var popup = '<div><p>Cluster of investments: ' + features.length + ' total</p>';
+                popup += '<table class="table table-condensed"><tr><th>Intention</th><th>Count</th></tr>';
 
                 var deals = {};
 
@@ -454,15 +455,25 @@ $(document).ready(function () {
                     }
                 }
 
-                for (dealtype in deals) {
-                    content.innerHTML = content.innerHTML + "<br><p>" + dealtype + deals[dealtype] + "</p>";
+                for (var dealtype in deals) {
+                    popup += "<tr><td>" + dealtype +"</td><td>" + deals[dealtype] + "</td></tr>";
                 }
+                popup += '</table><br>Zoom here for more details.</div>';
+                console.log(popup);
+                content.innerHTML = popup;
             } else {
                 var feat = features[0];
 
+                var id = feat.attributes.id;
+                var lat = feat.attributes.lat.toFixed(4);
+                var lon = feat.attributes.lon.toFixed(4);
+                var intention = feat.attributes.intention;
+
                 // TODO: Here, some javascript should be called to get the deal details from the API
                 // and render it inside the actual content popup
-                content.innerHTML = '<p>Deal #' + '<p>Coordinates:</p><code>' + feat.attributes.lat.toFixed(4) + ' ' + feat.attributes.lon.toFixed(4) + '</code>' + '<p>Intention of investment:</p><code>' + feat.attributes.intention + '</code>';
+                content.innerHTML = '<div><a href="/deal/'+ feat.attributes.id + '">Deal #' + id + '</a>';
+                content.innerHTML += '<p>Coordinates:</p><code>' + lat + ' ' + lon + '</code>';
+                content.innerHTML += '<p>Intention of investment:</p><code>' + intention + '</code></div>';
             }
 
             PopupOverlay.setPosition(evt.coordinate);
@@ -501,7 +512,8 @@ $(document).ready(function () {
         } else {
             for (var i = 0; i < data.length; i++) {
                 var marker = data[i];
-                addClusteredMarker(parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention);
+                console.log(marker);
+                addClusteredMarker(marker.deal_id, parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention);
             }
             console.log('Added deals: ', i);
         }
@@ -515,7 +527,7 @@ $(document).ready(function () {
 
 // MARKERS in clusters. ONE MARKER = ONE DEAL
 //longitude, latitude, intention im Index.html definiert
-function addClusteredMarker(longitude, latitude, intention) {
+function addClusteredMarker(dealid, longitude, latitude, intention) {
     intention = intention || 'Undefined';
 
     if ((typeof latitude == 'number') && (typeof longitude == 'number')) {
@@ -528,6 +540,7 @@ function addClusteredMarker(longitude, latitude, intention) {
         }
 
         feature.attributes = {
+            id: dealid,
             intention: intention,
             lat: latitude,
             lon: longitude
