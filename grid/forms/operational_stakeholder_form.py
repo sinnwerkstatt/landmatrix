@@ -5,7 +5,7 @@ from django.forms.models import ModelChoiceField, ModelForm
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext_lazy as _
 
-from django_select2.forms import ModelSelect2Widget
+from django_select2.forms import Select2Widget
 
 from grid.forms.base_form import BaseForm
 from grid.widgets.title_field import TitleField
@@ -25,9 +25,8 @@ class OperationalStakeholderForm(BaseForm):
             queryset=Investor.objects.filter(
                     pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
             ).order_by('name'),
-            widget=ModelSelect2Widget(
-                model=Investor,
-                search_fields=['name__icontains']
+            widget=Select2Widget(
+                attrs={'class': 'form-control investorfield'}
             )
     )
     project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)
