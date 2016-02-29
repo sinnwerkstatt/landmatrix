@@ -11,7 +11,7 @@ def staging():
     env.hosts = ['lmlo@lmlo.sinnwerkstatt.com']
     env.path = '/srv/lmlo.sinnwerkstatt.com/lmlo/'
     env.virtualenv_path = '/srv/lmlo.sinnwerkstatt.com/lmloenv'
-    env.backup_path = '/srv/lmlo.sinnwerkstatt.com/backups'
+    #env.backup_path = '/srv/lmlo.sinnwerkstatt.com/backups'
     env.push_branch = 'master'
     env.push_remote = 'origin'
     env.reload_cmd = 'supervisorctl restart lmlo'
@@ -20,7 +20,16 @@ def staging():
     env.after_deploy_url = 'http://lmlo.sinnwerkstatt.com'
     
 def production():
-    pass
+    env.name = 'production'
+    env.hosts = ['landmatrix@beta.landmatrix.org']
+    env.path = '/home/landmatrix/landmatrix'
+    env.virtualenv_path = '/home/landmatrix/.virtualenvs/landmatrix'
+    env.backup_path = '/srv/lmlo.sinnwerkstatt.com/backups'
+    env.push_branch = 'master'
+    env.push_remote = 'origin'
+    env.reload_cmd = 'supervisorctl restart landmatrix'
+    env.db_name = 'landmatrix'
+    env.db_username = 'landmatrix'
 
 def compile_less():
     pass
