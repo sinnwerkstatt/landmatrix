@@ -109,10 +109,10 @@ MIDDLEWARE_CLASSES = (
 
     'django.middleware.locale.LocaleMiddleware',
     # 'django.middleware.doc.XViewMiddleware',
-    'cms.middleware.user.CurrentUserMiddleware',
-    'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware'
+    #'cms.middleware.user.CurrentUserMiddleware',
+    #'cms.middleware.page.CurrentPageMiddleware',
+    #'cms.middleware.toolbar.ToolbarMiddleware',
+    #'cms.middleware.language.LanguageCookieMiddleware'
 )
 
 if FRONTENDDEV:
@@ -154,7 +154,7 @@ TEMPLATES = [
                 'django.core.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
-                'cms.context_processors.cms_settings',
+                #'cms.context_processors.cms_settings',
             ],
         },
     },
@@ -197,6 +197,13 @@ MEDIA_URL = "/media/"
 # tastypie
 #
 API_LIMIT_PER_PAGE = 100
+
+#
+# select2
+#
+
+SELECT2_JS = 'vendor/select2/dist/js/select2.min.js'
+SELECT2_CSS = 'vendor/select2/dist/css/select2.min.css'
 
 #
 # django-cms stuff

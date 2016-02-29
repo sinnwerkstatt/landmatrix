@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import include, url, patterns
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -33,8 +33,12 @@ from editor import urls as editor_urls
 from landmatrix.views.start_view import StartView
 from grid.views.stakeholder_view import StakeholderView
 
-urlpatterns = i18n_patterns('',
+non_i18n_patterns = patterns('',
+    url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
+    url(r'^select2/', include('django_select2.urls')),
+)
 
+urlpatterns = i18n_patterns('',
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
 
@@ -62,11 +66,10 @@ urlpatterns = i18n_patterns('',
 
     url(r'^deal/comments/', include('django_comments.urls')),
 
+    url(r'^stakeholder/add$', StakeholderView.as_view(), name='stakeholder_form'),
     url(r'^stakeholder/(?P<investor_id>[\d]+)/$', StakeholderView.as_view(), name='stakeholder_form'),
 
     url(r'^editor/', include(editor_urls)),
-    url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
     url(r'^$', StartView.as_view(), name='start'),
     #url(r'^', include('cms.urls')),
-    url(r'^select2/', include('django_select2.urls')),
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+) + non_i18n_patterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
