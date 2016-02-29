@@ -70,6 +70,7 @@ function get_base_filter() {
     return filters.substr(1);
 }
 function get_query_params(base_filter, filter) {
+    return "?deal_scope=transnational"
     if (base_filter && filter) {
         return "?" + base_filter + "&" + filter;
     } else if (base_filter) {
