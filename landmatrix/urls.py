@@ -75,7 +75,7 @@ urlpatterns = i18n_patterns(
         url(r'^stakeholder/(?P<investor_id>[\d]+)/$', StakeholderView.as_view(), name='stakeholder_form'),
 
         url(r'^editor/', include(editor_urls)),
-        url(r'^$', FilterView.as_view(), name='start'),
+        url(r'^$', StartView.as_view(), name='start'),
         url(r'^filters$', FilterView.as_view(), name='start'),
         # url(r'^', include('cms.urls')),
 ) + non_i18n_patterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL,
