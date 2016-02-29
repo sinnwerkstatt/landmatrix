@@ -12,11 +12,14 @@
 {% block title %}Add / edit Operational stakeholder{% endblock %}
 
 {% block content %}
+    <!-- Foo -->
+    {{ investor_form.media.js }}
+
     <div class="popup">
         <form action="." method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <table>
-                {{ investor_form }}
+                <!--  {{ investor_form }}
 
                 <tr>
                     <td><h3>Parent stakeholders</h3></td>
@@ -27,7 +30,13 @@
                     <td><h3>Investors</h3></td>
                 </tr>
                 {{ parent_investors }}
-
+                -->
+                <select class="investorfield">
+                    <option value="5">Investor One</option>
+                    <option value="23">Investor Two</option>
+                    <option value="512">Investor Three</option>
+                    <option value="32348">Investor Four</option>
+                </select>
 
                 <tr>
                     <td><input type="submit" value="Submit"/></td>
