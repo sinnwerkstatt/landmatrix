@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import include, url, patterns
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -31,42 +31,52 @@ from map import urls as map_urls
 from charts import urls as charts_urls
 from editor import urls as editor_urls
 from landmatrix.views.start_view import StartView
+from landmatrix.views.filterdebug_view import FilterView
 from grid.views.stakeholder_view import StakeholderView
 
-urlpatterns = i18n_patterns('',
+non_i18n_patterns = patterns(
+        '',
+        url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(),
+            name='ajax_widget'),
+        url(r'^select2/', include('django_select2.urls')),
+)
 
-    url('^accounts/', include('django.contrib.auth.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+urlpatterns = i18n_patterns(
+        '',
+        url('^accounts/', include('django.contrib.auth.urls')),
+        url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^api/', include(api_urls)),
-    url(r'^global/data/', include(grid_urls)),
-    url(r'^global/grid/', include(grid_urls)),
-    url(r'^global/map/', include(map_urls)),
-    url(r'^global/charts/', include(charts_urls)),
+        url(r'^api/', include(api_urls)),
+        url(r'^global/data/', include(grid_urls)),
+        url(r'^global/grid/', include(grid_urls)),
+        url(r'^global/map/', include(map_urls)),
+        url(r'^global/charts/', include(charts_urls)),
 
-    # url(r'^region/(?P<region_slug>)/data/', include(grid_urls)),
-    # url(r'^region/(?P<region_slug>)/map/', include(map_urls)),
-    # url(r'^region/(?P<region_slug>)/charts/', include(charts_urls)),
-    #
-    # url(r'^country/(?P<country_slug>)/data/', include(grid_urls)),
-    # url(r'^country/(?P<country_slug>)/map/', include(map_urls)),
-    # url(r'^country/(?P<country_slug>)/charts/', include(charts_urls)),
+        # url(r'^region/(?P<region_slug>)/data/', include(grid_urls)),
+        # url(r'^region/(?P<region_slug>)/map/', include(map_urls)),
+        # url(r'^region/(?P<region_slug>)/charts/', include(charts_urls)),
+        #
+        # url(r'^country/(?P<country_slug>)/data/', include(grid_urls)),
+        # url(r'^country/(?P<country_slug>)/map/', include(map_urls)),
+        # url(r'^country/(?P<country_slug>)/charts/', include(charts_urls)),
 
-    url(r'^deal/(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
-    url(r'^deal/(?P<deal_id>[\d_\.]+)/$', DealDetailView.as_view(), name='deal_detail'),
-    url(r'^deal/add/$', AddDealView.as_view(), name='add_deal'),
-    url(r'^deal/compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$', DealComparisonView.as_view(), name='compare_deals'),
-    url(r'^deal/compare/(?P<activity_1>[\d_\.]+)/$', DealComparisonView.as_view(), name='compare_deals'),
-    url(r'^deal/compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
-    url(r'^deal/edit/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
+        url(r'^deal/(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
+        url(r'^deal/(?P<deal_id>[\d_\.]+)/$', DealDetailView.as_view(), name='deal_detail'),
+        url(r'^deal/add/$', AddDealView.as_view(), name='add_deal'),
+        url(r'^deal/compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$', DealComparisonView.as_view(),
+            name='compare_deals'),
+        url(r'^deal/compare/(?P<activity_1>[\d_\.]+)/$', DealComparisonView.as_view(), name='compare_deals'),
+        url(r'^deal/compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
+        url(r'^deal/edit/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
 
-    url(r'^deal/comments/', include('django_comments.urls')),
+        url(r'^deal/comments/', include('django_comments.urls')),
 
-    url(r'^stakeholder/(?P<investor_id>[\d]+)/$', StakeholderView.as_view(), name='stakeholder_form'),
+        url(r'^stakeholder/add$', StakeholderView.as_view(), name='stakeholder_form'),
+        url(r'^stakeholder/(?P<investor_id>[\d]+)/$', StakeholderView.as_view(), name='stakeholder_form'),
 
-    url(r'^editor/', include(editor_urls)),
-    url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(), name='ajax_widget'),
-    url(r'^$', StartView.as_view(), name='start'),
-    #url(r'^', include('cms.urls')),
-    url(r'^select2/', include('django_select2.urls')),
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+        url(r'^editor/', include(editor_urls)),
+        url(r'^$', StartView.as_view(), name='start'),
+        url(r'^filters$', FilterView.as_view(), name='start'),
+        # url(r'^', include('cms.urls')),
+) + non_i18n_patterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL,
+                                                                                               document_root=settings.STATIC_ROOT)

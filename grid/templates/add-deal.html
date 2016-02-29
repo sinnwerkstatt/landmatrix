@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{% static "vendor/select2/dist/css/select2.min.css" %}"/>
 
     <script src="{% static "vendor/openlayers/ol.js" %}" type="text/javascript"></script>
-    <script src="{% static "js/editor/detail.js" %}" type="text/javascript" charset="utf-8"></script>
+    <!-- <script src="{% static "js/editor/detail.js" %}" type="text/javascript" charset="utf-8"></script> -->
 
     <script src="{% static "js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>
     <script>unlockMaps()</script>
@@ -27,7 +27,7 @@
 {% block breadcrumb %}
     <ul class="breadcrumb">
         <li><a href="/editor">{% trans "Editor" %}</a> <span class="divider"></span></li>
-        <li><a href="/en/global/add/">{% trans "Add a deal" %}</a> <span class="divider"></span></li>
+        <li><a href="/deal/add/">{% trans "Add a deal" %}</a> <span class="divider"></span></li>
     </ul>
 {% endblock %}
 
