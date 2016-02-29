@@ -1,4 +1,5 @@
-{% extends "charts/base_chart.html" %}{% load i18n %}
+{% extends "charts/base_chart.html" %}
+{% load i18n static %}
 
 {% block page_title %}{% trans "It's a big deal" %}{% endblock %}
 {% block title %}{% trans "It's a big deal" %}{% endblock %}
@@ -36,6 +37,172 @@
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=en"></script>
 <script type="text/javascript">
+
+var geocoders = new Array();
+var maps = new Array();
+var markers = new Array();
+var autocompletes = new Array();
+var latChanged = new Array();
+var lonChanged = new Array();
+var center_lat = 41.659,
+    center_lng = -4.714;
+var latlng;
+var circle,
+    circle_hectares = -1,
+    circle_radius = 0;
+
+function drawCircle (latlng, i) {
+      if (circle_hectares == -1) {
+          var query_params = get_query_params(get_base_filter(), "");
+          var json_query = "/api/hectares.json" + query_params;
+          jQuery.getJSON(json_query, function (data) {
+              circle_hectares = parseFloat(data["hectares"]);
+              circle_radius = Math.sqrt((circle_hectares * 10000) / Math.PI);
+              // Update legend
+              $(".legend li .hectares").text(number_format(circle_hectares, 0));
+              return drawCircle(latlng, i);
+          });
+      } else {
+          circle && circle.setMap(null); // Remove existing circle
+          circle = new google.maps.Circle({
+              map: maps[i],
+              center: latlng,
+              fillColor: "#ed881b",
+              fillOpacity: 0.5,
+              strokeColor: "#ed881b",
+              strokeOpacity: 1,
+              strokeWeight: 2,
+              radius: circle_radius
+          });
+      };
+};
+function initializeMap (el, index, draw_circle, lat, lng) {
+  //MAP
+  var options = {
+    zoom: 16,
+    center: latlng,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  };
+  maps[index] = new google.maps.Map(el, options);
+  //GEOCODER
+  geocoders[index] = new google.maps.Geocoder();
+
+  markers[index] = new google.maps.Marker({
+    map: maps[index],
+    draggable: true
+  });
+  if (lat && lng) {
+    latlng = new google.maps.LatLng(lat, lng);
+  } else {
+    latlng = new google.maps.LatLng(center_lat, center_lng);
+  }
+  maps[index].setCenter(latlng);
+  draw_circle && drawCircle(latlng, index);
+  markers[index].setPosition(latlng);
+  latChanged[index] = lat;
+  lonChanged[index] = lng;
+  if (latlng.length == 0) {
+      maps[index].setZoom(2);
+  } else {
+      //maps[index].setZoom(2);
+      maps[index].setZoom(5);
+  }
+
+  // changed lan or lng value, center map and request target Country
+  $(el).parents("ul").find(".point_lat input, .point_lon input").change(function() {
+    var accuracy = $(this).parents("ul").find(".level_of_accuracy select :selected").first().val();
+    var value = $(this).val();
+    if ($(this).parents("li").hasClass("point_lat")) {
+      latChanged[index] = value;
+    } else {
+      lonChanged[index] = value;
+    }
+    if (accuracy == "40" && latChanged[index] != null && latChanged[index] != "" && lonChanged[index] != null && lonChanged[index] != "") {
+      var latLng = new google.maps.LatLng(latChanged[index], lonChanged[index]);
+      maps[index].setCenter(latLng);
+      drawCircle(latlng, index);
+      maps[index].setZoom(8);
+      markers[index].setPosition(latLng);
+      geocoders[index].geocode({"latLng" : latLng, "language": "en"}, function(results, status) {
+        for(var i = 0; i < results[0].address_components.length; i++) {
+            if (results[0].address_components[i].types.indexOf("country") != -1) {
+              country = results[0].address_components[i].short_name;
+              $(el).parents("ul").find(".target_country option[title='" + country + "']").attr('selected', 'selected');
+              $(el).parents("ul").find(".target_country option:not([title='" + country + "'])").removeAttr("selected");
+            }
+          };
+      });
+    }
+  });
+  //switched level of accuracy fire event on lan and lon input fields
+  $(el).parents("ul").find(".level_of_accuracy select").change(function() {
+    if ($(this).find(":selected").val() == "40") {
+      $(this).parents("ul").find(".point_lat input, .point_lon input").change();
+    }
+  });
+  google.maps.event.addListener(markers[index], 'drag', function() {
+  geocoders[index].geocode({'latLng': markers[index].getPosition(), "language": "en"}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+      if (results[0]) {
+        $(el).parents("ul").find(".point_lat input").val(markers[index].getPosition().lat());
+        $(el).parents("ul").find(".point_lon input").val(markers[index].getPosition().lng());
+      }
+    }
+  });
+});
+  return maps[index];
+}
+
+function init_google_maps(el, index, draw_circle) {
+  el.autocomplete({
+        //This bit uses the geocoder to fetch address values
+        source: function(request, response) {
+          var accuracy = el.parents("ul").find(".level_of_accuracy select :selected").first().val();
+          // only lookup name when level of accuracy is not exact coordinates
+          if (accuracy != "40") {
+            geocoders[index].geocode( {'address': request.term, 'language':'en'}, function(results, status) {
+              response($.map(results, function(item) {
+                country = "";
+                for(var i = 0; i < item.address_components.length; i++) {
+                  if ($.inArray("country", item.address_components[i].types) != -1) {
+                    country = item.address_components[i].short_name;
+                  }
+                };
+                return {
+                  label:  item.formatted_address,
+                  value: item.formatted_address,
+                  latitude: item.geometry.location.lat(),
+                  longitude: item.geometry.location.lng(),
+                  country: country
+                }
+              }));
+            })
+          }
+        },
+        open: function(event, ui) { $(".ui-autocomplete").css("z-index", 10000); },
+        close: function(event, ui) { $(".ui-autocomplete").css("z-index", 1); },
+        //This bit is executed upon selection of an address
+        select: function(event, ui) {
+          el.parents("ul.form").find(".point_lat input").val(ui.item.latitude).change();
+          el.parents("ul.form").find(".point_lon input").val(ui.item.longitude).change();
+          //$("#id_spatial_data-target_country option:selected").removeAttr("selected"); - doesn't work in FF 14
+          el.parents("ul.form").find(".target_country option:selected").removeAttr("selected");
+          el.parents("ul.form").find(".target_country option[title='" + ui.item.country + "']").attr('selected', 'selected');
+          latlng = new google.maps.LatLng(ui.item.latitude, ui.item.longitude);
+          markers[index].setPosition(latlng);
+          maps[index].setCenter(latlng);
+          draw_circle && drawCircle(latlng, index);
+        }
+      });
+  if (draw_circle) {
+    google.maps.event.addListener(markers[index], 'drag', function() {
+        latlng = new google.maps.LatLng(markers[index].getPosition().lat(), markers[index].getPosition().lng());
+        drawCircle(latlng, index)
+    });
+  }
+};
+
+
 $(document).ready(function () {
     $(".get-the-idea .gmap").each(function () {
       var map = initializeMap(this, 0, true);
