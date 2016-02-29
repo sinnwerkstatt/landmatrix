@@ -1,6 +1,7 @@
 from pprint import pprint
 
 from django.forms.forms import Form
+from django.forms.formsets import BaseFormSet
 
 from landmatrix.models.activity import Activity
 from landmatrix.models.deal import Deal
@@ -50,7 +51,18 @@ class ChangeDealView(SaveDealView):
 
 def get_form(deal, form_class):
     data = form_class[1].get_data(deal)
-    if form_class[0] == 'data_sources':
-        print('get_form:', form_class[0], form_class[1].__name__)
-        # pprint(data)
-    return form_class[1](initial=data)
+    if issubclass(form_class[1], BaseFormSet):
+        data = to_formset_data(data)
+
+    return form_class[1](data)
+
+
+def to_formset_data(data):
+    returned = {}
+    for index in data.keys():
+        if not isinstance(index, int):
+            returned[index] = data[index]
+        else:
+            for key, value in data[index].items():
+                returned['form-{}-{}'.format(index, key)] = value
+    return returned

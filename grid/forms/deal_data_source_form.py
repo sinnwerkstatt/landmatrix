@@ -155,11 +155,16 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
             return {}
 
         taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
-        print('taggroups: ', [t.attributes for t in taggroups])
-        data = {}
+        # print('AddDealDataSourceFormSet taggroups:    ', [t.attributes for t in taggroups])
+
+        data = {
+            'form-TOTAL_FORMS': len(taggroups),
+            'form-INITIAL_FORMS': len(taggroups),
+            'form-MAX_NUM_FORMS': 1000
+        }
         for i, taggroup in enumerate(taggroups):
             form_data = DealDataSourceForm.get_data(deal, taggroup, taggroups[i+1] if i < len(taggroups)-1 else None)
-            print('form', i, ':', form_data)
+            # print('AddDealDataSourceFormSet form', i, ':    ', form_data)
             data[i] = form_data
         return data
 
@@ -184,7 +189,7 @@ class PublicViewDealDataSourceForm(DealDataSourceForm):
     @classmethod
     def get_data(cls, deal):
         taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
-        print('PublicViewDealDataSourceForm: taggroups', taggroups)
+        print('PublicViewDealDataSourceForm: taggroups    ', taggroups)
         data = {}
         for i, taggroup in enumerate(taggroups):
             data[i] = DealDataSourceForm.get_data(deal, taggroup=taggroup)
