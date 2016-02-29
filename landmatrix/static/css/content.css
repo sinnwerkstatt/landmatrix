@@ -253,6 +253,16 @@ hr {
  *    BUTTONS
  * ========================================================================== */
 
+
+.pagination > .active > a:hover,
+.pagination > li > a:hover {
+    color: #b9d635;
+    border-color: #B9D635;
+    background: #fcfcfc;
+}
+
+.pagination > .active > a,
+.pagination > li > a,
 button,
 a.btn {
     color: #fc941f;
@@ -445,6 +455,10 @@ h6 {
 a:hover {
     color: #fc941f;
     text-decoration: underline;
+}
+
+.noul:hover  {
+    text-decoration: none;
 }
 
 a:focus {
@@ -646,6 +660,10 @@ p a {
     top: 16px;
     right: 12px;
     position: absolute;
+}
+
+.investorfield .select2-main {
+    width: 50vw !important;
 }
 
 .dropdown-menu>.active>a,
