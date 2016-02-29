@@ -661,9 +661,11 @@ p a {
     right: 12px;
     position: absolute;
 }
-
-.investorfield .select2-main {
-    width: 50vw !important;
+.controls .select2,
+.controls .django-select2,
+.controls .select2-container,
+.controls .select2-main {
+    width: 95% !important;
 }
 
 .dropdown-menu>.active>a,
