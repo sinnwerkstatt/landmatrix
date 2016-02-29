@@ -31,7 +31,7 @@ from map import urls as map_urls
 from charts import urls as charts_urls
 from editor import urls as editor_urls
 from landmatrix.views.start_view import StartView
-from landmatrix.views.filterdebug_view import FilterView
+#from landmatrix.views.filterdebug_view import FilterView
 from grid.views.stakeholder_view import StakeholderView
 
 non_i18n_patterns = patterns(
@@ -76,7 +76,7 @@ urlpatterns = i18n_patterns(
 
         url(r'^editor/', include(editor_urls)),
         url(r'^$', StartView.as_view(), name='start'),
-        url(r'^filters$', FilterView.as_view(), name='start'),
+        #url(r'^filters$', FilterView.as_view(), name='filterdebug'),
         # url(r'^', include('cms.urls')),
 ) + non_i18n_patterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL,
                                                                                                document_root=settings.STATIC_ROOT)
