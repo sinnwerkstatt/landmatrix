@@ -33,7 +33,8 @@ class InvestorForm(BaseForm):
             ).order_by('name'),
             widget=ModelSelect2Widget(
                 model=Investor,
-                search_fields=['name__icontains']
+                search_fields=['name__icontains'],
+                attrs={'class': 'form-control investorfield'},
             )
     )
     investor_name = forms.CharField(required=False, label=_("Name"), max_length=255)
