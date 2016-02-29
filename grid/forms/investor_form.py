@@ -6,7 +6,7 @@ from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 
 from grid.forms.operational_stakeholder_form import _investor_description
 
-from django_select2.forms import ModelSelect2Widget
+from django_select2.forms import Select2Widget
 
 from django.utils.translation import ugettext_lazy as _
 from django import forms
@@ -31,9 +31,7 @@ class InvestorForm(BaseForm):
             queryset=Investor.objects.filter(
                     pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
             ).order_by('name'),
-            widget=ModelSelect2Widget(
-                model=Investor,
-                search_fields=['name__icontains'],
+            widget=Select2Widget(
                 attrs={'class': 'form-control investorfield'},
             )
     )
