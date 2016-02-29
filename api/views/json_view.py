@@ -19,6 +19,7 @@ import json
 from django.views.generic.base import TemplateView
 from grid.views.activity_protocol import ActivityQuerySet
 from landmatrix.models.country import Country
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 from landmatrix.models.region import Region
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -81,6 +82,14 @@ class RegionsQuerySet(SimpleFakeQuerySet):
 RegionsJSONGenerator = json_get_generator(RegionsQuerySet)
 CountriesJSONGenerator = json_get_generator(CountriesQuerySet)
 
+class InvestorsQuerySet(SimpleFakeQuerySet):
+    def all(self):
+        investors = Investor.objects.filter(
+            pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
+        ).filter(name__icontains=self.get_data.get('q', '')).order_by('name')
+        return [[investor.id, investor.name] for investor in investors]
+
+InvestorsJSONGenerator = json_get_generator(InvestorsQuerySet)
 
 class JSONView(TemplateView):
 
@@ -101,6 +110,7 @@ class JSONView(TemplateView):
         'activities.json':                      ActivitiesJSONGenerator,
         'regions.json':                         RegionsJSONGenerator,
         'countries.json':                       CountriesJSONGenerator,
+        'investors.json':                       InvestorsJSONGenerator,
     }
 
     def dispatch(self, request, *args, **kwargs):
