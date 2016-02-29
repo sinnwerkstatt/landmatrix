@@ -35,8 +35,46 @@
 
     {% if deal %}
         <div class="panel-group" id="accordion">
+            {% if forms %}
+                {% for form in forms %}
+                    {% if form.get_fields_display %}
+                    <div class="panel panel-default">
 
-            {% include "includes/dealpanels.html" %}
+                        <div class="panel-heading">
+                            <a data-toggle="collapse" data-parent="#accordion"
+                               href="#collapse_{{ forloop.counter }}">
+                                <h5 class="panel-title">
+                                    {{ form.form_title }}
+                                    <span id="collapsebtn_{{ forloop.counter }}"
+                                          class="lm-chevron-circle-down pull-right mgrey1"></span>
+                                </h5>
+                            </a>
+                        </div>
+
+                        <div id="collapse_{{ forloop.counter }}"
+                             class="panel-collapse collapse{% if forloop.first %} in {% endif %}">
+                            <div class="panel-body">
+                                {% for field in form.get_fields_display %}
+                                    {% if field.0 == 'tg' %}
+                                    <h3>{{ field.1 }}</h3>
+                                    {% else %}
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                {{ field.0 }}
+                                            </div>
+                                            <div class="col-md-9">
+                                                {{ field.1|safe }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
 
             {% if history|length > 1 %}
                 <div class="panel panel-default">
@@ -108,7 +146,7 @@
             {% endif %}
         </div>
 
-<h2>Comments:</h2>
+<h2>{% trans "Comments" %}</h2>
 
 {% render_comment_list for deal.activity %}
 {% render_comment_form for deal.activity %}
@@ -129,7 +167,7 @@
 
     {% else %}
 
-        <p>There are currently no deals matching your search criteria. <a href="/public/">Add a deal</a>.</p>
+        <p>{% trans "There are currently no deals matching your search criteria." %} <a href="/public/">{% trans "Add a deal" %}</a>.</p>
 
     {% endif %}
 
