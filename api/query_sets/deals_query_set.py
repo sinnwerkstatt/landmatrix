@@ -16,14 +16,28 @@ class DealsQuerySet(FakeQuerySetFlat):
         ('deal_id',   'a.activity_identifier'),
         ('point_lat', "location.attributes->'point_lat'"),
         ('point_lon', "location.attributes->'point_lon'"),
-        ('intention', "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention'), ', '), '')")
+        ('intention',
+         "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention'), ', '), '')"),
+        ('intended_size', "intended_size.attributes->'intended_size'"),
+         # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intended_size.attributes->'intended_size'), ', '), '')"),
+        ('contract_size', "contract_size.attributes->'contract_size'"),
+         # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_size.attributes->'contract_size'), ', '), '')"),
+        ('production_size', "production_size.attributes->'production_size'"),
+         # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT production_size.attributes->'production_size'), ', '), '')"),
+        ('investor', 'operational_stakeholder.name'),
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattributegroup    AS location         ON a.id = location.fk_activity_id AND location.attributes ? 'point_lat' AND location.attributes ? 'point_lon'",
         "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'"
+        "LEFT JOIN landmatrix_activityattributegroup    AS intended_size    ON a.id = intended_size.fk_activity_id AND intended_size.attributes ? 'intended_size'"
+        "LEFT JOIN landmatrix_activityattributegroup    AS contract_size    ON a.id = contract_size.fk_activity_id AND contract_size.attributes ? 'contract_size'"
+        "LEFT JOIN landmatrix_activityattributegroup    AS production_size  ON a.id = production_size.fk_activity_id AND production_size.attributes ? 'production_size'"
     ]
     ADDITIONAL_WHERES = ["location.attributes ? 'point_lat' AND location.attributes ? 'point_lon'"]
-    GROUP_BY = ['location.attributes', 'a.activity_identifier']
+    GROUP_BY = [
+        'location.attributes', 'intended_size.attributes', 'contract_size.attributes', 'production_size.attributes',
+        'operational_stakeholder.name', 'a.activity_identifier'
+    ]
 
     def __init__(self, get_data):
         if not 'deal_scope' in get_data:
