@@ -447,6 +447,10 @@ a:hover {
     text-decoration: underline;
 }
 
+.noul:hover  {
+    text-decoration: none;
+}
+
 a:focus {
     color: #b9d635;
     text-decoration: none;
@@ -646,6 +650,10 @@ p a {
     top: 16px;
     right: 12px;
     position: absolute;
+}
+
+.investorfield .select2-main {
+    width: 50vw !important;
 }
 
 .dropdown-menu>.active>a,
