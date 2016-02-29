@@ -26,7 +26,7 @@ $(document).ready(function () {
 
     $(".investorfield").each(function () {
         var investorId = $(this).val();
-        $(this).djangoSelect2({
+        $(this).select2({
             placeholder: 'Select Investor'
         });
         /*

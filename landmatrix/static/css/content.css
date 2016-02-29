@@ -665,7 +665,9 @@ p a {
 .controls .django-select2,
 .controls .select2-container,
 .controls .select2-main {
-    width: 95% !important;
+    min-width: 50% !important;
+    max-width: 100% !important;
+    height: 2em;
 }
 
 .dropdown-menu>.active>a,
