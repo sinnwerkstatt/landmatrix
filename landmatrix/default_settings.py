@@ -80,6 +80,8 @@ INSTALLED_APPS += (
     'django_select2',
     'crispy_forms',
 
+    'wkhtmltopdf',
+
     'threadedcomments',
     'django_comments',
 
