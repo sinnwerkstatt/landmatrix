@@ -47,7 +47,7 @@
                             {% for changeset in latest_added.cs %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                            href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
                                     </td>
                                     <td class="user">{{ changeset.user }}</td>
                                     <td class="comment" title="{{ changeset.comment }}"><span
@@ -98,7 +98,7 @@
                             {% for changeset in latest_modified.cs %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                            href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
                                     </td>
                                     <td class="user">{{ changeset.user }}</td>
                                     <td class="comment" title="{{ changeset.comment }}"><span
@@ -151,7 +151,7 @@
                             {% for changeset in latest_deleted.cs %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                            href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
                                     </td>
                                     <td class="user">{{ changeset.user }}</td>
                                     <td class="comment" title="{{ changeset.comment }}"><span
@@ -206,14 +206,14 @@
                                 {% for changeset in manage.a_changesets.updates.cs %}
                                     <tr class="update">
                                         <td class="deal"><a
-                                                href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                                href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
                                         </td>
                                         <td class="user">{{ changeset.user }}</td>
                                         <td class="state">{% trans "Update" %}</td>
                                         <td class="action">
-                                            <a href="/manage/deal/approve/{{ changeset.id }}/"
+                                            <a href="/editor/manage/deal/approve/{{ changeset.id }}/"
                                                class="approve">{% trans "Approve" %}</a>
-                                            <a href="/manage/deal/reject/{{ changeset.id }}/"
+                                            <a href="/editor/manage/deal/reject/{{ changeset.id }}/"
                                                class="reject">{% trans "Reject" %}</a>
                                         </td>
                                     </tr>
@@ -221,14 +221,14 @@
                                 {% for changeset in manage.a_changesets.deletes.cs %}
                                     <tr class="delete">
                                         <td class="deal"><a
-                                                href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                                href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
                                         </td>
                                         <td class="user">{{ changeset.user }}</td>
                                         <td class="state">{% trans "Delete" %}</td>
                                         <td class="action">
-                                            <a href="/manage/deal/approve/{{ changeset.id }}/"
+                                            <a href="/editor/manage/deal/approve/{{ changeset.id }}/"
                                                class="approve">{% trans "Approve" %}</a>
-                                            <a href="/manage/deal/reject/{{ changeset.id }}/"
+                                            <a href="/editor/manage/deal/reject/{{ changeset.id }}/"
                                                class="reject">{% trans "Reject" %}</a>
                                         </td>
                                     </tr>
@@ -236,14 +236,14 @@
                                 {% for changeset in manage.a_changesets.inserts.cs %}
                                     <tr class="insert">
                                         <td class="deal"><a
-                                                href="/browse/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                                href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
                                         </td>
                                         <td class="user">{{ changeset.user }}</td>
                                         <td class="state">{% trans "Add" %}</td>
                                         <td class="action">
-                                            <a href="/manage/deal/approve/{{ changeset.id }}/"
+                                            <a href="/editor/manage/deal/approve/{{ changeset.id }}/"
                                                class="approve">{% trans "Approve" %}</a>
-                                            <a href="/manage/deal/reject/{{ changeset.id }}/"
+                                            <a href="/editor/manage/deal/reject/{{ changeset.id }}/"
                                                class="reject">{% trans "Reject" %}</a>
                                         </td>
                                     </tr>
@@ -251,21 +251,21 @@
                                 {% for changeset in manage.sh_changesets.deletes.cs %}
                                     <tr class="deletes">
                                         <td class="investor"><a
-                                                href="/browse/investor/{{ changeset.investor_id }}/">#{{ changeset.investor_id }}</a>
+                                                href="/investor/{{ changeset.investor_id }}/">#{{ changeset.investor_id }}</a>
                                         </td>
                                         <td class="user">{{ changeset.user }}</td>
                                         <td class="state">{% trans "Delete" %}</td>
                                         <td class="action">
-                                            <a href="/manage/investor/approve/{{ changeset.id }}/"
+                                            <a href="/editor/manage/investor/approve/{{ changeset.id }}/"
                                                class="approve">{% trans "Approve" %}</a>
-                                            <a href="/manage/investor/reject/{{ changeset.id }}/"
+                                            <a href="/editor/manage/investor/reject/{{ changeset.id }}/"
                                                class="reject">{% trans "Reject" %}</a>
                                         </td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
                             </table>
-                            <a href="/manage/">Show all</a>
+                            <a href="/editor/manage/">Show all</a>
                         {% else %}
                             <p>{% trans "No pending changesets require your attention." %}</p>
                         {% endif %}
@@ -289,7 +289,7 @@
                             {% for feedback in feedbacks.feeds %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="/browse/deal/{{ feedback.deal_id }}/">#{{ feedback.deal_id }}</a></td>
+                                            href="/deal/{{ feedback.deal_id }}/">#{{ feedback.deal_id }}</a></td>
                                     <td class="user">{{ feedback.from_user }}</td>
                                     <td class="comment" title="{{ feedback.comment }}"><span
                                             class="truncate">{{ feedback.comment }}</span></td>
@@ -298,7 +298,7 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        <a href="/manage/">Show all</a>
+                        <a href="/editor/manage/">Show all</a>
                     {% else %}
                         <p>{% trans "No feedback requests lately." %}</p>
                     {% endif %}
