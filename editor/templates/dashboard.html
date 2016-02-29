@@ -265,7 +265,7 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
-                            <a href="/editor/manage/">Show all</a>
+                            <a href="/editor/manage/">{% trans "Show all" %}</a>
                         {% else %}
                             <p>{% trans "No pending changesets require your attention." %}</p>
                         {% endif %}
@@ -298,7 +298,7 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        <a href="/editor/manage/">Show all</a>
+                        <a href="/editor/manage/">{% trans "Show all" %}</a>
                     {% else %}
                         <p>{% trans "No feedback requests lately." %}</p>
                     {% endif %}

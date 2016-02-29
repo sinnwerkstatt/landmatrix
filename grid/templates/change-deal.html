@@ -16,8 +16,8 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-  <li><a href="/editor">{% trans "Editor" %}</a> <span class="divider">|</span></li>
-  <li><a href="/global/change/{{ deal_id }}">{% trans "Change deal" %} #{{ deal_id }}</a> <span class="divider">|</span></li>
+  <li><a href="/editor">{% trans "Editor" %}</a></li>
+  <li><a href="/global/change/{{ deal_id }}">{% trans "Change deal" %} #{{ deal_id }}</a></li>
   <li>{% trans "Change deal" %}  #{{ deal_id }}</li>
 </ul>
 {% endblock %}
@@ -31,7 +31,7 @@
         {% include "includes/dealpanels.html" %}
     </div>
 
-    <input type="submit" value="Submit" />
+    <input type="submit" value="{% trans 'Submit' %}" />
 
   </form>
 

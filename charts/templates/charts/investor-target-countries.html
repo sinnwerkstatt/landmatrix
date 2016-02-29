@@ -12,19 +12,19 @@
 <div style="height: 100px">
     {{ body|safe }}
     <div class="current-country" style="display:none">
-        <p><strong>Country</strong></p>
+        <p><strong>{% trans "Country" %}</strong></p>
         <p>
-            <span class="total-deals">0 acquisitions/targets</span>
-            <span class="related-country">to/from Country</span>
-            <span class="self-deals">whereof 0 with itself</span>
+            <span class="total-deals">{% trans "0 acquisitions/targets" %}</span>
+            <span class="related-country">{% trans "to/from Country" %}</span>
+            <span class="self-deals">{% trans "whereof 0 with itself" %}</span>
             <br/>
-            <b><a href="#">Go to Table</a></b>
+            <b><a href="#">{% trans "Go to Table" %}</a></b>
         </p>
     </div>
     <div class="btn-group views">
-        <a class="btn show-all" href="#" class="disabled">Reset</a>
-        <a class="btn active" href="?filter=investor">Investor&nbsp;Countries</a>
-        <a class="btn" href="?filter=target">Target&nbsp;Countries</a>
+        <a class="btn show-all" href="#" class="disabled">{% trans "Reset" %}</a>
+        <a class="btn active" href="?filter=investor">{% trans "Investor&nbsp;Countries" %}</a>
+        <a class="btn" href="?filter=target">{% trans "Target&nbsp;Countries" %}</a>
     </div>
 </div>
 {% endblock %}
@@ -33,8 +33,8 @@
 
 {% block legend %}
 <ul class="legend media-list">
-   <li><i class="icon icon-none" style="background-color: #44b7b6;"></i> Investor Countries</li>
-   <li><i class="icon icon-none" style="background-color: #ed881b;"></i> Target Countries</li>
+   <li><i class="icon icon-none" style="background-color: #44b7b6;"></i> {% trans "Investor Countries" %}</li>
+   <li><i class="icon icon-none" style="background-color: #ed881b;"></i> {% trans "Target Countries" %}</li>
 </ul>
 {% endblock %}
 
