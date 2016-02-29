@@ -66,7 +66,7 @@ class SimpleFakeQuerySet:
 
 class CountriesQuerySet(SimpleFakeQuerySet):
     def all(self):
-        if self.get_data['region']:
+        if self.get_data.get('region'):
             countries = Country.objects.filter(fk_region__slug=self.get_data['region']).order_by('name')
         else:
             countries = Country.objects.all().order_by('name')
@@ -78,9 +78,9 @@ class RegionsQuerySet(SimpleFakeQuerySet):
         regions = Region.objects.all().order_by('name')
         return [[region.slug, region.name] for region in regions]
 
-
 RegionsJSONGenerator = json_get_generator(RegionsQuerySet)
 CountriesJSONGenerator = json_get_generator(CountriesQuerySet)
+
 
 class InvestorsQuerySet(SimpleFakeQuerySet):
     def all(self):
@@ -90,6 +90,7 @@ class InvestorsQuerySet(SimpleFakeQuerySet):
         return [[investor.id, investor.name] for investor in investors]
 
 InvestorsJSONGenerator = json_get_generator(InvestorsQuerySet)
+
 
 class JSONView(TemplateView):
 
