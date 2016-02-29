@@ -13,12 +13,13 @@
 {% endblock %}
 
 
-{% block page_title %}Deal history comparison{% endblock %}
-{% block title %}Deal history comparison{% endblock %}
+{% block page_title %}{% trans "Deal history comparison" %}{% endblock %}
+{% block title %}{% trans "Deal history comparison" %}{% endblock %}
 
 {% block breadcrumb_inner %}
-  <li><a href="/global/">Global</a></li>
-  <li><a href="/global/compare/X_Y">Compare deal history</a></li>
+    <li><a href="/global/">Global</a></li>
+    <li><a href="/deal/{{ deal.activity_id }} %}">{% trans "Deal Details" %}</a></li>
+  <li><a href="/deal/compare/{{ deal.activity_id }}_foobar">{% trans "Compare deal history" %}</a></li>
 {% endblock %}
 
 
@@ -32,7 +33,7 @@
 
             <div class="panel-group" id="accordion">
 
-            {% if not comparison_forms.2 %}<strong>DIFFERENT</strong>{% endif %}
+            {% if not comparison_forms.2 %}<strong>{% trans "DIFFERENT" %}</strong>{% endif %}
             {% if comparison_forms.0 %}
 
                 <div class="panel panel-default">
@@ -93,7 +94,7 @@
 
         <div class="panel-group" id="accordion">
 
-        {% if not comparison_forms.2 %}<strong>DIFFERENT</strong>{% endif %}
+        {% if not comparison_forms.2 %}<strong>{% trans "DIFFERENT" %}</strong>{% endif %}
 
         {% if comparison_forms.1 %}
 
