@@ -253,6 +253,16 @@ hr {
  *    BUTTONS
  * ========================================================================== */
 
+
+.pagination > .active > a:hover,
+.pagination > li > a:hover {
+    color: #b9d635;
+    border-color: #B9D635;
+    background: #fcfcfc;
+}
+
+.pagination > .active > a,
+.pagination > li > a,
 button,
 a.btn {
     color: #fc941f;
