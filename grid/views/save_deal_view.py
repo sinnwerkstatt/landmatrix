@@ -30,24 +30,24 @@ from datetime import date
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-FORMS = [
-    ("spatial_data", AddDealSpatialFormSet),            #
-    ("general_information", AddDealGeneralForm),        #
-    ("employment", AddDealEmploymentForm),              #
-    # ("investor_info", InvestorFormSet),
-    ("investor_info", OperationalStakeholderForm),
-    ("data_sources", AddDealDataSourceFormSet),         #
-    ("local_communities", DealLocalCommunitiesForm),    #
-    ("former_use", DealFormerUseForm),                  #
-    ("produce_info", DealProduceInfoForm),              #
-    ("water", DealWaterForm),                           #
-    ("gender-related_info", DealGenderRelatedInfoForm), #
-    ("overall_comment", AddDealOverallCommentForm),     #
-    ("action_comment", ChangeDealActionCommentForm),
-]
-
 
 class SaveDealView(TemplateView):
+
+    FORMS = [
+        ("spatial_data", AddDealSpatialFormSet),            #
+        ("general_information", AddDealGeneralForm),        #
+        ("employment", AddDealEmploymentForm),              #
+        # ("investor_info", InvestorFormSet),
+        ("investor_info", OperationalStakeholderForm),
+        ("data_sources", AddDealDataSourceFormSet),         #
+        ("local_communities", DealLocalCommunitiesForm),    #
+        ("former_use", DealFormerUseForm),                  #
+        ("produce_info", DealProduceInfoForm),              #
+        ("water", DealWaterForm),                           #
+        ("gender-related_info", DealGenderRelatedInfoForm), #
+        ("overall_comment", AddDealOverallCommentForm),     #
+        ("action_comment", ChangeDealActionCommentForm),
+    ]
 
     def dispatch(self, request, *args, **kwargs):
         self.activity = self.get_activity(**kwargs)
@@ -60,7 +60,6 @@ class SaveDealView(TemplateView):
             # check whether it's valid:
             if all(form.is_valid() for form in forms):
 
-
                 groups = []
                 for form in forms:
                     groups.extend(self.create_attributes_for_form(self.activity, form))
@@ -68,14 +67,15 @@ class SaveDealView(TemplateView):
                 self.save_activity_and_attributes(self.activity, groups)
 
                 # redirect to dashboard
-                return HttpResponseRedirect('/dashboard/')
+                return HttpResponseRedirect('/editor/')
 
             else:
                 for form in forms:
                     if form.is_valid():
-                        print(form.__class__.__name__, form.cleaned_data)
+                        # print(form.__class__.__name__, form.cleaned_data)
+                        pass
                     else:
-                        print(form.__class__.__name__, 'INVALID:', form.errors)
+                        print(form.__class__.__name__, 'INVALID! Errors:', form.errors)
 
         # if a GET (or any other method) we'll create a blank form
 
@@ -88,6 +88,8 @@ class SaveDealView(TemplateView):
 
     @transaction.atomic
     def save_activity_and_attributes(self, activity, groups):
+        # todo temporarily disabled until i can save SimpleUploadedFile in the 'file' attribute
+        return
         activity.save()
         for group in groups:
             group.fk_activity = activity
@@ -99,10 +101,10 @@ class SaveDealView(TemplateView):
     def create_attributes_for_form(self,activity, form):
         groups = []
 
-        if name_of_form(form) == 'investor_info':
+        if self.name_of_form(form) == 'investor_info':
             self.operational_stakeholder = form.cleaned_data['operational_stakeholder']
 
-        elif name_of_form(form) == 'data_sources':
+        elif self.name_of_form(form) == 'data_sources':
             for sub_form_data in form.cleaned_data:
                 if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
                     field = DealDataSourceForm().fields['type']
@@ -111,7 +113,7 @@ class SaveDealView(TemplateView):
                 group = create_attribute_group(activity, sub_form_data)
                 groups.append(group)
 
-        elif name_of_form(form) == 'spatial_data':
+        elif self.name_of_form(form) == 'spatial_data':
             for sub_form_data in form.cleaned_data:
                 if sub_form_data['target_country'] and isinstance(sub_form_data['target_country'], Country):
                     sub_form_data['target_country'] = sub_form_data['target_country'].pk
@@ -124,9 +126,12 @@ class SaveDealView(TemplateView):
                 groups.append(group)
 
             else:
-                print('no data sent:', name_of_form(form))
+                print('no data sent:', self.name_of_form(form))
 
         return groups
+
+    def name_of_form(self, form):
+        return name_of_form(form, self.FORMS)
 
 
 def create_attribute_group(activity, form_data):
@@ -138,8 +143,8 @@ def create_attribute_group(activity, form_data):
     return group
 
 
-def name_of_form(form):
-    for name, Form in FORMS:
+def name_of_form(form, forms):
+    for name, Form in forms:
         if Form == form.__class__:
             return name
     raise ValueError('Form %s not in FORMS' % form.__class__.__name__)
