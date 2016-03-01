@@ -9,36 +9,36 @@
 
 {% block description %}
 {{ block.super }}
-<a class="btn show-all" href="#" class="disabled">Reset</a>
+<a class="btn show-all" href="#" class="disabled">{% trans "Reset" %}</a>
 {% endblock %}
 
 {% block data_availability %}{% endblock %}
 
 {% block legend %}
 <ul class="media-list legend">
-    <li><i class="icon icon-none" style="background-color: #6cc9d3;"></i> Investor Countries</li>
-    <li><i class="icon icon-none" style="background-color: #ed881b;"></i> Target Countries</li>
+    <li><i class="icon icon-none" style="background-color: #6cc9d3;"></i> {% trans "Investor Countries" %}</li>
+    <li><i class="icon icon-none" style="background-color: #ed881b;"></i> {% trans "Target Countries" %}</li>
 </ul>
 {% endblock %}
 
 {% block data %}
 <div class="row">
     <!--[if lte IE 8]>
-        <ul class="span12 messages">
-            <li class="alert alert-error"<strong>Visualisation not available in your browser:</strong> Unfortunately this data visualisation uses modern technologies and is therefor not available for old browsers (lower than Internet Explorer 8). Please update your browser.</li>
+        <ul class="col-md-12 messages">
+            <li class="alert alert-error">{% trans "<strong>Visualisation not available in your browser:</strong> Unfortunately this data visualisation uses modern technologies and is therefor not available for old browsers (lower than Internet Explorer 8). Please update your browser. " %}</li>
         </ul>
     <![endif]-->
     <div class="row canvas-container">
-        <div class="span4 well top-10-countries">
+        <div class="col-md-4 well top-10-countries">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Top 10 Countries</h3>
+                <h3>{% trans "Top 10 Countries" %}</h3>
             </div>
             <div class="row">
-                <div class="span4">
+                <div class="col-md-4">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a style="color: #6cc9d3" href="#investor-countries">Investor countries</a></li>
-                        <li><a style="color: #ed881b" href="#target-countries">Target countries</a></li>
+                        <li class="active"><a style="color: #6cc9d3" href="#investor-countries">{% trans "Investor countries" %}</a></li>
+                        <li><a style="color: #ed881b" href="#target-countries">{% trans "Target countries" %}</a></li>
                     </ul>
                     <div class="tab-content">
                         <div id="investor-countries" class="tab-pane active">
@@ -53,38 +53,38 @@
                 </div>
             </div>
         </div>
-        <div class="span4 well country-info" style="display: none">
+        <div class="col-md-4 well country-info" style="display: none">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3 class="country">Country</h3>
+                <h3 class="country">{% trans "Country" %}</h3>
             </div>
             <div class="row">
-                <div class="span4">
+                <div class="col-md-4">
                     <div class="target-regions">
-                        <h4 style="color: #6cc9d3">Regions investing in <span class="country">Country</span></h4>
+                        <h4 style="color: #6cc9d3">{% trans "Regions investing in " %}<span class="country">{% trans "Country" %}</span></h4>
                         <table class="table">
                         </table>
-                        <a href="" class="inbound">Show all inbound deals</a>
+                        <a href="" class="inbound">{% trans "Show all inbound deals" %}</a>
                     </div>
                     <div class="investor-regions">
-                        <h4 style="color: #ed881b">Regions <span class="country">Country</span> invests in</h4>
+                        <h4 style="color: #ed881b">{% trans "Regions" %} <span class="country">{% trans "Country" %}</span> {% trans "invests in" %}</h4>
                         <table class="table">
                         </table>
-                        <a href="" class="outbound">Show all outbound deals</a>
+                        <a href="" class="outbound">{% trans "Show all outbound deals" %}</a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="span12 canvas"></div>
+        <div class="col-md-12 canvas"></div>
     </div>
 
      <div class="current-country" style="display: none">
-          <h3>Country</h3>
+          <h3>{% trans "Country" %}</h3>
         <p>
-          <span class="total-hectares">0 acquisitions/targets</span>
-          <span class="relation-type">to/from</span>
-          <span class="related-regions">Region A: 0 hectares<br/>Region B: 0 hectares</span><br/><br/>
-          <a href="#">Go to Table</a>
+          <span class="total-hectares">{% trans "0 acquisitions/targets" %}</span>
+          <span class="relation-type">{% trans "to/from" %}</span>
+          <span class="related-regions">{% trans "Region A: 0 hectares" %}<br/>{% trans "Region B: 0 hectares" %}</span><br/><br/>
+          <a href="#">{% trans "Go to Table" %}</a>
         </p>
      </div>
 </div>
