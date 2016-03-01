@@ -11,7 +11,7 @@
 {% block description %}
 {{ block.super }}
 <div class="btn-group">
-    <input class="location col-md-2" name="location" type="text" value="" placeholder="Enter location..."/>
+    <input class="location col-md-2" name="location" type="text" value="" placeholder="{%  trans 'Enter location...' %}"/>
     <button type="submit" class="btn">{% trans "Go" %}</button>
 </div>
 {% endblock %}
@@ -19,7 +19,7 @@
 {% block data_availability %}{% endblock %}
 {% block legend %}
 <ul class="legend media-list">
-   <li><i class="icon icon-none" style="background-color: #ed881b;"></i> Area equal to the size of the intended, concluded or failed land acquisitions (<span class="hectares">0</span> ha)</li>
+   <li><i class="icon icon-none" style="background-color: #ed881b;"></i>{% trans 'Area equal to the size of the intended, concluded or failed land acquisitions (<span class="hectares">0</span> ha)' %}</li>
 </ul>
 {% endblock %}
 
