@@ -48,7 +48,7 @@
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
                         data-target="#main-navbar-collapse" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
+                    <span class="sr-only">{% trans "Toggle navigation"%}</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -77,12 +77,12 @@
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><i class="lm-nav lm-plus-circle"></i><span class="nav-text">Get Involved <span
+                           aria-expanded="false"><i class="lm-nav lm-plus-circle"></i><span class="nav-text">{% trans "Get Involved" %}<span
                                 class="caret"></span></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="/deal/add">Report a deal</a></li>
-                            <li><a href="/contact">Get in touch</a></li>
-                            <li><a href="/download">Download</a></li>
+                            <li><a href="/deal/add">{% trans "Report a deal" %}</a></li>
+                            <li><a href="/contact">{% trans "Get in touch" %}</a></li>
+                            <li><a href="/download">{% trans "Download" %}</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -100,7 +100,7 @@
 
 <div class="wrap">
     <!--[if lt IE 7]>
-                <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+                <p class="chromeframe">{% trans 'You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>' %}
             <![endif]-->
 
     {# top-level navigation #}
@@ -172,41 +172,41 @@
             <div id="footer-nav" class="row">
                 <div class="col-md-3">
                     <ul class="list-unstyled">
-                        <li><h4>Explore</h4></li>
-                        <li><a href="/global/charts/transnational-deals">Global Web of transn. deals</a></li>
-                        <li><a href="/global/map">Global map of investments</a></li>
-                        <li><a href="/global/map">Interactive Map</a></li>
-                        <li><a href="/global/data/by-target_country/">Grid of deals by country</a></li>
-                        <li><a href="/download">Download Data</a></li>
+                        <li><h4>{% trans "Explore" %}</h4></li>
+                        <li><a href="/global/charts/transnational-deals">{% trans "Global Web of transn. deals" %}</a></li>
+                        <li><a href="/global/map">{% trans "Global map of investments" %}</a></li>
+                        <li><a href="/global/map">{% trans "Interactive Map" %}</a></li>
+                        <li><a href="/global/data/by-target_country/">{% trans "Grid of deals by country" %}</a></li>
+                        <li><a href="/download">{% trans "Download Data" %}</a></li>
                     </ul>
                 </div>
                 <div class="col-md-3">
                     <ul class="list-unstyled">
-                        <li><h4>Get Involved</h4></li>
-                        <li><a href="/deal/add">Add a deal</a></li>
-                        <li><a href="/deal/add">Report a deal</a></li>
-                        <li><a href="/help/api">Develop your own app</a></li>
-                        <li><a href="/help/feedback">Provide Feedback</a></li>
-                        <li><a href="/help/translate">Help improve translations</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-md-3">
-                    <ul class="list-unstyled">
-                        <li><h4>Stay Informed</h4></li>
-                        <li><a href="/blog">Blog</a></li>
-                        <li><a href="/newsletter">Newsletter</a></li>
-                        <li><a href="/publications">Publications</a></li>
+                        <li><h4>{% trans "Get Involved" %}</h4></li>
+                        <li><a href="/deal/add">{% trans "Add a deal" %}</a></li>
+                        <li><a href="/deal/add">{% trans "Report a deal" %}</a></li>
+                        <li><a href="/help/api">{% trans "Develop your own app" %}</a></li>
+                        <li><a href="/help/feedback">{% trans "Provide Feedback" %}</a></li>
+                        <li><a href="/help/translate">{% trans "Help improve translations" %}</a></li>
                     </ul>
                 </div>
 
                 <div class="col-md-3">
                     <ul class="list-unstyled">
-                        <li><h4>About</h4></li>
-                        <li><a href="/about">About Land Matrix</a></li>
-                        <li><a href="/ilc">The ILC Partnership</a></li>
-                        <li><a href="/policy">Data policy</a></li>
-                        <li><a href="/contact">Get in touch</a></li>
+                        <li><h4>{% trans "Stay Informed" %}</h4></li>
+                        <li><a href="/blog">{% trans "Blog" %}</a></li>
+                        <li><a href="/newsletter">{% trans "Newsletter" %}</a></li>
+                        <li><a href="/publications">{% trans "Publications" %}</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <ul class="list-unstyled">
+                        <li><h4>{% trans "About" %}</h4></li>
+                        <li><a href="/about">{% trans "About Land Matrix" %}</a></li>
+                        <li><a href="/ilc">{% trans "The ILC Partnership" %}</a></li>
+                        <li><a href="/policy">{% trans "Data policy" %}</a></li>
+                        <li><a href="/contact">{% trans "Get in touch" %}</a></li>
                     </ul>
                 </div>
             </div>
@@ -218,20 +218,20 @@
 
             <div id="footer-etc" class="row">
                 <div class="col-md-5">
-                    <h4 class="toosmalltofail">Spread and share LM</h4>
-                    <h4 class="toobigtofail">Spread the word and share land matrix</h4>
+                    <h4 class="toosmalltofail">{% trans "Spread and share LM" %}</h4>
+                    <h4 class="toobigtofail">{% trans "Spread the word and share land matrix" %}</h4>
                     <a target="_blank" href="https://twitter.com/Land_Matrix"><i class="lm-footer lm-twitter-square"></i></a>
                     <a target="_blank" href="https://www.facebook.com/LandMatrix"><i class="lm-footer lm-facebook-square"></i></a>
                 </div>
                 <div class="col-md-2 center">
-                    <h4>Share and adapt</h4>
+                    <h4>{% trans "Share and adapt" %}</h4>
                     <a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span
-                            class="lm-footer lm-creative-commons"></span></a>
+                            class="lm-footer lm-creative-commons"></span>" %}</a>
                     <a target="_blank" href="https://github.com/sinnwerkstatt/landmatrix"><i class="lm-footer lm-github"></i></a>
                 </div>
                 <div class="col-md-5 text-right">
-                    <h4 class="toobigtofail">Sign up to receive updates</h4>
-                    <h4 class="toosmalltofail">Stay updated</h4>
+                    <h4 class="toobigtofail">{% trans "Sign up to receive updates" %}</h4>
+                    <h4 class="toosmalltofail">{% trans "Stay up to date" %}</h4>
                     <a target="_blank" href="http://eepurl.com/AHK0r"><i class="lm-footer lm-envelope"></i></a>
                 </div>
             </div>
@@ -241,7 +241,7 @@
 
 {% block footer_scripts %}
     <script src="{% static "vendor/bootstrap/dist/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "vendor/select2/dist/js/select2.full.min.js" %}"></script>
+    <script src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
     <script src="{% static "legacy/main.js" %}"></script>
     <!-- Select2 init -->
     <script type="text/javascript">
@@ -253,7 +253,7 @@
         } 
         $(document).ready(function () {
             $('#nav-region-select').select2({
-                placeholder: "Regions",
+                placeholder: "{% trans 'Regions' %}",
                 dropdownCssClass: "select2-main",
                 ajax: {
                     url: "/api/regions.json",
@@ -273,7 +273,7 @@
             }).on('select2:open', select2_open)
               .on('select2:close', select2_close);
             $('#nav-country-select').select2({
-                placeholder: "Countries",
+                placeholder: "{% trans 'Countries' %}",
                 dropdownCssClass: "select2-main",
                 ajax: {
                     url: "/api/countries.json?region=",

@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.forms import CharField
 from django.forms.fields import ChoiceField
+from django.forms.widgets import Select
 from django.forms.models import ModelChoiceField, ModelForm
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext_lazy as _
@@ -25,7 +26,7 @@ class OperationalStakeholderForm(BaseForm):
             queryset=Investor.objects.filter(
                     pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
             ).order_by('name'),
-            widget=Select2Widget(
+            widget=Select(
                 attrs={'class': 'form-control investorfield'}
             )
     )
