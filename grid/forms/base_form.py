@@ -511,7 +511,9 @@ class BaseForm(forms.Form):
                 data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
                 if isinstance(data, str):
                     data = data.replace('::', ':')
-                print('base_form line 511', data)
+                    if ':' not in data:
+                        data += ':'
+                # print('base_form line 511', data)
                 value, year = data.split(':')
                 if value:
                     if isinstance(f.fields[0], forms.ChoiceField):
