@@ -72,7 +72,8 @@ class DealDataSourceForm(BaseForm):
         from django.db.models import Q
         belongs_to_data_source = Q(attributes__contains=['file']) | \
                                  Q(attributes__contains=['url']) | \
-                                 Q(attributes__contains=['type'])
+                                 Q(attributes__contains=['type']) | \
+                                 Q(name__icontains='data_source')
 
         next_taggroup_id = next_taggroup.id if next_taggroup else ActivityAttributeGroup.objects.order_by('pk').last().id
 
@@ -151,10 +152,15 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
 
     @classmethod
     def get_data(cls, deal):
+        from django.db.models import Q
+        belongs_to_data_source = Q(attributes__contains=['file']) | \
+                                 Q(attributes__contains=['url']) | \
+                                 Q(attributes__contains=['type']) | \
+                                 Q(name__icontains='data_source')
         if not deal:
             return {}
 
-        taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
+        taggroups = deal.attribute_groups().filter(belongs_to_data_source).order_by('name')
 
         data = {
             'form-TOTAL_FORMS': len(taggroups),
