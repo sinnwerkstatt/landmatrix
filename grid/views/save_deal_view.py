@@ -1,6 +1,3 @@
-from django.core.exceptions import MultipleObjectsReturned
-from django.core.files.uploadedfile import SimpleUploadedFile
-
 from grid.forms.add_deal_employment_form import AddDealEmploymentForm
 from grid.forms.add_deal_general_form import AddDealGeneralForm
 from grid.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
@@ -12,6 +9,7 @@ from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from grid.forms.deal_produce_info_form import DealProduceInfoForm
 from grid.forms.deal_spatial_form import AddDealSpatialFormSet
 from grid.forms.deal_water_form import DealWaterForm
+from grid.forms.file_field_with_initial import FileFieldWithInitial, FileInputWithInitial
 from grid.forms.investor_formset import InvestorFormSet
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 
@@ -28,8 +26,20 @@ from django.db.models.query import QuerySet
 from django.http.response import HttpResponseRedirect
 from django.db import transaction
 from django.db.models import Model
+from django.contrib import messages
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.exceptions import MultipleObjectsReturned
+from django.core.files.storage import default_storage
+from django.core.files.uploadedfile import UploadedFile
+
+from wkhtmltopdf import wkhtmltopdf
 
 from datetime import date
+import urllib.request
+import urllib.error
+
+import os
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -52,20 +62,20 @@ class SaveDealView(TemplateView):
     ]
 
     def dispatch(self, request, *args, **kwargs):
+
+        self.request = request
         self.activity = self.get_activity(**kwargs)
 
         forms = self.get_forms(request.POST)
-        print('files:', request.FILES)
+
         # if this is a POST request we need to process the form data
         if request.method == 'POST':
-
             # check whether it's valid:
             if all(form.is_valid() for form in forms):
-                self.save_form_data(forms)
-                return HttpResponseRedirect('/editor/')
+                self.save_form_data(forms, request.FILES)
+                # return HttpResponseRedirect('/editor/')
             else:
                 print_form_errors(forms)
-        # if a GET (or any other method) we'll create a blank form
 
         context = super().get_context_data(**kwargs)
         context['forms'] = forms
@@ -74,10 +84,10 @@ class SaveDealView(TemplateView):
 
         return render_to_response(self.template_name, context, RequestContext(request))
 
-    def save_form_data(self, forms):
+    def save_form_data(self, forms, files):
         groups = []
         for form in forms:
-            groups.extend(self.create_attributes_for_form(self.activity, form))
+            groups.extend(self.create_attributes_for_form(self.activity, form, files))
         self.save_activity_and_attributes(self.activity, groups)
 
     @transaction.atomic
@@ -104,14 +114,14 @@ class SaveDealView(TemplateView):
             )
         involvement.save()
 
-    def create_attributes_for_form(self,activity, form):
+    def create_attributes_for_form(self,activity, form, files):
         groups = []
 
         if self.name_of_form(form) == 'investor_info':
             self.operational_stakeholder = form.cleaned_data['operational_stakeholder']
 
         elif self.name_of_form(form) == 'data_sources':
-            create_attributes_for_data_sources_formset(activity, form, groups)
+            self.create_attributes_for_data_sources_formset(activity, form, files, groups)
 
         elif self.name_of_form(form) == 'spatial_data':
             create_attributes_for_spatial_data_formset(activity, form, groups)
@@ -128,19 +138,106 @@ class SaveDealView(TemplateView):
     def name_of_form(self, form):
         return name_of_form(form, self.FORMS)
 
+    def create_attributes_for_data_sources_formset(self, activity, formset, files, groups):
+        count = 1
+        for sub_form_data in formset.cleaned_data:
 
-def create_attributes_for_data_sources_formset(activity, formset, groups):
-    count = 1
-    for sub_form_data in formset.cleaned_data:
-        if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
-            field = DealDataSourceForm().fields['type']
-            choices = dict(field.choices)
-            sub_form_data['type'] = str(choices[sub_form_data['type']])
-        if sub_form_data['file'] and isinstance(sub_form_data['file'], SimpleUploadedFile):
-            sub_form_data['file'] = sub_form_data['file'].name
-        group = create_attribute_group(activity, sub_form_data, 'data_source_{}'.format(count))
-        count += 1
-        groups.append(group)
+            if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
+                field = DealDataSourceForm().fields['type']
+                choices = dict(field.choices)
+                sub_form_data['type'] = str(choices[sub_form_data['type']])
+
+            if sub_form_data['file'] and isinstance(sub_form_data['file'], UploadedFile):
+                sub_form_data['file'] = sub_form_data['file'].name
+
+            uploaded = get_file_from_upload(files, count-1)
+            if uploaded:
+                sub_form_data['file'] = uploaded
+
+            if sub_form_data['url']:
+                sub_form_data = handle_url(sub_form_data, self.request)
+
+            group = create_attribute_group(activity, sub_form_data, 'data_source_{}'.format(count))
+            count += 1
+            groups.append(group)
+
+
+def get_file_from_upload(files, form_index):
+    try:
+        key = next(k for k in files.keys() if 'form-{}-file'.format(form_index))
+        file = files.getlist(key)[0]
+        handle_uploaded_file(file, file.name, FileInputWithInitial.UPLOAD_BASE_DIR)
+        return file.name
+    except (StopIteration, IndexError, AttributeError):
+        return None
+
+
+def handle_uploaded_file(uploaded_file, file_name, base_dir):
+    if not os.path.exists(base_dir):
+        os.makedirs(base_dir)
+    with open(base_dir+file_name, 'wb+') as destination:
+        for chunk in uploaded_file.chunks():
+            destination.write(chunk)
+
+
+def handle_url(form_data, request):
+
+    url = form_data['url']
+
+    url_slug = get_url_slug(request, url)
+
+    # if not url_slug or form_data['file'] or url_slug == form_data['file']:
+    if not url_slug or url_slug == form_data['file']:
+        return
+
+    # Remove file from taggroup
+    del form_data['file']
+
+    # Create file for URL
+    uploaded_pdf_path = os.path.join(settings.MEDIA_ROOT, "uploads", url_slug)
+    if not default_storage.exists(uploaded_pdf_path):
+        try:
+            # Check if URL changed and no file given
+            if url.endswith(".pdf"):
+                response = urllib.request.urlopen(url)
+                default_storage.save(
+                    uploaded_pdf_path, ContentFile(response.read())
+                )
+            else:
+                # Create PDF from URL
+                output = wkhtmltopdf(pages=url, output=uploaded_pdf_path)
+                print('wkhtmltopdf output:', output)
+            form_data['date'] = date.today().strftime("%Y-%m-%d")
+            form_data['file'] = url_slug
+        except Exception as e:
+            print(e)
+            # skip possible html to pdf conversion errors
+            # if request and not default_storage.exists(uploaded_pdf_path):
+            error_could_not_upload(request, url, str(e))
+
+    return form_data
+
+
+def get_url_slug(request, url):
+    import re
+    from django.template.defaultfilters import slugify
+
+    try:
+        urllib.request.urlopen(url)
+    except (urllib.error.HTTPError, urllib.error.URLError):
+        error_could_not_upload(request, url)
+        return None
+
+    return "%s.pdf" % re.sub(r"https|http|ftp|www|", "", slugify(url))
+
+
+def error_could_not_upload(request, url, message=''):
+    messages.error(
+        request,
+        "<p>Data source <a target='_blank' href='{}'>URL</a> could not be uploaded as a PDF file.</p>"
+        "<p>{}</p>"
+        "<p>Please upload manually.</p>".format(url, message)
+    )
 
 
 def create_attributes_for_spatial_data_formset(activity, formset, groups):
