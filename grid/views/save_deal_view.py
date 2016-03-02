@@ -55,7 +55,7 @@ class SaveDealView(TemplateView):
         self.activity = self.get_activity(**kwargs)
 
         forms = self.get_forms(request.POST)
-
+        print('files:', request.FILES)
         # if this is a POST request we need to process the form data
         if request.method == 'POST':
 
@@ -111,20 +111,15 @@ class SaveDealView(TemplateView):
             self.operational_stakeholder = form.cleaned_data['operational_stakeholder']
 
         elif self.name_of_form(form) == 'data_sources':
-            create_attributes_for_data_sources_form(activity, form, groups)
+            create_attributes_for_data_sources_formset(activity, form, groups)
 
         elif self.name_of_form(form) == 'spatial_data':
-            for sub_form_data in form.cleaned_data:
-                if sub_form_data['target_country'] and isinstance(sub_form_data['target_country'], Country):
-                    sub_form_data['target_country'] = sub_form_data['target_country'].pk
-                group = create_attribute_group(activity, sub_form_data)
-                groups.append(group)
+            create_attributes_for_spatial_data_formset(activity, form, groups)
 
         else:
             if any(form.cleaned_data.values()):
-                group = create_attribute_group(activity, form.cleaned_data)
+                group = create_attribute_group(activity, form.cleaned_data, self.name_of_form(form))
                 groups.append(group)
-
             else:
                 print('no data sent:', self.name_of_form(form))
 
@@ -132,6 +127,30 @@ class SaveDealView(TemplateView):
 
     def name_of_form(self, form):
         return name_of_form(form, self.FORMS)
+
+
+def create_attributes_for_data_sources_formset(activity, formset, groups):
+    count = 1
+    for sub_form_data in formset.cleaned_data:
+        if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
+            field = DealDataSourceForm().fields['type']
+            choices = dict(field.choices)
+            sub_form_data['type'] = str(choices[sub_form_data['type']])
+        if sub_form_data['file'] and isinstance(sub_form_data['file'], SimpleUploadedFile):
+            sub_form_data['file'] = sub_form_data['file'].name
+        group = create_attribute_group(activity, sub_form_data, 'data_source_{}'.format(count))
+        count += 1
+        groups.append(group)
+
+
+def create_attributes_for_spatial_data_formset(activity, formset, groups):
+    count = 1
+    for sub_form_data in formset.cleaned_data:
+        if sub_form_data['target_country'] and isinstance(sub_form_data['target_country'], Country):
+            sub_form_data['target_country'] = sub_form_data['target_country'].pk
+        group = create_attribute_group(activity, sub_form_data, 'spatial_data_{}'.format(count))
+        count += 1
+        groups.append(group)
 
 
 def print_form_errors(forms):
@@ -143,21 +162,9 @@ def print_form_errors(forms):
             print(form.__class__.__name__, 'INVALID! Errors:', form.errors)
 
 
-def create_attributes_for_data_sources_form(activity, form, groups):
-    for sub_form_data in form.cleaned_data:
-        if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
-            field = DealDataSourceForm().fields['type']
-            choices = dict(field.choices)
-            sub_form_data['type'] = str(choices[sub_form_data['type']])
-        if sub_form_data['file'] and isinstance(sub_form_data['file'], SimpleUploadedFile):
-            sub_form_data['file'] = sub_form_data['file'].name
-        group = create_attribute_group(activity, sub_form_data)
-        groups.append(group)
-
-
-def create_attribute_group(activity, form_data):
+def create_attribute_group(activity, form_data, name=None):
     group = ActivityAttributeGroup(
-        fk_activity=activity, date=date.today(),
+        fk_activity=activity, date=date.today(), name=name,
         attributes = {key: model_to_id(value) for key, value in form_data.items() if value},
         fk_language=Language.objects.get(english_name='English')
     )
