@@ -155,7 +155,6 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
             return {}
 
         taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
-        # print('AddDealDataSourceFormSet taggroups:    ', [t.attributes for t in taggroups])
 
         data = {
             'form-TOTAL_FORMS': len(taggroups),
