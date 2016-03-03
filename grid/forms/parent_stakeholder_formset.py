@@ -2,7 +2,7 @@ from django.forms.models import ModelChoiceField
 from django.forms.widgets import Select
 from grid.forms.base_form import BaseForm
 from grid.forms.investor_form import InvestorField
-from grid.forms.operational_stakeholder_form import _investor_description
+from grid.forms.operational_stakeholder_form import investor_description
 
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 
@@ -40,7 +40,7 @@ class ParentStakeholderForm(BaseForm):
 
     def _fill_investor_choices(self):
         self.investor_choices = [
-            (investor.id, _investor_description(investor))
+            (investor.id, investor_description(investor))
             for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
         ]
         self.fields["stakeholder"].choices = list(self.fields["stakeholder"].choices)[:1]
@@ -81,7 +81,7 @@ class ParentInvestorForm(BaseForm):
 
     def _fill_investor_choices(self):
         self.investor_choices = [
-            (investor.id, _investor_description(investor))
+            (investor.id, investor_description(investor))
             for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
         ]
         self.fields["parent_investor"].choices = list(self.fields["parent_investor"].choices)[:1]

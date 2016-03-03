@@ -308,7 +308,7 @@ class BaseForm(forms.Form):
         for (field_name, field) in cls().fields.items():
             prefixed_name = prefix and "%s-%s"%(prefix, field_name) or field_name
 
-            if cls.DEBUG: print('    field', field_name, field, prefix)
+            # if cls.DEBUG: print('    field', field_name, field, prefix)
 
             if field_name.startswith('tg_'):
                 taggroup = cls.get_data_for_tg_field(data, field_name, deal, prefixed_name, taggroup)
@@ -318,7 +318,7 @@ class BaseForm(forms.Form):
 
                 if tags and len(tags) > 0:
                     if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
-                        cls.get_multiple_choice_data(data, field, field_name, prefixed_name, taggroup)
+                        data.setlist(prefixed_name, cls.get_multiple_choice_data(field, field_name, taggroup))
                     else:
                         # Year based data?
                         if isinstance(field, forms.MultiValueField):
@@ -330,7 +330,7 @@ class BaseForm(forms.Form):
 
     @classmethod
     def get_other_data(cls, data, field, field_name, prefixed_name, taggroup, tags):
-        if cls.DEBUG: print('get_other_data')
+        # if cls.DEBUG: print('get_other_data')
         if isinstance(taggroup, ActivityAttributeGroup) and taggroup.attributes.get(field_name):
             value = taggroup.attributes[field_name]
         elif hasattr(taggroup, field_name):
@@ -338,10 +338,10 @@ class BaseForm(forms.Form):
         elif field_name in tags:
             value = tags[field_name]
         else:
-            if cls.DEBUG: print('didnt find %s' % field_name)
+            # if cls.DEBUG: print('didnt find %s' % field_name)
             value = None
         date = tags['date'] if 'date' in tags else None # tags.date or taggroup.date
-        if cls.DEBUG: print('        value, date', value, date)
+        # if cls.DEBUG: print('        value, date', value, date)
 
         if isinstance(field, forms.ChoiceField):
             for k, v in field.choices:
@@ -360,7 +360,7 @@ class BaseForm(forms.Form):
             data[prefixed_name] = value
 
     @classmethod
-    def get_multiple_choice_data(cls, data, field, field_name, prefixed_name, taggroup):
+    def get_multiple_choice_data(cls,  field, field_name, taggroup):
         tag_values = set([group.attributes[field_name] for group in taggroup if field_name in group.attributes])
         if cls.DEBUG: print('get_multiple_choice_data()', field_name, list(field.choices), tag_values)
         values = []
@@ -368,7 +368,8 @@ class BaseForm(forms.Form):
             value = cls.get_multiple_choice_value(field, tag_value)
             if value:
                 values.append(value)
-        data[prefixed_name] = values
+        if cls.DEBUG: print('data[...] =', values, type(values).__name__)
+        return values
 
     @classmethod
     def get_multiple_choice_value(cls, field, tag_value):
@@ -394,7 +395,7 @@ class BaseForm(forms.Form):
 
     @classmethod
     def get_year_based_data(cls, data, field, field_name, prefixed_name, tags, taggroup):
-        if cls.DEBUG: print('get_year_based_data()', field_name, tags.get(field_name))
+        # if cls.DEBUG: print('get_year_based_data()', field_name, tags.get(field_name))
         yb_data = []
 
         for tag in [field_name]:
@@ -506,7 +507,13 @@ class BaseForm(forms.Form):
                 #        year = self.initial.get(len(keys) > i+1 and keys[i+1] or "-", "")
                 #        if value or year:
                 #            break
+                # todo fails with historical deals
                 data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
+                if isinstance(data, str):
+                    data = data.replace('::', ':')
+                    if ':' not in data:
+                        data += ':'
+                # print('base_form line 511', data)
                 value, year = data.split(':')
                 if value:
                     if isinstance(f.fields[0], forms.ChoiceField):
