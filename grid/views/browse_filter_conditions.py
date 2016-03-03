@@ -1,9 +1,3 @@
-from time import time
-
-from django.db import connection
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from grid.forms.deal_produce_info_form import DealProduceInfoForm
 from grid.forms.deal_history_form import DealHistoryForm
 from grid.forms.deal_primary_investor_form import DealPrimaryInvestorForm
@@ -18,9 +12,16 @@ from grid.forms.change_deal_employment_form import ChangeDealEmploymentForm
 from grid.forms.deal_data_source_form import ChangeDealDataSourceFormSet
 from grid.forms.change_deal_action_comment_form import ChangeDealActionCommentForm
 from grid.forms.change_deal_overall_comment_form import ChangeDealOverallCommentForm
+from grid.forms.investor_form import InvestorForm
+from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.widgets import NestedMultipleChoiceField
+from grid.views.profiling_decorators import print_num_queries, print_execution_time
+from grid.views.profiling_decorators import print_func_execution_time, print_func_num_queries
+
 
 from django.db.models.fields import IntegerField
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class BrowseFilterConditions:
@@ -36,9 +37,9 @@ class BrowseFilterConditions:
         self.order_by = order_by
         self.limit = limit
 
+    @print_execution_time
+    @print_num_queries
     def parse(self):
-        start = time()
-        num_queries_old = len(connection.queries)
         self.data = {
             "activity": {},
             "deal_scope": "",
@@ -51,76 +52,91 @@ class BrowseFilterConditions:
             self.read_formset()
         self.set_order_by()
         self.set_limit()
-        # print(type(self).__name__, 'parse()', time()-start, 's', len(connection.queries)-num_queries_old, 'queries')
 
         return self.data
 
+    @print_execution_time
+    @print_num_queries
     def read_formset(self):
-        start = time()
-        num_queries_old = len(connection.queries)
-        filters_act, filters_inv = {"tags": {}}, {"tags": {}}
+        self.filters_act, self.filters_inv = {"tags": {}}, {"tags": {}}
         if not self.formset:
-            self.data["activity"] = filters_act
-            self.data["investor"] = filters_inv
+            self.data["activity"] = self.filters_act
+            self.data["investor"] = self.filters_inv
             return
 
-        for i, form in enumerate(self.formset):
-            fl, value = self.get_fl(form, i)
-            variable = fl.get("variable")
-            op = fl.get("operator")
-            values = fl.get("value")
-            year = fl.get("year")
-            # skip if no variable is selected
-            if not variable:
-                continue
-            # variable is identifier
-            if variable == "-1":
-                identifier_filter = filters_act.get("identifier", [])
-                identifier_filter.append({
-                    "value": values[0] or "0",
-                    "op": op,
-                })
-                filters_act["identifier"] = identifier_filter
-            elif variable == "-2":
-                # deal scope
-                if len(values) == 2:
-                    self.data["deal_scope"] = "all"
-                elif len(values) == 1:
-                    self.data["deal_scope"] = values[0] == "10" and "domestic" or values[0] == "20" and "transnational" or ""
-            elif "inv_" in variable:
-                variable = variable[4:]
-                f = get_field_by_sh_key_id(variable)
-                values = [
-                    year and "%s##!##%s" % (get_display_value_by_field(f, value), year) or get_display_value_by_field(f,
-                                                                                                                      value)
-                    for value in values]
-                if f and "Region" in f.label:
+        self.read_forms()
+
+        self.data["activity"] = self.filters_act
+        self.data["investor"] = self.filters_inv
+
+    @print_execution_time
+    @print_num_queries
+    def read_forms(self):
+        for i, form in self.get_forms():
+            self.read_form(form, i)
+
+    @print_execution_time
+    @print_num_queries
+    def get_forms(self):
+        return enumerate(self.formset)
+
+    @print_execution_time
+    @print_num_queries
+    def read_form(self, form, i):
+        fl, value = self.get_fl(form, i)
+        variable = fl.get("variable")
+        # skip if no variable is selected
+        if variable:
+            self.read_form_variable(fl, fl.get("operator"), value, fl.get("value"), variable, fl.get("year"))
+
+    @print_execution_time
+    @print_num_queries
+    def read_form_variable(self, fl, op, value, values, variable, year):
+        # variable is identifier
+        if variable == "-1":
+            identifier_filter = self.filters_act.get("identifier", [])
+            identifier_filter.append({
+                "value": values[0] or "0",
+                "op": op,
+            })
+            self.filters_act["identifier"] = identifier_filter
+        elif variable == "-2":
+            # deal scope
+            if len(values) == 2:
+                self.data["deal_scope"] = "all"
+            elif len(values) == 1:
+                self.data["deal_scope"] = values[0] == "10" and "domestic" or values[
+                                                                                  0] == "20" and "transnational" or ""
+        elif "inv_" in variable:
+            variable = variable[4:]
+            f = get_field_by_sh_key_id(variable)
+            values = [
+                year and "%s##!##%s" % (get_display_value_by_field(f, value), year) or get_display_value_by_field(f,
+                                                                                                                  value)
+                for value in values]
+            if f and "Region" in f.label:
+                # region values not stored at activity/investor
+                variable = "region"
+            elif f and "Country" in f.label:
+                # countries are referred by keys
+                values = fl.get("value")
+            self.filters_inv["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
+        else:
+            f = get_field_by_key(variable)
+            if year:
+                values = ["%s##!##%s" % (get_display_value_by_field(f, value), year)]
+            else:
+                values = [get_display_value_by_field(f, value) for value in values]
+            if f:
+                if "Region" in f.label:
                     # region values not stored at activity/investor
                     variable = "region"
-                elif f and "Country" in f.label:
-                    # countries are referred by keys
+                elif "Country" in f.label or "Crops" in f.label:
+                    # countries and crops are referred by keys
                     values = fl.get("value")
-                filters_inv["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
-            else:
-                f = get_field_by_key(variable)
-                if year:
-                    values = ["%s##!##%s" % (get_display_value_by_field(f, value), year)]
-                else:
-                    values = [get_display_value_by_field(f, value) for value in values]
-                if f:
-                    if "Region" in f.label:
-                        # region values not stored at activity/investor
-                        variable = "region"
-                    elif "Country" in f.label or "Crops" in f.label:
-                        # countries and crops are referred by keys
-                        values = fl.get("value")
-                    elif "Negotiation status" in f.label:
-                        variable = "negotiation_status"
-                filters_act["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
-
-        self.data["activity"] = filters_act
-        self.data["investor"] = filters_inv
-        # print(type(self).__name__, 'read_formset()', time()-start, 's', len(connection.queries)-num_queries_old, 'queries')
+                elif "Negotiation status" in f.label:
+                    variable = "negotiation_status"
+            self.filters_act["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
 
     def get_fl(self, form, i):
         fl = {}
@@ -162,6 +178,8 @@ class BrowseFilterConditions:
             self.data["limit"] = self.limit
 
 
+@print_func_execution_time
+@print_func_num_queries
 def get_field_by_key(key):
 
     if key.isnumeric():
@@ -170,9 +188,15 @@ def get_field_by_key(key):
         form = hasattr(form, "form") and form.form or form
         if key in form.base_fields:
             debug_found_form(form, key)
-            return form().fields[key]
+            return form_field(form, key)
 
     return None
+
+
+@print_func_execution_time
+@print_func_num_queries
+def form_field(form, key):
+    return form().fields[key]
 
 
 def debug_found_form(form, key):
@@ -191,7 +215,7 @@ CHANGE_FORMS = [
     ChangeDealSpatialFormSet,
     ChangeDealGeneralForm,
     ChangeDealEmploymentForm,
-    DealSecondaryInvestorFormSet,
+    InvestorForm,
     ChangeDealDataSourceFormSet,
     DealLocalCommunitiesForm,
     DealFormerUseForm,
@@ -201,7 +225,7 @@ CHANGE_FORMS = [
     ChangeDealOverallCommentForm,
     ChangeDealActionCommentForm,
     DealHistoryForm,
-    DealPrimaryInvestorForm
+    OperationalStakeholderForm
 ]
 
 
