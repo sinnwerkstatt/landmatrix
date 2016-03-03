@@ -6,7 +6,7 @@ from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from grid.views.base_model_form import BaseModelForm
 from grid.views.browse_text_input import BrowseTextInput
 from grid.views.browse_filter_conditions import get_field_by_key, a_keys
-from grid.views.profiling_decorators import print_num_queries, print_execution_time
+from grid.views.profiling_decorators import print_execution_time_and_num_queries
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -19,8 +19,7 @@ class BrowseConditionForm(BaseModelForm):
     )
     value = forms.CharField(required=False, label=_("Value"), initial="", widget=BrowseTextInput())
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def __init__(self, variables_activity=None, variables_investor=None, *args, **kwargs):
         super(BrowseConditionForm, self).__init__(*args, **kwargs)
 
@@ -30,8 +29,7 @@ class BrowseConditionForm(BaseModelForm):
         self.fields["variable"].choices = self._variables()
         self.fields["operator"].choices = _operators()
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def _set_a_fields(self, variables_activity):
         if variables_activity:
             self.a_fields = [
@@ -40,8 +38,7 @@ class BrowseConditionForm(BaseModelForm):
         else:
             self.a_fields = [(str(key), get_field_by_key(str(key))) for key in a_keys()]
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def _set_sh_fields(self, variables_investor):
         if variables_investor:
             self.sh_fields = [

@@ -6,7 +6,7 @@ from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 
 from grid.forms.operational_stakeholder_form import investor_description
 
-from grid.views.profiling_decorators import print_execution_time, print_num_queries
+from grid.views.profiling_decorators import print_execution_time_and_num_queries
 
 from django_select2.forms import Select2Widget
 
@@ -44,8 +44,7 @@ class InvestorForm(BaseForm):
     )
     tg_general_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         investor = kwargs.pop("investor", None)
@@ -89,8 +88,7 @@ class InvestorForm(BaseForm):
 
     _investor_choices = None
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def _fill_investor_choices(self):
         if InvestorForm._investor_choices is None:
             InvestorForm._investor_choices = [
