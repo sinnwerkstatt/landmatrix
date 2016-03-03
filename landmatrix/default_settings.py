@@ -77,7 +77,6 @@ INSTALLED_APPS += (
     'simple_history',
     'django_extensions',
 
-    'django_select2',
     'crispy_forms',
 
     'threadedcomments',
@@ -197,13 +196,6 @@ MEDIA_URL = "/media/"
 # tastypie
 #
 API_LIMIT_PER_PAGE = 100
-
-#
-# select2
-#
-
-SELECT2_JS = 'vendor/select2/dist/js/select2.min.js'
-SELECT2_CSS = 'vendor/select2/dist/css/select2.min.css'
 
 #
 # django-cms stuff

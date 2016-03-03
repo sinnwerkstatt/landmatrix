@@ -38,7 +38,6 @@ non_i18n_patterns = patterns(
         '',
         url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(),
             name='ajax_widget'),
-        url(r'^select2/', include('django_select2.urls')),
 )
 
 urlpatterns = i18n_patterns(

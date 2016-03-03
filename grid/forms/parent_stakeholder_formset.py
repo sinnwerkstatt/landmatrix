@@ -1,6 +1,5 @@
 from django.forms.models import ModelChoiceField
-from django_select2.forms import ModelSelect2Widget
-
+from django.forms.widgets import Select
 from grid.forms.base_form import BaseForm
 from grid.forms.investor_form import InvestorField
 from grid.forms.operational_stakeholder_form import _investor_description
@@ -22,9 +21,8 @@ class ParentStakeholderForm(BaseForm):
             queryset=Investor.objects.filter(
                     pk__in=InvestorVentureInvolvement.objects.values('fk_investor_id').distinct()
             ).order_by('name'),
-            widget=ModelSelect2Widget(
-                model=Investor,
-                search_fields=['name__icontains']
+            widget=Select(
+                attrs={'class': 'form-control investorfield'}
             )
     )
     percentage = forms.DecimalField(
@@ -63,9 +61,8 @@ class ParentInvestorForm(BaseForm):
             queryset=Investor.objects.filter(
                     pk__in=InvestorVentureInvolvement.objects.values('fk_investor_id').distinct()
             ).order_by('name'),
-            widget=ModelSelect2Widget(
-                model=Investor,
-                search_fields=['name__icontains']
+            widget=Select(
+                attrs={'class': 'form-control investorfield'},
             )
     )
     parent_investor_percentage = forms.DecimalField(
