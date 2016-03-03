@@ -226,7 +226,7 @@
                 <div class="col-md-2 center">
                     <h4>{% trans "Share and adapt" %}</h4>
                     <a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><span
-                            class="lm-footer lm-creative-commons"></span>" %}</a>
+                            class="lm-footer lm-creative-commons"></span></a>
                     <a target="_blank" href="https://github.com/sinnwerkstatt/landmatrix"><i class="lm-footer lm-github"></i></a>
                 </div>
                 <div class="col-md-5 text-right">
@@ -242,6 +242,8 @@
 {% block footer_scripts %}
     <script src="{% static "vendor/bootstrap/dist/js/bootstrap.min.js" %}"></script>
     <script src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
+    <script src="{% static "legacy/vendor/jquery.formset.min.js" %}"></script>
+    <script src="{% static "legacy/vendor/jquery.formset.custom.js" %}"></script>
     <script src="{% static "legacy/main.js" %}"></script>
     <!-- Select2 init -->
     <script type="text/javascript">
