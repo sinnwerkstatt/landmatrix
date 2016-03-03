@@ -1,10 +1,8 @@
 
 from grid.views.filter_widget_mixin import FilterWidgetMixin
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from .view_aux_functions import render_to_response
-from .profiling_decorators import print_execution_time, print_num_queries
+from grid.views.profiling_decorators import print_execution_time_and_num_queries
 from .intention_map import IntentionMap
 from .download import Download
 from grid.views.activity_protocol import ActivityProtocol
@@ -15,6 +13,7 @@ from django.template import RequestContext
 
 import json, numbers
 
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class TableGroupView(TemplateView, FilterWidgetMixin):
@@ -39,8 +38,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     def is_download(self):
         return self.download_type is not None
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def dispatch(self, request, *args, **kwargs):
 
         self.request = request
@@ -88,8 +86,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             else self.download_type if self.download_type \
             else 'csv'
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def get_records(self, request):
         ap = ActivityProtocol()
         request.POST = MultiValueDict(
@@ -151,8 +148,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         if not self._filter_set(self.GET) and self.group == "database":
             self.group = "all"
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def _set_columns(self):
         if self.is_download() and (self.group_value or self.group == "all"):
             self.columns = self.DOWNLOAD_COLUMNS
@@ -161,8 +157,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         else:
             self.columns = self._columns()
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def _set_filters(self):
         self.current_formset_conditions = self.get_formset_conditions(
             self._filter_set(self.GET), self.GET, self.group, self.rules
@@ -177,8 +172,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         download = Download(self.download_format(), self.columns, self.group)
         return download.get(items)
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def _get_items(self, query_result):
         return [self._get_row(record, query_result) for record in query_result]
 
