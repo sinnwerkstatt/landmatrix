@@ -3,8 +3,8 @@ from grid.views.filter_widget_mixin import FilterWidgetMixin
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from .view_aux_functions import create_condition_formset, render_to_response
-from .browse_filter_conditions import BrowseFilterConditions
+from .view_aux_functions import render_to_response
+from .profiling_decorators import print_execution_time, print_num_queries
 from .intention_map import IntentionMap
 from .download import Download
 from grid.views.activity_protocol import ActivityProtocol
@@ -16,26 +16,6 @@ from django.template import RequestContext
 import json, numbers
 
 
-from time import time
-
-from django.db import connection
-from django.db.backends.base.base import BaseDatabaseWrapper
-
-class ExecutionTimer:
-
-    def __init__(self, msg):
-        self.old_db_buffer_length = BaseDatabaseWrapper.queries_limit
-        BaseDatabaseWrapper.queries_limit = 100000
-        self.message = msg
-        self.start = time()
-        self.num_queries_old = len(connection.queries)
-
-    def __del__(self):
-        print(self.message, time()-self.start, 's', len(connection.queries)-self.num_queries_old, 'queries')
-        BaseDatabaseWrapper.queries_limit = self.old_db_buffer_length
-
-    def touch(self):
-        print(self.message, time()-self.start, 's', len(connection.queries)-self.num_queries_old, 'queries')
 
 class TableGroupView(TemplateView, FilterWidgetMixin):
 
@@ -59,9 +39,9 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     def is_download(self):
         return self.download_type is not None
 
+    @print_execution_time
+    @print_num_queries
     def dispatch(self, request, *args, **kwargs):
-
-        # timer = ExecutionTimer(type(self).__name__+'.dispatch()')
 
         self.request = request
         self.GET = request.GET
@@ -75,13 +55,9 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         query_result = self.get_records(request)
 
         items = self._get_items(query_result)
-        render = self.render(items, kwargs, request)
-        # timer.touch()
-        return render
+        return self.render(items, kwargs, request)
 
     def render(self, items, kwargs, request):
-
-        # timer = ExecutionTimer(type(self).__name__+'.render()')
 
         if self.is_download() and items:
             return self._get_download(items)
@@ -112,9 +88,9 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             else self.download_type if self.download_type \
             else 'csv'
 
+    @print_execution_time
+    @print_num_queries
     def get_records(self, request):
-        start = time()
-        num_queries_old = len(connection.queries)
         ap = ActivityProtocol()
         request.POST = MultiValueDict(
             {"data": [json.dumps({"filters": self.filters, "columns": self.columns})]}
@@ -124,7 +100,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         query_result = json.loads(res.decode())
 
         self.num_results = len(query_result['activities'])
-        # print(type(self).__name__, 'get_records()', time()-start, 's', len(connection.queries)-num_queries_old, 'queries')
+
         if self._limit_query():
             return query_result["activities"][:self._load_more()]
         else:
@@ -175,20 +151,19 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         if not self._filter_set(self.GET) and self.group == "database":
             self.group = "all"
 
+    @print_execution_time
+    @print_num_queries
     def _set_columns(self):
-        start = time()
-        num_queries_old = len(connection.queries)
         if self.is_download() and (self.group_value or self.group == "all"):
             self.columns = self.DOWNLOAD_COLUMNS
         elif self.group_value:
             self.columns = self.GROUP_COLUMNS_LIST
         else:
             self.columns = self._columns()
-        # print(type(self).__name__, '_set_columns()', time()-start, 's', len(connection.queries)-num_queries_old, 'queries')
 
+    @print_execution_time
+    @print_num_queries
     def _set_filters(self):
-        start = time()
-        num_queries_old = len(connection.queries)
         self.current_formset_conditions = self.get_formset_conditions(
             self._filter_set(self.GET), self.GET, self.group, self.rules
         )
@@ -197,18 +172,15 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             self.current_formset_conditions, self._order_by(), self.group, self.group_value,
             self.GET.get("starts_with", None)
         )
-        # print(type(self).__name__, '_set_filters()', time()-start, 's', len(connection.queries)-num_queries_old, 'queries')
 
     def _get_download(self, items):
         download = Download(self.download_format(), self.columns, self.group)
         return download.get(items)
 
+    @print_execution_time
+    @print_num_queries
     def _get_items(self, query_result):
-        start = time()
-        num_queries_old = len(connection.queries)
-        result_ = [self._get_row(record, query_result) for record in query_result]
-        # print(type(self).__name__, '_get_items()', time()-start, 's', len(connection.queries)-num_queries_old, 'queries')
-        return result_
+        return [self._get_row(record, query_result) for record in query_result]
 
     def _get_row(self, record, query_result):
         # iterate over database result
