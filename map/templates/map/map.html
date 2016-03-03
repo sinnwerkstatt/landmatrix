@@ -4,12 +4,6 @@
 {% load static %}
 
 {% block head %}
-    <script type="text/javascript" src="{% static "vendor/openlayers/ol.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
-
-    <script type="text/javascript" src="{% static "js/map.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/layers.js" %}"></script>
-
     <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
     <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
 
@@ -38,11 +32,14 @@
 
 {% block content %}
     {% include "filters.html" %}
+
     <div id="alert_placeholder"></div>
 
     <div id="map" class="map" title='{% trans "All Deals" %}'></div>
 
     <script>
+        $(document).ready(function () {
+        });
     </script>
 
     <div id="popup" class="ol-popup">
@@ -51,3 +48,36 @@
     </div>
 
 {% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{% static "vendor/openlayers/ol-debug.js" %}"></script>
+<script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
+
+<script type="text/javascript" src="{% static "js/map.js" %}"></script>
+<script type="text/javascript" src="{% static "js/layers.js" %}"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB59at4M4o0ERqk8OkvZOYjxH7N-8_HkNE&libraries=places"></script>
+
+{% endblock %}
+
+<!--
+<div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="collapseListGroupHeading1"><h4 class="panel-title"><a class=""
+                                                                                                    role="button"
+                                                                                                    data-toggle="collapse"
+                                                                                                    href="#collapseListGroup1"
+                                                                                                    aria-expanded="true"
+                                                                                                    aria-controls="collapseListGroup1">
+        Collapsible list group </a></h4></div>
+    <div style="" aria-expanded="true" id="collapseListGroup1" class="panel-collapse collapse in" role="tabpanel"
+         aria-labelledby="collapseListGroupHeading1">
+        <ul class="list-group">
+            <li class="list-group-item">Bootply</li>
+            <li class="list-group-item">One itmus ac facilin</li>
+            <li class="list-group-item">Second eros</li>
+        </ul>
+        <div class="panel-footer">Footer</div>
+    </div>
+</div>
+
+-->
