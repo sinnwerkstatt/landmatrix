@@ -57,10 +57,11 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     def render(self, items, kwargs, request):
 
+        print('filters:', self.filters)
+
         if self.is_download() and items:
             return self._get_download(items)
         context = {
-            'request': request,
             "view": "get-the-detail",
             "data": {
                 "items": items,
@@ -69,14 +70,13 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             },
             "name": self.group_value,
             "columns": self.group_value and self.GROUP_COLUMNS_LIST or self._columns(),
-            "filters": self.filters,
             "load_more": self._load_more_amount(),
             "group_slug": kwargs.get("group", self.DEFAULT_GROUP),
             "group_value": kwargs.get("list", None),
             "group": self.group.replace("_", " "),
-            "empty_form_conditions": self.current_formset_conditions,
-            "rules": self.rules,
+            # "rules": self.rules,
         }
+        self.add_filter_context_data(context, request)
         response = render_to_response(self.template_name, context, RequestContext(self.request))
 
         return response
@@ -159,9 +159,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     @print_execution_time_and_num_queries
     def _set_filters(self):
-        self.current_formset_conditions = self.get_formset_conditions(
-            self._filter_set(self.GET), self.GET, self.group, self.rules
-        )
+        self.current_formset_conditions = self.get_formset_conditions(self._filter_set(self.GET), self.GET, self.group)
 
         self.filters = self.get_filter_context(
             self.current_formset_conditions, self._order_by(), self.group, self.group_value,
