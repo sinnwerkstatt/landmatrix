@@ -14,7 +14,6 @@ from django import forms
 from django.forms.models import formset_factory
 from django.utils.translation import ugettext_lazy as _
 
-from django.forms.utils import ErrorDict, ErrorList, flatatt
 
 class DealSpatialForm(BaseForm):
 
@@ -47,9 +46,15 @@ class DealSpatialBaseFormSet(formset_factory(DealSpatialForm, extra=0)):
         else:
             taggroups = []
 
-        data = []
+        data = {
+            'form-TOTAL_FORMS': len(taggroups),
+            'form-INITIAL_FORMS': len(taggroups),
+            'form-MAX_NUM_FORMS': 1000
+        }
         for i, taggroup in enumerate(taggroups):
-            data.append(DealSpatialForm.get_data(activity, taggroup=taggroup))
+            form_data = DealSpatialForm.get_data(activity, taggroup=taggroup)
+            # print('DealSpatialBaseFormSet form', i, ':    ', form_data)
+            data[i] = form_data
         return data
 
 

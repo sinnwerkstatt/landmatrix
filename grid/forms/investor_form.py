@@ -4,7 +4,9 @@ from landmatrix.models.country import Country
 
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 
-from grid.forms.operational_stakeholder_form import _investor_description
+from grid.forms.operational_stakeholder_form import investor_description
+
+from grid.views.profiling_decorators import print_execution_time_and_num_queries
 
 from django.forms.widgets import Select
 
@@ -42,6 +44,7 @@ class InvestorForm(BaseForm):
     )
     tg_general_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
+    @print_execution_time_and_num_queries
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         investor = kwargs.pop("investor", None)
@@ -83,11 +86,16 @@ class InvestorForm(BaseForm):
             return True
         return False
 
+    _investor_choices = None
+
+    @print_execution_time_and_num_queries
     def _fill_investor_choices(self):
-        self.investor_choices = [
-            (investor.id, _investor_description(investor))
-            for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
-        ]
+        if InvestorForm._investor_choices is None:
+            InvestorForm._investor_choices = [
+                (investor.id, investor_description(investor))
+                for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
+            ]
+        self.investor_choices = InvestorForm._investor_choices
         self.fields["investor"].choices = list(self.fields["investor"].choices)[:1]
         self.fields["investor"].choices.extend(self.investor_choices)
 
@@ -97,3 +105,5 @@ class InvestorForm(BaseForm):
             (0, str(_("Multinational enterprise (MNE)")))
         ]
         self.fields["country"].choices.extend([(c.id, c.name) for c in Country.objects.all().order_by("name")])
+
+

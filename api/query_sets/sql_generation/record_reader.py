@@ -1,5 +1,8 @@
+from traceback import print_last
+
 from api.query_sets.sql_generation.sql_builder import list_view_wanted, SQLBuilder
 from api.query_sets.sql_generation.subquery_builder import SubqueryBuilder
+from grid.views.profiling_decorators import print_execution_time_and_num_queries, print_last_query
 
 from django.db import connection
 from django.conf import settings
@@ -18,6 +21,7 @@ class RecordReader:
             print('*'*80, 'Filters: \n', filters)
             print('*'*80, 'columns: \n', columns)
 
+    @print_execution_time_and_num_queries
     def get_all(self, assemble=None):
         if list_view_wanted(self.filters):
             records = self._slap_columns_together(assemble)
@@ -33,6 +37,8 @@ class RecordReader:
             return sql
         return self.get_all_at_once_sql()
 
+    @print_execution_time_and_num_queries
+    @print_last_query
     def get_column(self, column):
         if not column in self.columns: raise KeyError('Column %s not in columns' % column)
         return self._execute_sql(self.get_column_sql(column))
@@ -61,6 +67,7 @@ class RecordReader:
 
         return cursor.fetchall()
 
+    @print_execution_time_and_num_queries
     def _slap_columns_together(self, assemble=None):
         assemble = assemble or self._make_record_from_column_data
 
@@ -73,6 +80,7 @@ class RecordReader:
             final_data.append(record)
         return final_data
 
+    @print_execution_time_and_num_queries
     def get_all_columns(self):
         from django.db.utils import ProgrammingError
         from operator import itemgetter

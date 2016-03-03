@@ -79,6 +79,8 @@ INSTALLED_APPS += (
 
     'crispy_forms',
 
+    'wkhtmltopdf',
+
     'threadedcomments',
     'django_comments',
 

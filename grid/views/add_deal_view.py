@@ -1,4 +1,4 @@
-from grid.views.save_deal_view import SaveDealView, FORMS
+from grid.views.save_deal_view import SaveDealView
 from landmatrix.models.activity import Activity
 from django.db.models import Max
 
@@ -15,7 +15,7 @@ class AddDealView(SaveDealView):
 
     def get_forms(self, data=None):
             forms = []
-            for name, Form in FORMS:
+            for name, Form in self.FORMS:
                 new_form = Form() if not data else Form(data)
                 forms.append(new_form)
             return forms
