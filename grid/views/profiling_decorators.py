@@ -11,8 +11,19 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 PROFILING_DECORATORS_STFU = True
 
 
+def print_execution_time_and_num_queries(func):
+    @wraps(func)
+    def func_wrapper(self, *args, **kwargs):
+        return print_num_queries(print_execution_time(func))(self, *args, **kwargs)
+    return func_wrapper
+
+
 def method_name(self, func):
     return type(self).__name__ + '.' + func.__name__
+
+
+def args_to_str(args):
+    return str(tuple(str(arg)[:40] for arg in args))
 
 
 def print_execution_time(func):
@@ -27,7 +38,7 @@ def print_execution_time(func):
         print_execution_time.call_depth -= 1
         time_used = time() - start
         if time_used > print_execution_time.MIN_TIME_TO_PRINT:
-            print('    ' * print_execution_time.call_depth+method_name(self, func), time_used, 's')
+            print('    ' * print_execution_time.call_depth+method_name(self, func)+args_to_str(args), time_used, 's')
         return result
 
     return func_wrapper
@@ -48,7 +59,7 @@ def print_func_execution_time(func):
         print_execution_time.call_depth -= 1
         time_used = time() - start
         if time_used > print_execution_time.MIN_TIME_TO_PRINT:
-            print('    ' * print_execution_time.call_depth + func.__name__ + str(args), time_used, 's')
+            print('    ' * print_execution_time.call_depth + func.__name__ + args_to_str(args), time_used, 's')
         return result
 
     return func_wrapper
@@ -95,7 +106,7 @@ def print_func_num_queries(func):
         queries_used = len(connection.queries) - num_queries_old
         if queries_used:
             print(
-                '    '*print_num_queries.call_depth+func.__name__+str(args),
+                '    '*print_num_queries.call_depth+func.__name__+args_to_str(args),
                 queries_used, 'queries'
             )
         BaseDatabaseWrapper.queries_limit = old_db_buffer_length
@@ -103,6 +114,26 @@ def print_func_num_queries(func):
 
     return func_wrapper
 
+
+def print_last_query(func):
+
+    @wraps(func)
+    def func_wrapper(self, *args, **kwargs):
+        if PROFILING_DECORATORS_STFU:
+            return func(self, *args, **kwargs)
+        print_num_queries.call_depth += 1
+        result = func(self, *args, **kwargs)
+        print_num_queries.call_depth -= 1
+        last_query = connection.queries[-1]
+        if last_query and last_query.get('sql'):
+            print('    '*print_num_queries.call_depth+method_name(self, func)+args_to_str(args)+':')
+            print(last_query.get('sql'))
+            print()
+        return result
+
+    return func_wrapper
+
+print_num_queries.call_depth = 0
 
 def memoize(obj):
     cache = obj.cache = {}

@@ -1,4 +1,4 @@
-from grid.views.profiling_decorators import print_execution_time, print_num_queries
+from grid.views.profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.investor import Investor
 
 from .base_form import BaseForm
@@ -26,8 +26,7 @@ class DealSecondaryInvestorForm(BaseForm):
     investment_ratio = forms.DecimalField(max_digits=19, decimal_places=2, required=False, label=_("Percentage of investment"), help_text=_("%"))
     tg_general_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def __init__(self, *args, **kwargs):
         super(DealSecondaryInvestorForm, self).__init__(*args, **kwargs)
         investor = kwargs.pop("investor", None)
@@ -57,8 +56,7 @@ class DealSecondaryInvestorForm(BaseForm):
             return True
         return False
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def _fill_investor_choices(self):
         self.investor_choices = [
             (investor.id, self._investor_description(investor))
@@ -76,8 +74,7 @@ class DealSecondaryInvestorForm(BaseForm):
     def _investor_classification(self, investor):
         return investor.get_classification_display() if investor.classification else '-'
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def _fill_country_choices(self):
         self.fields["country"].choices = [
             ("", str(_("---------"))),

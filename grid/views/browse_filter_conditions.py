@@ -1,7 +1,5 @@
 from grid.forms.deal_produce_info_form import DealProduceInfoForm
 from grid.forms.deal_history_form import DealHistoryForm
-from grid.forms.deal_primary_investor_form import DealPrimaryInvestorForm
-from grid.forms.deal_secondary_investor_formset import DealSecondaryInvestorFormSet
 from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from grid.forms.deal_former_use_form import DealFormerUseForm
 from grid.forms.deal_water_form import DealWaterForm
@@ -15,7 +13,7 @@ from grid.forms.change_deal_overall_comment_form import ChangeDealOverallComment
 from grid.forms.investor_form import InvestorForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.widgets import NestedMultipleChoiceField
-from grid.views.profiling_decorators import print_num_queries, print_execution_time
+from grid.views.profiling_decorators import print_execution_time_and_num_queries
 from grid.views.profiling_decorators import print_func_execution_time, print_func_num_queries
 
 
@@ -37,8 +35,7 @@ class BrowseFilterConditions:
         self.order_by = order_by
         self.limit = limit
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def parse(self):
         self.data = {
             "activity": {},
@@ -55,8 +52,7 @@ class BrowseFilterConditions:
 
         return self.data
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def read_formset(self):
         self.filters_act, self.filters_inv = {"tags": {}}, {"tags": {}}
         if not self.formset:
@@ -69,19 +65,16 @@ class BrowseFilterConditions:
         self.data["activity"] = self.filters_act
         self.data["investor"] = self.filters_inv
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def read_forms(self):
         for i, form in self.get_forms():
             self.read_form(form, i)
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def get_forms(self):
         return enumerate(self.formset)
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def read_form(self, form, i):
         fl, value = self.get_fl(form, i)
         variable = fl.get("variable")
@@ -89,8 +82,7 @@ class BrowseFilterConditions:
         if variable:
             self.read_form_variable(fl, fl.get("operator"), value, fl.get("value"), variable, fl.get("year"))
 
-    @print_execution_time
-    @print_num_queries
+    @print_execution_time_and_num_queries
     def read_form_variable(self, fl, op, value, values, variable, year):
         # variable is identifier
         if variable == "-1":
