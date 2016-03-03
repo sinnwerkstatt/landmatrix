@@ -10,11 +10,14 @@ from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.investor import InvestorActivityInvolvement, InvestorVentureInvolvement
 from landmatrix.models.public_interface_cache import PublicInterfaceCache
 
+from grid.views.profiling_decorators import print_execution_time_and_num_queries
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class ActivityProtocol:
 
+    @print_execution_time_and_num_queries
     def dispatch(self, request, action):
         queryset = ActivityQuerySet(request.POST)
         res = queryset.all()
