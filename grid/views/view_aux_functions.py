@@ -41,8 +41,6 @@ FILTER_NEW = [
 FILTER_VAR_INV = ["investor_name", "country"]
 
 
-# @print_func_execution_time
-# @print_num_queries
 def create_condition_formset():
     from django.forms.formsets import formset_factory
     from django.utils.functional import curry
@@ -51,7 +49,6 @@ def create_condition_formset():
     ConditionFormset.form = staticmethod(
         curry(BrowseConditionForm, variables_activity=FILTER_VAR_ACT, variables_investor=FILTER_VAR_INV)
     )
-    # print(type(ConditionFormset), ConditionFormset.__name__)
     return ConditionFormset
 
 
