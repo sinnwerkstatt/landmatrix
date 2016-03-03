@@ -1,12 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.forms import CharField
-from django.forms.fields import ChoiceField
 from django.forms.widgets import Select
-from django.forms.models import ModelChoiceField, ModelForm
+from django.forms.models import ModelChoiceField
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext_lazy as _
-
-from django_select2.forms import Select2Widget
 
 from grid.forms.base_form import BaseForm
 from grid.widgets.title_field import TitleField
