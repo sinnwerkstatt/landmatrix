@@ -46,6 +46,10 @@ body {
     left: 0;
 }
 
+.debug {
+    background-color: hotpink;
+}
+
 .get-the-idea h1,
 .get-the-idea a:hover {
     color: #44b7b6;
@@ -661,12 +665,18 @@ p a {
     right: 12px;
     position: absolute;
 }
+
+
+.input-append .investorfield,
+.input-append .select2,
+.input-append .select2-container,
+.input-append .select2-main,
+.investorfield,
 .controls .select2,
-.controls .django-select2,
 .controls .select2-container,
 .controls .select2-main {
-    min-width: 50% !important;
-    max-width: 100% !important;
+    min-width: 90% !important;
+    max-width: 90% !important;
     height: 2em;
 }
 
