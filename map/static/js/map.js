@@ -41,7 +41,6 @@ var intentionColors = {
 
 //Map, Layers and Map Controls
 $(document).ready(function () {
-
     // Set up popup
 
     /**
@@ -283,7 +282,7 @@ $(document).ready(function () {
                         visible: false,
                         source: new ol.source.Stamen({layer: 'watercolor'})
                     })/*,
-                    vectorLayer */
+                     vectorLayer */
                 ]
             }),
             // Context Layers from the Landobservatory Geoserver.
@@ -456,24 +455,41 @@ $(document).ready(function () {
                 }
 
                 for (var dealtype in deals) {
-                    popup += "<tr><td>" + dealtype +"</td><td>" + deals[dealtype] + "</td></tr>";
+                    popup += "<tr><td>" + dealtype + "</td><td>" + deals[dealtype] + "</td></tr>";
                 }
                 popup += '</table><br>Zoom here for more details.</div>';
                 console.log(popup);
                 content.innerHTML = popup;
             } else {
                 var feat = features[0];
+                console.log("This is clicked: ", feat);
 
-                var id = feat.attributes.id;
+                var id = feat.attributes.deal_id;
                 var lat = feat.attributes.lat.toFixed(4);
                 var lon = feat.attributes.lon.toFixed(4);
                 var intention = feat.attributes.intention;
+                var intended_size = feat.attributes.intended_size;
+                var production_size = feat.attributes.production_size;
+                var contract_size = feat.attributes.contract_size;
+                var investor = feat.attributes.investor;
+                console.log(contract_size);
 
                 // TODO: Here, some javascript should be called to get the deal details from the API
-                // and render it inside the actual content popup
-                content.innerHTML = '<div><a href="/deal/'+ feat.attributes.id + '">Deal #' + id + '</a>';
-                content.innerHTML += '<p>Coordinates:</p><code>' + lat + ' ' + lon + '</code>';
-                content.innerHTML += '<p>Intention of investment:</p><code>' + intention + '</code></div>';
+                // and render it inside the actual content popup, instead of getting this from the db for every marker!
+                content.innerHTML = '<div><span><strong>Deal #' + id + '</strong></span>';
+                //content.innerHTML += '<p>Coordinates:</p><code>' + lat + ' ' + lon + '</code>';
+                if (intended_size !== null) {
+                    content.innerHTML += '<span>Intended area (ha):</span><span>' + intended_size + '</span><br/>';
+                }
+                if (production_size !== null) {
+                    content.innerHTML += '<span>Production size (ha):</span><span>' + production_size + '</span><br/>';
+                }
+                if (contract_size !== null) {
+                    content.innerHTML += '<span>Contract size (ha):</span><span>' + contract_size + '</span><br/>';
+                }
+                content.innerHTML += '<span>Intendion:</span><span>' + intention + '</span><br/>';
+                content.innerHTML += '<span>Investor:</span><span>' + investor + '</span><br />';
+                content.innerHTML += '<span><a href="/deal/' + id + '">More details</a> ></span></div>';
             }
 
             PopupOverlay.setPosition(evt.coordinate);
@@ -505,6 +521,9 @@ $(document).ready(function () {
         }
     });
 
+    var lats = {};
+    var duplicates = 0;
+
     var addData = function (data) {
         console.log('MAP DATA: ', data);
         if (data.length < 1) {
@@ -512,22 +531,140 @@ $(document).ready(function () {
         } else {
             for (var i = 0; i < data.length; i++) {
                 var marker = data[i];
-                console.log(marker);
-                addClusteredMarker(marker.deal_id, parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention);
+                marker.lat = parseFloat(marker.point_lat);
+                marker.lon = parseFloat(marker.point_lon);
+
+                if ($.inArray(marker.lat, lats) > -1) {
+                    duplicates += 1;
+                    console.log('Dup to ', marker.lat, marker, ' older is ', lats[marker.lat]);
+                } else {
+
+                    console.log(marker);
+                    addClusteredMarker(marker.deal_id, parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention, marker);
+                    //addClusteredMarkerNew(marker);
+                    lats[marker.lat] = marker;
+                }
             }
-            console.log('Added deals: ', i);
+            console.log('Added deals: ', i, ', ', duplicates, ' duplicates.');
         }
     };
 
     $.get(
-        "/en/api/deals.json?limit=300", //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+        "/en/api/deals.json?limit=10", //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
         addData
     );
+
+
+
+    /*
+     $('#mapsearch-select').select2({
+     placeholder: "Search",
+     //dropdownCssClass: "select2-main",
+     ajax: {
+     url: "/api/regions.json",
+     dataType: 'json',
+     delay: 250,
+     processResults: function (data, params) {
+     var items = [];
+     data.forEach(function (d) {
+     items.push({'id': d[0], 'text': d[1]});
+     });
+     return {
+     results: items
+     }
+     },
+     cache: true
+     }
+     });
+     */
+
+
 });
+
+function fitBounds(geom) {
+    var bounds = new ol.extent.boundingExtent([[geom.j.j, geom.R.R], [geom.j.R, geom.R.j]]);
+
+    console.log(bounds);
+    bounds = ol.proj.transformExtent(bounds, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
+    console.log(bounds);
+
+    map.getView().fit(bounds, map.getSize());
+}
+
+function initGeocoder(el) {
+    console.log("Running geocoder init");
+
+    var autocomplete = new google.maps.places.Autocomplete(el);
+
+    autocomplete.addListener('place_changed', function () {
+        var place = autocomplete.getPlace();
+        if (!place.geometry) {
+            window.alert("Autocomplete's returned place contains no geometry");
+            return;
+        }
+
+        // If the place has a geometry, then present it on a map.
+        if (place.geometry.viewport) {
+            console.log(place.geometry);
+
+            fitBounds(place.geometry.viewport);
+        } else {
+            console.log(place.geometry.location);
+            console.log(place.geometry.location.lat());
+            console.log(place.geometry.location.lng());
+            var target = [place.geometry.location.lng(), place.geometry.location.lat()]
+            target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
+            map.getView().setCenter(target);
+            map.getView().setZoom(17);  // Why 17? Because it looks good.
+        }
+
+        var address = '';
+        if (place.address_components) {
+            address = [
+                (place.address_components[0] && place.address_components[0].short_name || ''),
+                (place.address_components[1] && place.address_components[1].short_name || ''),
+                (place.address_components[2] && place.address_components[2].short_name || '')
+            ].join(' ');
+        }
+
+        //infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+        //infowindow.open(map, marker);
+    });
+}
+
+function addClusteredMarkerNew(marker) {
+    console.log("Heya: ", marker);
+    var feat = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.transform([marker.longitude, marker.latitude], 'EPSG:4326', 'EPSG:3857'))
+    });
+
+    console.log('OLD:', feat, marker);
+
+
+    if (intention.indexOf(',') > -1) {
+        intention = intention.split(',', 1)[0];
+    }
+
+    //feat.attributes = marker;
+    feat.attributes = {};
+    feat.attributes.lat = marker.point_lat;
+    feat.attributes.lon = marker.point_lon;
+    feat.attributes.id = marker.deal_id;
+
+
+    console.log('NEW:', feat);
+    console.log("Adding.");
+    //try {
+    markerSource.addFeature(feat);
+    //} catch(err) {
+    //console.log("Caught something bad.");
+    //}
+    console.log("Done adding.");
+}
 
 // MARKERS in clusters. ONE MARKER = ONE DEAL
 //longitude, latitude, intention im Index.html definiert
-function addClusteredMarker(dealid, longitude, latitude, intention) {
+function addClusteredMarker(dealid, longitude, latitude, intention, marker) {
     intention = intention || 'Undefined';
 
     if ((typeof latitude == 'number') && (typeof longitude == 'number')) {
@@ -535,16 +672,16 @@ function addClusteredMarker(dealid, longitude, latitude, intention) {
             geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
         });
 
+        intention = marker.intention;
+
         if (intention.indexOf(',') > -1) {
             intention = intention.split(',', 1)[0];
         }
 
-        feature.attributes = {
-            id: dealid,
-            intention: intention,
-            lat: latitude,
-            lon: longitude
-        };
+        feature.attributes = marker;
+        feature.attributes.intention = intention;
+
+        console.log('Adding:', feature);
 
         markerSource.addFeature(feature);
     } else {
