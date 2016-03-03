@@ -25,7 +25,6 @@ django-simple-history
 django-extensions
 
 #django-debug-toolbar
-django_select2 >= 5.8
 django-crispy-forms==1.6.0
 
 django-threadedcomments
