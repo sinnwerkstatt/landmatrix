@@ -12,7 +12,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class Activity(DefaultStringRepresentation, models.Model):
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
     availability = models.FloatField(_("availability"), blank=True, null=True)
-    fully_updated = models.DateTimeField(_("Fully updated"), blank=True, null=True)
+    fully_updated = models.DateTimeField(_("Fully updated"), blank=True, null=True, auto_now_add=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
 
     history = HistoricalRecords()
