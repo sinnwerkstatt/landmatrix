@@ -1,6 +1,8 @@
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from api.query_sets.sql_generation.join_functions import join_attributes
+from landmatrix.models.public_interface_cache import PublicInterfaceCache
+from api.query_sets.sql_generation.join_functions import join, join_attributes
 from api.query_sets.sql_generation.list_sql_builder import ListSQLBuilder
 
 
@@ -23,11 +25,10 @@ a.activity_identifier,
 %(columns)s, a.id AS id
 FROM landmatrix_activity AS a
 %(from)s
-LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal
-""" + join_attributes('deal_scope') + """
+""" + join(PublicInterfaceCache, 'pi', 'a.id = pi.fk_activity_id AND pi.is_deal') + '\n'\
+    + join_attributes('deal_scope') + """
 %(from_filter)s
 WHERE """ + "\nAND ".join([
-#            cls.max_version_condition(),
             cls.status_active_condition(), cls.is_deal_condition(), cls.not_mining_condition()
         ]) + """
 %(where)s
