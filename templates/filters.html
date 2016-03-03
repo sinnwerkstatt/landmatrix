@@ -1,4 +1,4 @@
-{% load i18n custom_tags %}
+{% load i18n custom_tags static %}
 {% load humanize %}
 
 <div id="filters">
@@ -10,7 +10,8 @@
             <span class="label label-filter">{% trans "Crops" %} <i class="lm lm-times"></i></span>
         </div>
         <div class="col-md-2 text-right">
-            <a class="toggle-filters" role="button" data-toggle="collapse" href="#manage-filters" aria-expanded="true" data-toggle-text="{% trans "Hide filters" %}"
+            <a class="toggle-filters" role="button" data-toggle="collapse" href="#manage-filters" aria-expanded="true"
+               data-toggle-text="{% trans "Hide filters" %}"
                aria-controls="manage-filters">
                 {% trans "Manage filters" %}
             </a>
@@ -41,16 +42,6 @@
                     </ul>
                 </div>
                 <div class="col-md-3 filterbox no-pad">
-                    <!-- <select id="filterselect" size="6" class="formcontrol">
-                        <option value=""><strong style="backgroud-color: blue;">Spatial Data</strong></option>
-                        <option value="">Location</option>
-                        <option value=""><strong style="backgroud-color: blue;">General Info</strong></option>
-                        <option value="">Current size under contract</option>
-                        <option value="">Intention of the Investment</option>
-                        <option value="">Nature of the deal</option>
-                        <option value="">Negotiation Status</option>
-                        <option value="">Implementation Status</option>
-                    </select> -->
                     <ul class="variables">
                         <li>
                             <h4>{% trans "Spatial Data" %}</h4>
@@ -90,7 +81,7 @@
         </form>
     </div>
 
-    <div id="filters_old" class="hidden">
+    <div id="filters_old" class="">
 
         <script type="text/javascript">
             function init_form_condition(el) {
@@ -130,56 +121,160 @@
                 $('a.intention-icon').popover({trigger: "hover", placement: "top"});
                 init_form_condition($("ul.form:not(.empty) .field:first-child select"));
                 // collapsible filters
-                //$(".toggle-filter").click(function (e) {
-                //    e.preventDefault();
-                //    $(".collapsible .collapsible-form").toggle();
-                //    var container = $(".collapsible .collapsible-tags"),
-                //            tags = container.find("ul");
-                //    if (container.hasClass("collapsed")) {
-                //        tags.empty();
-                //        $(".form.condition:not(.empty)").each(function (index) {
-                //            var tag = "";
-                //            $(this).find(":input").each(function (index) {
-                //                var el = $(this),
-                //                        name = el.attr("name");
-                //                if (name.indexOf("variable") > -1) {
-                //                    // variable
-                //                    tag += el.find(":selected").text();
-                //                }
-                //                /* requires update_widget to be executed before
-                //                 else if (name.indexOf("operator") > -1) {
-                //                 // operator
-                //                 tag += " " + el.val();
-                //                 // value (select)
-                //                 } else if (el.is("select")) {
-                //                 tag += " " + el.find(":selected").text();
-                //                 // value (radio buttons)
-                //                 } else if (el.is("[type=checkbox]")) {
-                //                 tag += (tag.indexOf(",") > -1) && (" " + el.parent().text//()) || ", " + el.parent().text();
-                //                 // value (other)
-                //                 } else if (!el.is("[type=hidden]")) {
-                //                 tag += " " + el.val();
-                //                 }*/
-                //            });
-                //            tag = "<li><span class=\"label\">" + tag + "</span></li>";
-                //            $(tag).appendTo(tags);
-                //        });
-                //        container.removeClass("collapsed");
-                //        container.find(".toggle-filter").text("Manage filters");
-                //        container.find(".toggle-tooltip").show();
-                //    } else {
-                //        container.addClass("collapsed");
-                //        container.find(".toggle-filter").text("Hide filters");
-                //        container.find(".toggle-tooltip").hide();
-                //    }
-                //    return false;
-                //}).click();
+                $(".toggle-filter").click(function (e) {
+                    e.preventDefault();
+                    $(".collapsible .collapsible-form").toggle();
+                    var container = $(".collapsible .collapsible-tags"),
+                            tags = container.find("ul");
+                    if (container.hasClass("collapsed")) {
+                        tags.empty();
+                        $(".form.condition:not(.empty)").each(function (index) {
+                            var tag = "";
+                            $(this).find(":input").each(function (index) {
+                                var el = $(this),
+                                        name = el.attr("name");
+                                if (name.indexOf("variable") > -1) {
+                                    // variable
+                                    tag += el.find(":selected").text();
+                                }
+                                /* requires update_widget to be executed before
+                                 else if (name.indexOf("operator") > -1) {
+                                 // operator
+                                 tag += " " + el.val();
+                                 // value (select)
+                                 } else if (el.is("select")) {
+                                 tag += " " + el.find(":selected").text();
+                                 // value (radio buttons)
+                                 } else if (el.is("[type=checkbox]")) {
+                                 tag += (tag.indexOf(",") > -1) && (" " + el.parent().text//()) || ", " + el.parent().text();
+                                 // value (other)
+                                 } else if (!el.is("[type=hidden]")) {
+                                 tag += " " + el.val();
+                                 }*/
+                            });
+                            tag = "<li><span class=\"label\">" + tag + "</span></li>";
+                            $(tag).appendTo(tags);
+                        });
+                        container.removeClass("collapsed");
+                        container.find(".toggle-filter").text("Manage filters");
+                        container.find(".toggle-tooltip").show();
+                    } else {
+                        container.addClass("collapsed");
+                        container.find(".toggle-filter").text("Hide filters");
+                        container.find(".toggle-tooltip").hide();
+                    }
+                    return false;
+                }).click();
                 $('.toggle-filters').click(function () {
                     var text = $(this).data('toggle-text');
                     $(this).data('toggle-text', $(this).text()).text(text);
                 })
             });
         </script> <!-- old filter javascript voodoo -->
-
+        <div class="row">
+            <div class="span7">
+                <div class="collapsible">
+                    <div class="collapsible-form">
+                        <form method="GET" class="form-inline filters">
+                            <div id="empty" class="rules row">
+                                <div class="span8">
+                                    <input type="hidden" name="filtered" value="true"/>
+                                    <input type="hidden" name="limit" value="{{ limit }}"/>
+                                    <input type="hidden" name="order_by" value="{{ data.order_by }}"/>
+                                    <input type="submit" class="submit" value="Apply Filters" style="display: none"/>
+                                    {% if empty_form_conditions %}
+                                        <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
+                                        {{ empty_form_conditions.management_form }}
+                                        {% for empty_form in empty_form_conditions.forms %}
+                                            <ul class="form clearfix condition">
+                                                {{ empty_form.as_ul }}
+                                                <li>&nbsp;<a class="delete-row" href="javascript:void(0)"><i
+                                                        class="icon icon-remove"></i></a></li>
+                                            </ul>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <ul class="form clearfix condition empty">
+                                        {{ empty_form_conditions.empty_form.as_ul }}
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="span8">
+                                    <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            //
+                                            $(".subnav li.limit a").click(function (e) {
+                                                e.preventDefault();
+                                                $("input[name=limit]").val($(this).attr("href").split("/")[1]);
+                                                $("form").submit();
+                                            });
+                                            //
+                                            $('.reset-filter').click(function () {
+                                                $('.rules').find('ul:gt(0)').remove();
+                                                $('#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS').val(0);
+                                            });
+                                            //
+                                            $('#empty ul.form.empty :input, #empty ul.form.empty label').each(function () {
+                                                var id = $(this).attr("id");
+                                                var name = $(this).attr("name");
+                                                var value = $(this).attr("value");
+                                                var for_str = $(this).attr("for");
+                                                if (id != undefined) {
+                                                    $(this).attr("id", id.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                                }
+                                                if (name != undefined) {
+                                                    $(this).attr("name", name.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                                }
+                                                if (value != undefined) {
+                                                    $(this).attr("value", value.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                                }
+                                                if (for_str != undefined) {
+                                                    $(this).attr("for", for_str.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                                }
+                                            });
+                                            //
+                                            $("ul.form.empty").formset({
+                                                prefix: '{{ empty_form_conditions.prefix }}',
+                                                addText: '{% trans "Add filter" %}',
+                                                deleteText: '<i class="icon icon-remove"></i>',
+                                                added: function (row) {
+                                                    // FIXME: Move row out of button group, this should be handled by the formset
+                                                    row.remove();
+                                                    row.insertBefore($(".add-row:visible").parent().parent().find(".btn-group"))
+                                                    init_form_condition($("ul.form.condition:last .field:first-child select"));
+                                                }
+                                            });
+                                            // FIXME: Move add-row button into the button group, don't use javascript for that
+                                            var b = $(".add-row").addClass("btn").hide();
+                                            $(".filters .btn-group").prepend(b.show());
+                                        })
+                                    </script>
+                                    <div class="btn-group">
+                                        <button type="submit" class="btn" name="reset"
+                                                value="reset">{% trans "Reset" %}</button>
+                                        <button type="submit" class="btn">{% trans "Go" %}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="collapsible-tags collapsed">
+                        <h5>Active filters:</h5>
+                        <ul class="unstyled"></ul>
+                        <a href="javascript:;" class="toggle-filter">Manage filters</a>
+                        <a href="#" class="toggle-tooltip"
+                           title="You can create custom filters here. However, please note that filters are reset when changing entry point.">
+                            <i class="icon icon-question-sign"> </i></a>
+                        {% if data.count %}<p style="clear: both">Showing
+                            {% if data.items|length != data.count %}{{ data.items|length }}
+                                of {% endif %}{{ data.count }} row{{ data.count|pluralize }}.</p>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div> <!-- old filter section -->
 </div>
+
+{% block js %}
+<script src="{% static "legacy/vendor/jquery.formset.custom.js"  %}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
