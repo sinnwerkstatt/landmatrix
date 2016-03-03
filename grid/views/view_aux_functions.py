@@ -1,9 +1,12 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from grid.views.browse_condition_form import BrowseConditionForm
+from grid.views.profiling_decorators import print_func_execution_time
+
+from .profiling_decorators import print_execution_time, print_num_queries
 
 from django.template import loader
 from django.http import HttpResponse
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 FILTER_VAR_ACT = [
@@ -38,6 +41,8 @@ FILTER_NEW = [
 FILTER_VAR_INV = ["investor_name", "country"]
 
 
+# @print_func_execution_time
+# @print_num_queries
 def create_condition_formset():
     from django.forms.formsets import formset_factory
     from django.utils.functional import curry
@@ -46,6 +51,7 @@ def create_condition_formset():
     ConditionFormset.form = staticmethod(
         curry(BrowseConditionForm, variables_activity=FILTER_VAR_ACT, variables_investor=FILTER_VAR_INV)
     )
+    # print(type(ConditionFormset), ConditionFormset.__name__)
     return ConditionFormset
 
 
@@ -58,3 +64,4 @@ def render_to_response(template_name, context, context_instance):
 
 def render_to_string(template_name, context, context_instance):
     return loader.render_to_string(template_name, context, context_instance)
+

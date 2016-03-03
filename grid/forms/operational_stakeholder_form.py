@@ -48,10 +48,10 @@ class OperationalStakeholderForm(BaseForm):
         return data
 
 
-
-def _investor_description(investor):
-    return _investor_name(investor) + ' (' + _investor_country_name(investor) + ')' + ' ' + _investor_classification(
-        investor)
+def investor_description(investor):
+    return '{} ({}) {}'.format(
+        _investor_name(investor), _investor_country_name(investor), _investor_classification(investor)
+    )
 
 
 def _investor_name(investor):
@@ -59,7 +59,7 @@ def _investor_name(investor):
 
 
 def _investor_country_name(investor):
-    return Country.objects.get(pk=investor.fk_country_id).name if investor.fk_country_id else '-'
+    return investor.fk_country.name if investor.fk_country_id else '-'
 
 
 def _investor_classification(investor):
