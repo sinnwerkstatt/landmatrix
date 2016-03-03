@@ -1,16 +1,17 @@
-
+from grid.views.filter_widget_mixin import FilterWidgetMixin
 from grid.views.view_aux_functions import render_to_response
 
 from django.views.generic.base import TemplateView
 from django.template import RequestContext
 
 
-class ChartView(TemplateView):
+class ChartView(TemplateView, FilterWidgetMixin):
     chart = ""
 
     def dispatch(self, request, *args, **kwargs):
+        self._set_filters(request.GET)
         context = self.get_context_data(**kwargs)
-        context['request'] = request
+        self.add_filter_context_data(context, request)
         return render_to_response(self.template_name, context, RequestContext(request))
 
     def get_context_data(self, **kwargs):
@@ -20,6 +21,10 @@ class ChartView(TemplateView):
             "chart": self.chart
         })
         return context
+
+    def _set_filters(self, GET):
+        self.current_formset_conditions = self.get_formset_conditions(self._filter_set(GET), GET)
+        self.filters = self.get_filter_context(self.current_formset_conditions)
 
 
 class OverviewChartView(ChartView):
