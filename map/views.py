@@ -10,29 +10,15 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class MapView(TemplateView, FilterWidgetMixin):
     template_name = 'map/map.html'
 
-    def _set_filters(self):
-        self.current_formset_conditions = self.get_formset_conditions(
-                self._filter_set(self.GET), self.GET, self.group, self.rules
-        )
-
-        self.filters = self.get_filter_context(
-                self.current_formset_conditions, self._order_by(), self.group, self.group_value,
-                self.GET.get("starts_with", None)
-        )
-
-    def _order_by(self, x=None):
-        return x
+    def _set_filters(self, GET):
+        self.current_formset_conditions = self.get_formset_conditions(self._filter_set(GET), GET)
+        self.filters = self.get_filter_context(self.current_formset_conditions)
 
     def dispatch(self, request, *args, **kwargs):
 
-        self.request = request
-        self.GET = request.GET
-        self.group = []
-        self.group_value = ""
-
-        self._set_filters()
+        self._set_filters(request.GET)
 
         context = self.get_context_data(**kwargs)
-        context['request'] = request
-        context['filters'] = self.filters
+        self.add_filter_context_data(context, request)
+
         return render_to_response(self.template_name, context, RequestContext(request))
