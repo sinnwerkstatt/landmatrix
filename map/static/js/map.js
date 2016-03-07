@@ -319,7 +319,9 @@ $(document).ready(function () {
         // Set the map view : here it's set to see the all world.
         view: new ol.View({
             center: [0, 0],
-            zoom: 2
+            zoom: 2,
+            minZoom: 2
+
         })
     });
 
