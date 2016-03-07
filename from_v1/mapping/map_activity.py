@@ -1,7 +1,7 @@
 from mapping.map_model import MapModel
 from mapping.map_status import MapStatus
 import landmatrix.models
-import editor.models
+import old_editor.models
 from migrate import V1
 
 from django.db import connections
@@ -10,7 +10,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapActivity(MapModel):
-    old_class = editor.models.Activity
+    old_class = old_editor.models.Activity
     new_class = landmatrix.models.Activity
     depends = [ MapStatus ]
 

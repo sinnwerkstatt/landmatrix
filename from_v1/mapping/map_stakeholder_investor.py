@@ -1,6 +1,6 @@
 from mapping.map_model import MapModel
 import landmatrix.models
-import editor.models
+import old_editor.models
 from mapping.aux_functions import get_first_stakeholder_tag_value, get_country_id_for_stakeholder, get_now
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -26,7 +26,7 @@ def get_classification_for_stakeholder(stakeholder_id):
 
 
 class MapStakeholderInvestor(MapModel):
-    old_class = editor.models.Stakeholder
+    old_class = old_editor.models.Stakeholder
     new_class = landmatrix.models.Investor
     attributes = {
         'stakeholder_identifier': 'investor_identifier',
