@@ -1,6 +1,6 @@
 from mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
 import landmatrix.models
-import editor.models
+import old_editor.models
 #from mapping.map_involvement import MapInvolvement
 from migrate import V1, V2
 
@@ -35,14 +35,14 @@ def get_collective_status(pi_status, st_status):
 
 
 def get_status(involvement):
-    pi_status = editor.models.PrimaryInvestor.objects.using(V1).get(pk=involvement['fk_primary_investor_id']).fk_status_id
-    st_status = editor.models.Stakeholder.objects.using(V1).get(pk=involvement['fk_stakeholder_id']).fk_status_id
+    pi_status = old_editor.models.PrimaryInvestor.objects.using(V1).get(pk=involvement['fk_primary_investor_id']).fk_status_id
+    st_status = old_editor.models.Stakeholder.objects.using(V1).get(pk=involvement['fk_stakeholder_id']).fk_status_id
     return get_collective_status(pi_status, st_status)
 
 
 class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
 
-    old_class = editor.models.Involvement
+    old_class = old_editor.models.Involvement
     new_class = landmatrix.models.InvestorActivityInvolvement
 
     @classmethod
