@@ -132,6 +132,10 @@ table .map {
     width: 1.2em;
 }
 
+div.layer-group > a:hover {
+    text-decoration: none;
+}
+
 .layer-switcher .panel,
 #legend .panel {
     background-color: #fcfcfc;

@@ -100,7 +100,7 @@ ol.control.LayerSwitcher = function(opt_options) {
 ol.inherits(ol.control.LayerSwitcher, ol.control.Control);
 
 /**
- * Show the layer panel.
+ * Show the legend panel.
  */
 ol.control.LayerSwitcher.prototype.showPanel = function() {
     if (this.element.className != this.shownClassName) {
@@ -110,13 +110,42 @@ ol.control.LayerSwitcher.prototype.showPanel = function() {
 };
 
 /**
- * Hide the layer panel.
+ * Hide the legend panel.
  */
 ol.control.LayerSwitcher.prototype.hidePanel = function() {
     if (this.element.className != this.hiddenClassName) {
         this.element.className = this.hiddenClassName;
     }
 };
+
+/**
+ * Show a layer panel.
+ */
+ol.control.LayerSwitcher.prototype.toggleLayerPanel = function() {
+    console.log(this);
+    var chevron = $(this.lastElementChild);
+
+    var collapse = $(this.nextSibling);
+    if (collapse.hasClass('hidden') === true) {
+        console.log('Uncollapsing layer group panel');
+        chevron.removeClass('lm-chevron-right').addClass('lm-chevron-down');
+        collapse.removeClass('hidden');
+    } else {
+        console.log('Collapsing layer group panel');
+        chevron.removeClass('lm-chevron-down').addClass('lm-chevron-right');
+        collapse.addClass('hidden');
+    }
+
+};
+
+/**
+ * Hide a layer panel.
+ */
+ol.control.LayerSwitcher.prototype.hideLayerPanel = function(panelname) {
+    $(panelname).addClass('hidden');
+};
+
+
 
 /**
  * Re-draw the layer panel to represent the current state of the layers.
@@ -129,8 +158,8 @@ ol.control.LayerSwitcher.prototype.renderPanel = function() {
         this.layerpanel.removeChild(this.layerpanel.firstChild);
     }
 
-    var ul = document.createElement('ul');
-    ul.className = 'list-group';
+    var ul = document.createElement('div');
+    //ul.className = '';
     this.layerpanel.appendChild(ul);
     this.renderLayers_(this.getMap(), ul);
 
@@ -201,25 +230,42 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
 
     var this_ = this;
 
-    var li = document.createElement('li');
-    li.className = 'list-group-item';
+    var item = document.createElement('div');
+    item.className = '';
 
     var lyrTitle = lyr.get('title');
     var lyrId = lyr.get('title').replace(' ', '-') + '_' + idx;
 
-    var label = document.createElement('label');
 
     if (lyr.getLayers) {
 
-        li.className = 'group';
-        label.innerHTML = lyrTitle;
-        li.appendChild(label);
+        var collapsename = lyrId+'Collapse';
+
+        var label = document.createElement('a');
+
+        item.className = 'layer-group';
+
+        label.setAttribute('role' ,"button");
+        label.setAttribute('aria-controls', collapsename);
+        label.setAttribute('aria-expanded', false);
+
+        label.innerHTML = '<i class="lm lm-chevron-down"></i>' + lyrTitle;
+        label.onclick = this.toggleLayerPanel;
+
+        item.appendChild(label);
+
+
+        var div = document.createElement('div');
+        div.className = 'layercollapse';
+        div.setAttribute('id', collapsename);
         var ul = document.createElement('ul');
-        li.appendChild(ul);
+        div.appendChild(ul);
+        item.appendChild(div);
 
         this.renderLayers_(lyr, ul);
 
     } else {
+        var label = document.createElement('label');
 
         var input = document.createElement('input');
         if (lyr.get('type') === 'base') {
@@ -233,15 +279,15 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
         input.onchange = function(e) {
             this_.setVisible_(lyr, e.target.checked);
         };
-        li.appendChild(input);
+        item.appendChild(input);
 
         label.htmlFor = lyrId;
         label.innerHTML = lyrTitle;
-        li.appendChild(label);
+        item.appendChild(label);
 
     }
 
-    return li;
+    return item;
 
 };
 
