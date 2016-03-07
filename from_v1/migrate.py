@@ -25,7 +25,7 @@ V1, V2 = 'v1_my', 'v2'
 BASE_PATH = '/home/lene/workspace/landmatrix'
 
 load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
-load_project(BASE_PATH+'/land-matrix', 'editor')
+load_project(BASE_PATH+'/land-matrix', 'old_editor')
 
 
 def map_classes(*args):
