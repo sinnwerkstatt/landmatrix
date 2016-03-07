@@ -1,6 +1,6 @@
 from mapping.map_model import MapModel
 import landmatrix.models
-import editor.models
+import old_editor.models
 from migrate import V1
 from mapping.map_activity import MapActivity
 from mapping.map_investor import MapInvestor
@@ -12,12 +12,12 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def get_status_for_investor(primary_investor_id):
-    investor = editor.models.PrimaryInvestor.objects.using(V1).get(pk=primary_investor_id)
+    investor = old_editor.models.PrimaryInvestor.objects.using(V1).get(pk=primary_investor_id)
     return investor.fk_status.pk
 
 
 class MapInvestorActivityInvolvement(MapModel):
-    old_class = editor.models.Involvement
+    old_class = old_editor.models.Involvement
     new_class = landmatrix.models.InvestorActivityInvolvement
     attributes = {
         'investment_ratio': 'percentage',
