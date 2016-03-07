@@ -25,24 +25,31 @@ ol.control.LayerSwitcher = function(opt_options) {
     button.setAttribute('title', tipLabel);
     element.appendChild(button);
 
-    this.search = document.createElement('div');
-    this.search.className = 'panel';
-    this.search.setAttribute('id', 'search-location');
+    var collapse = document.createElement('div');
+    collapse.setAttribute('id', 'legendstuff');
+    collapse.className = 'panel-collapse collapse in';
 
     var form = document.createElement('form');
     form.setAttribute('role', 'form');
 
     var formgroup = document.createElement('div');
-    formgroup.className = 'form-group has-feedback';
+    formgroup.className = 'form-group has-feedback panel';
 
-    var select = document.createElement('input');
-    select.setAttribute('id', 'mapsearch');
-    select.setAttribute('class', 'control');
-    select.setAttribute('type', 'text');
+    var searchfield = document.createElement('input');
+    searchfield.setAttribute('id', 'mapsearch');
+    searchfield.setAttribute('class', 'control');
+    searchfield.setAttribute('type', 'text');
 
-    formgroup.appendChild(select);
+    formgroup.appendChild(searchfield);
     form.appendChild(formgroup);
-    element.appendChild(form);
+
+    this.legend = document.createElement('div');
+    this.legend.className = 'panel';
+    this.legend.setAttribute('id', 'legend');
+    form.appendChild(this.legend);
+
+
+    collapse.appendChild(form);
 
 
     /*var innerHTML = '<form role="form">';
@@ -55,18 +62,17 @@ ol.control.LayerSwitcher = function(opt_options) {
     this.search.innerHTML = innerHTML;
     element.appendChild(this.search); */
 
-    this.legend = document.createElement('div');
-    this.legend.className = 'panel';
-    this.legend.setAttribute('id', 'legend');
-    element.appendChild(this.legend);
 
-    this.panel = document.createElement('div');
+    this.layerpanel = document.createElement('div');
     // TODO: Complete the collapse panel combo
-    this.panel.className = 'panel-collapse collapse in';
-    this.panel.setAttribute('id', 'layers');
-    element.appendChild(this.panel);
+    this.layerpanel.className = 'panel';
+    this.layerpanel.setAttribute('id', 'layers');
+    collapse.appendChild(this.layerpanel);
+
+    element.appendChild(collapse);
 
     var this_ = this;
+
 
     element.onmouseover = function(e) {
         this_.showPanel();
@@ -87,7 +93,7 @@ ol.control.LayerSwitcher = function(opt_options) {
         element: element,
         target: options.target
     });
-    initGeocoder(select);
+    initGeocoder(searchfield);
 
 };
 
@@ -119,13 +125,13 @@ ol.control.LayerSwitcher.prototype.renderPanel = function() {
 
     this.ensureTopVisibleBaseLayerShown_();
 
-    while(this.panel.firstChild) {
-        this.panel.removeChild(this.panel.firstChild);
+    while(this.layerpanel.firstChild) {
+        this.layerpanel.removeChild(this.layerpanel.firstChild);
     }
 
     var ul = document.createElement('ul');
     ul.className = 'list-group';
-    this.panel.appendChild(ul);
+    this.layerpanel.appendChild(ul);
     this.renderLayers_(this.getMap(), ul);
 
 };
