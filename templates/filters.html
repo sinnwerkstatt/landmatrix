@@ -1,25 +1,30 @@
-{% load i18n custom_tags static %}
+{% load i18n custom_tags static crispy_forms_tags %}
 {% load humanize %}
 
 <div id="filters">
     <div class="row">
-        <div class="col-md-10">
-            <label>{% trans "Active Filters" %}:</label>
-            <span class="label label-filter">{% trans "Negotiation status" %} <i class="lm lm-times"></i></span>
-            <span class="label label-filter">{% trans "Deal scope" %} <i class="lm lm-times"></i></span>
-            <span class="label label-filter">{% trans "Crops" %} <i class="lm lm-times"></i></span>
-        </div>
+        <form>
+            {% csrf_token %}
+            <div class="col-md-10" id="filterlist">
+                <label>{% trans "No active filters" %}:</label>
+            </div>
+        </form>
         <div class="col-md-2 text-right">
             <a class="toggle-filters" role="button" data-toggle="collapse" href="#manage-filters" aria-expanded="true"
                data-toggle-text="{% trans "Hide filters" %}"
                aria-controls="manage-filters">
                 {% trans "Manage filters" %}
             </a>
+            <a href="#" class="toggle-tooltip noul"
+               title="You can create custom filters here. Filters are kept when changing entry point.">
+                <i class="lm lm-question-circle"> </i></a>
         </div>
     </div>
 
+
     <div id="manage-filters" class="clearfix collapse">
         <form>
+            {% csrf_token %}
             <div class="row">
                 <div class="col-md-3 filterbox checkboxes">
                     <ul>
@@ -63,19 +68,30 @@
 
                 </div>
                 <div class="col-md-6 filterbox">
-                    <div class="input-group condition">
-                        <select class="operator select-inline" value="Contains">
-                            <option>{% trans "Contains not" %}</option>
-                            <option>{% trans "Equals" %}</option>
-                            <option>{% trans "Equals not" %}</option>
-                            <option>{% trans "Starts with" %}</option>
-                            <option>{% trans "Ends with" %}</option>
-                        </select>
-                        <input class="field" type="text" value="" class="inline">
+                    <div id="empty" class="rules">
+                        <input type="hidden" name="filtered" value="true"/>
+                        <input type="hidden" name="limit" value="{{ limit }}"/>
+                        <input type="hidden" name="order_by" value="{{ data.order_by }}"/>
+                        <input type="submit" class="submit" value="Apply Filters" style="display: none"/>
+                        {% if empty_form_conditions %}
+                            <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
+                            {{ empty_form_conditions.management_form }}
+                            {% for empty_form in empty_form_conditions.forms %}
+                                <div class="form condition input-group">
+                                    {{ empty_form.operator }}
+                                    {{ empty_form.value }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <ul class="form clearfix condition empty">
+                            {{ empty_form_conditions.empty_form.as_ul }}
+                        </ul>
                     </div>
+
                     <div class="input-group">
                         <button class="btn btn-default"><i class="lm lm-plus"></i> {% trans "Add condition" %}</button>
                     </div>
+
                 </div>
             </div>
         </form>
@@ -125,9 +141,13 @@
                     e.preventDefault();
                     $(".collapsible .collapsible-form").toggle();
                     var container = $(".collapsible .collapsible-tags"),
-                            tags = container.find("ul");
+                            tags = $("#filterlist");
+                    console.log(tags);
                     if (container.hasClass("collapsed")) {
                         tags.empty();
+                        var label = '<label>{% trans "Active Filters" %}:</label>';
+                        tags.append(label);
+
                         $(".form.condition:not(.empty)").each(function (index) {
                             var tag = "";
                             $(this).find(":input").each(function (index) {
@@ -152,8 +172,10 @@
                                  tag += " " + el.val();
                                  }*/
                             });
-                            tag = "<li><span class=\"label\">" + tag + "</span></li>";
+                            tag = tag + '<a class="delete-row" href="javascript:void(0)"><i class="lm lm-times"></i></a>';
+                            tag = '<span class="label label-filter">' + tag + '</span>';
                             $(tag).appendTo(tags);
+                            console.log("Tag appended.", tag, tags);
                         });
                         container.removeClass("collapsed");
                         container.find(".toggle-filter").text("Manage filters");
@@ -171,12 +193,12 @@
                 })
             });
         </script> <!-- old filter javascript voodoo -->
-        <div class="row">
+        <div class="row hidden">
             <div class="span7">
                 <div class="collapsible">
                     <div class="collapsible-form">
                         <form method="GET" class="form-inline filters">
-                            <div id="empty" class="rules row">
+                            <div id="emptyOLD" class="rules row">
                                 <div class="span8">
                                     <input type="hidden" name="filtered" value="true"/>
                                     <input type="hidden" name="limit" value="{{ limit }}"/>
@@ -189,11 +211,12 @@
                                             <ul class="form clearfix condition">
                                                 {{ empty_form.as_ul }}
                                                 <li>&nbsp;<a class="delete-row" href="javascript:void(0)"><i
-                                                        class="icon icon-remove"></i></a></li>
+                                                        class="lm lm-times"></i></a></li>
                                             </ul>
                                         {% endfor %}
                                     {% endif %}
                                     <ul class="form clearfix condition empty">
+                                        <li>Hello Bob!</li>
                                         {{ empty_form_conditions.empty_form.as_ul }}
                                     </ul>
                                 </div>
@@ -236,7 +259,7 @@
                                             $("ul.form.empty").formset({
                                                 prefix: '{{ empty_form_conditions.prefix }}',
                                                 addText: '{% trans "Add filter" %}',
-                                                deleteText: '<i class="icon icon-remove"></i>',
+                                                deleteText: '<i class="lm lm-times"></i>',
                                                 added: function (row) {
                                                     // FIXME: Move row out of button group, this should be handled by the formset
                                                     row.remove();
@@ -262,9 +285,6 @@
                         <h5>Active filters:</h5>
                         <ul class="unstyled"></ul>
                         <a href="javascript:;" class="toggle-filter">Manage filters</a>
-                        <a href="#" class="toggle-tooltip"
-                           title="You can create custom filters here. However, please note that filters are reset when changing entry point.">
-                            <i class="icon icon-question-sign"> </i></a>
                         {% if data.count %}<p style="clear: both">Showing
                             {% if data.items|length != data.count %}{{ data.items|length }}
                                 of {% endif %}{{ data.count }} row{{ data.count|pluralize }}.</p>{% endif %}
@@ -276,5 +296,5 @@
 </div>
 
 {% block js %}
-<script src="{% static "legacy/vendor/jquery.formset.custom.js"  %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static "legacy/vendor/jquery.formset.custom.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}

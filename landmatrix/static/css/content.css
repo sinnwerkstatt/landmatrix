@@ -92,6 +92,17 @@ body {
     margin-left: 10px;
 }
 
+.label-filter a {
+    top: 2px;
+    color: white;
+}
+
+.label-filter a:hover {
+    top: 2px;
+    color: #fc941f;
+    text-decoration: none;
+}
+
 .label {
     font-size: 100%;
 }
