@@ -17,8 +17,8 @@ from django.conf.urls import url, patterns
 from .views import *
 
 urlpatterns = patterns('chart.views',
-    url(r'^$', OverviewChartView.as_view(), name='chart_overview'),
-	url(r'^transnational-deals/$', TransnationalDealsChartView.as_view(), name='chart_transnational_deals'),
+	url(r'^$', TransnationalDealsChartView.as_view(), name='chart_transnational_deals'),
+    url(r'^overview$', OverviewChartView.as_view(), name='chart_overview'),
 	url(r'^map-of-investments/$', MapOfInvestmentsChartView.as_view(), name='chart_map_of_investments'),
 	url(r'^agricultural-drivers/$', AgriculturalDriversChartView.as_view(), name='chart_agricultural_drivers'),
 	url(r'^perspective/$', PerspectiveChartView.as_view(), name='chart_perspective'),

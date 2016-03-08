@@ -120,7 +120,7 @@ table .map {
 
 
 .legend-entry {
-    margin-bottom: 1px;
+    margin-bottom: 3px;
 }
 
 .legend-symbol {
@@ -130,6 +130,10 @@ table .map {
     margin-right: 0.3em;
     text-align: center;
     width: 1.2em;
+}
+
+div.layer-group > a:hover {
+    text-decoration: none;
 }
 
 .layer-switcher .panel,
