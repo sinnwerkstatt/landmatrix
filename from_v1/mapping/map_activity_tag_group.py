@@ -5,7 +5,7 @@ from mapping.map_tag_groups import MapTagGroups
 
 from landmatrix.models import Language, Activity, ActivityAttributeGroup
 if V1 == 'v1_my':
-    from editor.models import A_Tag, A_Tag_Group, A_Key_Value_Lookup, Comment
+    from old_editor.models import A_Tag, A_Tag_Group, A_Key_Value_Lookup, Comment
 
 from django.db import transaction
 
