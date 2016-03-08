@@ -15,6 +15,7 @@
 
                 <div class="collapse navbar-collapse" id="subnav">
                     <ul class="nav navbar-nav">
+                        <li{% if chart == "chart_transnational_deals" %} class="active"{% endif %}><a href="{% url "chart_transnational_deals" %}">{% trans "Web of transnational deals" %}</a></li>
                         <li class="dropdown{% if chart == "chart_overview" %} active{% endif %}">
                             <a href="{% url "chart_overview" %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 {% trans "Dynamics Overview" %}
@@ -27,7 +28,6 @@
                                 <li><a class="change-variable" href="{% url "chart_overview" %}?variable=investment_in_agriculture">{% trans "Investment in Agriculture" %}</a></li>
                             </ul>
                         </li>
-                        <li{% if chart == "chart_transnational_deals" %} class="active"{% endif %}><a href="{% url "chart_transnational_deals" %}">{% trans "Web of transnational deals" %}</a></li>
                         <li{% if chart == "chart_map_of_investments" %} class="active"{% endif %}><a href="{% url "chart_map_of_investments" %}">{% trans "Global map of investments" %}</a></li>
                         <li{% if chart == "chart_agricultural_drivers" %} class="active"{% endif %}><a href="{% url "chart_agricultural_drivers" %}">{% trans "Agricultural drivers" %}</a></li>
                         <li{% if chart == "chart_perspective" %} class="active"{% endif %}><a href="{% url "chart_perspective" %}">{% trans "It's a big deal" %}</a></li>
