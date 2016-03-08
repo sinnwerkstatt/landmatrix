@@ -1,6 +1,6 @@
 from mapping.map_model import MapModel
 import landmatrix.models
-import editor.models
+import old_editor.models
 from migrate import V1, V2
 
 from mapping.map_activity_attribute_group import MapActivityAttributeGroup
@@ -12,11 +12,12 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class MapPublicInterfaceCache(MapModel):
 
-    old_class = editor.models.A_Key_Value_Lookup
+    old_class = old_editor.models.A_Key_Value_Lookup
     new_class = landmatrix.models.PublicInterfaceCache
     depends = [ MapActivityAttributeGroup ]
 
     relevant_keys = ('pi_deal', 'deal_scope', 'pi_negotiation_status', 'pi_implementation_status', 'pi_deal_size')
+
     @classmethod
     @transaction.atomic(using=V2)
     def map_all(cls, save=False):
@@ -27,7 +28,9 @@ class MapPublicInterfaceCache(MapModel):
         activity_identifiers = cls.all_ids()
         cls._count = len(activity_identifiers)
         for index, activity_identifier in enumerate(activity_identifiers):
-            lookup_objects = editor.models.A_Key_Value_Lookup.objects.using(V1).filter(activity_identifier=activity_identifier).filter(key__in=cls.relevant_keys)
+            lookup_objects = old_editor.models.A_Key_Value_Lookup.objects.using(V1).\
+                filter(activity_identifier=activity_identifier).\
+                filter(key__in=cls.relevant_keys)
             if lookup_objects:
                 tags = { lu.key: lu.value for lu in lookup_objects}
                 pi_cache = landmatrix.models.PublicInterfaceCache(
