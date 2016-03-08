@@ -47,8 +47,8 @@ class DealSpatialBaseFormSet(formset_factory(DealSpatialForm, extra=0)):
             taggroups = []
 
         data = {
-            'form-TOTAL_FORMS': len(taggroups),
-            'form-INITIAL_FORMS': len(taggroups),
+            'form-TOTAL_FORMS': max(len(taggroups), 1),
+            'form-INITIAL_FORMS': max(len(taggroups), 1),
             'form-MAX_NUM_FORMS': 1000
         }
         for i, taggroup in enumerate(taggroups):
@@ -61,6 +61,7 @@ class DealSpatialBaseFormSet(formset_factory(DealSpatialForm, extra=0)):
 class AddDealSpatialFormSet(DealSpatialBaseFormSet):
 
     form_title = _('Location')
+    extra = 1
 
     def get_taggroups(self, request=None):
         ds_taggroups = []
