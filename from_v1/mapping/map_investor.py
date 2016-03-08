@@ -2,7 +2,7 @@ from django.utils import timezone
 
 from mapping.map_model import MapModel
 import landmatrix.models
-import editor.models
+import old_editor.models
 from mapping.aux_functions import get_country_id_for_stakeholder
 from migrate import V1
 from mapping.map_status import MapStatus
@@ -54,7 +54,7 @@ ORDER BY primary_investor_identifier
 
 
 class MapInvestor(MapPrimaryInvestor):
-    old_class = editor.models.PrimaryInvestor
+    old_class = old_editor.models.PrimaryInvestor
     new_class = landmatrix.models.Investor
     depends = [ MapStatus ]
     attributes = {
