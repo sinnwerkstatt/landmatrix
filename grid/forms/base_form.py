@@ -8,7 +8,7 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from crispy_forms.helper import FormHelper
+#from crispy_forms.helper import FormHelper
 
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.comment import Comment
@@ -83,7 +83,6 @@ class BaseForm(forms.Form):
                     label = bf.label_tag(label) or ''
                 else:
                     label = ''
-
                 if field.help_text:
                     help_text = help_text_html % force_text(field.help_text)
                 else:
@@ -537,12 +536,12 @@ class BaseForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(BaseForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
+        #self.helper = FormHelper()
         #self.helper.form_method = 'post'
-        self.helper.form_tag = False
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-8'
+        #self.helper.form_tag = False
+        #self.helper.form_class = 'form-horizontal'
+        #self.helper.label_class = 'col-sm-2'
+        #self.helper.field_class = 'col-sm-8'
 
         if self.DEBUG:
             print(self.__class__.__name__, args)
@@ -561,4 +560,12 @@ class BaseForm(forms.Form):
                     self.fields[n].widget.attrs["disabled"] = "disabled"
                 else:
                     self.fields[n].widget.attrs["readonly"] = True
+        for field in self.fields:
+            widget = self.fields[field].widget
+            if not isinstance(widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple, forms.RadioSelect)):
+                if 'class' in widget.attrs and widget.attrs['class']:
+                    widget.attrs['class'] += ' form-control'            
+                else:
+                    widget.attrs['class'] = 'form-control' 
+
 
