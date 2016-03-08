@@ -22,9 +22,24 @@ var intentions = [
     'Renewable Energy',
     'Tourism',
     'Other',
-    'Mining',
+    'Mining'
 ];
 
+var accuracies = {
+    'better than 100m': '#0f0',
+    '100m to 1km': '#0a0',
+    '1km to 10km': '#00f',
+    '10km to 100km': '#b00',
+    'worse than 100km': '#700'
+};
+
+var negotiationstatus = {
+    'Contract cancelled': '#0f0',
+    'Contract signed': '#0a0',
+    'Negotiations failed': '#00f',
+    'Oral agreement': '#b00',
+    'Under negotiation': '#700'
+};
 
 var intentionColors = {
     'Agriculture': '#1D6914',
@@ -37,7 +52,6 @@ var intentionColors = {
     'Mining': '#814A19',
     'Undefined': '#FF0000'
 };
-
 
 //Map, Layers and Map Controls
 $(document).ready(function () {
@@ -73,6 +87,9 @@ $(document).ready(function () {
      */
     closer.onclick = closePopup;
 
+    var changeIntentionTypes = function() {
+        console.log(this);
+    }
 
     /**
      * GeoJSON features
@@ -248,13 +265,26 @@ $(document).ready(function () {
         features: (new ol.format.GeoJSON()).readFeatures(geojsonObject)
     });
 
-    var vectorLayer = new ol.layer.Vector({
-        title: 'Deal area polygons',
+    var intendedareaLayer = new ol.layer.Vector({
+        title: 'Intended area(ha)',
         visible: true,
         source: vectorSource,
         style: styleFunction
     });
 
+    var contractareaLayer = new ol.layer.Vector({
+        title: 'Contract area(ha)',
+        visible: true,
+        source: vectorSource,
+        style: styleFunction
+    });
+
+    var currentareaLayer = new ol.layer.Vector({
+        title: 'Current area in operation(ha)',
+        visible: true,
+        source: vectorSource,
+        style: styleFunction
+    });
 
     map = new ol.Map({
         target: 'map',
@@ -262,33 +292,21 @@ $(document).ready(function () {
         // ol.layer.Group defines the LayerSwitcher organisation
         layers: [
             new ol.layer.Group({
-                'title': 'Base Maps',
-                layers: [
-                    new ol.layer.Tile({
-                        title: 'OpenStreetMap',
-                        type: 'base',
-                        visible: true,
-                        source: new ol.source.OSM()
-                    }),
-                    new ol.layer.Tile({
-                        title: 'Satellite',
-                        type: 'base',
-                        visible: false,
-                        source: new ol.source.MapQuest({layer: 'sat'})
-                    }),
-                    new ol.layer.Tile({
-                        title: 'Watercolor',
-                        type: 'base',
-                        visible: false,
-                        source: new ol.source.Stamen({layer: 'watercolor'})
-                    })/*,
-                     vectorLayer */
-                ]
+                title: 'Base Maps',
+                layers: baseLayers
             }),
             // Context Layers from the Landobservatory Geoserver.
             new ol.layer.Group({
                 title: 'Context Layers',
                 layers: contextLayers
+            }),
+            new ol.layer.Group({
+                title: 'Deals',
+                layers: [
+                    intendedareaLayer,
+                    contractareaLayer,
+                    currentareaLayer
+                ]
             })
         ],
         controls: [
@@ -403,33 +421,54 @@ $(document).ready(function () {
     });
 
     map.addLayer(cluster);
-    map.addLayer(vectorLayer);
 
     // LayerSwitcher Control by https://github.com/walkermatt/ol3-layerswitcher
     var layerSwitcher = new ol.control.LayerSwitcher({
-        tipLabel: 'Legende'
+        tipLabel: 'Legend'
     });
     map.addControl(layerSwitcher);
     layerSwitcher.showPanel();
 
     // Set up intention legend
     var legend = document.getElementById('legend');
+
+
+    var legendHeader = document.createElement("a");
+    legendHeader.onclick = ol.control.LayerSwitcher.prototype.toggleLayerPanel;
+
+    var legendHeaderLabel = document.createElement('span');
+    legendHeaderLabel.innerHTML = 'Deal details';
+
+    var legendHeaderChevron = document.createElement('i');
+    legendHeaderChevron.className = 'lm lm-chevron-down';
+
+    legendHeader.appendChild(legendHeaderChevron);
+    legendHeader.appendChild(legendHeaderLabel);
+
+    legend.appendChild(legendHeader);
+
     var intentionLegend = document.createElement('ul');
+    intentionLegend.className = 'legendcollapse';
 
-    var legendHeader = document.createElement("label");
 
-    legendHeader.innerHTML = "<strong>Deal Intentions</strong>";
-    intentionLegend.appendChild(legendHeader);
 
     for (var intention in intentions) {
         var intentionItem = document.createElement('li');
+        intentionItem.className = 'legend-entry';
+
         var intentionName = intentions[intention];
         var col = intentionColors[intentionName];
 
-        var innerHTML = '<div class="legend-entry"><span class="legend-symbol" style="color: ' + col + '; background-color: ' + col + ';">.</span>';
-        innerHTML = innerHTML + intentionName + "</div>";
-        intentionItem.innerHTML = innerHTML;
+        var legendSpan = document.createElement('span');
+        legendSpan.className = 'legend-symbol';
+        legendSpan.setAttribute('style', 'color: ' + col + '; background-color:' +  col + ";");
+        legendSpan.innerHTML =  ".";
 
+        var legendLabel = document.createElement('div');
+        legendLabel.innerHTML = intentionName;
+
+        intentionItem.appendChild(legendSpan);
+        intentionItem.appendChild(legendLabel);
         intentionLegend.appendChild(intentionItem);
     }
 
@@ -478,20 +517,20 @@ $(document).ready(function () {
 
                 // TODO: Here, some javascript should be called to get the deal details from the API
                 // and render it inside the actual content popup, instead of getting this from the db for every marker!
-                content.innerHTML = '<div><span><strong>Deal #' + id + '</strong></span>';
+                content.innerHTML = '<div><span><a href="/deal/' + id + '"><strong>Deal #' + id + '</strong></a></span>';
                 //content.innerHTML += '<p>Coordinates:</p><code>' + lat + ' ' + lon + '</code>';
                 if (intended_size !== null) {
-                    content.innerHTML += '<span>Intended area (ha):</span><span>' + intended_size + '</span><br/>';
+                    content.innerHTML += '<span>Intended area (ha):</span><span class="pull-right">' + intended_size + '</span><br/>';
                 }
                 if (production_size !== null) {
-                    content.innerHTML += '<span>Production size (ha):</span><span>' + production_size + '</span><br/>';
+                    content.innerHTML += '<span>Production size (ha):</span><span class="pull-right">' + production_size + '</span><br/>';
                 }
                 if (contract_size !== null) {
-                    content.innerHTML += '<span>Contract size (ha):</span><span>' + contract_size + '</span><br/>';
+                    content.innerHTML += '<span>Contract size (ha):</span><span class="pull-right">' + contract_size + '</span><br/>';
                 }
-                content.innerHTML += '<span>Intendion:</span><span>' + intention + '</span><br/>';
-                content.innerHTML += '<span>Investor:</span><span>' + investor + '</span><br />';
-                content.innerHTML += '<span><a href="/deal/' + id + '">More details</a> ></span></div>';
+                content.innerHTML += '<span>Intention:</span><span class="pull-right">' + intention + '</span><br/>';
+                content.innerHTML += '<span>Investor:</span><span class="pull-right">' + investor + '</span><br />';
+                content.innerHTML += '<span><a href="/deal/' + id + '">More details</a></span></div>';
             }
 
             PopupOverlay.setPosition(evt.coordinate);
@@ -552,7 +591,7 @@ $(document).ready(function () {
     };
 
     $.get(
-        "/en/api/deals.json?limit=10", //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+       "/en/api/deals.json?limit=10", //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
         addData
     );
 
