@@ -27,13 +27,14 @@ ol.control.LayerSwitcher = function(opt_options) {
 
     var collapse = document.createElement('div');
     collapse.setAttribute('id', 'legendstuff');
-    collapse.className = 'panel-collapse collapse in';
+    collapse.className = '';
 
     var form = document.createElement('form');
     form.setAttribute('role', 'form');
 
     var formgroup = document.createElement('div');
-    formgroup.className = 'form-group has-feedback panel';
+    formgroup.setAttribute('id', 'search');
+    formgroup.className = 'panel';
 
     var searchfield = document.createElement('input');
     searchfield.setAttribute('id', 'mapsearch');
@@ -47,9 +48,6 @@ ol.control.LayerSwitcher = function(opt_options) {
     this.legend.className = 'panel';
     this.legend.setAttribute('id', 'legend');
     form.appendChild(this.legend);
-
-
-    collapse.appendChild(form);
 
 
     /*var innerHTML = '<form role="form">';
@@ -67,8 +65,9 @@ ol.control.LayerSwitcher = function(opt_options) {
     // TODO: Complete the collapse panel combo
     this.layerpanel.className = 'panel';
     this.layerpanel.setAttribute('id', 'layers');
-    collapse.appendChild(this.layerpanel);
+    form.appendChild(this.layerpanel);
 
+    collapse.appendChild(form);
     element.appendChild(collapse);
 
     var this_ = this;
@@ -113,9 +112,9 @@ ol.control.LayerSwitcher.prototype.showPanel = function() {
  * Hide the legend panel.
  */
 ol.control.LayerSwitcher.prototype.hidePanel = function() {
-    if (this.element.className != this.hiddenClassName) {
+/*    if (this.element.className != this.hiddenClassName) {
         this.element.className = this.hiddenClassName;
-    }
+    }*/
 };
 
 /**
@@ -158,10 +157,10 @@ ol.control.LayerSwitcher.prototype.renderPanel = function() {
         this.layerpanel.removeChild(this.layerpanel.firstChild);
     }
 
-    var ul = document.createElement('div');
-    //ul.className = '';
-    this.layerpanel.appendChild(ul);
-    this.renderLayers_(this.getMap(), ul);
+    //var ul = document.createElement('div');
+    //ul.className = 'suppenkasper';
+    //this.layerpanel.appendChild(ul);
+    this.renderLayers_(this.getMap(), this.layerpanel);
 
 };
 
@@ -230,16 +229,17 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
 
     var this_ = this;
 
-    var item = document.createElement('div');
-    item.className = '';
 
     var lyrTitle = lyr.get('title');
     var lyrId = lyr.get('title').replace(' ', '-') + '_' + idx;
 
 
     if (lyr.getLayers) {
+        var item = document.createElement('div');
+        item.className = 'layer';
 
-        var collapsename = lyrId+'Collapse';
+
+        var collapsename = lyrId+'_collapse';
 
         var label = document.createElement('a');
 
@@ -255,16 +255,20 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
         item.appendChild(label);
 
 
-        var div = document.createElement('div');
-        div.className = 'layercollapse';
-        div.setAttribute('id', collapsename);
+        //var div = document.createElement('div');
+        //item.className = 'layercollapse';
+        //div.setAttribute('id', collapsename);
         var ul = document.createElement('ul');
-        div.appendChild(ul);
-        item.appendChild(div);
+        ul.className = 'layercollapse';
+        //div.appendChild(ul);
+        item.appendChild(ul);
 
         this.renderLayers_(lyr, ul);
 
     } else {
+        var item = document.createElement('li');
+        item.className = 'layer';
+
         var label = document.createElement('label');
 
         var input = document.createElement('input');
