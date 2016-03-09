@@ -44,7 +44,14 @@ if __name__ == '__main__':
         if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
-        MapActivityChangeset.map_all(save=True, verbose=False)
+        # MapStatus.map_all(save=True)
+        # MapLanguage.map_all(save=True)
+        # MapActivity.map_all(save=True)
+        MapActivity._done = True
+        MapActivityAttributeGroup.map_all(save=True)
+        MapComment.map_all(save=True)
+        # MapInvestor._done = True
+        # MapInvestorActivityInvolvement.map_all(save=True)
 
         if False:
             MapActivity._done = True

@@ -1,4 +1,4 @@
-import editor.models
+import old_editor.models
 from migrate import V1
 from django.utils import timezone
 
@@ -30,7 +30,7 @@ def replace_model_name_with_id(model, attributes, attribute):
 
 
 def replace_country_name_with_id(attributes, attribute):
-    return replace_model_name_with_id(editor.models.Country, attributes, attribute)
+    return replace_model_name_with_id(old_editor.models.Country, attributes, attribute)
 
 
 def is_number(s):
@@ -77,10 +77,13 @@ def _replace_model_name_with_id_str(model, attributes, attribute):
     return ', '.join(parts)
 
 
-def _replace_model_name_with_id_dict(model, attributes, attribute):
+def _replace_model_name_with_id_dict(model, attributes, attribute, v1_model=None):
+
+    if v1_model is None:
+        v1_model = model
 
     def replace_name_with_id(name):
-        return model.objects.using(V1).filter(name=name).values('id')[0]['id']
+        return v1_model.objects.using(V1).filter(name=name).values('id')[0]['id']
 
     value = attributes[attribute]
     if is_number(value):
