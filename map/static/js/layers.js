@@ -1,3 +1,24 @@
+var baseLayers = [
+    new ol.layer.Tile({
+        title: 'OpenStreetMap',
+        type: 'base',
+        visible: true,
+        source: new ol.source.OSM()
+    }),
+    new ol.layer.Tile({
+        title: 'Satellite',
+        type: 'base',
+        visible: false,
+        source: new ol.source.MapQuest({layer: 'sat'})
+    }),
+    new ol.layer.Tile({
+        title: 'Watercolor',
+        type: 'base',
+        visible: false,
+        source: new ol.source.Stamen({layer: 'watercolor'})
+    })
+];
+
 var contextLayers = [
 
     // Global layers
