@@ -43,7 +43,7 @@ def clean_target_country(attributes):
 
 
 def clean_crops(attributes):
-    from editor.models import Crop
+    from old_editor.models import Crop
     return replace_model_name_with_id(Crop, attributes, 'crops')
 
 
