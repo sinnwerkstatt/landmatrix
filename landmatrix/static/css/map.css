@@ -154,3 +154,11 @@ div.layer-group > a:hover {
     top: 5px;
     right: 5px;
 }
+
+#mapVariableSelect {
+    border: none;
+    padding: 0px;
+    margin-top: 0px;
+    margin-left: -5px;
+    margin-bottom: 10px;
+}
