@@ -13,3 +13,13 @@ class MapCrop(MapModel):
         'agricultural_produce': 'fk_agricultural_produce',
     }
     depends = [ MapAgriculturalProduce ]
+
+
+class MapAnimal(MapModel):
+    old_class = old_editor.models.Animal
+    new_class = landmatrix.models.Animal
+
+
+class MapMineral(MapModel):
+    old_class = old_editor.models.Mineral
+    new_class = landmatrix.models.Mineral
