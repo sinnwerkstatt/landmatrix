@@ -1576,7 +1576,8 @@ h4 .icon {
 .form-control {
     width: auto;
     display: inline-block;
-    border: solid 1px #4a4a4a;
+    border: solid 1px #919191;
+    height: 3em;
 }
 
 .controls > ul {
@@ -1689,25 +1690,6 @@ textarea {
     max-width: 100%;
     margin: 5px 2px 0px 0px;
     padding: 5px 5px;
-}
-
-select,
-input[type=number],
-input[type=text],
-input[type=password] {
-    height: 3em;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-    border-color: #B9D635;
-}
-
-.formcontrol {
-    border-color: #919191;
-    color: #919191;
-    border-color: #919191;
 }
 
 .form-control:focus {

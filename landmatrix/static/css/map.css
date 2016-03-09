@@ -125,8 +125,8 @@ table .map {
 
 .legend-symbol {
     float: left;
-/*    height: 1.2em; */
-    margin-left: 3.3em;
+    height: 1.2em;
+    margin-left: 5px;
     margin-right: 0.3em;
     text-align: center;
     width: 1.2em;
