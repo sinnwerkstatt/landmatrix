@@ -16,9 +16,9 @@ class MapView(TemplateView, FilterWidgetMixin):
 
     def dispatch(self, request, *args, **kwargs):
 
-        self._set_filters(request.GET)
+        #self._set_filters(request.GET)
 
         context = self.get_context_data(**kwargs)
-        self.add_filter_context_data(context, request)
+        #self.add_filter_context_data(context, request)
 
         return render_to_response(self.template_name, context, RequestContext(request))
