@@ -254,7 +254,11 @@ class Compare:
 def record_difference(records1, records2):
     records1 = set(lists_to_tuples(records1))
     records2 = set(lists_to_tuples(records2))
-    return sorted(list(records1 - records2))
+    try:
+        return sorted(list(records1 - records2))
+    except TypeError:
+        # print(records1, records2)
+        pass
 
 
 def list_contains_lists(collection):
