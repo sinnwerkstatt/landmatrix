@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms.formsets import BaseFormSet
 from django.template.context import RequestContext
 
 from grid.views.deal_detail_view import DealDetailView, get_forms
@@ -43,6 +44,8 @@ def get_comparison(deal_1, deal_2):
                 "Compared deals have different number of forms. Deal id(s): %i, %i. History IDs: %i, %i" %
                 (deal_1.id, deal_2.id, deal_1.activity.history_id, deal_2.activity.history_id)
         )
+    # print(forms_1)
+    # print(forms_2)
     comparison_forms = []
     for i in range(len(forms_1)):
         comparison_forms.append((forms_1[i], forms_2[i], is_different(forms_1[i], forms_2[i])))
@@ -109,11 +112,53 @@ def is_different(form_1, form_2):
     if not form_1.is_valid() == form_2.is_valid():
         return False
 
-    if len(list(form_1)) != len(list(form_2)):
-        return False
+    # OMG this is so hacky but I can't help myself
+    # Formsets initialized with a list of forms throw a ValidationError:
+    # 'ManagementForm data is missing or has been tampered with'
+    # Formset initialized with a dict throw a KeyError in _construct_form
+    # So I'm replacing _construct_form with my customized version that
+    # catches the KeyError here.
+    BaseFormSet._construct_form = _construct_form
+
+    if isinstance(form_1, BaseFormSet):
+        print(form_1.forms)
+        if len(form_1) != len(form_2):
+            return False
+    else:
+        if len(form_1.fields) != len(form_2.fields):
+            return False
 
     for i, field in enumerate(list(form_1)):
         if str(field) != str(list(form_2)[i]):
             return False
 
     return True
+
+
+# Hacked version of BaseFormSet._construct_form
+def _construct_form(self, i, **kwargs):
+        """
+        Instantiates and returns the i-th form instance in a formset.
+        """
+        defaults = {
+            'auto_id': self.auto_id,
+            'prefix': self.add_prefix(i),
+            'error_class': self.error_class,
+        }
+        if self.is_bound:
+            defaults['data'] = self.data
+            defaults['files'] = self.files
+        if self.initial and 'initial' not in kwargs:
+            try:
+                defaults['initial'] = self.initial[i]
+            # this is the line that has been changed!
+            except (IndexError, KeyError):
+                pass
+        # Allow extra forms to be empty, unless they're part of
+        # the minimum forms.
+        if i >= self.initial_form_count() and i >= self.min_num:
+            defaults['empty_permitted'] = True
+        defaults.update(kwargs)
+        form = self.form(**defaults)
+        self.add_fields(form, i)
+        return form
