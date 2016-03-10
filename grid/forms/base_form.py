@@ -231,7 +231,7 @@ class BaseForm(forms.Form):
                                     "key": str(n)
                                 }
                 elif isinstance(f, forms.FileField):
-                    tag["value"] = self.is_valid() and self.cleaned_data.get(n) and hasattr(self.cleaned_data.get(n), "name") and self.cleaned_data.get(n).name or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+                    null = self.get_display_value_file_field(n, tag["value"])
                     if tag["value"]:
                         taggroup["tags"].append(tag)
                 elif isinstance(f, forms.DecimalField):
@@ -459,75 +459,108 @@ class BaseForm(forms.Form):
         output = []
         tg_title = ''
         tg_items = []
-        for i, (n, f) in enumerate(self.fields.items()):
-            if n.startswith("tg_"):
-                if n.endswith("_comment"):
-                    data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n, []) 
+        for i, (field_name, field) in enumerate(self.fields.items()):
+
+            if field_name.startswith("tg_"):
+                if field_name.endswith("_comment"):
+                    data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name, [])
                     if data:
-                        tg_items.append((f.label, data))
+                        tg_items.append((field.label, data))
                     continue
                 if len(tg_items) > 0:
                     output.append(('tg', tg_title))
                     output.extend(tg_items)
-                tg_title = f.initial
+                tg_title = field.initial
                 tg_items = []
                 continue
-            if isinstance(f, NestedMultipleChoiceField):
-                data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
-                values = []
-                for v, l, c in f.choices:
-                    value = ''
-                    if str(v) in data:
-                        value = str(l)
-                    if c:
-                        choices = ', '.join([str(l) for v, l in c if str(v) in data])
-                        value = (value and '%s (%s)' % (value, choices)) or choices
-                    if value:
-                        values.append(value)
-                value = '<br>'.join(values)
-            elif isinstance(f, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
-                data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
-                value = '<br>'.join([str(l) for v, l in f.choices if str(v) in data])
-            elif isinstance(f, forms.ChoiceField):
-                data = self.initial.getlist(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
-                value = '<br>'.join([str(l) for v, l in f.choices if str(v) in data])
-            # Year based data?
-            elif isinstance(f, forms.MultiValueField):
-                #keys = filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n) ,o), self.initial.keys())
-                ##keys.sort()
-                #value = ''
-                #year = ''
-                #for i in range(len(keys)):
-                #    if i % 2 == 0:
-                #        value = self.initial.get(len(keys) > i and keys[i] or "-", "")
-                #        if value == "0" and isinstance(f.fields[0], forms.ChoiceField):
-                #            #filter default selection of choice fields
-                #            value = None
-                #        year = self.initial.get(len(keys) > i+1 and keys[i+1] or "-", "")
-                #        if value or year:
-                #            break
-                # todo fails with historical deals
-                data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
-                if isinstance(data, str):
-                    data = data.replace('::', ':')
-                    if ':' not in data:
-                        data += ':'
-                # print('base_form line 511', data)
-                value, year = data.split(':')
-                if value:
-                    if isinstance(f.fields[0], forms.ChoiceField):
-                        value = ', '.join([str(l) for v, l in f.fields[0].choices if str(v) == str(value)])
-                    value = '%s%s' % (value, year and ' (%s)'%year[:4] or '')
-            elif isinstance(f, forms.FileField):
-                value = self.is_valid() and self.cleaned_data.get(n) and hasattr(self.cleaned_data.get(n), "name") and self.cleaned_data.get(n).name or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+
+            if isinstance(field, NestedMultipleChoiceField):
+                value = self.get_display_value_nested_multiple_choice_field(field, field_name)
+            elif isinstance(field, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
+                value = self.get_display_value_multiple_choice_field(field, field_name)
+            elif isinstance(field, forms.ChoiceField):
+                value = self.get_display_value_choice_field(field, field_name)
+            elif isinstance(field, forms.MultiValueField):
+                value = self.get_display_value_multi_value_field(field, field_name)
+            elif isinstance(field, forms.FileField):
+                value = self.get_display_value_file_field(field_name, value)
             else:
-                value = self.is_valid() and self.cleaned_data.get(n) or self.initial.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+                value = self.is_valid() and self.cleaned_data.get(field_name) or self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name)
+
             if value:
-                tg_items.append((f.label, '%s %s' % (value, f.help_text)))
+                tg_items.append((field.label, '%s %s' % (value, field.help_text)))
+
         if len(tg_items) > 0:
             output.append(('tg', tg_title))
             output.extend(tg_items)
+
         return output
+
+    def get_display_value_file_field(self, field_name, value):
+        value = self.is_valid() and self.cleaned_data.get(field_name) and hasattr(self.cleaned_data.get(field_name),
+                                                                                  "name") and self.cleaned_data.get(
+            field_name).name or self.data.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name)
+        return value
+
+    def get_display_value_multi_value_field(self, field, field_name):
+        # Year based data?
+        # keys = filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n) ,o), self.initial.keys())
+        ##keys.sort()
+        # value = ''
+        # year = ''
+        # for i in range(len(keys)):
+        #    if i % 2 == 0:
+        #        value = self.initial.get(len(keys) > i and keys[i] or "-", "")
+        #        if value == "0" and isinstance(f.fields[0], forms.ChoiceField):
+        #            #filter default selection of choice fields
+        #            value = None
+        #        year = self.initial.get(len(keys) > i+1 and keys[i+1] or "-", "")
+        #        if value or year:
+        #            break
+        # todo fails with historical deals
+        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        value = None
+        year = None
+        if isinstance(data, str):
+            data = data.replace('::', ':')
+            if ':' not in data:
+                data += ':'
+            # print('base_form line 511', data)
+            value, year = data.split(':')
+        if value:
+            if isinstance(field.fields[0], forms.ChoiceField):
+                value = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) == str(value)])
+            value = '%s%s' % (value, year and ' (%s)' % year[:4] or '')
+        return value
+
+    def get_display_value_choice_field(self, field, field_name):
+        if isinstance(self.initial, MultiValueDict):
+            data = self.initial.getlist(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        else:
+            data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+            if data: data = [data]
+        value = '<br>'.join([str(l) for v, l in field.choices if str(v) in data])
+        return value
+
+    def get_display_value_multiple_choice_field(self, field, field_name):
+        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        value = '<br>'.join([str(l) for v, l in field.choices if str(v) in data])
+        return value
+
+    def get_display_value_nested_multiple_choice_field(self, field, field_name):
+        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        values = []
+        for v, l, c in field.choices:
+            value = ''
+            if str(v) in data:
+                value = str(l)
+            if c:
+                choices = ', '.join([str(l) for v, l in c if str(v) in data])
+                value = (value and '%s (%s)' % (value, choices)) or choices
+            if value:
+                values.append(value)
+        value = '<br>'.join(values)
+        return value
 
     class Meta:
         exclude = ()
