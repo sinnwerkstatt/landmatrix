@@ -47,7 +47,7 @@ non_i18n_patterns = patterns(
 wagtail_patterns = [
     url(r'^cms/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
-    url(r'^pages/', include(wagtail_urls)),
+    url(r'', include(wagtail_urls)),
 ]
 
 urlpatterns = i18n_patterns(
