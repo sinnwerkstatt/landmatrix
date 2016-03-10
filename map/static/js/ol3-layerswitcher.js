@@ -274,6 +274,10 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
             label.id = 'legendLabel';
         }
 
+        if (lyrTitle.indexOf('area') > -1) {
+            label.className = 'areaLabel';
+        }
+
         label.innerHTML = lyrTitle;
 
         item.appendChild(label);
