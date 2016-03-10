@@ -121,12 +121,12 @@ table .map {
 
 .legend-entry {
     margin-bottom: 3px;
+    margin-left: 5px;
 }
 
 .legend-symbol {
     float: left;
     height: 1.2em;
-    margin-left: 5px;
     margin-right: 0.3em;
     text-align: center;
     width: 1.2em;
