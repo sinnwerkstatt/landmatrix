@@ -370,10 +370,10 @@ $(document).ready(function () {
             new ol.layer.Group({
                 title: 'Deals',
                 layers: [
-                    cluster,
                     intendedareaLayer,
                     contractareaLayer,
-                    currentareaLayer
+                    currentareaLayer,
+                    cluster
                 ]
             })
         ],
