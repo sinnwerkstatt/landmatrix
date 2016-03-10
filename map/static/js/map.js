@@ -646,7 +646,9 @@ function initGeocoder(el) {
         autocomplete.addListener('place_changed', function () {
             var place = autocomplete.getPlace();
             if (!place.geometry) {
-                window.alert("Autocomplete's returned place contains no geometry");
+                $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>Sorry, that place cannot be found.</span></div>')
+
+                //window.alert("Autocomplete's returned place contains no geometry");
                 return;
             }
 
