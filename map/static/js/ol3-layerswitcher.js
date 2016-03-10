@@ -29,28 +29,32 @@ ol.control.LayerSwitcher = function(opt_options) {
     collapse.setAttribute('id', 'legendstuff');
     collapse.className = '';
 
-    var form = document.createElement('form');
-    form.setAttribute('role', 'form');
+    var formdiv = document.createElement('div');
 
     var formgroup = document.createElement('div');
     formgroup.setAttribute('id', 'search');
-    formgroup.className = 'panel';
+    formgroup.className = 'panel form-group';
 
     var searchfield = document.createElement('input');
     searchfield.setAttribute('id', 'mapsearch');
-    searchfield.setAttribute('class', 'control');
-    searchfield.setAttribute('type', 'text');
+    searchfield.setAttribute('class', 'form-control');
+    searchfield.setAttribute('type', 'search');
+
+    var searchicon = document.createElement('i');
+    searchicon.className = 'lm lm-search';
 
     formgroup.appendChild(searchfield);
-    form.appendChild(formgroup);
+    formgroup.appendChild(searchicon);
+
+    formdiv.appendChild(formgroup);
 
     this.layerpanel = document.createElement('div');
     // TODO: Complete the collapse panel combo
     this.layerpanel.className = 'panel';
     this.layerpanel.setAttribute('id', 'layers');
-    form.appendChild(this.layerpanel);
+    formdiv.appendChild(this.layerpanel);
 
-    collapse.appendChild(form);
+    collapse.appendChild(formdiv);
     element.appendChild(collapse);
 
     var this_ = this;
