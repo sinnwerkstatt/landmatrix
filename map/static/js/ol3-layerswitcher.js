@@ -44,23 +44,6 @@ ol.control.LayerSwitcher = function(opt_options) {
     formgroup.appendChild(searchfield);
     form.appendChild(formgroup);
 
-    this.legend = document.createElement('div');
-    this.legend.className = 'panel';
-    this.legend.setAttribute('id', 'legend');
-    form.appendChild(this.legend);
-
-
-    /*var innerHTML = '<form role="form">';
-    innerHTML = innerHTML + '  <div class="form-group has-feedback">';
-    innerHTML = innerHTML + '    <select id="mapsearch-select" class="nav-select">';
-    innerHTML = innerHTML + '    </select>';
-    innerHTML = innerHTML + '  </div>';
-    innerHTML = innerHTML + '</form>';
-
-    this.search.innerHTML = innerHTML;
-    element.appendChild(this.search); */
-
-
     this.layerpanel = document.createElement('div');
     // TODO: Complete the collapse panel combo
     this.layerpanel.className = 'panel';
@@ -104,7 +87,9 @@ ol.inherits(ol.control.LayerSwitcher, ol.control.Control);
 ol.control.LayerSwitcher.prototype.showPanel = function() {
     if (this.element.className != this.shownClassName) {
         this.element.className = this.shownClassName;
-        this.renderPanel();
+        //this.renderPanel(); // CAREFUL. This destroys the whole custom legend operation for deals.
+        // I wonder WHY exactly this is here, it seems to work just fine without - i personally never saw a reason
+        // to rerender previously hidden stuff. Does it get moldy back there on some browsers?
     }
 };
 
@@ -112,9 +97,9 @@ ol.control.LayerSwitcher.prototype.showPanel = function() {
  * Hide the legend panel.
  */
 ol.control.LayerSwitcher.prototype.hidePanel = function() {
-/*    if (this.element.className != this.hiddenClassName) {
+   if (this.element.className != this.hiddenClassName) {
         this.element.className = this.hiddenClassName;
-    }*/
+    }
 };
 
 /**
@@ -157,9 +142,6 @@ ol.control.LayerSwitcher.prototype.renderPanel = function() {
         this.layerpanel.removeChild(this.layerpanel.firstChild);
     }
 
-    //var ul = document.createElement('div');
-    //ul.className = 'suppenkasper';
-    //this.layerpanel.appendChild(ul);
     this.renderLayers_(this.getMap(), this.layerpanel);
 
 };
@@ -255,12 +237,8 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
         item.appendChild(label);
 
 
-        //var div = document.createElement('div');
-        //item.className = 'layercollapse';
-        //div.setAttribute('id', collapsename);
         var ul = document.createElement('ul');
         ul.className = 'layercollapse';
-        //div.appendChild(ul);
         item.appendChild(ul);
 
         this.renderLayers_(lyr, ul);
@@ -278,17 +256,29 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
         } else {
             input.type = 'checkbox';
         }
+
         input.id = lyrId;
         input.checked = lyr.get('visible');
-        input.onchange = function(e) {
+        input.onchange = function (e) {
             this_.setVisible_(lyr, e.target.checked);
         };
         item.appendChild(input);
 
         label.htmlFor = lyrId;
+
+        if (lyrTitle === "Markers") {
+            label.id = 'legendLabel';
+        }
+
         label.innerHTML = lyrTitle;
+
         item.appendChild(label);
 
+        if (lyrTitle === "Markers") {
+            var legend = document.createElement('ul');
+            legend.id = 'legend';
+            item.appendChild(legend);
+        }
     }
 
     return item;
