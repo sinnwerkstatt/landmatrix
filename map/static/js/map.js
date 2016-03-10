@@ -42,6 +42,12 @@ var detailviews = {
     }
 };
 
+const GeoJSONColors = {  // Back, Border
+    'Current area in operation (ha)': ['rgba(0, 0, 196, 64)', '#007'],
+    'Contract area (ha)': ['rgba(128, 128, 128, 96)', '#575757'],
+    'Intended area (ha)': ['rgba(0, 196, 0, 96)', '#0a0']
+};
+
 //Map, Layers and Map Controls
 $(document).ready(function () {
     // Set up popup
@@ -333,21 +339,21 @@ $(document).ready(function () {
     });
 
     var intendedareaLayer = new ol.layer.Vector({
-        title: 'Intended area(ha)',
+        title: 'Intended area (ha)',
         visible: true,
         source: vectorSource,
         style: styleFunction
     });
 
     var contractareaLayer = new ol.layer.Vector({
-        title: 'Contract area(ha)',
+        title: 'Contract area (ha)',
         visible: true,
         source: vectorSource,
         style: styleFunction
     });
 
     var currentareaLayer = new ol.layer.Vector({
-        title: 'Current area in operation(ha)',
+        title: 'Current area in operation (ha)',
         visible: true,
         source: vectorSource,
         style: styleFunction
@@ -370,10 +376,10 @@ $(document).ready(function () {
             new ol.layer.Group({
                 title: 'Deals',
                 layers: [
-                    cluster,
                     intendedareaLayer,
                     contractareaLayer,
-                    currentareaLayer
+                    currentareaLayer,
+                    cluster
                 ]
             })
         ],
@@ -420,6 +426,20 @@ $(document).ready(function () {
         tipLabel: 'Legend'
     });
     map.addControl(layerSwitcher);
+    $(".areaLabel").each(function (index) {
+        const context = $(this).context.innerHTML;
+        const colors = GeoJSONColors[context];
+
+        var legendSpan = document.createElement('span');
+        legendSpan.className = 'legend-symbol';
+        legendSpan.setAttribute('style', 'color: ' + colors[0] + ';' +
+                                'background-color:' + colors[0] + ';' +
+                                'border-color: ' + colors[1] + ';' +
+                                'border: solid 3px ' + colors[1] + ';');
+        legendSpan.innerHTML = " ";
+
+        $(this).append(legendSpan);
+    });
     layerSwitcher.showPanel();
 
     function updateVariableSelection(variableName) {
