@@ -63,6 +63,23 @@ INSTALLED_APPS += (
 #    'menus',
 #    'treebeard',
 
+    # wagtail and dependencies
+    'wagtail.wagtailforms',
+    'wagtail.wagtailredirects',
+    'wagtail.wagtailembeds',
+    'wagtail.wagtailsites',
+    'wagtail.wagtailusers',
+    'wagtail.wagtailsnippets',
+    'wagtail.wagtaildocs',
+    'wagtail.wagtailimages',
+    'wagtail.wagtailsearch',
+    'wagtail.wagtailadmin',
+    'wagtail.wagtailcore',
+
+    'modelcluster',
+    'compressor',
+    'taggit',
+
 #    'djangocms_admin_style',  # for the admin skin. You **must** add 'djangocms_admin_style' in the list **before** 'django.contrib.admin'.
     'django.contrib.admin',
     'django.contrib.sites',
@@ -114,6 +131,10 @@ MIDDLEWARE_CLASSES = (
     #'cms.middleware.page.CurrentPageMiddleware',
     #'cms.middleware.toolbar.ToolbarMiddleware',
     #'cms.middleware.language.LanguageCookieMiddleware'
+
+    # wagtail and dependencies
+    'wagtail.wagtailcore.middleware.SiteMiddleware',
+    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
 )
 
 if FRONTENDDEV:
@@ -249,3 +270,5 @@ CACHES = {
 }
 
 COMMENTS_APP = 'threadedcomments'
+
+WAGTAIL_SITE_NAME = 'Land Matrix'
