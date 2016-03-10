@@ -57,12 +57,6 @@ INSTALLED_APPS += (
 #   this apparently messes up the URL lookup in collaboration with cms. maybe try including it after cms.
     # 'debug_toolbar',
 
-#   django-cms and dependencies
-#    'cms',
-#    'mptt',
-#    'menus',
-#    'treebeard',
-
     # wagtail and dependencies
     'wagtail.wagtailforms',
     'wagtail.wagtailredirects',
@@ -80,11 +74,9 @@ INSTALLED_APPS += (
     'compressor',
     'taggit',
 
-#    'djangocms_admin_style',  # for the admin skin. You **must** add 'djangocms_admin_style' in the list **before** 'django.contrib.admin'.
     'django.contrib.admin',
     'django.contrib.sites',
-#    'sekizai',
-#    'djangocms_text_ckeditor',
+    'treebeard',
 
 #   to check test coverage
     'coverage',
@@ -107,6 +99,7 @@ INSTALLED_APPS += (
     'map',
     'charts',
     'editor',
+    'wagtailcms',
     'api',
 )
 
@@ -142,22 +135,6 @@ if FRONTENDDEV:
 
 ROOT_URLCONF = 'landmatrix.urls'
 
-# from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-
-# TEMPLATE_CONTEXT_PROCESSORS = TCP + (
-#     'django.contrib.auth.context_processors.auth',
-#     'django.core.context_processors.i18n',
-#     'django.core.context_processors.media',
-#     'django.core.context_processors.static',
-#     'django.core.context_processors.request',
-#     'django.contrib.messages.context_processors.messages',
-#     'sekizai.context_processors.sekizai',
-#     'cms.context_processors.cms_settings',
-# )
-# TEMPLATE_DIRS = (
-#     os.path.join(BASE_DIR, "templates"),
-# )
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -177,6 +154,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
                 #'cms.context_processors.cms_settings',
+                'wagtailcms.context_processors.add_root_page',
             ],
         },
     },

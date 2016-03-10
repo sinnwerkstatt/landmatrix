@@ -175,49 +175,31 @@
 </div>
 
 {% block footer %}
+
     <footer>
         <div class="container">
+
+            {# reads the four footer columns from the WagtailRootPage assigned #}
+            {# to the context by the context processor #}
+            {# wagtailcms.context_processors.add_root_page #}
+
             <div id="footer-nav" class="row">
                 <div class="col-md-3">
-                    <ul class="list-unstyled">
-                        <li><h4>{% trans "Explore" %}</h4></li>
-                        <li><a href="/global/charts/transnational-deals">{% trans "Global Web of transn. deals" %}</a></li>
-                        <li><a href="/global/map">{% trans "Global map of investments" %}</a></li>
-                        <li><a href="/global/map">{% trans "Interactive Map" %}</a></li>
-                        <li><a href="/global/data/by-target_country/">{% trans "Grid of deals by country" %}</a></li>
-                        <li><a href="/download">{% trans "Download Data" %}</a></li>
-                    </ul>
+                    {{ wagtail_root_page.footer_column_1|safe }}
                 </div>
                 <div class="col-md-3">
-                    <ul class="list-unstyled">
-                        <li><h4>{% trans "Get Involved" %}</h4></li>
-                        <li><a href="/deal/add">{% trans "Add a deal" %}</a></li>
-                        <li><a href="/deal/add">{% trans "Report a deal" %}</a></li>
-                        <li><a href="/help/api">{% trans "Develop your own app" %}</a></li>
-                        <li><a href="/help/feedback">{% trans "Provide Feedback" %}</a></li>
-                        <li><a href="/help/translate">{% trans "Help improve translations" %}</a></li>
-                    </ul>
+                    {{ wagtail_root_page.footer_column_2|safe }}
                 </div>
 
                 <div class="col-md-3">
-                    <ul class="list-unstyled">
-                        <li><h4>{% trans "Stay Informed" %}</h4></li>
-                        <li><a href="/blog">{% trans "Blog" %}</a></li>
-                        <li><a href="/newsletter">{% trans "Newsletter" %}</a></li>
-                        <li><a href="/publications">{% trans "Publications" %}</a></li>
-                    </ul>
+                    {{ wagtail_root_page.footer_column_3|safe }}
                 </div>
 
                 <div class="col-md-3">
-                    <ul class="list-unstyled">
-                        <li><h4>{% trans "About" %}</h4></li>
-                        <li><a href="/about">{% trans "About Land Matrix" %}</a></li>
-                        <li><a href="/ilc">{% trans "The ILC Partnership" %}</a></li>
-                        <li><a href="/policy">{% trans "Data policy" %}</a></li>
-                        <li><a href="/contact">{% trans "Get in touch" %}</a></li>
-                    </ul>
+                    {{ wagtail_root_page.footer_column_4|safe }}
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-md-12">
                     <hr/>
