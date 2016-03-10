@@ -111,7 +111,9 @@ function initializeMap (mapId) {
 
     var view = new ol.View({
         center: center,
-        zoom: 5
+        zoom: 5,
+        minZoom: 2,
+        maxZoom: 17
     });
 
     var marker = new ol.geom.Point(center);
