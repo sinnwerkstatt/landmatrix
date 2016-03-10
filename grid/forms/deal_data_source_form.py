@@ -1,4 +1,6 @@
+from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.deal_history import DealHistoryItem
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -77,7 +79,13 @@ class DealDataSourceForm(BaseForm):
 
         next_taggroup_id = next_taggroup.id if next_taggroup else ActivityAttributeGroup.objects.order_by('pk').last().id
 
-        tags = ActivityAttributeGroup.objects.filter(fk_activity=deal.activity).\
+        if isinstance(deal, DealHistoryItem):
+            deal_date = deal.activity.history_date
+            deal_activity = Activity.objects.get(pk=deal.activity.id).history.as_of(deal_date)
+        else:
+            deal_activity = deal.activity
+
+        tags = ActivityAttributeGroup.objects.filter(fk_activity=deal_activity).\
             filter(pk__gte=taggroup.id).filter(pk__lte=next_taggroup_id).\
             filter(belongs_to_data_source).values_list('attributes', flat=True)
 
