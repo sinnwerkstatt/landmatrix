@@ -21,3 +21,5 @@ from landmatrix.models.region import Region
 from landmatrix.models.status import Status
 from landmatrix.models.deal import Deal
 from landmatrix.models.public_interface_cache import PublicInterfaceCache
+
+from landmatrix.models.wagtail_home_page import WagtailHomePage
