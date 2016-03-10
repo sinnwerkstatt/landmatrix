@@ -14,43 +14,32 @@ var clusterSource = new ol.source.Cluster({
 
 var layers = [];
 
-var intentions = [
-    'Agriculture',
-    'Forestry',
-    'Conservation',
-    'Industry',
-    'Renewable Energy',
-    'Tourism',
-    'Other',
-    'Mining'
-];
-
-var accuracies = {
-    'better than 100m': '#0f0',
-    '100m to 1km': '#0a0',
-    '1km to 10km': '#00f',
-    '10km to 100km': '#b00',
-    'worse than 100km': '#700'
-};
-
-var negotiationstatus = {
-    'Contract cancelled': '#0f0',
-    'Contract signed': '#0a0',
-    'Negotiations failed': '#00f',
-    'Oral agreement': '#b00',
-    'Under negotiation': '#700'
-};
-
-var intentionColors = {
-    'Agriculture': '#1D6914',
-    'Forestry': '#2A4BD7',
-    'Conservation': '#575757',
-    'Industry': '#AD2323',
-    'Renewable Energy': '#81C57A',
-    'Tourism': '#9DAFFF',
-    'Other': '#8126C0',
-    'Mining': '#814A19',
-    'Undefined': '#FF0000'
+var detailviews = {
+    'Geospatial Accuracy': {
+        'better than 100m': '#0f0',
+        '100m to 1km': '#0a0',
+        '1km to 10km': '#00f',
+        '10km to 100km': '#b00',
+        'worse than 100km': '#700'
+    },
+    'Negotiation Status': {
+        'Contract cancelled': '#0f0',
+        'Contract signed': '#0a0',
+        'Negotiations failed': '#00f',
+        'Oral agreement': '#b00',
+        'Under negotiation': '#700'
+    },
+    'Deal Intention': {
+        'Agriculture': '#1D6914',
+        'Forestry': '#2A4BD7',
+        'Conservation': '#575757',
+        'Industry': '#AD2323',
+        'Renewable Energy': '#81C57A',
+        'Tourism': '#9DAFFF',
+        'Other': '#8126C0',
+        'Mining': '#814A19',
+        'Undefined': '#FF0000'
+    }
 };
 
 //Map, Layers and Map Controls
@@ -87,9 +76,87 @@ $(document).ready(function () {
      */
     closer.onclick = closePopup;
 
-    var changeIntentionTypes = function() {
+    var changeIntentionTypes = function () {
         console.log(this);
     }
+
+
+    var cluster = new ol.layer.Vector({
+        title: 'Markers',
+        source: clusterSource,
+        style: function (feature, resolution) {
+            var size = feature.get('features').length;
+            //Give a color to each Intention of Investment, only for single points
+            // PROBLEM : how to clustered the points by color?
+
+            var color = "";
+            var legend_image = {};
+            var legend_text = {};
+            var style = {};
+
+            if (size > 1) {
+                color = '#4C76AB';
+
+                var radius = size + 10;
+
+                if (radius > 30) {
+                    radius = 30;
+                }
+                else if (radius < 10) {
+                    radius = 10;
+                }
+
+                legend_image = new ol.style.Circle({
+                    radius: radius,
+                    stroke: new ol.style.Stroke({
+                        color: '#fff'
+                    }),
+                    fill: new ol.style.Fill({
+                        color: color
+                    })
+                });
+
+                legend_text = new ol.style.Text({
+                    text: size.toString(),
+                    fill: new ol.style.Fill({
+                        color: '#fff'
+                    })
+                });
+
+                style = [new ol.style.Style({
+                    image: legend_image,
+                    text: legend_text
+                })];
+
+            } else {
+                feature = feature.get('features')[0];
+                var intention = feature.attributes.intention;
+
+                if (intention in detailviews[currentVariable]) {
+                    color = detailviews[currentVariable][intention];
+                } else {
+                    color = '#000';
+                }
+
+                legend_text = new ol.style.Text({
+                    text: '\uf041',
+                    font: 'normal 36px FontAwesome',
+                    textBaseline: 'Bottom',
+                    fill: new ol.style.Fill({
+                        color: color
+                    })
+                });
+
+                style = [new ol.style.Style({
+                    text: legend_text
+                })];
+
+            }
+
+            return style;
+        }
+    });
+
 
     /**
      * GeoJSON features
@@ -303,6 +370,7 @@ $(document).ready(function () {
             new ol.layer.Group({
                 title: 'Deals',
                 layers: [
+                    cluster,
                     intendedareaLayer,
                     contractareaLayer,
                     currentareaLayer
@@ -338,6 +406,7 @@ $(document).ready(function () {
         view: new ol.View({
             center: [0, 0],
             zoom: 2,
+            maxZoom: 17,
             minZoom: 2
 
         })
@@ -345,82 +414,6 @@ $(document).ready(function () {
 
     //var styleCache = {};
 
-    var cluster = new ol.layer.Vector({
-        source: clusterSource,
-        style: function (feature, resolution) {
-            var size = feature.get('features').length;
-            //Give a color to each Intention of Investment, only for single points
-            // PROBLEM : how to clustered the points by color?
-
-            var color = "";
-            var legend_image = {};
-            var legend_text = {};
-            var style = {};
-
-            if (size > 1) {
-                color = '#4C76AB';
-
-                var radius = size + 10;
-
-                if (radius > 30) {
-                    radius = 30;
-                }
-                else if (radius < 10) {
-                    radius = 10;
-                }
-
-                legend_image = new ol.style.Circle({
-                    radius: radius,
-                    stroke: new ol.style.Stroke({
-                        color: '#fff'
-                    }),
-                    fill: new ol.style.Fill({
-                        color: color
-                    })
-                });
-
-                legend_text = new ol.style.Text({
-                    text: size.toString(),
-                    fill: new ol.style.Fill({
-                        color: '#fff'
-                    })
-                });
-
-                style = [new ol.style.Style({
-                    image: legend_image,
-                    text: legend_text
-                })];
-
-            } else {
-                feature = feature.get('features')[0];
-                var intention = feature.attributes.intention;
-
-                if (intention in intentionColors) {
-                    color = intentionColors[intention];
-                } else {
-                    color = '#000';
-                }
-
-                legend_text = new ol.style.Text({
-                    text: '\uf041',
-                    font: 'normal 36px FontAwesome',
-                    textBaseline: 'Bottom',
-                    fill: new ol.style.Fill({
-                        color: color
-                    })
-                });
-
-                style = [new ol.style.Style({
-                    text: legend_text
-                })];
-
-            }
-
-            return style;
-        }
-    });
-
-    map.addLayer(cluster);
 
     // LayerSwitcher Control by https://github.com/walkermatt/ol3-layerswitcher
     var layerSwitcher = new ol.control.LayerSwitcher({
@@ -429,50 +422,88 @@ $(document).ready(function () {
     map.addControl(layerSwitcher);
     layerSwitcher.showPanel();
 
-    // Set up intention legend
-    var legend = document.getElementById('legend');
+    function updateVariableSelection(variableName) {
+        var legend = document.getElementById('legend');
 
+        var variableSet = detailviews[variableName];
 
-    var legendHeader = document.createElement("a");
-    legendHeader.onclick = ol.control.LayerSwitcher.prototype.toggleLayerPanel;
+        while (legend.hasChildNodes()) {
+            legend.removeChild(legend.lastChild)
+        }
 
-    var legendHeaderLabel = document.createElement('span');
-    legendHeaderLabel.innerHTML = 'Deal details';
+        for (name in variableSet) {
+            var varItem = document.createElement('li');
+            varItem.className = 'legend-entry';
 
-    var legendHeaderChevron = document.createElement('i');
-    legendHeaderChevron.className = 'lm lm-chevron-down';
+            var varName = name;
+            var varColor = variableSet[name];
 
-    legendHeader.appendChild(legendHeaderChevron);
-    legendHeader.appendChild(legendHeaderLabel);
+            var legendSpan = document.createElement('span');
+            legendSpan.className = 'legend-symbol';
+            legendSpan.setAttribute('style', 'color: ' + varColor + '; background-color:' + varColor + ";");
+            legendSpan.innerHTML = ".";
 
-    legend.appendChild(legendHeader);
+            var legendLabel = document.createElement('div');
+            legendLabel.innerHTML = varName;
 
-    var intentionLegend = document.createElement('ul');
-    intentionLegend.className = 'legendcollapse';
+            varItem.appendChild(legendSpan);
+            varItem.appendChild(legendLabel);
 
-
-
-    for (var intention in intentions) {
-        var intentionItem = document.createElement('li');
-        intentionItem.className = 'legend-entry';
-
-        var intentionName = intentions[intention];
-        var col = intentionColors[intentionName];
-
-        var legendSpan = document.createElement('span');
-        legendSpan.className = 'legend-symbol';
-        legendSpan.setAttribute('style', 'color: ' + col + '; background-color:' +  col + ";");
-        legendSpan.innerHTML =  ".";
-
-        var legendLabel = document.createElement('div');
-        legendLabel.innerHTML = intentionName;
-
-        intentionItem.appendChild(legendSpan);
-        intentionItem.appendChild(legendLabel);
-        intentionLegend.appendChild(intentionItem);
+            legend.appendChild(varItem);
+        }
     }
 
-    legend.appendChild(intentionLegend);
+    var variableLabel = document.getElementById('legendLabel');
+
+    var currentVariable = 'Deal Intention';
+
+    var innerHTML = '';
+    for (key in detailviews) {
+        innerHTML = innerHTML + '<option';
+        if (key === currentVariable) {
+            innerHTML = innerHTML + ' selected';
+        }
+        innerHTML = innerHTML + '>' + key + '</option>';
+    }
+
+    var dropdown = document.createElement('select');
+    dropdown.id = 'mapVariableSelect';
+    dropdown.value = currentVariable;
+
+    NProgress.configure(
+        {
+            trickleRate: 0.02,
+            trickleSpeed: 800
+        }
+    );
+
+    function getApiData() {
+        NProgress.start();
+        // TODO: (Later) initiate spinner before fetchin' stuff
+        markerSource.clear();
+
+        $.get(
+            "/en/api/deals.json?limit=10&variable="+currentVariable, //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+            addData
+        );
+
+        NProgress.set(0.2);
+    }
+
+    function pickNewVariable() {
+        currentVariable = dropdown.value;
+        console.log(currentVariable);
+        updateVariableSelection(currentVariable);
+        getApiData();
+    }
+
+    dropdown.onchange = pickNewVariable;
+
+    dropdown.innerHTML = innerHTML;
+
+    newlegendlabel = variableLabel.parentNode.replaceChild(dropdown, variableLabel);
+
+    updateVariableSelection(currentVariable);
 
     map.on('click', function (evt) {
         var handleFeatureClick = function (feature, layer) {
@@ -562,15 +593,17 @@ $(document).ready(function () {
         }
     });
 
-    var lats = {};
-    var duplicates = 0;
-
     var addData = function (data) {
-        console.log('MAP DATA: ', data);
+        var lats = {};
+        var duplicates = 0;
+
+        NProgress.set(0.8);
+        console.log('MAP DATA: ', data.length);
         if (data.length < 1) {
             $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
         } else {
             for (var i = 0; i < data.length; i++) {
+                NProgress.inc();
                 var marker = data[i];
                 marker.lat = parseFloat(marker.point_lat);
                 marker.lon = parseFloat(marker.point_lon);
@@ -588,38 +621,10 @@ $(document).ready(function () {
             }
             console.log('Added deals: ', i, ', ', duplicates, ' duplicates.');
         }
+        NProgress.done(true);
     };
 
-    $.get(
-       "/en/api/deals.json?limit=10", //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
-        addData
-    );
-
-
-
-    /*
-     $('#mapsearch-select').select2({
-     placeholder: "Search",
-     //dropdownCssClass: "select2-main",
-     ajax: {
-     url: "/api/regions.json",
-     dataType: 'json',
-     delay: 250,
-     processResults: function (data, params) {
-     var items = [];
-     data.forEach(function (d) {
-     items.push({'id': d[0], 'text': d[1]});
-     });
-     return {
-     results: items
-     }
-     },
-     cache: true
-     }
-     });
-     */
-
-
+    getApiData();
 });
 
 function fitBounds(geom) {
@@ -635,42 +640,54 @@ function fitBounds(geom) {
 function initGeocoder(el) {
     console.log("Running geocoder init");
 
-    var autocomplete = new google.maps.places.Autocomplete(el);
+    try {
+        var autocomplete = new google.maps.places.Autocomplete(el);
 
-    autocomplete.addListener('place_changed', function () {
-        var place = autocomplete.getPlace();
-        if (!place.geometry) {
-            window.alert("Autocomplete's returned place contains no geometry");
-            return;
-        }
+        autocomplete.addListener('place_changed', function () {
+            var place = autocomplete.getPlace();
+            if (!place.geometry) {
+                window.alert("Autocomplete's returned place contains no geometry");
+                return;
+            }
 
-        // If the place has a geometry, then present it on a map.
-        if (place.geometry.viewport) {
-            console.log(place.geometry);
+            // If the place has a geometry, then present it on a map.
+            if (place.geometry.viewport) {
+                console.log(place.geometry);
 
-            fitBounds(place.geometry.viewport);
-        } else {
-            console.log(place.geometry.location);
-            console.log(place.geometry.location.lat());
-            console.log(place.geometry.location.lng());
-            var target = [place.geometry.location.lng(), place.geometry.location.lat()]
-            target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
-            map.getView().setCenter(target);
-            map.getView().setZoom(17);  // Why 17? Because it looks good.
-        }
+                fitBounds(place.geometry.viewport);
+            } else {
+                console.log(place.geometry.location);
+                console.log(place.geometry.location.lat());
+                console.log(place.geometry.location.lng());
+                var target = [place.geometry.location.lng(), place.geometry.location.lat()]
+                target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
+                map.getView().setCenter(target);
+                map.getView().setZoom(17);  // Why 17? Because it looks good.
+            }
 
-        var address = '';
-        if (place.address_components) {
-            address = [
-                (place.address_components[0] && place.address_components[0].short_name || ''),
-                (place.address_components[1] && place.address_components[1].short_name || ''),
-                (place.address_components[2] && place.address_components[2].short_name || '')
-            ].join(' ');
-        }
+            var address = '';
+            if (place.address_components) {
+                address = [
+                    (place.address_components[0] && place.address_components[0].short_name || ''),
+                    (place.address_components[1] && place.address_components[1].short_name || ''),
+                    (place.address_components[2] && place.address_components[2].short_name || '')
+                ].join(' ');
+            }
 
-        //infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
-        //infowindow.open(map, marker);
-    });
+            //infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+            //infowindow.open(map, marker);
+        });
+    }
+    catch (err) {
+        console.log('No google libs loaded, replacing with a hint.');
+
+        var hint = '<a title="If you allow Google javascript, a geolocation search field would appear here." href="#" class="toggle-tooltip noul">';
+        hint = hint + '<i class="lm lm-question-circle"></i></a>';
+
+        $(el).replaceWith(hint);
+
+    }
+
 }
 
 function addClusteredMarkerNew(marker) {
