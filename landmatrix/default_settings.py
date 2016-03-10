@@ -212,6 +212,12 @@ STATIC_URL = '/static/'
 #    os.path.join(BASE_DIR, "landmatrix", "static", "vendor"),
 #)
 
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder'
+)
+
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
