@@ -88,7 +88,15 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="/help" role="button"><span class="nav-circle nav-help">?</span></a></li>
-                    <li><a href="/editor" role="button"><span class="fa lm-envelope messages"></span></a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false"><i class="fa lm-envelope messages"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/blog">{% trans "Blog" %}</a></li>
+                            <li><a href="/newsletter">{% trans "Newsletter" %}</a></li>
+                            <li><a href="/publications">{% trans "Publications" %}</a></li>
+                        </ul>
+                    </li>
                     {% include "language_chooser.html" %}
                 </ul>
             </div>
