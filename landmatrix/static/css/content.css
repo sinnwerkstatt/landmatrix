@@ -670,7 +670,7 @@ p a {
     -moz-osx-font-smoothing: grayscale;
     position: relative;
 }
-.select2-search::before {
+.nav .select2-search::before {
     content: "\e003";
     top: 16px;
     right: 12px;
@@ -689,6 +689,7 @@ p a {
     min-width: 90% !important;
     max-width: 90% !important;
     height: 2em;
+    margin-bottom: 1em;
 }
 
 .dropdown-menu>.active>a,
@@ -1789,6 +1790,24 @@ textarea {
     display: inline-block;
 }
 
+a.add-ybd {
+    height: 42px;
+    margin-top: 5px;
+    padding: 8px 12px;
+    border-color: transparent;
+    visibility: collapse;
+    margin-left: 20px;
+    float: right;
+    color: #414141;
+}
+a.add-ybd i {
+    visibility: visible;
+}
+a.add-ybd:hover {
+    border-color: #fc941f;
+    visibility: visible;
+    color: #fc941f;
+}
 
 /* ==========================================================================
  *    MAPS
