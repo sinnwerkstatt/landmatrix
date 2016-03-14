@@ -1,5 +1,5 @@
 function cloneYBDfield(link) {
-  var wrap = link.parents(".field").find(".input-append:last"),
+  var wrap = link.parents(".field").find(".controls:last"),
     inputs = wrap.find(":input"),
     input_data = $(inputs[inputs.size()-2]).clone(),
     input_year = $(inputs[inputs.size()-1]).clone(),
@@ -17,7 +17,7 @@ function cloneYBDfield(link) {
   //input_year.removeClass('form-control');
   remove_link.css("display", "inline-block");
   remove_link.click(removeYBDfield);
-  var new_wrap = $("<div class=\"input-append\"></div>");
+  var new_wrap = $("<div class=\"input-group\"></div>");
   new_wrap.append(input_data);
   new_wrap.append(input_year);
   new_wrap.append(helptext);
@@ -27,7 +27,6 @@ function cloneYBDfield(link) {
 }
 
 function removeYBDfield() {
-  debugger;
   $(this).parent().remove();
 }
 
