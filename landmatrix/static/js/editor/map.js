@@ -30,9 +30,11 @@ function unlockMaps() {
 function getLocationFields(mapId) {
     const target = "map" + mapId;
 
+    var mapParent = $("#map"+mapId).parentsUntil(".panel-collapse");
+
     var result = {
-        lat: $(".point_lat input"),
-        lon: $(".point_lon input")
+        lat: mapParent.find(".point_lat input"),
+        lon: mapParent.find(".point_lon input")
     };
 
     return result;
@@ -82,24 +84,28 @@ function updateLocationFields(mapId, coords) {
 
 function updateGeocoding(mapId) {
     var fields = getLocationFields(mapId);
-    var latLng = new google.maps.LatLng(fields.lat, fields.lon);
+    console.log(fields, parseFloat(fields.lat));
+    var latLng = new google.maps.LatLng(parseFloat(fields.lat.val()), parseFloat(fields.lon.val()));
 
-    var map = maps[mapId];
+    var map = $("#map"+mapId);
 
     // changed lan or lon value, request target Country
 
-    console.log("Hello, i'm updating")
+    var mapParent = $("#map"+mapId).parentsUntil(".panel-collapse");
 
-    var accuracy = $(map).parents("div.panel-body").find(".level_of_accuracy select :selected").first().val();
-    console.log(accuracy)
+    var accuracy = mapParent.find(".level_of_accuracy select :selected").first().val();
+
+    console.log(accuracy);
+
     if (accuracy == "40" && fields.lat != null && fields.lat != "" && fields.lon != null && fields.lon != "") {
-
-        geocoders[index].geocode({"latLng" : latLng, "language": "en"}, function(results, status) {
+        console.log(latLng);
+        geocoders[mapId].geocode({"latLng" : latLng, "language": "en"}, function(results, status) {
+            console.log("Google gave us: ", results, status);
             for(var i = 0; i < results[0].address_components.length; i++) {
                 if (results[0].address_components[i].types.indexOf("country") != -1) {
                     country = results[0].address_components[i].short_name;
-                    $(this).parents("div").find(".target_country option[title='" + country + "']").attr('selected', 'selected');
-                    $(this).parents("div").find(".target_country option:not([title='" + country + "'])").removeAttr("selected");
+                    mapParent.find(".target_country option[title='" + country + "']").attr('selected', 'selected');
+                    mapParent.find(".target_country option:not([title='" + country + "'])").removeAttr("selected");
                 }
             }
         });
