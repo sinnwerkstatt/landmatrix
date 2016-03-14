@@ -483,7 +483,7 @@ class BaseForm(forms.Form):
             elif isinstance(field, forms.MultiValueField):
                 value = self.get_display_value_multi_value_field(field, field_name)
             elif isinstance(field, forms.FileField):
-                value = self.get_display_value_file_field(field_name, value)
+                value = self.get_display_value_file_field(field_name)
             else:
                 value = self.is_valid() and self.cleaned_data.get(field_name) or self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name)
 
@@ -496,51 +496,36 @@ class BaseForm(forms.Form):
 
         return output
 
-    def get_display_value_file_field(self, field_name, value):
+    def get_display_value_file_field(self, field_name):
         value = self.is_valid() and self.cleaned_data.get(field_name) and hasattr(self.cleaned_data.get(field_name),
                                                                                   "name") and self.cleaned_data.get(
             field_name).name or self.data.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name)
         return value
 
     def get_display_value_multi_value_field(self, field, field_name):
-        # Year based data?
-        # keys = filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n) ,o), self.initial.keys())
-        ##keys.sort()
-        # value = ''
-        # year = ''
-        # for i in range(len(keys)):
-        #    if i % 2 == 0:
-        #        value = self.initial.get(len(keys) > i and keys[i] or "-", "")
-        #        if value == "0" and isinstance(f.fields[0], forms.ChoiceField):
-        #            #filter default selection of choice fields
-        #            value = None
-        #        year = self.initial.get(len(keys) > i+1 and keys[i+1] or "-", "")
-        #        if value or year:
-        #            break
-        # todo fails with historical deals
-        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        value = None
-        year = None
-        if isinstance(data, str):
-            data = data.replace('::', ':')
-            if ':' not in data:
-                data += ':'
-            # print('base_form line 511', data)
-            value, year = data.split(':')
+        # todo - fails with historical deals?
+        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
+        data = ensure_is_year_based_data(data)
+        print('base_form line 528', data)
+        value, year = data.split(':')
         if value:
             if isinstance(field.fields[0], forms.ChoiceField):
                 value = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) == str(value)])
-            value = '%s%s' % (value, year and ' (%s)' % year[:4] or '')
+            if year:
+                value += ' ({})'.format(year[:4])
         return value
 
     def get_display_value_choice_field(self, field, field_name):
-        if isinstance(self.initial, MultiValueDict):
-            data = self.initial.getlist(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        else:
-            data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-            if data: data = [data]
+        data = self.get_list_from_initial(field_name)
         value = '<br>'.join([str(l) for v, l in field.choices if str(v) in data])
         return value
+
+    def get_list_from_initial(self, field_name):
+        if isinstance(self.initial, MultiValueDict):
+            return self.initial.getlist(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        if data: data = [data]
+        return data
 
     def get_display_value_multiple_choice_field(self, field, field_name):
         data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
@@ -599,6 +584,11 @@ class BaseForm(forms.Form):
                 if 'class' in widget.attrs and widget.attrs['class']:
                     widget.attrs['class'] += ' form-control'            
                 else:
-                    widget.attrs['class'] = 'form-control' 
+                    widget.attrs['class'] = 'form-control'
 
 
+def ensure_is_year_based_data(data):
+    data = data.replace('::', ':')
+    if ':' not in data:
+        data += ':'
+    return data
