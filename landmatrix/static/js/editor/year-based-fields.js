@@ -10,28 +10,25 @@ function cloneYBDfield(link) {
   input_data.attr("id", prefix + (parseInt(input_data.attr("id").replace(prefix, ""))+2));
   input_data.attr("name", prefix.slice(3) + (parseInt(input_data.attr("name").replace(prefix.slice(3), ""))+2));
   input_data.val("");
-  input_data.removeClass('form-control');
+  //input_data.removeClass('form-control');
   input_year.attr("id", prefix + (parseInt(input_year.attr("id").replace(prefix, ""))+2));
   input_year.attr("name", prefix.slice(3) + (parseInt(input_year.attr("name").replace(prefix.slice(3), ""))+2));
   input_year.val("");
-  input_year.removeClass('form-control');
+  //input_year.removeClass('form-control');
   remove_link.css("display", "inline-block");
-  remove_link.click(function () { removeYBDfield($(this)); });
-  var new_wrap = $("<div class=\"input-group\"></div>");
+  remove_link.click(removeYBDfield);
+  var new_wrap = $("<div class=\"input-append\"></div>");
   new_wrap.append(input_data);
   new_wrap.append(input_year);
   new_wrap.append(helptext);
-  new_wrap.append(remove_link);;
-  link.parents(".field").find("td").append(new_wrap);
+  new_wrap.append(remove_link);
+  link.parents(".controls").append(new_wrap);
   //link.next().show();
 }
 
-function removeYBDfield(link) {
-  len = link.parents(".field").find(".input-group").length;
-  console.log($(this));
-  if (len >= 1) {
-    link.parents(".input-group").remove();
-  }
+function removeYBDfield() {
+  debugger;
+  $(this).parent().remove();
 }
 
 function update_year_based_history (el, id) {

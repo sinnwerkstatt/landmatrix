@@ -30,11 +30,9 @@ function unlockMaps() {
 function getLocationFields(mapId) {
     const target = "map" + mapId;
 
-    var parent = $("#"+target).parents("tbody");
-
     var result = {
-        lat: parent.find(".point_lat input"),
-        lon: parent.find(".point_lon input")
+        lat: $(".point_lat input"),
+        lon: $(".point_lon input")
     };
 
     return result;
