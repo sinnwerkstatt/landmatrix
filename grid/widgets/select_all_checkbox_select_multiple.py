@@ -14,11 +14,11 @@ class SelectAllCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
           </label>
           <script type="text/javascript">
             $("#select-all-%(id)s").click(function() {
-            $(this).parents(".input-append").find("ul :checkbox").attr("checked", this.checked);
+            $(this).parents(".input-group").find("ul :checkbox").attr("checked", this.checked);
             });
             $(document).ready(function () {
-                var checked = $("#select-all-%(id)s").parents(".input-append").find("ul :checked").length;
-                var all = $("#select-all-%(id)s").parents(".input-append").find("ul :checkbox").length
+                var checked = $("#select-all-%(id)s").parents(".input-group").find("ul :checked").length;
+                var all = $("#select-all-%(id)s").parents(".input-group").find("ul :checkbox").length
                 if (checked == all) {
                     $("#select-all-%(id)s").attr("checked", "checked");
                 }
