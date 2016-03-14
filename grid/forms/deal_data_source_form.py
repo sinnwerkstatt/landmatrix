@@ -79,7 +79,7 @@ class DealDataSourceForm(BaseForm):
 
         next_taggroup_id = next_taggroup.id if next_taggroup else ActivityAttributeGroup.objects.order_by('pk').last().id
 
-        if isinstance(deal, DealHistoryItem):
+        if hasattr(deal.activity, 'history_date'):  # isinstance(deal, DealHistoryItem):
             deal_date = deal.activity.history_date
             deal_activity = Activity.objects.get(pk=deal.activity.id).history.as_of(deal_date)
         else:
