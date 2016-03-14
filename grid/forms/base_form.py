@@ -27,7 +27,7 @@ class BaseForm(forms.Form):
 
     def as_p(self):
         return self._html_output(
-                    normal_row = u'<div%(html_class_attr)s><div class="control-label col-md-3">%(label)s</div><div class="controls input-append col-md-9">%(field)s%(help_text)s</div>%(errors)s</div>',
+                    normal_row = u'<div%(html_class_attr)s><div class="control-label col-md-3">%(label)s</div><div class="controls col-sm-9">%(field)s%(help_text)s</div>%(errors)s</div>',
                     error_row = u'<div>%s</div>',
                     row_ender = '</div>',
                     help_text_html = u' <span class="helptext add-on">%s</span>',
@@ -35,7 +35,7 @@ class BaseForm(forms.Form):
 
     def as_ul(self):
         return self._html_output(
-                    normal_row = u'<li%(html_class_attr)s>%(label)s <div class="input-append clearfix">%(field)s%(help_text)s</div>%(errors)s</li>',
+                    normal_row = u'<li%(html_class_attr)s>%(label)s <div class="input-group clearfix">%(field)s%(help_text)s</div>%(errors)s</li>',
                     error_row = u'<li>%s</li>',
                     row_ender = '</li>',
                     help_text_html = u' <span class="helptext add-on">%s</span>',
@@ -43,7 +43,7 @@ class BaseForm(forms.Form):
 
     def as_table(self):
         return self._html_output(
-            normal_row = '<tr%(html_class_attr)s"><th>%(label)s</th><td><div class="input-append clearfix">%(field)s%(help_text)s</div>%(errors)s</td></tr>',
+            normal_row = '<tr%(html_class_attr)s"><th>%(label)s</th><td><div class="input-group clearfix">%(field)s%(help_text)s</div>%(errors)s</td></tr>',
             error_row = '<tr><td colspan="2">%s</td></tr>',
             row_ender = '</td></tr>',
             help_text_html = '<span class="helptext add-on">%s</span>',
@@ -84,14 +84,15 @@ class BaseForm(forms.Form):
                 else:
                     label = ''
                 if field.help_text:
-                    help_text = help_text_html % force_text(field.help_text)
+                    widget = '<div class="input-group">%s' % str(bf) 
+                    help_text = '<div class="input-group-addon">%s</div></div>' % help_text_html % force_text(field.help_text)
                 else:
+                    widget = str(bf)
                     help_text = u''
-
                 output.append(normal_row % {
                     'errors': force_text(bf_errors),
                     'label': force_text(label),
-                    'field': str(bf),
+                    'field': widget,
                     'help_text': help_text,
                     'html_class_attr': html_class_attr,
                     'name': name
