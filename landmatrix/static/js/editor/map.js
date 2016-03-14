@@ -58,6 +58,7 @@ function updateMapLocation(mapId) {
         var center = ol.proj.fromLonLat([lon, lat]);
         markers[mapId].setCoordinates(center);
         views[mapId].setCenter(center);
+        updateGeocoding(mapId);
     }
 }
 
@@ -77,7 +78,44 @@ function updateLocationFields(mapId, coords) {
 
         fields.lat.val(formCoords[1]);
         fields.lon.val(formCoords[0]);
+        updateGeocoding(mapId);
     }
+}
+
+function updateGeocoding(mapId) {
+    var fields = getLocationFields(mapId);
+    var latLng = new google.maps.LatLng(fields.lat, fields.lon);
+
+    var map = maps[mapId];
+
+    // changed lan or lon value, request target Country
+
+    console.log("Hello, i'm updating")
+
+    var accuracy = $(map).parents("div.panel-body").find(".level_of_accuracy select :selected").first().val();
+    console.log(accuracy)
+    if (accuracy == "40" && fields.lat != null && fields.lat != "" && fields.lon != null && fields.lon != "") {
+
+        geocoders[index].geocode({"latLng" : latLng, "language": "en"}, function(results, status) {
+            for(var i = 0; i < results[0].address_components.length; i++) {
+                if (results[0].address_components[i].types.indexOf("country") != -1) {
+                    country = results[0].address_components[i].short_name;
+                    $(this).parents("div").find(".target_country option[title='" + country + "']").attr('selected', 'selected');
+                    $(this).parents("div").find(".target_country option:not([title='" + country + "'])").removeAttr("selected");
+                }
+            }
+        });
+    } else {
+        console.log("NOT updating anything")
+    }
+
+    //switched level of accuracy fire event on lan and lon input fields
+    $(map).parents("div").find(".level_of_accuracy select").change(function() {
+        if ($(map).find(":selected").val() == "40") {
+            $(map).parents("div").find(".point_lat input, .point_lon input").change();
+        }
+    });
+
 }
 
 var markerStyle = new ol.style.Style({
@@ -150,6 +188,7 @@ function initializeMap (mapId) {
     maps[mapId] = map;
     views[mapId] = view;
     markers[mapId] = marker;
+    geocoders[mapId] = new google.maps.Geocoder();
 
     map.on('singleclick', function(evt) {
         updateLocationFields(mapId, evt.coordinate);
