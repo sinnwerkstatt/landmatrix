@@ -19,9 +19,9 @@ class DealProduceInfoForm(BaseForm):
 
     # Detailed crop, animal and mineral information
     tg_crop_animal_mineral = TitleField(required=False, label="", initial=_("Detailed crop, animal and mineral information"))
-    crops = forms.ModelMultipleChoiceField(required=False, label=_("Crops"), queryset=Crop.objects.all(), widget=forms.CheckboxSelectMultiple)
-    animals = forms.ModelMultipleChoiceField(required=False, label=_("Animals"), queryset=Animal.objects.all(), widget=forms.CheckboxSelectMultiple)
-    minerals = forms.ModelMultipleChoiceField(required=False, label=_("Minerals"), queryset=Mineral.objects.all(), widget=forms.CheckboxSelectMultiple)
+    crops = forms.ModelMultipleChoiceField(required=False, label=_("Crops"), queryset=Crop.objects.all())
+    animals = forms.ModelMultipleChoiceField(required=False, label=_("Animals"), queryset=Animal.objects.all())
+    minerals = forms.ModelMultipleChoiceField(required=False, label=_("Minerals"), queryset=Mineral.objects.all())
 
     # Use of produce
     tg_use_of_produce = TitleField(required=False, label="", initial=_("Use of produce"))

@@ -277,4 +277,5 @@ $(document).ready(function(){
         $(".field.control-group.tg_feedback_comment ").slideUp("fast");
     }
 
+    $('.crops select,.animals select,.minerals select').select2();
 });
