@@ -1,4 +1,4 @@
-{% load i18n static %}<!DOCTYPE html>
+{% load i18n static wagtailcore_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -185,18 +185,18 @@
 
             <div id="footer-nav" class="row">
                 <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_1|safe }}
+                    {{ wagtail_root_page.footer_column_1|richtext }}
                 </div>
                 <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_2|safe }}
-                </div>
-
-                <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_3|safe }}
+                    {{ wagtail_root_page.footer_column_2|richtext }}
                 </div>
 
                 <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_4|safe }}
+                    {{ wagtail_root_page.footer_column_3|richtext }}
+                </div>
+
+                <div class="col-md-3">
+                    {{ wagtail_root_page.footer_column_4|richtext }}
                 </div>
             </div>
 

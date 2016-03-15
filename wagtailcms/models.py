@@ -6,6 +6,7 @@ from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtailcore.blocks import StructBlock
 from wagtail.wagtailembeds.blocks import EmbedBlock
 from wagtail.wagtailcore.blocks import URLBlock
+from wagtail.wagtailcore.blocks import RawHTMLBlock
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -16,6 +17,7 @@ CONTENT_BLOCKS = [
     ('image', ImageChooserBlock(icon="image")),
     ('media', EmbedBlock(icon="media")),
     ('link', URLBlock(icon="link")),
+    ('html', RawHTMLBlock(icon="code")),
 ]
 
 
@@ -55,13 +57,7 @@ class Columns1To2Block(ColumnsBlock):
 
 
 class WagtailRootPage(Page):
-    body = StreamField(
-        [
-            ('heading', blocks.CharBlock(classname="full title", icon="title")),
-            ('paragraph', blocks.RichTextBlock()),
-            ('image', ImageChooserBlock(icon="image")),
-            ('media', EmbedBlock(icon="media")),
-            ('link', URLBlock(icon="link")),
+    body = StreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
             ('columns_2_1', Columns2To1Block()),
             ('columns_1_2', Columns1To2Block())
@@ -82,13 +78,7 @@ class WagtailRootPage(Page):
 
 
 class WagtailPage(Page):
-    body = StreamField(
-        [
-            ('heading', blocks.CharBlock(classname="full title", icon="title")),
-            ('paragraph', blocks.RichTextBlock()),
-            ('image', ImageChooserBlock(icon="image")),
-            ('media', EmbedBlock(icon="media")),
-            ('link', URLBlock(icon="link")),
+    body = StreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
             ('columns_2_1', Columns2To1Block()),
             ('columns_1_2', Columns1To2Block())
