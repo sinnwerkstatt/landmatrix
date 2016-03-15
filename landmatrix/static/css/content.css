@@ -678,10 +678,10 @@ p a {
 }
 
 
-.input-append .investorfield,
-.input-append .select2,
-.input-append .select2-container,
-.input-append .select2-main,
+.input-group .investorfield,
+.input-group .select2,
+.input-group .select2-container,
+.input-group .select2-main,
 .investorfield,
 .controls .select2,
 .controls .select2-container,
@@ -1568,6 +1568,7 @@ h4 .icon {
 
 .control-group {
     clear: both;
+    padding-bottom: 5px;
 }
 
 .control-group .control-label {
@@ -1689,7 +1690,6 @@ textarea {
     box-shadow: none !important;
     color: #4a4a4a;
     max-width: 100%;
-    margin: 5px 2px 0px 0px;
     padding: 5px 5px;
 }
 
@@ -1697,18 +1697,18 @@ textarea {
     border-color: #B9D635;
 }
 
-.get-the-detail .input-append .value-wrapper > ul {
+.get-the-detail .input-group .value-wrapper > ul {
     display: block;
     max-height: 180px;
     width: 260px;
     overflow-y: auto;
 }
 
-.get-the-detail ul.form.condition .input-append li {
+.get-the-detail ul.form.condition .input-group li {
     float: none;
 }
 
-.get-the-detail ul.form.condition .input-append li input {
+.get-the-detail ul.form.condition .input-group li input {
     width: 15px;
 }
 
@@ -2170,7 +2170,7 @@ form .panel-body {
 }
 
 /* ==========================================================================
- *    FORMS
+ *    CONDITION FORM
  * ========================================================================== */
 .condition {
     clear: both;

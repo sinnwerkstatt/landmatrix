@@ -13,5 +13,6 @@
 {% block page_title %}{{ page.title }}{% endblock %}
 
 {% block content %}
-    {{ page.body }}
+    {{ page.body|richtext }}
 {% endblock %}
+
