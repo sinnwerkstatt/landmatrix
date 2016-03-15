@@ -52,9 +52,10 @@ class DealDetailView(TemplateView):
             if '_' in deal_id:
                 deal = deal_from_activity_id_and_timestamp(deal_id)
             else:
-                deal = Deal(deal_id)
-        except ObjectDoesNotExist:
-            return HttpResponse('Deal %s does not exist' % deal_id, status=404)
+                deal = get_latest_valid_deal(deal_id)
+
+        except ObjectDoesNotExist as e:
+            return HttpResponse('Deal {} does not exist ({})'.format(deal_id, e), status=404)
         return self.render_forms(request, self.get_context(deal, kwargs))
 
     def get_context(self, deal, kwargs):
@@ -80,6 +81,25 @@ class DealDetailView(TemplateView):
 
     def render_forms_to_string(self, request, context):
         return render_to_string(self.template_name, context, RequestContext(request))
+
+
+# todo
+def get_latest_valid_deal(deal_id):
+    deal = Deal(deal_id)
+
+    if deal.activity.fk_status.name in ['active', 'overwritten']:
+        return deal
+    elif deal.activity.fk_status.name in ['deleted', 'to_delete']:
+        raise ObjectDoesNotExist('Deal {} is deleted or waiting for deletion'.format(deal_id))
+
+    for timestamp, item in DealHistoryItem.get_history_for(deal).items():
+        if item.activity.fk_status.name in ['active', 'overwritten']:
+            print('active:', timestamp)
+            return item
+        else:
+            print('inactive', timestamp)
+
+    raise ObjectDoesNotExist('No approved version found for deal {}'.format(deal_id))
 
 
 def display_valid_forms(forms):
