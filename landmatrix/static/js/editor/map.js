@@ -30,9 +30,11 @@ function unlockMaps() {
 function getLocationFields(mapId) {
     const target = "map" + mapId;
 
+    var mapParent = $("#map"+mapId).parentsUntil(".panel-collapse");
+
     var result = {
-        lat: $(".point_lat input"),
-        lon: $(".point_lon input")
+        lat: mapParent.find(".point_lat input"),
+        lon: mapParent.find(".point_lon input")
     };
 
     return result;
@@ -56,6 +58,11 @@ function updateMapLocation(mapId) {
         var center = ol.proj.fromLonLat([lon, lat]);
         markers[mapId].setCoordinates(center);
         views[mapId].setCenter(center);
+        try {
+            updateGeocoding(mapId);
+        } catch (err) {
+            //console.log(err);
+        }
     }
 }
 
@@ -75,7 +82,53 @@ function updateLocationFields(mapId, coords) {
 
         fields.lat.val(formCoords[1]);
         fields.lon.val(formCoords[0]);
+        try {
+            updateGeocoding(mapId);
+        } catch (err) {
+            //console.log(err);
+        }
     }
+}
+
+function updateGeocoding(mapId) {
+    var fields = getLocationFields(mapId);
+    //console.log(fields, parseFloat(fields.lat));
+    var latLng = new google.maps.LatLng(parseFloat(fields.lat.val()), parseFloat(fields.lon.val()));
+
+    var map = $("#map"+mapId);
+
+    // changed lan or lon value, request target Country
+
+    var mapParent = $("#map"+mapId).parentsUntil(".panel-collapse");
+
+    var accuracy = mapParent.find(".level_of_accuracy select :selected").first().val();
+
+    //console.log(accuracy);
+
+    if (accuracy == "40" && fields.lat != null && fields.lat != "" && fields.lon != null && fields.lon != "") {
+        //console.log(latLng);
+        geocoders[mapId].geocode({"latLng" : latLng, "language": "en"}, function(results, status) {
+            //console.log("Google gave us: ", results, status);
+            for(var i = 0; i < results[0].address_components.length; i++) {
+                if (results[0].address_components[i].types.indexOf("country") != -1) {
+                    country = results[0].address_components[i].short_name;
+                    mapParent.find(".target_country option[title='" + country + "']").attr('selected', 'selected');
+                    mapParent.find(".target_country option:not([title='" + country + "'])").removeAttr("selected");
+                }
+            }
+            map.prev().val(results[0].formatted_address);
+        });
+    } /*else {
+        console.log("NOT updating anything")
+    }*/
+
+    //switched level of accuracy fire event on lan and lon input fields
+    $(map).parents("div").find(".level_of_accuracy select").change(function() {
+        if ($(map).find(":selected").val() == "40") {
+            $(map).parents("div").find(".point_lat input, .point_lon input").change();
+        }
+    });
+
 }
 
 var markerStyle = new ol.style.Style({
@@ -149,6 +202,8 @@ function initializeMap (mapId) {
     views[mapId] = view;
     markers[mapId] = marker;
 
+    initGeocoder(mapId);
+
     map.on('singleclick', function(evt) {
         updateLocationFields(mapId, evt.coordinate);
     });
@@ -162,6 +217,18 @@ function initializeMap (mapId) {
         updateMapLocation(mapId);
     });
 
+}
+
+function initGeocoder(mapId) {
+    try {
+        geocoders[mapId] = new google.maps.Geocoder();
+        //TODO: This should probably not be done (Data is either stored (=edit/view) or not available(=add)):
+        // updateGeocoding(mapId);
+    }
+    catch (err) {
+        console.log('No google libs loaded, replacing with a hint.');
+        alert('Please enable Javascript for the Google Maps API!');
+    }
 }
 
 
