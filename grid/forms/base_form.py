@@ -506,7 +506,6 @@ class BaseForm(forms.Form):
         # todo - fails with historical deals?
         data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
         data = ensure_is_year_based_data(data)
-        print('base_form line 528', data)
         value, year = data.split(':')
         if value:
             if isinstance(field.fields[0], forms.ChoiceField):
