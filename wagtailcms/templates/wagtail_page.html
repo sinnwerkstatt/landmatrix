@@ -9,9 +9,8 @@
     {% wagtailuserbar %}
 {% endblock %}
 
-{% block title %}
-    {{ page.title }}
-{% endblock %}
+{% block title %}{{ page.title }}{% endblock %}
+{% block page_title %}{{ page.title }}{% endblock %}
 
 {% block content %}
     {{ page.body|richtext }}
