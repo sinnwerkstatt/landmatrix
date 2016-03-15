@@ -2700,21 +2700,21 @@ img {
   border-left: 1px solid #4a4a4a;
   border-right: 1px solid #4a4a4a;
 }
-#btn-share .popover .popover-content .btn-media.facebook:after {
+#btn-share .popover .popover-content .btn-media.facebook:before {
   position: absolute;
-  bottom: -10px;
-  margin-left: -21px;
+  top: -10px;
+  margin-left: 0;
   content: "";
   border-left: 11px solid transparent;
   border-right: 11px solid transparent;
-  border-top: 10px solid #4a4a4a;
+  border-bottom: 10px solid #4a4a4a;
 }
 #btn-share .popover .popover-content .btn-media:hover,
 #btn-share .popover .popover-content .btn-media:focus {
   background: #fc941f;
 }
-#btn-share .popover .popover-content .btn-media:hover.facebook:after,
-#btn-share .popover .popover-content .btn-media:focus.facebook:after {
+#btn-share .popover .popover-content .btn-media:hover.facebook:before,
+#btn-share .popover .popover-content .btn-media:focus.facebook:before {
   border-top-color: #fc941f;
 }
 #btn-share .popover .popover-content .btn-media i {
