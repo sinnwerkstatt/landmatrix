@@ -20,6 +20,16 @@ CONTENT_BLOCKS = [
     ('html', RawHTMLBlock(icon="code")),
 ]
 
+class ImageBlock(ImageChooserBlock):
+    class Meta:
+        icon = 'image'
+        template = 'widgets/image.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['url'] = value.get_rendition('max-1200x1200').url
+        context['name'] = value.title
+        return context
 
 class ColumnsBlock(StructBlock):
 
@@ -55,6 +65,64 @@ class Columns1To2Block(ColumnsBlock):
         label = 'Columns 1:2'
         template = 'widgets/columns-1-2.html'
 
+class SliderBlock(StructBlock):
+    images = blocks.ListBlock(ImageBlock())
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        images_data = value.get('images')
+        images = []
+        if images_data:
+            for image in images_data:
+                rendition = image.get_rendition('max-1200x1200')
+                url = rendition.url
+                name = image.title
+                image_context = {'url': url, 'name': name}
+                images.append(image_context)
+        context['images'] = images
+        return context
+
+    class Meta:
+        icon = 'fa fa-picture-o'
+        label = 'Slider'
+        template = 'widgets/slider.html'
+
+class GalleryBlock(StructBlock):
+    columns = blocks.ChoiceBlock(choices=[
+        (1, '1 column'),
+        (2, '2 columns'),
+        (3, '3 columns'),
+        (4, '4 columns'),
+        (6, '6 columns'),
+    ], icon='fa fa-columns')
+    images = blocks.ListBlock(ImageBlock())
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        columns_data = value.get('columns')
+        if columns_data and columns_data.isdigit():
+            context['columns'] = int(columns_data)
+        images_data = value.get('images')
+        images = []
+        if images_data:
+            for image in images_data:
+                rendition = image.get_rendition('max-1200x1200')
+                url = rendition.url
+                name = image.title
+                image_context = {'url': url, 'name': name}
+                images.append(image_context)
+        context['images'] = images
+        return context
+
+    class Meta:
+        icon = 'fa fa-picture-o'
+        label = 'Gallery'
+        template = 'widgets/gallery.html'
+
+CONTENT_BLOCKS = CONTENT_BLOCKS + [
+    ('gallery', GalleryBlock()),
+    ('slider', SliderBlock()),
+]
 
 class WagtailRootPage(Page):
     body = StreamField(CONTENT_BLOCKS + [
