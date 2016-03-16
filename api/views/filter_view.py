@@ -29,7 +29,7 @@ class FilterView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         values = dict(request.GET)
         values.update(request.POST)
-        action = values.pop('action', None)
+        action = values.pop('action', '')
         if isinstance(action, list):
             action = action.pop()
 
@@ -38,20 +38,17 @@ class FilterView(TemplateView):
 
         stored_filters = request.session.get('filters', {})
         if action.lower() == 'set':
-            new_filter = Filter(values['variable'], values['operator'], values['value'], values.get('name'))
+            new_filter = Filter(values['variable'], values['operator'], values['value'], values.get('name', [None]).pop())
             stored_filters[new_filter.name] = new_filter
             request.session['filters'] = stored_filters
             self.filters[request.user] = stored_filters
-            print(self.filters)
-            return HttpResponse(json.dumps(new_filter['name']), content_type="application/json")
+            # print('FilterView.dispatch', self.filters)
         elif action.lower() == 'remove':
             name = values.get('name').pop()
-            print(stored_filters)
-            print(name)
+            # print('FilterView.dispatch', stored_filters)
+            # print('FilterView.dispatch', name)
             stored_filters.pop(name, None)
             request.session['filters'] = stored_filters
             self.filters[request.user] = stored_filters
-            return HttpResponse(json.dumps(''), content_type="application/json")
-        elif action.lower() == 'list':
-            return HttpResponse(json.dumps(stored_filters))
+        return HttpResponse(json.dumps(stored_filters))
 
