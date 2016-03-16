@@ -58,16 +58,10 @@ HectaresJSONGenerator = json_get_generator(HectaresQuerySet)
 # grid view
 ActivitiesJSONGenerator = json_post_generator(ActivityQuerySet)
 
-#
+# for navigation menus
 RegionsJSONGenerator = json_get_generator(RegionsQuerySet)
 CountriesJSONGenerator = json_get_generator(CountriesQuerySet)
 InvestorsJSONGenerator = json_get_generator(InvestorsQuerySet)
-
-
-#
-class FilterJSONGenerator:
-    def dispatch(self, request):
-        pass
 
 
 class JSONView(TemplateView):
@@ -90,7 +84,6 @@ class JSONView(TemplateView):
         'regions.json':                         RegionsJSONGenerator,
         'countries.json':                       CountriesJSONGenerator,
         'investors.json':                       InvestorsJSONGenerator,
-        'filter.json':                          FilterJSONGenerator,
     }
 
     def dispatch(self, request, *args, **kwargs):
