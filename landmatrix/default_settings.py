@@ -48,13 +48,11 @@ INSTALLED_APPS += (
 
     'django.contrib.humanize',
 
-#   works with django 1.8, not in 1.7:
     'django.contrib.postgres',
     'django_hstore',
 
     'tastypie',
 
-#   this apparently messes up the URL lookup in collaboration with cms. maybe try including it after cms.
     # 'debug_toolbar',
 
     # wagtail and dependencies
@@ -111,8 +109,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-#    'django.middleware.transaction.TransactionMiddleware',
-#   added by generating the project with django 1.8, does not work in 1.7:
     'django.middleware.security.SecurityMiddleware',
 
     # populate the history user automatically
@@ -153,7 +149,6 @@ TEMPLATES = [
                 'django.core.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
-                #'cms.context_processors.cms_settings',
                 'wagtailcms.context_processors.add_root_page',
             ],
         },
@@ -233,12 +228,10 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.headers.HeadersPanel',
     'debug_toolbar.panels.request.RequestPanel',
     'debug_toolbar.panels.sql.SQLPanel',
-    # 'debug_toolbar.panels.staticfiles.StaticFilesPanel',
     'debug_toolbar.panels.templates.TemplatesPanel',
     'debug_toolbar.panels.cache.CachePanel',
     'debug_toolbar.panels.signals.SignalsPanel',
     'debug_toolbar.panels.logging.LoggingPanel',
-    # 'debug_toolbar.panels.redirects.RedirectsPanel',
     'debug_toolbar.panels.profiling.ProfilingPanel',
     'debug_toolbar_line_profiler.panel.ProfilingPanel'
 ]
