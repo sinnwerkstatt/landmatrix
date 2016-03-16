@@ -1,3 +1,4 @@
+from pprint import pprint
 from time import time
 
 from django.db import connection
@@ -34,6 +35,20 @@ class FilterWidgetMixin:
         context['filters'] = self.filters
         context["empty_form_conditions"] = self.current_formset_conditions
         context["rules"] = self.rules
+
+        # YUK:
+        varlist = self.current_formset_conditions.forms[0]._variables()  # 1. grab somones privates
+        vardict = {}
+        for item in varlist:
+            try:
+                int(item[0])    # 2. Typecast to filter fails
+                continue
+            except:             # 3. Totally overachieve!
+                pass            # 4. Handle naught.
+
+            if item[0] != '':  # 5. Filter more stuff
+                vardict[item[0]] = item[1]  # 6. ??????
+        context['variables'] = vardict    # 7. Profit!
 
     @print_execution_time_and_num_queries
     def get_filter_context(self, formset_conditions, order_by=None, group_by=None, group_value=None, starts_with=None):
