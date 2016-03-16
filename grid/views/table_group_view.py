@@ -57,8 +57,6 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     def render(self, items, kwargs, request):
 
-        print('filters:', self.filters)
-
         if self.is_download() and items:
             return self._get_download(items)
         context = {
