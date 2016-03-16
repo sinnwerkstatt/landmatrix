@@ -7,10 +7,12 @@ from wagtail.wagtailcore.blocks import StructBlock
 from wagtail.wagtailembeds.blocks import EmbedBlock
 from wagtail.wagtailcore.blocks import URLBlock
 from wagtail.wagtailcore.blocks import RawHTMLBlock
+
 from django.utils.html import format_html, format_html_join
 from django.conf import settings
 
 from wagtail.wagtailcore import hooks
+from wagtail.wagtailcore.whitelist import attribute_rule, check_url, allow_without_attributes
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -214,3 +216,9 @@ def editor_css():
         ((settings.STATIC_URL, filename) for filename in css_files))
 
     return css_includes
+
+@hooks.register('construct_whitelister_element_rules')
+def whitelister_element_rules():
+    return {
+        'p': attribute_rule({'style': True}),
+    }
