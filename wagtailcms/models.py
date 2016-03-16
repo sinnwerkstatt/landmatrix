@@ -135,7 +135,21 @@ class GalleryBlock(StructBlock):
         label = 'Gallery'
         template = 'widgets/gallery.html'
 
+class FullWidthContainerBlock(StructBlock):
+    body = blocks.StreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['body'] = value.get('body')
+        return context
+
+    class Meta:
+        icon = 'fa fa-arrows-h'
+        label = 'Full width container'
+        template = 'widgets/full-width-container.html'
+
 CONTENT_BLOCKS = CONTENT_BLOCKS + [
+    ('full_width_container', FullWidthContainerBlock()),
     ('gallery', GalleryBlock()),
     ('slider', SliderBlock()),
 ]
