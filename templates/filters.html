@@ -142,6 +142,22 @@
                 });
             }
 
+            function updateFilters(data) {
+                console.log("Filterdata:", data);
+            }
+            // Get current filterdata
+            $.get(
+                    "/api/filter.json?action=list",
+                    updateFilters
+            );
+
+            function removeFilter(filterName) {
+                $.post(
+                        "/api/filter.json?action=remove&" + filterName,
+                        updateFilters
+                );
+            }
+
             $(document).ready(function () {
                 // add sticky header to table
                 var offset = $('.navbar').height();
@@ -149,6 +165,8 @@
                 // enable popover for intention of investment
                 $('a.intention-icon').popover({trigger: "hover", placement: "top"});
                 init_form_condition($("ul.form:not(.empty) .field:first-child select"));
+
+
                 // collapsible filters
                 $(".toggle-filter").click(function (e) {
                     e.preventDefault();
@@ -185,9 +203,10 @@
                                  tag += " " + el.val();
                                  }*/
                             });
-                            tag = tag + '<a class="delete-row" href="javascript:void(0)"><i class="lm lm-times"></i></a>';
-                            tag = '<span class="label label-filter">' + tag + '</span>';
-                            $(tag).appendTo(tags);
+                            var finalHtml = '';
+                            finalHtml = tag + '<a class="delete-row" href="javascript:removeFilter(\'' + tag + '\')"><i class="lm lm-times"></i></a>';
+                            finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
+                            $(finalHtml).appendTo(tags);
                             console.log("Tag appended.", tag, tags);
                         });
                         container.removeClass("collapsed");
@@ -274,7 +293,7 @@
                                                 var form = $(this);
                                                 data = form.serialize();
                                                 console.log("This is what i'm transmitting:", data);
-                                                $.post('api/add-filter', data, success = function (foo) {
+                                                $.post('/api/filter.json?action=set&' + data, success = function (foo) {
                                                     console.log("Result:", foo);
                                                 });
                                             });
