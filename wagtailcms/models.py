@@ -16,6 +16,15 @@ from wagtail.wagtailcore.whitelist import attribute_rule, check_url, allow_witho
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+#FIXME: Move blocks to blocks.py
+CONTENT_BLOCKS = [
+    ('heading', blocks.CharBlock(classname="full title", icon="title")),
+    ('paragraph', blocks.RichTextBlock()),
+    ('img', ImageChooserBlock()),
+    ('media', EmbedBlock(icon="media")),
+    ('link', URLBlock(icon="link")),
+    ('html', RawHTMLBlock(icon="code")),
+]
 
 class ImageBlock(ImageChooserBlock):
     class Meta:
@@ -27,16 +36,6 @@ class ImageBlock(ImageChooserBlock):
         context['url'] = value.get_rendition('max-1200x1200').url
         context['name'] = value.title
         return context
-
-#FIXME: Move blocks to blocks.py
-CONTENT_BLOCKS = [
-    ('heading', blocks.CharBlock(classname="full title", icon="title")),
-    ('paragraph', blocks.RichTextBlock()),
-    ('image', ImageBlock()),
-    ('media', EmbedBlock(icon="media")),
-    ('link', URLBlock(icon="link")),
-    ('html', RawHTMLBlock(icon="code")),
-]
 
 class LinkedImageBlock(StructBlock):
     image = ImageChooserBlock()
