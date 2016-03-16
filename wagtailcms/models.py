@@ -136,11 +136,11 @@ class GalleryBlock(StructBlock):
         template = 'widgets/gallery.html'
 
 class FullWidthContainerBlock(StructBlock):
-    body = blocks.StreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
+    content = blocks.StreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
 
     def get_context(self, value):
         context = super().get_context(value)
-        context['body'] = value.get('body')
+        context['content'] = value.get('content')
         return context
 
     class Meta:
