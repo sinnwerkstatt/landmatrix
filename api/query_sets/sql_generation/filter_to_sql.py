@@ -7,6 +7,8 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class FilterToSQL:
 
+    DEBUG = False
+
     count_offset = 1
 
     def __init__(self, filters, columns):
@@ -79,6 +81,11 @@ class FilterToSQL:
                             'variable': variable
                         }
                 else:
+
+                    if self.DEBUG: print('_where_activity', index, tag, value)
+
+                    if value.isnumeric():
+                        value = [value]
                     for v in value:
                         year = None
                         if "##!##" in v:
