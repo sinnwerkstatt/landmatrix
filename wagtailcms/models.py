@@ -7,10 +7,15 @@ from wagtail.wagtailcore.blocks import StructBlock
 from wagtail.wagtailembeds.blocks import EmbedBlock
 from wagtail.wagtailcore.blocks import URLBlock
 from wagtail.wagtailcore.blocks import RawHTMLBlock
+from django.utils.html import format_html, format_html_join
+from django.conf import settings
+
+from wagtail.wagtailcore import hooks
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
+#FIXME: Move blocks to blocks.py
 CONTENT_BLOCKS = [
     ('heading', blocks.CharBlock(classname="full title", icon="title")),
     ('paragraph', blocks.RichTextBlock()),
@@ -19,7 +24,6 @@ CONTENT_BLOCKS = [
     ('link', URLBlock(icon="link")),
     ('html', RawHTMLBlock(icon="code")),
 ]
-
 
 class ImageBlock(ImageChooserBlock  ):
 
@@ -183,3 +187,30 @@ class WagtailPage(Page):
         ]
     )
     content_panels = Page.content_panels + [StreamFieldPanel('body')]
+
+
+#FIXME: Move hooks to wagtail_hooks.py
+@hooks.register('insert_editor_js')
+def editor_js():
+  return format_html(
+    """
+    <script>
+      registerHalloPlugin('hallojustify');
+    </script>
+    """
+  )
+
+@hooks.register('insert_editor_css')
+def editor_css():
+    # Add extra CSS files to the admin like font-awesome
+    css_files = [
+        'vendor/font-awesome/css/font-awesome.min.css',
+        'css/wagtail-font-awesome.css'
+    ]
+
+    css_includes = format_html_join(
+        '\n',
+        '<link rel="stylesheet" href="{0}{1}">',
+        ((settings.STATIC_URL, filename) for filename in css_files))
+
+    return css_includes
