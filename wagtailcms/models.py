@@ -20,7 +20,9 @@ CONTENT_BLOCKS = [
     ('html', RawHTMLBlock(icon="code")),
 ]
 
-class ImageBlock(ImageChooserBlock):
+
+class ImageBlock(ImageChooserBlock  ):
+
     class Meta:
         icon = 'image'
         template = 'widgets/image.html'
@@ -31,8 +33,22 @@ class ImageBlock(ImageChooserBlock):
         context['name'] = value.title
         return context
 
-class ColumnsBlock(StructBlock):
+class LinkedImageBlock(StructBlock):
+    image = ImageChooserBlock()
+    url = blocks.URLBlock(required=False)
 
+    class Meta:
+        icon = 'image'
+        template = 'widgets/image.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['href'] = value.url
+        context['url'] = value.get_rendition('max-1200x1200').url
+        context['name'] = value.title
+        return context
+
+class ColumnsBlock(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
 
@@ -66,7 +82,7 @@ class Columns1To2Block(ColumnsBlock):
         template = 'widgets/columns-1-2.html'
 
 class SliderBlock(StructBlock):
-    images = blocks.ListBlock(ImageBlock())
+    images = blocks.ListBlock(LinkedImageBlock())
 
     def get_context(self, value):
         context = super().get_context(value)
@@ -95,7 +111,7 @@ class GalleryBlock(StructBlock):
         (4, '4 columns'),
         (6, '6 columns'),
     ], icon='fa fa-columns')
-    images = blocks.ListBlock(ImageBlock())
+    images = blocks.ListBlock(LinkedImageBlock())
 
     def get_context(self, value):
         context = super().get_context(value)
