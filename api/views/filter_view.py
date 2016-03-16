@@ -38,7 +38,7 @@ class FilterView(TemplateView):
 
         stored_filters = request.session.get('filters', {})
         if action.lower() == 'set':
-            new_filter = Filter(values['variable'], values['operator'], values['value'], values.get('name'))
+            new_filter = Filter(values['variable'], values['operator'], values['value'], values.get('name', [None]).pop())
             stored_filters[new_filter.name] = new_filter
             request.session['filters'] = stored_filters
             self.filters[request.user] = stored_filters
