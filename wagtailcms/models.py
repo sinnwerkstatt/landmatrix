@@ -115,6 +115,7 @@ class GalleryBlock(StructBlock):
         (2, '2 columns'),
         (3, '3 columns'),
         (4, '4 columns'),
+        (5, '5 columns'),
         (6, '6 columns'),
     ], icon='fa fa-columns')
     images = blocks.ListBlock(LinkedImageBlock())
