@@ -220,5 +220,9 @@ def editor_css():
 @hooks.register('construct_whitelister_element_rules')
 def whitelister_element_rules():
     return {
+        'h2': attribute_rule({'style': True}),
+        'h3': attribute_rule({'style': True}),
+        'h4': attribute_rule({'style': True}),
+        'h5': attribute_rule({'style': True}),
         'p': attribute_rule({'style': True}),
     }
