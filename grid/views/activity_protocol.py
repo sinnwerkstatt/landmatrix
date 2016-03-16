@@ -19,7 +19,7 @@ class ActivityProtocol:
 
     @print_execution_time_and_num_queries
     def dispatch(self, request, action):
-        queryset = ActivityQuerySet(request.POST)
+        queryset = ActivityQuerySet(request)
         res = queryset.all()
         output = json.dumps(res)
 
