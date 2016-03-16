@@ -17,6 +17,7 @@
     <!-- <link rel="stylesheet" href="{% static "vendor/bootstrap/dist/css/bootstrap-theme.min.css" %}"> -->
     <link rel="stylesheet" href="{% static "css/content.css" %}">
     <link rel="stylesheet" href="{% static "vendor/select2/dist/css/select2.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "vendor/font-awesome/css/font-awesome.css" %}">
     <link rel="stylesheet" href="{% static "css/icons.css" %}">
     <link rel="icon" href="{% static "img/favicon.ico" %}">
 
@@ -148,10 +149,9 @@
                                     <i class="lm lm-download"></i>{% trans "Download this" %}
                                 </a></li>
                             {% endblock %}
-                            <li role="presentation"><a href="#/share">
-                                <i class="lm lm-spacer lm-share-square-o"></i>
-                                {% trans "Share" %}
-                            </a></li>
+                            <li role="presentation">
+                                {% include "share.html" %}
+                            </li>
                         </ul>
                     {% endblock %}
                 </div>
@@ -231,6 +231,7 @@
 
 {% block footer_scripts %}
     <script src="{% static "vendor/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "vendor/bootstrap/js/popover.js" %}"></script>
     <script src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
     <script src="{% static "legacy/vendor/jquery.formset.min.js" %}"></script>
     <script src="{% static "legacy/vendor/jquery.formset.custom.js" %}"></script>

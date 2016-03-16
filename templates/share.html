@@ -1,0 +1,42 @@
+{% load i18n %}
+<a id="btn-share" class="popover-html" data-container="body" data-toggle="popover" data-placement="bottom" href="javascript:;">
+    <i class="lm lm-spacer lm-share-square-o"></i>
+    {% trans "Share" %}
+</a>
+<!-- Popover hidden content -->
+<span id="share" class="hidden">
+  <a target="_blank" href="#" class="btn-media twitter">
+    <i class="fa fa-twitter"></i>
+  </a>
+  <a target="_blank" href="#" class="btn-media facebook">
+    <i class="fa fa-facebook"></i>
+  </a>
+  <a target="_blank" href="#" class="btn-media google-plus">
+    <i class="fa fa-google-plus"></i>
+  </a>
+</span>
+<script type="text/javascript">
+$(document).ready(function () {
+  $("#btn-share").popover({
+    html : true, 
+    container : '#btn-share',
+    content: function() {
+      return $('#share').html();
+    },
+    template: '<div class="popover" role="tooltip"><div class="popover-content"></div></div>'
+  });  
+});
+
+$(document).click(function (event) {
+  // hide share button popover
+  if (!$(event.target).closest('#btn-share').length) {
+    $('#btn-share').popover('hide')
+  }
+});
+
+$("a.twitter").attr("href", "https://twitter.com/home?status=" + window.location.href);
+$("a.facebook").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + window.location.href);
+$("a.google-plus").attr("href", "https://plus.google.com/share?url=" + window.location.href);
+
+
+</script>
