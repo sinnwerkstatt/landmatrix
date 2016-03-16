@@ -90,10 +90,10 @@ class SliderBlock(StructBlock):
         images = []
         if images_data:
             for image in images_data:
-                rendition = image.get_rendition('max-1200x1200')
+                rendition = image.get('image').get_rendition('max-1200x1200')
                 url = rendition.url
-                name = image.title
-                image_context = {'url': url, 'name': name}
+                name = image.get('image').title
+                image_context = {'url': url, 'name': name, 'href': image.get('url')}
                 images.append(image_context)
         context['images'] = images
         return context
@@ -122,10 +122,10 @@ class GalleryBlock(StructBlock):
         images = []
         if images_data:
             for image in images_data:
-                rendition = image.get_rendition('max-1200x1200')
+                rendition = image.get('image').get_rendition('max-1200x1200')
                 url = rendition.url
-                name = image.title
-                image_context = {'url': url, 'name': name}
+                name = image.get('image').title
+                image_context = {'url': url, 'name': name, 'href': image.get('url')}
                 images.append(image_context)
         context['images'] = images
         return context
