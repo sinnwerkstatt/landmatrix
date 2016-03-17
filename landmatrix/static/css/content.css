@@ -127,11 +127,13 @@ form select {
 h1 {
     font-size: 28px;
     line-height: 32px;
+    margin-bottom: 20px;
 }
 h2,
 h3,
 .wrap h4 {
     font-size: 20px;
+    margin-bottom: 20px;
 }
 h5,
 h6 {
@@ -2720,4 +2722,21 @@ img {
 #btn-share .popover .popover-content .btn-media i {
   font-size: 30px;
   line-height: 49px;
+}
+
+/* FULL WIDTH CONTAINERS */
+.fullwidth {
+    border-top: 1px solid #c6c6c6;
+}
+.fullwidth:first-child {
+    border-top: none;
+}
+.fullwidth.fullwidth-lightgrey {
+    background-color: #fcfcfc;
+}
+.fullwidth.fullwidth-darkgrey {
+    background-color: #eee;
+}
+.block {
+    padding: 30px 0;
 }

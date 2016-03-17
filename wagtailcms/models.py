@@ -5,10 +5,9 @@ from wagtail.wagtailadmin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtailcore.blocks import StructBlock
 from wagtail.wagtailembeds.blocks import EmbedBlock
-from wagtail.wagtailcore.blocks import URLBlock
-from wagtail.wagtailcore.blocks import RawHTMLBlock
+from wagtail.wagtailcore.blocks import Block, URLBlock, RawHTMLBlock, StreamBlock
 
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html, format_html_join, force_text
 from django.conf import settings
 
 from wagtail.wagtailcore import hooks
@@ -20,11 +19,33 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 CONTENT_BLOCKS = [
     ('heading', blocks.CharBlock(classname="full title", icon="title")),
     ('paragraph', blocks.RichTextBlock()),
-    ('img', ImageChooserBlock()),
+    ('image', ImageChooserBlock()),
     ('media', EmbedBlock(icon="media")),
     ('link', URLBlock(icon="link")),
     ('html', RawHTMLBlock(icon="code")),
 ]
+
+# Overwrite Stream block to disable wrapping DIVs
+class NoWrapsStreamBlock(StreamBlock):
+    def render_basic(self, value):
+        return format_html_join(
+            '\n', '<div class="{1}">{0}</div>',
+            [(force_text(child), child.block_type != 'full_width_container' and 'block-%s block'%child.block_type or '') for child in value]
+        )
+        #return format_html_join(
+        #    '\n', '{0}',
+        #    [(force_text(child), child.block_type) for child in value]
+        #)
+
+class NoWrapsStreamField(StreamField):
+    def __init__(self, block_types, **kwargs):
+        super(NoWrapsStreamField, self).__init__(block_types, **kwargs)
+        if isinstance(block_types, Block):
+            self.stream_block = block_types
+        elif isinstance(block_types, type):
+            self.stream_block = block_types()
+        else:
+            self.stream_block = NoWrapsStreamBlock(block_types)
 
 class ImageBlock(ImageChooserBlock):
     class Meta:
@@ -141,11 +162,17 @@ class GalleryBlock(StructBlock):
         template = 'widgets/gallery.html'
 
 class FullWidthContainerBlock(StructBlock):
-    content = blocks.StreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
+    color = blocks.ChoiceBlock(choices=[
+        ('white', 'White'),
+        ('lightgrey', 'Light grey'),
+        ('darkgrey', 'Dark grey')
+    ], default='white')
+    content = NoWrapsStreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
 
     def get_context(self, value):
         context = super().get_context(value)
         context['content'] = value.get('content')
+        context['color'] = value.get('color')
         return context
 
     class Meta:
@@ -154,13 +181,13 @@ class FullWidthContainerBlock(StructBlock):
         template = 'widgets/full-width-container.html'
 
 CONTENT_BLOCKS = CONTENT_BLOCKS + [
-    ('full_width_container', FullWidthContainerBlock()),
+    ('full_width_container', FullWidthContainerBlock(form_classname='')),
     ('gallery', GalleryBlock()),
     ('slider', SliderBlock()),
 ]
 
 class WagtailRootPage(Page):
-    body = StreamField(CONTENT_BLOCKS + [
+    body = NoWrapsStreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
             ('columns_2_1', Columns2To1Block()),
             ('columns_1_2', Columns1To2Block())
@@ -181,14 +208,13 @@ class WagtailRootPage(Page):
 
 
 class WagtailPage(Page):
-    body = StreamField(CONTENT_BLOCKS + [
+    body = NoWrapsStreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
             ('columns_2_1', Columns2To1Block()),
             ('columns_1_2', Columns1To2Block())
         ]
     )
     content_panels = Page.content_panels + [StreamFieldPanel('body')]
-
 
 #FIXME: Move hooks to wagtail_hooks.py
 @hooks.register('insert_editor_js')
