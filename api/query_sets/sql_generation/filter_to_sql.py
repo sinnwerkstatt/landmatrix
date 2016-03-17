@@ -40,14 +40,14 @@ class FilterToSQL:
     }
 
     def _where_activity(self):
-        where_act = ''
+        where = []
         if self.filters.get("activity", {}).get("identifier"):
             for f in self.filters.get("activity").get("identifier"):
                 operation = f.get("op")
                 value = ",".join(filter(None, [s.strip() for s in f.get("value").split(",")]))
-                where_act += "AND a.activity_identifier %s " % self.OPERATION_MAP[operation][0] % value
+                where.append("AND a.activity_identifier %s " % self.OPERATION_MAP[operation][0] % value)
         if self.filters.get("deal_scope") and self.filters.get("deal_scope") != "all":
-            where_act += " AND pi.deal_scope = '%s' " % self.filters.get("deal_scope")
+            where.append("AND pi.deal_scope = '%s' " % self.filters.get("deal_scope"))
 
         if self.filters.get("activity", {}).get("tags"):
             tags = self.filters.get("activity").get("tags")
@@ -63,28 +63,32 @@ class FilterToSQL:
                     operation = variable_operation[1]
                 # empty as operation or no value given
                 if operation == "is_empty" or not value or (value and not value[0]):
-                    where_act += " AND attr_%(count)i.attributes->'%(variable)s' IS NULL " % {
-                        "count": i, 'variable': variable
-                    }
+                    where.append(
+                        "AND attr_%(count)i.attributes->'%(variable)s' IS NULL " % {"count": i, 'variable': variable}
+                    )
                 elif operation in ("in", "not_in"):
                     # value = value[0].split(",")
                     in_values = ",".join(["'%s'" % v.strip().replace("'", "\\'") for v in value])
                     if variable == "region":
-                        where_act += " AND ar%(count)i.name %(op)s " % {
-                            "count": i,
-                            "op": self.OPERATION_MAP[operation][0] % in_values,
-                        }
+                        where.append(
+                            "AND ar%(count)i.name %(op)s " % {
+                                "count": i,
+                                "op": self.OPERATION_MAP[operation][0] % in_values,
+                            }
+                        )
                     else:
-                        where_act += " AND attr_%(count)i.attributes->'%(variable)s' %(op)s " % {
-                            "count": i,
-                            "op": self.OPERATION_MAP[operation][0] % in_values,
-                            'variable': variable
-                        }
+                        where.append(
+                            "AND attr_%(count)i.attributes->'%(variable)s' %(op)s " % {
+                                "count": i,
+                                "op": self.OPERATION_MAP[operation][0] % in_values,
+                                'variable': variable
+                            }
+                        )
                 else:
 
                     if self.DEBUG: print('_where_activity', index, tag, value)
 
-                    if value.isnumeric():
+                    if not isinstance(value, list) and value.isnumeric():
                         value = [value]
                     for v in value:
                         year = None
@@ -92,10 +96,12 @@ class FilterToSQL:
                             v,year =  v.split("##!##")[0], v.split("##!##")[1]
                         operation_type = not v.isdigit() and 1 or 0
                         if variable == "region":
-                            where_act += " AND ar%(count)i.name %(op)s " % {
-                                "count": i,
-                                "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")
-                            }
+                            where.append(
+                                "AND ar%(count)i.name %(op)s " % {
+                                    "count": i,
+                                    "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")
+                                }
+                            )
                         else:
                             if operation in ['lt', 'lte', 'gt', 'gte'] or operation == 'is' and str(v).isnumeric():
                                 comparator = "CAST(attr_%(count)i.attributes->'%(variable)s' AS NUMERIC)" % {
@@ -105,14 +111,16 @@ class FilterToSQL:
                                 comparator = "attr_%(count)i.attributes->'%(variable)s'" % {
                                     "count": i, 'variable': variable
                                 }
-                            where_act += "  %(value)s  %(year)s " % {
-                                "value": v and " AND %(comparator)s %(op)s " % {
-                                    'comparator': comparator,
-                                    "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"),
-                                } or "",
-                                "year": year and " AND attr_%i.year = '%s' " % (i, year) or ""
-                            }
-        return where_act
+                            where.append(
+                                "  %(value)s  %(year)s " % {
+                                    "value": v and "AND %(comparator)s %(op)s " % {
+                                        'comparator': comparator,
+                                        "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"),
+                                    } or "",
+                                    "year": year and "AND attr_%i.year = '%s' " % (i, year) or ""
+                                }
+                            )
+        return '\n'.join(where)
 
     def where_investor(self):
         where_inv = ''
@@ -156,7 +164,7 @@ class FilterToSQL:
         return where_inv
 
     def _tables_activity(self):
-        tables_from_act = ''
+        tables_from = []
         if self.filters.get("activity", {}).get("tags"):
             tags = self.filters.get("activity").get("tags")
             for index, (tag, value) in enumerate(tags.items()):
@@ -166,16 +174,18 @@ class FilterToSQL:
 
                 # join tag tables for each condition
                 if variable == "region":
-                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i, countries AS ac%(count)i, regions AS ar%(count)i \n" % {"count": i}
-                    tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? 'target_country' AND attr_%(count)i.value = ac%(count)i.name AND ar%(count)i.id = ac%(count)i.fk_region)"%{"count": i, "key": variable}
+                    tables_from.append(
+                        "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i, countries AS ac%(count)i, regions AS ar%(count)i \n" % {"count": i} +\
+                        " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? 'target_country' AND attr_%(count)i.value = ac%(count)i.name AND ar%(count)i.id = ac%(count)i.fk_region)"%{"count": i, "key": variable}
+                    )
                 if variable.isdigit():
-                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i\n" % {"count": i}
-                    tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
+                    tables_from.append(
+                        "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i\n" % {"count": i} +\
+                        " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
+                    )
                 else:
-                    tables_from_act += join_attributes("attr_%(count)i" % {"count": i}, variable)
-#                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i\n" % {"count": i}
-#                    tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? '%(key)s')"%{"count": i, "key": variable}
-        return tables_from_act
+                    tables_from.append(join_attributes("attr_%(count)i" % {"count": i}, variable))
+        return '\n'.join(tables_from)
 
     def _tables_investor(self):
         tables_from_inv = ''
