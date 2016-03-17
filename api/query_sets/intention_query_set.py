@@ -26,9 +26,9 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
     ORDER_BY = ['sub.intention']
     ADDITIONAL_SUBQUERY_OPTIONS = "GROUP BY a.id, intention.attributes->'intention'"
 
-    def __init__(self, get_data):
-        super().__init__(get_data)
-        self.intention = get_data.get("intention", "")
+    def __init__(self, request):
+        super().__init__(request)
+        self.intention = request.GET.get("intention", "")
 
     INTENTIONS = list(filter(lambda k: "Mining" not in k, [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices]))
     INTENTIONS_AGRICULTURE = [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices[0][2]]
