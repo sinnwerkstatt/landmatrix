@@ -19,8 +19,8 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class LinkBlock(StructBlock):
     cls = blocks.ChoiceBlock(choices=[
         ('btn', 'Button'),
-    ])
-    url = blocks.URLBlock()
+    ], required=False, label='Type')
+    url = blocks.URLBlock(label='URL')
     text = blocks.CharBlock()
 
     class Meta:
@@ -39,7 +39,7 @@ class LinkBlock(StructBlock):
 CONTENT_BLOCKS = [
     ('heading', blocks.CharBlock(classname="full title", icon="title")),
     ('paragraph', blocks.RichTextBlock()),
-    ('image', ImageChooserBlock()),
+    ('image', ImageChooserBlock(icon="image")),
     ('media', EmbedBlock(icon="media")),
     ('html', RawHTMLBlock(icon="code")),
     ('link', LinkBlock(icon="link")),
@@ -80,12 +80,12 @@ class ImageBlock(ImageChooserBlock):
 
 class SectionDivider(StructBlock):
     class Meta:
-        icon = 'image'
+        icon = 'fa fa-minus'
         template = 'widgets/divider.html'
 
 class LinkedImageBlock(StructBlock):
     image = ImageChooserBlock()
-    url = blocks.URLBlock(required=False)
+    url = blocks.URLBlock(required=False, label='URL')
 
     class Meta:
         icon = 'image'
@@ -182,13 +182,13 @@ class GalleryBlock(StructBlock):
         return context
 
     class Meta:
-        icon = 'fa fa-picture-o'
+        icon = 'fa fa-th'
         label = 'Gallery'
         template = 'widgets/gallery.html'
 
 class MapDataChartsBlock(StructBlock):
     class Meta:
-        icon = 'fa fa-picture-o'
+        icon = 'fa fa-chain'
         label = 'Map / Grid / Charts'
         template = 'widgets/map-data-charts.html'
 
