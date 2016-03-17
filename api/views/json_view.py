@@ -27,7 +27,7 @@ def json_get_generator(query_set_class):
 
     class Generator:
         def dispatch(self, request):
-            data = query_set_class(request.GET).all()
+            data = query_set_class(request).all()
             return HttpResponse(json.dumps(data, cls=DecimalEncoder), content_type="application/json")
 
     return Generator
@@ -37,7 +37,7 @@ def json_post_generator(query_set_class):
 
     class Generator:
         def dispatch(self, request):
-            data = query_set_class(request.POST).all()
+            data = query_set_class(request).all()
             return HttpResponse(json.dumps(data, cls=DecimalEncoder), content_type="application/json")
 
     return Generator
