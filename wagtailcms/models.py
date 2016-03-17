@@ -58,6 +58,11 @@ class ImageBlock(ImageChooserBlock):
         context['name'] = value.title
         return context
 
+class SectionDivider(StructBlock):
+    class Meta:
+        icon = 'image'
+        template = 'widgets/divider.html'
+
 class LinkedImageBlock(StructBlock):
     image = ImageChooserBlock()
     url = blocks.URLBlock(required=False)
@@ -182,6 +187,7 @@ class FullWidthContainerBlock(StructBlock):
 
 CONTENT_BLOCKS = CONTENT_BLOCKS + [
     ('full_width_container', FullWidthContainerBlock(form_classname='')),
+    ('section_divider', SectionDivider()),
     ('gallery', GalleryBlock()),
     ('slider', SliderBlock()),
 ]
