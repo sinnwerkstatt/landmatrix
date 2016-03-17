@@ -1,3 +1,5 @@
+from django.http.request import HttpRequest
+
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from grid.views.view_aux_functions import create_condition_formset
@@ -27,11 +29,11 @@ class FakeQuerySet(QuerySet):
     ORDER_BY = []
     LIMIT = None
 
-    def __init__(self, get_data):
+    def __init__(self, request):
         self._all_results = []
         self._additional_joins = self.ADDITIONAL_JOINS
         self._additional_wheres = self.ADDITIONAL_WHERES
-        self._set_filter_sql(self._get_filter(get_data))
+        self._set_filter_sql(self._get_filter(request))
         self._group_by = self.GROUP_BY
         self._order_by = self.ORDER_BY
         self._limit = self.LIMIT
@@ -156,7 +158,11 @@ class FakeQuerySet(QuerySet):
         # self.filters["group_value"] = self.group_value
         self.filters["starts_with"] = GET.get("starts_with", None)
 
-    def _get_filter(self, get_data):
+    def _get_filter(self, request):
+        assert isinstance(request, HttpRequest)
+        get_data = request.GET
+        # print(get_data)
+
         negotiation_status = get_data.getlist("negotiation_status", [])
         deal_scope = get_data.getlist("deal_scope", [])
         data_source_type = get_data.get("data_source_type")

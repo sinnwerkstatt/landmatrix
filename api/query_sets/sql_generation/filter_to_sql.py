@@ -84,7 +84,7 @@ class FilterToSQL:
 
                     if self.DEBUG: print('_where_activity', index, tag, value)
 
-                    if value.isnumeric():
+                    if not isinstance(value, list) and value.isnumeric():
                         value = [value]
                     for v in value:
                         year = None
