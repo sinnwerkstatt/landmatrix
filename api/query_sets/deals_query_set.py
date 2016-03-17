@@ -39,18 +39,18 @@ class DealsQuerySet(FakeQuerySetFlat):
         'operational_stakeholder.name', 'a.activity_identifier'
     ]
 
-    def __init__(self, get_data):
-        if not 'deal_scope' in get_data:
-            get_data = get_data.copy()
-            get_data.setlist('deal_scope', ['domestic', 'transnational'])
-        super().__init__(get_data)
-        self._set_limit(get_data.get('limit', None))
-        self._set_investor_country(get_data.get('investor_country', None))
-        self._set_investor_region(get_data.get('investor_region', None))
-        self._set_target_country(get_data.get('target_country', None))
-        self._set_target_region(get_data.get('target_region', None))
-        if get_data.get('window'):
-            lat_min, lat_max, lon_min, lon_max = get_data.get('window').split(',')
+    def __init__(self, request):
+        if not 'deal_scope' in request:
+            request.GET = request.GET.copy()
+            request.GET.setlist('deal_scope', ['domestic', 'transnational'])
+        super().__init__(request)
+        self._set_limit(request.GET.get('limit', None))
+        self._set_investor_country(request.GET.get('investor_country', None))
+        self._set_investor_region(request.GET.get('investor_region', None))
+        self._set_target_country(request.GET.get('target_country', None))
+        self._set_target_region(request.GET.get('target_region', None))
+        if request.GET.get('window'):
+            lat_min, lat_max, lon_min, lon_max = request.GET.get('window').split(',')
             self._set_window(lat_min, lat_max, lon_min, lon_max)
 
     def all(self):
