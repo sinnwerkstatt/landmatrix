@@ -15,14 +15,34 @@ from wagtail.wagtailcore.whitelist import attribute_rule, check_url, allow_witho
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+
+class LinkBlock(StructBlock):
+    cls = blocks.ChoiceBlock(choices=[
+        ('btn', 'Button'),
+    ])
+    url = blocks.URLBlock()
+    text = blocks.CharBlock()
+
+    class Meta:
+        icon = 'anchor'
+        template = 'widgets/link.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['href'] = value.get('url')
+        context['text'] = value.get('text')
+        context['class'] = value.get('cls')
+        return context
+    ('link', URLBlock(icon="link")),
+
 #FIXME: Move blocks to blocks.py
 CONTENT_BLOCKS = [
     ('heading', blocks.CharBlock(classname="full title", icon="title")),
     ('paragraph', blocks.RichTextBlock()),
     ('image', ImageChooserBlock()),
     ('media', EmbedBlock(icon="media")),
-    ('link', URLBlock(icon="link")),
     ('html', RawHTMLBlock(icon="code")),
+    ('link', LinkBlock(icon="link")),
 ]
 
 # Overwrite Stream block to disable wrapping DIVs
