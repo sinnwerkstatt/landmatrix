@@ -13,10 +13,11 @@ $(document).ready(function () {
 
     var generateButtons = function (field) {
         var investorId = field.val();
-        console.log("Heya:", field, investorId);
 
         var buttons = '<a onClick="openInvestorPopup()" href="javascript:void(0);" class="noul"><i class="lm lm-plus"></i></a>';
-        buttons += '<a onClick="openInvestorPopup(' + investorId + ')" href="javascript:void(0);" class="noul"><i class="lm lm-pencil"></i></a>';
+        if (field.val() !== '') {
+            buttons += '<a onClick="openInvestorPopup(' + investorId + ')" href="javascript:void(0);" class="noul"><i class="lm lm-pencil"></i></a>';
+        }
         var wrap = '<span class="investorops">' + buttons + '</span>';
 
         field.parent().find('.investorops').remove();
