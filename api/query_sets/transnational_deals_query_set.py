@@ -48,9 +48,9 @@ class TransnationalDealsQuerySet(FakeQuerySetFlat):
     ADDITIONAL_WHERES = ["investor_country.id <> deal_country.id"]
     GROUP_BY = ['target_country']
 
-    def __init__(self, get_data):
-        super().__init__(get_data)
-        self.regions = get_data.getlist("region", [])
+    def __init__(self, request):
+        super().__init__(request)
+        self.regions = request.GET.getlist("region", [])
 
     def shorten_country(self, country):
             country_parts = country.split(".")

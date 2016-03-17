@@ -15,9 +15,9 @@ class TransnationalDealsQuerySetBase(FakeQuerySetWithSubquery):
     ]
     GROUP_BY = ['sub.region_id', 'sub.region']
 
-    def __init__(self, get_data):
-        super().__init__(get_data)
-        self.country = get_data.get("country", "")
+    def __init__(self, request):
+        super().__init__(request)
+        self.country = request.GET.get("country", "")
 
     def all(self):
         if self.country:
@@ -69,21 +69,21 @@ class TransnationalDealsByInvestorCountryQuerySet(TransnationalDealsQuerySetBase
 
 class TransnationalDealsByCountryQuerySet:
 
-    def __init__(self, get_data):
-        self.get_data = get_data
+    def __init__(self, request):
+        self.request = request
 
     def all(self):
         return {
-            'target_country': aggregate_regions(self.get_transnational_deals_by_target_country(self.get_data)),
-            'investor_country': aggregate_regions(self.get_transnational_deals_by_investor_country(self.get_data))
+            'target_country': aggregate_regions(self.get_transnational_deals_by_target_country(self.request)),
+            'investor_country': aggregate_regions(self.get_transnational_deals_by_investor_country(self.request))
         }
 
-    def get_transnational_deals_by_target_country(self, get):
-        queryset = TransnationalDealsByTargetCountryQuerySet(get)
+    def get_transnational_deals_by_target_country(self, request):
+        queryset = TransnationalDealsByTargetCountryQuerySet(request)
         return queryset.all()
 
-    def get_transnational_deals_by_investor_country(self, get):
-        queryset = TransnationalDealsByInvestorCountryQuerySet(get)
+    def get_transnational_deals_by_investor_country(self, request):
+        queryset = TransnationalDealsByInvestorCountryQuerySet(request)
         return queryset.all()
 
 

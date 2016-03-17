@@ -13,5 +13,6 @@ urlpatterns = patterns('')
 urlpatterns.extend([
     url(r'^filter.json', FilterView.as_view(), name='landmatrix_api'),
     url(r'^(?P<type>.*\.json)', cache_page(CACHE_TIMEOUT)(JSONView.as_view()), name='landmatrix_api'),
+    # url(r'^(?P<type>.*\.json)', JSONView.as_view(), name='landmatrix_api'),
 ])
 
