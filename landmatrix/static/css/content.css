@@ -2727,8 +2727,15 @@ img {
 /* FULL WIDTH CONTAINERS */
 .fullwidth {
     border-top: 1px solid #c6c6c6;
+    border-bottom: 1px solid #c6c6c6;
 }
 .fullwidth:first-child {
+    border-top: none;
+}
+.fullwidth-empty {
+    display: none;
+}
+.fullwidth-empty + .fullwidth {
     border-top: none;
 }
 .fullwidth.fullwidth-lightgrey {
