@@ -166,6 +166,12 @@ class GalleryBlock(StructBlock):
         label = 'Gallery'
         template = 'widgets/gallery.html'
 
+class MapDataChartsBlock(StructBlock):
+    class Meta:
+        icon = 'fa fa-picture-o'
+        label = 'Map / Grid / Charts'
+        template = 'widgets/map-data-charts.html'
+
 class FullWidthContainerBlock(StructBlock):
     color = blocks.ChoiceBlock(choices=[
         ('white', 'White'),
@@ -188,6 +194,7 @@ class FullWidthContainerBlock(StructBlock):
 CONTENT_BLOCKS = CONTENT_BLOCKS + [
     ('full_width_container', FullWidthContainerBlock(form_classname='')),
     ('section_divider', SectionDivider()),
+    ('map_data_charts', MapDataChartsBlock()),
     ('gallery', GalleryBlock()),
     ('slider', SliderBlock()),
 ]
