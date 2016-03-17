@@ -34,10 +34,10 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
     ADDITIONAL_SUBQUERY_OPTIONS = "GROUP BY a.id, deal_country.id, deal_region.name"
     GROUP_BY = ['sub.country, sub.country_id, sub.name, sub.point_lat, sub.point_lon']
 
-    def __init__(self, get_data):
-        super().__init__(get_data)
-        self.country_code = get_data.get("country_code", None)
-        self.region = get_data.get("regions", None)
+    def __init__(self, request):
+        super().__init__(request)
+        self.country_code = request.GET.get("country_code", None)
+        self.region = request.GET.get("regions", None)
 
     def all(self):
         if self.region:
