@@ -11,7 +11,7 @@ table form labels mehr padding
  * ========================================================================== */
 html,
 body {
-    background-color: #fcfcfc;
+    background-color: #ffffff;
     padding: 0;
 }
 
@@ -2725,13 +2725,7 @@ img {
 }
 
 /* FULL WIDTH CONTAINERS */
-.fullwidth {
-    border-top: 1px solid #c6c6c6;
-}
-.fullwidth:first-child {
-    border-top: none;
-}
-.fullwidth.fullwidth-lightgrey {
+div.fullwidth.fullwidth-lightgrey {
     background-color: #fcfcfc;
 }
 .fullwidth.fullwidth-darkgrey {
@@ -2739,4 +2733,12 @@ img {
 }
 .block {
     padding: 30px 0;
+}
+.block.block-section_divider {
+    padding: 0;
+}
+.wrap > hr {
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid #c6c6c6;
 }
