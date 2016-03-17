@@ -193,7 +193,6 @@ class MapDataChartsBlock(StructBlock):
         template = 'widgets/map-data-charts.html'
 
 CONTENT_BLOCKS = CONTENT_BLOCKS + [
-    ('full_width_container', FullWidthContainerBlock(form_classname='')),
     ('section_divider', SectionDivider()),
     ('map_data_charts', MapDataChartsBlock()),
     ('gallery', GalleryBlock()),
@@ -218,6 +217,9 @@ class FullWidthContainerBlock(StructBlock):
         icon = 'fa fa-arrows-h'
         label = 'Full width container'
         template = 'widgets/full-width-container.html'
+CONTENT_BLOCKS += [
+    ('full_width_container', FullWidthContainerBlock(form_classname='')),
+]
 
 class WagtailRootPage(Page):
     body = NoWrapsStreamField(CONTENT_BLOCKS + [
