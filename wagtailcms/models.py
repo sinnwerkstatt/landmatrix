@@ -15,14 +15,34 @@ from wagtail.wagtailcore.whitelist import attribute_rule, check_url, allow_witho
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+
+class LinkBlock(StructBlock):
+    cls = blocks.ChoiceBlock(choices=[
+        ('btn', 'Button'),
+    ], required=False, label='Type')
+    url = blocks.URLBlock(label='URL')
+    text = blocks.CharBlock()
+
+    class Meta:
+        icon = 'anchor'
+        template = 'widgets/link.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['href'] = value.get('url')
+        context['text'] = value.get('text')
+        context['class'] = value.get('cls')
+        return context
+    ('link', URLBlock(icon="link")),
+
 #FIXME: Move blocks to blocks.py
 CONTENT_BLOCKS = [
     ('heading', blocks.CharBlock(classname="full title", icon="title")),
     ('paragraph', blocks.RichTextBlock()),
-    ('image', ImageChooserBlock()),
+    ('image', ImageChooserBlock(icon="image")),
     ('media', EmbedBlock(icon="media")),
-    ('link', URLBlock(icon="link")),
     ('html', RawHTMLBlock(icon="code")),
+    ('link', LinkBlock(icon="link")),
 ]
 
 # Overwrite Stream block to disable wrapping DIVs
@@ -60,12 +80,12 @@ class ImageBlock(ImageChooserBlock):
 
 class SectionDivider(StructBlock):
     class Meta:
-        icon = 'image'
+        icon = 'fa fa-minus'
         template = 'widgets/divider.html'
 
 class LinkedImageBlock(StructBlock):
     image = ImageChooserBlock()
-    url = blocks.URLBlock(required=False)
+    url = blocks.URLBlock(required=False, label='URL')
 
     class Meta:
         icon = 'image'
@@ -162,15 +182,22 @@ class GalleryBlock(StructBlock):
         return context
 
     class Meta:
-        icon = 'fa fa-picture-o'
+        icon = 'fa fa-th'
         label = 'Gallery'
         template = 'widgets/gallery.html'
 
 class MapDataChartsBlock(StructBlock):
     class Meta:
-        icon = 'fa fa-picture-o'
+        icon = 'fa fa-chain'
         label = 'Map / Grid / Charts'
         template = 'widgets/map-data-charts.html'
+
+CONTENT_BLOCKS = CONTENT_BLOCKS + [
+    ('section_divider', SectionDivider()),
+    ('map_data_charts', MapDataChartsBlock()),
+    ('gallery', GalleryBlock()),
+    ('slider', SliderBlock()),
+]
 
 class FullWidthContainerBlock(StructBlock):
     color = blocks.ChoiceBlock(choices=[
@@ -190,13 +217,8 @@ class FullWidthContainerBlock(StructBlock):
         icon = 'fa fa-arrows-h'
         label = 'Full width container'
         template = 'widgets/full-width-container.html'
-
-CONTENT_BLOCKS = CONTENT_BLOCKS + [
+CONTENT_BLOCKS += [
     ('full_width_container', FullWidthContainerBlock(form_classname='')),
-    ('section_divider', SectionDivider()),
-    ('map_data_charts', MapDataChartsBlock()),
-    ('gallery', GalleryBlock()),
-    ('slider', SliderBlock()),
 ]
 
 class WagtailRootPage(Page):
