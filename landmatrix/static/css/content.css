@@ -2732,10 +2732,11 @@ img {
 .fullwidth:first-child {
     border-top: none;
 }
-.fullwidth-empty {
-    display: none;
+.fullwidth-after {
+    border-top: none;
+    border-bottom: none;
 }
-.fullwidth-empty + .fullwidth {
+.fullwidth-after + .fullwidth {
     border-top: none;
 }
 .fullwidth.fullwidth-lightgrey {
