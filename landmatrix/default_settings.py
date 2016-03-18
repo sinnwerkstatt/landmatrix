@@ -78,16 +78,11 @@ INSTALLED_APPS += (
 
 #   to check test coverage
     'coverage',
-
     'django.contrib.gis',
-
     'simple_history',
     'django_extensions',
-
     'crispy_forms',
-
     'wkhtmltopdf',
-
     'threadedcomments',
     'django_comments',
 

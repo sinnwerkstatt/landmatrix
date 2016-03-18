@@ -292,6 +292,12 @@ a.btn {
     text-shadow: none;
 }
 
+/* BUTTONS ARE SAME HEIGHT AS FORM INPUTS */
+a.btn {
+    height: 3em;
+    padding: 8px 12px;
+}
+
 a.btn-large {
     padding: 1em 3.5vw;
     margin-top: 1.5em;
@@ -803,7 +809,7 @@ form >.in {
 .subnav.nav > li > span,
 .subnav.nav > li > a {
     padding: 2px 5px;
-    border-radius: 5px;
+    border-radius: 4px;
     display: inline-block;
 }
 
@@ -831,7 +837,7 @@ form >.in {
 .subnav.nav > .active > span {
     color: #fcfcfc;
     background-color: #4a4a4a;
-    border-radius: 5px;
+    border-radius: 4px;
 }
 
 .subnav.nav > li.divider {
@@ -1569,12 +1575,25 @@ h4 .icon {
  * ========================================================================== */
 
 .control-group {
+    margin-bottom: 10px;
+}
+.control-group .input-group {
+    margin-top: 10px;
+    width: 30%;
+}
+.control-group .input-group:first-child {
+    margin-top: 0;
+}
+.control-group:before {
+    display: table;
+    content: " ";
+}
+.control-group:after {
     clear: both;
-    padding-bottom: 5px;
 }
 
 .control-group .control-label {
-    padding-top: 5px;
+    padding: 5px 0 0 30px;
 }
 
 .form-control {
@@ -1582,6 +1601,26 @@ h4 .icon {
     display: inline-block;
     border: solid 1px #919191;
     height: 3em;
+}
+
+.form-control:focus {
+    border-color: #B9D635;
+}
+
+textarea.form-control {
+    width: 100%;
+}
+
+.control-group .input-group-addon {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.controls .select2-container--default .select2-selection--single {
+    border: solid 1px #919191;
+    height: 3em;
+    font-size: 16px;
+    line-height: 1.5em;
 }
 
 .controls > ul {
@@ -1612,9 +1651,7 @@ h4 .icon {
 }
 
 .checkboxes .checkbox label:before {
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+    border-radius: 4px;
 }
 
 .checkboxes input[type=checkbox]:checked + label:before {
@@ -1682,9 +1719,7 @@ label[for=id_honeypot] {
 input,
 select,
 textarea {
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+    border-radius: 4px;
     border: 1px solid;
     border-color: #919191;
 
@@ -1693,10 +1728,6 @@ textarea {
     color: #4a4a4a;
     max-width: 100%;
     padding: 5px 5px;
-}
-
-.form-control:focus {
-    border-color: #B9D635;
 }
 
 .get-the-detail .input-group .value-wrapper > ul {
@@ -1792,9 +1823,11 @@ textarea {
     display: inline-block;
 }
 
-a.add-ybd {
+/* YEAR BASED DATA */
+
+a.add-ybd,
+a.remove-ybd {
     height: 42px;
-    margin-top: 5px;
     padding: 8px 12px;
     border-color: transparent;
     visibility: collapse;
@@ -1802,13 +1835,75 @@ a.add-ybd {
     float: right;
     color: #414141;
 }
-a.add-ybd i {
+
+a.add-ybd i,
+a.remove-ybd i {
     visibility: visible;
 }
-a.add-ybd:hover {
+
+a.add-ybd:hover,
+a.remove-ybd:hover {
     border-color: #fc941f;
     visibility: visible;
     color: #fc941f;
+}
+
+.input-group .form-control.year-based {
+    width: 70%;
+}
+.input-group .form-control.year-based-year {
+    width: 30%;
+}
+
+.negotiation_status .input-group,
+.implementation_status .input-group {
+    width: 80%;
+}
+.negotiation_status .input-group .year-based,
+.implementation_status .input-group .year-based {
+    width: 40%;
+}
+.negotiation_status .input-group .year-based-year,
+.implementation_status .input-group .year-based-year {
+    width: 30%;
+}
+
+.agreement_duration .input-group,
+.total_jobs_current .input-group,
+.total_jobs_current_employees .input-group,
+.total_jobs_current_daily_workers .input-group,
+.domestic_jobs_current .input-group,
+.domestic_jobs_current_employees .input-group,
+.domestic_jobs_current_daily_workers .input-group,
+.foreign_jobs_current .input-group,
+.foreign_jobs_current_employees .input-group,
+.foreign_jobs_current_daily_workers .input-group {
+    width: 80%;
+}
+
+.agreement_duration .input-group .year-based,
+.total_jobs_current .input-group .year-based,
+.total_jobs_current_employees .input-group .year-based,
+.total_jobs_current_daily_workers .input-group .year-based,
+.domestic_jobs_current .input-group .year-based,
+.domestic_jobs_current_employees .input-group .year-based,
+.domestic_jobs_current_daily_workers .input-group .year-based,
+.foreign_jobs_current .input-group .year-based,
+.foreign_jobs_current_employees .input-group .year-based,
+.foreign_jobs_current_daily_workers .input-group .year-based {
+    width: 62%;
+}
+.agreement_duration .input-group .year-based-year,
+.total_jobs_current .input-group .year-based-year,
+.total_jobs_current_employees .input-group .year-based-year,
+.total_jobs_current_daily_workers .input-group .year-based-year,
+.domestic_jobs_current .input-group .year-based-year,
+.domestic_jobs_current_employees .input-group .year-based-year,
+.domestic_jobs_current_daily_workers .input-group .year-based-year,
+.foreign_jobs_current .input-group .year-based-year,
+.foreign_jobs_current_employees .input-group .year-based-year,
+.foreign_jobs_current_daily_workers .input-group .year-based-year {
+    width: 38%;
 }
 
 /* ==========================================================================
@@ -1876,6 +1971,58 @@ a.add-ybd:hover {
     background-color: #ebebeb;
     color: #4a4a4a;
 }
+
+.form-horizontal .checkbox,
+.form-horizontal .radio {
+    padding-top: 0;
+}
+
+/* RADIO / CHECKBOX 
+input[type='radio'],
+input[type='checkbox'] {
+    margin: 0 !important;
+    visibility: hidden;
+}
+
+input[type='radio']:after,
+input[type='checkbox']:after {
+    margin-right: 2em;
+    padding-top: 1em !important;
+    padding-left: 3em;
+    position: relative;
+    visibility: inherit;
+}
+
+input[type='radio'] + label::before,
+input[type='checkbox'] + label::before {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    width: 2em;
+    height: 2em;
+    margin: 0.65em 0 0 0;
+    border: 1px solid #C2CFBF;
+    border-radius: 50%;
+}
+
+input[type='radio']:hover + label::before,
+input[type='radio']:focus + label::before,
+input[type='checkbox']:hover + label::before,
+input[type='checkbox']:focus + label::before {
+    border-color: #10b52b;
+}
+
+input[type='radio']:checked + label::before,
+input[type='checkbox']:checked + label::before {
+    background-color: #10b52b;
+    background-position: 1px 1px;
+    background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMzIiIHdpZHRoPSIzMiI+PGc+PHBhdGggZD0iTTE5IDExbC03IDctNC00IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGZpbGw9Im5vbmUiLz48L2c+PC9zdmc+");
+    border-color: #10b52b;
+}
+*/
 
 /* ==========================================================================
  *    MAPS
