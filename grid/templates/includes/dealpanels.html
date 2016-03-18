@@ -1,52 +1,78 @@
-{% load custom_tags %}
+{% load i18n %}
 {% if forms %}
-    {% for form in forms %}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <a data-toggle="collapse" data-parent="#accordion"
-                   href="#{{ form.form_title|slugify }}_body"
-                   id="{{ form.form_title|slugify }}">
-                    <h5 class="panel-title">
-                        {{ form.form_title }}
-                        <span id="collapsebtn_{{ forloop.counter }}"
-                              class="lm-chevron-circle-down pull-right mgrey1"></span>
-                    </h5>
-                </a>
-            </div>
+{% for form in forms %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion"
+               href="#{{ form.form_title|slugify }}_body"
+               id="{{ form.form_title|slugify }}">
+                <h5 class="panel-title">
+                    {{ form.form_title }}
+                    <span id="collapsebtn_{{ forloop.counter }}"
+                          class="lm-chevron-circle-down pull-right mgrey1"></span>
+                </h5>
+            </a>
+        </div>
 
-            <div id="{{ form.form_title|slugify }}_body"
-                 class="panel-collapse collapse{% if forloop.first %} in{% endif %}">
-                <div class="panel-body">
-                    {% if form.forms %}
-                        {% for subform in form %}
-                        {% endfor %}
-                    {% else %}
-                        {% for field in form %}
-                        <div class="control-group row {{ field.name }}">
-                            <div class="control-label col-md-3">
-                                {{ field.label_tag }}
-                            </div>
-                            <div class="controls col-md-9">
-                                {% if field.help_text %}
-                                <div class="input-group">
-                                    {{ field|add_class:'form-control' }}
-                                    <div class="input-group-addon">{{ field.help_text }}</div>
-                                </div>
-                                {% else %}
-                                    {{ field|add_class:'form-control' }}
-                                {% endif %}
-                            </div>
+        <div id="{{ form.form_title|slugify }}_body"
+             class="panel-collapse collapse{% if forloop.first %} in{% endif %}">
+            <div class="panel-body">
+                {% if form.forms %}
+                    {{ form.management_form }}
+                    {% for subform in form %}
+                        <div class="{{ form.form_title|slugify }}-form">
+                        {% include "form.html" with form=subform form_count=forloop.counter %}
                         </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
+                    {% endfor %}
+                    <script type="text/javascript">
+                    function init_form(form) {
+                        // Init buttons
+                        form.find('.add-form').click(function () {
+                            form.parents('.panel-body').find('.formset-add-form').trigger('click');
+                        });
+                        form.find('.remove-form').click(function () {
+                            form.find('.formset-remove-form').trigger('click');
+                        });
+                        // Init map
+                    }
+                    $(document).ready(function () {
+                        $('.{{ form.form_title|slugify }}-form').formset({
+                            prefix: '{{ form.form_title|slugify }}',
+                            addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+                            addCssClass: 'formset-add-form hidden',
+                            deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
+                            deleteCssClass: 'formset-remove-form hidden',
+                            added: function (row) {
+                                // Update form counters
+                                var form_count = 1;
+                                $('.{{ form.form_title|slugify }}-form h3 small').each(function () {
+                                    $(this).text('#' + form_count++);
+                                });
+                                init_form(row);
+                            },
+                            removed: function () {
+                                // Update form counters
+                                var form_count = 1;
+                                $('.{{ form.form_title|slugify }}-form h3 small').each(function () {
+                                    $(this).text('#' + form_count++);
+                                });
+                            }
+                        }).each(function () { init_form($(this)); });
+                    });
+                    </script>
+                {% else %}
+                    {% include "form.html" with form=form %}
+                {% endif %}
             </div>
-        </div>            {# class="panel panel-default" #}
-    {% endfor %}
-    <script>
-        $('.panel .panel-heading a').click(function () {
-            $(this).find('span').toggleClass('lm-chevron-circle-down').toggleClass('lm-chevron-circle-up');
-            location.hash = $(this).attr('id');
-        });
-    </script>
+        </div>
+    </div>            {# class="panel panel-default" #}
+{% endfor %}
+<script>
+$(document).ready(function () {
+    $('.panel .panel-heading a').click(function () {
+        $(this).find('span').toggleClass('lm-chevron-circle-down').toggleClass('lm-chevron-circle-up');
+        location.hash = $(this).attr('id');
+    });
+});
+</script>
 {% endif %}           {# forms #}
