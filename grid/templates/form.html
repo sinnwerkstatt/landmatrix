@@ -1,0 +1,37 @@
+{% load custom_tags i18n %}
+{% for field in form %}
+{% if not field.is_hidden %}
+<div class="control-group row {{ field.name }}">
+    {% if field.field.is_title %}
+    <div class="control-label col-sm-12">
+        <h3>
+            {{ field.value }}{% if form_count %} 
+            <small>#{{ form_count }}</small>{% endif %}
+            <a class="btn float-right add-form">
+                <i class="fa fa-plus"></i>
+                {% trans "Add another" %}
+            </a>
+            <a class="btn float-right remove-form">
+                <i class="fa fa-minus"></i>
+                {% trans "Remove" %}
+            </a>
+        </h3>
+    </div>
+    {% else %}
+    <div class="control-label col-md-3">
+        {{ field.label_tag }}
+    </div>
+    <div class="controls col-md-9">
+        {% if field.help_text %}
+        <div class="input-group">
+            {{ field|add_class:'form-control' }}
+            <div class="input-group-addon">{{ field.help_text }}</div>
+        </div>
+        {% else %}
+            {{ field|add_class:'form-control' }}
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+{% endfor %}
