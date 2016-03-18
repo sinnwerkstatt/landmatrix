@@ -5,8 +5,9 @@
     {% if field.field.is_title %}
     <div class="control-label col-sm-12">
         <h3>
-            {{ field.value }}{% if form_count %} 
-            <small>#{{ form_count }}</small>{% endif %}
+            {{ field.value }}
+            {% if form_count %} 
+            <small>#{{ form_count }}</small>
             <a class="btn float-right add-form">
                 <i class="fa fa-plus"></i>
                 {% trans "Add another" %}
@@ -15,6 +16,7 @@
                 <i class="fa fa-minus"></i>
                 {% trans "Remove" %}
             </a>
+            {% endif %}
         </h3>
     </div>
     {% else %}

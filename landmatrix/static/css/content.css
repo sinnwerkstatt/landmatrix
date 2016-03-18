@@ -670,15 +670,14 @@ p a {
     position: relative;
     top: 1px;
     display: inline-block;
-    font-family: 'Glyphicons Halflings';
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     position: relative;
 }
 .nav .select2-search::before {
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: 400;
     content: "\e003";
     top: 16px;
     right: 12px;
@@ -696,7 +695,7 @@ p a {
 .controls .select2-main {
     min-width: 90% !important;
     max-width: 90% !important;
-    height: 2em;
+    height: 3em;
     margin-bottom: 1em;
 }
 
@@ -1623,8 +1622,12 @@ textarea.form-control {
 .controls .select2-container--default .select2-selection--single {
     border: solid 1px #919191;
     height: 3em;
-    font-size: 16px;
-    line-height: 1.5em;
+    padding: 8px 12px;
+}
+
+.select2-container--default .select2-selection--single span.select2-selection__arrow {
+    right: 10px;
+    top: 10px;
 }
 
 .controls > ul {
