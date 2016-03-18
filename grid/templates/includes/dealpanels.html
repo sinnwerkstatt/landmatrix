@@ -1,10 +1,11 @@
-{% load %}
+{% load custom_tags %}
 {% if forms %}
     {% for form in forms %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <a data-toggle="collapse" data-parent="#accordion"
-                   href="#collapse_{{ forloop.counter }}">
+                   href="#{{ form.form_title|slugify }}_body"
+                   id="{{ form.form_title|slugify }}">
                     <h5 class="panel-title">
                         {{ form.form_title }}
                         <span id="collapsebtn_{{ forloop.counter }}"
@@ -13,24 +14,39 @@
                 </a>
             </div>
 
-            <div id="collapse_{{ forloop.counter }}"
-                 class="panel-collapse collapse{% if forloop.first %} in {% endif %}">
+            <div id="{{ form.form_title|slugify }}_body"
+                 class="panel-collapse collapse{% if forloop.first %} in{% endif %}">
                 <div class="panel-body">
-                    {{ form.as_p }}
+                    {% if form.forms %}
+                        {% for subform in form %}
+                        {% endfor %}
+                    {% else %}
+                        {% for field in form %}
+                        <div class="control-group row {{ field.name }}">
+                            <div class="control-label col-md-3">
+                                {{ field.label_tag }}
+                            </div>
+                            <div class="controls col-md-9">
+                                {% if field.help_text %}
+                                <div class="input-group">
+                                    {{ field|add_class:'form-control' }}
+                                    <div class="input-group-addon">{{ field.help_text }}</div>
+                                </div>
+                                {% else %}
+                                    {{ field|add_class:'form-control' }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>            {# class="panel panel-default" #}
-
-        <script>
-            var collapsename = "#collapse_{{forloop.counter}}";
-            $(collapsename).on("hidden.bs.collapse", function () {
-                $("#collapsebtn_{{forloop.counter}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
-            });
-            $(collapsename).on("shown.bs.collapse", function () {
-                $("#collapsebtn_{{forloop.counter}}").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
-            });
-        </script>
-
     {% endfor %}
-
+    <script>
+        $('.panel .panel-heading a').click(function () {
+            $(this).find('span').toggleClass('lm-chevron-circle-down').toggleClass('lm-chevron-circle-up');
+            location.hash = $(this).attr('id');
+        });
+    </script>
 {% endif %}           {# forms #}

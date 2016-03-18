@@ -1,5 +1,5 @@
 function cloneYBDfield(link) {
-  var wrap = link.parents(".field").find(".controls:last"),
+  var wrap = link.parents(".input-group"),
     inputs = wrap.find(":input"),
     input_data = $(inputs[inputs.size()-2]).clone(),
     input_year = $(inputs[inputs.size()-1]).clone(),

@@ -1,10 +1,9 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from grid.widgets.number_input import NumberInput
+from django import forms
 from grid.widgets.year_based_widget import YearBasedWidget
 
 import re
-
 
 class YearBasedTextInput(YearBasedWidget):
 
@@ -15,8 +14,8 @@ class YearBasedTextInput(YearBasedWidget):
 
     def get_widgets(self):
         return [
-            NumberInput(attrs={"class": "year-based"}),
-            NumberInput(attrs={"class": "year-based-year"})
+            forms.NumberInput(attrs={"class": "year-based"}),
+            forms.NumberInput(attrs={"class": "year-based-year"})
         ]
 
     def decompress(self, value):

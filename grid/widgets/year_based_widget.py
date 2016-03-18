@@ -32,8 +32,9 @@ class YearBasedWidget(forms.MultiWidget):
         output = []
         final_attrs = self.build_attrs(attrs)
         id_ = final_attrs.get('id', None)
-        helptext = self.help_text and "<span class=\"helptext add-on last\">%s</span>" % str(self.help_text) or ""
+        helptext = self.help_text and "<span class=\"helptext input-group-addon\">%s</span>" % str(self.help_text) or ""
         widgets_count = len(self.widgets)
+        output.append('<div class="input-group">')
         for i, widget in enumerate(self.widgets):
             try:
                 widget_value = value[i]
@@ -41,7 +42,9 @@ class YearBasedWidget(forms.MultiWidget):
                 widget_value = None
             if id_:
                 final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))
-            output.append(widget.render(name + '_%s' % i, widget_value, final_attrs))
+            attrs = dict(final_attrs)
+            attrs['class'] = ' '.join([final_attrs.get('class', ''), widget.attrs.get('class', '')])
+            output.append(widget.render(name + '_%s' % i, widget_value, attrs))
             # Append helptext and close reopen div every second element
             if ((i+1) % 2 == 0):
                 output.append(helptext)
@@ -53,4 +56,5 @@ class YearBasedWidget(forms.MultiWidget):
                     output.append('<a href="javascript:;" class="btn remove-ybd delete-row"><i class="lm lm-minus"></i> Remove</a>')
                 if (i+1) < widgets_count:
                     output.append('</div><div class="input-group">')
+        output.append('</div>')
         return mark_safe(self.format_output(output))
