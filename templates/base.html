@@ -140,14 +140,11 @@
                         </ul>
                     {% endblock %}
                 </div>
-                <div class="col-md-4 col-md-offset-4">
+                <div class="col-md-6 col-md-offset-2">
 
                     {% block subnav %}
                         <ul class="subnav nav nav-pills pull-right">
                             {% block subnav_inner %}
-                                <li role="presentation"><a href="#/download">
-                                    <i class="lm lm-download"></i>{% trans "Download this" %}
-                                </a></li>
                             {% endblock %}
                             <li role="presentation">
                                 {% include "share.html" %}
