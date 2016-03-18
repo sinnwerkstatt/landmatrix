@@ -1607,6 +1607,10 @@ h4 .icon {
     border-color: #B9D635;
 }
 
+.control-group.url .input-group {
+    width: 100%;
+}
+
 textarea.form-control {
     width: 100%;
 }
@@ -1823,8 +1827,10 @@ textarea {
     display: inline-block;
 }
 
-/* YEAR BASED DATA */
+/* YEAR BASED DATA AND FORMSETS */
 
+a.add-form,
+a.remove-form,
 a.add-ybd,
 a.remove-ybd {
     height: 42px;
@@ -1836,11 +1842,15 @@ a.remove-ybd {
     color: #414141;
 }
 
+a.add-form i,
+a.remove-form i,
 a.add-ybd i,
 a.remove-ybd i {
     visibility: visible;
 }
 
+a.add-form:hover,
+a.remove-form:hover,
 a.add-ybd:hover,
 a.remove-ybd:hover {
     border-color: #fc941f;
@@ -1904,6 +1914,18 @@ a.remove-ybd:hover {
 .foreign_jobs_current_employees .input-group .year-based-year,
 .foreign_jobs_current_daily_workers .input-group .year-based-year {
     width: 38%;
+}
+
+.dynamic-form .remove-form {
+    display: none;
+}
+
+.dynamic-form + .dynamic-form .remove-form {
+    display: block;
+}
+
+.dynamic-form + .dynamic-form .add-form {
+    display: none;
 }
 
 /* ==========================================================================
