@@ -66,7 +66,7 @@ class BaseForm(forms.Form):
                 # Create a 'class="..."' atribute if the row should have any
                 # CSS classes applied.
                 css_classes = bf.css_classes()
-                css_classes = ' '.join(["field", "control-group", name, css_classes])
+                css_classes = ' '.join(["control-group", "row", name, css_classes])
                 if css_classes:
                     html_class_attr = ' class="%s"' % css_classes
 
@@ -89,6 +89,8 @@ class BaseForm(forms.Form):
                 else:
                     widget = str(bf)
                     help_text = u''
+                #if name == 'negotiation_status':
+                #    raise IOError(bf)
                 output.append(normal_row % {
                     'errors': force_text(bf_errors),
                     'label': force_text(label),
@@ -578,13 +580,6 @@ class BaseForm(forms.Form):
                     self.fields[n].widget.attrs["disabled"] = "disabled"
                 else:
                     self.fields[n].widget.attrs["readonly"] = True
-        for field in self.fields:
-            widget = self.fields[field].widget
-            if not isinstance(widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple, forms.RadioSelect)):
-                if 'class' in widget.attrs and widget.attrs['class']:
-                    widget.attrs['class'] += ' form-control'            
-                else:
-                    widget.attrs['class'] = 'form-control'
 
 
 def ensure_is_year_based_data(data):
