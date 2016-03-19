@@ -5,7 +5,7 @@
     {% if field.field.is_title %}
     <div class="control-label col-sm-12">
         <h3>
-            {{ field.value }}
+            {{ field.field.initial }}
             {% if form_count %} 
             <small>#{{ form_count }}</small>
             <a class="btn float-right add-form">
@@ -32,6 +32,7 @@
         {% else %}
             {{ field|add_class:'form-control' }}
         {% endif %}
+        {{ form.error }}
     </div>
     {% endif %}
 </div>

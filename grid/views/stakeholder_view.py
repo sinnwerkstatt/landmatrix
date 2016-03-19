@@ -19,7 +19,6 @@ class StakeholderView(TemplateView):
     template_name = 'stakeholder.html'
 
     def dispatch(self, request, *args, **kwargs):
-        print('dispatch')
         try:
             investor = investor_from_id(kwargs["investor_id"])
         except KeyError:
