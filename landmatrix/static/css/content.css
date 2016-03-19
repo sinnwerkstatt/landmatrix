@@ -324,14 +324,7 @@ a.btn:hover {
     color: #fcfcfc !important;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
     background-color: #006dcc;
-    *background-color: #bf6d15;
-    background-image: -moz-linear-gradient(top, #fc941f, #bf6d15);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fc941f), to(#bf6d15));
-    background-image: -webkit-linear-gradient(top, #fc941f, #bf6d15);
-    background-image: -o-linear-gradient(top, #fc941f, #bf6d15);
-    background-image: linear-gradient(to bottom, #fc941f, #bf6d15);
-    background-repeat: repeat-x;
-    border-color: #bf6d15 !important;
+    border: none;
 }
 
 .btn.disabled:hover,
@@ -348,7 +341,6 @@ a.btn:hover {
 .btn-primary[disabled] {
     color: #fcfcfc !important;
     background-color: #bf6d15;
-    *background-color: #003bb3;
 }
 
 .btn-primary:active,
@@ -652,6 +644,11 @@ p a {
 }
 .navbar-main .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
     border-bottom-color: #4e4e4e !important;
+}
+
+.navbar-main .select2-container--default .select2-selection--single span.select2-selection__arrow {
+    right: 1px;
+    top: 1px;
 }
 
 .navbar-main .select2.select2-container {
@@ -1687,7 +1684,8 @@ form ul li,
 }
 
 .helptext {
-    padding-left: 5px;
+    border-top-right-radius: 4px !important;
+    border-bottom-right-radius: 4px !important;
 }
 
 #id_crops, #id_animals, #id_minerals {

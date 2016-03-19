@@ -38,5 +38,5 @@ class YearBasedTextInput(YearBasedWidget):
         # update widgets
         self.widgets = []
         for i in range(len(value)//2):
-            self.widgets.extend([NumberInput(attrs={"class": "year-based"}), NumberInput(attrs={"class": "year-based-year"})])
+            self.widgets.extend([forms.NumberInput(attrs={"class": "year-based"}), forms.NumberInput(attrs={"class": "year-based-year"})])
         return value
