@@ -34,6 +34,13 @@
                             form.find('.formset-remove-form').trigger('click');
                         });
                         // Init map
+                        var map = form.find('.map');
+                        if (map) {
+                            var formId = form.find('h3 small').text().replace('#', ''),
+                                mapId = form.attr('class') + '-' + formId;
+                            map.attr('id', 'map-' + mapId);
+                            initializeMap(mapId);
+                        }
                     }
                     $(document).ready(function () {
                         $('.{{ form.form_title|slugify }}-form').formset({
