@@ -8,30 +8,32 @@
 {% endblock %}
 {% block navutils %}
 {% endblock %}
-{% block page_title %}{% trans "Add / edit Operational stakeholder" %}{% endblock %}
-{% block title %}{% trans "Add / edit Operational stakeholder" %}{% endblock %}
+{% block page_title %}{% if investor %}{{ investor.name }}{% else %}{% trans "Add Operational stakeholder" %}{% endif %}{% endblock %}
+{% block title %}{% if investor %}{{ investor.name }}{% else %}{% trans "Add Operational stakeholder" %}{% endif %}{% endblock %}
 
 {% block content %}
     <div class="popup">
         <form action="." method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <table>
-                {{ investor_form }}
+            {% include "form.html" with form=investor_form %}
+            
+            <div class="col-sm-12">
+                <h3>{% trans "Parent stakeholders" %}</h3>
+            </div>
+            {{ parent_stakeholders.management_form }}
+            {% for form in parent_stakeholders %}
+                {% include "form.html" with form=form %}
+            {% endfor %}
 
-                <tr>
-                    <td><h3>Parent stakeholders</h3></td>
-                </tr>
-                {{ parent_stakeholders }}
+            <div class="col-sm-12">
+                <h3>{% trans "Investors" %}</h3>
+            </div>
+            {{ parent_investors.management_form }}
+            {% for form in parent_investors %}
+                {% include "form.html" with form=parent_investors %}
+            {% endfor %}
 
-                <tr>
-                    <td><h3>Investors</h3></td>
-                </tr>
-                {{ parent_investors }}
-
-                <tr>
-                    <td><input type="submit" value="Submit"/></td>
-                </tr>
-            </table>
+            <input type="submit" class="btn btn-primary" value="{% trans "Submit" %}">
         </form>
     </div>
 {% endblock %}
