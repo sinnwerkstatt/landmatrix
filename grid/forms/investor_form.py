@@ -96,8 +96,8 @@ class InvestorForm(BaseForm):
                 for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
             ]
         self.investor_choices = InvestorForm._investor_choices
-        self.fields["investor"].choices = list(self.fields["investor"].choices)[:1]
-        self.fields["investor"].choices.extend(self.investor_choices)
+        #self.fields["investor"].choices = list(self.fields["investor"].choices)[:1]
+        #self.fields["investor"].choices.extend(self.investor_choices)
 
     def _fill_country_choices(self):
         self.fields["country"].choices = [

@@ -27,8 +27,8 @@ class StakeholderView(TemplateView):
         context = super(StakeholderView, self).get_context_data(**kwargs)
         context['investor'] = investor
         context['investor_form'] = InvestorForm(InvestorForm.get_data(investor))
-        context['parent_stakeholders'] = ParentStakeholderFormSet(initial=ParentStakeholderFormSet.get_data(investor, role='ST'))
-        context['parent_investors'] = ParentInvestorFormSet(initial=ParentInvestorFormSet.get_data(investor, role='IN'))
+        context['parent_stakeholders'] = ParentStakeholderFormSet(initial=ParentStakeholderFormSet.get_data(investor, role='ST'), prefix='parent-stakeholder-form')
+        context['parent_investors'] = ParentInvestorFormSet(initial=ParentInvestorFormSet.get_data(investor, role='IN'), prefix='parent-investor-form')
 
         if request.POST:
             save_from_post(request.POST)
