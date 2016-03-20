@@ -1841,6 +1841,8 @@ a.remove-ybd {
     margin-left: 20px;
     float: right;
     color: #414141;
+    width: 120px;
+    text-align: left;
 }
 
 a.add-form i,
@@ -1927,6 +1929,11 @@ a.remove-ybd:hover {
 
 .dynamic-form + .dynamic-form .add-form {
     display: none;
+}
+
+.control-group.parent-stakeholder-form .input-group,
+.control-group.parent-investor-form .input-group {
+    width: auto;
 }
 
 /* ==========================================================================
