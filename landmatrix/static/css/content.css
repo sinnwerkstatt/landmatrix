@@ -293,12 +293,12 @@ a.btn {
 }
 
 /* BUTTONS ARE SAME HEIGHT AS FORM INPUTS */
-a.btn {
+.btn {
     height: 3em;
     padding: 8px 12px;
 }
 
-a.btn-large {
+.btn-large {
     padding: 1em 3.5vw;
     margin-top: 1.5em;
     margin-bottom: 1.5em;
@@ -2076,10 +2076,6 @@ input[type='checkbox']:checked + label::before {
 /* ==========================================================================
  *    COMMENT
  * ========================================================================== */
-#comments {
-    margin-bottom: 20px;
-}
-
 .get-the-detail .form-actions {
     background-color: inherit;
     border-top: inherit;
