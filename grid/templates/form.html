@@ -8,11 +8,11 @@
             {{ field.field.initial }}
             {% if form_count %} 
             <small>#{{ form_count }}</small>
-            <a class="btn float-right add-form">
+            <a class="btn pull-right add-form">
                 <i class="fa fa-plus"></i>
                 {% trans "Add another" %}
             </a>
-            <a class="btn float-right remove-form">
+            <a class="btn pull-right remove-form">
                 <i class="fa fa-minus"></i>
                 {% trans "Remove" %}
             </a>
@@ -32,7 +32,7 @@
         {% else %}
             {{ field|add_class:'form-control' }}
         {% endif %}
-        {{ form.error }}
+        {{ field.errors }}
     </div>
     {% endif %}
 </div>
