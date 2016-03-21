@@ -41,7 +41,7 @@
                     <div class="panel panel-default">
 
                         <div class="panel-heading">
-                            <a data-toggle="collapse" data-parent="#accordion"
+                            <a id="{{ form.form_title|slugify }}" data-toggle="collapse" data-parent="#accordion"
                                href="#collapse_{{ forloop.counter }}">
                                 <h5 class="panel-title">
                                     {{ form.form_title }}
@@ -75,22 +75,19 @@
                 {% endfor %}
             {% endif %}
 
-
             {% if history|length > 1 %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse_history">
+                        <a id="history" data-toggle="collapse" data-parent="#accordion" href="#collapse_history">
                             <h5 class="panel-title">
-                                History
+                                {% trans "History" %}
                                 <span id="collapsebtn_history"
                                       class="lm-chevron-circle-down pull-right mgrey1"></span>
                             </h5>
                         </a>
                     </div>
-
                     <div id="collapse_history" class="panel-collapse collapse">
                         <div class="panel-body">
-
                             <table>
                                 <col width="33%">
                                 {% for changedate, item in history.items %}
@@ -133,42 +130,43 @@
                             </table>
                         </div>
                     </div>
-                    <script>
-                        var collapsename = "#collapse_history";
-                        $(collapsename).on("hidden.bs.collapse", function () {
-                            $("#collapsebtn_history}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
-                        });
-                        $(collapsename).on("shown.bs.collapse", function () {
-                            $("#collapsebtn_history").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
-                        });
-                    </script>
                 </div>
             {% endif %}
-        </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a id="comments" data-toggle="collapse" data-parent="#accordion" href="#collapse_comments">
+                            <h5 class="panel-title">
+                                {% trans "Comments" %}
+                                <span id="collapsebtn_history"
+                                      class="lm-chevron-circle-down pull-right mgrey1"></span>
+                            </h5>
+                        </a>
+                    </div>
+                    <div id="collapse_comments" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="col-sm-12">
+                                {% get_comment_count for deal.activity as comment_count %}
+                                {% if comment_count > 0 %}
+                                    {% render_comment_list for deal.activity %}
+                                {% else %}
+                                    <p class="alert alert-info">{% trans "There are no comments to this deal yet." %}</p>
+                                {% endif %}
+                            </div>
+                            <form method="." action="POST">
+                            {% get_comment_form for deal.activity as comment_form %}
+                            {% include "form.html" with form=comment_form %}
+                            <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
+                            </form>
+                        </div>
+                    </div>
+            </div>
 
-<h2>{% trans "Comments" %}</h2>
 
-{% render_comment_list for deal.activity %}
-{% render_comment_form for deal.activity %}
-
-        <script type="text/javascript">
-            $(document).ready(function () {
-                console.log("Locking buttons");
-                $('.add-row').each(function (i) {
-                    this.remove();
-                });
-
-                $('.delete-row').each(function (i) {
-                    this.remove();
-                });
-            });
-
-        </script>
-
-    {% else %}
-
-        <p>{% trans "There are currently no deals matching your search criteria." %} <a href="/deal/add">{% trans "Add a deal" %}</a>.</p>
-
-    {% endif %}
+{% else %}
+    <p>
+        {% trans "There are currently no deals matching your search criteria." %} 
+        <a href="/deal/add">{% trans "Add a deal" %}</a>.
+    </p>
+{% endif %}
 
 {% endblock %}
