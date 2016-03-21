@@ -26,17 +26,17 @@ class InvestorField(forms.ChoiceField):
 class InvestorForm(BaseForm):
 
     # Investor
-    tg_investor = TitleField(required=False, label="", initial=_("Investor"))
+    #tg_investor = TitleField(required=False, label="", initial=_("Investor"))
     # investor = InvestorField(required=False, label=_("Existing investor"), choices=())#, widget=LivesearchSelect)
-    investor = ModelChoiceField(
-            required=True, label=_("Existing investor"),
-            queryset=Investor.objects.filter(
-                    pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
-            ).order_by('name'),
-            widget=Select(
-                attrs={'class': 'form-control investorfield'},
-            )
-    )
+    #investor = ModelChoiceField(
+    #        required=True, label=_("Existing investor"),
+    #        queryset=Investor.objects.filter(
+    #                pk__in=InvestorActivityInvolvement.objects.values('fk_investor_id').distinct()
+    #        ).order_by('name'),
+    #        widget=Select(
+    #            attrs={'class': 'form-control investorfield'},
+    #        )
+    #)
     investor_name = forms.CharField(required=False, label=_("Name"), max_length=255)
     country = forms.ChoiceField(required=False, label=_("Country"), choices=())
     classification = forms.ChoiceField(
@@ -48,7 +48,7 @@ class InvestorForm(BaseForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         investor = kwargs.pop("investor", None)
-        self.fields["investor"].initial = investor
+        #self.fields["investor"].initial = investor
         self._fill_investor_choices()
         self._fill_country_choices()
 
@@ -96,8 +96,8 @@ class InvestorForm(BaseForm):
                 for investor in Investor.objects.filter(fk_status_id__in=(2, 3)).order_by('name')
             ]
         self.investor_choices = InvestorForm._investor_choices
-        self.fields["investor"].choices = list(self.fields["investor"].choices)[:1]
-        self.fields["investor"].choices.extend(self.investor_choices)
+        #self.fields["investor"].choices = list(self.fields["investor"].choices)[:1]
+        #self.fields["investor"].choices.extend(self.investor_choices)
 
     def _fill_country_choices(self):
         self.fields["country"].choices = [
