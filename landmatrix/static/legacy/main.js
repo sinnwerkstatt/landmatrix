@@ -363,6 +363,34 @@ function update_widget (el, key_id, form) {
   });
 };
 
+function new_update_widget (el, key_id, form) {
+    var value = form.find("input[type='hidden']").val(),
+        name = el.find(":input").attr("name"),
+        op = el.parents("li").prev().find("option:selected"),
+        op_value = op.val();
+    //name = name.replace("_0", "");
+    const request = {key_id:  key_id, value: value, name: name, operation: op_value};
+    console.log(request);
+    $.get("/ajax/widget/values", request, function (data) {
+        console.log('This is what you get: ', data);
+        el.html(data);
+        var is_number = (el.find(":input[type=number]:not(.year-based-year)").length > 0);
+        var is_list = (el.find("select,ul").length > 0);
+        console.log("Going on with operators:", is_number, is_list, el.find('ul'));
+        form.find("#operator option").each(function (index) {
+            console.log("Running through the operator options." ,index);
+            if (is_number) {
+                $(this).attr("disabled", (jQuery.inArray($(this).val(), numeric_operators) == -1));
+            } else if (is_list) {
+                $(this).attr("disabled", (jQuery.inArray($(this).val(), list_operators) == -1));
+            } else {
+                $(this).attr("disabled", (jQuery.inArray($(this).val(), string_operators) == -1));
+            }
+        });
+    });
+};
+
+
 $(document).ready(function () {
 	// Set width of headings to make them horizontally centerable
 	$("h1.separator span").each(function () {
