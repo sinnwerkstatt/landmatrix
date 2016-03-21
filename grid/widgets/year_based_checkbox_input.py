@@ -1,7 +1,5 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from grid.widgets.number_input import NumberInput
-
 from django import forms
 
 
@@ -14,7 +12,7 @@ class YearBasedCheckboxInput(forms.MultiWidget):
     def get_widgets(self):
         return [
             forms.CheckboxInput(attrs={"class": "year-based"}),
-            NumberInput(attrs={"class": "year-based-year"})
+            forms.NumberInput(attrs={"class": "year-based-year"})
         ]
 
     def decompress(self, value):

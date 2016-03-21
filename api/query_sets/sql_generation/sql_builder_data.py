@@ -146,8 +146,8 @@ class SQLBuilderData:
                        "COUNT(DISTINCT a.activity_identifier) as deal_count"],
         "availability": ["SUM(a.availability) / COUNT(a.activity_identifier) AS availability",
                          "SUM(a.availability) / COUNT(a.activity_identifier) AS availability"],
-        "operational_stakeholder": ["ARRAY_AGG(DISTINCT operational_stakeholder.name) AS investor",
-                                    "ARRAY_AGG(DISTINCT operational_stakeholder.name) AS investor"],
+        "operational_stakeholder": ["ARRAY_AGG(DISTINCT operational_stakeholder.name) AS operational_stakeholder",
+                                    "ARRAY_AGG(DISTINCT operational_stakeholder.name) AS operational_stakeholder"],
         "negotiation_status": [
             """ARRAY_AGG(DISTINCT CONCAT(
                         negotiation_status.attributes->'negotiation_status',        '#!#',

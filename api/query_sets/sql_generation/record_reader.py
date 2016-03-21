@@ -44,7 +44,11 @@ class RecordReader:
         return self._execute_sql(self.get_column_sql(column))
 
     def get_column_sql(self, column):
-        return SubqueryBuilder(self.filters, [column]).get_sql()
+        if self.filters.get('order_by'):
+            columns = [column]+self.filters['order_by']
+        else:
+            columns = [column]
+        return SubqueryBuilder(self.filters, columns).get_sql()
 
     def get_all_at_once(self):
         return self._execute_sql(self.get_all_at_once_sql())
@@ -83,12 +87,12 @@ class RecordReader:
     @print_execution_time_and_num_queries
     def get_all_columns(self):
         from django.db.utils import ProgrammingError
-        from operator import itemgetter
 
         column_data = dict()
+
         for column in self.columns:
             try:
-                column_data[column] = sorted(self.get_column(column), key=itemgetter(0))
+                column_data[column] = self.get_column(column)
             except ProgrammingError as e:
                 print('SQL for column "%s" failed:\n%s' % (column, self.get_column_sql(column)))
 

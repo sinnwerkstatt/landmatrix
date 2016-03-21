@@ -1,0 +1,38 @@
+{% load i18n %}
+<a id="btn-download" class="popover-html" data-container="body" data-toggle="popover" data-placement="bottom" href="javascript:;">
+    <i class="lm lm-spacer lm-download"></i>
+    {% trans "Download" %}
+</a>
+<!-- Popover hidden content -->
+<span id="download" class="hidden">
+  <a href="/global/grid/all.xml" class="btn-media xml">
+    <i class=""></i>XML
+  </a>
+  <a href="/global/grid/all.csv" class="btn-media csv">
+    <i class=""></i>CSV
+  </a>
+  <a href="/global/grid/all.xls" class="btn-media xls">
+    <i class=""></i>XLS
+  </a>
+</span>
+<script type="text/javascript">
+$(document).ready(function () {
+  $("#btn-download").popover({
+    html : true, 
+    container : '#btn-download',
+    content: function() {
+      return $('#download').html();
+    },
+    template: '<div class="popover" role="tooltip"><div class="popover-content"></div></div>'
+  });  
+});
+
+$(document).click(function (event) {
+  // hide download button popover
+  if (!$(event.target).closest('#btn-download').length) {
+    $('#btn-download').popover('hide');
+  }
+});
+
+
+</script>
