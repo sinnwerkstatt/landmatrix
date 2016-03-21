@@ -146,7 +146,7 @@ $(document).ready(function () {
 
                 legend_text = new ol.style.Text({
                     text: '\uf041',
-                    font: 'normal 36px FontAwesome',
+                    font: 'normal 36px landmatrix',
                     textBaseline: 'Bottom',
                     fill: new ol.style.Fill({
                         color: color

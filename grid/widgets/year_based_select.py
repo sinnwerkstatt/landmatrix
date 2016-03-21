@@ -5,7 +5,6 @@ from grid.widgets.year_based_widget import YearBasedWidget
 from django import forms
 import re
 
-
 class YearBasedSelect(YearBasedWidget):
 
     def __init__(self, *args, **kwargs):
@@ -17,7 +16,7 @@ class YearBasedSelect(YearBasedWidget):
     def get_widgets(self):
         return [
             forms.Select(choices=self.choices, attrs={"class": "year-based"}),
-            forms.TextInput(attrs={"class": "year-based-year"})
+            forms.NumberInput(attrs={"class": "year-based-year"})
         ]
 
     def decompress(self, value):
