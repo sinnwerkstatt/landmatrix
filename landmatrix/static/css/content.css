@@ -2002,6 +2002,18 @@ a.remove-ybd:hover {
     color: #4a4a4a;
 }
 
+.filter_active {
+    background-color: #44c42d;
+    color: #4a4a4a;
+}
+
+.filter_active a:focus,
+.filter_active a:hover {
+    background-color: #fc941f;
+    color: #fcfcfc;
+    text-decoration: none;
+}
+
 .form-horizontal .checkbox,
 .form-horizontal .radio {
     padding-top: 0;
