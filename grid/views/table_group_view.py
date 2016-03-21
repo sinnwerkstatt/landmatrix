@@ -193,46 +193,18 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
         return sorted(list(set(filter(None, intentions))))
 
-    def _process_investor_name(self, value):
-        if not isinstance(value, list):
-            value = [value]
-        result = [
-            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
-            for inv in value
-        ]
-        return result
-
-    def _process_stakeholder_name(self, value):
-        if not isinstance(value, list):
-            value = [value]
-        result = [
-            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
-            for inv in value
-        ]
-        return result
-
-    def _process_stitched_together_field(self, value):
-        if not isinstance(value, list):
-            value = [value]
-        return [field.split("#!#")[0] for field in value]
-
-    def _process_name_and_year(self, value):
-        return [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]or 0} for n in value]
-
     def _process_value(self, c, value):
         if not value: return None
         process_functions = {
             'intention': self._process_intention,
-            'investor_name': self._process_investor_name,
-            'stakeholder_name': self._process_stakeholder_name,
-#            'investor_country': self._process_stitched_together_field,
-            'stakeholder_country': self._process_stitched_together_field,
-#            'investor_region': self._process_stitched_together_field,
-            'stakeholder_region': self._process_stitched_together_field,
-            'crop': self._process_stitched_together_field,
+            'investor_name': _process_investor_name,
+            'stakeholder_name': _process_stakeholder_name,
+            'stakeholder_country': _process_stitched_together_field,
+            'stakeholder_region': _process_stitched_together_field,
+            'crop': _process_stitched_together_field,
             'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
-            'negotiation_status': self._process_name_and_year,
-            'implementation_status': self._process_name_and_year,
+            'negotiation_status': _process_name_and_year,
+            'implementation_status': _process_name_and_year,
             "intended_size": lambda v: v and v[0],
             "production_size": lambda v: v and v[0],
             "contract_size": lambda v: v and v[0],
@@ -258,11 +230,8 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
             "target_region": ["target_region", "intention", "deal_count", "availability"],
             "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
-# stakeholder_region temporarily disabled until a more intelligent caching for the public interface variables is implemented
 #            "stakeholder_country": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
             "stakeholder_country": ["stakeholder_country", "intention", "deal_count", "availability"],
-# intention temporarily disabled until a more intelligent caching for the public interface variables is implemented
-#            "stakeholder_region": ["stakeholder_region", "intention", "deal_count", "availability"],
             "stakeholder_region": ["stakeholder_region", "deal_count", "availability"],
             "intention": ["intention", "deal_count", "availability"],
             "crop": ["crop", "intention", "deal_count", "availability"],
@@ -297,4 +266,34 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
                     gv.update({k: ""})
             output.append(format_string % gv)
         return output
+
+
+def _process_investor_name(value):
+    if not isinstance(value, list):
+        value = [value]
+    result = [
+        {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
+        for inv in value
+    ]
+    return result
+
+
+def _process_stakeholder_name(value):
+    if not isinstance(value, list):
+        value = [value]
+    result = [
+        {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
+        for inv in value
+    ]
+    return result
+
+
+def _process_stitched_together_field(value):
+    if not isinstance(value, list):
+        value = [value]
+    return [field.split("#!#")[0] for field in value]
+
+
+def _process_name_and_year(value):
+    return [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]or 0} for n in value]
 

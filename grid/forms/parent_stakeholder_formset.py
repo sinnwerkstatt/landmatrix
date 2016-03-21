@@ -94,7 +94,7 @@ class ParentInvestorForm(BaseForm):
         return data
 
 
-class ParentStakeholderFormSet(formset_factory(ParentStakeholderForm, extra=0)):
+class ParentStakeholderFormSet(formset_factory(ParentStakeholderForm, extra=0, min_num=1)):
 
     @classmethod
     def get_data(cls, investor, role):
@@ -111,7 +111,7 @@ class ParentStakeholderFormSet(formset_factory(ParentStakeholderForm, extra=0)):
         return data
 
 
-class ParentInvestorFormSet(formset_factory(ParentInvestorForm, extra=0)):
+class ParentInvestorFormSet(formset_factory(ParentInvestorForm, extra=0, min_num=1)):
 
     @classmethod
     def get_data(cls, investor, role):

@@ -9,7 +9,7 @@ class YearBasedChoiceField(forms.MultiValueField):
     def __init__(self, *args, **kwargs):
         self.choices = kwargs["choices"]
         kwargs["fields"] = [forms.ChoiceField(choices=kwargs["choices"], required=False), forms.CharField(required=False)]
-        kwargs["widget"] = YearBasedSelect(choices=kwargs.pop("choices"),help_text=kwargs.pop("help_text", ""),attrs={})
+        kwargs["widget"] = YearBasedSelect(choices=kwargs.pop("choices"), help_text=kwargs.pop("help_text", ""),attrs={})
         super(YearBasedChoiceField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
