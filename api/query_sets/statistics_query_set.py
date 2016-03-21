@@ -2,12 +2,11 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models import *
 
-from django.db import models
 from django.db import connection
 from django.conf import settings
 
 
-class StatisticsManager(models.Manager):
+class StatisticsQuerySet:
 
     def all(self):
         BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status ON status.id = a.fk_status_id
