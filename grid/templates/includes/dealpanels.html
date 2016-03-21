@@ -1,36 +1,85 @@
-{% load %}
+{% load i18n %}
 {% if forms %}
-    {% for form in forms %}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <a data-toggle="collapse" data-parent="#accordion"
-                   href="#collapse_{{ forloop.counter }}">
-                    <h5 class="panel-title">
-                        {{ form.form_title }}
-                        <span id="collapsebtn_{{ forloop.counter }}"
-                              class="lm-chevron-circle-down pull-right mgrey1"></span>
-                    </h5>
-                </a>
+{% for form in forms %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion"
+               href="#{{ form.form_title|slugify }}_body"
+               id="{{ form.form_title|slugify }}">
+                <h5 class="panel-title">
+                    {{ form.form_title }}
+                    <span id="collapsebtn_{{ forloop.counter }}"
+                          class="lm-chevron-circle-down pull-right mgrey1"></span>
+                </h5>
+            </a>
+        </div>
+
+        <div id="{{ form.form_title|slugify }}_body"
+             class="panel-collapse collapse{% if forloop.first %} in{% endif %}">
+            <div class="panel-body">
+                {% if form.forms %}
+                    {{ form.management_form }}
+                    {% for subform in form %}
+                        <div class="{{ form.form_title|slugify }}-form">
+                        {% include "form.html" with form=subform form_count=forloop.counter %}
+                        </div>
+                    {% endfor %}
+                    <script type="text/javascript">
+                    function init_form(form) {
+                        // Init buttons
+                        form.find('.add-form').click(function () {
+                            form.parents('.panel-body').find('.formset-add-form').trigger('click');
+                        });
+                        form.find('.remove-form').click(function () {
+                            form.find('.formset-remove-form').trigger('click');
+                        });
+                        // Init map
+                        var map = form.find('.map');
+                        if (map) {
+                            var formId = form.find('h3 small').text().replace('#', ''),
+                                mapId = form.attr('class') + '-' + formId;
+                            map.attr('id', 'map-' + mapId);
+                            initializeMap(mapId);
+                        }
+                    }
+                    $(document).ready(function () {
+                        $('.{{ form.form_title|slugify }}-form').formset({
+                            prefix: '{{ form.form_title|slugify }}',
+                            addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+                            addCssClass: 'formset-add-form hidden',
+                            deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
+                            deleteCssClass: 'formset-remove-form hidden',
+                            added: function (row) {
+                                // Update form counters
+                                var form_count = 1;
+                                $('.{{ form.form_title|slugify }}-form h3 small').each(function () {
+                                    $(this).text('#' + form_count++);
+                                });
+                                init_form(row);
+                            },
+                            removed: function () {
+                                // Update form counters
+                                var form_count = 1;
+                                $('.{{ form.form_title|slugify }}-form h3 small').each(function () {
+                                    $(this).text('#' + form_count++);
+                                });
+                            }
+                        }).each(function () { init_form($(this)); });
+                    });
+                    </script>
+                {% else %}
+                    {% include "form.html" with form=form %}
+                {% endif %}
             </div>
-
-            <div id="collapse_{{ forloop.counter }}"
-                 class="panel-collapse collapse{% if forloop.first %} in {% endif %}">
-                <div class="panel-body">
-                    {{ form.as_p }}
-                </div>
-            </div>
-        </div>            {# class="panel panel-default" #}
-
-        <script>
-            var collapsename = "#collapse_{{forloop.counter}}";
-            $(collapsename).on("hidden.bs.collapse", function () {
-                $("#collapsebtn_{{forloop.counter}}").addClass('lm-chevron-circle-down').removeClass('lm-chevron-circle-up');
-            });
-            $(collapsename).on("shown.bs.collapse", function () {
-                $("#collapsebtn_{{forloop.counter}}").removeClass('lm-chevron-circle-down').addClass('lm-chevron-circle-up');
-            });
-        </script>
-
-    {% endfor %}
-
+        </div>
+    </div>            {# class="panel panel-default" #}
+{% endfor %}
+<script>
+$(document).ready(function () {
+    $('.panel .panel-heading a').click(function () {
+        $(this).find('span').toggleClass('lm-chevron-circle-down').toggleClass('lm-chevron-circle-up');
+        location.hash = $(this).attr('id');
+    });
+});
+</script>
 {% endif %}           {# forms #}

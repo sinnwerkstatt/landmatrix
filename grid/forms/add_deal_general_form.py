@@ -88,7 +88,7 @@ class AddDealGeneralForm(BaseForm):
         (10, _("per ha")),
         (20, _("for specified area")),
     ), coerce=int)
-    purchase_price_area = forms.IntegerField(required=False, label=_("Purchase price area"), help_text=_("ha"), widget=NumberInput)
+    purchase_price_area = forms.IntegerField(required=False, label=_("Purchase price area"), help_text=_("ha"), widget=NumberInput(attrs={'class':'test'}))
     tg_purchase_price_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
     # Leasing fees
     tg_leasing_fees = TitleField(required=False, label="", initial=_("Leasing fees"))
