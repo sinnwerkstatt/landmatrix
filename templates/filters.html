@@ -23,142 +23,157 @@
 
 
     <div id="manage-filters" class="clearfix collapse">
-        <form>
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-md-3 filterbox checkboxes">
-                    <ul>
-                        <li class="checkbox">
-                            <input id="checkbox1" name="data1" type="checkbox">
-                            <label for="checkbox1">{% trans "Concluded Deals" %}</label>
-                        </li>
-                        <li class="checkbox">
-                            <input id="checkbox2" name="data2" type="checkbox">
-                            <label for="checkbox2">{% trans "Intended Deals" %}</label>
-                        </li>
-                        <li class="checkbox">
-                            <input id="checkbox3" name="data3" type="checkbox">
-                            <label for="checkbox3">{% trans "Failed Deals" %}</label>
-                        </li>
-                        <li class="checkbox">
-                            <input id="checkbox4" name="data4" type="checkbox">
-                            <label for="checkbox4">{% trans "Exclude Media Reports" %}</label>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-md-3 filterbox no-pad">
-                    <ul class="variables">
-                        <li>
-                            <h4>Unsorted</h4>
-                            <ul>
-                                {% for key, value in variables.items %}
-                                    <li><a href="javascript:createFilter('{{ key }}')"
-                                           id="{{ key }}">{% trans value %}</a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        <li>
-                            <h4>{% trans "Spatial Data" %}</h4>
-                            <ul>
-                                <li><a href="#">{% trans "Location" %}</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <h4>{% trans "General Info" %}</h4>
-                            <ul>
-                                <li><a href="#">{% trans "Current size under contract" %}</a></li>
-                                <li><a href="#">{% trans "Intention of the Investment" %}</a></li>
-                                <li><a href="#">{% trans "Nature of the deal" %}</a></li>
-                                <li><a href="#">{% trans "Negotiation Status" %}</a></li>
-                                <li><a href="#">{% trans "Implementation Status" %}</a></li>
-                            </ul>
-                        </li>
-                    </ul>
+        <div class="row">
+            <div class="col-md-3 filterbox checkboxes">
+                <ul>
+                    <li class="checkbox">
+                        <input id="checkbox1" name="data1" type="checkbox">
+                        <label for="checkbox1">{% trans "Concluded Deals" %}</label>
+                    </li>
+                    <li class="checkbox">
+                        <input id="checkbox2" name="data2" type="checkbox">
+                        <label for="checkbox2">{% trans "Intended Deals" %}</label>
+                    </li>
+                    <li class="checkbox">
+                        <input id="checkbox3" name="data3" type="checkbox">
+                        <label for="checkbox3">{% trans "Failed Deals" %}</label>
+                    </li>
+                    <li class="checkbox">
+                        <input id="checkbox4" name="data4" type="checkbox">
+                        <label for="checkbox4">{% trans "Exclude Media Reports" %}</label>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-3 filterbox no-pad">
+                <ul class="variables">
+                    <li>
+                        <h4>Unsorted</h4>
+                        <ul>
+                            {% for key, value in variables.items %}
+                                <li id="filter_{{ key }}" class="filter_item"><a
+                                        href="javascript:createFilter('{{ key }}')"
+                                        id="filter_{{ key }}_link">{% trans value %}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>{% trans "Spatial Data" %}</h4>
+                        <ul>
+                            <li><a href="#">{% trans "Location" %}</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>{% trans "General Info" %}</h4>
+                        <ul>
+                            <li><a href="#">{% trans "Current size under contract" %}</a></li>
+                            <li><a href="#">{% trans "Intention of the Investment" %}</a></li>
+                            <li><a href="#">{% trans "Nature of the deal" %}</a></li>
+                            <li><a href="#">{% trans "Negotiation Status" %}</a></li>
+                            <li><a href="#">{% trans "Implementation Status" %}</a></li>
+                        </ul>
+                    </li>
+                </ul>
 
-                </div>
-                <div class="col-md-6 filterbox">
-                    <div id="empty" class="rules">
+            </div>
+            <div class="col-md-6 filterbox">
+                <div id="empty" class="rules">
+                    <form class="form">
+                        {#% csrf_token %#}
+
+                        <!--
                         <input type="hidden" name="filtered" value="true"/>
                         <input type="hidden" name="limit" value="{{ limit }}"/>
                         <input type="hidden" name="order_by" value="{{ data.order_by }}"/>
-                        <input type="submit" class="submit" value="Apply Filters" style="display: none"/>
-                        {% if empty_form_conditions %}
-                            <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
-                            {{ empty_form_conditions.management_form }}
-                            <!--
-                            {#% for empty_form in empty_form_conditions.forms %#}
-                                <div class="form condition input-group">
-                                    {# { empty_form.operator }#}
-                                    {# { empty_form.value }#}
-                                </div>
-                            {#% endfor %#}
-                            -->
-                        {% endif %}
-                        <ul class="form clearfix condition empty">
-                            {{ empty_form_conditions.empty_form.as_ul }}
-                        </ul>
+                        -->
 
-                        <select id="operator">
-                            <option value="lt"><</option>
-                            <option value="gt">></option>
-                            <option value="gte">>=</option>
-                            <option value="lte">=<</option>
-                            <option value="is">is</option>
-                            <option value="is_empty">is empty</option>
-                            <option value="not_in">not in</option>
-                            <option value="in">in</option>
-                            <option value="contains">contains</option>
-                        </select>
-                        <input id="value"/>
-                    </div>
+                        <input id="filter_variable" type="hidden" name="variable" value=""/>
 
-                    <div class="btn-group">
+                        <div class="input-group">
+                            <select id="filter_operator" name="operator">
+                                <option value="lt"><</option>
+                                <option value="gt">></option>
+                                <option value="gte">>=</option>
+                                <option value="lte">=<</option>
+                                <option value="is">is</option>
+                                <option value="is_empty">is empty</option>
+                                <option value="not_in">not in</option>
+                                <option value="in">in</option>
+                                <option value="contains">contains</option>
+                            </select>
+
+                            <div id="filter_value" class="right">
+                                <input type="text"/>
+                            </div>
+                        </div>
                         <button type="submit" class="btn btn-primary" name="add"
                                 value="add">{% trans "Add filter" %}</button>
-                        <button type="submit" class="btn" name="reset"
-                                value="reset">{% trans "Reset" %}</button>
-                        <button type="submit" class="btn">{% trans "Go" %}</button>
-                    </div>
+                        <!-- <button type="submit" class="btn" name="reset"
+                                    value="reset">{% trans "Reset" %}</button>
+                            <button type="submit" class="btn">{% trans "Go" %}</button> -->
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
 
     <div id="filters_old" class="">
 
         <script type="text/javascript">
+            var currentVariable = "";
+
             function init_form_condition(el) {
                 // variable
-                el.change(function () {
-                    var form = $(this).parents("ul.form");
-                    new_update_widget(form.find(".field:last .value-wrapper"), $(this).find("option:selected").val(), form);
-                }).change();
-                // operator
-                el.parents("ul.form").find(".operator").change(function () {
-                    el.change();
-                });
-                // delete button
-                el.parents("ul.form").find(".delete-row").click(function () {
-                    var form = $(this).parents("form"),
-                            conditions = form.find(".condition:visible");
-                    $(this).parents("ul.form.condition").remove();
-                    var count = $("#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS").val() - 1;
-                    $("#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS").val(count);
-                    // reset row counters
-                    var new_name;
-                    for (var i = 0; i < count; i++) {
-                        $(conditions[i]).find(":input").each(function () {
-                            $(this).attr("id") && $(this).attr("id", $(this).attr("id").replace(/{{ empty_form_conditions.prefix }}-[0-9]+/, "{{ empty_form_conditions.prefix }}-" + i));
-                            $(this).attr("name") && $(this).attr("name", $(this).attr("name").replace(/{{ empty_form_conditions.prefix }}-[0-9]+/, "{{ empty_form_conditions.prefix }}-" + i));
-                        });
-                        //el.parents("ul.form").find("li.field")
-                    }
-                });
+                /*
+                 el.change(function () {
+                 var form = $(this).parents("ul.form");
+                 new_update_widget(form.find(".field:last .value-wrapper"), $(this).find("option:selected").val(), form);
+                 }).change();
+                 // operator
+                 el.parents("ul.form").find(".operator").change(function () {
+                 el.change();
+                 });
+                 // delete button
+                 el.parents("ul.form").find(".delete-row").click(function () {
+                 var form = $(this).parents("form"),
+                 conditions = form.find(".condition:visible");
+                 $(this).parents("ul.form.condition").remove();
+                 var count = $("#id_
+                {{ empty_form_conditions.prefix }}-TOTAL_FORMS").val() - 1;
+                 $("#id_
+                {{ empty_form_conditions.prefix }}-TOTAL_FORMS").val(count);
+                 // reset row counters
+                 var new_name;
+                 for (var i = 0; i < count; i++) {
+                 $(conditions[i]).find(":input").each(function () {
+                 $(this).attr("id") && $(this).attr("id", $(this).attr("id").replace(/
+                {{ empty_form_conditions.prefix }}-[0-9]+/, "
+                {{ empty_form_conditions.prefix }}-" + i));
+                 $(this).attr("name") && $(this).attr("name", $(this).attr("name").replace(/
+                {{ empty_form_conditions.prefix }}-[0-9]+/, "
+                {{ empty_form_conditions.prefix }}-" + i));
+                 });
+                 //el.parents("ul.form").find("li.field")
+                 }
+                 });
+                 */
             }
 
-            function updateFilters(data) {
+            function updateFilters(json) {
+                var data = JSON.parse(json);
                 console.log("Filterdata:", data);
+                var tags = $("#filterlist");
+                tags.empty();
+                var label = '<label>{% trans "Active Filters" %}:</label>';
+                tags.append(label);
+
+                for (item in data) {
+                    var tag = data[item].name;
+                    var finalHtml = tag + '<a class="delete-row" href="javascript:removeFilter(\'' + tag + '\')"><i class="lm lm-times"></i></a>';
+                    finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
+                    $(finalHtml).appendTo(tags);
+                    console.log("Tag appended.", tag, tags);
+                }
             }
             // Get current filterdata
             $.get(
@@ -174,61 +189,35 @@
             }
 
             function createFilter(variable) {
-                var form = $(this).parents("ul.form");
-                new_update_widget(form.find(".field:last .value-wrapper"), variable, form);
+                new_update_widget($("#filter_operator"), $("#filter_value"), variable);
+                $('#filter_variable').val(variable);
+                currentVariable = variable;
+
+                $(".filter_active").removeClass('filter_active');
+                $("#filter_" + variable).addClass('filter_active');
             }
 
             $(document).ready(function () {
-                // add sticky header to table
-                var offset = $('.navbar').height();
-                //$("#summary").stickyTableHeaders({fixedOffset: offset});
-                // enable popover for intention of investment
-                $('a.intention-icon').popover({trigger: "hover", placement: "top"});
-                init_form_condition($("ul.form:not(.empty) .field:first-child select"));
+                /*
+                 // add sticky header to table
+                 var offset = $('.navbar').height();
+                 //$("#summary").stickyTableHeaders({fixedOffset: offset});
+                 // enable popover for intention of investment
+                 $('a.intention-icon').popover({trigger: "hover", placement: "top"});
+                 init_form_condition($("ul.form:not(.empty) .field:first-child select"));
+                 */
 
+                $('#filter_operator').change(function () {
+                    new_update_widget($("#filter_operator"), $("#filter_value"), currentVariable)
+                });
 
                 // collapsible filters
                 $(".toggle-filter").click(function (e) {
                     e.preventDefault();
                     $(".collapsible .collapsible-form").toggle();
-                    var container = $(".collapsible .collapsible-tags"),
-                            tags = $("#filterlist");
-                    console.log(tags);
-                    if (container.hasClass("collapsed")) {
-                        tags.empty();
-                        var label = '<label>{% trans "Active Filters" %}:</label>';
-                        tags.append(label);
+                    var container = $(".collapsible .collapsible-tags");
 
-                        $(".form.condition:not(.empty)").each(function (index) {
-                            var tag = "";
-                            $(this).find(":input").each(function (index) {
-                                var el = $(this),
-                                        name = el.attr("name");
-                                if (name.indexOf("variable") > -1) {
-                                    // variable
-                                    tag += el.find(":selected").text();
-                                }
-                                /* requires update_widget to be executed before
-                                 else if (name.indexOf("operator") > -1) {
-                                 // operator
-                                 tag += " " + el.val();
-                                 // value (select)
-                                 } else if (el.is("select")) {
-                                 tag += " " + el.find(":selected").text();
-                                 // value (radio buttons)
-                                 } else if (el.is("[type=checkbox]")) {
-                                 tag += (tag.indexOf(",") > -1) && (" " + el.parent().text//()) || ", " + el.parent().text();
-                                 // value (other)
-                                 } else if (!el.is("[type=hidden]")) {
-                                 tag += " " + el.val();
-                                 }*/
-                            });
-                            var finalHtml = '';
-                            finalHtml = tag + '<a class="delete-row" href="javascript:removeFilter(\'' + tag + '\')"><i class="lm lm-times"></i></a>';
-                            finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
-                            $(finalHtml).appendTo(tags);
-                            console.log("Tag appended.", tag, tags);
-                        });
+                    if (container.hasClass("collapsed")) {
                         container.removeClass("collapsed");
                         container.find(".toggle-filter").text("Manage filters");
                         container.find(".toggle-tooltip").show();
@@ -243,6 +232,18 @@
                     var text = $(this).data('toggle-text');
                     $(this).data('toggle-text', $(this).text()).text(text);
                 })
+
+
+                $("form").submit(function (e) {
+                    e.preventDefault();
+                    var form = $(this);
+                    data = form.serialize();
+                    console.log("This is what i'm transmitting:", data);
+                    $.post('/api/filter.json?action=set&name='+currentVariable + "&" + data, success = function (foo) {
+                        console.log("Result:", foo);
+                    });
+                });
+
             });
         </script> <!-- old filter javascript voodoo -->
         <div class="row hidden">
@@ -314,15 +315,6 @@
                                              }
                                              }); */
                                             //
-                                            $("form").submit(function (e) {
-                                                e.preventDefault();
-                                                var form = $(this);
-                                                data = form.serialize();
-                                                console.log("This is what i'm transmitting:", data);
-                                                $.post('/api/filter.json?action=set&' + data, success = function (foo) {
-                                                    console.log("Result:", foo);
-                                                });
-                                            });
                                             /*
                                              $("ul.form.empty").formset({
                                              prefix: '
@@ -368,5 +360,5 @@
 </div>
 
 {% block js %}
-    <script src="{% static "legacy/vendor/jquery.formset.custom.js" %}" type="text/javascript" charset="utf-8"></script>
+    <!-- <script src="{% static "legacy/vendor/jquery.formset.custom.js" %}" type="text/javascript" charset="utf-8"></script> -->
 {% endblock %}
