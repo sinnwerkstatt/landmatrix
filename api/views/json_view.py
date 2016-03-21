@@ -6,6 +6,7 @@ from api.query_sets.implementation_status_query_set import ImplementationStatusQ
 from api.query_sets.intention_query_set import IntentionQuerySet
 from api.query_sets.investor_country_summaries_query_set import InvestorCountrySummariesQuerySet
 from api.query_sets.investors_query_set import InvestorsQuerySet
+from api.query_sets.latest_changes_query_set import LatestChangesQuerySet
 from api.query_sets.negotiation_status_query_set import NegotiationStatusQuerySet
 from api.query_sets.regions_query_set import RegionsQuerySet
 from api.query_sets.target_country_summaries_query_set import TargetCountrySummariesQuerySet
@@ -63,6 +64,9 @@ RegionsJSONGenerator = json_get_generator(RegionsQuerySet)
 CountriesJSONGenerator = json_get_generator(CountriesQuerySet)
 InvestorsJSONGenerator = json_get_generator(InvestorsQuerySet)
 
+# latest DB changes (add/change/delete/comment)
+LatestChangesJSONGenerator = json_get_generator(LatestChangesQuerySet)
+
 
 class JSONView(TemplateView):
 
@@ -84,6 +88,7 @@ class JSONView(TemplateView):
         'regions.json':                         RegionsJSONGenerator,
         'countries.json':                       CountriesJSONGenerator,
         'investors.json':                       InvestorsJSONGenerator,
+        'latest_changes.json':                  LatestChangesJSONGenerator,
     }
 
     def dispatch(self, request, *args, **kwargs):
