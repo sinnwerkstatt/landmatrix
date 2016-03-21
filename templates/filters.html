@@ -52,7 +52,8 @@
                             <h4>Unsorted</h4>
                             <ul>
                                 {% for key, value in variables.items %}
-                                    <li><a href="#" id="{{ key }}">{% trans value %}</a>
+                                    <li><a href="javascript:createFilter('{{ key }}')"
+                                           id="{{ key }}">{% trans value %}</a>
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -85,22 +86,36 @@
                         {% if empty_form_conditions %}
                             <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
                             {{ empty_form_conditions.management_form }}
-                            {% for empty_form in empty_form_conditions.forms %}
+                            <!--
+                            {#% for empty_form in empty_form_conditions.forms %#}
                                 <div class="form condition input-group">
-                                    {{ empty_form.operator }}
-                                    {{ empty_form.value }}
+                                    {# { empty_form.operator }#}
+                                    {# { empty_form.value }#}
                                 </div>
-                            {% endfor %}
+                            {#% endfor %#}
+                            -->
                         {% endif %}
                         <ul class="form clearfix condition empty">
                             {{ empty_form_conditions.empty_form.as_ul }}
                         </ul>
+
+                        <select id="operator">
+                            <option value="lt"><</option>
+                            <option value="gt">></option>
+                            <option value="gte">>=</option>
+                            <option value="lte">=<</option>
+                            <option value="is">is</option>
+                            <option value="is_empty">is empty</option>
+                            <option value="not_in">not in</option>
+                            <option value="in">in</option>
+                            <option value="contains">contains</option>
+                        </select>
+                        <input id="value"/>
                     </div>
 
-                    <div class="input-group">
-                        <button class="btn btn-default"><i class="lm lm-plus"></i> {% trans "Add condition" %}</button>
-                    </div>
                     <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" name="add"
+                                value="add">{% trans "Add filter" %}</button>
                         <button type="submit" class="btn" name="reset"
                                 value="reset">{% trans "Reset" %}</button>
                         <button type="submit" class="btn">{% trans "Go" %}</button>
@@ -117,7 +132,7 @@
                 // variable
                 el.change(function () {
                     var form = $(this).parents("ul.form");
-                    update_widget(form.find(".field:last .value-wrapper"), $(this).find("option:selected").val(), form);
+                    new_update_widget(form.find(".field:last .value-wrapper"), $(this).find("option:selected").val(), form);
                 }).change();
                 // operator
                 el.parents("ul.form").find(".operator").change(function () {
@@ -156,6 +171,11 @@
                         "/api/filter.json?action=remove&" + filterName,
                         updateFilters
                 );
+            }
+
+            function createFilter(variable) {
+                var form = $(this).parents("ul.form");
+                new_update_widget(form.find(".field:last .value-wrapper"), variable, form);
             }
 
             $(document).ready(function () {
@@ -239,13 +259,14 @@
                                     {% if empty_form_conditions %}
                                         <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
                                         {{ empty_form_conditions.management_form }}
-                                        {% for empty_form in empty_form_conditions.forms %}
+                                        <!--    {#% for empty_form in empty_form_conditions.forms %#}
                                             <ul class="form clearfix condition">
-                                                {{ empty_form.as_ul }}
+                                                {# empty_form.as_ul #}
                                                 <li>&nbsp;<a class="delete-row" href="javascript:void(0)"><i
                                                         class="lm lm-times"></i></a></li>
                                             </ul>
-                                        {% endfor %}
+                                        {#% endfor %#}
+                                        -->
                                     {% endif %}
                                     <!-- <ul class="form clearfix condition empty">
                                         <li>Hello Bob!</li>
@@ -263,30 +284,35 @@
                                                 $("input[name=limit]").val($(this).attr("href").split("/")[1]);
                                                 $("form").submit();
                                             });
-                                            //
-                                            $('.reset-filter').click(function () {
-                                                $('.rules').find('ul:gt(0)').remove();
-                                                $('#id_{{ empty_form_conditions.prefix }}-TOTAL_FORMS').val(0);
-                                            });
-                                            //
-                                            $('#empty ul.form.empty :input, #empty ul.form.empty label').each(function () {
-                                                var id = $(this).attr("id");
-                                                var name = $(this).attr("name");
-                                                var value = $(this).attr("value");
-                                                var for_str = $(this).attr("for");
-                                                if (id != undefined) {
-                                                    $(this).attr("id", id.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                                }
-                                                if (name != undefined) {
-                                                    $(this).attr("name", name.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                                }
-                                                if (value != undefined) {
-                                                    $(this).attr("value", value.replace("{{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                                }
-                                                if (for_str != undefined) {
-                                                    $(this).attr("for", for_str.replace("id_{{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                                }
-                                            });
+                                            /*
+                                             $('.reset-filter').click(function () {
+                                             $('.rules').find('ul:gt(0)').remove();
+                                             $('#id_
+                                            {{ empty_form_conditions.prefix }}-TOTAL_FORMS').val(0);
+                                             });
+                                             */
+                                            /* $('#empty ul.form.empty :input, #empty ul.form.empty label').each(function () {
+                                             var id = $(this).attr("id");
+                                             var name = $(this).attr("name");
+                                             var value = $(this).attr("value");
+                                             var for_str = $(this).attr("for");
+                                             if (id != undefined) {
+                                             $(this).attr("id", id.replace("id_
+                                            {{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                             }
+                                             if (name != undefined) {
+                                             $(this).attr("name", name.replace("
+                                            {{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                             }
+                                             if (value != undefined) {
+                                             $(this).attr("value", value.replace("
+                                            {{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                             }
+                                             if (for_str != undefined) {
+                                             $(this).attr("for", for_str.replace("id_
+                                            {{ empty_form_conditions.prefix }}-__prefix__-", ""));
+                                             }
+                                             }); */
                                             //
                                             $("form").submit(function (e) {
                                                 e.preventDefault();
@@ -297,18 +323,22 @@
                                                     console.log("Result:", foo);
                                                 });
                                             });
-
-                                            $("ul.form.empty").formset({
-                                                prefix: '{{ empty_form_conditions.prefix }}',
-                                                addText: '{% trans "Add filter" %}',
-                                                deleteText: '<i class="lm lm-times"></i>',
-                                                added: function (row) {
-                                                    // FIXME: Move row out of button group, this should be handled by the formset
-                                                    row.remove();
-                                                    row.insertBefore($(".add-row:visible").parent().parent().find(".btn-group"))
-                                                    init_form_condition($("ul.form.condition:last .field:first-child select"));
-                                                }
-                                            });
+                                            /*
+                                             $("ul.form.empty").formset({
+                                             prefix: '
+                                            {{ empty_form_conditions.prefix }}',
+                                             addText: '
+                                            {% trans "Add filter" %}',
+                                             deleteText: '<i class="lm lm-times"></i>',
+                                             added: function (row) {
+                                             console.log("I've been added: ", row);
+                                             // FIXME: Move row out of button group, this should be handled by the formset
+                                             row.remove();
+                                             row.insertBefore($(".add-row:visible").parent().parent().find(".btn-group"))
+                                             init_form_condition($("ul.form.condition:last .field:first-child select"));
+                                             }
+                                             });
+                                             */
                                             // FIXME: Move add-row button into the button group, don't use javascript for that
                                             var b = $(".add-row").addClass("btn").hide();
                                             $(".filters .btn-group").prepend(b.show());
