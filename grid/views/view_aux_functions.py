@@ -1,10 +1,9 @@
 from grid.views.browse_condition_form import BrowseConditionForm
-from grid.views.profiling_decorators import print_func_execution_time
-
-from .profiling_decorators import print_execution_time, print_num_queries
 
 from django.template import loader
 from django.http import HttpResponse
+
+import json
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -62,3 +61,18 @@ def render_to_response(template_name, context, context_instance):
 def render_to_string(template_name, context, context_instance):
     return loader.render_to_string(template_name, context, context_instance)
 
+
+def get_filter_name(filter_data):
+    if filter_data[0] in FILTER_VAR_INV:
+        return 'investor'
+    return 'activity'
+
+
+def get_filter_definition(filter_data):
+    filter_data = filter_data[1]
+    value = filter_data['value'][0]
+    if '[' in value:
+        value = [str(v) for v in json.loads(value)]
+    variable = filter_data['variable'][0]
+    operator = filter_data['operator'][0]
+    return {'{}__{}'.format(variable, operator): value}

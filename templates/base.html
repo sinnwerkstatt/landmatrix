@@ -1,4 +1,4 @@
-{% load i18n static %}<!DOCTYPE html>
+{% load i18n static wagtailcore_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -14,21 +14,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="{% static "vendor/bootstrap/dist/css/bootstrap.min.css" %}">
-    <!-- <link rel="stylesheet" href="{% static "vendor/bootstrap/dist/css/bootstrap-theme.min.css" %}"> -->
     <link rel="stylesheet" href="{% static "css/content.css" %}">
     <link rel="stylesheet" href="{% static "vendor/select2/dist/css/select2.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "vendor/font-awesome/css/font-awesome.css" %}">
     <link rel="stylesheet" href="{% static "css/icons.css" %}">
     <link rel="icon" href="{% static "img/favicon.ico" %}">
 
-    <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
     {% if is_pdf_export %}
         <link rel="stylesheet" href="{% static "css/htmltopdf.css" %}" type="text/css" media="screen"
               title="no title" charset="utf-8">
     {% endif %}
-
-    <!-- <script src="{% static "js/legacy/vendor/modernizr-2.6.2-respond-1.1.0.min.js" %}"></script>-->
-
-    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
     <script>window.jQuery || document.write('<script src="{% static "vendor/jquery/dist/jquery.min.js" %}"><\/script>')</script>
     {% block head %}
     {% endblock %}
@@ -139,19 +134,15 @@
                         </ul>
                     {% endblock %}
                 </div>
-                <div class="col-md-4 col-md-offset-4">
+                <div class="col-md-6 col-md-offset-2">
 
                     {% block subnav %}
                         <ul class="subnav nav nav-pills pull-right">
                             {% block subnav_inner %}
-                                <li role="presentation"><a href="#/download">
-                                    <i class="lm lm-download"></i>{% trans "Download this" %}
-                                </a></li>
                             {% endblock %}
-                            <li role="presentation"><a href="#/share">
-                                <i class="lm lm-spacer lm-share-square-o"></i>
-                                {% trans "Share" %}
-                            </a></li>
+                            <li role="presentation">
+                                {% include "share.html" %}
+                            </li>
                         </ul>
                     {% endblock %}
                 </div>
@@ -185,18 +176,18 @@
 
             <div id="footer-nav" class="row">
                 <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_1|safe }}
+                    {{ wagtail_root_page.footer_column_1|richtext }}
                 </div>
                 <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_2|safe }}
-                </div>
-
-                <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_3|safe }}
+                    {{ wagtail_root_page.footer_column_2|richtext }}
                 </div>
 
                 <div class="col-md-3">
-                    {{ wagtail_root_page.footer_column_4|safe }}
+                    {{ wagtail_root_page.footer_column_3|richtext }}
+                </div>
+
+                <div class="col-md-3">
+                    {{ wagtail_root_page.footer_column_4|richtext }}
                 </div>
             </div>
 
@@ -231,10 +222,9 @@
 
 {% block footer_scripts %}
     <script src="{% static "vendor/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "vendor/bootstrap/js/popover.js" %}"></script>
     <script src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
-    <script src="{% static "legacy/vendor/jquery.formset.min.js" %}"></script>
-    <script src="{% static "legacy/vendor/jquery.formset.custom.js" %}"></script>
-    <script src="{% static "legacy/main.js" %}"></script>
+    <script src="{% static "js/main.js" %}"></script>
     <!-- Select2 init -->
     <script type="text/javascript">
         function select2_open (e) {

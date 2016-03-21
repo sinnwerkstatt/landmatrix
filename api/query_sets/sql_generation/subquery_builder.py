@@ -33,4 +33,6 @@ WHERE """ + "\nAND ".join([
         ]) + """
 %(where)s
 %(where_filter)s
-%(group_by)s"""
+%(group_by)s
+%(order_by)s
+"""
