@@ -3,8 +3,12 @@ settings.py
 
 # Collected(!) statics
 ./static/
+static
+static/*
 
 node_modules
+media
+media/*
 media/js
 
 # Ignore global javascript vendor packages
