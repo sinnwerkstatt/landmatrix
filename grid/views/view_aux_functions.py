@@ -70,9 +70,16 @@ def get_filter_name(filter_data):
 
 def get_filter_definition(filter_data):
     filter_data = filter_data[1]
-    value = filter_data['value'][0]
-    if '[' in value:
-        value = [str(v) for v in json.loads(value)]
+    value = parse_value(filter_data['value'])
     variable = filter_data['variable'][0]
     operator = filter_data['operator'][0]
     return {'{}__{}'.format(variable, operator): value}
+
+
+def parse_value(filter_value):
+    if len(filter_value) > 1:
+        return filter_value
+    value = filter_value[0]
+    if '[' in value:
+        value = [str(v) for v in json.loads(value)]
+    return value
