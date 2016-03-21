@@ -122,6 +122,57 @@ function updateGeocoding(mapId) {
         console.log("NOT updating anything")
     }*/
 
+     try {
+        var autocomplete = new google.maps.places.Autocomplete(map.prev());
+
+        autocomplete.addListener('place_changed', function () {
+            var place = autocomplete.getPlace();
+            if (!place.geometry) {
+                $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>Sorry, that place cannot be found.</span></div>')
+
+                //window.alert("Autocomplete's returned place contains no geometry");
+                return;
+            }
+
+            // If the place has a geometry, then present it on a map.
+            if (place.geometry.viewport) {
+                console.log(place.geometry);
+
+                fitBounds(place.geometry.viewport);
+            } else {
+                console.log(place.geometry.location);
+                console.log(place.geometry.location.lat());
+                console.log(place.geometry.location.lng());
+                var target = [place.geometry.location.lng(), place.geometry.location.lat()]
+                target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
+                map.getView().setCenter(target);
+                map.getView().setZoom(17);  // Why 17? Because it looks good.
+            }
+
+            var address = '';
+            if (place.address_components) {
+                address = [
+                    (place.address_components[0] && place.address_components[0].short_name || ''),
+                    (place.address_components[1] && place.address_components[1].short_name || ''),
+                    (place.address_components[2] && place.address_components[2].short_name || '')
+                ].join(' ');
+            }
+
+            //infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+            //infowindow.open(map, marker);
+        });
+    }
+    catch (err) {
+        console.log('No google libs loaded, replacing with a hint.');
+        /*b
+
+        var hint = '<a title="If you allow Google javascript, a geolocation search field would appear here." href="#" class="toggle-tooltip noul">';
+        hint = hint + '<i class="lm lm-question-circle"></i></a>';
+
+        $(map.prev()).replaceWith(hint);*/
+
+    }
+
     //switched level of accuracy fire event on lan and lon input fields
     $(map).parents("div").find(".level_of_accuracy select").change(function() {
         if ($(map).find(":selected").val() == "40") {
@@ -208,7 +259,6 @@ function initializeMap (mapId) {
         updateLocationFields(mapId, evt.coordinate);
     });
 
-
     fields.lon.change(function() {
         updateMapLocation(mapId);
     });
@@ -226,7 +276,7 @@ function initGeocoder(mapId) {
         // updateGeocoding(mapId);
     }
     catch (err) {
-        console.log('No google libs loaded, replacing with a hint.');
+        console.log('No google libs loaded, giving a hint.');
         alert('Please enable Javascript for the Google Maps API!');
     }
 }
