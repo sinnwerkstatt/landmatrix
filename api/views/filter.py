@@ -12,7 +12,7 @@ class Filter(dict):
 
         if operator[0] not in FilterToSQL.OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
-        if variable[0] not in FILTER_VAR_INV and variable not in FILTER_VAR_ACT:
+        if variable[0] not in FILTER_VAR_INV and variable[0] not in FILTER_VAR_ACT:
             raise ValueError('No such variable: {}'.format(variable))
 
         Filter.filter_number += 1
