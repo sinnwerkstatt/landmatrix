@@ -9,7 +9,7 @@ class YearBasedIntegerField(forms.MultiValueField):
 
     def __init__(self, *args, **kwargs):
         kwargs["fields"] = [forms.IntegerField(required=False), forms.CharField(required=False)]
-        kwargs["widget"] = YearBasedTextInput(help_text=kwargs.pop("help_text", ""))
+        kwargs["widget"] = YearBasedTextInput(help_text=kwargs.pop("help_text", ""), attrs={})
         super(YearBasedIntegerField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
