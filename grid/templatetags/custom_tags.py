@@ -1,3 +1,4 @@
+import re
 import time, datetime
 
 from django import template
@@ -6,6 +7,8 @@ from django.template import Node, resolve_variable, Variable
 from django.template.defaultfilters import slugify
 from django.template.defaultfilters import stringfilter
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.utils.safestring import mark_safe
+from django import forms
 
 
 # from editor.views import get_display_value_by_field
@@ -206,4 +209,24 @@ def add_or_update_param(GET, new_param, new_value):
 
 @register.filter
 def create_order_by_link(value):
-  return value
+    return value
+
+@register.filter
+def add_class(field, new_cls):
+    #return mark_safe(re.sub(r'(<(select|input|textarea).*?class=\")', '\1%s ' % new_cls, str(field)))
+    #cls = field.field.widget.attrs.get('class', '')
+    #cls += ' ' + new_cls
+    if isinstance(field.field.widget, (forms.CheckboxInput, forms.RadioSelect, forms.CheckboxSelectMultiple)):
+        return field
+    #elif isinstance(field.field.widget, forms.MultiValueWidget):
+    #    attrs = field.field.widget.get_widgets()
+    else:
+        # MultiValueWidget?
+        attrs = field.field.widget.attrs
+        if 'class' in attrs:
+            attrs['class'] += ' %s' % new_cls
+        else:
+            attrs['class'] = new_cls
+        return mark_safe(field.as_widget())
+        #return mark_safe(field.as_widget(attrs={"class":new_cls}))
+

@@ -8,10 +8,10 @@ var lonChanged = new Array();
 var lock = true;;
 
 $(document).ready(function () {
-    $(".maptemplate").each(function (index) {
-        $(this).attr('id', 'map' + (index + 1)).removeClass("maptemplate").addClass("map");
-        initializeMap(index + 1);
-    });
+    //$(".maptemplate").each(function (index) {
+    //    $(this).attr('id', 'map' + (index + 1)).removeClass("maptemplate").addClass("map");
+    //    initializeMap(index + 1);
+    //});
 
     $('#accordion').on("shown.bs.collapse", function(things) {
         var mapId = String(things.target.id).split("_")[1];
@@ -144,7 +144,7 @@ var markerStyle = new ol.style.Style({
 
 
 function initializeMap (mapId) {
-    const target = "map" + mapId;
+    const target = "map-" + mapId;
 
     var fields = getLocationFields(mapId);
 

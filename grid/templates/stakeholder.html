@@ -8,34 +8,122 @@
 {% endblock %}
 {% block navutils %}
 {% endblock %}
-{% block page_title %}{% trans "Add / edit Operational stakeholder" %}{% endblock %}
-{% block title %}{% trans "Add / edit Operational stakeholder" %}{% endblock %}
+{% block page_title %}{% if investor %}{{ investor.name }}{% else %}{% trans "Add Operational stakeholder" %}{% endif %}{% endblock %}
+{% block title %}{% if investor %}{{ investor.name }}{% else %}{% trans "Add Operational stakeholder" %}{% endif %}{% endblock %}
 
 {% block content %}
-    <div class="popup">
-        <form action="." method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <table>
-                {{ investor_form }}
-
-                <tr>
-                    <td><h3>Parent stakeholders</h3></td>
-                </tr>
-                {{ parent_stakeholders }}
-
-                <tr>
-                    <td><h3>Investors</h3></td>
-                </tr>
-                {{ parent_investors }}
-
-                <tr>
-                    <td><input type="submit" value="Submit"/></td>
-                </tr>
-            </table>
-        </form>
-    </div>
+<div class="popup">
+    <form action="." method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            {% include "form.html" with form=investor_form %}
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>{% trans "Parent stakeholders" %}</h3>
+            </div>
+            <div class="col-sm-12">
+                {{ parent_stakeholders.management_form }}
+                {% for form in parent_stakeholders %}
+                <div class="parent-stakeholder-form row control-group {{ field.name }}">
+                    <div class="controls col-md-6">
+                        {{ form.stakeholder|add_class:'form-control' }}
+                        {{ form.stakeholder.errors }}
+                    </div>
+                    <div class="controls col-md-4">
+                        <div class="input-group">
+                            {{ form.percentage|add_class:'form-control' }}
+                            <div class="input-group-addon">{{ form.percentage.help_text }}</div>
+                            <a class="btn pull-right add-form">
+                                <i class="fa fa-plus"></i>
+                                {% trans "Add another" %}
+                            </a>
+                            <a class="btn pull-right remove-form">
+                                <i class="fa fa-minus"></i>
+                                {% trans "Remove" %}
+                            </a>
+                        </div>
+                        {{ form.percentage.errors }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>{% trans "Investors" %}</h3>
+            </div>
+            <div class="col-sm-12">
+                {{ parent_investors.management_form }}
+                {% for form in parent_investors %}
+                    <div class="parent-investor-form row control-group {{ field.name }}">
+                        <div class="controls col-md-6">
+                            {{ form.parent_investor|add_class:'form-control' }}
+                            {{ form.parent_investor.errors }}
+                        </div>
+                        <div class="controls col-md-4">
+                            <div class="input-group">
+                                {{ form.parent_investor_percentage|add_class:'form-control' }}
+                                <div class="input-group-addon">{{ form.parent_investor_percentage.help_text }}</div>
+                                <a class="btn pull-right add-form">
+                                    <i class="fa fa-plus"></i>
+                                    {% trans "Add another" %}
+                                </a>
+                                <a class="btn pull-right remove-form">
+                                    <i class="fa fa-minus"></i>
+                                    {% trans "Remove" %}
+                                </a>
+                            </div>
+                        </div>
+                        {{ form.parent_investor_percentage.errors }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <input type="submit" class="btn btn-primary" value="{% trans "Submit" %}">
+            </div>
+        </div>
+    </form>
+</div>
 {% endblock %}
 
 {% block js %}
-    <script type="text/javascript" src="{% static "js/editor/detail.js" %}"></script>
+<script src="{% static "js/editor/jquery.formset.custom.js" %}" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+function init_form(form) {
+    // Init buttons
+    form.find('.add-form').click(function () {
+        $(this).parents('.row').find('.formset-add-form').trigger('click');
+    });
+    form.find('.remove-form').click(function () {
+        form.find('.formset-remove-form').trigger('click');
+    });
+    form.find('select').select2();
+}
+$(document).ready(function () {
+    $('.country select').select2();
+    $('.parent-stakeholder-form').formset({
+        prefix: 'parent-stakeholder-form',
+        addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+        addCssClass: 'formset-add-form hidden',
+        deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
+        deleteCssClass: 'formset-remove-form hidden',
+        added: function (row) {
+            init_form(row);
+        }
+    }).each(function () { init_form($(this)); });
+    $('.parent-investor-form').formset({
+        prefix: 'parent-investor-form',
+        addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+        addCssClass: 'formset-add-form hidden',
+        deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
+        deleteCssClass: 'formset-remove-form hidden',
+        added: function (row) {
+            init_form(row);
+        },
+    }).each(function () { init_form($(this)); });
+});
+</script>
 {% endblock %}

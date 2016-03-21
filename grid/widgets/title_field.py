@@ -7,6 +7,7 @@ from django import forms
 
 class TitleField(forms.CharField):
     widget = forms.HiddenInput
+    is_title = True
 
     def __init__(self, *args, **kwargs):
         self.widget = TitleWidget(initial=kwargs.get("initial"))
