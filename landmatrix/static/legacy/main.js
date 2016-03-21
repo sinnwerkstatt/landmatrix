@@ -1,4 +1,4 @@
-$.fn.textWidth = function(text){
+$.fn.textWidth = function (text) {
     var org = $(this);
     var html = $('<span style="position:absolute;width:auto;left:-9999px">' + (text || org.html()) + '</span>');
     if (!text) {
@@ -14,65 +14,70 @@ $.fn.textWidth = function(text){
 function getParameterByName(name) {
     var urlParams;
     var match,
-        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        pl = /\+/g,  // Regex for replacing addition symbol with a space
         search = /([^&=]+)=?([^&]*)/g,
-        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-        query  = name;
+        decode = function (s) {
+            return decodeURIComponent(s.replace(pl, " "));
+        },
+        query = name;
 
     urlParams = {};
     while (match = search.exec(query))
-       urlParams[decode(match[1])] = decode(match[2]);
-   return urlParams;
+        urlParams[decode(match[1])] = decode(match[2]);
+    return urlParams;
 }
 
 // Usage:
 //   var data = { 'first name': 'George', 'last name': 'Jetson', 'age': 110 };
 //   var querystring = EncodeQueryData(data);
 //
-function EncodeQueryData(data)
-{
-   var ret = [];
-   for (var d in data)
-      ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
-   return ret.join("&");
+function EncodeQueryData(data) {
+    var ret = [];
+    for (var d in data)
+        ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+    return ret.join("&");
 }
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function drawPie (e, d, isDataAvailability) {
+function drawPie(e, d, isDataAvailability) {
     var r = Raphael(e, d, d),
         data = $(e).data("title"),
         chart;
     if (isDataAvailability) {
-        data = parseFloat(data.toString().replace(/[^0-9\.]/g,''));
-        data = [data, 100-data];
-        chart = r.piechart(d/2, d/2, d/2, data, {colors: ["#da891e", "#444444"], strokewidth: 0});
-        c = r.circle(d/2, d/2, (d/2)-1);
+        data = parseFloat(data.toString().replace(/[^0-9\.]/g, ''));
+        data = [data, 100 - data];
+        chart = r.piechart(d / 2, d / 2, d / 2, data, {colors: ["#da891e", "#444444"], strokewidth: 0});
+        c = r.circle(d / 2, d / 2, (d / 2) - 1);
         c.attr("stroke", "#ffffff");
         c.attr("stroke-width", "2");
     } else {
-        data = data.replace(/[ %]/g,"").split(","),
-        data = [parseFloat(data[0]), parseFloat(data[1]), parseFloat(data[2]), parseFloat(data[3])]
-        chart = r.piechart(d/2, d/2, d/2, data, {colors: ["#DA8A1C", "#EEC497", "#F6EDE1", "#84CECE"], strokewidth: 1, stroke: "#ededed"});
+        data = data.replace(/[ %]/g, "").split(","),
+            data = [parseFloat(data[0]), parseFloat(data[1]), parseFloat(data[2]), parseFloat(data[3])]
+        chart = r.piechart(d / 2, d / 2, d / 2, data, {
+            colors: ["#DA8A1C", "#EEC497", "#F6EDE1", "#84CECE"],
+            strokewidth: 1,
+            stroke: "#ededed"
+        });
         chart.each(function () {
             //scale each sector to 0
             this.sector.scale(0, 0, this.cx, this.cy);
             //animate from 0 to default size
-            this.sector.animate({ transform: 's1 1 ' + this.cx + ' ' + this.cy }, 400, "linear");
+            this.sector.animate({transform: 's1 1 ' + this.cx + ' ' + this.cy}, 400, "linear");
 
         });
     }
 }
 
-function drawHorizontalLineChart (element, pct, color, width, height) {
+function drawHorizontalLineChart(element, pct, color, width, height) {
     var r = Raphael(element, width, height);
-    var bg = r.rect(0, 0, width, height).attr({ fill: 'rgb(216, 216, 216)', 'stroke-width': 0 });
-    var fill = r.rect(0, 0, width * (pct / 100), height).attr({ fill: color, 'stroke-width': 0 });
+    var bg = r.rect(0, 0, width, height).attr({fill: 'rgb(216, 216, 216)', 'stroke-width': 0});
+    var fill = r.rect(0, 0, width * (pct / 100), height).attr({fill: color, 'stroke-width': 0});
 }
 
-function drawVerticalLine (paper, x, startY) {
+function drawVerticalLine(paper, x, startY) {
     var start = x + " " + (startY - 10);
     var end = "0 -" + (paper.height - 40 - (paper.height - startY));
     var line = paper.path("M " + start + " l " + end).attr({
@@ -85,7 +90,7 @@ function drawVerticalLine (paper, x, startY) {
     return line;
 }
 
-function getZoomedCoords (x, y, zoomData) {
+function getZoomedCoords(x, y, zoomData) {
     var fullWidth = $('#map').width();
     var fullHeight = $('#map').height();
     zoomData.left = zoomData.x - (zoomData.width / 2);
@@ -99,7 +104,7 @@ function getZoomedCoords (x, y, zoomData) {
     return coords;
 }
 
-function showTooltip (obj, e) {
+function showTooltip(obj, e) {
     if (obj == window) return false;
     var t,
         pos,
@@ -111,7 +116,7 @@ function showTooltip (obj, e) {
         pos = obj.offset();
         pos.width = obj.width();
         pos.height = obj.height();
-        var top = (pos.top + pos.height/2 + obj.height()/2);
+        var top = (pos.top + pos.height / 2 + obj.height() / 2);
 
     } else {
         // map bubble
@@ -122,18 +127,18 @@ function showTooltip (obj, e) {
             var coords = getZoomedCoords(pos.x, pos.y, zoomData);
             pos.top = $("#map").offset().top + coords.y;
             pos.left = $("#map").offset().left + coords.x;
-            var top = (pos.top + pos.height/2 + c.height());
+            var top = (pos.top + pos.height / 2 + c.height());
         }
         else {
             // world map
             pos.top = $("#map").offset().top + pos.y;
             pos.left = $("#map").offset().left + pos.x;
-            var top = (pos.top + pos.height/2 + c.height()) - 20; // -20 for world map
+            var top = (pos.top + pos.height / 2 + c.height()) - 20; // -20 for world map
         }
 
         t = obj.data && obj.data("title");
     }
-    var left = (pos.left + pos.width/2 - c.width()/2);
+    var left = (pos.left + pos.width / 2 - c.width() / 2);
     c.find("span.content").html(t);
     c.css({
         'top': top + "px",
@@ -142,33 +147,33 @@ function showTooltip (obj, e) {
     t && c.show();
 }
 
-function hideTooltip (obj, e) {
+function hideTooltip(obj, e) {
     $("#tooltip-container").hide();
 }
 
 /* NUMBER FORMAT FROM https://raw.github.com/kvz/phpjs/master/functions/strings/number_format.js */
-function number_format (number, decimals, dec_point, thousands_sep) {
-  // Strip all characters but numerical ones.
-  number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
-  var n = !isFinite(+number) ? 0 : +number,
-    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-    sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
-    dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
-    s = '',
-    toFixedFix = function (n, prec) {
-      var k = Math.pow(10, prec);
-      return '' + Math.round(n * k) / k;
-    };
-  // Fix for IE parseFloat(0.55).toFixed(0) = 0;
-  s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
-  if (s[0].length > 3) {
-    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
-  }
-  if ((s[1] || '').length < prec) {
-    s[1] = s[1] || '';
-    s[1] += new Array(prec - s[1].length + 1).join('0');
-  }
-  return s.join(dec);
+function number_format(number, decimals, dec_point, thousands_sep) {
+    // Strip all characters but numerical ones.
+    number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+    var n = !isFinite(+number) ? 0 : +number,
+        prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+        sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+        dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+        s = '',
+        toFixedFix = function (n, prec) {
+            var k = Math.pow(10, prec);
+            return '' + Math.round(n * k) / k;
+        };
+    // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+    s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+    if (s[0].length > 3) {
+        s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+    }
+    if ((s[1] || '').length < prec) {
+        s[1] = s[1] || '';
+        s[1] += new Array(prec - s[1].length + 1).join('0');
+    }
+    return s.join(dec);
 }
 
 //var geocoders = new Array();
@@ -341,44 +346,17 @@ var list_operators = ["not_in", "in", "is", "is_empty"];
 /**
  *  updates the filter widget for the grid view if the field to filter by is changed
  */
-function update_widget (el, key_id, form) {
-  var value = form.find("input[type='hidden']").val(),
-      name = el.find(":input").attr("name"),
-      op = el.parents("li").prev().find("option:selected"),
-      op_value = op.val();
-  name = name.replace("_0", "");
-  $.get("/ajax/widget/values", {key_id:  key_id, value: value, name: name, operation: op_value}, function (data) {
-    el.html(data);
-    var is_number = (el.find(":input[type=number]:not(.year-based-year)").length > 0);
-    var is_list = (el.find("select,ul").length > 0);
-    form.find(".operator option").each(function (index) {
-        if (is_number) {
-            $(this).attr("disabled", (jQuery.inArray($(this).val(), numeric_operators) == -1));
-        } else if (is_list) {
-            $(this).attr("disabled", (jQuery.inArray($(this).val(), list_operators) == -1));
-        } else {
-            $(this).attr("disabled", (jQuery.inArray($(this).val(), string_operators) == -1));
-        }
-    });
-  });
-};
-
-function new_update_widget (el, key_id, form) {
+function update_widget(el, key_id, form) {
     var value = form.find("input[type='hidden']").val(),
         name = el.find(":input").attr("name"),
         op = el.parents("li").prev().find("option:selected"),
         op_value = op.val();
-    //name = name.replace("_0", "");
-    const request = {key_id:  key_id, value: value, name: name, operation: op_value};
-    console.log(request);
-    $.get("/ajax/widget/values", request, function (data) {
-        console.log('This is what you get: ', data);
+    name = name.replace("_0", "");
+    $.get("/ajax/widget/values", {key_id: key_id, value: value, name: name, operation: op_value}, function (data) {
         el.html(data);
         var is_number = (el.find(":input[type=number]:not(.year-based-year)").length > 0);
         var is_list = (el.find("select,ul").length > 0);
-        console.log("Going on with operators:", is_number, is_list, el.find('ul'));
-        form.find("#operator option").each(function (index) {
-            console.log("Running through the operator options." ,index);
+        form.find(".operator option").each(function (index) {
             if (is_number) {
                 $(this).attr("disabled", (jQuery.inArray($(this).val(), numeric_operators) == -1));
             } else if (is_list) {
@@ -388,16 +366,37 @@ function new_update_widget (el, key_id, form) {
             }
         });
     });
-};
+}
+
+function new_update_widget(operatorfield, variablefield, key_id) {
+    var name = variablefield.find(":input").attr("name"),
+        op_value = operatorfield.val();
+
+    const request = {key_id: key_id, value: "", name: 'value', operation: op_value};
+    $.get("/ajax/widget/values", request, function (data) {
+        variablefield.html(data);
+        var is_number = (variablefield.find(":input[type=number]:not(.year-based-year)").length > 0);
+        var is_list = (variablefield.find("select,ul").length > 0);
+        operatorfield.find('option').each(function (index) {
+            if (is_number) {
+                $(this).attr("disabled", (jQuery.inArray($(this).val(), numeric_operators) == -1));
+            } else if (is_list) {
+                $(this).attr("disabled", (jQuery.inArray($(this).val(), list_operators) == -1));
+            } else {
+                $(this).attr("disabled", (jQuery.inArray($(this).val(), string_operators) == -1));
+            }
+        });
+    });
+}
 
 
 $(document).ready(function () {
-	// Set width of headings to make them horizontally centerable
-	$("h1.separator span").each(function () {
-		$(this).css("width", $(this).textWidth()+80);
-	});
+    // Set width of headings to make them horizontally centerable
+    $("h1.separator span").each(function () {
+        $(this).css("width", $(this).textWidth() + 80);
+    });
     $("h2.separator span").each(function () {
-        $(this).css("width", $(this).textWidth()+30);
+        $(this).css("width", $(this).textWidth() + 30);
     });
     // Toogle links for collapsible sections
     $(".collapsible .toggle").click(function (e) {
@@ -426,12 +425,16 @@ $(document).ready(function () {
 
     //FIXME cleanup js
     // Replace title attributes to prevent the default tooltip
-    $('a[title]').each( function() {
+    $('a[title]').each(function () {
         var e = $(this);
         e.data('title', e.attr('title'));
         e.removeAttr('title');
     });
-    $(".tooltip").hover(function (e) { return showTooltip(this, e) }, function (e) { return hideTooltip(this, e) });
+    $(".tooltip").hover(function (e) {
+        return showTooltip(this, e)
+    }, function (e) {
+        return hideTooltip(this, e)
+    });
     // Create/replace pie charts
     $(".pie-chart").each(function () {
         if ($(this).data("title").indexOf('100') != -1) {
@@ -457,7 +460,7 @@ $(document).ready(function () {
         else {
             var color = 'rgb(197, 175, 137)';
         }
-        var val = parseFloat($(this).data("title").toString().replace(/[^0-9\.]/g,'')) * 10;
+        var val = parseFloat($(this).data("title").toString().replace(/[^0-9\.]/g, '')) * 10;
         drawHorizontalLineChart(this, val, color, 90, 10);
     });
     // Toggle links
@@ -507,7 +510,7 @@ $(document).ready(function () {
     //     e.preventDefault();
     // });
 
-    var togglePage = function(selector) {
+    var togglePage = function (selector) {
         var page_id = selector.substring(1);
         var page = $('#' + page_id);
         $(".subnav .select span:visible").hide();
@@ -529,32 +532,32 @@ $(document).ready(function () {
     // Select links
     $("a.select").click(function (e) {
         var l = $(this);
-            t = $(l.attr("href") + " input").attr("checked", l.hasClass("all") ? true : false);
+        t = $(l.attr("href") + " input").attr("checked", l.hasClass("all") ? true : false);
         e.preventDefault();
         return false;
     });
 
     // Form fields
-    $('[placeholder]').focus(function() {
-      var input = $(this);
-      if (input.val() == input.attr('placeholder')) {
-        input.val('');
-        input.removeClass('placeholder');
-      }
-    }).blur(function() {
-      var input = $(this);
-      if (input.val() == '' || input.val() == input.attr('placeholder')) {
-        input.addClass('placeholder');
-        input.val(input.attr('placeholder'));
-      }
-    }).blur();
-    $('[placeholder]').parents('form').submit(function() {
-      $(this).find('[placeholder]').each(function() {
+    $('[placeholder]').focus(function () {
         var input = $(this);
         if (input.val() == input.attr('placeholder')) {
-          input.val('');
+            input.val('');
+            input.removeClass('placeholder');
         }
-      })
+    }).blur(function () {
+        var input = $(this);
+        if (input.val() == '' || input.val() == input.attr('placeholder')) {
+            input.addClass('placeholder');
+            input.val(input.attr('placeholder'));
+        }
+    }).blur();
+    $('[placeholder]').parents('form').submit(function () {
+        $(this).find('[placeholder]').each(function () {
+            var input = $(this);
+            if (input.val() == input.attr('placeholder')) {
+                input.val('');
+            }
+        })
     });
     // Compare filter
     $("a.filter-compare").click(function (e) {
@@ -581,7 +584,7 @@ $(document).ready(function () {
     var validHashes = ['#pages', '#pages-about', '#pages-partners', '#pages-methodology', '#pages-terminology', '#pages-disclaimer', '#report-a-deal', '#analytical-report'];
     var hash = window.location.hash;
     if (hash && (jQuery.inArray(hash, validHashes) != -1)) {
-        if (hash.substring(0,6) != '#pages') {
+        if (hash.substring(0, 6) != '#pages') {
             showOverlay(hash + '-overlay');
         }
         else {
