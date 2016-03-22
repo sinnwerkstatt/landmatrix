@@ -230,3 +230,7 @@ def add_class(field, new_cls):
         return mark_safe(field.as_widget())
         #return mark_safe(field.as_widget(attrs={"class":new_cls}))
 
+
+@register.filter
+def classname(obj):
+    return obj.__class__.__name__
