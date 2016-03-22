@@ -26,9 +26,7 @@ class LatestChangesQuerySet:
         ]
 
         deal_data = remove_duplicates(deal_data)
-
         deal_data = sorted(deal_data, key=lambda d: d['change_date'], reverse=True)
-
         return deal_data[:self.num_changes]
 
     def get_latest_commented(self):

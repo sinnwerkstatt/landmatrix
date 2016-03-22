@@ -1,64 +1,61 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+from pprint import pprint
 
 from landmatrix.models import *
 
 from django.db import connection
 from django.conf import settings
 
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
+
+BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status ON status.id = a.fk_status_id
+    LEFT JOIN """ + InvestorActivityInvolvement._meta.db_table + """ AS iai ON iai.fk_activity_id = a.id
+    LEFT JOIN """ + Investor._meta.db_table + """ AS os ON iai.fk_investor_id = os.id
+    LEFT JOIN """ + InvestorVentureInvolvement._meta.db_table + """ AS ivi ON ivi.fk_venture_id = os.id
+    LEFT JOIN """ + Investor._meta.db_table + """ AS s ON ivi.fk_investor_id = s.id
+    LEFT JOIN """ + Status._meta.db_table + """ AS os_st ON os.fk_status_id = os_st.id
+    LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON a.id = activity_attrs.fk_activity_id
+    LEFT JOIN """ + Country._meta.db_table + """ AS investor_country ON s.fk_country_id = investor_country.id
+    LEFT JOIN """ + Region._meta.db_table + """ AS investor_region ON investor_country.fk_region_id = investor_region.id
+    LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON CAST(activity_attrs.attributes->'target_country' AS NUMERIC) = deal_country.id
+    LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id
+    LEFT JOIN """ + PublicInterfaceCache._meta.db_table + """ AS pi ON a.id = pi.fk_activity_id AND pi.is_deal
+"""
+HECTARES_SQL = "ROUND(COALESCE(SUM(sub.deal_size)), 0) AS deal_size"
+BASE_CONDITON = """ status.name IN ('active', 'overwritten') AND os_st.name IN ('active', 'overwritten')"""
+
 
 class StatisticsQuerySet:
 
+    DEBUG = False
+
+    def __init__(self, request):
+        pass
+
     def all(self):
-        BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status ON status.id = a.fk_status_id
-    LEFT JOIN """ + Involvement._meta.db_table + """ AS i ON i.fk_activity_id = a.id
-    LEFT JOIN """ + Stakeholder._meta.db_table + """ AS s ON i.fk_stakeholder_id = s.id
-    LEFT JOIN """ + PrimaryInvestor._meta.db_table + """ AS pi ON i.fk_primary_investor_id = pi.id
-    LEFT JOIN """ + Status._meta.db_table + """ AS pi_st ON pi.fk_status_id = pi_st.id
-    LEFT JOIN """ + StakeholderAttributeGroup._meta.db_table + """ AS stakeholder_attrs ON s.id = stakeholder_attrs.fk_stakeholder_id
-    LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON a.id = activity_attrs.fk_activity_id
-    LEFT JOIN  """ + Country._meta.db_table + """ AS investor_country ON stakeholder_attrs.attributes->'country' = investor_country.name
-    LEFT JOIN  """ + Region._meta.db_table + """ AS investor_region ON investor_country.fk_region_id = investor_region.id
-    LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON activity_attrs.attributes->'target_country' = deal_country.name
-    LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id"""+\
-    "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal\n"
-
-        HECTARES_SQL = "ROUND(COALESCE(SUM(pi.deal_size)), 0)) AS deal_size"
-
-        BASE_CONDITON = """a.version = (
-        SELECT MAX(version)
-        FROM """ + Activity._meta.db_table + """ AS amax, """ + Status._meta.db_table + """ AS st
-        WHERE amax.fk_status_id = st.id AND amax.activity_identifier = a.activity_identifier
-            AND st.name IN ('active', 'overwritten', 'deleted')
-    )
-    AND pi.version = (
-        SELECT MAX(version)
-        FROM """ + PrimaryInvestor._meta.db_table + """ AS pimax, """ + Status._meta.db_table + """ AS st
-        WHERE pimax.fk_status_id = st.id AND pimax.primary_investor_identifier = pi.primary_investor_identifier
-            AND st.name IN ('active', 'overwritten', 'deleted')
-    )
-    AND status.name IN ('active', 'overwritten') AND pi_st.name IN ('active', 'overwritten')
-    AND pi.is_deal"""
-
         cursor = connection.cursor()
         sql = """SELECT
     sub.negotiation_status,
     COUNT(DISTINCT a.activity_identifier) AS deals,
-    """ + HECTARES_SQL + """,
-    MIN(sub.negotiation_status_date) AS year
+    """ + HECTARES_SQL + """
 FROM """ + Activity._meta.db_table + """ AS a
 LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON a.id = activity_attrs.fk_activity_id,
 (
     SELECT DISTINCT
         a.id,
         pi.negotiation_status AS negotiation_status,
-        activity_attrs.date AS negotiation_status_date
+        pi.deal_size AS deal_size
     FROM """ + Activity._meta.db_table + """ AS a
     """ + BASE_JOIN + """
     WHERE """ + BASE_CONDITON + """
+    AND pi.negotiation_status IS NOT NULL
+    GROUP BY a.activity_identifier, a.id, pi.negotiation_status, pi.deal_size
 ) AS sub
 WHERE a.id = sub.id
 GROUP BY sub.negotiation_status"""
+
+        if self.DEBUG: print(sql)
         cursor.execute(sql)
         result = cursor.fetchall()
-        if settings.DEBUG and connection.queries: print(connection.queries[-1]['sql'])
+        if self.DEBUG: pprint(result)
         return result
