@@ -57,22 +57,6 @@
                             {% endfor %}
                         </ul>
                     </li>
-                    <li>
-                        <h4>{% trans "Spatial Data" %}</h4>
-                        <ul>
-                            <li><a href="#">{% trans "Location" %}</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <h4>{% trans "General Info" %}</h4>
-                        <ul>
-                            <li><a href="#">{% trans "Current size under contract" %}</a></li>
-                            <li><a href="#">{% trans "Intention of the Investment" %}</a></li>
-                            <li><a href="#">{% trans "Nature of the deal" %}</a></li>
-                            <li><a href="#">{% trans "Negotiation Status" %}</a></li>
-                            <li><a href="#">{% trans "Implementation Status" %}</a></li>
-                        </ul>
-                    </li>
                 </ul>
 
             </div>
@@ -171,11 +155,14 @@
 
                 for (item in data) {
                     var tag = data[item].variable[0];
+
                     if (filternames.indexOf(tag) >= 0) {
                         tag = data[item].variable[0] + " " + data[item].operator[0];
                     }
                     filternames.push(tag);
-                    var finalHtml = tag + '<a class="delete-row" href="javascript:removeFilter(\'' + data[item].name + '\')"><i class="lm lm-times"></i></a>';
+                    var finalHtml = '<a class="delete-row" href="javascript:removeFilter(\'' + data[item].name + '\')" title="'
+                    var filterPopup = data[item].variable[0] + " " + data[item].operator[0] + " " + data[item].value[0];
+                    finalHtml = finalHtml + filterPopup + '">' + tag + '<i class="lm lm-times"></i></a>';
                     finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
                     $(finalHtml).appendTo(tags);
                     console.log("Tag appended.", tag, tags);
