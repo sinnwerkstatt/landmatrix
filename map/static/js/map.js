@@ -571,13 +571,13 @@ $(document).ready(function () {
                 content.innerHTML = '<div><span><a href="/deal/' + id + '"><strong>Deal #' + id + '</strong></a></span>';
                 //content.innerHTML += '<p>Coordinates:</p><code>' + lat + ' ' + lon + '</code>';
                 if (intended_size !== null) {
-                    content.innerHTML += '<span>Intended area (ha):</span><span class="pull-right">' + intended_size + '</span><br/>';
+                    content.innerHTML += '<span>Intended area (ha):</span><span class="pull-right">' + parseInt(intended_size).toLocaleString(options={useGrouping:true}) + '</span><br/>';
                 }
                 if (production_size !== null) {
-                    content.innerHTML += '<span>Production size (ha):</span><span class="pull-right">' + production_size + '</span><br/>';
+                    content.innerHTML += '<span>Production size (ha):</span><span class="pull-right">' + parseInt(production_size).toLocaleString(options={useGrouping:true}) + '</span><br/>';
                 }
                 if (contract_size !== null) {
-                    content.innerHTML += '<span>Contract size (ha):</span><span class="pull-right">' + contract_size + '</span><br/>';
+                    content.innerHTML += '<span>Contract size (ha):</span><span class="pull-right">' + parseInt(contract_size).toLocaleString(options={useGrouping:true}) + '</span><br/>';
                 }
                 content.innerHTML += '<span>Intention:</span><span class="pull-right">' + intention + '</span><br/>';
                 content.innerHTML += '<span>Investor:</span><span class="pull-right">' + investor + '</span><br />';
