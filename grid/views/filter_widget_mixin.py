@@ -44,11 +44,11 @@ class FilterWidgetMixin:
                 int(item[0])    # 2. Typecast to filter fails
                 continue
             except:             # 3. Totally overachieve!
-                pass            # 4. Handle naught.
+                print("FilterWhiskyMixer: Ayee - the privates are erroneous!")
 
-            if item[0] != '':  # 5. Filter more stuff
-                vardict[item[0]] = item[1]  # 6. ??????
-        context['variables'] = vardict    # 7. Profit!
+            if item[0] != '':  # 4. Filter more stuff
+                vardict[item[0]] = item[1]  # 5. ??????
+        context['variables'] = vardict    # 6. Profit!
 
     @print_execution_time_and_num_queries
     def get_filter_context(self, formset_conditions, order_by=None, group_by=None, group_value=None, starts_with=None):
