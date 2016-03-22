@@ -194,16 +194,16 @@ var markerStyle = new ol.style.Style({
 });
 
 
-function initializeMap (mapId) {
+function initializeMap (mapId, lat, lon) {
     const target = "map-" + mapId;
 
     var fields = getLocationFields(mapId);
-
-    var lat = 0.0;
-    lat =  parseFloat(fields.lat.val());
-
-    var lon = 0.0;
-    lon = parseFloat(fields.lon.val());
+    if (typeof lat === 'undefined') {
+      lat =  parseFloat(fields.lat.val());
+    }
+    if (typeof lon === 'undefined') {
+      lon =  parseFloat(fields.lon.val());
+    }
 
     if (isNaN(lat) || isNaN(lon)) {
         lon = lat = 0;

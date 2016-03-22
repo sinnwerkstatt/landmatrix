@@ -491,10 +491,18 @@ class BaseForm(forms.Form):
                 value = self.is_valid() and self.cleaned_data.get(field_name) or self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name)
 
             if value:
-                tg_items.append((field.label, '%s %s' % (value, field.help_text)))
+                tg_items.append({
+                    'name': field_name,
+                    'label': field.label,
+                    'value': '%s %s' % (value, field.help_text),
+                })
 
         if len(tg_items) > 0:
-            output.append(('tg', tg_title))
+            output.append({
+                'name': 'tg',
+                'label': '',
+                'value': tg_title,
+            })
             output.extend(tg_items)
 
         return output
