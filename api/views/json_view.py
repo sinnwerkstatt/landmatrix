@@ -1,3 +1,8 @@
+import json
+
+from django.http.response import HttpResponse
+from django.views.generic.base import TemplateView
+
 from api.query_sets.agricultural_produce_query_set import AllAgriculturalProduceQuerySet
 from api.query_sets.countries_query_set import CountriesQuerySet
 from api.query_sets.deals_query_set import DealsQuerySet
@@ -9,17 +14,13 @@ from api.query_sets.investors_query_set import InvestorsQuerySet
 from api.query_sets.latest_changes_query_set import LatestChangesQuerySet
 from api.query_sets.negotiation_status_query_set import NegotiationStatusQuerySet
 from api.query_sets.regions_query_set import RegionsQuerySet
+from api.query_sets.statistics_query_set import StatisticsQuerySet
 from api.query_sets.target_country_summaries_query_set import TargetCountrySummariesQuerySet
 from api.query_sets.top_10_countries_query_set import Top10CountriesQuerySet
 from api.query_sets.transnational_deals_by_country_query_set import TransnationalDealsByCountryQuerySet
 from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
-from grid.views.activity_protocol import ActivityQuerySet
 from api.views.decimal_encoder import DecimalEncoder
-
-from django.http.response import HttpResponse
-from django.views.generic.base import TemplateView
-
-import json
+from grid.views.activity_protocol import ActivityQuerySet
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -67,6 +68,7 @@ InvestorsJSONGenerator = json_get_generator(InvestorsQuerySet)
 # latest DB changes (add/change/delete/comment)
 LatestChangesJSONGenerator = json_get_generator(LatestChangesQuerySet)
 
+StatisticsJSONGenerator = json_get_generator(StatisticsQuerySet)
 
 class JSONView(TemplateView):
 
@@ -89,6 +91,7 @@ class JSONView(TemplateView):
         'countries.json':                       CountriesJSONGenerator,
         'investors.json':                       InvestorsJSONGenerator,
         'latest_changes.json':                  LatestChangesJSONGenerator,
+        'statistics.json':                      StatisticsJSONGenerator,
     }
 
     def dispatch(self, request, *args, **kwargs):
