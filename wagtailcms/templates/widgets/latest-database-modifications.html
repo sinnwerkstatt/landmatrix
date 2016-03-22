@@ -1,0 +1,52 @@
+<table class="table table-striped" id="latest-database-modifications">
+    <tr>
+        <th>Deal #</th>
+        <th>Date</th>
+        <th>State</th>
+        <th>Target Country</th>
+    </tr>
+    <tr>
+        <td><a href="">768</a></td>
+        <td>03/12/14</td>
+        <td>Updated</td>
+        <td>Brazil</td>
+    </tr>
+    <tr>
+        <td><a href="">4575</a></td>
+        <td>03/12/14</td>
+        <td>Updated</td>
+        <td>Lao People's Democratic Republic</td>
+    </tr>
+    <tr>
+        <td><a href="">4054</a></td>
+        <td>10/14/14</td>
+        <td>Updated</td>
+        <td>Brazil</td>
+    </tr>
+    <tr>
+        <td><a href="">4201</a></td>
+        <td>07/04/14</td>
+        <td>Added</td>
+        <td>Brazil</td>
+    </tr>
+    <tr>
+        <td><a href="">4365</a></td>
+        <td>03/12/14</td>
+        <td>Updated</td>
+        <td>Panama</td>
+    </tr>
+    <tr>
+        <td><a href="">4054</a></td>
+        <td>02/08/14</td>
+        <td>Updated</td>
+        <td>Brazil</td>
+    <tr>
+</table>
+<script type="text/javascript">
+$(document).ready(function () {
+    var count = {{ count }} || 5;
+    $.get('/api/latest_changes.json?n=' + count, function (data) {
+        debugger;
+    })
+});
+</script>
