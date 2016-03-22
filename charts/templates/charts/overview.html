@@ -18,8 +18,8 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 
 {% block description %}
 <div class="desc">
-    <p class="negotiation_status">{%  trans 'Deals divided by negotiation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %}<a href="/about/#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left" title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i class="lm lm-question-circle"> </i></a></p>
-    <p class="implementation_status" style="display: none">{%trans 'Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %} <a href="/about/#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left" title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i class="lm lm-question-circle"> </i></a></p>
+    <p class="negotiation_status">{%  trans 'Deals divided by negotiation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %}<a href="/about/#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left noul" title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i class="lm lm-question-circle"> </i></a></p>
+    <p class="implementation_status" style="display: none">{%trans 'Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %} <a href="/about/#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left noul" title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i class="lm lm-question-circle"> </i></a></p>
     <p class="intention_of_investment" style="display: none">{% trans 'Deals divided by intention of investment.' %}</p>
     <p class="agriculture" style="display: none">{% trans 'Deals having „agriculture“ as main intention of investment disaggregated into sub-sections.' %}</p>
 
@@ -36,7 +36,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 {% block data %}
 <div class="row">
     <div class="col-md-12">
-        <canvas id="bar" width="1200" height="390"></canvas>
+        <canvas id="bar" width="1200" height="500"></canvas>
 
     </div>
 </div>
@@ -92,6 +92,7 @@ function draw (callback, chart_data) {
         }
         var bar = new RGraph.Bar('bar', bar_data);
         bar.Set('chart.hmargin', 40);
+        bar.Set('chart.gutter.bottom', 130);
         bar.Set('chart.colors', [show_deals && '#44b7b6' || '#ed881b']);
         bar.Set('chart.labels', bar_labels);
         //bar.Set('chart.labels.above.specific', bar_labels_ingraph);
@@ -104,10 +105,11 @@ function draw (callback, chart_data) {
         bar.Set('chart.text.font', 'Open Sans');
         bar.Set('chart.text.color', '#3b3b3b');
         bar.Set('chart.axis.color', '#3b3b3b');
-        bar.Set('chart.text.size', '9');
+        bar.Set('chart.text.Angle', 45);
+        bar.Set('chart.text.size', '8');
         bar.Set('chart.tooltips', bar_labels_ingraph);
         bar.Set('chart.tooltips.css.class', 'graph-popover');
-        bar.Set('chart.gutter.left', (Math.max.apply(Math, bar_data).toString().length * 9));
+        bar.Set('chart.gutter.left', (Math.max.apply(Math, bar_data).toString().length * 11));
         bar.Set('chart.tooltips.event', 'onmousemove');
         RGraph.Effects.Fade.In(bar, {'duration': 250});
 

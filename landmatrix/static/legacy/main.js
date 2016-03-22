@@ -379,12 +379,20 @@ function new_update_widget(operatorfield, variablefield, key_id) {
         var is_list = (variablefield.find("select,ul").length > 0);
         operatorfield.find('option').each(function (index) {
             if (is_number) {
-                $(this).attr("disabled", (jQuery.inArray($(this).val(), numeric_operators) == -1));
+                var state = (jQuery.inArray($(this).val(), numeric_operators) == -1);
             } else if (is_list) {
-                $(this).attr("disabled", (jQuery.inArray($(this).val(), list_operators) == -1));
+                var state = (jQuery.inArray($(this).val(), list_operators) == -1);
             } else {
-                $(this).attr("disabled", (jQuery.inArray($(this).val(), string_operators) == -1));
+                var state = (jQuery.inArray($(this).val(), string_operators) == -1);
             }
+
+            $(this).attr("disabled", state);
+            if (state == true) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+
         });
     });
 }
