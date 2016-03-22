@@ -5,6 +5,8 @@ from django_comments.models import Comment
 
 import json
 
+from landmatrix.models.country import Country
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
@@ -26,9 +28,7 @@ class LatestChangesQuerySet:
         ]
 
         deal_data = remove_duplicates(deal_data)
-
         deal_data = sorted(deal_data, key=lambda d: d['change_date'], reverse=True)
-
         return deal_data[:self.num_changes]
 
     def get_latest_commented(self):
@@ -64,6 +64,6 @@ def target_country(activity):
     attributes = ActivityAttributeGroup.objects.filter(fk_activity_id=activity.id).order_by('-id')
     for group in attributes:
         if 'target_country' in group.attributes:
-            return group.attributes['target_country']
+            return Country.objects.get(pk=group.attributes['target_country']).name
     raise ValueError('No target_country in attributes for activity ()'.format(activity.id))
 
