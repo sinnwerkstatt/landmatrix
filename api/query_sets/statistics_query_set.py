@@ -19,10 +19,9 @@ BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status ON status.i
     LEFT JOIN """ + Region._meta.db_table + """ AS investor_region ON investor_country.fk_region_id = investor_region.id
     LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON CAST(activity_attrs.attributes->'target_country' AS NUMERIC) = deal_country.id
     LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id
-    LEFT JOIN """ + PublicInterfaceCache._meta.db_table + """ AS pi ON a.id = pi.fk_activity_id AND pi.is_deal
-"""
+    LEFT JOIN """ + PublicInterfaceCache._meta.db_table + """ AS pi ON a.id = pi.fk_activity_id AND pi.is_deal"""
 HECTARES_SQL = "ROUND(COALESCE(SUM(sub.deal_size)), 0) AS deal_size"
-BASE_CONDITON = """ status.name IN ('active', 'overwritten') AND os_st.name IN ('active', 'overwritten')"""
+BASE_CONDITON = "status.name IN ('active', 'overwritten') AND os_st.name IN ('active', 'overwritten')"
 
 
 class StatisticsQuerySet:
