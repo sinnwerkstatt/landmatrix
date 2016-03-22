@@ -1,5 +1,5 @@
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
-from grid.views.view_aux_functions import FILTER_VAR_INV, FILTER_VAR_ACT
+from grid.views.view_aux_functions import get_filter_vars
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -12,7 +12,7 @@ class Filter(dict):
 
         if operator[0] not in FilterToSQL.OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
-        if variable[0] not in FILTER_VAR_INV and variable[0] not in FILTER_VAR_ACT:
+        if variable[0] not in get_filter_vars():
             raise ValueError('No such variable: {}'.format(variable))
 
         Filter.filter_number += 1
