@@ -97,8 +97,7 @@ class BrowseFilterConditions:
             if len(values) == 2:
                 self.data["deal_scope"] = "all"
             elif len(values) == 1:
-                self.data["deal_scope"] = values[0] == "10" and "domestic" or values[
-                                                                                  0] == "20" and "transnational" or ""
+                self.data["deal_scope"] = "domestic" if values[0] == "10" else "transnational" if values[0] == "20" else ""
         elif "inv_" in variable:
             variable = variable[4:]
             f = get_field_by_sh_key_id(variable)

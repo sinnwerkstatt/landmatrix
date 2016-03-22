@@ -36,6 +36,9 @@ class FilterWidgetMixin:
         context["empty_form_conditions"] = self.current_formset_conditions
         context["rules"] = self.rules
 
+        if not self.current_formset_conditions.forms:
+            return
+
         # YUK:
         varlist = self.current_formset_conditions.forms[0]._variables()  # 1. grab somones privates
         vardict = {}
