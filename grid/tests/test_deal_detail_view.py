@@ -69,12 +69,13 @@ class TestDealDetailView(DealsTestData, WithClientMixin, TestCase):
         response = self._get_url_following_redirects('/deal/%i_%f/' % (self.activity_identifier, time()))
 
         content = response.content.decode('utf-8')
-        self.assertIn(str(self.INTENDED_SIZE['new']), grep_line(content, 'intended_size')[0])
-        self.assertIn(str(self.CONTRACT_SIZE['new']), grep_line(content, 'contract_size')[0])
-        self.assertIn(str(self.PRODUCTION_SIZE['new']), grep_line(content, 'production_size')[0])
-        self.assertNotIn(str(self.INTENDED_SIZE['old']), grep_line(content, 'intended_size')[0])
-        self.assertNotIn(str(self.CONTRACT_SIZE['old']), grep_line(content, 'contract_size')[0])
-        self.assertNotIn(str(self.PRODUCTION_SIZE['old']), grep_line(content, 'production_size')[0])
+
+        self.assertIn(str(self.INTENDED_SIZE['new']), grep_line(content, 'intended_size', trailing=6)[0])
+        self.assertIn(str(self.CONTRACT_SIZE['new']), grep_line(content, 'contract_size', trailing=6)[0])
+        self.assertIn(str(self.PRODUCTION_SIZE['new']), grep_line(content, 'production_size', trailing=6)[0])
+        self.assertNotIn(str(self.INTENDED_SIZE['old']), grep_line(content, 'intended_size', trailing=6)[0])
+        self.assertNotIn(str(self.CONTRACT_SIZE['old']), grep_line(content, 'contract_size', trailing=6)[0])
+        self.assertNotIn(str(self.PRODUCTION_SIZE['old']), grep_line(content, 'production_size', trailing=6)[0])
 
     def test_deal_detail_view_with_history_old_version(self):
         attributes = self._change_activity_attributes()
@@ -86,9 +87,9 @@ class TestDealDetailView(DealsTestData, WithClientMixin, TestCase):
         response = self._get_url_following_redirects('/deal/%i_%f/' % (self.activity_identifier, hopefully_existing_timestamp))
 
         content = response.content.decode('utf-8')
-        self.assertIn(str(self.INTENDED_SIZE['old']), grep_line(content, 'intended_size')[0])
-        self.assertIn(str(self.CONTRACT_SIZE['old']), grep_line(content, 'contract_size')[0])
-        self.assertIn(str(self.PRODUCTION_SIZE['old']), grep_line(content, 'production_size')[0])
+        self.assertIn(str(self.INTENDED_SIZE['old']), grep_line(content, 'intended_size', trailing=6)[0])
+        self.assertIn(str(self.CONTRACT_SIZE['old']), grep_line(content, 'contract_size', trailing=6)[0])
+        self.assertIn(str(self.PRODUCTION_SIZE['old']), grep_line(content, 'production_size', trailing=6)[0])
 
     def _change_activity_attributes(self):
         activity = Activity.objects.last()
@@ -103,5 +104,12 @@ class TestDealDetailView(DealsTestData, WithClientMixin, TestCase):
         return attributes
 
 
-def grep_line(string, search):
-    return [item for item in string.split("\n") if search in item]
+def grep_line(string, search, trailing=0):
+    found_lines = []
+    lines = string.split("\n")
+    for i, item in enumerate(lines):
+        if search in item:
+            trailing_lines = [lines[j].strip() for j in range(i, i+trailing)]
+            found_lines.append(item.strip()+''.join(trailing_lines))
+    return found_lines
+
