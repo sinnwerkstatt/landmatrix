@@ -98,6 +98,23 @@ class LinkedImageBlock(StructBlock):
         context['name'] = value.title
         return context
 
+class LatestDatabaseModificationsBlock(StructBlock):
+    count = blocks.CharBlock()
+
+    class Meta:
+        icon = 'fa fa-list'
+        label = 'Latest database modifications'
+        template = 'widgets/latest-database-modifications.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['count'] = value.get('count')
+        return context
+
+CONTENT_BLOCKS += [
+    ('latest_database_modifications', LatestDatabaseModificationsBlock()),
+]
+
 class ColumnsBlock(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
