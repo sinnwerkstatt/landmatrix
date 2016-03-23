@@ -17,8 +17,18 @@ class TestActivityProtocol(TestCase, DealsTestData):
     def setUp(self):
         self.old_setting = settings.DEBUG
         settings.DEBUG = False
-        self.request = HttpRequest()
+        self.request = self._prepare_request_with_session()
         self.protocol = ActivityProtocol()
+
+    def _prepare_request_with_session(self):
+        from django.conf import settings
+        from django.utils.importlib import import_module
+
+        request = HttpRequest()
+        engine = import_module(settings.SESSION_ENGINE)
+        session_key = None
+        request.session = engine.SessionStore(session_key)
+        return request
 
     def tearDown(self):
         settings.DEBUG = self.old_setting

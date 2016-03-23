@@ -3,7 +3,7 @@ from django.views.generic.base import TemplateView
 
 import json
 
-from api.views.filter import Filter
+from api.views.filter import Filter, PresetFilter
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -38,10 +38,13 @@ class FilterView(TemplateView):
 
 
 def set_filter(stored_filters, filter_values):
-    new_filter = Filter(
-        filter_values['variable'], filter_values['operator'], filter_values['value'],
-        filter_values.get('name', [None]).pop()
-    )
+    if 'preset' in filter_values:
+        new_filter = PresetFilter(filter_values['preset'], filter_values.get('name', [None]).pop())
+    else:
+        new_filter = Filter(
+            filter_values['variable'], filter_values['operator'], filter_values['value'],
+            filter_values.get('name', [None]).pop()
+        )
     stored_filters[new_filter.name] = new_filter
 
 
