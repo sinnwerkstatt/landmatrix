@@ -24,39 +24,54 @@
 
     <div id="manage-filters" class="clearfix collapse">
         <div class="row">
-            <div class="col-md-3 filterbox checkboxes">
-                <ul>
-                    <li class="checkbox">
-                        <input id="checkbox1" name="data1" type="checkbox">
-                        <label for="checkbox1">{% trans "Concluded Deals" %}</label>
+            <div class="col-md-3 filterbox no-pad">
+                <ul class="variables">
+                    <li>
+                        <h4>Preset Category Label</h4>
+                        <ul>
+                            <li class="filter_item">
+                                <a href="javascript:loadPreset('PresetName')"
+                                   title="$Detailed Preset Filtering explanation">
+                                    <label>{% trans "PresetLabel" %}</label>
+                                </a>
+                            </li>
+                            <li class="filter_item">
+                                <a href="javascript:loadPreset('PresetName')"
+                                   title="$Detailed Preset Filtering explanation">
+                                    <label>{% trans "PresetLabel" %}</label>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="checkbox">
-                        <input id="checkbox2" name="data2" type="checkbox">
-                        <label for="checkbox2">{% trans "Intended Deals" %}</label>
+                    <li>
+                        <h4>Preset Category Label</h4>
+                        <ul>
+                            <li class="filter_item">
+                                <a href="javascript:loadPreset('PresetName')"
+                                   title="$Detailed Preset Filtering explanation">
+                                    <label>{% trans "PresetLabel" %}</label>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="checkbox">
-                        <input id="checkbox3" name="data3" type="checkbox">
-                        <label for="checkbox3">{% trans "Failed Deals" %}</label>
-                    </li>
-                    <li class="checkbox">
-                        <input id="checkbox4" name="data4" type="checkbox">
-                        <label for="checkbox4">{% trans "Exclude Media Reports" %}</label>
-                    </li>
+
                 </ul>
             </div>
             <div class="col-md-3 filterbox no-pad">
                 <ul class="variables">
-                    <li>
-                        <h4>Unsorted</h4>
-                        <ul>
-                            {% for key, value in variables.items %}
-                                <li id="filter_{{ key }}" class="filter_item"><a
-                                        href="javascript:createFilter('{{ key }}')"
-                                        id="filter_{{ key }}_link">{% trans value %}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
+                    {% for group in variables %}
+                        <li>
+                            <h4>{{ group.label }}</h4>
+                            <ul>
+                                {% for variable in group.items %}
+                                    <li id="filter_{{ variable.name }}" class="filter_item"><a
+                                            href="javascript:createFilter('{{ variable.name }}')"
+                                            id="filter_{{ variable.name }}_link">{% trans variable.label %}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
                 </ul>
 
             </div>
@@ -89,270 +104,17 @@
                             <div id="filter_value" class="right">
                                 <input type="text"/>
                             </div>
+                            <div></div>
                         </div>
                         <button type="submit" class="btn btn-primary" name="add"
                                 value="add">{% trans "Add filter" %}</button>
-                        <!-- <button type="submit" class="btn" name="reset"
-                                    value="reset">{% trans "Reset" %}</button>
-                            <button type="submit" class="btn">{% trans "Go" %}</button> -->
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <div id="filters_old" class="">
-
-        <script type="text/javascript">
-            var currentVariable = "";
-
-            function init_form_condition(el) {
-                // variable
-                /*
-                 el.change(function () {
-                 var form = $(this).parents("ul.form");
-                 new_update_widget(form.find(".field:last .value-wrapper"), $(this).find("option:selected").val(), form);
-                 }).change();
-                 // operator
-                 el.parents("ul.form").find(".operator").change(function () {
-                 el.change();
-                 });
-                 // delete button
-                 el.parents("ul.form").find(".delete-row").click(function () {
-                 var form = $(this).parents("form"),
-                 conditions = form.find(".condition:visible");
-                 $(this).parents("ul.form.condition").remove();
-                 var count = $("#id_
-                {{ empty_form_conditions.prefix }}-TOTAL_FORMS").val() - 1;
-                 $("#id_
-                {{ empty_form_conditions.prefix }}-TOTAL_FORMS").val(count);
-                 // reset row counters
-                 var new_name;
-                 for (var i = 0; i < count; i++) {
-                 $(conditions[i]).find(":input").each(function () {
-                 $(this).attr("id") && $(this).attr("id", $(this).attr("id").replace(/
-                {{ empty_form_conditions.prefix }}-[0-9]+/, "
-                {{ empty_form_conditions.prefix }}-" + i));
-                 $(this).attr("name") && $(this).attr("name", $(this).attr("name").replace(/
-                {{ empty_form_conditions.prefix }}-[0-9]+/, "
-                {{ empty_form_conditions.prefix }}-" + i));
-                 });
-                 //el.parents("ul.form").find("li.field")
-                 }
-                 });
-                 */
-            }
-
-            function updateFilters(json) {
-                var data = JSON.parse(json);
-                console.log("Filterdata:", data);
-                var tags = $("#filterlist");
-                tags.empty();
-                var label = '<label>{% trans "Active Filters" %}:</label>';
-                tags.append(label);
-
-                var filternames = [];
-
-                for (item in data) {
-                    var tag = data[item].variable[0];
-
-                    if (filternames.indexOf(tag) >= 0) {
-                        tag = data[item].variable[0] + " " + data[item].operator[0];
-                    }
-                    filternames.push(tag);
-                    var finalHtml = '<a class="delete-row" href="javascript:removeFilter(\'' + data[item].name + '\')" title="'
-                    var filterPopup = data[item].variable[0] + " " + data[item].operator[0] + " " + data[item].value[0];
-                    finalHtml = finalHtml + filterPopup + '">' + tag + '<i class="lm lm-times"></i></a>';
-                    finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
-                    $(finalHtml).appendTo(tags);
-                    console.log("Tag appended.", tag, tags);
-                }
-            }
-            // Get current filterdata
-            $.get(
-                    "/api/filter.json?action=list",
-                    updateFilters
-            );
-
-            function removeFilter(filterName) {
-                $.post(
-                        "/api/filter.json?action=remove&name=" + filterName,
-                        updateFilters
-                );
-            }
-
-            function createFilter(variable) {
-                new_update_widget($("#filter_operator"), $("#filter_value"), variable);
-                $('#filter_variable').val(variable);
-                currentVariable = variable;
-
-                $(".filter_active").removeClass('filter_active');
-                $("#filter_" + variable).addClass('filter_active');
-            }
-
-            $(document).ready(function () {
-                /*
-                 // add sticky header to table
-                 var offset = $('.navbar').height();
-                 //$("#summary").stickyTableHeaders({fixedOffset: offset});
-                 // enable popover for intention of investment
-                 $('a.intention-icon').popover({trigger: "hover", placement: "top"});
-                 init_form_condition($("ul.form:not(.empty) .field:first-child select"));
-                 */
-
-                $('#filter_operator').change(function () {
-                    new_update_widget($("#filter_operator"), $("#filter_value"), currentVariable)
-                });
-
-                // collapsible filters
-                $(".toggle-filter").click(function (e) {
-                    e.preventDefault();
-                    $(".collapsible .collapsible-form").toggle();
-                    var container = $(".collapsible .collapsible-tags");
-
-                    if (container.hasClass("collapsed")) {
-                        container.removeClass("collapsed");
-                        container.find(".toggle-filter").text("Manage filters");
-                        container.find(".toggle-tooltip").show();
-                    } else {
-                        container.addClass("collapsed");
-                        container.find(".toggle-filter").text("Hide filters");
-                        container.find(".toggle-tooltip").hide();
-                    }
-                    return false;
-                }).click();
-                $('.toggle-filters').click(function () {
-                    var text = $(this).data('toggle-text');
-                    $(this).data('toggle-text', $(this).text()).text(text);
-                })
-
-
-                $("form").submit(function (e) {
-                    e.preventDefault();
-                    var form = $(this);
-                    var data = form.serialize();
-
-                    $.post(
-                            '/api/filter.json?action=set&' + data,
-                            updateFilters
-                    );
-                });
-
-            });
-        </script> <!-- old filter javascript voodoo -->
-        <div class="row hidden">
-            <div class="span7">
-                <div class="collapsible">
-                    <div class="collapsible-form">
-                        <form method="GET" class="form-inline filters">
-                            <div id="emptyOLD" class="rules row">
-                                <div class="span8">
-                                    <input type="hidden" name="filtered" value="true"/>
-                                    <input type="hidden" name="limit" value="{{ limit }}"/>
-                                    <input type="hidden" name="order_by" value="{{ data.order_by }}"/>
-                                    <input type="submit" class="submit" value="Apply Filters" style="display: none"/>
-                                    {% if empty_form_conditions %}
-                                        <input type="hidden" name="prefix" value="{{ empty_form_conditions.prefix }}">
-                                        {{ empty_form_conditions.management_form }}
-                                        <!--    {#% for empty_form in empty_form_conditions.forms %#}
-                                            <ul class="form clearfix condition">
-                                                {# empty_form.as_ul #}
-                                                <li>&nbsp;<a class="delete-row" href="javascript:void(0)"><i
-                                                        class="lm lm-times"></i></a></li>
-                                            </ul>
-                                        {#% endfor %#}
-                                        -->
-                                    {% endif %}
-                                    <!-- <ul class="form clearfix condition empty">
-                                        <li>Hello Bob!</li>
-                                        {{ empty_form_conditions.empty_form.as_ul }} -->
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="span8">
-                                    <script type="text/javascript">
-                                        $(document).ready(function () {
-                                            //
-                                            $(".subnav li.limit a").click(function (e) {
-                                                e.preventDefault();
-                                                $("input[name=limit]").val($(this).attr("href").split("/")[1]);
-                                                $("form").submit();
-                                            });
-                                            /*
-                                             $('.reset-filter').click(function () {
-                                             $('.rules').find('ul:gt(0)').remove();
-                                             $('#id_
-                                            {{ empty_form_conditions.prefix }}-TOTAL_FORMS').val(0);
-                                             });
-                                             */
-                                            /* $('#empty ul.form.empty :input, #empty ul.form.empty label').each(function () {
-                                             var id = $(this).attr("id");
-                                             var name = $(this).attr("name");
-                                             var value = $(this).attr("value");
-                                             var for_str = $(this).attr("for");
-                                             if (id != undefined) {
-                                             $(this).attr("id", id.replace("id_
-                                            {{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                             }
-                                             if (name != undefined) {
-                                             $(this).attr("name", name.replace("
-                                            {{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                             }
-                                             if (value != undefined) {
-                                             $(this).attr("value", value.replace("
-                                            {{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                             }
-                                             if (for_str != undefined) {
-                                             $(this).attr("for", for_str.replace("id_
-                                            {{ empty_form_conditions.prefix }}-__prefix__-", ""));
-                                             }
-                                             }); */
-                                            //
-                                            /*
-                                             $("ul.form.empty").formset({
-                                             prefix: '
-                                            {{ empty_form_conditions.prefix }}',
-                                             addText: '
-                                            {% trans "Add filter" %}',
-                                             deleteText: '<i class="lm lm-times"></i>',
-                                             added: function (row) {
-                                             console.log("I've been added: ", row);
-                                             // FIXME: Move row out of button group, this should be handled by the formset
-                                             row.remove();
-                                             row.insertBefore($(".add-row:visible").parent().parent().find(".btn-group"))
-                                             init_form_condition($("ul.form.condition:last .field:first-child select"));
-                                             }
-                                             });
-                                             */
-                                            // FIXME: Move add-row button into the button group, don't use javascript for that
-                                            var b = $(".add-row").addClass("btn").hide();
-                                            $(".filters .btn-group").prepend(b.show());
-                                        })
-                                    </script>
-                                    <!--<div class="btn-group">
-                                        <button type="submit" class="btn" name="reset"
-                                                value="reset">{% trans "Reset" %}</button>
-                                        <button type="submit" class="btn">{% trans "Go" %}</button>
-                                    </div>-->
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="collapsible-tags collapsed">
-                        <h5>Active filters:</h5>
-                        <ul class="unstyled"></ul>
-                        <a href="javascript:;" class="toggle-filter">Manage filters</a>
-                        {% if data.count %}<p style="clear: both">Showing
-                            {% if data.items|length != data.count %}{{ data.items|length }}
-                                of {% endif %}{{ data.count }} row{{ data.count|pluralize }}.</p>{% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> <!-- old filter section -->
 </div>
 
 {% block js %}
-    <!-- <script src="{% static "legacy/vendor/jquery.formset.custom.js" %}" type="text/javascript" charset="utf-8"></script> -->
+    <script src="{% static "js/filters.js" %}" type="text/javascript"></script>
 {% endblock %}
