@@ -368,37 +368,55 @@ function update_widget(el, key_id, form) {
     });
 }
 
-function new_update_widget(operatorfield, variablefield, key_id) {
-    var name = variablefield.find(":input").attr("name"),
-        op_value = operatorfield.val();
-
-    const request = {key_id: key_id, value: "", name: 'value', operation: op_value};
-    $.get("/ajax/widget/values", request, function (data) {
-        variablefield.html(data);
-        var is_number = (variablefield.find(":input[type=number]:not(.year-based-year)").length > 0);
-        var is_list = (variablefield.find("select,ul").length > 0);
-        operatorfield.find('option').each(function (index) {
-            if (is_number) {
-                var state = (jQuery.inArray($(this).val(), numeric_operators) == -1);
-            } else if (is_list) {
-                var state = (jQuery.inArray($(this).val(), list_operators) == -1);
-            } else {
-                var state = (jQuery.inArray($(this).val(), string_operators) == -1);
-            }
-
-            $(this).attr("disabled", state);
-            if (state == true) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-
-        });
-    });
-}
-
 
 $(document).ready(function () {
+
+
+
+    function setupSharePopover() {
+        $("#btn-share").popover({
+            html: true,
+            container: '#btn-share',
+            content: function () {
+                return $('#share').html();
+            },
+            template: '<div class="popover" role="tooltip"><div class="popover-content"></div></div>'
+        });
+
+
+        $(document).click(function (event) {
+            // hide share button popover
+            if (!$(event.target).closest('#btn-share').length) {
+                $('#btn-share').popover('hide')
+            }
+        });
+
+        $("a.twitter").attr("href", "https://twitter.com/home?status=" + window.location.href);
+        $("a.facebook").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + window.location.href);
+        $("a.google-plus").attr("href", "https://plus.google.com/share?url=" + window.location.href);
+    }
+
+    function setupDownloadPopover() {
+        $("#btn-download").popover({
+            html: true,
+            container: '#btn-download',
+            content: function () {
+                return $('#download').html();
+            },
+            template: '<div class="popover" role="tooltip"><div class="popover-content"></div></div>'
+        });
+
+        $(document).click(function (event) {
+            // hide download button popover
+            if (!$(event.target).closest('#btn-download').length) {
+                $('#btn-download').popover('hide');
+            }
+        });
+    }
+
+    setupSharePopover();
+    setupDownloadPopover()
+
     // Set width of headings to make them horizontally centerable
     $("h1.separator span").each(function () {
         $(this).css("width", $(this).textWidth() + 80);
