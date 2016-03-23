@@ -39,13 +39,35 @@ def get_filter_name(filter_data):
 
 def get_filter_definition(filter_data):
     filter_data = filter_data[1]
-    value = parse_value(filter_data['value'])
+    value = _parse_value(filter_data['value'])
     variable = filter_data['variable'][0]
     operator = filter_data['operator'][0]
     return {'{}__{}'.format(variable, operator): value}
 
 
-def parse_value(filter_value):
+def update_filters(filter_dict, filter):
+    name = get_filter_name(filter)
+    definition = get_filter_definition(filter)
+    definition_key = list(definition.keys())[0]
+    if filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
+        filter_dict[name]['tags'][definition_key].extend(definition[definition_key])
+    else:
+        filter_dict[name]['tags'].update(definition)
+
+
+def apply_filters_from_session(request, filter_dict):
+    from api.views.filter import PresetFilter
+
+    for filter in request.session.get('filters', {}).items():
+        if 'variable' in filter[1]:
+            update_filters(filter_dict, filter)
+        elif 'preset_id' in filter[1]:
+            preset = PresetFilter([filter[1]['preset_id']], filter[1].get('name'))
+            for i, condition in enumerate(preset.filter.conditions()):
+                update_filters(filter_dict, (filter[1].get('name')+'_{}'.format(i), condition))
+
+
+def _parse_value(filter_value):
     if len(filter_value) > 1:
         return filter_value
     value = filter_value[0]
