@@ -9,6 +9,19 @@ class FilterToSQL:
 
     DEBUG = False
 
+    # operation => (numeric operand, character operand, description )
+    OPERATION_MAP = {
+        "is":       ("= %s", "= '%s'", _("is")),
+        "in":       ("IN (%s)", "IN (%s)", _("is one of")),
+        "not_in":   ("NOT IN (%s)", "NOT IN (%s)", _("isn't any of")),
+        "gte":      (">= %s", ">= %s", _("is >=")),
+        "gt":       ("> %s", "> '%s'", _("is >")),
+        "lte":      ("<= %s", "<= '%s'", _("is <=")),
+        "lt":       ("< %s", "< '%s'", _("is <")),
+        "contains": ("LIKE '%%%%%%%%%s%%%%%%%%'", "LIKE '%%%%%%%%%s%%%%%%%%'", _("contains")),
+        "is_empty": ("IS NULL", "IS NULL", _("is empty")),
+    }
+
     count_offset = 1
 
     def __init__(self, filters, columns):
@@ -25,19 +38,6 @@ class FilterToSQL:
     def filter_where(self):
         # print('FilterToSQL:   where', self._where_activity() + "\n" + self.where_investor())
         return self._where_activity() + "\n" + self.where_investor()
-
-    # operation => (numeric operand, character operand, description )
-    OPERATION_MAP = {
-        "is" :      ("= %s", "= '%s'", _("is")),
-        "in":       ("IN (%s)", "IN (%s)", _("is one of")),
-        "not_in":   ("NOT IN (%s)", "NOT IN (%s)", _("isn't any of")),
-        "gte":      (">= %s", ">= %s", _("is >=")),
-        "gt":       ("> %s", "> '%s'", _("is >")),
-        "lte":      ("<= %s", "<= '%s'", _("is <=")),
-        "lt":       ("< %s", "< '%s'", _("is <")),
-        "contains": ("LIKE '%%%%%%%%%s%%%%%%%%'", "LIKE '%%%%%%%%%s%%%%%%%%'", _("contains")),
-        "is_empty": ("IS NULL", "IS NULL", _("is empty")),
-    }
 
     def _where_activity(self):
         where = []

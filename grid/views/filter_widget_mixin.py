@@ -69,7 +69,7 @@ class FilterWidgetMixin:
         context["rules"] = self.rules
 
         variables = self.create_variable_table()
-        pprint(variables)
+        #pprint(variables)
         context['variables'] = variables
 
     @print_execution_time_and_num_queries
