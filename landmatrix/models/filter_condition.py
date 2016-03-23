@@ -44,7 +44,7 @@ def get_filter_vars():
 
 
 class FilterCondition(models.Model):
-    rule = models.ForeignKey(FilterPreset)
+    fk_rule = models.ForeignKey(FilterPreset)
     variable = models.CharField(
         _("Variable"), max_length=32,
         choices=([(var, ' '.join(v.title() for v in var.split('_'))) for var in get_filter_vars()])
@@ -57,3 +57,22 @@ class FilterCondition(models.Model):
 
     def __str__(self):
         return '{} {} {}'.format(self.variable, self.operator, self.value)
+
+    def to_filter(self):
+        from api.views.filter import Filter
+        return Filter(self.variable, self.operator, self.value, str(self))
+
+    def __getitem__(self, item):
+        if item == 'variable':
+            return [self.variable]
+        elif item == 'operator':
+            return [self.operator]
+        elif item == 'value':
+            return [self.parsed_value]
+        raise ValueError('FilterCondition<{}>[{}]'.format(str(self), item))
+
+    @property
+    def parsed_value(self):
+        if ',' in self.value:
+            return [v.strip() for v in self.value.split(',')]
+        return self.value
