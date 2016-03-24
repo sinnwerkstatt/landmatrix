@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{% static "css/content.css" %}">
     <link rel="stylesheet" href="{% static "vendor/select2/dist/css/select2.min.css" %}"/>
     <link rel="stylesheet" href="{% static "vendor/font-awesome/css/font-awesome.css" %}">
-    <link rel="stylesheet" href="{% static "vendor/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" %}">
+    <link rel="stylesheet" href="{% static "vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" %}">
     <link rel="stylesheet" href="{% static "css/icons.css" %}">
     <link rel="icon" href="{% static "img/favicon.ico" %}">
 
@@ -229,8 +229,9 @@
 {% endblock %}
 
 {% block footer_scripts %}
-    <script src="{% static "vendor/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" %}"></script>
     <script src="{% static "vendor/bootstrap/js/popover.js" %}"></script>
+    <script src="{% static "vendor/moment/min/moment-with-locales.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" %}" type="text/javascript"></script>
 
     <script src="{% static "js/main.js" %}"></script>
     <!-- Select2 init -->

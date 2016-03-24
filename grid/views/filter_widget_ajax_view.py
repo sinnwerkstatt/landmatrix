@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.views.generic.edit import View
 from django.forms import TextInput, CheckboxSelectMultiple, HiddenInput, SelectMultiple, RadioSelect, Select
 
-from datetimewidget.widgets import DateWidget
+from bootstrap3_datetime.widgets import DateTimePicker
 
 from django.contrib.auth.models import User
 
@@ -58,7 +58,7 @@ class FilterWidgetAjaxView(View):
                     value = datetime.strptime(value, "%Y-%m-%d")
                 except:
                     value = ""
-            widget = DateWidget(options={"format": "yyyy-mm-dd"}).render(
+            widget = DateTimePicker(options={"format": "yyyy-mm-dd"}).render(
                 request.GET.get("name", ""), value=value, attrs={"id": "id_%s"%request.GET.get("name", "")}
             )
 
