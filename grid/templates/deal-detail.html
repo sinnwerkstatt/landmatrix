@@ -65,7 +65,7 @@
                                                 {{ field.label }}
                                             </div>
                                             <div class="col-md-9">
-                                                {{ field.value|safe }}
+                                                {{ field.value|safe|decimalgroupstring }}
                                             </div>
                                         </div>
                                         {% if field.name == 'location' %}
