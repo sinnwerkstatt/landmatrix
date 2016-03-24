@@ -5,9 +5,10 @@ from django.db import connection
 
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from grid.views.view_aux_functions import create_condition_formset
+from grid.views.save_deal_view import SaveDealView
+
 from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.browse_condition import BrowseCondition
-
 
 from django.utils.datastructures import MultiValueDict
 
@@ -20,6 +21,37 @@ class FilterWidgetMixin:
 
     current_formset_conditions = None
     filters = None
+
+    def create_variable_table(self):
+        input_groups = []
+        group_items = []
+        group_title = ''
+        for form_name, form in SaveDealView.FORMS:
+            # FormSet (Spatial Data und Data source)
+            if hasattr(form, 'form'):
+                form = form.form
+            for field_name, field in form.base_fields.items():
+                if field_name.startswith('tg_'):
+                    if group_title and len(group_items) > 0:
+                        input_groups.append({
+                            'label': group_title,
+                            'items': group_items
+                        })
+                        group_items = []
+                    group_title = str(field.initial)
+                else:
+                    group_items.append({
+                        'name': field_name,
+                        'label': str(field.label)
+                    })
+
+        if group_title and len(group_items):
+            input_groups.append({
+                'label': group_title,
+                'items': group_items
+            })
+
+        return input_groups
 
     def example_set_filters(self):
         self.current_formset_conditions = self.get_formset_conditions(self._filter_set(self.GET), self.GET, self.rules,
@@ -36,22 +68,9 @@ class FilterWidgetMixin:
         context["empty_form_conditions"] = self.current_formset_conditions
         context["rules"] = self.rules
 
-        if not self.current_formset_conditions.forms:
-            return
-
-        # YUK:
-        varlist = self.current_formset_conditions.forms[0]._variables()  # 1. grab somones privates
-        vardict = {}
-        for item in varlist:
-            try:
-                int(item[0])    # 2. Typecast to filter fails
-                continue
-            except:             # 3. Totally overachieve!
-                print("FilterWhiskyMixer: Ayee - the privates are erroneous!")
-
-            if item[0] != '':  # 4. Filter more stuff
-                vardict[item[0]] = item[1]  # 5. ??????
-        context['variables'] = vardict    # 6. Profit!
+        variables = self.create_variable_table()
+        #pprint(variables)
+        context['variables'] = variables
 
     @print_execution_time_and_num_queries
     def get_filter_context(self, formset_conditions, order_by=None, group_by=None, group_value=None, starts_with=None):
