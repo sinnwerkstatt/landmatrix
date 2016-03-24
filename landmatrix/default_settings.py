@@ -67,6 +67,7 @@ INSTALLED_APPS += (
     'wagtail.wagtailsearch',
     'wagtail.wagtailadmin',
     'wagtail.wagtailcore',
+    'blog',
 
     'modelcluster',
     'compressor',

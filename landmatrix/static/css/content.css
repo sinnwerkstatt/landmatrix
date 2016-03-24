@@ -139,6 +139,12 @@ h5,
 h6 {
     font-size: 18px;
 }
+.newsitem h4 {
+    font-size: 16px;
+    line-height: 1.5em;
+    margin: -6px 0 0;
+    text-transform: none;
+}
 #main-navbar-collapse > a,
 #main-navbar-collapse > a.btn,
 #main-navbar-collapse > .nav a {
@@ -256,15 +262,6 @@ hr {
     background: #ebebeb;
 }
 
-#news .thumb {
-    float: left;
-    height: 150px;
-    width: 80px;
-}
-
-#news p {
-    margin-top: 0.5em;
-}
 
 /* ==========================================================================
  *    BUTTONS

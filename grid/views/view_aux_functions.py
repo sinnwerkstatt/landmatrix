@@ -31,21 +31,53 @@ def render_to_string(template_name, context, context_instance):
     return loader.render_to_string(template_name, context, context_instance)
 
 
-def get_filter_name(filter_data):
+def apply_filters_from_session(request, filter_dict):
+    """Reads filter values stored in the current FE user's session and stores
+       them in filter_dict. Used in ActivityQuerySet for the grid views and in
+       FakeQuerySet for the API calls."""
+    from api.views.filter import PresetFilter
+
+    for filter in request.session.get('filters', {}).items():
+        if 'variable' in filter[1]:
+            _update_filters(filter_dict, filter)
+        elif 'preset_id' in filter[1]:
+            preset = PresetFilter([filter[1]['preset_id']], filter[1].get('name'))
+            for i, condition in enumerate(preset.filter.conditions()):
+                _update_filters(filter_dict, (filter[1].get('name') + '_{}'.format(i), condition))
+
+
+def _update_filters(filter_dict, filter):
+    name = _get_filter_type(filter)
+    definition = _get_filter_definition(filter)
+    definition_key = list(definition.keys())[0]
+    if filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
+        filter_dict[name]['tags'][definition_key].extend(definition[definition_key])
+    else:
+        filter_dict[name]['tags'].update(definition)
+
+
+def _get_filter_type(filter_data):
     if filter_data[0] in FILTER_VAR_INV:
         return 'investor'
     return 'activity'
 
 
-def get_filter_definition(filter_data):
+def _get_filter_definition(filter_data):
+    """Converts a definition of the form
+        {'variable': variable, 'operator': operator, 'value': value}
+       as stored in the session and returned when converting a Filter to dict,
+       into the format used by FilterToSql:
+        {'variable__operator': value}
+        """
     filter_data = filter_data[1]
-    value = parse_value(filter_data['value'])
+    value = _parse_value(filter_data['value'])
     variable = filter_data['variable'][0]
     operator = filter_data['operator'][0]
     return {'{}__{}'.format(variable, operator): value}
 
 
-def parse_value(filter_value):
+def _parse_value(filter_value):
+    """Necessary due to the different ways single values and lists are stored in DB and session."""
     if len(filter_value) > 1:
         return filter_value
     value = filter_value[0]
