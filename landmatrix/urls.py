@@ -46,6 +46,7 @@ non_i18n_patterns = patterns(
 
 wagtail_patterns = [
     url(r'^cms/', include(wagtailadmin_urls)),
+    url(r'^news/', include('blog.urls', namespace='news')),
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'', include(wagtail_urls)),
 ]
