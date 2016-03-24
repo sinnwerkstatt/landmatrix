@@ -19,7 +19,7 @@ class FilterView(TemplateView):
         unique_user = _get_unique_frontend_user(request)
 
         if unique_user is None:
-            return
+            return HttpResponse("{}", status=204)
 
         if unique_user not in FilterView.filters:
             FilterView.filters[unique_user] = {}
