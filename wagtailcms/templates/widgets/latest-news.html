@@ -1,0 +1,28 @@
+{% load i18n wagtailcore_tags %}
+<div id="news" class="col-md-12">
+    <h3 class="center">{% trans "Latest News" %}</h3>
+
+    <div class="row">
+        {% for blog in news %}
+        <div class="col-md-6 newsitem">
+            <div class="row">
+                {% if blog.header_image %}
+                <div class="col-sm-4">
+                    <img src="{{ blog.header_image.file.url }}"/>
+                </div>
+                <div class="col-sm-8">
+                {% else %}
+                <div class="col-sm-12">
+                {% endif %}
+                    <h4>{{ blog.title }}</h4>
+                    <small>{% trans "Published on" %}: {{ blog.date|date:"d/m/Y" }}</small>
+                    {{ blog.body|richtext|truncatewords_html:70 }}
+                    <p>
+                        <a href="{{ blog.get_absolute_url }}">{% trans "Read more" %}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div> <!-- News -->
