@@ -17,7 +17,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class FilterWidgetMixin:
 
-    rules = BrowseCondition.objects.filter(rule__rule_type="generic")
+    rules = []
 
     current_formset_conditions = None
     filters = None
@@ -69,7 +69,6 @@ class FilterWidgetMixin:
         context["rules"] = self.rules
 
         variables = self.create_variable_table()
-        #pprint(variables)
         context['variables'] = variables
 
     @print_execution_time_and_num_queries
@@ -78,7 +77,6 @@ class FilterWidgetMixin:
         filters["group_by"] = group_by
         filters["group_value"] = group_value
         filters["starts_with"] = starts_with
-
         return filters
 
     @print_execution_time_and_num_queries
