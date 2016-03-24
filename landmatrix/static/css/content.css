@@ -1989,6 +1989,11 @@ a.remove-ybd:hover {
     margin: 0;
 }
 
+#filters ul.presets a,
+#filters ul.presets h4 {
+    margin-left: 15px !important;
+}
+
 #filters ul.variables ul li a {
     display: block;
     padding: 0 15px 0 30px;
