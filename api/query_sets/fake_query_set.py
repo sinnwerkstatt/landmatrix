@@ -1,18 +1,16 @@
-from pprint import pprint
-
-from django.http.request import HttpRequest
-
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from grid.views.view_aux_functions import create_condition_formset, apply_filters_from_session
 from landmatrix.models.browse_condition import BrowseCondition
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 
 from django.db.models.query import QuerySet
 from django.db import connection
+from django.http.request import HttpRequest
+
+from pprint import pprint
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FakeModel(dict):
