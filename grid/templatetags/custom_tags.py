@@ -6,7 +6,7 @@ from django.forms.fields import MultiValueField, ChoiceField, BooleanField
 from django.template import Node, resolve_variable, Variable
 from django.template.defaultfilters import slugify
 from django.template.defaultfilters import stringfilter
-from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.contrib.humanize.templatetags.humanize import naturaltime, intcomma
 from django.utils.safestring import mark_safe
 from django import forms
 
@@ -234,3 +234,14 @@ def add_class(field, new_cls):
 @register.filter
 def classname(obj):
     return obj.__class__.__name__
+
+@register.filter
+def decimalgroupstring(obj):
+    try:
+        origs = obj.split(" ")
+        val = int(origs.pop(0))
+        new = intcomma(val)
+
+        return str(new + " " + " ".join(origs))
+    except ValueError:
+        return obj
