@@ -12,6 +12,7 @@ from django.conf import settings
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.whitelist import attribute_rule, check_url, allow_without_attributes
+from blog.models import BlogPage
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -113,6 +114,24 @@ class LatestDatabaseModificationsBlock(StructBlock):
 
 CONTENT_BLOCKS += [
     ('latest_database_modifications', LatestDatabaseModificationsBlock()),
+]
+
+class LatestNewsBlock(StructBlock):
+    count = blocks.CharBlock()
+
+    class Meta:
+        icon = 'fa fa-list'
+        label = 'Latest news'
+        template = 'widgets/latest-news.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        count = value.get('count')
+        context['news'] = BlogPage.objects.all()[:int(count)]
+        return context
+
+CONTENT_BLOCKS += [
+    ('latest_news', LatestNewsBlock()),
 ]
 
 class ColumnsBlock(StructBlock):
