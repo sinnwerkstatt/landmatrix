@@ -2,7 +2,7 @@ import json
 from pprint import pprint
 
 from api.query_sets.sql_generation.record_reader import RecordReader
-from grid.views.view_aux_functions import get_filter_definition, get_filter_name
+from grid.views.view_aux_functions import apply_filters_from_session
 from grid.views.profiling_decorators import print_execution_time_and_num_queries
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -15,8 +15,7 @@ class ActivityQuerySet:
     def __init__(self, request):
         data = request.POST.get('data', '{"filters": {}, "columns": {}}')
         self.data = json.loads(data)
-        for filter in request.session.get('filters', {}).items():
-            self.data['filters'][get_filter_name(filter)]['tags'].update(get_filter_definition(filter))
+        apply_filters_from_session(request, self.data['filters'])
         if self.DEBUG: pprint(self.data['filters'], width=120, compact=True)
         if 'columns' not in self.data:
             self.data['columns'] = {}
@@ -36,4 +35,5 @@ class ActivityQuerySet:
         if self.DEBUG:
             print(reader.get_all_sql())
         return reader.get_all(assemble=reader._make_padded_record_from_column_data)
+
 

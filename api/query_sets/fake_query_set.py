@@ -1,19 +1,16 @@
-from pprint import pprint
-
-from django.http.request import HttpRequest
-
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
-from api.views.filter import Filter, PresetFilter
 from grid.views.browse_filter_conditions import BrowseFilterConditions
-from grid.views.view_aux_functions import create_condition_formset, get_filter_name, get_filter_definition
+from grid.views.view_aux_functions import create_condition_formset, apply_filters_from_session
 from landmatrix.models.browse_condition import BrowseCondition
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 
 from django.db.models.query import QuerySet
 from django.db import connection
+from django.http.request import HttpRequest
+
+from pprint import pprint
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FakeModel(dict):
@@ -187,7 +184,7 @@ class FakeQuerySet(QuerySet):
         self._set_filters(get_data)
         # self._add_order_by_columns()
 
-        self._apply_filters_from_session(request)
+        apply_filters_from_session(request, self.filters)
 
         self.filter_to_sql = FilterToSQL(self.filters, self.columns)
         additional_sql = self.filter_to_sql.filter_where()
@@ -197,23 +194,3 @@ class FakeQuerySet(QuerySet):
             self._additional_joins.append(additional_joins)
 
         return filter_sql
-
-    def _apply_filters_from_session(self, request):
-        for filter in request.session.get('filters', {}).items():
-            if 'variable' in filter[1]:
-                update_filters(self.filters, filter)
-                self.filters[get_filter_name(filter)]['tags'].update(get_filter_definition(filter))
-            elif 'preset_id' in filter[1]:
-                preset = PresetFilter([filter[1]['preset_id']], filter[1].get('name'))
-                for i, condition in enumerate(preset.filter.conditions()):
-                    update_filters(self.filters, (filter[1].get('name')+'_{}'.format(i), condition))
-
-
-def update_filters(filter_dict, filter):
-    name = get_filter_name(filter)
-    definition = get_filter_definition(filter)
-    definition_key = list(definition.keys())[0]
-    if filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
-        filter_dict[name]['tags'][definition_key].extend(definition[definition_key])
-    else:
-        filter_dict[name]['tags'].update(definition)
