@@ -6,12 +6,13 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FilterPreset(Model):
+    group = CharField(_("Group"), max_length=255)
     name = CharField(_("Name"), max_length=255)
     is_default = BooleanField(default=False)
     overrides_default = BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.group + ': ' + self.name
 
     def conditions(self):
         from landmatrix.models.filter_condition import FilterCondition
