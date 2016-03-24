@@ -17,14 +17,20 @@
     <link rel="stylesheet" href="{% static "css/content.css" %}">
     <link rel="stylesheet" href="{% static "vendor/select2/dist/css/select2.min.css" %}"/>
     <link rel="stylesheet" href="{% static "vendor/font-awesome/css/font-awesome.css" %}">
+    <link rel="stylesheet" href="{% static "vendor/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" %}">
     <link rel="stylesheet" href="{% static "css/icons.css" %}">
     <link rel="icon" href="{% static "img/favicon.ico" %}">
+
+    <script src="{% static "vendor/jquery/dist/jquery.js" %}"></script>
+    <script src="{% static "vendor/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
+
 
     {% if is_pdf_export %}
         <link rel="stylesheet" href="{% static "css/htmltopdf.css" %}" type="text/css" media="screen"
               title="no title" charset="utf-8">
     {% endif %}
-    <script>window.jQuery || document.write('<script src="{% static "vendor/jquery/dist/jquery.min.js" %}"><\/script>')</script>
+
     {% block head %}
     {% endblock %}
     {% block css %}
@@ -150,6 +156,8 @@
 
         {% endblock %}
 
+        <noscript><div id="javascriptwarning" class="alert alert-danger" role="alert">Please <a href="http://www.enable-javascript.com/" target="_blank">enable Javascript</a> to use all features of the Landmatrix!</div></noscript>
+
         {% block title_section %}
             <div class="row">
                 <div class="col-md-12">
@@ -221,9 +229,9 @@
 {% endblock %}
 
 {% block footer_scripts %}
-    <script src="{% static "vendor/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "vendor/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" %}"></script>
     <script src="{% static "vendor/bootstrap/js/popover.js" %}"></script>
-    <script src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
+
     <script src="{% static "js/main.js" %}"></script>
     <!-- Select2 init -->
     <script type="text/javascript">
