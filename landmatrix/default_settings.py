@@ -73,6 +73,8 @@ INSTALLED_APPS += (
     'compressor',
     'taggit',
 
+    'bootstrap3_datetime',
+
     'django.contrib.admin',
     'django.contrib.sites',
     'treebeard',
