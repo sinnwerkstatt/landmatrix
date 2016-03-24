@@ -1,52 +1,32 @@
 <table class="table table-striped" id="latest-database-modifications">
-    <tr>
-        <th>Deal #</th>
-        <th>Date</th>
-        <th>State</th>
-        <th>Target Country</th>
-    </tr>
-    <tr>
-        <td><a href="">768</a></td>
-        <td>03/12/14</td>
-        <td>Updated</td>
-        <td>Brazil</td>
-    </tr>
-    <tr>
-        <td><a href="">4575</a></td>
-        <td>03/12/14</td>
-        <td>Updated</td>
-        <td>Lao People's Democratic Republic</td>
-    </tr>
-    <tr>
-        <td><a href="">4054</a></td>
-        <td>10/14/14</td>
-        <td>Updated</td>
-        <td>Brazil</td>
-    </tr>
-    <tr>
-        <td><a href="">4201</a></td>
-        <td>07/04/14</td>
-        <td>Added</td>
-        <td>Brazil</td>
-    </tr>
-    <tr>
-        <td><a href="">4365</a></td>
-        <td>03/12/14</td>
-        <td>Updated</td>
-        <td>Panama</td>
-    </tr>
-    <tr>
-        <td><a href="">4054</a></td>
-        <td>02/08/14</td>
-        <td>Updated</td>
-        <td>Brazil</td>
-    <tr>
+    <thead>
+        <tr>
+            <th>Deal #</th>
+            <th>Date</th>
+            <th>State</th>
+            <th>Target Country</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
 </table>
 <script type="text/javascript">
 $(document).ready(function () {
     var count = {{ count }} || 5;
     $.get('/api/latest_changes.json?n=' + count, function (data) {
-        debugger;
+        var tbody = $('#latest-database-modifications tbody').empty();
+        var item, row;
+        for (var i = 0; i < data.length; i++) {
+            item = data[i];
+            row = '<tr>';
+            row += '<td><a href="/deal/' + item.deal_id + '/">' + item.deal_id + '</a></td>';
+            date = new Date(item.change_date);
+            row += '<td>' + date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate() + '</td>';
+            action = item.action.charAt(0).toUpperCase() + item.action.slice(1);
+            row += '<td>' + action + '</td>';
+            row += '<td>' + item.target_country + '</td>';
+            tbody.append(row);
+        };
     })
 });
 </script>
