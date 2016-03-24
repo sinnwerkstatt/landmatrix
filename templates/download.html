@@ -15,24 +15,3 @@
     <i class=""></i>XLS
   </a>
 </span>
-<script type="text/javascript">
-$(document).ready(function () {
-  $("#btn-download").popover({
-    html : true, 
-    container : '#btn-download',
-    content: function() {
-      return $('#download').html();
-    },
-    template: '<div class="popover" role="tooltip"><div class="popover-content"></div></div>'
-  });  
-});
-
-$(document).click(function (event) {
-  // hide download button popover
-  if (!$(event.target).closest('#btn-download').length) {
-    $('#btn-download').popover('hide');
-  }
-});
-
-
-</script>
