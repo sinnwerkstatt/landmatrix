@@ -481,6 +481,8 @@ class BaseForm(forms.Form):
                 value = self.get_display_value_nested_multiple_choice_field(field, field_name)
             elif isinstance(field, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
                 value = self.get_display_value_multiple_choice_field(field, field_name)
+            elif isinstance(field, forms.ModelChoiceField):
+                value = self.get_display_value_model_choice_field(field_name) # FIXME: Rename method
             elif isinstance(field, forms.ChoiceField):
                 value = self.get_display_value_choice_field(field, field_name)
             elif isinstance(field, forms.MultiValueField):
@@ -509,8 +511,8 @@ class BaseForm(forms.Form):
 
     def get_display_value_file_field(self, field_name):
         value = self.is_valid() and self.cleaned_data.get(field_name) and hasattr(self.cleaned_data.get(field_name),
-                                                                                  "name") and self.cleaned_data.get(
-            field_name).name or self.data.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name)
+            "name") and self.cleaned_data.get(field_name).name or self.data.get(self.prefix and "%s-%s" % (
+                self.prefix, field_name) or field_name)
         return value
 
     def get_display_value_multi_value_field(self, field, field_name):
@@ -556,6 +558,10 @@ class BaseForm(forms.Form):
                 values.append(value)
         value = '<br>'.join(values)
         return value
+
+    def get_display_value_model_choice_field(self, field_name):
+        value = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        return str(value)
 
     class Meta:
         exclude = ()
