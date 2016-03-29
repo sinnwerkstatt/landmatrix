@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from landmatrix.models.filter_condition import FILTER_VAR_ACT, FILTER_VAR_INV, get_filter_vars
 from grid.views.browse_condition_form import BrowseConditionForm
 
@@ -29,6 +31,41 @@ def render_to_response(template_name, context, context_instance):
 
 def render_to_string(template_name, context, context_instance):
     return loader.render_to_string(template_name, context, context_instance)
+
+
+def create_variable_table():
+    from grid.views.save_deal_view import SaveDealView
+
+    input_groups = []
+    group_items = []
+    group_title = ''
+
+    for form_name, form in SaveDealView.FORMS:
+        # FormSet (Spatial Data und Data source)
+        if hasattr(form, 'form'):
+            form = form.form
+        for field_name, field in form.base_fields.items():
+            if field_name.startswith('tg_'):
+                if group_title and len(group_items) > 0:
+                    input_groups.append({
+                        'label': group_title,
+                        'items': group_items
+                    })
+                    group_items = []
+                group_title = str(field.initial)
+            else:
+                group_items.append({
+                    'name': field_name,
+                    'label': str(field.label)
+                })
+
+    if group_title and len(group_items):
+        input_groups.append({
+            'label': group_title,
+            'items': group_items
+        })
+
+    return input_groups
 
 
 def apply_filters_from_session(request, filter_dict):
