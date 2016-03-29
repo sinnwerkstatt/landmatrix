@@ -1946,14 +1946,37 @@ a.remove-ybd:hover {
     font-weight: 300;
 }
 
-.filterbox {
+.filterbox,
+.filterwidgetbox {
     color: #c6c6c6 !important;
-    overflow-y: auto;
-    overflow-x: hidden;
     height: 200px;
     border-left: solid 1px #919191;
     padding: 0;
-    padding: 15px 15px;
+    padding: 5px 15px;
+}
+
+#filter_value {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+#filter_operator {
+    padding-top: 3px;
+}
+
+#filter_value > ul:nth-child(1) {
+    overflow-y: auto;
+    height: 160px;
+}
+
+#filter_value > .input-group,
+#id_value {
+    max-width: 25vw;
+}
+
+.filterbox {
+    overflow-y: auto;
+    overflow-x: auto;
 }
 
 .filterbox:first-child {
@@ -2244,6 +2267,10 @@ table tbody {
 .table-condensed th,
 .table-condensed td {
     padding: 4px 5px;
+}
+
+.table .comment {
+    max-width:15vw;
 }
 
 .table th .intention-icon,
