@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.forms.fields import CharField
 from django.forms.widgets import Textarea
 from django.views.generic.edit import UpdateView
@@ -33,12 +35,12 @@ class ManageView(TemplateView):
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
     def render_authenticated_user(self, request, *args, **kwargs):
-        from pprint import pprint
         csp = ChangesetProtocol()
-        request.POST = MultiValueDict({"data": [json.dumps({"a_changesets":["updates", "deletes", "inserts"], "sh_changesets": ["deletes"]})]})
+        request.POST = MultiValueDict(
+            {"data": [json.dumps({"a_changesets":["updates", "deletes", "inserts", "rejected"], "sh_changesets": ["deletes"]})]}
+        )
         response = csp.dispatch(request, action="list")
         response = json.loads(response.content.decode())
-        print('ManageView resonse', response)
         data = {
             "view": "manage"
         }
@@ -54,12 +56,15 @@ class ManageView(TemplateView):
 
         data.update({"sh_deletes": response.get("sh_changesets", {}).get("deletes", {})})
         data.update({"feedbacks": response.get("feedbacks", [])})
+        data.update({"rejected": response.get("rejected", [])})
 
         return render_to_response(self.template_name, data, context_instance=RequestContext(request))
 
 
 class CommentInput(Textarea):
-    def render(self, name, value, attrs={}):
+    def render(self, name, value, attrs=None):
+        if not attrs:
+            attrs = {}
         attrs.update({'rows': '3'})
         return super(CommentInput, self).render(name, value, attrs)
 
