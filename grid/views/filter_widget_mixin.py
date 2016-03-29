@@ -5,7 +5,6 @@ from django.db import connection
 
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from grid.views.view_aux_functions import create_condition_formset
-from grid.views.save_deal_view import SaveDealView
 
 from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.browse_condition import BrowseCondition
@@ -18,44 +17,22 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class FilterWidgetMixin:
 
     rules = []
+    # leave to test how transnational/domestic deals are filtered for
+    # rules = BrowseCondition.objects.filter(rule__rule_type="generic")
 
     current_formset_conditions = None
     filters = None
 
     def create_variable_table(self):
-        input_groups = []
-        group_items = []
-        group_title = ''
-        for form_name, form in SaveDealView.FORMS:
-            # FormSet (Spatial Data und Data source)
-            if hasattr(form, 'form'):
-                form = form.form
-            for field_name, field in form.base_fields.items():
-                if field_name.startswith('tg_'):
-                    if group_title and len(group_items) > 0:
-                        input_groups.append({
-                            'label': group_title,
-                            'items': group_items
-                        })
-                        group_items = []
-                    group_title = str(field.initial)
-                else:
-                    group_items.append({
-                        'name': field_name,
-                        'label': str(field.label)
-                    })
-
-        if group_title and len(group_items):
-            input_groups.append({
-                'label': group_title,
-                'items': group_items
-            })
-
-        return input_groups
+        # moved the function to view_aux_functions because it is static
+        # redirected from here in order to keep the interface
+        from grid.views.view_aux_functions import create_variable_table
+        return create_variable_table()
 
     def example_set_filters(self):
-        self.current_formset_conditions = self.get_formset_conditions(self._filter_set(self.GET), self.GET, self.rules,
-                                                                      self.group)
+        self.current_formset_conditions = self.get_formset_conditions(
+            self._filter_set(self.GET), self.GET, self.rules, self.group
+        )
 
         self.filters = self.get_filter_context(
             self.current_formset_conditions, self._order_by(), self.group, self.group_value,
