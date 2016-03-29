@@ -243,45 +243,40 @@
             $(this).parents("li").removeClass("open")
         } 
         $(document).ready(function () {
-            $('#nav-region-select').select2({
+            // Regions
+            var region_select = $('#nav-region-select').select2({
                 placeholder: "{% trans 'Regions' %}",
                 dropdownCssClass: "select2-main",
-                ajax: {
-                    url: "/api/regions.json",
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function (data, params) {
-                        items = [];
-                        data.forEach(function (d) {
-                            items.push({'id': d[0], 'text': d[1]});
-                        })
-                        return {
-                          results: items
-                        }
-                    },
-                    cache: true
-                }
             }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);
-            $('#nav-country-select').select2({
+              .on('select2:close', select2_close);;
+            var region_request = $.ajax({
+              url: '/api/regions.json'
+            });
+            region_request.then(function (data) {
+              for (var d = 0; d < data.length; d++) {
+                var item = data[d];
+                var option = new Option(item[1], item[0], true, true);
+                region_select.append(option);
+              }
+              //$element.trigger('change');
+            });
+            // Countries
+            var country_select = $('#nav-country-select').select2({
                 placeholder: "{% trans 'Countries' %}",
                 dropdownCssClass: "select2-main",
-                ajax: {
-                    url: "/api/countries.json?region=",
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function (data, params) {
-                        items = [];
-                        data.forEach(function (d) {
-                            items.push({'id': d[0], 'text': d[1]});
-                        })
-                        return {
-                          results: items
-                        }
-                    },
-                }
             }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);
+              .on('select2:close', select2_close);;
+            var country_request = $.ajax({
+              url: '/api/countries.json'
+            });
+            country_request.then(function (data) {
+              for (var d = 0; d < data.length; d++) {
+                var item = data[d];
+                var option = new Option(item[1], item[0], true, true);
+                country_select.append(option);
+              }
+              //$element.trigger('change');
+            });
         });
     </script>
     <!-- Piwik -->
