@@ -278,4 +278,13 @@ $(document).ready(function(){
     }
 
     $('.crops select,.animals select,.minerals select').select2();
+
+    $('.negotiation_status select').change(function () {
+      var val = $(this).find('option:selected').val();
+      if (val == 70) {
+        $('.sold_as_deal').show();
+      } else {
+        $('.sold_as_deal').hide();
+      }
+    }).change();
 });
