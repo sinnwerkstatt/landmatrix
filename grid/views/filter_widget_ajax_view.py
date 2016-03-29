@@ -1,6 +1,5 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-
 from grid.views.browse_filter_conditions import get_field_by_key
 from grid.widgets import LocationWidget, YearBasedSelect, YearBasedMultipleSelect, NumberInput
 from grid.forms.deal_primary_investor_form import DealPrimaryInvestorForm
@@ -15,7 +14,6 @@ from django.contrib.auth.models import User
 
 
 class FilterWidgetAjaxView(View):
-
     def dispatch(self, request, *args, **kwargs):
         """ render form to enter values for the requested field in the filter widget for the grid view
             form to select operations is updated by the javascript function update_widget() in /media/js/main.js
@@ -58,16 +56,25 @@ class FilterWidgetAjaxView(View):
                     value = datetime.strptime(value, "%Y-%m-%d")
                 except:
                     value = ""
-            widget = DateTimePicker(options={"format": "yyyy-mm-dd"}).render(
-                request.GET.get("name", ""), value=value, attrs={"id": "id_%s"%request.GET.get("name", "")}
+            widgetObject = DateTimePicker(options={"format": "YYYY-MM-DD", "debug": True})
+            # See here: https://github.com/jorgenpt/django-bootstrap3-datetimepicker/commit/042dd1da3a7ff21010c1273c092cba108d95baeb#commitcomment-16877308
+            widgetObject.js_template = """<script>
+                    $(function(){$("#%(picker_id)s:has(input:not([readonly],[disabled]))").datetimepicker(%(options)s);});
+            </script>"""
+            widget = widgetObject.render(
+                    request.GET.get("name", ""), value=value, attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"}
             )
 
         elif key_id == "fully_updated_by":
-            users = User.objects.filter(groups__name__in=("Research admins", "Research assistants")).order_by("username")
+            users = User.objects.filter(groups__name__in=("Research admins", "Research assistants")).order_by(
+                "username")
             if operation in ("in", "not_in"):
-                widget = SelectMultiple(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(request.GET.get("name", ""),  value, attrs={"id": "id_%s"%request.GET.get("name", "")})
+                widget = SelectMultiple(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(
+                    request.GET.get("name", ""), value, attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
             else:
-                widget = Select(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(request.GET.get("name", ""),  len(value) == 1 and value[0] or value, attrs={"id": "id_%s"%request.GET.get("name", "")})
+                widget = Select(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(
+                    request.GET.get("name", ""), len(value) == 1 and value[0] or value,
+                    attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
         # primary investor
         elif key_id == "inv_-2":
             form = DealPrimaryInvestorForm()
@@ -96,7 +103,8 @@ class FilterWidgetAjaxView(View):
                     # FIXME: multiple value parameters can arrive like "value=1&value=2" or "value=1,2", not very nice
                     value = type(value) in (list, tuple) and value or request.GET.getlist("value", [])
                     value = [value, ""]
-                    widget = field.widget.render(request.GET.get("name", ""), value, attrs={"id": "id_%s"%request.GET.get("name", "")})
+                    widget = field.widget.render(request.GET.get("name", ""), value,
+                                                 attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
                 elif type(widget) == RadioSelect:
                     widget = CheckboxSelectMultiple()
                     widget.choices = field.widget.choices
@@ -108,13 +116,15 @@ class FilterWidgetAjaxView(View):
                     widget.choices = field.widget.choices
                     widget = widget.render(request.GET.get("name", ""), value)
                 else:
-                    widget = widget.render(request.GET.get("name", ""), ",".join(value), attrs={"id": "id_%s"%request.GET.get("name", "")})
+                    widget = widget.render(request.GET.get("name", ""), ",".join(value),
+                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
             elif operation in ("contains",):
                 widget = TextInput().render(request.GET.get("name", ""), ",".join(value))
             else:
                 if issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple)):
                     widget = widget.render(request.GET.get("name", ""), value)
                 else:
-                    widget = widget.render(request.GET.get("name", ""),  ",".join(value), attrs={"id": "id_%s"%request.GET.get("name", "")})
+                    widget = widget.render(request.GET.get("name", ""), ",".join(value),
+                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
 
         return HttpResponse(widget, content_type="text/plain")
