@@ -99,6 +99,16 @@ class LinkedImageBlock(StructBlock):
         context['name'] = value.title
         return context
 
+class StatisticsBlock(StructBlock):
+    class Meta:
+        icon = 'fa fa-list'
+        label = 'Statistics'
+        template = 'widgets/statistics.html'
+
+CONTENT_BLOCKS += [
+    ('statistics', StatisticsBlock()),
+]
+
 class LatestDatabaseModificationsBlock(StructBlock):
     count = blocks.CharBlock()
 

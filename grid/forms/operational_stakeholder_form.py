@@ -44,20 +44,16 @@ class OperationalStakeholderForm(BaseForm):
                 data[prefixed_name] = deal.get_activity_attributes().get('project_name')
         return data
 
-
 def investor_description(investor):
     return '{} ({}) {}'.format(
         _investor_name(investor), _investor_country_name(investor), _investor_classification(investor)
     )
 
-
 def _investor_name(investor):
     return investor.name if len(investor.name) <= 80 else investor.name[:80] + '...'
 
-
 def _investor_country_name(investor):
     return investor.fk_country.name if investor.fk_country_id else '-'
-
 
 def _investor_classification(investor):
     return investor.get_classification_display() if investor.classification else '-'
