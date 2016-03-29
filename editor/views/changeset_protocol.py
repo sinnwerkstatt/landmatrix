@@ -1,3 +1,4 @@
+from datetime import timedelta
 
 from django.utils.encoding import force_text
 
@@ -29,6 +30,7 @@ class ChangesetProtocol(View):
             action = kwargs["action"]
         else:
             raise IOError("Parameter 'action' missing")
+
         if request.POST:
             self.data = json.loads(request.POST["data"])
         elif action in ('history', 'list'):
@@ -59,7 +61,9 @@ class ChangesetProtocol(View):
                 ActivityChangeset.objects.get_by_state("deleted"), request.GET.get('latest_deleted_page')
             ),
             "manage": self._changeset_to_json(limit=2),
-            "feedbacks": _feedbacks_to_json(request.user, limit=5)
+            "feedbacks": _feedbacks_to_json(request.user, limit=5),
+            "rejected": _rejected_to_json(request.user)
+
         }
         return HttpResponse(json.dumps(res), content_type="application/json")
 
@@ -81,6 +85,8 @@ class ChangesetProtocol(View):
             }
         res = self._changeset_to_json(user, request.GET.get('my_deals_page'), request.GET.get('updates_page'), request.GET.get('inserts_page'), request.GET.get('deletions_page'))
         res["feedbacks"] = _feedbacks_to_json(user, request.GET.get('feedbacks_page'))
+        res["rejected"] = _rejected_to_json(request.user)
+
         return HttpResponse(json.dumps(res), content_type="application/json")
 
     @transaction.atomic
@@ -344,6 +350,37 @@ def _feedbacks_to_json(user, feedbacks_page=1, limit=None):
         "feeds": feedbacks,
         "pagination": _pagination_to_json(paginator, page),
     }
+
+
+def _rejected_to_json(user, limit=None):
+    rejected = Activity.history.filter(fk_status__name='rejected').filter(history_user_id=user.id)
+    feed = limit and rejected[:limit] or rejected
+    paginator = Paginator(feed, 10)
+    page = _get_page(1, paginator)
+    feed = page.object_list
+    rejected = [
+        {
+            "deal_id": activity.activity_identifier,
+            "user": user.username,
+            "comment": _get_comment(activity),
+            "timestamp": activity.history_date.strftime("%Y-%m-%d %H:%M:%S")
+         } for activity in feed
+    ]
+    return {
+        "cs": rejected,
+        "pagination": _pagination_to_json(paginator, page),
+    }
+
+
+def _get_comment(historical_activity):
+    changeset = ActivityChangesetReview.objects.filter(
+        timestamp__gt=historical_activity.history_date - timedelta(seconds=1)
+    ).filter(
+        timestamp__lt=historical_activity.history_date + timedelta(seconds=1)
+    ).filter(
+        fk_activity_changeset__fk_activity_id=historical_activity.id
+    ).first()
+    return changeset.comment if changeset else None
 
 
 def _get_page(page_number, paginator):
