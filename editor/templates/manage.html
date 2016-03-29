@@ -32,9 +32,12 @@
             <li><a href="#deletions"><i class="icon-chevron-down"></i>
                 {% trans "Pending deletions" %}{% if deletes %} ({{ deletes.cs|length }}){% endif %}</a></li>
             <li><a href="#inserts"><i class="icon-chevron-down"></i>
-                {% trans "New deals for approval" %}{% if inserts %} ({{ inserts.cs|length }}){% endif %}</a></ li>
+                {% trans "New deals for approval" %}{% if inserts %} ({{ inserts.cs|length }}){% endif %}</a></li>
             <li><a href="#sh-deletions"><i class="icon-chevron-down"></i>
                 {% trans "Pending Stakeholder deletions" %}{% if sh_deletes %} ({{ sh_deletes.cs|length }}){% endif %}
+            </a></li>
+            <li><a href="#rejected"><i class="icon-chevron-down"></i>
+                {% trans "Rejected changes" %}{% if rejected %} ({{ rejected.cs|length }}){% endif %}
             </a></li>
         {% endif %}
     </ul>
@@ -352,6 +355,55 @@
 
                 {% else %}
                     <div class="alert bg-warning">{% trans "Currently there are no pending stakeholder deletions." %}</div>
+                {% endif %}
+            </div>
+            <div id="rejected" class="tab-pane">
+                {% if rejected %}
+                    <table class="table table-striped table-condensed">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="55%">
+                            <col width="25%">
+                        </colgroup>
+                        <thead>
+                        <th class="Stakeholder">{% trans "Deal ID #" %}</th>
+                        <th class="user">{% trans "User" %}</th>
+                        <th class="comment">{% trans "Comment" %}</th>
+                        <th class="action">{% trans "Timestamp" %}</th>
+                        </thead>
+                        <tbody>
+                        {% for changeset in rejected.cs %}
+                            <tr class="deletes">
+                                <td class="investor"><a
+                                        href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                </td>
+                                <td class="user">{{ changeset.user }}</td>
+                                <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
+                                <td class="timestamp">{{ changeset.timestamp }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <ul class="pagination">
+                        {% if "previous" in rejected.pagination %}
+                            <li><a type="button" class="btn btn-default"
+                                   href="{% add_get_parameter deletes_page=sh_deletes.pagination.previous,selected='deletions' %}">&laquo;</a>
+                            </li>
+                        {% endif %}
+                        <li class="active">
+                            <a type="button" class="btn btn-default"
+                               href="#">{% trans "Page" %} {{ rejected.pagination.current }} {% trans "of" %} {{ rejected.pagination.last }}</a>
+                        </li>
+                        {% if "next" in rejected.pagination %}
+                            <li><a type="button" class="btn btn-default"
+                                   href="{% add_get_parameter deletes_page=rejected.pagination.next,selected='deletions' %}">&raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+
+                {% else %}
+                    <div class="alert bg-warning">{% trans "Currently there are no rejected changes." %}</div>
                 {% endif %}
             </div>
         {% endif %}
