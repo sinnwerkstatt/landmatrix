@@ -75,7 +75,7 @@
                 </ul>
 
             </div>
-            <div class="col-md-6 filterbox">
+            <div class="col-md-6 filterwidgetbox">
                 <div id="empty" class="rules">
                     <form class="form">
                         {#% csrf_token %#}
@@ -88,23 +88,20 @@
 
                         <input id="filter_variable" type="hidden" name="variable" value=""/>
 
-                        <div class="input-group">
-                            <select id="filter_operator" name="operator">
-                                <option value="lt"><</option>
-                                <option value="gt">></option>
-                                <option value="gte">>=</option>
-                                <option value="lte">=<</option>
-                                <option value="is">is</option>
-                                <option value="is_empty">is empty</option>
-                                <option value="not_in">not in</option>
-                                <option value="in">in</option>
-                                <option value="contains">contains</option>
-                            </select>
+                        <select id="filter_operator" name="operator" class="form-inline form-control">
+                            <option value="lt"><</option>
+                            <option value="gt">></option>
+                            <option value="gte">>=</option>
+                            <option value="lte">=<</option>
+                            <option value="is">is</option>
+                            <option value="is_empty">is empty</option>
+                            <option value="not_in">not in</option>
+                            <option value="in">in</option>
+                            <option value="contains">contains</option>
+                        </select>
 
-                            <div id="filter_value" class="right">
-                                <input type="text"/>
-                            </div>
-                            <div></div>
+                        <div id="filter_value" class="form-inline">
+                            <input type="text"/>
                         </div>
                         <button type="submit" class="btn btn-primary" name="add"
                                 value="add">{% trans "Add filter" %}</button>
