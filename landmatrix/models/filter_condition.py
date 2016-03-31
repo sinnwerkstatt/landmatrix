@@ -38,7 +38,7 @@ FILTER_NEW = [
     "total_jobs_planned_daily_workers", "total_jobs_planned_employees", "type", "url",
     "water_extraction_amount", "water_extraction_envisaged"
 ]
-FILTER_VAR_INV = ["investor_name", "country"]
+FILTER_VAR_INV = ['investor', "investor_name", "country", 'stakeholder_country']
 
 
 def get_filter_vars():

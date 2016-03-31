@@ -92,7 +92,7 @@ def filters_via_url(request):
     operator = request.GET.getlist('operator')
     value = request.GET.getlist('value')
     return [
-        ('dummy', filter_condition(variable[i], operator[i], value[i]))
+        (variable[i], filter_condition(variable[i], operator[i], value[i]))
         for i in range(len(variable))
     ]
 
@@ -108,7 +108,6 @@ def filter_condition(variable, operator, value):
 def _update_filters(filter_dict, filter):
     name = _get_filter_type(filter)
     definition = _get_filter_definition(filter)
-    print('_update_filters', filter_dict, filter, definition)
     definition_key = list(definition.keys())[0]
     if filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
         filter_dict[name]['tags'][definition_key].extend(definition[definition_key])
