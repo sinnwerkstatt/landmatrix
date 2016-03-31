@@ -168,6 +168,8 @@ class FilterToSQL:
                             where_inv += " AND skvr%i.name %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
                         elif 'country' in variable:
                             where_inv += ' AND stakeholder.fk_country_id = {}'.format(v)
+                        elif 'investor' == variable:
+                            where_inv += ' AND stakeholder.investor_identifier = {}'.format(v)
                         else:
                             where_inv += " AND skv%i.value %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
                         #query_params.append(v)
@@ -215,7 +217,6 @@ class FilterToSQL:
                     tables_from_inv += "LEFT JOIN countries skvc%(count)i, regions skvr%(count)i \n" % {"count": i}
                     tables_from_inv += " ON stakeholder.fk_country_id = skvc%(count)i.id AND skvr%(count)i.id = skvc%(count)i.fk_region)"%{"count": i, "key": variable}
                 elif 'country' in variable:
-                    # tables_from_inv += 'LEFT JOIN landmatrix_country AS skvc{} ON '
                     pass
 
         if self.DEBUG: print('FilterToSQL._tables_investor tables:', tables_from_inv)
