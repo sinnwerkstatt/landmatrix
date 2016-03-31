@@ -31,15 +31,15 @@ class FilterWidgetAjaxView(View):
         operation = request.GET.get("operation", "")
         field = None
         value = value and value.split(",") or []
-        widget = TextInput().render(request.GET.get("name", ""), ",".join(value))
+        widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs={"class": "form-control"})
         if operation == 'is_empty':
             return HttpResponse('', content_type="text/plain")
         # ID
         elif key_id == "-1":
             if operation in ("in", "not_in"):
-                widget = TextInput().render(request.GET.get("name", ""), ",".join(value))
+                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs={"class": "form-control"})
             else:
-                widget = NumberInput().render(request.GET.get("name", ""), ",".join(value))
+                widget = NumberInput().render(request.GET.get("name", ""), ",".join(value), attrs={"class": "form-control"})
         # deal scope
         elif key_id == "-2":
             widget = CheckboxSelectMultiple()
@@ -114,12 +114,12 @@ class FilterWidgetAjaxView(View):
                 elif isinstance(widget, Select):
                     widget = SelectMultiple()
                     widget.choices = field.widget.choices
-                    widget = widget.render(request.GET.get("name", ""), value)
+                    widget = widget.render(request.GET.get("name", ""), value, attrs={"class": "form-control"})
                 else:
                     widget = widget.render(request.GET.get("name", ""), ",".join(value),
                                            attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
             elif operation in ("contains",):
-                widget = TextInput().render(request.GET.get("name", ""), ",".join(value))
+                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs={"class": "form-control"})
             else:
                 if issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple)):
                     widget = widget.render(request.GET.get("name", ""), value)
