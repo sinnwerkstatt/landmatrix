@@ -154,7 +154,7 @@
               {% if item.intention %}
                 {% for i in item.intention %}
                   <li>
-                    <a href="/global/data/all?variable=intention&operator=is&value={{ i|slugify }}"
+                    <a href="/global/data/all?variable=intention&operator=is&value={{ i }}"
                        {% if group != "intention" %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a>
                   </li>
                 {% endfor %}
