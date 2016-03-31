@@ -83,7 +83,6 @@ class DealDetailView(TemplateView):
         return render_to_string(self.template_name, context, RequestContext(request))
 
 
-# todo
 def get_latest_valid_deal(deal_id):
     deal = Deal(deal_id)
 
