@@ -1,3 +1,4 @@
+from pprint import pprint
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -60,10 +61,10 @@ class SQLBuilder(SQLBuilderData):
 
         if self._need_involvements_and_stakeholders():
             self.join_expressions.extend([
-                join_expression(InvestorActivityInvolvement, 'iai', 'a.id', 'iai.fk_activity_id'),
-                join_expression(Investor, 'operational_stakeholder', 'operational_stakeholder.id', 'iai.fk_investor_id'),
-                join_expression(InvestorVentureInvolvement, 'ivi', 'operational_stakeholder.id', 'ivi.fk_venture_id'),
-                join_expression(Investor, 'stakeholder', 'stakeholder.id', 'ivi.fk_venture_id')
+                join_expression(InvestorActivityInvolvement, 'iai', 'a.id', 'fk_activity_id'),
+                join_expression(Investor, 'operational_stakeholder', 'fk_investor_id', 'id'),
+                join_expression(InvestorVentureInvolvement, 'ivi', 'operational_stakeholder.id', 'fk_venture_id'),
+                join_expression(Investor, 'stakeholder', 'fk_venture_id', 'id')
             ])
 
         for c in get_join_columns(self.columns, self.group, self.group_value):
@@ -149,9 +150,17 @@ class SQLBuilder(SQLBuilderData):
 
     def _add_join_if_not_present(self, new_join_expressions):
         for new_join_expression in new_join_expressions:
-            if new_join_expression not in self.join_expressions:
+            if not self._already_present_in_joins(new_join_expression):
                 self.join_expressions.append(new_join_expression)
 
+    def _already_present_in_joins(self, join):
+        first = join.find(' AS ') + 4
+        alias = join[first:join.find(' ', first)]
+        for already_there in self.join_expressions:
+            if ' AS ' + alias in already_there:
+                return True
+
+        return False
 
     @classmethod
     def max_version_condition(cls, model=Activity, alias='a', id_field='activity_identifier'):
