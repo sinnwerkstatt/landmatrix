@@ -88,7 +88,7 @@ class FilterToSQL:
 
                     if self.DEBUG: print('_where_activity', index, tag, value)
 
-                    if not isinstance(value, list) and value.isnumeric():
+                    if not isinstance(value, list):
                         value = [value]
                     for v in value:
                         year = None
@@ -156,7 +156,7 @@ class FilterToSQL:
                             "op": self.OPERATION_MAP[operation][0] % in_values
                         }
                 else:
-                    if not isinstance(value, list) and value.isnumeric():
+                    if not isinstance(value, list):
                         value = [value]
                     for v in value:
 
