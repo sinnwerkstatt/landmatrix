@@ -281,6 +281,7 @@ function initGeocoder(mapId) {
     }
 }
 
+/*
 
 function legacyInitializeMap(el, index) {
   //MAP
@@ -352,7 +353,9 @@ function legacyInitializeMap(el, index) {
   });
 });
 }
+*/
 
+/*
 
 function init_google_maps(el, index) {
   el.autocomplete({
@@ -393,3 +396,4 @@ function init_google_maps(el, index) {
         }
       });
 };
+*/
