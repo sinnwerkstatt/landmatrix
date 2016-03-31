@@ -21,40 +21,25 @@
         </div>
     </div>
 
-
     <div id="manage-filters" class="clearfix collapse">
         <div class="row">
             <div class="col-md-3 filterbox no-pad">
                 <ul class="presets variables">
+                    {% for groupname, items in presets.items %}
                     <li>
-                        <h4>Preset Category Label</h4>
+                        <h4>{{ groupname }}</h4>
                         <ul>
+                            {% for item in items %}
                             <li class="filter_item">
-                                <a href="javascript:loadPreset('PresetName')"
-                                   title="$Detailed Preset Filtering explanation">
-                                    <label>{% trans "PresetLabel" %}</label>
+                                <a href="javascript:loadPreset('{{ item.id }}')"
+                                   title="{{ groupname }}: {{ item.label }}">
+                                    <label>{% trans item.label %}</label>
                                 </a>
                             </li>
-                            <li class="filter_item">
-                                <a href="javascript:loadPreset('PresetName')"
-                                   title="$Detailed Preset Filtering explanation">
-                                    <label>{% trans "PresetLabel" %}</label>
-                                </a>
-                            </li>
+                            {% endfor %}
                         </ul>
                     </li>
-                    <li>
-                        <h4>Preset Category Label</h4>
-                        <ul>
-                            <li class="filter_item">
-                                <a href="javascript:loadPreset('PresetName')"
-                                   title="$Detailed Preset Filtering explanation">
-                                    <label>{% trans "PresetLabel" %}</label>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
+                    {% endfor %}
                 </ul>
             </div>
             <div class="col-md-3 filterbox no-pad">
@@ -113,5 +98,6 @@
 </div>
 
 {% block js %}
+    <script src="{% static "js/editor/year-based-fields.js" %}" type="text/javascript" charset="utf-8"></script>
     <script src="{% static "js/filters.js" %}" type="text/javascript"></script>
 {% endblock %}
