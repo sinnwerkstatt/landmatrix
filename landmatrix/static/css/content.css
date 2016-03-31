@@ -26,7 +26,7 @@ body {
 }
 
 .wrap h1 span {
-    background: #fcfcfc;
+    background: #ffffff;
     padding: 0 15px;
     position: relative;
     z-index: 1;
@@ -2464,24 +2464,25 @@ form .panel-body {
  *    STATS
  * ========================================================================== */
 
-.stats h4 .icon {
+#stats h4 .icon {
     margin-top: -5px;
 }
 
-.stats .bar {
+#stats .bar {
     padding: 0 8px 2px;
     text-align: left;
     color: #fff;
     font-weight: bold;
     line-height: 22px;
+    height: 100%;
 }
 
-.stats .number {
+#stats .number {
     font-weight: bold;
     display: block;
 }
 
-.stats .progress {
+#stats .progress {
     margin-bottom: 10px;
 }
 
@@ -2518,27 +2519,9 @@ form .panel-body {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#884e0e', endColorstr='#884e0e', GradientType=0);
 }
 
-.stats .legend.well-square {
-    padding: 5px;
-    margin-top: 10px;
-}
-
-.stats ul.media-list li {
-    width: 107px;
-    display: inline-block;
-    text-align: center;
-}
-
-.stats ul.media-list {
-    margin-top: 2px;
-}
-
-.stats .description ul {
-    margin-top: 30px;
-}
-
-.stats .description li {
-    margin-bottom: 10px;
+#stats .legend ul {
+    width: 300px;
+    margin: 0 auto;
 }
 
 /* FIXME: Cleanup */
