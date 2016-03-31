@@ -1,5 +1,6 @@
 from pprint import pprint
 
+from landmatrix.models.country import Country
 from landmatrix.models.filter_condition import FILTER_VAR_ACT, FILTER_VAR_INV, get_filter_vars, FilterCondition
 from grid.views.browse_condition_form import BrowseConditionForm
 
@@ -132,6 +133,8 @@ def _get_filter_definition(filter_data):
     variable = filter_data['variable'][0]
     operator = filter_data['operator'][0]
     value = _parse_value(filter_data['value'])
+    if 'country' in variable and not value.isnumeric():
+        value = str(Country.objects.get(name__iexact=value).pk)
     if 'in' in operator and not isinstance(value, list):
         value = [value]
     return {'{}__{}'.format(variable, operator): value}
