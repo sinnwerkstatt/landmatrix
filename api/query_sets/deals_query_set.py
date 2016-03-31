@@ -65,7 +65,9 @@ class DealsQuerySet(FakeQuerySetFlat):
         return output
 
     def _set_attributes(self, attributes):
+        # intention is already in the base joins and i can't be bothered to do it cleanly now, so:
         attributes.remove('intention')
+
         for attribute in attributes:
             self._fields = add_to_list_if_not_present(
                 self._fields, [(attribute, "{}.attributes->'{}'".format(attribute, attribute))]

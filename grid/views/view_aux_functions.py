@@ -107,6 +107,7 @@ def filter_condition(variable, operator, value):
 def _update_filters(filter_dict, filter):
     name = _get_filter_type(filter)
     definition = _get_filter_definition(filter)
+    print('_update_filters', filter_dict, filter, definition)
     definition_key = list(definition.keys())[0]
     if filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
         filter_dict[name]['tags'][definition_key].extend(definition[definition_key])
@@ -128,9 +129,11 @@ def _get_filter_definition(filter_data):
         {'variable__operator': value}
         """
     filter_data = filter_data[1]
-    value = _parse_value(filter_data['value'])
     variable = filter_data['variable'][0]
     operator = filter_data['operator'][0]
+    value = _parse_value(filter_data['value'])
+    if 'in' in operator and not isinstance(value, list):
+        value = [value]
     return {'{}__{}'.format(variable, operator): value}
 
 
