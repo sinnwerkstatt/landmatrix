@@ -367,7 +367,7 @@
                             <col width="25%">
                         </colgroup>
                         <thead>
-                        <th class="Stakeholder">{% trans "Deal ID #" %}</th>
+                        <th class="dealid">{% trans "Deal ID #" %}</th>
                         <th class="user">{% trans "User" %}</th>
                         <th class="comment">{% trans "Comment" %}</th>
                         <th class="action">{% trans "Timestamp" %}</th>
@@ -375,7 +375,7 @@
                         <tbody>
                         {% for changeset in rejected.cs %}
                             <tr class="deletes">
-                                <td class="investor"><a
+                                <td class="dealid"><a
                                         href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
                                 </td>
                                 <td class="user">{{ changeset.user }}</td>
