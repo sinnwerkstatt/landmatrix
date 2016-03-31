@@ -23,6 +23,7 @@ class FakeQuerySet(QuerySet):
 
     _filter_sql = ''
 
+    FIELDS = []
     ADDITIONAL_JOINS = []
     ADDITIONAL_WHERES = []
     GROUP_BY = []
@@ -31,9 +32,11 @@ class FakeQuerySet(QuerySet):
 
     def __init__(self, request):
         self._all_results = []
+
         self._additional_joins = self.ADDITIONAL_JOINS
         self._additional_wheres = self.ADDITIONAL_WHERES
         self._set_filter_sql(self._get_filter(request))
+        self._fields = self.FIELDS
         self._group_by = self.GROUP_BY
         self._order_by = self.ORDER_BY
         self._limit = self.LIMIT
@@ -48,7 +51,8 @@ class FakeQuerySet(QuerySet):
 #        return self.QUERY % (self.columns(), self.additional_joins(), self.additional_wheres(), self._filter_sql)
 
     def columns(self):
-        return ",\n    ".join([definition+" AS "+alias for alias, definition in self.FIELDS])
+        # print(self.FIELDS)
+        return ",\n    ".join([definition+" AS "+alias for alias, definition in self._fields])
 
     def additional_joins(self):
         no_dups = self._uniquify_join_expressions(self._additional_joins)
@@ -105,7 +109,7 @@ class FakeQuerySet(QuerySet):
         if not self._all_results:
             for result in self._execute_query():
                 try:
-                    as_dict = {self.FIELDS[i][0]: result[i] for i in range(len(self.FIELDS))}
+                    as_dict = {self._fields[i][0]: result[i] for i in range(len(self._fields))}
                 except KeyError:
                     raise RuntimeError('You probably haven\'t defined the correct fields for your FakeQuerySet.')
                 as_model = FakeModel(as_dict)
