@@ -1,11 +1,20 @@
 {% load i18n custom_tags static crispy_forms_tags %}
 {% load humanize %}
 
+<script>
+    var presets = {};
+    {% for groupname, items in presets.items %}
+        {% for item in items %}
+    presets[{{ item.id }}] = '{{ groupname }}:{{ item.label }}';
+        {% endfor %}
+    {% endfor %}
+</script>
+
 <div id="filters">
     <div class="row">
         <form>
             {% csrf_token %}
-            <div class="col-md-10" id="filterlist">
+            <div class="col-md-10 clearfix" id="filterlist">
                 <label>{% trans "No active filters" %}</label>
             </div>
         </form>
@@ -22,7 +31,7 @@
     </div>
 
     <div id="manage-filters" class="clearfix collapse">
-        <div class="row">
+        <div id="filterrow" class="row">
             <div class="col-md-3 filterbox no-pad">
                 <ul class="presets variables">
                     {% for groupname, items in presets.items %}
@@ -86,7 +95,7 @@
                         </select>
 
                         <div id="filter_value" class="form-inline">
-                            <input type="text"/>
+                            <input type="text" class="form-control" />
                         </div>
                         <button type="submit" class="btn btn-primary" name="add"
                                 value="add">{% trans "Add filter" %}</button>
