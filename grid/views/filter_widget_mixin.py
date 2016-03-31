@@ -23,6 +23,12 @@ class FilterWidgetMixin:
     current_formset_conditions = None
     filters = None
 
+    def create_preset_table(self):
+        # moved the function to view_aux_functions because it is static
+        # redirected from here in order to keep the interface
+        from api.views.filter_preset_view import create_preset_table
+        return create_preset_table()
+
     def create_variable_table(self):
         # moved the function to view_aux_functions because it is static
         # redirected from here in order to keep the interface
@@ -47,6 +53,8 @@ class FilterWidgetMixin:
 
         variables = self.create_variable_table()
         context['variables'] = variables
+        presets = self.create_preset_table()
+        context['presets'] = presets
 
     @print_execution_time_and_num_queries
     def get_filter_context(self, formset_conditions, order_by=None, group_by=None, group_value=None, starts_with=None):
