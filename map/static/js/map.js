@@ -14,6 +14,12 @@ var clusterSource = new ol.source.Cluster({
 
 var layers = [];
 
+var fieldnames = {
+    'Geospatial Accuracy': 'accuracy',
+    'Negotiation Status': 'negotiation_status',
+    'Deal Intention': 'intention'
+}
+
 var detailviews = {
     'Geospatial Accuracy': {
         'better than 100m': '#0f0',
@@ -503,7 +509,7 @@ $(document).ready(function () {
         markerSource.clear();
 
         $.get(
-            "/en/api/deals.json?limit=10&variable="+currentVariable, //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+            "/en/api/deals.json?limit=10&attributes="+fieldnames[currentVariable], //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
             addData
         );
 

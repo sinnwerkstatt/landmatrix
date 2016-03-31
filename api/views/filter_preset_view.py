@@ -7,6 +7,21 @@ import json
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+def create_preset_table():
+
+    groups = FilterPreset.objects.values_list().distinct()
+
+    table = {}
+    for item in groups:
+        newitem = {
+            'id': item[0],
+            'label': item[2]
+        }
+        if item[1] not in table:
+            table[item[1]] = [newitem]
+        else:
+            table[item[1]].append(newitem)
+    return table
 
 class FilterPresetView(TemplateView):
 
