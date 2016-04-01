@@ -5,13 +5,50 @@
 </a>
 <!-- Popover hidden content -->
 <span id="download" class="hidden">
-  <a href="{% url "export" format=".xml" %}" class="btn-media xml">
+  {# FIXME: EXPORT_FORMATS available in the context would make this much cleaner #}
+  {% if group_slug %}
+    {% if group_value %}
+    <a href="{% url "export" group=group_slug list=group_value format="xml" %}" class="btn-media xml">
+    {% else %}
+    <a href="{% url "export" group=group_slug format="xml" %}" class="btn-media xml">
+    {% endif %}
+  {% else %}
+    {% if deal %}
+    <a href="{% url "export" deal_id=deal.activity_identifier format="xml" %}" class="btn-media xml">
+    {% else %}
+    <a href="{% url "export" format="xml" %}" class="btn-media xml">
+    {% endif %}
+  {% endif %}
     <i class=""></i>XML
   </a>
-  <a href="{% url "export" format=".csv" %}" class="btn-media csv">
+  {% if group_slug %}
+    {% if group_value %}
+    <a href="{% url "export" group=group_slug list=group_value format="csv" %}" class="btn-media csv">
+    {% else %}
+    <a href="{% url "export" group=group_slug format="csv" %}" class="btn-media csv">
+    {% endif %}
+  {% else %}
+    {% if deal %}
+    <a href="{% url "export" deal_id=deal.activity_identifier format="csv" %}" class="btn-media csv">
+    {% else %}
+    <a href="{% url "export" format="csv" %}" class="btn-media csv">
+    {% endif %}
+  {% endif %}
     <i class=""></i>CSV
   </a>
-  <a href="{% url "export" format=".xls" %}" class="btn-media xls">
-    <i class=""></i>XLS
+  {% if group_slug %}
+    {% if group_value %}
+    <a href="{% url "export" group=group_slug list=group_value format="xls" %}" class="btn-media xls">
+    {% else %}
+    <a href="{% url "export" group=group_slug format="xls" %}" class="btn-media xls">
+    {% endif %}
+  {% else %}
+    {% if deal %}
+    <a href="{% url "export" deal_id=deal.activity_identifier format="xls" %}" class="btn-media xls">
+    {% else %}
+    <a href="{% url "export" format="xls" %}" class="btn-media xls">
+    {% endif %}
+  {% endif %}
+    <i class=""></i>XSL
   </a>
 </span>
