@@ -12,14 +12,13 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class ExportView(TemplateView):
     template_name = 'export.html'
     FORMATS = ['csv', 'xml', 'xls']
-    format = None
 
-    def export(self, items):
-        if self.format not in FORMATS:
-            raise RuntimeError('Download format not recognized: ' + self.format)
+    def export(self, items, columns, format, filename="test"):
+        if format not in self.FORMATS:
+            raise RuntimeError('Download format not recognized: ' + format)
 
-        return getattr(self, 'export_%s' % self.format)(
-            self.columns, format_items_for_download(items, self.columns), "%s.%s" % (self.group, self.format)
+        return getattr(self, 'export_%s' % format)(
+            columns, self.format_items_for_download(items, columns), "%s.%s" % (filename, format)
         )
 
     def export_xls(self, header, data, filename):
@@ -68,7 +67,6 @@ class ExportView(TemplateView):
         writer.writerow(header)
         for row in data:
             writer.writerow([str(s).encode("utf-8") for s in row])
-            raise IOError(row)
         return response
 
 
@@ -110,6 +108,25 @@ class ExportView(TemplateView):
             rows.append(row)
         return rows
 
+
 class AllDealsExportView(AllDealsView, ExportView):
-    def dispatch(self, *args, **kwargs):
-        pass
+    def dispatch(self, request, *args, **kwargs):
+        format = kwargs.pop('format')
+        kwargs['group'] = 'all'
+        context = super(AllDealsExportView, self).get_context_data(*args, **kwargs)
+        return self.export(context['data']['items'], context['columns'], format, filename=kwargs['group'])
+
+class TableGroupExportView(TableGroupView, ExportView):
+    def dispatch(self, request, *args, **kwargs):
+        format = kwargs.pop('format')
+        context = super(TableGroupExportView, self).get_context_data(*args, **kwargs)
+        return self.export(context['data']['items'], context['columns'], format, filename=kwargs['group'])
+
+class DealDetailExportView(DealDetailView, ExportView):
+    def dispatch(self, request, *args, **kwargs):
+        format = kwargs.pop('format')
+        context = super(DealDetailExportView, self).get_context_data(*args, **kwargs)
+        attrs = context['deal']['attributes']
+        items = [attrs,]
+        columns = list(attrs.keys())
+        return self.export(items, columns, format, filename=kwargs['deal_id'])
