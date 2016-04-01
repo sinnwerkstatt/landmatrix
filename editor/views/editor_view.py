@@ -50,7 +50,9 @@ class EditorView(TemplateView):
 
 
 def get_overall_deal_count():
-    return Activity.objects.filter(fk_status__name__in=('active', 'overwritten')).values('activity_identifier').distinct().count()
+    return Activity.objects.filter(
+        fk_status__name__in=('active', 'overwritten')
+    ).values('activity_identifier').distinct().count()
 
 
 def get_public_deal_count():
