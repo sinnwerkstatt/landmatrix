@@ -50,6 +50,6 @@ urlpatterns = patterns('grid.views',
     url(r'^(?P<deal_id>[\d]+)/$', cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), name='deal_detail'),
     url(r'^(?P<deal_id>[\d_\.]+)/$', cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), name='deal_detail'),
     # needs to come last, regexp catches all expressions
+     url(r'^(?P<group>.+)/(?P<list>.+)/$', cache_page(CACHE_TIMEOUT)(TableGroupView.as_view()), name='table_list'),
     url(r'^(?P<group>.+)/$', cache_page(CACHE_TIMEOUT)(TableGroupView.as_view()), name='table_list'),
-    # url(r'^(?P<group>.+)/(?P<list>)/$', cache_page(CACHE_TIMEOUT)(TableGroupView.as_view()), name='table_list'),
 )

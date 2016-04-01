@@ -34,11 +34,17 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     template_name = "group-by.html"
     debug_query = False
+    group = None
+    group_value = None
 
     def get_context_data(self, group, list=None):
         context = super(TableGroupView, self).get_context_data()
-        self._set_group_value(group, list)
-        self._set_group(group, list)
+        self.group = group or self.DEFAULT_GROUP
+        self.group = self.group.replace("by-", "").replace("-", "_")
+        #if not self._filter_set(self.request.GET) and self.group == "database":
+        #    self.group = "all"
+        self.group_value = list or ''
+
         self._set_filters()
         self._set_columns()
 
@@ -53,10 +59,10 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
                 "count": self.num_results
             },
             "name": self.group_value,
-            "columns": self.group_value and self.GROUP_COLUMNS_LIST or self._columns(),
+            "columns": self.columns,
             "load_more": self._load_more_amount(),
-            "group_slug": self.kwargs.get("group", self.DEFAULT_GROUP),
-            "group_value": self.kwargs.get("list", None),
+            "group_slug": self.group,
+            "group_value": self.group_value,
             "group": self.group.replace("_", " "),
             # "rules": self.rules,
         }
@@ -106,9 +112,9 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             return int(self._load_more()) + self.LOAD_MORE_AMOUNT
         return None
 
-    def _set_group_value(self, group, list=None):
-        self.group_value = list
-        if self.group_value == 'none': self.group_value = ''
+    #def _set_group_value(self, group, list=None):
+    #    self.group_value = list
+    #    if self.group_value == 'none': self.group_value = ''
         #if self.group_value.endswith(".csv") or kwargs.get("group", self.DEFAULT_GROUP).endswith(".csv"):
         #    self.group_value = self.group_value.split(".")[0]
 
@@ -120,20 +126,20 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     #            self.download_type = ext
     #            return
 
-    def _set_group(self, group, list=None):
-        self.group = group or self.DEFAULT_GROUP
-        #if self.is_download():
-        #    self.group = self.group.split(".")[0]
-        # map url to group variable, cut possible .csv suffix
-        self.group = self.group.replace("by-", "").replace("-", "_")
-        if not self._filter_set(self.request.GET) and self.group == "database":
-            self.group = "all"
+    #def _set_group(self, group, list=None):
+    #    self.group = group or self.DEFAULT_GROUP
+    #    #if self.is_download():
+    #    #    self.group = self.group.split(".")[0]
+    #    # map url to group variable, cut possible .csv suffix
+    #    self.group = self.group.replace("by-", "").replace("-", "_")
+    #    if not self._filter_set(self.request.GET) and self.group == "database":
+    #        self.group = "all"
 
     @print_execution_time_and_num_queries
     def _set_columns(self):
         #if self.is_download() and (self.group_value or self.group == "all"):
         #    self.columns = self.DOWNLOAD_COLUMNS
-        if self.group:
+        if self.group_value:
             self.columns = self.GROUP_COLUMNS_LIST
         else:
             self.columns = self._columns()
@@ -180,14 +186,14 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         if not value: return None
         process_functions = {
             'intention': self._process_intention,
-            'investor_name': _process_investor_name,
-            'stakeholder_name': _process_stakeholder_name,
-            'stakeholder_country': _process_stitched_together_field,
-            'stakeholder_region': _process_stitched_together_field,
-            'crop': _process_stitched_together_field,
+            'investor_name': self._process_investor_name,
+            'stakeholder_name': self._process_stakeholder_name,
+            'stakeholder_country': self._process_stitched_together_field,
+            'stakeholder_region': self._process_stitched_together_field,
+            'crop': self._process_stitched_together_field,
             'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
-            'negotiation_status': _process_name_and_year,
-            'implementation_status': _process_name_and_year,
+            'negotiation_status': self._process_name_and_year,
+            'implementation_status': self._process_name_and_year,
             "intended_size": lambda v: v and v[0],
             "production_size": lambda v: v and v[0],
             "contract_size": lambda v: v and v[0],
@@ -251,32 +257,32 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         return output
 
 
-def _process_investor_name(value):
-    if not isinstance(value, list):
-        value = [value]
-    result = [
-        {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
-        for inv in value
-    ]
-    return result
+    def _process_investor_name(self, value):
+        if not isinstance(value, list):
+            value = [value]
+        result = [
+            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
+            for inv in value
+        ]
+        return result
 
 
-def _process_stakeholder_name(value):
-    if not isinstance(value, list):
-        value = [value]
-    result = [
-        {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
-        for inv in value
-    ]
-    return result
+    def _process_stakeholder_name(self, value):
+        if not isinstance(value, list):
+            value = [value]
+        result = [
+            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
+            for inv in value
+        ]
+        return result
 
 
-def _process_stitched_together_field(value):
-    if not isinstance(value, list):
-        value = [value]
-    return [field.split("#!#")[0] for field in value]
+    def _process_stitched_together_field(self, value):
+        if not isinstance(value, list):
+            value = [value]
+        return [field.split("#!#")[0] for field in value]
 
 
-def _process_name_and_year(value):
-    return [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]or 0} for n in value]
+    def _process_name_and_year(self, value):
+        return [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]or 0} for n in value]
 
