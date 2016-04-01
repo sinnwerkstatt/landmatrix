@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.shortcuts import redirect
 from django.template.context import RequestContext
 from django.conf import settings
