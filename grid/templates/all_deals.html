@@ -42,42 +42,42 @@
 
 {% if data.items %}
 {% if not group_value %}
-{% if group == "investor name" or group == "investor country" or group == "target country" %}
-<div class="btn-toolbar">
-    <div class="btn-group" data-toggle="buttons-radio">
-      <a class="btn btn-mini{% if filters.starts_with == 'A' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'A' %}">A</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'B' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'B' %}">B</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'C' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'C' %}">C</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'D' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'D' %}">D</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'E' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'E' %}">E</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'F' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'F' %}">F</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'G' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'G' %}">G</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'H' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'H' %}">H</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'I' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'I' %}">I</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'J' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'J' %}">J</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'K' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'K' %}">K</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'L' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'L' %}">L</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'M' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'M' %}">M</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'N' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'N' %}">N</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'O' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'O' %}">O</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'P' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'P' %}">P</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'Q' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Q' %}">Q</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'R' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'R' %}">R</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'S' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'S' %}">S</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'T' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'T' %}">T</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'U' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'U' %}">U</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'V' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'V' %}">V</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'W' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'W' %}">W</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'X' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'X' %}">X</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'Y' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Y' %}">Y</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'Z' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Z' %}">Z</a>
+  {% if group == "investor name" or group == "investor country" or group == "target country" %}
+    <div class="btn-toolbar">
+      <div class="btn-group" data-toggle="buttons-radio">
+        <a class="btn btn-mini{% if filters.starts_with == 'A' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'A' %}">A</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'B' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'B' %}">B</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'C' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'C' %}">C</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'D' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'D' %}">D</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'E' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'E' %}">E</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'F' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'F' %}">F</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'G' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'G' %}">G</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'H' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'H' %}">H</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'I' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'I' %}">I</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'J' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'J' %}">J</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'K' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'K' %}">K</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'L' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'L' %}">L</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'M' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'M' %}">M</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'N' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'N' %}">N</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'O' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'O' %}">O</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'P' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'P' %}">P</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'Q' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Q' %}">Q</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'R' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'R' %}">R</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'S' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'S' %}">S</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'T' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'T' %}">T</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'U' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'U' %}">U</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'V' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'V' %}">V</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'W' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'W' %}">W</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'X' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'X' %}">X</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'Y' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Y' %}">Y</a>
+        <a class="btn btn-mini{% if filters.starts_with == 'Z' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Z' %}">Z</a>
+      </div>
+      <div class="btn-group" data-toggle="buttons-radio">
+        <a class="btn btn-mini{% if not filters.starts_with %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' '' %}">{% trans "ALL" %}</a>
+      </div>
+      <a href="#" class="toggle-tooltip" title="{% trans 'You can filter by initial letter.' %}"> <i class="lm lm-question-circle"> </i></a>
     </div>
-    <div class="btn-group" data-toggle="buttons-radio">
-      <a class="btn btn-mini{% if not filters.starts_with %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' '' %}">{% trans "ALL" %}</a>
-    </div>
-    <a href="#" class="toggle-tooltip" title="{% trans 'You can filter by initial letter.' %}"> <i class="lm lm-question-circle"> </i></a>
-</div>
-{% endif %}
+  {% endif %}
 {% endif %}
 <div class="summary-wrap">
 <table id="summary" class="table table-striped">
@@ -143,7 +143,7 @@
               <td style="width:341px">
               {% if  item.crop %}
               {% for c in item.crop %}
-                <a href="/global/data/by-crop/{{ c|slugify }}/">{{ c }}</a></br>
+                <a href="/global/data/all?variable=crop&operator=is&value={{ c|slugify }}">{{ c }}</a></br>
               {% endfor %}
               {% else %}{% trans "unknown" %}
               {% endif %}
@@ -153,21 +153,15 @@
               <ul class="list-unstyled">
               {% if item.intention %}
                 {% for i in item.intention %}
-                  <li><a href="/global/data/by-intention/{{ i|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if group != "intention" %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a></li>
+                  <li>
+                    <a href="/global/data/all?variable=intention&operator=is&value={{ i }}"
+                       {% if group != "intention" %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a>
+                  </li>
                 {% endfor %}
               {% else %}{% trans "unknown" %}
               {% endif %}
               </ul>
               </td>
-          {% elif column == "primary_investor" %}
-            <td style="width:183px">
-            {% if item.primary_investor %}
-                {% for i in item.primary_investor %}
-                  {{ i }}<br/>
-                {% endfor %}
-            {% else %}{% trans "unknown" %}
-            {% endif %}
-            </td>
           {% elif column == "operational_stakeholder" %}
             <td style="width:183px">
             {% if item.operational_stakeholder %}
@@ -181,7 +175,7 @@
             <td style="width:183px">
             {% if item.stakeholder_name %}
                 {% for i in item.stakeholder_name %}
-                  <a href="/global/data/by-investor-name/{{i.id}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ i.name }}</a><br/>
+                  <a href="/global/data/all?variable=investor&operator=is&value={{i.id}}">{{ i.name }}</a><br/>
                 {% endfor %}
             {% else %}{% trans "unknown" %}
             {% endif %}
@@ -190,7 +184,7 @@
             <td class="investor-country">
               {% if item.stakeholder_country %}
               {% for stakeholder_country  in item.stakeholder_country %}
-                <a href="/global/data/by-investor-country/{{investor_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ stakeholder_country }}</a><br/>
+                <a href="/global/data/all?variable=stakeholder_country&operator=is&value={{stakeholder_country|slugify}}">{{ stakeholder_country }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown country" %}{% endif %}
             </td>
@@ -198,7 +192,7 @@
             <td class="investor-country">
               {% if item.investor_country %}
               {% for investor_country  in item.investor_country %}
-                <a href="/global/data/by-investor-country/{{investor_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_country }}</a><br/>
+                <a href="/global/data/all?variable=investor_country&operator=is&value={{investor_country|slugify}}">{{ investor_country }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown country" %}{% endif %}
             </td>
@@ -206,7 +200,7 @@
             <td class="investor-region">
               {% if item.investor_region %}
               {% for investor_region  in item.investor_region %}
-                <a href="/global/data/by-investor-region/{{investor_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ investor_region }}</a><br/>
+                <a href="/global/data/all?variable=investor_region&operator=is&value={{investor_region|slugify}}">{{ investor_region }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown region" %}{% endif %}
             </td>
@@ -214,7 +208,7 @@
             <td>
               {% if item.target_country %}
                 {% for target_country  in item.target_country %}
-                  <a href="/global/data/by-target-country/{{target_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_country }}</a><br/>
+                  <a href="/global/data/all?variable=target_country&operator=is&value={{target_country|slugify}}">{{ target_country }}</a><br/>
                 {% endfor %}
               {% else %}
                 {% trans "unknown" %}
@@ -224,7 +218,7 @@
             <td>
               {% if item.target_region %}
                 {% for target_region  in item.target_region %}
-                    <a href="/global/data/by-target-region/{{target_region|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ target_region }}</a><br/>
+                  <a href="/global/data/all?variable=target_region&operator=is&value={{target_region|slugify}}">{{ target_region }}</a><br/>
                 {% endfor %}
               {% else %}
                 {% trans "unknown" %}
@@ -233,7 +227,7 @@
           {% elif column == "year" %}
             <td>
               {% if item.year %}
-                <a href="/global/data/by-year/{{item.year}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ item.year }}</a>
+                <a href="/global/data/all?variable=year&operator=is&value={{item.year}}">{{ item.year }}</a><br/>
               {% else %}
                 {% trans "unknown" %}
               {% endif %}
@@ -242,7 +236,7 @@
             <td>
               {% if item.data_source_type %}
               {% for data_source_type in item.data_source_type %}
-                <a href="/global/data/by-data-source-type/{{data_source_type|slug_and_slash_to_plus}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ data_source_type }}</a>
+                <a href="/global/data/all?variable=data_source_type&operator=is&value={{data_source_type}}">{{ data_source_type }}</a><br/>
               {% endfor %}
               {% else %}
                 {% trans "unknown" %}
@@ -298,9 +292,9 @@
 </table>
 </div>
 {% if load_more %}
-<a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn">{% trans "More..." %}</a>
+  <a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn">{% trans "More..." %}</a>
 {% endif %}
 {% else %}
-<p>{% trans "There are currently no deals matching your search criteria." %} <a href="/deal/add">{% trans "Add a deal" %}</a>.</p>
+  <p>{% trans "There are currently no deals matching your search criteria." %} <a href="/deal/add">{% trans "Add a deal" %}</a>.</p>
 {% endif %}
 {% endblock %}

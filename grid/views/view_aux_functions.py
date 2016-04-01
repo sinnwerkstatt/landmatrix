@@ -1,6 +1,7 @@
 from pprint import pprint
 
-from landmatrix.models.filter_condition import FILTER_VAR_ACT, FILTER_VAR_INV, get_filter_vars
+from landmatrix.models.country import Country
+from landmatrix.models.filter_condition import FILTER_VAR_ACT, FILTER_VAR_INV, get_filter_vars, FilterCondition
 from grid.views.browse_condition_form import BrowseConditionForm
 
 from django.template import loader
@@ -82,6 +83,27 @@ def apply_filters_from_session(request, filter_dict):
             for i, condition in enumerate(preset.filter.conditions()):
                 _update_filters(filter_dict, (filter[1].get('name') + '_{}'.format(i), condition))
 
+    for filter in filters_via_url(request):
+        _update_filters(filter_dict, filter)
+
+
+def filters_via_url(request):
+    variable = request.GET.getlist('variable')
+    operator = request.GET.getlist('operator')
+    value = request.GET.getlist('value')
+    return [
+        (variable[i], filter_condition(variable[i], operator[i], value[i]))
+        for i in range(len(variable))
+    ]
+
+
+def filter_condition(variable, operator, value):
+    condition = FilterCondition()
+    condition.variable = variable
+    condition.operator = operator
+    condition.value = value
+    return condition
+
 
 def _update_filters(filter_dict, filter):
     name = _get_filter_type(filter)
@@ -107,9 +129,13 @@ def _get_filter_definition(filter_data):
         {'variable__operator': value}
         """
     filter_data = filter_data[1]
-    value = _parse_value(filter_data['value'])
     variable = filter_data['variable'][0]
     operator = filter_data['operator'][0]
+    value = _parse_value(filter_data['value'])
+    if 'country' in variable and not value.isnumeric():
+        value = str(Country.objects.get(name__iexact=value).pk)
+    if 'in' in operator and not isinstance(value, list):
+        value = [value]
     return {'{}__{}'.format(variable, operator): value}
 
 
