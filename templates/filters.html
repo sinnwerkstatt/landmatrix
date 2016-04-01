@@ -5,13 +5,13 @@
     var presets = {};
     {% for groupname, items in presets.items %}
         {% for item in items %}
-    presets[{{ item.id }}] = '{{ groupname }}:{{ item.label }}';
+            presets[{{ item.id }}] = '{{ groupname }}:{{ item.label }}';
         {% endfor %}
     {% endfor %}
 </script>
 
 <div id="filters">
-    <div class="row">
+    <div id="list-filters" class="row">
         <form>
             {% csrf_token %}
             <div class="col-md-10 clearfix" id="filterlist">
@@ -35,19 +35,19 @@
             <div class="col-md-3 filterbox no-pad">
                 <ul class="presets variables">
                     {% for groupname, items in presets.items %}
-                    <li>
-                        <h4>{{ groupname }}</h4>
-                        <ul>
-                            {% for item in items %}
-                            <li class="filter_item">
-                                <a href="javascript:loadPreset('{{ item.id }}')"
-                                   title="{{ groupname }}: {{ item.label }}">
-                                    <label>{% trans item.label %}</label>
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
+                        <li>
+                            <h4>{{ groupname }}</h4>
+                            <ul>
+                                {% for item in items %}
+                                    <li class="filter_item">
+                                        <a href="javascript:loadPreset('{{ item.id }}')"
+                                           title="{{ groupname }}: {{ item.label }}">
+                                            <label>{% trans item.label %}</label>
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
                     {% endfor %}
                 </ul>
             </div>
@@ -69,20 +69,11 @@
                 </ul>
 
             </div>
-            <div class="col-md-6 filterwidgetbox">
-                <div id="empty" class="rules">
-                    <form class="form">
-                        {#% csrf_token %#}
-
-                        <!--
-                        <input type="hidden" name="filtered" value="true"/>
-                        <input type="hidden" name="limit" value="{{ limit }}"/>
-                        <input type="hidden" name="order_by" value="{{ data.order_by }}"/>
-                        -->
-
-                        <input id="filter_variable" type="hidden" name="variable" value=""/>
-
-                        <select id="filter_operator" name="operator" class="form-inline form-control">
+            <form class="form">
+                <div class="col-md-1 filterbox filtercontrolbox">
+                    <input id="filter_variable" type="hidden" name="variable" value=""/>
+                    <div class="">
+                        <select id="filter_operator" name="operator" class="form-control">
                             <option value="lt"><</option>
                             <option value="gt">></option>
                             <option value="gte">>=</option>
@@ -94,14 +85,18 @@
                             <option value="contains">contains</option>
                         </select>
 
-                        <div id="filter_value" class="form-inline">
-                            <input type="text" class="form-control" />
-                        </div>
-                        <button type="submit" class="btn btn-primary" name="add"
-                                value="add">{% trans "Add filter" %}</button>
-                    </form>
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="add"
+                            value="add">{% trans "Add" %}</button>
+
+
                 </div>
-            </div>
+                <div class="col-md-5 filtervaluebox filterbox">
+                    <div class="" id="filter_value"> <!-- class="form-inline"> -->
+                        <input type="text" class="form-control"/>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
