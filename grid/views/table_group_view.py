@@ -35,14 +35,14 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     template_name = "group-by.html"
     debug_query = False
 
-    def get_context_data(self, group):
+    def get_context_data(self, group, list=None):
         context = super(TableGroupView, self).get_context_data()
-        self._set_group_value()
-        self._set_group(group)
+        self._set_group_value(group, list)
+        self._set_group(group, list)
         self._set_filters()
         self._set_columns()
 
-        query_result = self.get_records(request)
+        query_result = self.get_records()
         items = self._get_items(query_result)
 
         context = {
@@ -55,8 +55,8 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             "name": self.group_value,
             "columns": self.group_value and self.GROUP_COLUMNS_LIST or self._columns(),
             "load_more": self._load_more_amount(),
-            "group_slug": kwargs.get("group", self.DEFAULT_GROUP),
-            "group_value": kwargs.get("list", None),
+            "group_slug": self.kwargs.get("group", self.DEFAULT_GROUP),
+            "group_value": self.kwargs.get("list", None),
             "group": self.group.replace("_", " "),
             # "rules": self.rules,
         }
@@ -69,13 +69,13 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     #        else 'csv'
 
     @print_execution_time_and_num_queries
-    def get_records(self, request):
+    def get_records(self):
         ap = ActivityProtocol()
-        request.POST = MultiValueDict(
+        self.request.POST = MultiValueDict(
             {"data": [json.dumps({"filters": self.filters, "columns": self.columns})]}
         )
         ap.DEBUG = self.debug_query
-        res = ap.dispatch(request, action="list_group").content
+        res = ap.dispatch(self.request, action="list_group").content
         query_result = json.loads(res.decode())
 
         self.num_results = len(query_result['activities'])
@@ -106,8 +106,8 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             return int(self._load_more()) + self.LOAD_MORE_AMOUNT
         return None
 
-    def _set_group_value(self, **kwargs):
-        self.group_value = kwargs.get("list", "")
+    def _set_group_value(self, group, list=None):
+        self.group_value = list
         if self.group_value == 'none': self.group_value = ''
         #if self.group_value.endswith(".csv") or kwargs.get("group", self.DEFAULT_GROUP).endswith(".csv"):
         #    self.group_value = self.group_value.split(".")[0]
@@ -120,8 +120,8 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     #            self.download_type = ext
     #            return
 
-    def _set_group(self, group):
-        self.group = kwargs.get("group", self.DEFAULT_GROUP)
+    def _set_group(self, group, list=None):
+        self.group = group or self.DEFAULT_GROUP
         #if self.is_download():
         #    self.group = self.group.split(".")[0]
         # map url to group variable, cut possible .csv suffix
