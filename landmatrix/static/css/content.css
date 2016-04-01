@@ -1992,6 +1992,13 @@ a.remove-ybd:hover {
         border-left: solid 1px #919191;
     }
 
+    .filtercontrolbox {
+        border-right: none;
+    }
+
+    .filtervaluebox {
+        border-left: none;
+    }
 }
 
 @media (max-width: 992px) {
@@ -2012,6 +2019,17 @@ a.remove-ybd:hover {
     #filterbox:nth-child(2) ul.variables {
         margin-left: 15px !important;
     }
+
+    .filtercontrolbox {
+        border-bottom: none !important;
+        height: 100px;
+    }
+
+    .filtervaluebox {
+        border-top: none !important;
+        height: auto; /* 300px; */
+    }
+
 }
 
 #filter_value {
@@ -2021,6 +2039,8 @@ a.remove-ybd:hover {
 
 #filter_operator {
     padding-top: 3px;
+/*    width: 50px;
+    max-width: 50px;*/
 }
 
 #filter_value > ul:nth-child(1) {
@@ -2028,10 +2048,17 @@ a.remove-ybd:hover {
     height: 160px;
 }
 
+#filter_value .filtervalueheight {
+    height: 190px;
+    padding-bottom: 0px;
+    margin-bottom: -161px;
+}
+
+/*
 #filter_value > .input-group,
 #id_value {
     max-width: 25vw;
-}
+}*/
 
 .filterbox {
     overflow-y: auto;
@@ -2046,6 +2073,7 @@ a.remove-ybd:hover {
     width: 100%;
     padding: 5px 15px;
 }
+
 #filterlist > label:nth-child(1) {
     margin-bottom: 0px;
 }

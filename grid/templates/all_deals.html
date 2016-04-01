@@ -10,7 +10,7 @@
   <li><a href="/">Home</a></li>
   <li><a href="/global/">Global</a></li>
   {% if group == "all" %}
-  <li>{{ name|capfirst }}</li>
+  <li>{% trans "All deals" %}</li>
   {% elif filters.group_value %}
   <li><a href="/global/data/{{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">{% trans "By" %} {{ group }}</a></li>
   <li>{{ name }}</li>
