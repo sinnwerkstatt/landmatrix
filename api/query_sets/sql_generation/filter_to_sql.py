@@ -28,15 +28,15 @@ class FilterToSQL:
         FilterToSQL.count_offset += 10
         self.filters = filters
         self.columns = columns
-        # print('FilterToSQL: filters', self.filters)
+        if self.DEBUG: print('FilterToSQL: filters', self.filters)
         # print('FilterToSQL: columns', self.columns)
 
     def filter_from(self):
-        # print('FilterToSQL:  tables', self._tables_activity() + "\n" + self._tables_investor())
+        if self.DEBUG: print('FilterToSQL:  tables', self._tables_activity() + "\n" + self._tables_investor())
         return self._tables_activity() + "\n" + self._tables_investor()
 
     def filter_where(self):
-        # print('FilterToSQL:   where', self._where_activity() + "\n" + self.where_investor())
+        if self.DEBUG: print('FilterToSQL:   where', self._where_activity() + "\n" + self.where_investor())
         return self._where_activity() + "\n" + self.where_investor()
 
     def _where_activity(self):
@@ -88,7 +88,7 @@ class FilterToSQL:
 
                     if self.DEBUG: print('_where_activity', index, tag, value)
 
-                    if not isinstance(value, list) and value.isnumeric():
+                    if not isinstance(value, list):
                         value = [value]
                     for v in value:
                         year = None
@@ -132,6 +132,8 @@ class FilterToSQL:
                     continue
                 variable_operation = tag.split("__")
                 variable = variable_operation[0]
+                # if self.DEBUG: print('FilterToSQL.where_investor:', index, tag, value, variable_operation)
+
                 # choose operation depending on variable type default 0(int)
                 operation = ""
                 if len(variable_operation) > 1:
@@ -154,10 +156,20 @@ class FilterToSQL:
                             "op": self.OPERATION_MAP[operation][0] % in_values
                         }
                 else:
+                    if not isinstance(value, list):
+                        value = [value]
                     for v in value:
+
                         operation_type = not v.isdigit() and 1 or 0
+
+                        if self.DEBUG: print('FilterToSQL.where_investor:', index, variable, operation, v, operation_type)
+
                         if variable == "region":
                             where_inv += " AND skvr%i.name %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
+                        elif 'country' in variable:
+                            where_inv += ' AND stakeholder.fk_country_id = {}'.format(v)
+                        elif 'investor' == variable:
+                            where_inv += ' AND stakeholder.investor_identifier = {}'.format(v)
                         else:
                             where_inv += " AND skv%i.value %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
                         #query_params.append(v)
@@ -192,6 +204,7 @@ class FilterToSQL:
         if self.filters.get("investor", {}).get("tags"):
             tags = self.filters.get("investor").get("tags")
             for index, (tag, value) in enumerate(tags.items()):
+                if self.DEBUG: print('FilterToSQL._tables_investor:', index, tag, value)
                 i = index+FilterToSQL.count_offset
                 if not value:
                     continue
@@ -203,6 +216,9 @@ class FilterToSQL:
                     # tables_from_inv += " ON (skv%(count)i.stakeholder_identifier = s.stakeholder_identifier AND skv%(count)i.key = 'country' AND skv%(count)i.value = skvc%(count)i.name AND skvr%(count)i.id = skvc%(count)i.fk_region)"%{"count": i, "key": variable}
                     tables_from_inv += "LEFT JOIN countries skvc%(count)i, regions skvr%(count)i \n" % {"count": i}
                     tables_from_inv += " ON stakeholder.fk_country_id = skvc%(count)i.id AND skvr%(count)i.id = skvc%(count)i.fk_region)"%{"count": i, "key": variable}
+                elif 'country' in variable:
+                    pass
 
+        if self.DEBUG: print('FilterToSQL._tables_investor tables:', tables_from_inv)
         return tables_from_inv
 

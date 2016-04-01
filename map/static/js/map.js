@@ -5,6 +5,7 @@
 // Globale Variablen 
 var map;
 
+var currentVariable = 'Deal Intention';
 var markerSource = new ol.source.Vector();
 
 var clusterSource = new ol.source.Cluster({
@@ -29,11 +30,12 @@ var detailviews = {
         'worse than 100km': '#700'
     },
     'Negotiation Status': {
-        'Contract cancelled': '#0f0',
-        'Contract signed': '#0a0',
-        'Negotiations failed': '#00f',
-        'Oral agreement': '#b00',
-        'Under negotiation': '#700'
+        'Failed (Contract canceled)': '#0f0',
+        'Failed (Negotiations failed)': '#00f',
+        'Concluded (Contract signed)': '#0a0',
+        'Concluded (Oral agreement)': '#b00',
+        'Intended (Expression of interest)': '#500',
+        'Intended (Under negotiation)': '#700'
     },
     'Deal Intention': {
         'Agriculture': '#1D6914',
@@ -90,7 +92,7 @@ $(document).ready(function () {
 
     var changeIntentionTypes = function () {
         console.log(this);
-    }
+    };
 
 
     var cluster = new ol.layer.Vector({
@@ -142,10 +144,11 @@ $(document).ready(function () {
 
             } else {
                 feature = feature.get('features')[0];
-                var intention = feature.attributes.intention;
+                var classifier = feature.attributes[fieldnames[currentVariable]];
+                console.log(classifier)
 
-                if (intention in detailviews[currentVariable]) {
-                    color = detailviews[currentVariable][intention];
+                if (classifier in detailviews[currentVariable]) {
+                    color = detailviews[currentVariable][classifier];
                 } else {
                     color = '#000';
                 }
@@ -480,8 +483,6 @@ $(document).ready(function () {
     }
 
     var variableLabel = document.getElementById('legendLabel');
-
-    var currentVariable = 'Deal Intention';
 
     var innerHTML = '';
     for (key in detailviews) {
