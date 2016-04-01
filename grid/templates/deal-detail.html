@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "global_base.html" %}
 {% load i18n custom_tags static %}
 {% load humanize %}
 
@@ -31,6 +31,22 @@
 {% block breadcrumb_inner %}
     <li><a href="/global/data">Global</a></li>
     <li>{% trans "Deal" %} #{{ deal.activity_identifier }}</li>
+{% endblock %}
+
+{% block subnav_inner %}
+    <li role="presentation"><a href="/global/map/">
+        <i class="lm lm-map-marker"></i>{% trans "Map" %}
+    </a></li>
+    <li role="presentation"><a href="/global/data/">
+        <i class="lm lm-table"></i>{% trans "Data" %}
+    </a></li>
+    <li role="presentation"><a href="/global/charts/">
+        <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+    </a></li>
+    <li class="divider"></li>
+    <li role="presentation">
+        {% include "export.html" %}
+    </li>
 {% endblock %}
 
 {% block content %}

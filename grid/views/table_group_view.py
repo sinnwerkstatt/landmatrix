@@ -4,7 +4,7 @@ from grid.views.filter_widget_mixin import FilterWidgetMixin
 from .view_aux_functions import render_to_response
 from grid.views.profiling_decorators import print_execution_time_and_num_queries
 from .intention_map import IntentionMap
-from .download import Download
+#from .download import Download
 from grid.views.activity_protocol import ActivityProtocol
 
 from django.views.generic import TemplateView
@@ -35,30 +35,16 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     template_name = "group-by.html"
     debug_query = False
 
-    def is_download(self):
-        return self.download_type is not None
-
-    @print_execution_time_and_num_queries
-    def dispatch(self, request, *args, **kwargs):
-
-        self.request = request
-        self.GET = request.GET
-
-        self._set_group_value(**kwargs)
-        self._set_download(**kwargs)
-        self._set_group(**kwargs)
+    def get_context_data(self, group):
+        context = super(TableGroupView, self).get_context_data()
+        self._set_group_value()
+        self._set_group(group)
         self._set_filters()
         self._set_columns()
 
         query_result = self.get_records(request)
-
         items = self._get_items(query_result)
-        return self.render(items, kwargs, request)
 
-    def render(self, items, kwargs, request):
-
-        if self.is_download() and items:
-            return self._get_download(items)
         context = {
             "view": "get-the-detail",
             "data": {
@@ -74,15 +60,13 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             "group": self.group.replace("_", " "),
             # "rules": self.rules,
         }
-        self.add_filter_context_data(context, request)
-        response = render_to_response(self.template_name, context, RequestContext(self.request))
+        self.add_filter_context_data(context, self.request)
+        return context
 
-        return response
-
-    def download_format(self):
-        return self.GET.get("download_format") if self.GET.get("download_format") \
-            else self.download_type if self.download_type \
-            else 'csv'
+    #def download_format(self):
+    #    return self.GET.get("download_format") if self.GET.get("download_format") \
+    #        else self.download_type if self.download_type \
+    #        else 'csv'
 
     @print_execution_time_and_num_queries
     def get_records(self, request):
@@ -102,16 +86,15 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             return query_result["activities"]
 
     def _limit_query(self):
-        """ Don't limit query when download or group view."""
+        """ Don't limit query when group view."""
         return not (
-            self.is_download()
-            or (not self.group_value and self.group not in self.QUERY_LIMITED_GROUPS)
-            or self.GET.get("starts_with", None)
+            (not self.group_value and self.group not in self.QUERY_LIMITED_GROUPS)
+            or self.request.GET.get("starts_with", None)
         )
 
     def _load_more(self):
-        load_more = int(self.GET.get("more", 50))
-        if not self._filter_set(self.GET) and self.group == "database":
+        load_more = int(self.request.GET.get("more", 50))
+        if not self._filter_set(self.request.GET) and self.group == "database":
             load_more = None
         if not self._limit_query():
             load_more = None
@@ -126,47 +109,47 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     def _set_group_value(self, **kwargs):
         self.group_value = kwargs.get("list", "")
         if self.group_value == 'none': self.group_value = ''
-        if self.group_value.endswith(".csv") or kwargs.get("group", self.DEFAULT_GROUP).endswith(".csv"):
-            self.group_value = self.group_value.split(".")[0]
+        #if self.group_value.endswith(".csv") or kwargs.get("group", self.DEFAULT_GROUP).endswith(".csv"):
+        #    self.group_value = self.group_value.split(".")[0]
 
-    def _set_download(self, **kwargs):
-        if not self.group_value: self._set_group_value(**kwargs)
-        self.download_type = None
-        for ext in Download.supported_formats():
-            if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
-                self.download_type = ext
-                return
+    #def _set_download(self, **kwargs):
+    #    if not self.group_value: self._set_group_value(**kwargs)
+    #    self.download_type = None
+    #    for ext in Download.supported_formats():
+    #        if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
+    #            self.download_type = ext
+    #            return
 
-    def _set_group(self, **kwargs):
+    def _set_group(self, group):
         self.group = kwargs.get("group", self.DEFAULT_GROUP)
-        if self.is_download():
-            self.group = self.group.split(".")[0]
+        #if self.is_download():
+        #    self.group = self.group.split(".")[0]
         # map url to group variable, cut possible .csv suffix
         self.group = self.group.replace("by-", "").replace("-", "_")
-        if not self._filter_set(self.GET) and self.group == "database":
+        if not self._filter_set(self.request.GET) and self.group == "database":
             self.group = "all"
 
     @print_execution_time_and_num_queries
     def _set_columns(self):
-        if self.is_download() and (self.group_value or self.group == "all"):
-            self.columns = self.DOWNLOAD_COLUMNS
-        elif self.group_value:
+        #if self.is_download() and (self.group_value or self.group == "all"):
+        #    self.columns = self.DOWNLOAD_COLUMNS
+        if self.group:
             self.columns = self.GROUP_COLUMNS_LIST
         else:
             self.columns = self._columns()
 
     @print_execution_time_and_num_queries
     def _set_filters(self):
-        self.current_formset_conditions = self.get_formset_conditions(self._filter_set(self.GET), self.GET, self.group)
+        self.current_formset_conditions = self.get_formset_conditions(self._filter_set(self.request.GET), self.request.GET, self.group)
 
         self.filters = self.get_filter_context(
             self.current_formset_conditions, self._order_by(), self.group, self.group_value,
-            self.GET.get("starts_with", None)
+            self.request.GET.get("starts_with", None)
         )
 
-    def _get_download(self, items):
-        download = Download(self.download_format(), self.columns, self.group)
-        return download.get(items)
+    #def _get_download(self, items):
+    #    download = Download(self.download_format(), self.columns, self.group)
+    #    return download.get(items)
 
     @print_execution_time_and_num_queries
     def _get_items(self, query_result):
@@ -186,10 +169,10 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         if not isinstance(value, list):
             return [value]
 
-        if self.is_download():
-            intentions = [intention for intention in set(value) if not IntentionMap.has_subintentions(intention)]
-        else:
-            intentions = [IntentionMap.get_parent(intention) for intention in set(value)]
+        #if self.is_download():
+        #    intentions = [intention for intention in set(value) if not IntentionMap.has_subintentions(intention)]
+        #else:
+        intentions = [IntentionMap.get_parent(intention) for intention in set(value)]
 
         return sorted(list(set(filter(None, intentions))))
 
@@ -218,7 +201,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         return value
 
     def _order_by(self):
-        order_by = self.GET.get("order_by", self.group_value and "deal_id" or self.group) \
+        order_by = self.request.GET.get("order_by", self.group_value and "deal_id" or self.group) \
                    or self.group_value and "deal_id" \
                    or self.group
         if order_by == "all" or order_by == "database":
