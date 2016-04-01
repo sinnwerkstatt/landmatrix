@@ -26,6 +26,7 @@ class ChangesetProtocol(View):
 
     #@method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
+        print(request.session.get('dashboard_filters', {}))
         if "action" in kwargs:
             action = kwargs["action"]
         else:
