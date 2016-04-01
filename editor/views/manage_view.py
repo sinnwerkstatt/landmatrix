@@ -34,7 +34,7 @@ class ManageView(TemplateView):
         else:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
-    def render_authenticated_user(self, request, *args, **kwargs):
+    def render_authenticated_user(self, request):
         csp = ChangesetProtocol()
         request.POST = MultiValueDict(
             {"data": [json.dumps({"a_changesets":["updates", "deletes", "inserts", "rejected"], "sh_changesets": ["deletes"]})]}
