@@ -46,20 +46,16 @@ class DealDetailView(TemplateView):
 
     template_name = 'deal-detail.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        deal_id = kwargs["deal_id"]
+    def get_context_data(self, deal_id):
         try:
             if '_' in deal_id:
                 deal = deal_from_activity_id_and_timestamp(deal_id)
             else:
                 deal = get_latest_valid_deal(deal_id)
-
         except ObjectDoesNotExist as e:
             return HttpResponse('Deal {} does not exist ({})'.format(deal_id, e), status=404)
-        return self.render_forms(request, self.get_context(deal, kwargs))
 
-    def get_context(self, deal, kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(DealDetailView, self).get_context_data()
         context['deal'] = {
             'id': deal.activity.id,
             'activity': deal.activity,

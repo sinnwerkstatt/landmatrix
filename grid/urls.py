@@ -26,9 +26,10 @@ urlpatterns = patterns('grid.views',
     # url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
 
     url(r'^$', cache_page(CACHE_TIMEOUT)(AllDealsView.as_view()), name='app_main'),
-    url(r'^all(?P<format>\.(csv|xml|xls))/$', cache_page(CACHE_TIMEOUT)(ExportView.as_view()), name='export'),
-    url(r'^(?P<group>.+)(?P<format>\.(csv|xml|xls))/$', cache_page(CACHE_TIMEOUT)(ExportView.as_view()), name='export'),
-    url(r'^deal/(?P<deal_id>[\d]+)(?P<format>\.(csv|xml|xls))/$', cache_page(CACHE_TIMEOUT)(ExportView.as_view()), name='export'),
+    url(r'^all\.(?P<format>(csv|xml|xls))/$', cache_page(CACHE_TIMEOUT)(AllDealsExportView.as_view()), name='export'),
+    url(r'^deal/(?P<deal_id>[\d]+)\.(?P<format>(csv|xml|xls))/$', cache_page(CACHE_TIMEOUT)(DealDetailExportView.as_view()), name='export'),
+    url(r'^(?P<group>.+)/(?P<list>.+)\.(?P<format>(csv|xml|xls))/$', cache_page(CACHE_TIMEOUT)(TableGroupExportView.as_view()), name='export'),
+    url(r'^(?P<group>.+)\.(?P<format>(csv|xml|xls))/$', cache_page(CACHE_TIMEOUT)(TableGroupExportView.as_view()), name='export'),
     url(
         r'^compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$',
         cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
