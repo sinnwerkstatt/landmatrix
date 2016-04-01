@@ -1,13 +1,7 @@
-from grid.views.deal_comparison_view import DealComparisonView
-from grid.views.change_deal_view import ChangeDealView
-from .views.all_deals_view import AllDealsView
-from .views.table_group_view import TableGroupView
-from .views.deal_detail_view import DealDetailView
-from grid.views.add_deal_view import AddDealView
-from grid.views.stakeholder_view import StakeholderView
-
 from django.conf.urls import url, patterns
 from django.views.decorators.cache import cache_page
+
+from grid.views import *
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -29,15 +23,12 @@ CACHE_TIMEOUT = 24*3600
 urlpatterns = patterns('grid.views',
     # please leave them here, commented out, for quick cache de-/activation when developing
     # url(r'^$', AllDealsView.as_view(), name='app_main'),
-    # url(r'^all(?P<type>\.csv)?/$', AllDealsView.as_view(), name='all_deal'),
-    # url(r'^all(?P<type>\.xml)?/$', AllDealsView.as_view(), name='all_deal'),
-    # url(r'^all(?P<type>\.xls)?/$', AllDealsView.as_view(), name='all_deal'),
     # url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
 
     url(r'^$', cache_page(CACHE_TIMEOUT)(AllDealsView.as_view()), name='app_main'),
-    url(r'^all(?P<type>\.csv)?/$', cache_page(CACHE_TIMEOUT)(AllDealsView.as_view()), name='all_deal'),
-    url(r'^all(?P<type>\.xml)?/$', cache_page(CACHE_TIMEOUT)(AllDealsView.as_view()), name='all_deal'),
-    url(r'^all(?P<type>\.xls)?/$', cache_page(CACHE_TIMEOUT)(AllDealsView.as_view()), name='all_deal'),
+    url(r'^all(?P<format>\.(csv|xml|xls))/$', cache_page(CACHE_TIMEOUT)(ExportView.as_view()), name='export'),
+    url(r'^(?P<group>.+)(?P<format>\.(csv|xml|xls))/$', cache_page(CACHE_TIMEOUT)(ExportView.as_view()), name='export'),
+    url(r'^deal/(?P<deal_id>[\d]+)(?P<format>\.(csv|xml|xls))/$', cache_page(CACHE_TIMEOUT)(ExportView.as_view()), name='export'),
     url(
         r'^compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$',
         cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),

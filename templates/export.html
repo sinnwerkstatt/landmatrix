@@ -5,13 +5,13 @@
 </a>
 <!-- Popover hidden content -->
 <span id="download" class="hidden">
-  <a href="/global/grid/all.xml" class="btn-media xml">
+  <a href="{% url "export" format=".xml" %}" class="btn-media xml">
     <i class=""></i>XML
   </a>
-  <a href="/global/grid/all.csv" class="btn-media csv">
+  <a href="{% url "export" format=".csv" %}" class="btn-media csv">
     <i class=""></i>CSV
   </a>
-  <a href="/global/grid/all.xls" class="btn-media xls">
+  <a href="{% url "export" format=".xls" %}" class="btn-media xls">
     <i class=""></i>XLS
   </a>
 </span>
