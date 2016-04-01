@@ -6,7 +6,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class CountriesQuerySet(SimpleFakeQuerySet):
     def all(self):
-        #if self.get_data.get('region'): FIXME: Doesn't work, get_data returns request
+        #if self.get_data.get('region'): #FIXME: Doesn't work, get_data returns request
         #    countries = Country.objects.filter(fk_region__slug=self.get_data['region']).order_by('name')
         #else:
         countries = Country.objects.all().order_by('name')
