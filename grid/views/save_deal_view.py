@@ -45,50 +45,41 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class SaveDealView(TemplateView):
-
     FORMS = [
-        ("spatial_data", AddDealSpatialFormSet),            #
-        ("general_information", AddDealGeneralForm),        #
-        ("employment", AddDealEmploymentForm),              #
+        ("spatial_data", AddDealSpatialFormSet),            
+        ("general_information", AddDealGeneralForm),        
+        ("employment", AddDealEmploymentForm),              
         ("investor_info", OperationalStakeholderForm),
-        ("data_sources", AddDealDataSourceFormSet),         #
-        ("local_communities", DealLocalCommunitiesForm),    #
-        ("former_use", DealFormerUseForm),                  #
-        ("produce_info", DealProduceInfoForm),              #
-        ("water", DealWaterForm),                           #
-        ("gender-related_info", DealGenderRelatedInfoForm), #
-        ("overall_comment", AddDealOverallCommentForm),     #
+        ("data_sources", AddDealDataSourceFormSet),         
+        ("local_communities", DealLocalCommunitiesForm),    
+        ("former_use", DealFormerUseForm),                  
+        ("produce_info", DealProduceInfoForm),              
+        ("water", DealWaterForm),                           
+        ("gender-related_info", DealGenderRelatedInfoForm), 
+        ("overall_comment", AddDealOverallCommentForm),     
         ("action_comment", ChangeDealActionCommentForm),
     ]
+    deal_id = None
+    activity = None
 
-    def dispatch(self, request, *args, **kwargs):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**self.kwargs)
+        if self.request.method != 'post':
+            context['forms'] = self.get_forms()
+        context['kwargs'] = self.kwargs
+        return context
 
-        self.request = request
-        self.activity = self.get_activity(**kwargs)
-
-        forms = self.get_forms(request.POST)
-
-        # if this is a POST request we need to process the form data
-        if request.method == 'POST':
-            # check whether it's valid:
-            if all(form.is_valid() for form in forms):
-                self.save_form_data(forms, request.FILES)
-                # return HttpResponseRedirect('/editor/')
-            else:
-                print_form_errors(forms)
-
-        context = super().get_context_data(**kwargs)
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        forms = self.get_forms(self.request.POST)
+        if all(form.is_valid() for form in forms):
+            groups = []
+            for form in forms:
+                groups.extend(self.create_attributes_for_form(self.activity, form, request.FILES))
+            self.save_activity_and_attributes(activity, groups)
+            # return HttpResponseRedirect('/editor/')
         context['forms'] = forms
-        context['kwargs'] = kwargs
-        context['deal_id'] = kwargs.get('deal_id')
-
-        return render_to_response(self.template_name, context, RequestContext(request))
-
-    def save_form_data(self, forms, files):
-        groups = []
-        for form in forms:
-            groups.extend(self.create_attributes_for_form(self.activity, form, files))
-        self.save_activity_and_attributes(self.activity, groups)
+        return self.render_to_response(context)
 
     @transaction.atomic
     def save_activity_and_attributes(self, activity, groups):
@@ -114,7 +105,7 @@ class SaveDealView(TemplateView):
             )
         involvement.save()
 
-    def create_attributes_for_form(self,activity, form, files):
+    def create_attributes_for_form(self, activity, form, files):
         groups = []
 
         if self.name_of_form(form) == 'investor_info':
@@ -140,24 +131,23 @@ class SaveDealView(TemplateView):
 
     def create_attributes_for_data_sources_formset(self, activity, formset, files, groups):
         count = 1
-        for sub_form_data in formset.cleaned_data:
-
-            if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
+        for data in formset.cleaned_data:
+            if data['type'] and isinstance(data['type'], int):
                 field = DealDataSourceForm().fields['type']
                 choices = dict(field.choices)
-                sub_form_data['type'] = str(choices[sub_form_data['type']])
+                data['type'] = str(choices[data['type']])
 
-            if sub_form_data['file'] and isinstance(sub_form_data['file'], UploadedFile):
-                sub_form_data['file'] = sub_form_data['file'].name
+            if data['file'] and isinstance(data['file'], UploadedFile):
+                data['file'] = data['file'].name
 
             uploaded = get_file_from_upload(files, count-1)
             if uploaded:
-                sub_form_data['file'] = uploaded
+                data['file'] = uploaded
 
-            if sub_form_data['url']:
-                sub_form_data = handle_url(sub_form_data, self.request)
+            if data['url']:
+                data = handle_url(data, self.request)
 
-            group = create_attribute_group(activity, sub_form_data, 'data_source_{}'.format(count))
+            group = create_attribute_group(activity, data, 'data_source_{}'.format(count))
             count += 1
             groups.append(group)
 
@@ -242,22 +232,14 @@ def error_could_not_upload(request, url, message=''):
 
 def create_attributes_for_spatial_data_formset(activity, formset, groups):
     count = 1
-    for sub_form_data in formset.cleaned_data:
-        if sub_form_data['target_country'] and isinstance(sub_form_data['target_country'], Country):
-            sub_form_data['target_country'] = sub_form_data['target_country'].pk
-        group = create_attribute_group(activity, sub_form_data, 'spatial_data_{}'.format(count))
+    for data in formset.cleaned_data:
+        if not data:
+            raise IOError(data)
+        if data['target_country'] and isinstance(data['target_country'], Country):
+            data['target_country'] = data['target_country'].pk
+        group = create_attribute_group(activity, data, 'spatial_data_{}'.format(count))
         count += 1
         groups.append(group)
-
-
-def print_form_errors(forms):
-    for form in forms:
-        if form.is_valid():
-            # print(form.__class__.__name__, form.cleaned_data)
-            pass
-        else:
-            print(form.__class__.__name__, 'INVALID! Errors:', form.errors)
-
 
 def create_attribute_group(activity, form_data, name=None):
     group = ActivityAttributeGroup(

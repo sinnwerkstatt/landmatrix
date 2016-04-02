@@ -171,15 +171,16 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
 
         taggroups = deal.attribute_groups().filter(belongs_to_data_source).order_by('name')
 
-        data = {
-            'form-TOTAL_FORMS': len(taggroups),
-            'form-INITIAL_FORMS': len(taggroups),
-            'form-MAX_NUM_FORMS': 1000
-        }
+        data = []
+        #data = {
+        #    'form-TOTAL_FORMS': len(taggroups),
+        #    'form-INITIAL_FORMS': len(taggroups),
+        #    'form-MAX_NUM_FORMS': 1000
+        #}
         for i, taggroup in enumerate(taggroups):
             form_data = DealDataSourceForm.get_data(deal, taggroup, taggroups[i+1] if i < len(taggroups)-1 else None)
             # print('AddDealDataSourceFormSet form', i, ':    ', form_data)
-            data[i] = form_data
+            data.append(form_data)
         return data
 
 
