@@ -1826,6 +1826,15 @@ textarea {
     display: inline-block;
 }
 
+.with-error .panel-heading h5,
+.errorlist li {
+    color: red;
+}
+
+.control-group.with-error .form-control {
+    border-color: red;
+}
+
 /* YEAR BASED DATA AND FORMSETS */
 
 a.add-form,

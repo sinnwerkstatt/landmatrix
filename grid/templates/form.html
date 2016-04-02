@@ -1,7 +1,7 @@
 {% load custom_tags i18n %}
 {% for field in form %}
 {% if not field.is_hidden %}
-<div class="control-group row {{ field.name }}">
+<div class="control-group row {{ field.name }}{% if field.errors %} with-error{% endif %}">
     {% if field.field.is_title %}
     <div class="control-label col-sm-12">
         <h3>
