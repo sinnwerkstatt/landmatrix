@@ -1,23 +1,12 @@
-{% extends "base.html" %}
+{% extends "global_base.html" %}
 {% load static i18n custom_tags humanize %}
 
-{% block head %}
-
-    <script src="{% static "js/editor/year-based-fields.js" %}" type="text/javascript" charset="utf-8"></script>
+{% block global_head %}
 {#     <script src="{% static "js/editor/livesearch.js" %}" type="text/javascript" charset="utf-8"></script> #}
     <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
 
     {# map #}
-    <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/map.css" %}"/>
 
-    <script src="{% static "vendor/openlayers/ol.js" %}" type="text/javascript"></script>
-    <script src="{% static "js/editor/detail.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script src="{% static "js/editor/map.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script src="{% static "js/editor/jquery.formset.custom.js" %}" type="text/javascript" charset="utf-8"></script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB59at4M4o0ERqk8OkvZOYjxH7N-8_HkNE&libraries=places"></script>
-    <script>unlockMaps()</script>
 {% endblock %}
 
 {% block page_title %}{% trans "Add a deal" %}{% endblock %}
@@ -41,3 +30,6 @@
 
 {% endblock %}
 
+{% block global_js %}
+    <script>unlockMaps()</script>
+{% endblock %}

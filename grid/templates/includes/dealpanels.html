@@ -45,6 +45,8 @@
                         var investor = form.find('.operational_stakeholder');
                         if (investor) {
                             var index = 0;
+                            var alreadyInitizalized = form.find("#chart" + index).find('svg') > 0;
+                            if (alreadyInitizalized)
                             setupSankey(index);
                         }
                     }
