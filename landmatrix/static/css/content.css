@@ -1835,6 +1835,10 @@ textarea {
     border-color: red;
 }
 
+.with-error .panel-collapse {
+    display: block;
+}
+
 /* YEAR BASED DATA AND FORMSETS */
 
 a.add-form,

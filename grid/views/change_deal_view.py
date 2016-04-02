@@ -26,18 +26,18 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class ChangeDealView(SaveDealView):
 
     FORMS = [
-        ("spatial_data", ChangeDealSpatialFormSet),
-        ("general_information", ChangeDealGeneralForm),
-        ("employment", AddDealEmploymentForm),
-        ("investor_info", OperationalStakeholderForm),
-        ("data_sources", AddDealDataSourceFormSet),
-        ("local_communities", DealLocalCommunitiesForm),
-        ("former_use", DealFormerUseForm),
-        ("produce_info", DealProduceInfoForm),
-        ("water", DealWaterForm),
-        ("gender-related_info", DealGenderRelatedInfoForm),
-        ("overall_comment", AddDealOverallCommentForm),
-        ("action_comment", ChangeDealActionCommentForm),
+        ChangeDealSpatialFormSet,
+        ChangeDealGeneralForm,
+        AddDealEmploymentForm,
+        OperationalStakeholderForm,
+        AddDealDataSourceFormSet,
+        DealLocalCommunitiesForm,
+        DealFormerUseForm,
+        DealProduceInfoForm,
+        DealWaterForm,
+        DealGenderRelatedInfoForm,
+        AddDealOverallCommentForm,
+        ChangeDealActionCommentForm,
     ]
 
     template_name = 'change-deal.html'
@@ -57,10 +57,10 @@ class ChangeDealView(SaveDealView):
 
     def get_form(self, form_class, data=None):
         deal = Deal(self.activity.activity_identifier)
-        initial = form_class[1].get_data(deal)
+        initial = form_class.get_data(deal)
         #if issubclass(form_class[1], BaseFormSet):
         #    data = to_formset_data(data)
-        return form_class[1](initial=initial, data=data)
+        return form_class(initial=initial, data=data)
 
 
 def to_formset_data(data):

@@ -33,6 +33,8 @@ class DealSpatialForm(BaseForm):
     target_region = forms.ModelChoiceField(required=False, label=_("Target Region"), widget=forms.HiddenInput, queryset=Region.objects.all().order_by("name"))
     tg_location_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
+    class Meta:
+        name = 'spatial_data'
 
 class DealSpatialBaseFormSet(formset_factory(DealSpatialForm, extra=0)):
 
@@ -57,32 +59,29 @@ class DealSpatialBaseFormSet(formset_factory(DealSpatialForm, extra=0)):
             data.append(form_data)
         return data
 
+    class Meta:
+        name = 'spatial_data'
 
 class AddDealSpatialFormSet(DealSpatialBaseFormSet):
 
     form_title = _('Location')
     extra = 1
 
-    def get_taggroups(self, request=None):
-        ds_taggroups = []
-        for i, form in enumerate(self.forms):
-            for j, taggroup in enumerate(form.get_taggroups()):
-                taggroup["main_tag"]["value"] += "_" + str(i+1)
-                ds_taggroups.append(taggroup)
-        return ds_taggroups
+    def get_attributes(self, request=None):
+        attributes = []
+        for form in self.forms:
+            attributes.append(form.get_attributes(request))
+        return attributes
 
 
 class ChangeDealSpatialFormSet(AddDealSpatialFormSet):
-
-    form_title = _('Location')
     extra = 0
 
 
 class PublicViewDealSpatialForm(DealSpatialForm):
 
-    form_title = _('Location')
-
     class Meta:
+        name = 'spatial_data'
         fields = (
             "tg_location", "location", "point_lat", "point_lon", 'tg_location_comment'
         )
