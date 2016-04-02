@@ -38,6 +38,6 @@ class AddInvestorForm(BaseForm):
              raise forms.ValidationError("%s is no valid investor." % investor)
         return investor
 
-    def get_taggroups(self, request=None):
-        taggroups = super(AddInvestorForm, self).get_taggroups()
+    def get_attributes(self, request=None):
+        taggroups = super(AddInvestorForm, self).get_attributes()
         return taggroups

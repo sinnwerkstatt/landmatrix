@@ -1,7 +1,7 @@
 {% load i18n %}
 {% if forms %}
 {% for form in forms %}
-    <div class="panel panel-default">
+    <div class="panel panel-default{% if form.forms %}{% for subform in form.forms %}{% if subform.errors %} with-error{% endif %}{% endfor %}{% else %}{% if form.errors %} with-error{% endif %}{% endif %}">
         <div class="panel-heading">
             <a data-toggle="collapse" data-parent="#accordion"
                href="#{{ form.form_title|slugify }}_body"
@@ -15,7 +15,7 @@
         </div>
 
         <div id="{{ form.form_title|slugify }}_body"
-             class="panel-collapse collapse{% if forloop.first %} in{% endif %}{% if form.errors %} in{% endif %}">
+             class="panel-collapse collapse{% if forloop.first %} in{% endif %}">
             <div class="panel-body">
                 {% if form.forms %}
                     {{ form.management_form }}
