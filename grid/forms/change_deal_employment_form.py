@@ -41,3 +41,5 @@ class ChangeDealEmploymentForm(BaseForm):
     domestic_jobs_current_daily_workers = YearBasedIntegerField(required=False, label=_("Daily/seasonal workers"), help_text=_("workers"))
     tg_domestic_jobs_created_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
+    class Meta:
+        name = 'employment'
