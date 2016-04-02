@@ -43,3 +43,5 @@ class DealFormerUseForm(BaseForm):
     ), widget=forms.CheckboxSelectMultiple)
     tg_land_cover_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
+    class Meta:
+        name = 'former_use'

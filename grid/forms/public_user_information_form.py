@@ -26,7 +26,7 @@ class PublicUserInformationForm(AddDealOverallCommentForm):
 
     def get_action_comment(self):
         action_comment = ""
-        taggroups = super(PublicUserInformationForm, self).get_taggroups()
+        taggroups = super(PublicUserInformationForm, self).get_attributes()
         if len(taggroups) > 0:
             taggroup = taggroups[0]
             action_comment += "comment: %s\n" % taggroup.get("comment", "-")
@@ -34,5 +34,5 @@ class PublicUserInformationForm(AddDealOverallCommentForm):
                 action_comment += "%s: %s\n" % (t.get("key").split("_")[-1], t.get("value"))
         return action_comment
 
-    def get_taggroups(self, request=None):
+    def get_attributes(self, request=None):
             return []
