@@ -20,237 +20,124 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class BaseForm(forms.Form):
-
     DEBUG = False
-
     error_css_class = "error"
 
-    def as_p(self):
-        return self._html_output(
-                    normal_row = u'<div%(html_class_attr)s><div class="control-label col-md-3">%(label)s</div><div class="controls col-sm-9">%(field)s%(help_text)s</div>%(errors)s</div>',
-                    error_row = u'<div>%s</div>',
-                    row_ender = '</div>',
-                    help_text_html = u' <span class="helptext add-on">%s</span>',
-                    errors_on_separate_row = False)
-
-    def as_ul(self):
-        return self._html_output(
-                    normal_row = u'<li%(html_class_attr)s>%(label)s <div class="input-group clearfix">%(field)s%(help_text)s</div>%(errors)s</li>',
-                    error_row = u'<li>%s</li>',
-                    row_ender = '</li>',
-                    help_text_html = u' <span class="helptext add-on">%s</span>',
-                    errors_on_separate_row = False)
-
-    def as_table(self):
-        return self._html_output(
-            normal_row = '<tr%(html_class_attr)s"><th>%(label)s</th><td><div class="input-group clearfix">%(field)s%(help_text)s</div>%(errors)s</td></tr>',
-            error_row = '<tr><td colspan="2">%s</td></tr>',
-            row_ender = '</td></tr>',
-            help_text_html = '<span class="helptext add-on">%s</span>',
-            errors_on_separate_row = False)
-
-    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
-        "Helper function for outputting HTML. Used by as_table(), as_ul(), as_p()."
-        top_errors = self.non_field_errors() # Errors that should be displayed above all fields.
-        output, hidden_fields = [], []
-
-        for name, field in self.fields.items():
-            html_class_attr = ''
-            bf = self[name]
-            bf_errors = self.error_class([conditional_escape(error) for error in bf.errors]) # Escape and cache in local variable.
-            if bf.is_hidden:
-                if bf_errors:
-                    top_errors.extend([u'(Hidden field %s) %s' % (name, force_text(e)) for e in bf_errors])
-                hidden_fields.append(str(bf))
-            else:
-                # Create a 'class="..."' atribute if the row should have any
-                # CSS classes applied.
-                css_classes = bf.css_classes()
-                css_classes = ' '.join(["control-group", "row", name, css_classes])
-                if css_classes:
-                    html_class_attr = ' class="%s"' % css_classes
-
-                if errors_on_separate_row and bf_errors:
-                    output.append(error_row % force_text(bf_errors))
-
-                if bf.label:
-                    label = conditional_escape(force_text(bf.label))
-                    # Only add the suffix if the label does not end in
-                    # punctuation.
-                    if self.label_suffix:
-                        if label[-1] not in ':?.!':
-                            label += self.label_suffix
-                    label = bf.label_tag(label) or ''
-                else:
-                    label = ''
-                if field.help_text:
-                    widget = '<div class="input-group">%s' % str(bf) 
-                    help_text = '<div class="input-group-addon">%s</div></div>' % help_text_html % force_text(field.help_text)
-                else:
-                    widget = str(bf)
-                    help_text = u''
-                #if name == 'negotiation_status':
-                #    raise IOError(bf)
-                output.append(normal_row % {
-                    'errors': force_text(bf_errors),
-                    'label': force_text(label),
-                    'field': widget,
-                    'help_text': help_text,
-                    'html_class_attr': html_class_attr,
-                    'name': name
-                })
-
-        if top_errors:
-            output.insert(0, error_row % force_text(top_errors))
-
-        if hidden_fields: # Insert any hidden fields in the last row.
-            str_hidden = u''.join(hidden_fields)
-            if output:
-                last_row = output[-1]
-                # Chop off the trailing row_ender (e.g. '</td></tr>') and
-                # insert the hidden fields.
-                if not last_row.endswith(row_ender):
-                    # This can happen in the as_p() case (and possibly others
-                    # that users write): if there are only top errors, we may
-                    # not be able to conscript the last row for our purposes,
-                    # so insert a new, empty row.
-                    last_row = (normal_row % {'errors': '', 'label': '',
-                                              'field': '', 'help_text':'',
-                                              'html_class_attr': html_class_attr})
-                    output.append(last_row)
-                output[-1] = last_row[:-len(row_ender)] + str_hidden + row_ender
-            else:
-                # If there aren't any rows in the output, just append the
-                # hidden fields.
-                output.append(str_hidden)
-        return mark_safe(u'\n'.join(output))
-
-    def get_taggroups(self, request=None):
-        """Create json for groups/tags/values from request"""
+    def get_attributes(self, request=None):
+        """Create json for attributes from request"""
         # form data given?
         if self.data.get(self.prefix and "%s-TOTAL_FORMS"%self.prefix or "TOTAL_FORMS", 1) < 1:
-            return []
-        taggroups = []
-        taggroup = {
-            "main_tag": {
-                "key": "name",
-                "value": ""
-            },
-            "tags": [],
-            "comment": ""
-        }
+            return {}
+        attributes = {}
         for i, (n, f) in enumerate(self.fields.items()):
+            key = key = str(n)
             # New tag group?
             if n.startswith('tg_'):
                 if n.endswith('_comment'):
-                    comment = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n, None)
-                    if comment:
-                        taggroup["comment"] = comment
+                    key = 'comment'
                 else:
-                    if taggroup["main_tag"]["value"] and (taggroup["tags"] or taggroup["comment"]):
-                        taggroups.append(deepcopy(taggroup))
-                    taggroup["main_tag"]["value"] = n[3:]
-                    taggroup["tags"] = []
-                    taggroup["comment"] = ""
-            else:
-                tag = {
-                    "key": str(n)
-                }
-                if n == "investment_ratio":
-                    taggroup["investment_ratio"] = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-                # don't add choices for select fields, they're always the same
-                elif isinstance(f, UserModelChoiceField):
-                    value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
-                    if value:
-                        tag["value"] = value
-                        taggroup["tags"].append(tag)
-                elif isinstance(f, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
-                    # Create tags for each value
-                    tag["op"] = "select"
-                    a = self.data
-                    value = self.data.getlist(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
-                    for v in list(value):
-                        if v:
-                            v = int(v)
-                            try:
-                                tag["value"] = str(dict([i[:2] for i in f.choices])[v])
-                            except:
-                                tag["value"] = None
-                            if isinstance(f, NestedMultipleChoiceField) and not tag["value"]:
-                                for choice in f.choices:
+                    continue
+                #if n.endswith('_comment'):
+                    #raise NotImplementedError('Comment')
+                    #comment = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n, None)
+                    #if comment:
+                    #    activity["comment"] = comment
+                #else:
+                    #if activity["main_tag"]["value"] and (attributes or activity["comment"]):
+                    #    attributes.append(deepcopy(activity))
+                    #activity["main_tag"]["value"] = n[3:]
+                    #attributes = []
+                    #activity["comment"] = ""
+            #if n == "investment_ratio":
+            #    activity["investment_ratio"] = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+            # don't add choices for select fields, they're always the same
+            #elif isinstance(f, UserModelChoiceField):
+            #    value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
+            #    if value:
+            #        tag["value"] = value
+            #        attributes.append(tag)
+            if isinstance(f, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
+                # Create tags for each value
+                #tag["op"] = "select"
+                a = self.data
+                value = self.data.getlist(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
+                for v in list(value):
+                    if v:
+                        v = int(v)
+                        try:
+                            value = str(dict([i[:2] for i in f.choices])[v])
+                        except:
+                            value = None
+                        if isinstance(f, NestedMultipleChoiceField) and not value:
+                            for choice in f.choices:
+                                try:
+                                    value = str(dict([i[:2] for i in choice[2]])[v])
+                                    if value:
+                                        break
+                                except:
+                                    value = None
+                        if not value:
+                            value = v
+                        if value:
+                            attributes[key] = value
+            elif isinstance(f, forms.ChoiceField):
+                #tag["op"] = "select"
+                value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+#                if activity["main_tag"]["value"] == "investor":
+#                    raise IOError, self.data
+#                if activity["main_tag"]["value"] == "investor" and value:
+#                    raise IOError, n
+                # quickfix for receiving 'Non' as a value FIXME
+                if value and value != "0" and value != "Non":
+                    if key in ("investor", "primary_investor"):
+                        attributes[key] = value
+                    else:
+                        try:
+                            value = int(value)
+                            value = str(dict(f.choices).get(value))
+                            if value:
+                                attributes[key] = value
+                        except:
+                            raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
+            # Year based data?
+            elif isinstance(f, forms.MultiValueField):
+                keys = list(filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n), o), self.data.keys()))
+                keys.sort()
+                for i in range(len(keys)):
+                    if i % 2 == 0:
+                        value = self.data.get(len(keys) > i and keys[i] or "-", "")
+                        year = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
+                        if value or year:
+                            # allow zero value if yearbasedintegerfield
+                            if value and (isinstance(f.fields[0], forms.IntegerField) or value != "0"):
+                                if isinstance(f.fields[0], forms.ChoiceField):
                                     try:
-                                        tag["value"] = str(dict([i[:2] for i in choice[2]])[v])
-                                        if tag["value"]:
-                                            break
+                                        value = int(value)
+                                        value = str(dict(f.fields[0].choices).get(value))
                                     except:
-                                        tag["value"] = None
-                            if not tag["value"]:
-                                tag["value"] = v
-                            if tag["value"]:
-                                taggroup["tags"].append(copy(tag))
-                elif isinstance(f, forms.ChoiceField):
-                    tag["op"] = "select"
-                    value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-#                    if taggroup["main_tag"]["value"] == "investor":
-#                        raise IOError, self.data
-#                    if taggroup["main_tag"]["value"] == "investor" and value:
-#                        raise IOError, n
-                    # quickfix for receiving 'Non' as a value FIXME
-                    if value and value != "0" and value != "Non":
-                        if tag["key"] in ("investor", "primary_investor"):
-                            tag["value"] = value
-                            taggroup["tags"].append(tag)
-                        else:
-                            try:
-                                tag["value"] = int(value)
-                                tag["value"] = str(dict(f.choices).get(tag["value"]))
-                                if tag["value"]:
-                                    taggroup["tags"].append(tag)
-                            except:
-                                raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
-                # Year based data?
-                elif isinstance(f, forms.MultiValueField):
-                    keys = filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n), o), self.data.keys())
-                    keys.sort()
-                    for i in range(len(keys)):
-                        if i % 2 == 0:
-                            value = self.data.get(len(keys) > i and keys[i] or "-", "")
-                            year = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
-                            if value or year:
-                                # allow zero value if yearbasedintegerfield
-                                if value and (isinstance(f.fields[0], forms.IntegerField) or value != "0"):
-                                    if isinstance(f.fields[0], forms.ChoiceField):
-                                        try:
-                                            tag["value"] = int(value)
-                                            tag["value"] = str(dict(f.fields[0].choices).get(tag["value"]))
-                                        except:
-                                            raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
-                                    else:
-                                        tag["value"] = value
-                                if year:
-                                    tag["year"] = year
-                                taggroup["tags"].append(tag)
-                                tag = {
-                                    "key": str(n)
-                                }
-                elif isinstance(f, forms.FileField):
-                    null = self.get_display_value_file_field(n, tag["value"])
-                    if tag["value"]:
-                        taggroup["tags"].append(tag)
-                elif isinstance(f, forms.DecimalField):
-                    value = tag["value"] = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-                    if value:
-                        tag["value"] = str(value)
-                        taggroup["tags"].append(tag)
-                else:
-                    tag["value"] = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-                    if tag["value"]:
-                        taggroup["tags"].append(tag)
-            if i == len(self.fields.items())-1:
-                if taggroup["main_tag"]["value"] and (taggroup["tags"] or taggroup["comment"]):
-                    taggroups.append(deepcopy(taggroup))
-
-        return taggroups
+                                        raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
+                                else:
+                                    value = value
+                            if year:
+                                pass # FIXME: Append year to value?
+                            attributes[key] = value 
+            elif isinstance(f, forms.FileField):
+                value = self.get_display_value_file_field(n)
+                if value:
+                    attributes[key] = value
+            elif isinstance(f, forms.DecimalField):
+                value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+                if value:
+                    value = str(value)
+                    attributes[key] = value
+            else:
+                value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+                if value:
+                    attributes[key] = value
+            #if i == len(self.fields.items())-1:
+            #    if activity["main_tag"]["value"] and (attributes or activity["comment"]):
+            #        attributes.append(deepcopy(activity))
+        return attributes
 
     def get_availability(self):
         available_field_count = 0.0
@@ -306,12 +193,8 @@ class BaseForm(forms.Form):
         using taggroup only - if given (for formsets)
         """
         data = MultiValueDict()
-        if cls.DEBUG: print('get_data', str(deal)[:140], '...', taggroup)
         for (field_name, field) in cls().fields.items():
             prefixed_name = prefix and "%s-%s"%(prefix, field_name) or field_name
-
-            # if cls.DEBUG: print('    field', field_name, field, prefix)
-
             if field_name.startswith('tg_'):
                 taggroup = cls.get_data_for_tg_field(data, field_name, deal, prefixed_name, taggroup)
 
@@ -327,7 +210,6 @@ class BaseForm(forms.Form):
                             cls.get_year_based_data(data, field, field_name, prefixed_name, tags, taggroup)
                         else:
                             cls.get_other_data(data, field, field_name, prefixed_name, taggroup, tags)
-        if cls.DEBUG: print('returned data', data)
         return data
 
     @classmethod
@@ -567,6 +449,7 @@ class BaseForm(forms.Form):
         exclude = ()
         fields = ()
         readonly_fields = ()
+        name = ''
 
     def __init__(self, *args, **kwargs):
         super(BaseForm, self).__init__(*args, **kwargs)

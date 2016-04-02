@@ -15,7 +15,6 @@ class AddDealView(SaveDealView):
 
     def get_forms(self, data=None):
             forms = []
-            for name, Form in self.FORMS:
-                new_form = Form() if not data else Form(data)
-                forms.append(new_form)
+            for form in self.FORMS:
+                forms.append(form(data or None))
             return forms
