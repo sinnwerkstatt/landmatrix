@@ -20,10 +20,9 @@ class ActivityChangesetManager(Manager):
 
     def get_my_deals(self, user):
         changesets = ActivityChangeset.objects.filter(fk_user=user).\
-            filter(fk_activity__fk_status__name__in=("pending", "rejected")).\
-            order_by('-timestamp').\
-            values_list('fk_activity_id', flat=True).distinct()
-        return changesets
+            filter(fk_activity__fk_status__name__in=("pending", "rejected"))
+
+        return changesets.order_by('-timestamp').values_list('fk_activity_id', flat=True).distinct()
 
         changesets = self.raw("""
             SELECT
