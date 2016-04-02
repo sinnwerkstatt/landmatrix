@@ -16,6 +16,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction
 import json
 
+from landmatrix.models.country import Country
 from landmatrix.models.investor import InvestorActivityInvolvement, InvestorVentureInvolvement
 from landmatrix.models.status import Status
 
@@ -26,7 +27,9 @@ class ChangesetProtocol(View):
 
     #@method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        print(request.session.get('dashboard_filters', {}))
+
+        self.request = request
+
         if "action" in kwargs:
             action = kwargs["action"]
         else:
@@ -84,7 +87,11 @@ class ChangesetProtocol(View):
             self.data = {
                 "a_changesets": ["my_deals"],
             }
-        res = self._changeset_to_json(user, request.GET.get('my_deals_page'), request.GET.get('updates_page'), request.GET.get('inserts_page'), request.GET.get('deletions_page'))
+        res = self._changeset_to_json(
+            user,
+            request.GET.get('my_deals_page'), request.GET.get('updates_page'),
+            request.GET.get('inserts_page'), request.GET.get('deletions_page')
+        )
         res["feedbacks"] = _feedbacks_to_json(user, request.GET.get('feedbacks_page'))
         res["rejected"] = _rejected_to_json(request.user)
 
@@ -208,8 +215,8 @@ class ChangesetProtocol(View):
 
     def handle_my_deals(self, a_changesets, changesets, limit, my_deals_page, user):
         changesets_my_deals = changesets.get_my_deals(user.id)
+        changesets_my_deals = self.apply_locality_filters(changesets_my_deals)
         changesets_my_deals = limit and changesets_my_deals[:limit] or changesets_my_deals
-        print('handle_my_deals', changesets_my_deals)
         paginator = Paginator(changesets_my_deals, 10)
         page = _get_page(my_deals_page, paginator)
         changesets_my_deals = page.object_list
@@ -221,7 +228,8 @@ class ChangesetProtocol(View):
             a_changesets["my_deals"] = my_deals
 
     def handle_updates(self, a_changesets, changesets, limit, updates_page):
-        changesets_update = changesets.filter(fk_activity__fk_status__name="pending")  # , previous_version__isnull=False
+        changesets_update = changesets.filter(fk_activity__fk_status__name="pending")
+        changesets_update = self.apply_locality_filters(changesets_update)
         changesets_update = limit and changesets_update[:limit] or changesets_update
         paginator = Paginator(changesets_update, 10)
         page = _get_page(updates_page, paginator)
@@ -229,14 +237,26 @@ class ChangesetProtocol(View):
         updates = {"cs": []}
         for changeset in changesets_update:
             fields_changed = _find_changed_fields(changeset)
-
             updates["cs"].append(self.changeset_template_data(changeset, {"fields_changed": fields_changed}))
         if updates["cs"]:
             updates["pagination"] = _pagination_to_json(paginator, page)
             a_changesets["updates"] = updates
 
+    def apply_locality_filters(self, changesets):
+        if self.request.session.get('dashboard_filters', {}).get('country'):
+            changesets = _filter_changesets_by_countries(
+                changesets, self.request.session['dashboard_filters']['country']
+            )
+        elif self.request.session.get('dashboard_filters', {}).get('region'):
+            country_ids = Country.objects.filter(
+                fk_region_id__in=self.request.session.get('dashboard_filters', {}).get('region')
+            ).values_list('id', flat=True).distinct()
+            changesets = _filter_changesets_by_countries(changesets, [str(c) for c in country_ids])
+        return changesets
+
     def handle_inserts(self, a_changesets, changesets, inserts_page, limit):
         changesets_insert = changesets.filter(fk_activity__fk_status__name="pending")  #  previous_version__isnull=True)
+        changesets_insert = self.apply_locality_filters(changesets_insert)
         changesets_insert = limit and changesets_insert[:limit] or changesets_insert
         paginator = Paginator(changesets_insert, 10)
         page = _get_page(inserts_page, paginator)
@@ -273,6 +293,12 @@ class ChangesetProtocol(View):
                 sh_changesets["deletes"] = deletes
         if sh_changesets:
             res["sh_changesets"] = sh_changesets
+
+
+def _filter_changesets_by_countries(changesets, countries):
+    return changesets.filter(
+        fk_activity__activityattributegroup__attributes__contains={'target_country': countries}
+    )
 
 
 def changeset_comment(changeset):
