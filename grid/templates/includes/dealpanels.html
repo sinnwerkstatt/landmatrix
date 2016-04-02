@@ -15,12 +15,12 @@
         </div>
 
         <div id="{{ form.form_title|slugify }}_body"
-             class="panel-collapse collapse{% if forloop.first %} in{% endif %}">
+             class="panel-collapse collapse{% if forloop.first %} in{% endif %}{% if form.errors %} in{% endif %}">
             <div class="panel-body">
                 {% if form.forms %}
                     {{ form.management_form }}
                     {% for subform in form %}
-                        <div class="{{ form.form_title|slugify }}-form">
+                        <div class="{{ form.form_title|slugify }}-form{% if subform.errors %} with-error{% endif %}">
                         {% include "form.html" with form=subform form_count=forloop.counter %}
                         </div>
                     {% endfor %}
