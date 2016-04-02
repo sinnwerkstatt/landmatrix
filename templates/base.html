@@ -120,9 +120,9 @@
         {% block navutils %}
 
             {% block messages %}
-                <ul class="unstyled messages">
+                <ul class="list-unstyled messages">
                     {% for message in messages %}
-                        <li class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">
+                        <li class="alert{% if message.tags %} alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %}}{% else %} alert-info{% endif %}">
                             <strong>{{ message.tags|capfirst }}:</strong> {{ message|safe }}</li>
                     {% endfor %}
                     {% block extra_messages %}{% endblock %}

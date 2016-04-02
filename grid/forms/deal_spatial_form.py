@@ -45,16 +45,16 @@ class DealSpatialBaseFormSet(formset_factory(DealSpatialForm, extra=0)):
                 filter(fk_activity=activity).filter(attributes__contains=["location"])
         else:
             taggroups = []
-
-        data = {
-            'form-TOTAL_FORMS': max(len(taggroups), 1),
-            'form-INITIAL_FORMS': max(len(taggroups), 1),
-            'form-MAX_NUM_FORMS': 1000
-        }
+        data = []
+        #data = {
+        #    'form-TOTAL_FORMS': max(len(taggroups), 1),
+        #    'form-INITIAL_FORMS': max(len(taggroups), 1),
+        #    'form-MAX_NUM_FORMS': 1000
+        #}
         for i, taggroup in enumerate(taggroups):
             form_data = DealSpatialForm.get_data(activity, taggroup=taggroup)
             # print('DealSpatialBaseFormSet form', i, ':    ', form_data)
-            data[i] = form_data
+            data.append(form_data)
         return data
 
 
