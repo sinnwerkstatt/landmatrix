@@ -20,18 +20,18 @@
 {% block title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
 
 {% block breadcrumb_inner %}
-    <li><a href="/global/data">Global</a></li>
+    <li><a href="/global/data">{% trans 'Global' %}</a></li>
     <li>{% trans "Deal" %} #{{ deal.activity_identifier }}</li>
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation"><a href="/global/map/">
+    <li role="presentation"><a href="{% url 'map' %}">
         <i class="lm lm-map-marker"></i>{% trans "Map" %}
     </a></li>
-    <li role="presentation"><a href="/global/data/">
+    <li role="presentation"><a href="{% url 'app_main' %}">
         <i class="lm lm-table"></i>{% trans "Data" %}
     </a></li>
-    <li role="presentation"><a href="/global/charts/">
+    <li role="presentation"><a href="{% url 'chart_transnational_deals' %}">
         <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
     </a></li>
     <li class="divider"></li>
@@ -177,7 +177,7 @@
 {% else %}
     <p>
         {% trans "There are currently no deals matching your search criteria." %} 
-        <a href="/deal/add">{% trans "Add a deal" %}</a>.
+        <a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.
     </p>
 {% endif %}
 
