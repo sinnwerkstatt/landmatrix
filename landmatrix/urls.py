@@ -49,9 +49,16 @@ wagtail_patterns = [
     url(r'^news/', include('blog.urls', namespace='news')),
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'', include(wagtail_urls)),
+    url(r'^/contact', StartView.as_view(), name='contact'),
+    url(r'^/download', StartView.as_view(), name='download'),
+    url(r'^/help', StartView.as_view(), name='help'),
+    url(r'^/blog', StartView.as_view(), name='blog'),
+    url(r'^/newsletter', StartView.as_view(), name='newsletter'),
+    url(r'^/publications', StartView.as_view(), name='publications'),
+    url(r'^/blog', StartView.as_view(), name='blog')
 ]
 
-urlpatterns = i18n_patterns(
+urlpatterns = patterns(
     '',
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
