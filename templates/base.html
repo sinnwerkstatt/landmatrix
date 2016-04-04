@@ -54,13 +54,13 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand brand" href="/"><img src="{% static "img/lm-logo.png" %}"></a>
+                <a class="navbar-brand brand" href="{% url 'start' %}"><img src="{% static "img/lm-logo.png" %}"></a>
             </div>
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="/global/map/"><i class="lm-nav lm-globe"></i><span class="nav-text">Global</span></a>
+                        <a href="{% url 'map' %}"><i class="lm-nav lm-globe"></i><span class="nav-text">{% trans 'Global' %}</span></a>
                     </li>
                     <li>
                         <span>
@@ -81,21 +81,21 @@
                            aria-expanded="false"><i class="lm-nav lm-plus-circle"></i><span class="nav-text">{% trans "Get Involved" %}<span
                                 class="caret"></span></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="/deal/add">{% trans "Report a deal" %}</a></li>
-                            <li><a href="/contact">{% trans "Get in touch" %}</a></li>
-                            <li><a href="/download">{% trans "Download" %}</a></li>
+                            <li><a href="{% url 'add_deal' %}">{% trans "Report a deal" %}</a></li>
+                            <li><a href="{% url 'contact' %}">{% trans "Get in touch" %}</a></li>
+                            <li><a href="{% url 'download' %}">{% trans "Download" %}</a></li>
                         </ul>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/help" role="button"><span class="nav-circle nav-help">?</span></a></li>
+                    <li><a href="{% url 'help' %}" role="button"><span class="nav-circle nav-help">?</span></a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false"><i class="fa lm-envelope messages"></i></a>
                         <ul class="dropdown-menu">
-                            <li><a href="/blog">{% trans "Blog" %}</a></li>
-                            <li><a href="/newsletter">{% trans "Newsletter" %}</a></li>
-                            <li><a href="/publications">{% trans "Publications" %}</a></li>
+                            <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
+                            <li><a href="{% url 'newsletter' %}">{% trans "Newsletter" %}</a></li>
+                            <li><a href="{% url 'publications' %}">{% trans "Publications" %}</a></li>
                         </ul>
                     </li>
                     {% include "language_chooser.html" %}
@@ -134,7 +134,7 @@
 
                     {% block breadcrumb %}
                         <ul class="breadcrumb">
-                            <li><a href="/">Home</a></li>
+                            <li><a href="{% url 'start' %}">{% trans 'Home' %}</a></li>
                             {% block breadcrumb_inner %}
                             {% endblock %}
                         </ul>
@@ -246,9 +246,9 @@
             // Regions
             var region_select = $('#nav-region-select').select2({
                 placeholder: "{% trans 'Regions' %}",
-                dropdownCssClass: "select2-main",
+                dropdownCssClass: "select2-main"
             }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);;
+              .on('select2:close', select2_close);
             var region_request = $.ajax({
               url: '/api/regions.json'
             });
@@ -263,9 +263,9 @@
             // Countries
             var country_select = $('#nav-country-select').select2({
                 placeholder: "{% trans 'Countries' %}",
-                dropdownCssClass: "select2-main",
+                dropdownCssClass: "select2-main"
             }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);;
+              .on('select2:close', select2_close);
             var country_request = $.ajax({
               url: '/api/countries.json'
             });
