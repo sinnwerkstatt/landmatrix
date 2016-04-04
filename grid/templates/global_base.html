@@ -75,8 +75,8 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-	<li><a href="/">Home</a></li>
-	<li>Global</li>
+	<li><a href="{% url 'start' %}">{% trans 'Home' %}</a></li>
+	<li>{% trans 'Global' %}</li>
 </ul>
 {% endblock %}
 

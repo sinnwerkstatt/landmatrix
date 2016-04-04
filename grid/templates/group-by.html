@@ -7,8 +7,8 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-  <li><a href="/">Home</a></li>
-  <li><a href="/global/data/">Global</a></li>
+  <li><a href="{% url 'start' %}">{% trans 'Home' %}</a></li>
+  <li><a href="{% url 'app_main' %}">{% trans 'Global' %}</a></li>
   {% if group == "all" %}
   <li>{{ name|capfirst }}</li>
   {% elif filters.group_value %}
@@ -308,6 +308,6 @@
 <a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn">{% trans "More..." %}</a>
 {% endif %}
 {% else %}
-<p>{% trans "There are currently no deals matching your search criteria" %}. <a href="/deal/add">{% trans "Add a deal" %}</a>.</p>
+<p>{% trans "There are currently no deals matching your search criteria" %}. <a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.</p>
 {% endif %}
 {% endblock %}
