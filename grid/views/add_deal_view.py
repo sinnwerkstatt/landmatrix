@@ -6,16 +6,20 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class AddDealView(SaveDealView):
-
     template_name = 'add-deal.html'
+    #success_message = _('Added successfully.')
 
-    def get_activity(self, **kwargs):
+    def post(self, request, *args, **kwargs):
+    	# Create activity first
         activity_identifier = Activity.objects.values().aggregate(Max('activity_identifier'))['activity_identifier__max'] + 1
-        return Activity(activity_identifier=activity_identifier, fk_status_id=1)
+        self.activity = Activity.objects.create(
+        	activity_identifier=activity_identifier,
+        	fk_status_id=1
+        )
+        return super(AddDealView, self).post(request, *args, **kwargs)
 
     def get_forms(self, data=None):
-            forms = []
-            for name, Form in self.FORMS:
-                new_form = Form() if not data else Form(data)
-                forms.append(new_form)
-            return forms
+        forms = []
+        for form in self.FORMS:
+            forms.append(form(data or None))
+        return forms

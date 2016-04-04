@@ -5,7 +5,7 @@ from landmatrix.models.deal_history import DealHistoryItem
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from grid.forms.base_form import BaseForm
-from grid.forms.file_field_with_initial import FileFieldWithInitial
+from grid.forms.file_field_with_initial import FileFieldWithInitial, FileInputWithInitial
 from grid.widgets import TitleField, CommentInput
 
 from django import forms
@@ -107,57 +107,60 @@ DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=0)
 
 
 class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
-
     form_title = _('Data sources')
     extra = 1
 
-    def get_taggroups(self, request=None):
-        ds_taggroups = []
-        for i, form in enumerate(self.forms):
-            for j, taggroup in enumerate(form.get_taggroups()):
-                taggroup["main_tag"]["value"] += "_" + str(i+1)
-                ds_taggroups.append(taggroup)
-                ds_url, ds_file = None, None
-                for t in taggroup["tags"]:
-                    if t["key"] == "url":
-                        ds_url = t["value"]
-                    elif t["key"] == "file":
-                        ds_file = t["value"]
-                if ds_file:
-                    taggroup["tags"].append({
-                            "key": "file",
-                            "value": ds_file,
-                        })
-                if ds_url:
-                    url_slug = "%s.pdf" % re.sub(r"http|https|ftp|www|", "", slugify(ds_url))
-                    if not ds_file or url_slug != ds_file:
-                        # Remove file from taggroup
-                        taggroup["tags"] = filter(lambda o: o["key"] != "file", taggroup["tags"])
-                        # Create file for URL
-                        if not default_storage.exists("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug)):
-                            try:
-                                # Check if URL changed and no file given
-                                if ds_url.endswith(".pdf"):
-                                    response = urllib.request.urlopen(ds_url)
-                                    default_storage.save("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug), ContentFile(response.read()))
-                                else:
-                                    # Create PDF from URL
-                                    wkhtmltopdf(ds_url, "%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug))
-                                # Set file tag
-                            except:
-                                # skip possible html to pdf conversion errors
-                                if request and not default_storage.exists("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug)):
-                                    messages.error(request, "Data source <a target='_blank' href='%s'>URL</a> could not be uploaded as a PDF file. Please upload manually." % ds_url)
-                        taggroup["tags"].append({
-                            "key": "file",
-                            "value": url_slug,
-                        })
-                        # always add url, cause there is a problem with storing the file when deal get changed again
-                        #taggroup["tags"].append({
-                        #    "key": "url",
-                        #    "value": ds_url,
-                        #})
-        return ds_taggroups
+    def get_attributes(self, request=None):
+        attributes = []
+        for count, form in enumerate(self.forms):
+            form_attributes = form.get_attributes()
+            uploaded = get_file_from_upload(request.FILES, count)
+            if uploaded:
+                form_attributes['file'] = uploaded
+            if 'url' in form_attributes and form_attributes['url']:
+                form_attributes = handle_url(form_attributes, request)
+            attributes.append(form_attributes)
+        return attributes
+            #ds_url, ds_file = None, None
+            #for t in taggroup["tags"]:
+            #    if t["key"] == "url":
+            #        ds_url = t["value"]
+            #    elif t["key"] == "file":
+            #        ds_file = t["value"]
+            #if ds_file:
+            #    taggroup["tags"].append({
+            #            "key": "file",
+            #            "value": ds_file,
+            #        })
+            #if ds_url:
+            #    url_slug = "%s.pdf" % re.sub(r"http|https|ftp|www|", "", slugify(ds_url))
+            #    if not ds_file or url_slug != ds_file:
+            #        # Remove file from taggroup
+            #        taggroup["tags"] = filter(lambda o: o["key"] != "file", taggroup["tags"])
+            #        # Create file for URL
+            #        if not default_storage.exists("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug)):
+            #            try:
+            #                # Check if URL changed and no file given
+            #                if ds_url.endswith(".pdf"):
+            #                    response = urllib.request.urlopen(ds_url)
+            #                    default_storage.save("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug), ContentFile(response.read()))
+            #                else:
+            #                    # Create PDF from URL
+            #                    wkhtmltopdf(ds_url, "%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug))
+            #                # Set file tag
+            #            except:
+            #                # skip possible html to pdf conversion errors
+            #                if request and not default_storage.exists("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug)):
+            #                    messages.error(request, "Data source <a target='_blank' href='%s'>URL</a> could not be uploaded as a PDF file. Please upload manually." % ds_url)
+            #        taggroup["tags"].append({
+            #            "key": "file",
+            #            "value": url_slug,
+            #        })
+            #        # always add url, cause there is a problem with storing the file when deal get changed again
+            #        #taggroup["tags"].append({
+            #        #    "key": "url",
+            #        #    "value": ds_url,
+            #        #})
 
     @classmethod
     def get_data(cls, deal):
@@ -171,28 +174,28 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
 
         taggroups = deal.attribute_groups().filter(belongs_to_data_source).order_by('name')
 
-        data = {
-            'form-TOTAL_FORMS': len(taggroups),
-            'form-INITIAL_FORMS': len(taggroups),
-            'form-MAX_NUM_FORMS': 1000
-        }
+        data = []
+        #data = {
+        #    'form-TOTAL_FORMS': len(taggroups),
+        #    'form-INITIAL_FORMS': len(taggroups),
+        #    'form-MAX_NUM_FORMS': 1000
+        #}
         for i, taggroup in enumerate(taggroups):
             form_data = DealDataSourceForm.get_data(deal, taggroup, taggroups[i+1] if i < len(taggroups)-1 else None)
             # print('AddDealDataSourceFormSet form', i, ':    ', form_data)
-            data[i] = form_data
+            data.append(form_data)
         return data
 
+    class Meta:
+        name = 'data_sources'
 
 class ChangeDealDataSourceFormSet(AddDealDataSourceFormSet):
-
-    form_title = _('Data sources')
-
     extra = 0
-
 
 class PublicViewDealDataSourceForm(DealDataSourceForm):
 
     class Meta:
+        name = 'data_sources'
         fields = (
             "tg_data_source", "type", "url", "company", "date"
         )
@@ -217,4 +220,76 @@ class PublicViewDealDataSourceFormSet(
     form_title = _('Data sources')
 
 
+
+def get_file_from_upload(files, form_index):
+    try:
+        key = next(k for k in files.keys() if 'form-{}-file'.format(form_index))
+        file = files.getlist(key)[0]
+        handle_uploaded_file(file, file.name, FileInputWithInitial.UPLOAD_BASE_DIR)
+        return file.name
+    except (StopIteration, IndexError, AttributeError):
+        return None
+
+
+def handle_uploaded_file(uploaded_file, file_name, base_dir):
+    if not os.path.exists(base_dir):
+        os.makedirs(base_dir)
+    with open(base_dir+file_name, 'wb+') as destination:
+        for chunk in uploaded_file.chunks():
+            destination.write(chunk)
+
+def handle_url(form_data, request):
+    url = form_data['url']
+    url_slug = get_url_slug(request, url)
+
+    # if not url_slug or form_data['file'] or url_slug == form_data['file']:
+    if not url_slug or url_slug == form_data['file']:
+        return
+
+    # Remove file from taggroup
+    del form_data['file']
+
+    # Create file for URL
+    uploaded_pdf_path = os.path.join(settings.MEDIA_ROOT, "uploads", url_slug)
+    if not default_storage.exists(uploaded_pdf_path):
+        try:
+            # Check if URL changed and no file given
+            if url.endswith(".pdf"):
+                response = urllib.request.urlopen(url)
+                default_storage.save(
+                    uploaded_pdf_path, ContentFile(response.read())
+                )
+            else:
+                # Create PDF from URL
+                output = wkhtmltopdf(pages=url, output=uploaded_pdf_path)
+                print('wkhtmltopdf output:', output)
+            form_data['date'] = date.today().strftime("%Y-%m-%d")
+            form_data['file'] = url_slug
+        except Exception as e:
+            print(e)
+            # skip possible html to pdf conversion errors
+            # if request and not default_storage.exists(uploaded_pdf_path):
+            error_could_not_upload(request, url, str(e))
+
+    return form_data
+
+
+def get_url_slug(request, url):
+    import re
+    from django.template.defaultfilters import slugify
+
+    try:
+        urllib.request.urlopen(url)
+    except (urllib.error.HTTPError, urllib.error.URLError):
+        error_could_not_upload(request, url)
+        return None
+
+    return "%s.pdf" % re.sub(r"https|http|ftp|www|", "", slugify(url))
+
+
+def error_could_not_upload(request, url, message=''):
+    messages.error(
+        request,
+        _("Data source <a target='_blank' href='{0}'>URL</a> could not be uploaded as a PDF file. {1} <br>Please upload manually.").format(url, message)
+    )
 
