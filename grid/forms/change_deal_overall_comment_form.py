@@ -27,3 +27,6 @@ class ChangeDealOverallCommentForm(BaseForm):
         if comments and len(comments) > 0:
             data["tg_overall_comment"] = comments[0].comment
         return data
+
+    class Meta:
+        name = 'overall_comment'

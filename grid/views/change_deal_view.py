@@ -3,9 +3,9 @@ from pprint import pprint
 from django.forms.formsets import BaseFormSet
 
 from grid.forms.change_deal_general_form import ChangeDealGeneralForm
+from .save_deal_view import SaveDealView
 from landmatrix.models.activity import Activity
 from landmatrix.models.deal import Deal
-from .save_deal_view import SaveDealView
 
 from grid.forms.add_deal_employment_form import AddDealEmploymentForm
 from grid.forms.add_deal_general_form import AddDealGeneralForm
@@ -26,38 +26,41 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class ChangeDealView(SaveDealView):
 
     FORMS = [
-        ("spatial_data", ChangeDealSpatialFormSet),
-        ("general_information", ChangeDealGeneralForm),
-        ("employment", AddDealEmploymentForm),
-        ("investor_info", OperationalStakeholderForm),
-        ("data_sources", AddDealDataSourceFormSet),
-        ("local_communities", DealLocalCommunitiesForm),
-        ("former_use", DealFormerUseForm),
-        ("produce_info", DealProduceInfoForm),
-        ("water", DealWaterForm),
-        ("gender-related_info", DealGenderRelatedInfoForm),
-        ("overall_comment", AddDealOverallCommentForm),
-        ("action_comment", ChangeDealActionCommentForm),
+        ChangeDealSpatialFormSet,
+        ChangeDealGeneralForm,
+        AddDealEmploymentForm,
+        OperationalStakeholderForm,
+        AddDealDataSourceFormSet,
+        DealLocalCommunitiesForm,
+        DealFormerUseForm,
+        DealProduceInfoForm,
+        DealWaterForm,
+        DealGenderRelatedInfoForm,
+        AddDealOverallCommentForm,
+        ChangeDealActionCommentForm,
     ]
 
     template_name = 'change-deal.html'
 
-    def get_activity(self, **kwargs):
-        return Activity.objects.get(activity_identifier=kwargs.get('deal_id'))
+    def dispatch(self, request, *args, **kwargs):
+        if 'deal_id' in kwargs:
+            self.activity = Activity.objects.get(activity_identifier=kwargs.get('deal_id'))
+        return super(ChangeDealView, self).dispatch(request, *args, **kwargs)
 
-    def get_forms(self, post_data):
-        return [get_form(Deal(self.activity.activity_identifier), post_data, form) for form in self.FORMS]
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**self.kwargs)
+        context['deal_id'] = kwargs.pop('deal_id')
+        return context
 
+    def get_forms(self, data=None):
+        return [self.get_form(form, data) for form in self.FORMS]
 
-def get_form(deal, post_data, form_class):
-    if post_data:
-        data = post_data
-    else:
-        data = form_class[1].get_data(deal)
-        if issubclass(form_class[1], BaseFormSet):
-            data = to_formset_data(data)
-
-    return form_class[1](data)
+    def get_form(self, form_class, data=None):
+        deal = Deal(self.activity.activity_identifier)
+        initial = form_class.get_data(deal)
+        #if issubclass(form_class[1], BaseFormSet):
+        #    data = to_formset_data(data)
+        return form_class(initial=initial, data=data)
 
 
 def to_formset_data(data):
@@ -69,3 +72,4 @@ def to_formset_data(data):
             for key, value in data[index].items():
                 returned['form-{}-{}'.format(index, key)] = value
     return returned
+

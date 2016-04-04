@@ -17,14 +17,14 @@ BaseDealSecondaryInvestorFormSet = formset_factory(DealSecondaryInvestorForm, ex
 
 class DealSecondaryInvestorFormSet(BaseDealSecondaryInvestorFormSet):
 
-    def get_taggroups(self, request=None):
+    def get_attributes(self, request=None):
         return []
 
     def get_stakeholders(self):
         stakeholders = []
         for i, form in enumerate(self.forms):
             stakeholder = {}
-            for j, taggroup in enumerate(form.get_taggroups()):
+            for j, taggroup in enumerate(form.get_attributes()):
                 comment = taggroup.get("comment", "")
                 for i, t in reversed(list(enumerate(taggroup["tags"]))):
                     if t["key"] == "investor":
