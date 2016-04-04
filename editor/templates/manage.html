@@ -2,7 +2,7 @@
 {% load i18n custom_tags %}
 
 {% block breadcrumb_inner %}
-    <li><a href="/editor">{% trans "Dashboard" %}</a></li>
+    <li><a href="{% url 'editor' %}">{% trans "Dashboard" %}</a></li>
     <li>{% trans "Manage deals " %}</li>
 {% endblock %}
 
@@ -61,7 +61,7 @@
                     <tbody>
                     {% for feedback in feedbacks.feeds %}
                         <tr>
-                            <td class="deal"><a href="/deal/{{ feedback.deal_id }}/">#{{ feedback.deal_id }}</a></td>
+                            <td class="deal"><a href="{% url 'deal_detail' deal_id=feedback_deal_id %}">#{{ feedback.deal_id }}</a></td>
                             <td class="user">{{ feedback.from_user }}</td>
                             <td class="comment" title="{{ feedback.comment }}">{{ feedback.comment }}</td>
                             <td class="date">{{ feedback.timestamp|naturaltime_from_string }}</td>
@@ -109,10 +109,10 @@
                             <tr>
                                 <td class="deal">
                                     {% if changeset.status == "rejected" %}
-                                        <a href="/deal/{{ changeset.deal_id }}/?version=rejected">#{{ changeset.deal_id }}
+                                        <a href="{% url 'deal_detail' deal_id=changeset.deal_id version='rejected' %}">#{{ changeset.deal_id }}
                                             ({% trans "Rejected version" %})</a>
                                     {% else %}
-                                        <a href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                        <a href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
                                     {% endif %}
                                 </td>
                                 <td class="user">{{ changeset.timestamp|naturaltime_from_string }}</td>
@@ -162,16 +162,16 @@
                         <tbody>
                         {% for changeset in updates.cs %}
                             <tr>
-                                <td class="deal"><a href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                <td class="deal"><a href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
                                 </td>
                                 <td class="user">{{ changeset.user }}</td>
                                 <td class="modified">{{ changeset.fields_changed }}</td>
                                 <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
                                 <td class="action">
-                                    <a href="/editor/manage/deal/approve/{{ changeset.id }}/"
+                                    <a href="{% url 'manage_deal' type='deal' action='approve' id=changeset.id %}"
                                        class="btn btn-success approve"><i
                                             class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="/editor/manage/deal/reject/{{ changeset.id }}/"
+                                    <a href="{% url 'manage_deal' type='deal' action='reject' id=changeset.id %}"
                                        class="btn btn-danger reject"><i
                                             class="lm lm-thumbs-down"></i> {% trans "Reject" %}</a>
                                 </td>
@@ -216,14 +216,14 @@
                         <tbody>
                         {% for changeset in deletes.cs %}
                             <tr>
-                                <td class="deal"><a href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                <td class="deal"><a href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
                                 </td>
                                 <td class="user">{{ changeset.user }}</td>
                                 <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
                                 <td class="action">
-                                    <a href="/editor/manage/deal/approve/{{ changeset.id }}/"
+                                    <a href="{% url 'manage_deal' type='deal' action='approve' id=changeset.id %}"
                                        class="btn btn-success approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="/editor/manage/deal/reject/{{ changeset.id }}/"
+                                    <a href="{% url 'manage_deal' type='deal' action='reject' id=changeset.id %}"
                                        class="btn btn-danger reject"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 </td>
@@ -268,14 +268,14 @@
                         <tbody>
                         {% for changeset in inserts.cs %}
                             <tr>
-                                <td class="deal"><a href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                <td class="deal"><a href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
                                 </td>
                                 <td class="user">{{ changeset.user }}</td>
                                 <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
                                 <td class="action">
-                                    <a href="/editor/manage/deal/approve/{{ changeset.id }}/"
+                                    <a href="{% url 'manage_deal' type='deal' action='approve' id=changeset.id %}"
                                        class="btn btn-success approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="/editor/manage/deal/reject/{{ changeset.id }}/"
+                                    <a href="{% url 'manage_deal' type='deal' action='reject' id=changeset.id %}"
                                        class="btn btn-danger reject"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 </td>
@@ -326,9 +326,9 @@
                                 <td class="user">{{ changeset.user }}</td>
                                 <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
                                 <td class="action">
-                                    <a href="/editor/manage/investor/approve/{{ changeset.id }}/"
+                                    <a href="{% url 'manage_deal' type='investor' action='approve' id=changeset.id %}"
                                        class="btn btn-success approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="/editor/manage/investor/reject/{{ changeset.id }}/"
+                                    <a href="{% url 'manage_deal' type='investor' action='reject' id=changeset.id %}"
                                        class="btn btn-danger reject"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 </td>
@@ -376,7 +376,7 @@
                         {% for changeset in rejected.cs %}
                             <tr class="deletes">
                                 <td class="dealid"><a
-                                        href="/deal/{{ changeset.deal_id }}/">#{{ changeset.deal_id }}</a>
+                                        href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
                                 </td>
                                 <td class="user">{{ changeset.user }}</td>
                                 <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
