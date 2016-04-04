@@ -44,6 +44,9 @@ class OperationalStakeholderForm(BaseForm):
                 data[prefixed_name] = deal.get_activity_attributes().get('project_name')
         return data
 
+    class Meta:
+        name = 'investor_info'
+
 def investor_description(investor):
     return '{} ({}) {}'.format(
         _investor_name(investor), _investor_country_name(investor), _investor_classification(investor)

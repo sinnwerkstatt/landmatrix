@@ -11,7 +11,6 @@ from grid.forms.deal_produce_info_form import PublicViewDealProduceInfoForm
 from grid.forms.deal_spatial_form import PublicViewDealSpatialForm
 from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
-from grid.views.save_deal_view import name_of_form, create_attribute_group
 from grid.views.view_aux_functions import render_to_string, render_to_response
 
 from landmatrix.models import Deal
@@ -102,28 +101,28 @@ def display_valid_forms(forms):
                               'activity_identifier__max'] + 1
     activity = Activity(activity_identifier=activity_identifier, fk_status_id=1, version=1)
     for form in forms:
-        if name_of_form(form, FORMS) == 'investor_info':
+        if form.Meta.name == 'investor_info':
             print('investor_info', form.cleaned_data)
-        elif name_of_form(form, FORMS) == 'data_sources':
+        elif form.Meta.name == 'data_sources':
             for sub_form_data in form.cleaned_data:
                 if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
                     field = DealDataSourceForm().fields['type']
                     choices = dict(field.choices)
                     sub_form_data['type'] = str(choices[sub_form_data['type']])
                 group = create_attribute_group(activity, sub_form_data)
-                print(name_of_form(form, FORMS), group)
-        elif name_of_form(form, FORMS) == 'spatial_data':
+                print(form.Meta.name, group)
+        elif form.Meta.name == 'spatial_data':
             for sub_form_data in form.cleaned_data:
                 if sub_form_data['target_country'] and isinstance(sub_form_data['target_country'], Country):
                     sub_form_data['target_country'] = sub_form_data['target_country'].pk
                 group = create_attribute_group(activity, sub_form_data)
-                print(name_of_form(form, FORMS), group)
+                print(form.Meta.name, group)
         else:
             if any(form.cleaned_data.values()):
                 group = create_attribute_group(activity, form.cleaned_data)
-                print(name_of_form(form, FORMS), group)
+                print(form.Meta.name, group)
             else:
-                print('no data sent:', name_of_form(form, FORMS))
+                print('no data sent:', form.Meta.name)
 
 
 def display_invalid_forms(forms):

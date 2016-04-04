@@ -7,4 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 
 class DealHistoryForm(BaseForm):
     form_title = _('Deal history')
-    pass
+
+    class Meta:
+    	name = 'history'
