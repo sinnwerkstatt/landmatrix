@@ -2,22 +2,26 @@
 {% load i18n custom_tags %}
 {% load humanize %}
 
-{% block page_title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}{% trans "By" %} {{ group }}{% endif %}{% endblock %}
-{% block title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}{% trans "By" %} {{ group }}{% endif %}{% endblock %}
+{% block page_title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}
+    {% trans "By" %} {{ group }}{% endif %}{% endblock %}
+{% block title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}
+    {% trans "By" %} {{ group }}{% endif %}{% endblock %}
 
 {% block breadcrumb %}
-<ul class="breadcrumb">
-  <li><a href="/">Home</a></li>
-  <li><a href="/global/">Global</a></li>
-  {% if group == "all" %}
-  <li>{% trans "All deals" %}</li>
-  {% elif filters.group_value %}
-  <li><a href="/global/data/{{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">{% trans "By" %} {{ group }}</a></li>
-  <li>{{ name }}</li>
-  {% else %}
-  <li>{% trans "By" %} {{ group }}</li>
-  {% endif %}
-</ul>
+    <ul class="breadcrumb">
+        <li><a href="{% url 'start' %}/">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'app_main' %}">{% trans 'Global' %}</a></li>
+        {% if group == "all" %}
+            <li>{% trans "All deals" %}</li>
+        {% elif filters.group_value %}
+            <li><a href="/global/data/
+                    {{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">{% trans "By" %} {{ group }}</a>
+            </li>
+            <li>{{ name }}</li>
+        {% else %}
+            <li>{% trans "By" %} {{ group }}</li>
+        {% endif %}
+    </ul>
 {% endblock %}
 
 {% block subnav_inner %}
@@ -37,264 +41,403 @@
 {% endblock %}
 
 {% block content %}
-{% include "grid/subnav.html" %}
-{% include "filters.html" %}
+    {% include "grid/subnav.html" %}
+    {% include "filters.html" %}
 
-{% if data.items %}
-{% if not group_value %}
-  {% if group == "investor name" or group == "investor country" or group == "target country" %}
-    <div class="btn-toolbar">
-      <div class="btn-group" data-toggle="buttons-radio">
-        <a class="btn btn-mini{% if filters.starts_with == 'A' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'A' %}">A</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'B' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'B' %}">B</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'C' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'C' %}">C</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'D' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'D' %}">D</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'E' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'E' %}">E</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'F' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'F' %}">F</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'G' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'G' %}">G</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'H' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'H' %}">H</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'I' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'I' %}">I</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'J' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'J' %}">J</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'K' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'K' %}">K</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'L' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'L' %}">L</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'M' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'M' %}">M</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'N' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'N' %}">N</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'O' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'O' %}">O</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'P' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'P' %}">P</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'Q' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Q' %}">Q</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'R' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'R' %}">R</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'S' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'S' %}">S</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'T' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'T' %}">T</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'U' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'U' %}">U</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'V' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'V' %}">V</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'W' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'W' %}">W</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'X' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'X' %}">X</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'Y' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Y' %}">Y</a>
-        <a class="btn btn-mini{% if filters.starts_with == 'Z' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Z' %}">Z</a>
-      </div>
-      <div class="btn-group" data-toggle="buttons-radio">
-        <a class="btn btn-mini{% if not filters.starts_with %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' '' %}">{% trans "ALL" %}</a>
-      </div>
-      <a href="#" class="toggle-tooltip" title="{% trans 'You can filter by initial letter.' %}"> <i class="lm lm-question-circle"> </i></a>
-    </div>
-  {% endif %}
-{% endif %}
-<div class="summary-wrap">
-<table id="summary" class="table table-striped">
-  <thead>
-    <tr>
-      {% for column in columns %}
-        {% if "deal_id"  == column %}
-        <th class="deal-id"><a {% if data.order_by == 'deal_id' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-deal_id' %}" {% elif data.order_by == '-deal_id' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'deal_id' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'deal_id' %}"{% endif %}>#</a></th>
-        {% elif "crop"  == column %}
-        <th><a {% if data.order_by == 'crop' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-crop' %}" {% elif data.order_by == '-crop' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'crop' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'crop' %}"{% endif %}>{% trans "Crop" %}</a></th>
-        {% elif "intention"  == column %}
-        <th><a {% if data.order_by == 'intention' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-intention' %}" {% elif data.order_by == '-intention' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'intention' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'intention' %}"{% endif %}>{% trans "Intention of investment" %}</a></th>
-        {% elif "primary_investor"  == column %}
-        <th><a {% if data.order_by == 'primary_investor' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-primary_investor' %}" {% elif data.order_by == '-primary_investor' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'primary_investor' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'primary_investor' %}"{% endif %}>{% trans "Primary investor" %}</a></th>
-        {% elif "operational_stakeholder"  == column %}
-        <th><a {% if data.order_by == 'operational_stakeholder' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-operational_stakeholder' %}" {% elif data.order_by == '-operational_stakeholder' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'operational_stakeholder' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'operational_stakeholder' %}"{% endif %}>{% trans "Operational stakeholder" %}</a></th>
-        {% elif "stakeholder_name"  == column %}
-        <th><a {% if data.order_by == 'stakeholder_name' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-stakeholder_name' %}" {% elif data.order_by == '-stakeholder_name' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'stakeholder_name' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'stakeholder_name' %}"{% endif %}>{% trans "Stakeholders" %}</a></th>
-        {% elif "stakeholder_country" == column %}
-        <th class="investor-country"><a {% if data.order_by == 'stakeholder_country' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-stakeholder_country' %}" {% elif data.order_by == '-stakeholder_country' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'stakeholder_country' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'stakeholder_country' %}"{% endif %}>{% trans "Stakeholder countries" %}</a></th>
-        {% elif "investor_country" == column %}
-        <th class="investor-country"><a {% if data.order_by == 'investor_country' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-investor_country' %}" {% elif data.order_by == '-investor_country' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'investor_country' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'investor_country' %}"{% endif %}>{% trans "Secondary&nbsp;investor country" %}</a></th>
-        {% elif "investor_region" == column %}
-        <th class="investor_region"><a {% if data.order_by == 'investor_region' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-investor_region' %}" {% elif data.order_by == '-investor_region' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'investor_region' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'investor_region' %}"{% endif %}>{% trans "Secondary&nbsp;investor region" %}</a></th>
-        {% elif "target_country"  == column %}
-        <th><a {% if data.order_by == 'target_country' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-target_country' %}" {% elif data.order_by == '-target_country' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'target_country' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'target_country' %}"{% endif %}>{% trans "Target country" %}</a></th>
-        {% elif "target_region"  == column %}
-        <th><a {% if data.order_by == 'target_region' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-target_region' %}" {% elif data.order_by == '-target_region' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'target_region' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'target_region' %}"{% endif %}>{% trans "Target region" %}</a></th>
-        {% elif "year"  == column %}
-        <th><a {% if data.order_by == 'year' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-year' %}" {% elif data.order_by == '-year' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'year' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'year' %}"{% endif %}>{% trans "Year" %}</a></th>
-        {% elif "deal_size" == column %}
-          <th class="number"><a {% if data.order_by == 'deal_size' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-deal_size' %}" {% elif data.order_by == '-deal_size' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'deal_size' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'deal_size' %}"{% endif %}>{% trans "Investment size" %}</a></th>
-        {% elif "deal_count" == column %}
-          <th class="deals number"><a {% if data.order_by == 'deal_count' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-deal_count' %}" {% elif data.order_by == '-deal_count' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'deal_count' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'deal_count' %}"{% endif %}>{% trans "Deals" %}</a></th>
-        {% elif "data_source_type" == column %}
-          <th class="deals"><a {% if data.order_by == 'data_source_type' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-data_source_type' %}" {% elif data.order_by == '-data_source_type' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'data_source_type' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'data_source_type' %}"{% endif %}>{% trans "Deal data source type" %}</a></th>
-        {% elif "availability" == column %}
-          <th><a {% if data.order_by == 'availability' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-availability' %}" {% elif data.order_by == '-availability' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'availability' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'availability' %}"{% endif %}>{% trans "Availability" %}</a><a href="/about/#what-does-data-availability-mean" class="toggle-tooltip noul" title="{% trans "This column shows the percentage of information about deals we have collected.<br/>Click to read more." %}"> <i class="lm lm-question-circle"> </i></a></th>
-        {% elif "intended_size" == column %}
-          <th class="number"><a {% if data.order_by == 'intended_size' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-intended_size' %}" {% elif data.order_by == '-intended_size' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'intended_size' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'intended_size' %}"{% endif %}>{% trans "Intended size (ha)" %}</a></th>
-        {% elif "contract_size" == column %}
-          <th class="number"><a {% if data.order_by == 'contract_size' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-contract_size' %}" {% elif data.order_by == '-contract_size' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'contract_size' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'contract_size' %}"{% endif %}>{% trans "Contract size (ha)" %}</a></th>
-        {% elif "implementation_status" == column %}
-          <th class="number"><a {% if data.order_by == 'implementation_status' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-implementation_status' %}" {% elif data.order_by == '-implementation_status' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'implementation_status' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'implementation_status' %}"{% endif %}>{% trans "Implementation status" %}</a></th>
-        {% elif "negotiation_status" == column %}
-          <th class="number"><a {% if data.order_by == 'negotiation_status' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-negotiation_status' %}" {% elif data.order_by == '-negotiation_status' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'negotiation_status' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'negotiation_status' %}"{% endif %}>{% trans "Negotiation status" %}</a></th>
-        {% endif %}
-      {% endfor %}
-        {% if "deal_id" in columns %}
-        <th></th>
-        {% endif %}
-    </tr>
-  </thead>
-  <tbody>
-    {% for item in data.items  %}
-        <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
-        {% for column in columns %}
-          {% if column == "deal_id" %}
-            <td class="deal-id">
-                <a href="/deal/{{ item.deal_id }}/">{{ item.deal_id }}</a>
-            </td>
-          {% elif column == "crop" %}
-              <td style="width:341px">
-              {% if  item.crop %}
-              {% for c in item.crop %}
-                <a href="/global/data/all?variable=crop&operator=is&value={{ c|slugify }}">{{ c }}</a></br>
-              {% endfor %}
-              {% else %}{% trans "unknown" %}
-              {% endif %}
-              </td>
-          {% elif column == "intention" %}
-              <td>
-              <ul class="list-unstyled">
-              {% if item.intention %}
-                {% for i in item.intention %}
-                  <li>
-                    <a href="/global/data/all?variable=intention&operator=is&value={{ i }}"
-                       {% if group != "intention" %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a>
-                  </li>
-                {% endfor %}
-              {% else %}{% trans "unknown" %}
-              {% endif %}
-              </ul>
-              </td>
-          {% elif column == "operational_stakeholder" %}
-            <td style="width:183px">
-            {% if item.operational_stakeholder %}
-                {% for i in item.operational_stakeholder %}
-                  {{ i }}<br/>
-                {% endfor %}
-            {% else %}{% trans "unknown" %}
+    {% if data.items %}
+        {% if not group_value %}
+            {% if group == "investor name" or group == "investor country" or group == "target country" %}
+                <div class="btn-toolbar">
+                    <div class="btn-group" data-toggle="buttons-radio">
+                        <a class="btn btn-mini{% if filters.starts_with == 'A' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'A' %}">A</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'B' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'B' %}">B</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'C' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'C' %}">C</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'D' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'D' %}">D</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'E' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'E' %}">E</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'F' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'F' %}">F</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'G' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'G' %}">G</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'H' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'H' %}">H</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'I' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'I' %}">I</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'J' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'J' %}">J</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'K' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'K' %}">K</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'L' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'L' %}">L</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'M' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'M' %}">M</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'N' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'N' %}">N</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'O' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'O' %}">O</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'P' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'P' %}">P</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'Q' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'Q' %}">Q</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'R' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'R' %}">R</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'S' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'S' %}">S</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'T' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'T' %}">T</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'U' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'U' %}">U</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'V' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'V' %}">V</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'W' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'W' %}">W</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'X' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'X' %}">X</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'Y' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'Y' %}">Y</a>
+                        <a class="btn btn-mini{% if filters.starts_with == 'Z' %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' 'Z' %}">Z</a>
+                    </div>
+                    <div class="btn-group" data-toggle="buttons-radio">
+                        <a class="btn btn-mini{% if not filters.starts_with %} active{% endif %}"
+                           href="?{% add_or_update_param request.GET 'starts_with' '' %}">{% trans "ALL" %}</a>
+                    </div>
+                    <a href="#" class="toggle-tooltip" title="{% trans 'You can filter by initial letter.' %}"> <i
+                            class="lm lm-question-circle"> </i></a>
+                </div>
             {% endif %}
-            </td>
-          {% elif column == "stakeholder_name" %}
-            <td style="width:183px">
-            {% if item.stakeholder_name %}
-                {% for i in item.stakeholder_name %}
-                  <a href="/global/data/all?variable=investor&operator=is&value={{i.id}}">{{ i.name }}</a><br/>
+        {% endif %}
+        <div class="summary-wrap">
+            <table id="summary" class="table table-striped">
+                <thead>
+                <tr>
+                    {% for column in columns %}
+                        {% if "deal_id"  == column %}
+                            <th class="deal-id"><a {% if data.order_by == 'deal_id' %}class="asc"
+                                                   href="?{% add_or_update_param request.GET 'order_by' '-deal_id' %}"
+                                                   {% elif data.order_by == '-deal_id' %}class="desc"
+                                                   href="?{% add_or_update_param request.GET 'order_by' 'deal_id' %}"{% else %}
+                                                   href="?{% add_or_update_param request.GET 'order_by' 'deal_id' %}"{% endif %}>#</a>
+                            </th>
+                        {% elif "crop"  == column %}
+                            <th><a {% if data.order_by == 'crop' %}class="asc"
+                                   href="?{% add_or_update_param request.GET 'order_by' '-crop' %}"
+                                   {% elif data.order_by == '-crop' %}class="desc"
+                                   href="?{% add_or_update_param request.GET 'order_by' 'crop' %}"{% else %}
+                                   href="?{% add_or_update_param request.GET 'order_by' 'crop' %}"{% endif %}>{% trans "Crop" %}</a>
+                            </th>
+                        {% elif "intention"  == column %}
+                            <th><a {% if data.order_by == 'intention' %}class="asc"
+                                   href="?{% add_or_update_param request.GET 'order_by' '-intention' %}"
+                                   {% elif data.order_by == '-intention' %}class="desc"
+                                   href="?{% add_or_update_param request.GET 'order_by' 'intention' %}"{% else %}
+                                   href="?{% add_or_update_param request.GET 'order_by' 'intention' %}"{% endif %}>{% trans "Intention of investment" %}</a>
+                            </th>
+                        {% elif "primary_investor"  == column %}
+                            <th><a {% if data.order_by == 'primary_investor' %}class="asc"
+                                   href="?{% add_or_update_param request.GET 'order_by' '-primary_investor' %}"
+                                   {% elif data.order_by == '-primary_investor' %}class="desc"
+                                   href="?{% add_or_update_param request.GET 'order_by' 'primary_investor' %}"{% else %}
+                                   href="?{% add_or_update_param request.GET 'order_by' 'primary_investor' %}"{% endif %}>{% trans "Primary investor" %}</a>
+                            </th>
+                        {% elif "operational_stakeholder"  == column %}
+                            <th><a {% if data.order_by == 'operational_stakeholder' %}class="asc"
+                                   href="?{% add_or_update_param request.GET 'order_by' '-operational_stakeholder' %}"
+                                   {% elif data.order_by == '-operational_stakeholder' %}class="desc"
+                                   href="?{% add_or_update_param request.GET 'order_by' 'operational_stakeholder' %}"{% else %}
+                                   href="?{% add_or_update_param request.GET 'order_by' 'operational_stakeholder' %}"{% endif %}>{% trans "Operational stakeholder" %}</a>
+                            </th>
+                        {% elif "stakeholder_name"  == column %}
+                            <th><a {% if data.order_by == 'stakeholder_name' %}class="asc"
+                                   href="?{% add_or_update_param request.GET 'order_by' '-stakeholder_name' %}"
+                                   {% elif data.order_by == '-stakeholder_name' %}class="desc"
+                                   href="?{% add_or_update_param request.GET 'order_by' 'stakeholder_name' %}"{% else %}
+                                   href="?{% add_or_update_param request.GET 'order_by' 'stakeholder_name' %}"{% endif %}>{% trans "Stakeholders" %}</a>
+                            </th>
+                        {% elif "stakeholder_country" == column %}
+                            <th class="investor-country"><a {% if data.order_by == 'stakeholder_country' %}class="asc"
+                                                            href="?{% add_or_update_param request.GET 'order_by' '-stakeholder_country' %}"
+                                                            {% elif data.order_by == '-stakeholder_country' %}class="desc"
+                                                            href="?{% add_or_update_param request.GET 'order_by' 'stakeholder_country' %}"{% else %}
+                                                            href="?{% add_or_update_param request.GET 'order_by' 'stakeholder_country' %}"{% endif %}>{% trans "Stakeholder countries" %}</a>
+                            </th>
+                        {% elif "investor_country" == column %}
+                            <th class="investor-country"><a {% if data.order_by == 'investor_country' %}class="asc"
+                                                            href="?{% add_or_update_param request.GET 'order_by' '-investor_country' %}"
+                                                            {% elif data.order_by == '-investor_country' %}class="desc"
+                                                            href="?{% add_or_update_param request.GET 'order_by' 'investor_country' %}"{% else %}
+                                                            href="?{% add_or_update_param request.GET 'order_by' 'investor_country' %}"{% endif %}>{% trans "Secondary&nbsp;investor country" %}</a>
+                            </th>
+                        {% elif "investor_region" == column %}
+                            <th class="investor_region"><a {% if data.order_by == 'investor_region' %}class="asc"
+                                                           href="?{% add_or_update_param request.GET 'order_by' '-investor_region' %}"
+                                                           {% elif data.order_by == '-investor_region' %}class="desc"
+                                                           href="?{% add_or_update_param request.GET 'order_by' 'investor_region' %}"{% else %}
+                                                           href="?{% add_or_update_param request.GET 'order_by' 'investor_region' %}"{% endif %}>{% trans "Secondary&nbsp;investor region" %}</a>
+                            </th>
+                        {% elif "target_country"  == column %}
+                            <th><a {% if data.order_by == 'target_country' %}class="asc"
+                                   href="?{% add_or_update_param request.GET 'order_by' '-target_country' %}"
+                                   {% elif data.order_by == '-target_country' %}class="desc"
+                                   href="?{% add_or_update_param request.GET 'order_by' 'target_country' %}"{% else %}
+                                   href="?{% add_or_update_param request.GET 'order_by' 'target_country' %}"{% endif %}>{% trans "Target country" %}</a>
+                            </th>
+                        {% elif "target_region"  == column %}
+                            <th><a {% if data.order_by == 'target_region' %}class="asc"
+                                   href="?{% add_or_update_param request.GET 'order_by' '-target_region' %}"
+                                   {% elif data.order_by == '-target_region' %}class="desc"
+                                   href="?{% add_or_update_param request.GET 'order_by' 'target_region' %}"{% else %}
+                                   href="?{% add_or_update_param request.GET 'order_by' 'target_region' %}"{% endif %}>{% trans "Target region" %}</a>
+                            </th>
+                        {% elif "year"  == column %}
+                            <th><a {% if data.order_by == 'year' %}class="asc"
+                                   href="?{% add_or_update_param request.GET 'order_by' '-year' %}"
+                                   {% elif data.order_by == '-year' %}class="desc"
+                                   href="?{% add_or_update_param request.GET 'order_by' 'year' %}"{% else %}
+                                   href="?{% add_or_update_param request.GET 'order_by' 'year' %}"{% endif %}>{% trans "Year" %}</a>
+                            </th>
+                        {% elif "deal_size" == column %}
+                            <th class="number"><a {% if data.order_by == 'deal_size' %}class="asc"
+                                                  href="?{% add_or_update_param request.GET 'order_by' '-deal_size' %}"
+                                                  {% elif data.order_by == '-deal_size' %}class="desc"
+                                                  href="?{% add_or_update_param request.GET 'order_by' 'deal_size' %}"{% else %}
+                                                  href="?{% add_or_update_param request.GET 'order_by' 'deal_size' %}"{% endif %}>{% trans "Investment size" %}</a>
+                            </th>
+                        {% elif "deal_count" == column %}
+                            <th class="deals number"><a {% if data.order_by == 'deal_count' %}class="asc"
+                                                        href="?{% add_or_update_param request.GET 'order_by' '-deal_count' %}"
+                                                        {% elif data.order_by == '-deal_count' %}class="desc"
+                                                        href="?{% add_or_update_param request.GET 'order_by' 'deal_count' %}"{% else %}
+                                                        href="?{% add_or_update_param request.GET 'order_by' 'deal_count' %}"{% endif %}>{% trans "Deals" %}</a>
+                            </th>
+                        {% elif "data_source_type" == column %}
+                            <th class="deals"><a {% if data.order_by == 'data_source_type' %}class="asc"
+                                                 href="?{% add_or_update_param request.GET 'order_by' '-data_source_type' %}"
+                                                 {% elif data.order_by == '-data_source_type' %}class="desc"
+                                                 href="?{% add_or_update_param request.GET 'order_by' 'data_source_type' %}"{% else %}
+                                                 href="?{% add_or_update_param request.GET 'order_by' 'data_source_type' %}"{% endif %}>{% trans "Deal data source type" %}</a>
+                            </th>
+                        {% elif "availability" == column %}
+                            <th><a {% if data.order_by == 'availability' %}class="asc"
+                                   href="?{% add_or_update_param request.GET 'order_by' '-availability' %}"
+                                   {% elif data.order_by == '-availability' %}class="desc"
+                                   href="?{% add_or_update_param request.GET 'order_by' 'availability' %}"{% else %}
+                                   href="?{% add_or_update_param request.GET 'order_by' 'availability' %}"{% endif %}>{% trans "Availability" %}</a><a
+                                    href="/about/#what-does-data-availability-mean" class="toggle-tooltip noul"
+                                    title="{% trans "This column shows the percentage of information about deals we have collected.<br/>Click to read more." %}">
+                                <i class="lm lm-question-circle"> </i></a></th>
+                        {% elif "intended_size" == column %}
+                            <th class="number"><a {% if data.order_by == 'intended_size' %}class="asc"
+                                                  href="?{% add_or_update_param request.GET 'order_by' '-intended_size' %}"
+                                                  {% elif data.order_by == '-intended_size' %}class="desc"
+                                                  href="?{% add_or_update_param request.GET 'order_by' 'intended_size' %}"{% else %}
+                                                  href="?{% add_or_update_param request.GET 'order_by' 'intended_size' %}"{% endif %}>{% trans "Intended size (ha)" %}</a>
+                            </th>
+                        {% elif "contract_size" == column %}
+                            <th class="number"><a {% if data.order_by == 'contract_size' %}class="asc"
+                                                  href="?{% add_or_update_param request.GET 'order_by' '-contract_size' %}"
+                                                  {% elif data.order_by == '-contract_size' %}class="desc"
+                                                  href="?{% add_or_update_param request.GET 'order_by' 'contract_size' %}"{% else %}
+                                                  href="?{% add_or_update_param request.GET 'order_by' 'contract_size' %}"{% endif %}>{% trans "Contract size (ha)" %}</a>
+                            </th>
+                        {% elif "implementation_status" == column %}
+                            <th class="number"><a {% if data.order_by == 'implementation_status' %}class="asc"
+                                                  href="?{% add_or_update_param request.GET 'order_by' '-implementation_status' %}"
+                                                  {% elif data.order_by == '-implementation_status' %}class="desc"
+                                                  href="?{% add_or_update_param request.GET 'order_by' 'implementation_status' %}"{% else %}
+                                                  href="?{% add_or_update_param request.GET 'order_by' 'implementation_status' %}"{% endif %}>{% trans "Implementation status" %}</a>
+                            </th>
+                        {% elif "negotiation_status" == column %}
+                            <th class="number"><a {% if data.order_by == 'negotiation_status' %}class="asc"
+                                                  href="?{% add_or_update_param request.GET 'order_by' '-negotiation_status' %}"
+                                                  {% elif data.order_by == '-negotiation_status' %}class="desc"
+                                                  href="?{% add_or_update_param request.GET 'order_by' 'negotiation_status' %}"{% else %}
+                                                  href="?{% add_or_update_param request.GET 'order_by' 'negotiation_status' %}"{% endif %}>{% trans "Negotiation status" %}</a>
+                            </th>
+                        {% endif %}
+                    {% endfor %}
+                    {% if "deal_id" in columns %}
+                        <th></th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in data.items %}
+                    <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                        {% for column in columns %}
+                            {% if column == "deal_id" %}
+                                <td class="deal-id">
+                                    <a href="{% url 'deal_detail' item.deal_id %}/">{{ item.deal_id }}</a>
+                                </td>
+                            {% elif column == "crop" %}
+                                <td style="width:341px">
+                                    {% if  item.crop %}
+                                        {% for c in item.crop %}
+                                            <a href="{% url 'app_main' variable='crop' operator='is' value=c|slugify %}">{{ c }}</a>
+                                            </br>
+                                        {% endfor %}
+                                        {% else %}{% trans "unknown" %}
+                                    {% endif %}
+                                </td>
+                            {% elif column == "intention" %}
+                                <td>
+                                    <ul class="list-unstyled">
+                                        {% if item.intention %}
+                                            {% for i in item.intention %}
+                                                <li>
+                                                    <a href="/global/data/all?variable=intention&operator=is&value={{ i }}"
+                                                       {% if group != "intention" %}class="intention-icon {{ i|slugify }}"
+                                                       data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a>
+                                                </li>
+                                            {% endfor %}
+                                            {% else %}{% trans "unknown" %}
+                                        {% endif %}
+                                    </ul>
+                                </td>
+                            {% elif column == "operational_stakeholder" %}
+                                <td style="width:183px">
+                                    {% if item.operational_stakeholder %}
+                                        {% for i in item.operational_stakeholder %}
+                                            {{ i }}<br/>
+                                        {% endfor %}
+                                        {% else %}{% trans "unknown" %}
+                                    {% endif %}
+                                </td>
+                            {% elif column == "stakeholder_name" %}
+                                <td style="width:183px">
+                                    {% if item.stakeholder_name %}
+                                        {% for i in item.stakeholder_name %}
+                                            <a href="/global/data/all?variable=investor&operator=is&value={{ i.id }}">{{ i.name }}</a>
+                                            <br/>
+                                        {% endfor %}
+                                        {% else %}{% trans "unknown" %}
+                                    {% endif %}
+                                </td>
+                            {% elif "stakeholder_country" == column %}
+                                <td class="investor-country">
+                                    {% if item.stakeholder_country %}
+                                        {% for stakeholder_country  in item.stakeholder_country %}
+                                            <a href="/global/data/all?variable=stakeholder_country&operator=is&value={{ stakeholder_country|slugify }}">{{ stakeholder_country }}</a>
+                                            <br/>
+                                        {% endfor %}
+                                    {% else %}{% trans "unknown country" %}{% endif %}
+                                </td>
+                            {% elif "investor_country" == column %}
+                                <td class="investor-country">
+                                    {% if item.investor_country %}
+                                        {% for investor_country  in item.investor_country %}
+                                            <a href="/global/data/all?variable=investor_country&operator=is&value={{ investor_country|slugify }}">{{ investor_country }}</a>
+                                            <br/>
+                                        {% endfor %}
+                                    {% else %}{% trans "unknown country" %}{% endif %}
+                                </td>
+                            {% elif "investor_region" == column %}
+                                <td class="investor-region">
+                                    {% if item.investor_region %}
+                                        {% for investor_region  in item.investor_region %}
+                                            <a href="/global/data/all?variable=investor_region&operator=is&value={{ investor_region|slugify }}">{{ investor_region }}</a>
+                                            <br/>
+                                        {% endfor %}
+                                    {% else %}{% trans "unknown region" %}{% endif %}
+                                </td>
+                            {% elif column == "target_country" %}
+                                <td>
+                                    {% if item.target_country %}
+                                        {% for target_country  in item.target_country %}
+                                            <a href="/global/data/all?variable=target_country&operator=is&value={{ target_country|slugify }}">{{ target_country }}</a>
+                                            <br/>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% trans "unknown" %}
+                                    {% endif %}
+                                </td>
+                            {% elif column == "target_region" %}
+                                <td>
+                                    {% if item.target_region %}
+                                        {% for target_region  in item.target_region %}
+                                            <a href="/global/data/all?variable=target_region&operator=is&value={{ target_region|slugify }}">{{ target_region }}</a>
+                                            <br/>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% trans "unknown" %}
+                                    {% endif %}
+                                </td>
+                            {% elif column == "year" %}
+                                <td>
+                                    {% if item.year %}
+                                        <a href="/global/data/all?variable=year&operator=is&value={{ item.year }}">{{ item.year }}</a>
+                                        <br/>
+                                    {% else %}
+                                        {% trans "unknown" %}
+                                    {% endif %}
+                                </td>
+                            {% elif column == "data_source_type" %}
+                                <td>
+                                    {% if item.data_source_type %}
+                                        {% for data_source_type in item.data_source_type %}
+                                            <a href="/global/data/all?variable=data_source_type&operator=is&value={{ data_source_type }}">{{ data_source_type }}</a>
+                                            <br/>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% trans "unknown" %}
+                                    {% endif %}
+                                </td>
+                            {% elif column == "deal_size" %}
+                                <td class="number">{{ item.deal_size|intcomma }}</td>
+                            {% elif column == "intended_size" %}
+                                <td class="number">
+                                    {% if item.intended_size %}{{ item.intended_size|intcomma }}{% else %}
+                                        {% trans "unknown" %}{% endif %}</td>
+                            {% elif column == "contract_size" %}
+                                <td class="number">
+                                    {% if item.contract_size %}{{ item.contract_size|intcomma }}{% else %}
+                                        {% trans "unknown" %}{% endif %}</td>
+                            {% elif column == "deal_count" %}
+                                <td class="deals number">{{ item.deal_count }}</td>
+                            {% elif column == "availability" %}
+                                <td>{{ item.availability }}%</td>
+                            {% elif column == "implementation_status" %}
+                                <td>
+                                    {% if item.implementation_status %}
+                                        {% with item.implementation_status|last as implementation_stati %}
+                                            {% if implementation_stati.year != 0 %}
+                                                [{{ implementation_stati.year }}]
+                                            {% endif %}
+                                            {{ implementation_stati.name }}
+                                        {% endwith %}
+                                    {% else %}
+                                        {% trans "unknown" %}
+                                    {% endif %}
+                                </td>
+                            {% elif column == "negotiation_status" %}
+                                <td>
+                                    {% if item.negotiation_status %}
+                                        {% with item.negotiation_status|last as negotiation_stati %}
+                                            {% if negotiation_stati.year != 0 %}
+                                                [{{ negotiation_stati.year }}]
+                                            {% endif %}
+                                            {{ negotiation_stati.name }}
+                                        {% endwith %}
+                                    {% else %}
+                                        {% trans "unknown" %}
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
-            {% else %}{% trans "unknown" %}
-            {% endif %}
-            </td>
-          {% elif "stakeholder_country" == column %}
-            <td class="investor-country">
-              {% if item.stakeholder_country %}
-              {% for stakeholder_country  in item.stakeholder_country %}
-                <a href="/global/data/all?variable=stakeholder_country&operator=is&value={{stakeholder_country|slugify}}">{{ stakeholder_country }}</a><br/>
-              {% endfor %}
-              {% else %}{% trans "unknown country" %}{% endif %}
-            </td>
-          {% elif "investor_country" == column %}
-            <td class="investor-country">
-              {% if item.investor_country %}
-              {% for investor_country  in item.investor_country %}
-                <a href="/global/data/all?variable=investor_country&operator=is&value={{investor_country|slugify}}">{{ investor_country }}</a><br/>
-              {% endfor %}
-              {% else %}{% trans "unknown country" %}{% endif %}
-            </td>
-          {% elif "investor_region" == column %}
-            <td class="investor-region">
-              {% if item.investor_region %}
-              {% for investor_region  in item.investor_region %}
-                <a href="/global/data/all?variable=investor_region&operator=is&value={{investor_region|slugify}}">{{ investor_region }}</a><br/>
-              {% endfor %}
-              {% else %}{% trans "unknown region" %}{% endif %}
-            </td>
-          {% elif column == "target_country" %}
-            <td>
-              {% if item.target_country %}
-                {% for target_country  in item.target_country %}
-                  <a href="/global/data/all?variable=target_country&operator=is&value={{target_country|slugify}}">{{ target_country }}</a><br/>
-                {% endfor %}
-              {% else %}
-                {% trans "unknown" %}
-              {% endif %}
-            </td>
-          {% elif column == "target_region" %}
-            <td>
-              {% if item.target_region %}
-                {% for target_region  in item.target_region %}
-                  <a href="/global/data/all?variable=target_region&operator=is&value={{target_region|slugify}}">{{ target_region }}</a><br/>
-                {% endfor %}
-              {% else %}
-                {% trans "unknown" %}
-              {% endif %}
-            </td>
-          {% elif column == "year" %}
-            <td>
-              {% if item.year %}
-                <a href="/global/data/all?variable=year&operator=is&value={{item.year}}">{{ item.year }}</a><br/>
-              {% else %}
-                {% trans "unknown" %}
-              {% endif %}
-            </td>
-          {% elif column == "data_source_type" %}
-            <td>
-              {% if item.data_source_type %}
-              {% for data_source_type in item.data_source_type %}
-                <a href="/global/data/all?variable=data_source_type&operator=is&value={{data_source_type}}">{{ data_source_type }}</a><br/>
-              {% endfor %}
-              {% else %}
-                {% trans "unknown" %}
-              {% endif %}
-            </td>
-          {% elif column == "deal_size" %}
-            <td class="number">{{ item.deal_size|intcomma }}</td>
-          {% elif column == "intended_size" %}
-            <td class="number">{% if item.intended_size %}{{ item.intended_size|intcomma }}{% else %}{% trans "unknown" %}{% endif %}</td>
-          {% elif column == "contract_size" %}
-            <td class="number">{% if item.contract_size %}{{ item.contract_size|intcomma }}{% else %}{% trans "unknown" %}{% endif %}</td>
-          {% elif column == "deal_count" %}
-            <td class="deals number">{{ item.deal_count }}</td>
-          {% elif column == "availability" %}
-            <td>{{ item.availability }}%</td>
-          {% elif column == "implementation_status" %}
-            <td>
-              {% if item.implementation_status %}
-                {% with item.implementation_status|last as implementation_stati %}
-                  {% if implementation_stati.year != 0 %}
-                    [{{implementation_stati.year}}]
-                  {% endif %}
-                  {{implementation_stati.name}}
-                {% endwith %}
-              {% else %}
-                {% trans "unknown" %}
-              {% endif %}
-            </td>
-          {% elif column == "negotiation_status" %}
-            <td>
-              {% if item.negotiation_status %}
-                {% with item.negotiation_status|last as negotiation_stati %}
-                  {% if negotiation_stati.year != 0 %}
-                    [{{negotiation_stati.year}}]
-                  {% endif %}
-                  {{negotiation_stati.name}}
-                {% endwith %}
-              {% else %}
-                {% trans "unknown" %}
-              {% endif %}
-            </td>
-          {% endif %}
-        {% endfor %}
-    {% if "deal_id" in columns %}
-    <td>
-    <!-- TODO: This one is only hidden.-->
-        <a href="/deal/{{ item.deal_id }}/" class="hidden btn btn-small">{% trans "Details" %}</a>
-    </td>
+                </tbody>
+            </table>
+        </div>
+        {% if load_more %}
+            <a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn">{% trans "More..." %}</a>
+        {% endif %}
+    {% else %}
+        <p>{% trans "There are currently no deals matching your search criteria." %} <a
+                href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.</p>
     {% endif %}
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-</div>
-{% if load_more %}
-  <a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn">{% trans "More..." %}</a>
-{% endif %}
-{% else %}
-  <p>{% trans "There are currently no deals matching your search criteria." %} <a href="/deal/add">{% trans "Add a deal" %}</a>.</p>
-{% endif %}
 {% endblock %}
