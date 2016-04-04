@@ -2,6 +2,7 @@ from pprint import pprint
 
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.country import Country
 from landmatrix.models.deal import Deal
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -36,6 +37,16 @@ class DealSpatialForm(BaseForm):
     class Meta:
         name = 'spatial_data'
 
+    def get_attributes(self, request=None):
+        attributes = super().get_attributes()
+        if 'target_country' in attributes \
+                and not isinstance(attributes['target_country'], int) \
+                and not attributes['target_country'].isnumeric():
+            target_country = Country.objects.get(name=attributes['target_country'])
+            attributes['target_country'] = target_country.pk
+        return attributes
+
+
 class DealSpatialBaseFormSet(formset_factory(DealSpatialForm, extra=0)):
 
     @classmethod
@@ -68,10 +79,7 @@ class AddDealSpatialFormSet(DealSpatialBaseFormSet):
     extra = 1
 
     def get_attributes(self, request=None):
-        attributes = []
-        for form in self.forms:
-            attributes.append(form.get_attributes(request))
-        return attributes
+        return [form.get_attributes(request) for form in self.forms]
 
 
 class ChangeDealSpatialFormSet(AddDealSpatialFormSet):
