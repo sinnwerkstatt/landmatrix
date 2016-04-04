@@ -50,3 +50,6 @@ class DealWaterForm(BaseForm):
     tg_water_extraction_amount_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
     )
+
+    class Meta:
+         name = 'water'

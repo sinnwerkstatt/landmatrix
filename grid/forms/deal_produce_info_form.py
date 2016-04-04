@@ -45,10 +45,13 @@ class DealProduceInfoForm(BaseForm):
     ), widget=forms.RadioSelect)
     tg_in_country_processing_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
+    class Meta:
+        name = 'produce_info'
 
 class PublicViewDealProduceInfoForm(DealProduceInfoForm):
 
     class Meta:
+        name = 'produce_info'
         fields = (
             "tg_crop_animal_mineral", "crops",
         )
