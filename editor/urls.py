@@ -13,7 +13,7 @@ def allowed_to_manage(user):
 
 
 urlpatterns = patterns('editor.views',
-    url(r'^$', login_required(EditorView.as_view()), name='app_main'),
+    url(r'^$', login_required(EditorView.as_view()), name='editor'),
     url(
         r'^manage/(?P<type>deal|investor)/(?P<action>approve|reject)/(?P<id>[0-9]+)/',
         user_passes_test(allowed_to_manage)(ManageContentView.as_view()), name='manage_deal'
