@@ -14,8 +14,8 @@
 
 {% block breadcrumb %}
     <ul class="breadcrumb">
-        <li><a href="/editor">{% trans "Editor" %}</a></li>
-        <li><a href="/deal/add/">{% trans "Add a deal" %}</a></li>
+        <li><a href="{% url 'editor' %}">{% trans "Editor" %}</a></li>
+        <li><a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a></li>
     </ul>
 {% endblock %}
 
