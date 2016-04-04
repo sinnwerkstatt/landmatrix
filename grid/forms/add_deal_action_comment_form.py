@@ -31,13 +31,13 @@ class AddDealActionCommentForm(BaseForm):
     tg_feedback_comment = forms.CharField(required=False, label=_("Feedback comment"), widget=CommentInput)
 
     def get_action_comment(self):
-        for j, taggroup in enumerate(super(AddDealActionCommentForm, self).get_taggroups()):
+        for j, taggroup in enumerate(super(AddDealActionCommentForm, self).get_attributes()):
             if taggroup["main_tag"]["value"] == "action":
                 return taggroup["comment"]
         return ""
 
     def get_feedback(self):
-        for j, taggroup in enumerate(super(AddDealActionCommentForm, self).get_taggroups()):
+        for j, taggroup in enumerate(super(AddDealActionCommentForm, self).get_attributes()):
             if taggroup["main_tag"]["value"] == "feedback":
                 tags = taggroup.get("tags", [])
                 if len(tags) > 0:
@@ -49,21 +49,21 @@ class AddDealActionCommentForm(BaseForm):
         return ""
 
     def get_fully_updated(self):
-        for j, taggroup in enumerate(super(AddDealActionCommentForm, self).get_taggroups()):
+        for j, taggroup in enumerate(super(AddDealActionCommentForm, self).get_attributes()):
             if taggroup["main_tag"]["value"] == "action":
                 for tag in taggroup.get("tags", []):
                     if tag.get("key") == "fully_updated":
                         return tag.get("value")
         return False
 
-    def get_taggroups(self, request=None):
-        taggroups = []
-        for tg in super(AddDealActionCommentForm, self).get_taggroups():
-            if tg["main_tag"]["value"] in ("action", "feedback"):
-                continue
-            else:
-                taggroups.append(tg)
-        return taggroups
+    #def get_attributes(self, request=None):
+    #    taggroups = []
+    #    for tg in super(AddDealActionCommentForm, self).get_attributes():
+    #        if tg["main_tag"]["value"] in ("action", "feedback"):
+    #            continue
+    #        else:
+    #            taggroups.append(tg)
+    #    return taggroups
 
     @classmethod
     def get_data(cls, activity):
@@ -97,3 +97,6 @@ class AddDealActionCommentForm(BaseForm):
             "fully_updated_history": "\n".join(fully_updated)
         })
         return data
+
+    class Meta:
+        name = 'action_comment'

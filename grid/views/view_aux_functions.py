@@ -41,7 +41,7 @@ def create_variable_table():
     group_items = []
     group_title = ''
 
-    for form_name, form in SaveDealView.FORMS:
+    for form in SaveDealView.FORMS:
         # FormSet (Spatial Data und Data source)
         if hasattr(form, 'form'):
             form = form.form

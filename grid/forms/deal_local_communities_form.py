@@ -47,3 +47,6 @@ class DealLocalCommunitiesForm(BaseForm):
     tg_number_of_displaced_people = TitleField(required=False, label="", initial=_("Number of people actually displaced"))
     number_of_displaced_people = forms.IntegerField(required=False, label=_("Number of displaced people"), help_text="", widget=NumberInput)
     tg_number_of_displaced_people_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+
+    class Meta:
+        name = 'local_communities'

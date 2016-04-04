@@ -130,3 +130,6 @@ class ChangeDealGeneralForm(BaseForm):
             return date and date.strftime("%Y-%m-%d") or ""
         except:
             raise forms.ValidationError(_("Invalid date. Please enter a date in the format [dd:mm:yyyy]"))
+
+    class Meta:
+        name = 'general_information'

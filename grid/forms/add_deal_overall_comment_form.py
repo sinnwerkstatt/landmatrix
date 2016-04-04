@@ -14,3 +14,6 @@ class AddDealOverallCommentForm(BaseForm):
     # Coordinators and reviewers overall comments
     tg_overall = TitleField(required=False, label="", initial=_("Overall comment"))
     tg_overall_comment = forms.CharField(required=False, label="", widget=CommentInput)
+
+    class Meta:
+    	name = 'overall_comment'

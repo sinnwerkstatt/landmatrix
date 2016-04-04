@@ -30,6 +30,7 @@ function reloadSankey(index) {
 }
 
 function setupSankey(index) {
+    return;
     var margin = {top: 1, right: 1, bottom: 6, left: 1},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
