@@ -51,7 +51,7 @@ wagtail_patterns = [
     url(r'', include(wagtail_urls)),
 ]
 
-urlpatterns = i18n_patterns(
+urlpatterns = patterns(
     '',
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
