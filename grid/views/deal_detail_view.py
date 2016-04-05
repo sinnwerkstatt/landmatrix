@@ -60,8 +60,9 @@ class DealDetailView(TemplateView):
             'activity': deal.activity,
             'activity_identifier': deal.activity.activity_identifier,
             'attributes': deal.attributes,
-            'primary_investor': deal.operational_stakeholder,
-            'stakeholder': deal.stakeholders,
+            'operational_stakeholder': deal.operational_stakeholder,
+            'stakeholders': deal.stakeholders,
+            'object': deal
         }
         context['forms'] = get_forms(deal)
         context['investor'] = deal.stakeholders
