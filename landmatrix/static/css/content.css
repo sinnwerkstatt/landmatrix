@@ -2040,6 +2040,7 @@ a.remove-ybd:hover {
 
     .filtervaluebox {
         border-top: none !important;
+        border-bottom: none !important;
         height: auto; /* 300px; */
     }
 
@@ -2090,7 +2091,7 @@ a.remove-ybd:hover {
     overflow-x: auto;
 }
 
-.filterbox:first-child {
+.presetbox {
     border-left: none;
 }
 
