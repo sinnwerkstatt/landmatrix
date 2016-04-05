@@ -2045,16 +2045,23 @@ a.remove-ybd:hover {
 
 }
 
+#filter_operator,
+#filter_submit {
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+#filter_submit {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
 #filter_value {
     display: inline-block;
     margin-right: 10px;
 }
 
-#filter_operator {
-    padding-top: 3px;
-/*    width: 50px;
-    max-width: 50px;*/
-}
+
 
 #filter_value > ul:nth-child(1) {
     overflow-y: auto;
