@@ -9,6 +9,7 @@ from django.views.generic.edit import View
 from django.forms import TextInput, CheckboxSelectMultiple, HiddenInput, SelectMultiple, RadioSelect, Select
 
 from bootstrap3_datetime.widgets import DateTimePicker
+import datetime
 
 from django.contrib.auth.models import User
 
@@ -56,7 +57,11 @@ class FilterWidgetAjaxView(View):
                     value = datetime.strptime(value, "%Y-%m-%d")
                 except:
                     value = ""
-            widgetObject = DateTimePicker(options={"format": "YYYY-MM-DD", "debug": True})
+            widgetObject = DateTimePicker(options={
+                "format": "YYYY-MM-DD",
+                "inline": True,
+            })
+
             # See here: https://github.com/jorgenpt/django-bootstrap3-datetimepicker/commit/042dd1da3a7ff21010c1273c092cba108d95baeb#commitcomment-16877308
             widgetObject.js_template = """<script>
                     $(function(){$("#%(picker_id)s:has(input:not([readonly],[disabled]))").datetimepicker(%(options)s);});
