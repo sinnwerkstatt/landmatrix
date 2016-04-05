@@ -121,6 +121,7 @@ function get_filter_options(operatorfield, variablefield, key_id) {
             valuefield.attr('id', 'id_value');
             valuefield.attr('name', 'value');
             valuefield.removeClass('year-based');
+            valuefield.addClass('form-control');
         }
 
         operatorfield.find('option').each(function (index) {
