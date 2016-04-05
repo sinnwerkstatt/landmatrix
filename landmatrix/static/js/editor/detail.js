@@ -2,7 +2,7 @@ function openInvestorPopup(investorId) {
     if (typeof investorId === 'undefined') {
         investorId = 'add';
     }
-    window.open("/en/stakeholder/" + investorId);
+    window.open("/stakeholder/" + investorId);
 }
 
 function generateButtons(field, index) {
