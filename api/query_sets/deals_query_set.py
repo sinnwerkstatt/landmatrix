@@ -56,7 +56,6 @@ class DealsQuerySet(FakeQuerySetFlat):
 
     def all(self):
         start_time = timeit.default_timer()
-
         output = super().all()
 
         if self.DEBUG:
@@ -83,6 +82,8 @@ class DealsQuerySet(FakeQuerySetFlat):
             )
 
     def _set_limit(self, limit):
+        if limit and ',' in limit:
+            limit = '{} OFFSET {}'.format(limit.split(',')[0], limit.split(',')[1])
         self._limit = limit
 
     def _set_investor_country(self, country_id):
