@@ -510,7 +510,7 @@ $(document).ready(function () {
         markerSource.clear();
 
         $.get(
-            "/en/api/deals.json?limit=10&attributes="+fieldnames[currentVariable], //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+            "/api/deals.json?limit=10&attributes="+fieldnames[currentVariable], //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
             addData
         );
 
