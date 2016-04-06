@@ -9,6 +9,7 @@ from django.views.generic.edit import View
 from django.forms import TextInput, CheckboxSelectMultiple, HiddenInput, SelectMultiple, RadioSelect, Select
 
 from bootstrap3_datetime.widgets import DateTimePicker
+import datetime
 
 from django.contrib.auth.models import User
 
@@ -56,7 +57,11 @@ class FilterWidgetAjaxView(View):
                     value = datetime.strptime(value, "%Y-%m-%d")
                 except:
                     value = ""
-            widgetObject = DateTimePicker(options={"format": "YYYY-MM-DD", "debug": True})
+            widgetObject = DateTimePicker(options={
+                "format": "YYYY-MM-DD",
+                "inline": True,
+            })
+
             # See here: https://github.com/jorgenpt/django-bootstrap3-datetimepicker/commit/042dd1da3a7ff21010c1273c092cba108d95baeb#commitcomment-16877308
             widgetObject.js_template = """<script>
                     $(function(){$("#%(picker_id)s:has(input:not([readonly],[disabled]))").datetimepicker(%(options)s);});
@@ -74,7 +79,7 @@ class FilterWidgetAjaxView(View):
             else:
                 widget = Select(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(
                     request.GET.get("name", ""), len(value) == 1 and value[0] or value,
-                    attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
+                    attrs={"id": "id_%s" % request.GET.get("name", "")})
         # primary investor
         elif key_id == "inv_-2":
             form = DealPrimaryInvestorForm()
@@ -114,10 +119,10 @@ class FilterWidgetAjaxView(View):
                 elif isinstance(widget, Select):
                     widget = SelectMultiple()
                     widget.choices = field.widget.choices
-                    widget = widget.render(request.GET.get("name", ""), value, attrs={"class": "form-control"})
+                    widget = widget.render(request.GET.get("name", ""), value)
                 else:
                     widget = widget.render(request.GET.get("name", ""), ",".join(value),
-                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
+                                           attrs={"id": "id_%s" % request.GET.get("name", "")})
             elif operation in ("contains",):
                 widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs={"class": "form-control"})
             else:
@@ -125,6 +130,6 @@ class FilterWidgetAjaxView(View):
                     widget = widget.render(request.GET.get("name", ""), value)
                 else:
                     widget = widget.render(request.GET.get("name", ""), ",".join(value),
-                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
+                                           attrs={"id": "id_%s" % request.GET.get("name", "")})
 
         return HttpResponse(widget, content_type="text/plain")

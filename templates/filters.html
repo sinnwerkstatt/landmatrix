@@ -13,7 +13,6 @@
 <div id="filters">
     <div id="list-filters" class="row">
         <form>
-            {% csrf_token %}
             <div class="col-md-10 clearfix" id="filterlist">
                 <label>{% trans "No active filters" %}</label>
             </div>
@@ -86,8 +85,8 @@
                         </select>
 
                     </div>
-                    <button type="submit" class="btn btn-primary" name="add"
-                            value="add">{% trans "Add" %}</button>
+                    <button id="filter_submit" type="submit" class="btn btn-primary" name="add"
+                            value="add">{% trans "Add Filter" %}</button>
 
 
                 </div>
