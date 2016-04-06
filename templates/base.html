@@ -54,7 +54,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand brand" href="{% url 'start' %}"><img src="{% static "img/lm-logo.png" %}"></a>
+                <a class="navbar-brand brand" href="/"><img src="{% static "img/lm-logo.png" %}"></a>
             </div>
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
@@ -133,7 +133,7 @@
 
                     {% block breadcrumb %}
                         <ul class="breadcrumb">
-                            <li><a href="{% url 'start' %}">{% trans 'Home' %}</a></li>
+                            <li><a href="/">{% trans 'Home' %}</a></li>
                             {% block breadcrumb_inner %}
                             {% endblock %}
                         </ul>
