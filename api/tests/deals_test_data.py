@@ -31,12 +31,12 @@ class DealsTestData:
         self.make_activity_with_new_version()
         self._generate_language()
         Region(
-            name='South-East Asia', slug='south-east-asia', point_lat=0., point_lon=120.
+            name='South-East Asia', slug='south-east-asia', point_lat_min=0., point_lon_min=120.
         ).save()
         Country(
             fk_region=Region.objects.last(), code_alpha2='LA', code_alpha3='LAO',
             name="Lao People's Democratic Republic", slug='lao-peoples-democratic-republic',
-            point_lat=18.85627, point_lon=106.495496,
+            point_lat_min=18.85627, point_lon_min=106.495496,
             democracy_index=2.10, corruption_perception_index=2.1, high_income=False
         ).save()
         aag = ActivityAttributeGroup(
@@ -180,8 +180,7 @@ class DealsTestData:
 
     activity_identifiers = []
     def _generate_deal(self, investor_country, target_country, attributes):
-        if not self.activity_identifiers: act_id = 1
-        else: act_id = self.activity_identifiers[-1]+1
+        act_id = 1 if not self.activity_identifiers else self.activity_identifiers[-1]+1
         self.activity_identifiers.append(act_id)
 
         activity = self._generate_activity(act_id)
