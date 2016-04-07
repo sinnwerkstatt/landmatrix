@@ -11,8 +11,10 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         ('country_id', 'sub.country_id'),
         ('country',    'sub.country'),
         ('region',     'sub.name'),
-        ('lat',        'sub.point_lat'),
-        ('lon',        'sub.point_lon'),
+        ('lat_min',    'sub.point_lat_min'),
+        ('lon_min',    'sub.point_lon_min'),
+        ('lat_max',    'sub.point_lat_max'),
+        ('lon_max',    'sub.point_lon_max'),
         ('deals',      'COUNT(DISTINCT a.activity_identifier)'),
         ('hectares',   "ROUND(SUM(pi.deal_size))"),
         ('intentions', 'ARRAY_AGG(sub.intention)')
@@ -21,8 +23,10 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         ('country_id', "deal_country.id"),
         ('country', "deal_country.name"),
         ('name', "deal_region.name"),
-        ('point_lat', "deal_country.point_lat"),
-        ('point_lon', "deal_country.point_lon"),
+        ('point_lat_min', "deal_country.point_lat_min"),
+        ('point_lon_min', "deal_country.point_lon_min"),
+        ('point_lat_max', "deal_country.point_lat_max"),
+        ('point_lon_max', "deal_country.point_lon_max"),
         ('intention', "STRING_AGG(DISTINCT intention.attributes->'intention', ',')"),
     ]
     ADDITIONAL_JOINS = [
@@ -32,7 +36,10 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         "LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id",
     ]
     ADDITIONAL_SUBQUERY_OPTIONS = "GROUP BY a.id, deal_country.id, deal_region.name"
-    GROUP_BY = ['sub.country, sub.country_id, sub.name, sub.point_lat, sub.point_lon']
+    GROUP_BY = [
+        'sub.country, sub.country_id, sub.name, '
+        'sub.point_lat_min, sub.point_lon_min, sub.point_lat_max, sub.point_lon_max'
+    ]
 
     def __init__(self, request):
         super().__init__(request)
