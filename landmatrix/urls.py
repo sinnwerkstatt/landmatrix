@@ -91,7 +91,6 @@ urlpatterns = patterns(
     url(r'^stakeholder/(?P<investor_id>[\d]+)/$', StakeholderView.as_view(), name='stakeholder_form'),
 
     url(r'^editor/', include(editor_urls)),
-    url(r'^$', StartView.as_view(), name='start'),
     #url(r'^filters$', FilterView.as_view(), name='filterdebug'),
     # url(r'^', include('cms.urls')),
 ) + non_i18n_patterns +\
