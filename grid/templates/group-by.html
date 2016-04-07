@@ -7,7 +7,7 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-  <li><a href="{% url 'start' %}">{% trans 'Home' %}</a></li>
+  <li><a href="/">{% trans 'Home' %}</a></li>
   <li><a href="{% url 'app_main' %}">{% trans 'Global' %}</a></li>
   {% if group == "all" %}
   <li>{{ name|capfirst }}</li>
