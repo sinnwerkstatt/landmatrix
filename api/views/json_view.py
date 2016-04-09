@@ -19,6 +19,7 @@ from api.query_sets.target_country_summaries_query_set import TargetCountrySumma
 from api.query_sets.top_10_countries_query_set import Top10CountriesQuerySet
 from api.query_sets.transnational_deals_by_country_query_set import TransnationalDealsByCountryQuerySet
 from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
+from api.query_sets.users_query_set import UsersQuerySet
 from api.views.decimal_encoder import DecimalEncoder
 from grid.views.activity_protocol import ActivityQuerySet
 
@@ -69,6 +70,7 @@ InvestorsJSONGenerator = json_get_generator(InvestorsQuerySet)
 LatestChangesJSONGenerator = json_get_generator(LatestChangesQuerySet)
 
 StatisticsJSONGenerator = json_get_generator(StatisticsQuerySet)
+UsersJSONGenerator = json_get_generator(UsersQuerySet)
 
 class JSONView(TemplateView):
 
@@ -92,6 +94,7 @@ class JSONView(TemplateView):
         'investors.json':                       InvestorsJSONGenerator,
         'latest_changes.json':                  LatestChangesJSONGenerator,
         'statistics.json':                      StatisticsJSONGenerator,
+        'users.json':                           UsersJSONGenerator,
     }
 
     def dispatch(self, request, *args, **kwargs):
