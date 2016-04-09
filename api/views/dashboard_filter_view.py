@@ -2,6 +2,7 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.http.response import HttpResponse
 from django.views.generic.base import TemplateView
+from django.contrib.auth.models import User
 
 from landmatrix.models import Region, Country
 
@@ -10,7 +11,6 @@ import json
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class DashboardFilterView(TemplateView):
-
     filters = {}
 
     def post(self, *args, **kwargs):
@@ -42,7 +42,7 @@ class DashboardFilterView(TemplateView):
             if region:
                 filters['region'] = [region.id,]
         elif data.get('user'):
-            #region = Region.objects.get(slug=data.get('region'))
-            #return {'region': region.id}
-            pass
+            user = User.objects.get(pk=data.get('user'))
+            if user:
+                filters['user'] = [user.id,]
         return filters
