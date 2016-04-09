@@ -33,7 +33,7 @@
     </li>
     <li class="divider"></li>
     <li>
-        <span class="label label-default number">{{ statistics.not_public_deal_count }}</span> {% trans "Not public deals" %}
+        <span class="label label-default number">{{ statistics.not_public_deal_count }}</span> {% trans "Non public deals" %}
     </li>
 </ul>
 {% endif %}
@@ -110,7 +110,8 @@
                       }
                     });
                 });
-                $('#dashboard-filter-clear').change(function (e) {
+                $('#dashboard-filter-clear').click(function (e) {
+                    e.preventDefault()
                     $.post({
                       url: $('form#dashboard-filter').attr('action'),
                       data: {
@@ -164,7 +165,7 @@
                   for (var d = 0; d < data.length; d++) {
                     var item = data[d];
                     var option = new Option(item[2], item[0], false, false);
-                    country_select.append(option);
+                    user_select.append(option);
                   };
                   //$element.trigger('change');
                 });
