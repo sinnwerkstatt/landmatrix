@@ -10,26 +10,177 @@
 {% block page_title %}{% trans "Dashboard" %}{% endblock %}
 {% block title %}{% trans "Dashboard" %}{% endblock %}
 
+
+{% block user_tools %}
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+       aria-expanded="false" title="{% trans "Logged in as" %}: {{ user }}"><i class="fa fa-user messages"></i></a>
+    <ul class="dropdown-menu">
+        <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
+    </ul>
+</li>
+{% endblock %}
+
+{% block subnav %}
+{% if statistics %}
+<ul class="subnav nav nav-pills pull-right">
+    <li>
+        <span class="label label-default number">{{ statistics.overall_deal_count }}</span> {% trans "Overall deals" %}
+    </li>
+    <li class="divider"></li>
+    <li>
+        <span class="label label-default number">{{ statistics.public_deal_count }}</span> {% trans "Public deals" %}
+    </li>
+    <li class="divider"></li>
+    <li>
+        <span class="label label-default number">{{ statistics.not_public_deal_count }}</span> {% trans "Not public deals" %}
+    </li>
+</ul>
+{% endif %}
+{% endblock %}
+
 {% block content %}
-
     <div class="dashboard">
-        <div class="row stats">
-            {% if user %}
-                <div class="col-md-3">{% trans "Logged in as" %}: <span class="user">{{ user }}</span></div>
-            {% else %}
-                <div class="danger">Oh noes! There is no user!!eleventy!</div>
-            {% endif %}
+        <div class="row">
+            <form method="POST" action="{% url 'api_dashboard_filter' %}" id="dashboard-filter">
+                {% csrf_token %}
+                <div class="controls col-sm-2">
+                    <select id="dashboard-filter-region">
+                    </select>
+                </div>
+                <div class="controls col-sm-2">
+                    <select id="dashboard-filter-country">
+                    </select>
+                </div>
+                <div class="controls col-sm-2">
+                    <select id="dashboard-filter-user">
+                    </select>
+                </div>
+                <div class="controls col-sm-2">
+                    <a id="dashboard-filter-clear" class="btn" href="">{% trans 'Clear' %}</a>
+                </div>
+            </form>
+            <script type="text/javascript">
+            function initDashboardFilters(data) {
+                if (data.length == 0) {
+                    return;
+                }
+                if ('region' in data) {
+                    $('#dashboard-filter-region').val(data.region[0]).trigger('change');
+                }
+                if ('country' in data) {
+                    $('#dashboard-filter-country').val(data.country[0]).trigger('change');
+                }
+                if ('user' in data) {
+                    $('#dashboard-filter-user').val(data.user[0]).trigger('change');
+                }
+                $('#dashboard-filter-region').change(function () {
+                    $.post({
+                      url: $('form#dashboard-filter').attr('action'),
+                      data: {
+                        'action': 'set',
+                        'region': $(this).val(),
+                      },
+                      success: function (data) {
+                        location.reload();
+                      }
+                    });
+                });
+                $('#dashboard-filter-country').change(function () {
+                    $.post({
+                      url: $('form#dashboard-filter').attr('action'),
+                      data: {
+                        'action': 'set',
+                        'country': $(this).val(),
+                      },
+                      success: function (data) {
+                        location.reload();
+                      }
+                    });
+                });
+                $('#dashboard-filter-user').change(function (e) {
+                    $.post({
+                      url: $('form#dashboard-filter').attr('action'),
+                      data: {
+                        'action': 'set',
+                        'user': $(this).val(),
+                      },
+                      success: function (data) {
+                        location.reload();
+                      }
+                    });
+                });
+                $('#dashboard-filter-clear').change(function (e) {
+                    $.post({
+                      url: $('form#dashboard-filter').attr('action'),
+                      data: {
+                        'action': 'clear',
+                      },
+                      success: function (data) {
+                        location.reload();
+                      }
+                    });
+                });
+            }
+            $(document).ready(function () {
+                // Regions
+                var region_select = $('#dashboard-filter-region').select2({
+                    placeholder: "{% trans 'Region' %}"
+                });
+                var region_request = $.ajax({
+                  url: '/api/regions.json'
+                });
+                region_request.then(function (data) {
+                  for (var d = 0; d < data.length; d++) {
+                    var item = data[d];
+                    var option = new Option(item[2], item[0], false, false);
+                    region_select.append(option);
+                  };
+                  //$element.trigger('change');
+                });
+                // Countries
+                var country_select = $('#dashboard-filter-country').select2({
+                    placeholder: "{% trans 'Country' %}"
+                });
+                var country_request = $.ajax({
+                  url: '/api/countries.json'
+                });
+                country_request.then(function (data) {
+                  for (var d = 0; d < data.length; d++) {
+                    var item = data[d];
+                    var option = new Option(item[2], item[0], false, false);
+                    country_select.append(option);
+                  };
+                  //$element.trigger('change');
+                });
+                // Users
+                var user_select = $('#dashboard-filter-user').select2({
+                    placeholder: "{% trans 'User' %}"
+                });
+                var user_request = $.ajax({
+                  url: '/api/users.json'
+                });
+                user_request.then(function (data) {
+                  for (var d = 0; d < data.length; d++) {
+                    var item = data[d];
+                    var option = new Option(item[2], item[0], false, false);
+                    country_select.append(option);
+                  };
+                  //$element.trigger('change');
+                });
+                // Select current filters
+                $.get({
+                    url: $('#dashboard-filter').attr('action'),
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        initDashboardFilters(data);
+                    }
+                });
 
-            {% if statistics %}
-
-                <div class="col-md-2 pull-right">{% trans "Overall deals" %}:<br><span
-                        class="number">{{ statistics.overall_deal_count }}</span></div>
-                <div class="col-md-2 pull-right">{% trans "Public deals" %}:<br><span
-                        class="number">{{ statistics.public_deal_count }}</span></div>
-                <div class="col-md-2 pull-right">{% trans "Not public deals" %}:<br><span
-                        class="number">{{ statistics.not_public_deal_count }}</span></div>
-            {% endif %}
+            });
+            </script>
         </div>
+
         <div class="row">
             <div class="col-md-6">
                 <div class="alert alert-success">
