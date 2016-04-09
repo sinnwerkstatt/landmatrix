@@ -10,4 +10,4 @@ class CountriesQuerySet(SimpleFakeQuerySet):
         #    countries = Country.objects.filter(fk_region__slug=self.get_data['region']).order_by('name')
         #else:
         countries = Country.objects.all().order_by('name')
-        return [[country.slug, country.name] for country in countries]
+        return [[country.id, country.slug, country.name] for country in countries]
