@@ -54,7 +54,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand brand" href="{% url 'start' %}"><img src="{% static "img/lm-logo.png" %}"></a>
+                <a class="navbar-brand brand" href="/"><img src="{% static "img/lm-logo.png" %}"></a>
             </div>
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
@@ -99,9 +99,9 @@
                         </ul>
                     </li>
                     {% include "language_chooser.html" %}
+                    {% block user_tools %}{% endblock %}
                 </ul>
             </div>
-            {% block user_tools %}{% endblock %}
         </div>
     </div>
 
@@ -133,7 +133,7 @@
 
                     {% block breadcrumb %}
                         <ul class="breadcrumb">
-                            <li><a href="{% url 'start' %}">{% trans 'Home' %}</a></li>
+                            <li><a href="/">{% trans 'Home' %}</a></li>
                             {% block breadcrumb_inner %}
                             {% endblock %}
                         </ul>
@@ -255,7 +255,7 @@
             region_request.then(function (data) {
               for (var d = 0; d < data.length; d++) {
                 var item = data[d];
-                var option = new Option(item[1], item[0], true, true);
+                var option = new Option(item[2], item[1], false, false);
                 region_select.append(option);
               }
               //$element.trigger('change');
@@ -272,7 +272,7 @@
             country_request.then(function (data) {
               for (var d = 0; d < data.length; d++) {
                 var item = data[d];
-                var option = new Option(item[1], item[0], true, true);
+                var option = new Option(item[2], item[1], false, false);
                 country_select.append(option);
               }
               //$element.trigger('change');

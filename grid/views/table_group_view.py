@@ -37,13 +37,11 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     group = None
     group_value = None
 
-    def get_context_data(self, group, list=None):
+    def get_context_data(self, group, group_value=None):
         context = super(TableGroupView, self).get_context_data()
         self.group = group or self.DEFAULT_GROUP
         self.group = self.group.replace("by-", "").replace("-", "_")
-        #if not self._filter_set(self.request.GET) and self.group == "database":
-        #    self.group = "all"
-        self.group_value = list or ''
+        self.group_value = group_value or ''
 
         self._set_filters()
         self._set_columns()
@@ -68,11 +66,6 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         }
         self.add_filter_context_data(context, self.request)
         return context
-
-    #def download_format(self):
-    #    return self.GET.get("download_format") if self.GET.get("download_format") \
-    #        else self.download_type if self.download_type \
-    #        else 'csv'
 
     @print_execution_time_and_num_queries
     def get_records(self):
@@ -112,33 +105,8 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             return int(self._load_more()) + self.LOAD_MORE_AMOUNT
         return None
 
-    #def _set_group_value(self, group, list=None):
-    #    self.group_value = list
-    #    if self.group_value == 'none': self.group_value = ''
-        #if self.group_value.endswith(".csv") or kwargs.get("group", self.DEFAULT_GROUP).endswith(".csv"):
-        #    self.group_value = self.group_value.split(".")[0]
-
-    #def _set_download(self, **kwargs):
-    #    if not self.group_value: self._set_group_value(**kwargs)
-    #    self.download_type = None
-    #    for ext in Download.supported_formats():
-    #        if self.group_value.endswith(ext) or kwargs.get("group", self.DEFAULT_GROUP).endswith('.'+ext):
-    #            self.download_type = ext
-    #            return
-
-    #def _set_group(self, group, list=None):
-    #    self.group = group or self.DEFAULT_GROUP
-    #    #if self.is_download():
-    #    #    self.group = self.group.split(".")[0]
-    #    # map url to group variable, cut possible .csv suffix
-    #    self.group = self.group.replace("by-", "").replace("-", "_")
-    #    if not self._filter_set(self.request.GET) and self.group == "database":
-    #        self.group = "all"
-
     @print_execution_time_and_num_queries
     def _set_columns(self):
-        #if self.is_download() and (self.group_value or self.group == "all"):
-        #    self.columns = self.DOWNLOAD_COLUMNS
         if self.group_value:
             self.columns = self.GROUP_COLUMNS_LIST
         else:
@@ -146,16 +114,14 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     @print_execution_time_and_num_queries
     def _set_filters(self):
-        self.current_formset_conditions = self.get_formset_conditions(self._filter_set(self.request.GET), self.request.GET, self.group)
+        self.current_formset_conditions = self.get_formset_conditions(
+            self._filter_set(self.request.GET), self.request.GET, self.group
+        )
 
         self.filters = self.get_filter_context(
             self.current_formset_conditions, self._order_by(), self.group, self.group_value,
-            self.request.GET.get("starts_with", None)
+            self.request.GET.get("starts_with")
         )
-
-    #def _get_download(self, items):
-    #    download = Download(self.download_format(), self.columns, self.group)
-    #    return download.get(items)
 
     @print_execution_time_and_num_queries
     def _get_items(self, query_result):
@@ -175,9 +141,6 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         if not isinstance(value, list):
             return [value]
 
-        #if self.is_download():
-        #    intentions = [intention for intention in set(value) if not IntentionMap.has_subintentions(intention)]
-        #else:
         intentions = [IntentionMap.get_parent(intention) for intention in set(value)]
 
         return sorted(list(set(filter(None, intentions))))
@@ -215,10 +178,15 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         return order_by
 
     def _columns(self):
+        print('_columns')
+        if self.request.GET.get('columns'):
+            return self.request.GET.getlist('columns')
+
         columns = {
             "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
             "target_region": ["target_region", "intention", "deal_count", "availability"],
             "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
+#           region column disabled due to slowness resulting from additional JOIN
 #            "stakeholder_country": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
             "stakeholder_country": ["stakeholder_country", "intention", "deal_count", "availability"],
             "stakeholder_region": ["stakeholder_region", "deal_count", "availability"],

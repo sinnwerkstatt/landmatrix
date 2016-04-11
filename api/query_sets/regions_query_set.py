@@ -7,4 +7,4 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class RegionsQuerySet(SimpleFakeQuerySet):
     def all(self):
         regions = Region.objects.all().order_by('name')
-        return [[region.slug, region.name] for region in regions]
+        return [[region.id, region.slug, region.name] for region in regions]
