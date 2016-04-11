@@ -248,7 +248,11 @@ CONTENT_BLOCKS = CONTENT_BLOCKS + [
     ('gallery', GalleryBlock()),
     ('slider', SliderBlock()),
 ]
-
+CONTENT_BLOCKS = CONTENT_BLOCKS + [
+    ('columns_1_1', Columns1To1Block()),
+    ('columns_2_1', Columns2To1Block()),
+    ('columns_1_2', Columns1To2Block())
+]
 class FullWidthContainerBlock(StructBlock):
     color = blocks.ChoiceBlock(choices=[
         ('white', 'White'),
@@ -272,12 +276,7 @@ CONTENT_BLOCKS += [
 ]
 
 class WagtailRootPage(Page):
-    body = NoWrapsStreamField(CONTENT_BLOCKS + [
-            ('columns_1_1', Columns1To1Block()),
-            ('columns_2_1', Columns2To1Block()),
-            ('columns_1_2', Columns1To2Block())
-        ]
-    )
+    body = NoWrapsStreamField(CONTENT_BLOCKS)
     footer_column_1 = RichTextField(blank=True)
     footer_column_2 = RichTextField(blank=True)
     footer_column_3 = RichTextField(blank=True)
