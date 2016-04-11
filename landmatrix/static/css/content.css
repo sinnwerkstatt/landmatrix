@@ -1978,8 +1978,8 @@ a.remove-ybd:hover {
     font-weight: normal;
     background-color: #ebebeb;
     color: #4a4a4a;
-    padding: 10px 15px;
-    margin-top: 5px;
+    padding: 5px 15px;
+    margin-top: 0px;
     margin-bottom: 5px;
 }
 
@@ -2040,6 +2040,7 @@ a.remove-ybd:hover {
 
     .filtervaluebox {
         border-top: none !important;
+        border-bottom: none !important;
         height: auto; /* 300px; */
     }
 
@@ -2061,6 +2062,7 @@ a.remove-ybd:hover {
 #filter_value {
     display: inline-block;
     margin-right: 10px;
+    width: 95%;
 }
 
 #filter_value .bootstrap-datetimepicker-widget {
@@ -2070,7 +2072,7 @@ a.remove-ybd:hover {
 #filter_value > ul:nth-child(1) {
     overflow-y: auto;
     max-width: 100%;
-    height: 160px;
+    height: 100% !important;
 }
 
 #filter_value .filtervalueheight {
@@ -2079,24 +2081,29 @@ a.remove-ybd:hover {
     margin-bottom: -161px;
 }
 
-/*
-#filter_value > .input-group,
-#id_value {
-    max-width: 25vw;
-}*/
+.in
+
+.valuefield {
+    max-width: 95%;
+    width: 100% !important;
+}
+
+.valuefield option {
+    overflow: auto;
+}
 
 .filterbox {
     overflow-y: auto;
     overflow-x: auto;
 }
 
-.filterbox:first-child {
+.presetbox {
     border-left: none;
 }
 
 .filterbox label {
     width: 100%;
-    padding: 5px 15px;
+    margin-bottom: 0px;
 }
 
 #filterlist > label:nth-child(1) {
@@ -2112,12 +2119,13 @@ a.remove-ybd:hover {
 }
 
 
-#filters ul.presets li a,
+#filters ul.presets.ul.variables li a,
 #filters ul.variables li a {
     display: block;
-    padding: 5px 15px 5px 30px;
+    padding: 0px 15px 0px 30px;
 }
 
+#filters ul.presets.ul.variables > li > ul > li:hover > a,
 #filters ul.variables > li > ul > li:hover > a {
     background-color: #ebebeb;
     color: #4a4a4a;
