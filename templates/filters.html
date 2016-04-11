@@ -31,7 +31,7 @@
 
     <div id="manage-filters" class="clearfix collapse">
         <div id="filterrow" class="row">
-            <div class="col-md-3 filterbox no-pad">
+            <div class="col-md-3 filterbox presetbox no-pad">
                 <ul class="presets variables">
                     {% for groupname, items in presets.items %}
                         <li>
@@ -69,7 +69,7 @@
 
             </div>
             <form class="form">
-                <div class="col-md-1 filterbox filtercontrolbox">
+                <div class="col-md-2 filterbox filtercontrolbox">
                     <input id="filter_variable" type="hidden" name="variable" value=""/>
                     <div class="">
                         <select id="filter_operator" name="operator" class="form-control">
@@ -90,7 +90,7 @@
 
 
                 </div>
-                <div class="col-md-5 filtervaluebox filterbox">
+                <div class="col-md-4 filtervaluebox filterbox">
                     <div class="" id="filter_value"> <!-- class="form-inline"> -->
                         <input type="text" class="form-control"/>
                     </div>
