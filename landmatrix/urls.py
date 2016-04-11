@@ -34,32 +34,16 @@ from landmatrix.views import CountryView, RegionView
 #from landmatrix.views.filterdebug_view import FilterView
 from grid.views.stakeholder_view import StakeholderView
 
-non_i18n_patterns = patterns(
-    '',
-    url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(),
-            name='ajax_widget'),
-)
+urlpatterns = patterns('',
+    url('^accounts/', include('django.contrib.auth.urls')),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/', include(api_urls)),
 
-wagtail_patterns = [
+    # Wagtail
     url(r'^cms/', include(wagtailadmin_urls)),
     url(r'^news/', include('blog.urls', namespace='news')),
     url(r'^documents/', include(wagtaildocs_urls)),
-    url(r'', include(wagtail_urls)),
-    #url(r'^/contact', StartView.as_view(), name='contact'),
-    #url(r'^/download', StartView.as_view(), name='download'),
-    #url(r'^/help', StartView.as_view(), name='help'),
-    #url(r'^/blog', StartView.as_view(), name='blog'),
-    #url(r'^/newsletter', StartView.as_view(), name='newsletter'),
-    #url(r'^/publications', StartView.as_view(), name='publications'),
-    #url(r'^/blog', StartView.as_view(), name='blog')
-]
 
-urlpatterns = patterns(
-    '',
-    url('^accounts/', include('django.contrib.auth.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-
-    url(r'^api/', include(api_urls)),
     url(r'^global/data/', include(grid_urls)),
     url(r'^global/map/', include(map_urls)),
     url(r'^global/charts/', include(charts_urls)),
@@ -91,7 +75,12 @@ urlpatterns = patterns(
 
     url(r'^editor/', include(editor_urls)),
     #url(r'^filters$', FilterView.as_view(), name='filterdebug'),
-    # url(r'^', include('cms.urls')),
-) + non_i18n_patterns +\
-              wagtail_patterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
-              static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    url(r'', include(wagtail_urls)),
+)
+# Non i18n patterns
+urlpatterns += patterns('',
+    url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(),
+            name='ajax_widget'),
+)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
