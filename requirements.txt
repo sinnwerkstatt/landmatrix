@@ -24,3 +24,4 @@ django-extensions
 django-crispy-forms==1.6.0
 django-threadedcomments
 django-wkhtmltopdf
+django-sekizai>=0.9.0

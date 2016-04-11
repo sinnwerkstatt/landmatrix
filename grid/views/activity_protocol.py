@@ -14,6 +14,9 @@ from grid.views.profiling_decorators import print_execution_time_and_num_queries
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+# minimum size for a deal to be shown in PI
+MIN_DEAL_SIZE = 200
+
 
 class ActivityProtocol:
 
@@ -170,7 +173,7 @@ def _is_size_invalid(activity_identifier):
     production_size = latest_attribute_value_for_activity(activity_identifier, "production_size") or 0
     # Filter B2 (area size >= 200ha AND at least one area size is given)
     no_size_set = (not intended_size and not contract_size and not production_size)
-    size_too_small = int(intended_size) < 200 and int(contract_size) < 200 and int(production_size) < 200
+    size_too_small = int(intended_size) < MIN_DEAL_SIZE and int(contract_size) < MIN_DEAL_SIZE and int(production_size) < MIN_DEAL_SIZE
     return no_size_set or size_too_small
 
 
@@ -301,6 +304,7 @@ def attributes_without_date(activity_identifier, attribute):
 def latest_attribute_value_for_activity(activity_identifier, attribute):
         attributes = nonnull_attributes_for_activity(activity_identifier, attribute).order_by("-date")
         return len(attributes) > 0 and attributes[0].attributes[attribute] or None
+
 
 def nonnull_attributes_for_activity(activity_identifier, attribute):
     return attributes_for_activity(activity_identifier, attribute).filter(attributes__isnull={attribute: True})
