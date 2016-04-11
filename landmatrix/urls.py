@@ -24,17 +24,13 @@ from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 
-from grid.views.add_deal_view import AddDealView
-from grid.views.change_deal_view import ChangeDealView
-from grid.views.deal_comparison_view import DealComparisonView
-from grid.views.deal_detail_view import DealDetailView
-from grid.views.filter_widget_ajax_view import FilterWidgetAjaxView
+from grid.views import AddDealView, ChangeDealView, DealComparisonView, DealDetailView, FilterWidgetAjaxView
 from api import urls as api_urls
 from grid import urls as grid_urls
 from map import urls as map_urls
 from charts import urls as charts_urls
 from editor import urls as editor_urls
-from landmatrix.views.start_view import StartView
+from landmatrix.views import CountryView, RegionView
 #from landmatrix.views.filterdebug_view import FilterView
 from grid.views.stakeholder_view import StakeholderView
 
@@ -49,13 +45,13 @@ wagtail_patterns = [
     url(r'^news/', include('blog.urls', namespace='news')),
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'', include(wagtail_urls)),
-    url(r'^/contact', StartView.as_view(), name='contact'),
-    url(r'^/download', StartView.as_view(), name='download'),
-    url(r'^/help', StartView.as_view(), name='help'),
-    url(r'^/blog', StartView.as_view(), name='blog'),
-    url(r'^/newsletter', StartView.as_view(), name='newsletter'),
-    url(r'^/publications', StartView.as_view(), name='publications'),
-    url(r'^/blog', StartView.as_view(), name='blog')
+    #url(r'^/contact', StartView.as_view(), name='contact'),
+    #url(r'^/download', StartView.as_view(), name='download'),
+    #url(r'^/help', StartView.as_view(), name='help'),
+    #url(r'^/blog', StartView.as_view(), name='blog'),
+    #url(r'^/newsletter', StartView.as_view(), name='newsletter'),
+    #url(r'^/publications', StartView.as_view(), name='publications'),
+    #url(r'^/blog', StartView.as_view(), name='blog')
 ]
 
 urlpatterns = patterns(
@@ -84,6 +80,9 @@ urlpatterns = patterns(
     url(r'^deal/compare/(?P<activity_1>[\d_\.]+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^deal/compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^deal/edit/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
+
+    url(r'^region/(?P<region_slug>[A-Za-z\-]+)/$', RegionView.as_view(), name='region'),
+    url(r'^country/(?P<country_slug>[A-Za-z\-]+)/$', CountryView.as_view(), name='country'),
 
     url(r'^deal/comments/', include('django_comments.urls')),
 
