@@ -1,6 +1,7 @@
 from api.views.dashboard_filter_view import DashboardFilterView
 from api.views.deal_detail_json_view import DealDetailJSONView
 from api.views.filter_preset_view import FilterPresetView
+from api.views.investor_network_json_view import InvestorNetworkJSONView
 from api.views.json_view import JSONView
 from api.views.filter_view import FilterView
 
@@ -14,10 +15,11 @@ CACHE_TIMEOUT = 24*3600
 urlpatterns = patterns('')
 
 urlpatterns.extend([
-    url(r'^filter.json', FilterView.as_view(), name='landmatrix_api'),
-    url(r'^dashboard_filter.json', DashboardFilterView.as_view(), name='landmatrix_api'),
-    url(r'^filter_preset.json', FilterPresetView.as_view(), name='landmatrix_api'),
-    url(r'^deal_detail.json', DealDetailJSONView.as_view(), name='landmatrix_api'),
+    url(r'^filter\.json', FilterView.as_view(), name='api_filter'),
+    url(r'^dashboard_filter\.json', DashboardFilterView.as_view(), name='api_dashboard_filter'),
+    url(r'^filter_preset\.json', FilterPresetView.as_view(), name='api_dashboard_filter_preset'),
+    url(r'^deal_detail\.json', DealDetailJSONView.as_view(), name='api_deal_detail'),
+    url(r'^investor_network.\json', InvestorNetworkJSONView.as_view(), name='api_investor_network'),
     url(r'^(?P<type>.*\.json)', cache_page(CACHE_TIMEOUT)(JSONView.as_view()), name='landmatrix_api'),
     # url(r'^(?P<type>.*\.json)', JSONView.as_view(), name='landmatrix_api'),
 ])

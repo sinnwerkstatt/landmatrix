@@ -69,13 +69,13 @@ class DealsTestData:
     def create_country(self):
         if self.region: return
         self.region = Region(
-            name='South-East Asia', slug='south-east-asia', point_lat=0., point_lon=120.
+            name='South-East Asia', slug='south-east-asia', point_lat_min=0., point_lon_min=120.
         )
         self.region.save()
         self.country = Country(
             fk_region=Region.objects.last(), code_alpha2='KH', code_alpha3='KHM',
             name="Cambodia", slug='cambodia',
-            point_lat=12.565679, point_lon=104.990963,
+            point_lat_min=12.565679, point_lon_min=104.990963,
             democracy_index=4.87, corruption_perception_index=2.2, high_income=False
         )
         self.country.save()
