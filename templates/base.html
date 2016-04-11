@@ -248,7 +248,10 @@
                 placeholder: "{% trans 'Regions' %}",
                 dropdownCssClass: "select2-main"
             }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);
+              .on('select2:close', select2_close)
+              .on('change', function () {
+                location.href = '/region/' + $(this).val();
+              });
             var region_request = $.ajax({
               url: '/api/regions.json'
             });
@@ -265,7 +268,10 @@
                 placeholder: "{% trans 'Countries' %}",
                 dropdownCssClass: "select2-main"
             }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);
+              .on('select2:close', select2_close)
+              .change(function () {
+                location.href = '/country/' + $(this).val();
+              });
             var country_request = $.ajax({
               url: '/api/countries.json'
             });
