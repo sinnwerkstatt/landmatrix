@@ -28,8 +28,9 @@ class FilterToSQL:
         FilterToSQL.count_offset += 10
         self.filters = filters
         self.columns = columns
-        if self.DEBUG: print('FilterToSQL: filters', self.filters)
-        # print('FilterToSQL: columns', self.columns)
+        if self.DEBUG:
+            print('FilterToSQL: filters', self.filters)
+            print('FilterToSQL: columns', self.columns)
 
     def filter_from(self):
         if self.DEBUG: print('FilterToSQL:  tables', self._tables_activity() + "\n" + self._tables_investor())
