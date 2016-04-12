@@ -145,7 +145,7 @@ $(document).ready(function () {
             } else {
                 feature = feature.get('features')[0];
                 var classifier = feature.attributes[fieldnames[currentVariable]];
-                console.log(classifier)
+                //console.log(classifier)
 
                 if (classifier in detailviews[currentVariable]) {
                     color = detailviews[currentVariable][classifier];
@@ -510,7 +510,7 @@ $(document).ready(function () {
         markerSource.clear();
 
         $.get(
-            "/api/deals.json?limit=10&attributes="+fieldnames[currentVariable], //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+            "/api/deals.json?limit=500&attributes="+fieldnames[currentVariable], //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
             addData
         );
 
@@ -571,6 +571,8 @@ $(document).ready(function () {
                 var production_size = feat.attributes.production_size;
                 var contract_size = feat.attributes.contract_size;
                 var investor = feat.attributes.investor;
+                var status = feat.attributes.negotiation_status;
+                var accuracy = feat.attributes.geospatial_accuracy;
                 console.log(contract_size);
 
                 // TODO: Here, some javascript should be called to get the deal details from the API
@@ -588,6 +590,13 @@ $(document).ready(function () {
                 }
                 content.innerHTML += '<span>Intention:</span><span class="pull-right">' + intention + '</span><br/>';
                 content.innerHTML += '<span>Investor:</span><span class="pull-right">' + investor + '</span><br />';
+                // TODO: Handle other possibly already known attributes from currentVariable
+                if (status) {
+                    content.innerHTML += '<span>Negotiation Status:</span><span class="pull-right">' + status + '</span><br />';
+                }
+                if (accuracy) {
+                    content.innerHTML += '<span>Geospatial Accuracy:</span><span class="pull-right">' + accuracy + '</span><br />';
+                }
                 content.innerHTML += '<span><a href="/deal/' + id + '">More details</a></span></div>';
             }
 
@@ -640,8 +649,8 @@ $(document).ready(function () {
                     console.log('Dup to ', marker.lat, marker, ' older is ', lats[marker.lat]);
                 } else {
 
-                    console.log(marker);
-                    addClusteredMarker(marker.deal_id, parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention, marker);
+                    //console.log(marker);
+                    addClusteredMarker(marker);
                     //addClusteredMarkerNew(marker);
                     lats[marker.lat] = marker;
                 }
@@ -654,12 +663,40 @@ $(document).ready(function () {
     getApiData();
 });
 
+// MARKERS in clusters. ONE MARKER = ONE DEAL
+//longitude, latitude, intention im Index.html definiert
+function addClusteredMarker(marker) { // dealid, longitude, latitude, intention, marker) {
+    // .deal_id, parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention, marker
+
+    var lat = parseFloat(marker.point_lat);
+    var lon = parseFloat(marker.point_lon);
+
+    if ((typeof lat == 'number') && (typeof lon == 'number')) {
+        var feature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'))
+        });
+
+        if (('intention' in marker) && (marker.intention) && (marker.intention.indexOf(',') > -1)) {
+            marker.intention = marker.intention.split(',', 1)[0];
+        }
+
+        feature.attributes = marker;
+
+        //console.log('Adding:', feature);
+
+        markerSource.addFeature(feature);
+    } else {
+        console.log("Faulty object: ", marker);
+    }
+}
+
+
 function fitBounds(geom) {
     var bounds = new ol.extent.boundingExtent([[geom.j.j, geom.R.R], [geom.j.R, geom.R.j]]);
 
-    console.log(bounds);
+    //console.log(bounds);
     bounds = ol.proj.transformExtent(bounds, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
-    console.log(bounds);
+    //console.log(bounds);
 
     map.getView().fit(bounds, map.getSize());
 }
@@ -685,9 +722,9 @@ function initGeocoder(el) {
 
                 fitBounds(place.geometry.viewport);
             } else {
-                console.log(place.geometry.location);
-                console.log(place.geometry.location.lat());
-                console.log(place.geometry.location.lng());
+                //console.log(place.geometry.location);
+                //console.log(place.geometry.location.lat());
+                //console.log(place.geometry.location.lng());
                 var target = [place.geometry.location.lng(), place.geometry.location.lat()]
                 target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
                 map.getView().setCenter(target);
@@ -718,62 +755,3 @@ function initGeocoder(el) {
     }
 
 }
-
-function addClusteredMarkerNew(marker) {
-    console.log("Heya: ", marker);
-    var feat = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.transform([marker.longitude, marker.latitude], 'EPSG:4326', 'EPSG:3857'))
-    });
-
-    console.log('OLD:', feat, marker);
-
-
-    if (intention.indexOf(',') > -1) {
-        intention = intention.split(',', 1)[0];
-    }
-
-    //feat.attributes = marker;
-    feat.attributes = {};
-    feat.attributes.lat = marker.point_lat;
-    feat.attributes.lon = marker.point_lon;
-    feat.attributes.id = marker.deal_id;
-
-
-    console.log('NEW:', feat);
-    console.log("Adding.");
-    //try {
-    markerSource.addFeature(feat);
-    //} catch(err) {
-    //console.log("Caught something bad.");
-    //}
-    console.log("Done adding.");
-}
-
-// MARKERS in clusters. ONE MARKER = ONE DEAL
-//longitude, latitude, intention im Index.html definiert
-function addClusteredMarker(dealid, longitude, latitude, intention, marker) {
-    intention = intention || 'Undefined';
-
-    if ((typeof latitude == 'number') && (typeof longitude == 'number')) {
-        var feature = new ol.Feature({
-            geometry: new ol.geom.Point(ol.proj.transform([longitude, latitude], 'EPSG:4326', 'EPSG:3857'))
-        });
-
-        intention = marker.intention;
-
-        if (intention.indexOf(',') > -1) {
-            intention = intention.split(',', 1)[0];
-        }
-
-        feature.attributes = marker;
-        feature.attributes.intention = intention;
-
-        console.log('Adding:', feature);
-
-        markerSource.addFeature(feature);
-    } else {
-        console.log("Faulty object: ", longitude, latitude, intention);
-    }
-}
-
-
