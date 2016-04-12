@@ -82,26 +82,26 @@
                                 class="caret"></span></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'add_deal' %}">{% trans "Report a deal" %}</a></li>
-                            <li><a href="{% url 'contact' %}">{% trans "Get in touch" %}</a></li>
-                            <li><a href="{% url 'download' %}">{% trans "Download" %}</a></li>
+                            <li><a href="{% slugurl 'contact' %}">{% trans "Get in touch" %}</a></li>
+                            <li><a href="{% slugurl 'download' %}">{% trans "Download" %}</a></li>
                         </ul>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% url 'help' %}" role="button"><span class="nav-circle nav-help">?</span></a></li>
+                    <li><a href="{% slugurl 'help' %}" role="button"><span class="nav-circle nav-help">?</span></a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false"><i class="fa lm-envelope messages"></i></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
-                            <li><a href="{% url 'newsletter' %}">{% trans "Newsletter" %}</a></li>
-                            <li><a href="{% url 'publications' %}">{% trans "Publications" %}</a></li>
+                            <li><a href="{% slugurl 'news' %}">{% trans "News" %}</a></li>
+                            <li><a href="{% slugurl 'newsletter' %}">{% trans "Newsletter" %}</a></li>
+                            <li><a href="{% slugurl 'publications' %}">{% trans "Publications" %}</a></li>
                         </ul>
                     </li>
                     {% include "language_chooser.html" %}
+                    {% block user_tools %}{% endblock %}
                 </ul>
             </div>
-            {% block user_tools %}{% endblock %}
         </div>
     </div>
 
@@ -248,14 +248,17 @@
                 placeholder: "{% trans 'Regions' %}",
                 dropdownCssClass: "select2-main"
             }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);
+              .on('select2:close', select2_close)
+              .on('change', function () {
+                location.href = '/region/' + $(this).val();
+              });
             var region_request = $.ajax({
               url: '/api/regions.json'
             });
             region_request.then(function (data) {
               for (var d = 0; d < data.length; d++) {
                 var item = data[d];
-                var option = new Option(item[1], item[0], true, true);
+                var option = new Option(item[2], item[1], false, false);
                 region_select.append(option);
               }
               //$element.trigger('change');
@@ -265,14 +268,17 @@
                 placeholder: "{% trans 'Countries' %}",
                 dropdownCssClass: "select2-main"
             }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);
+              .on('select2:close', select2_close)
+              .change(function () {
+                location.href = '/country/' + $(this).val();
+              });
             var country_request = $.ajax({
               url: '/api/countries.json'
             });
             country_request.then(function (data) {
               for (var d = 0; d < data.length; d++) {
                 var item = data[d];
-                var option = new Option(item[1], item[0], true, true);
+                var option = new Option(item[2], item[1], false, false);
                 country_select.append(option);
               }
               //$element.trigger('change');
