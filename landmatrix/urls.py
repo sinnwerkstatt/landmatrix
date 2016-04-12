@@ -24,46 +24,26 @@ from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 
-from grid.views.add_deal_view import AddDealView
-from grid.views.change_deal_view import ChangeDealView
-from grid.views.deal_comparison_view import DealComparisonView
-from grid.views.deal_detail_view import DealDetailView
-from grid.views.filter_widget_ajax_view import FilterWidgetAjaxView
+from grid.views import AddDealView, ChangeDealView, DealComparisonView, DealDetailView, FilterWidgetAjaxView
 from api import urls as api_urls
 from grid import urls as grid_urls
 from map import urls as map_urls
 from charts import urls as charts_urls
 from editor import urls as editor_urls
-from landmatrix.views.start_view import StartView
+from landmatrix.views import CountryView, RegionView
 #from landmatrix.views.filterdebug_view import FilterView
 from grid.views.stakeholder_view import StakeholderView
 
-non_i18n_patterns = patterns(
-    '',
-    url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(),
-            name='ajax_widget'),
-)
+urlpatterns = patterns('',
+    url('^accounts/', include('django.contrib.auth.urls')),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/', include(api_urls)),
 
-wagtail_patterns = [
+    # Wagtail
     url(r'^cms/', include(wagtailadmin_urls)),
     url(r'^news/', include('blog.urls', namespace='news')),
     url(r'^documents/', include(wagtaildocs_urls)),
-    url(r'', include(wagtail_urls)),
-    url(r'^/contact', StartView.as_view(), name='contact'),
-    url(r'^/download', StartView.as_view(), name='download'),
-    url(r'^/help', StartView.as_view(), name='help'),
-    url(r'^/blog', StartView.as_view(), name='blog'),
-    url(r'^/newsletter', StartView.as_view(), name='newsletter'),
-    url(r'^/publications', StartView.as_view(), name='publications'),
-    url(r'^/blog', StartView.as_view(), name='blog')
-]
 
-urlpatterns = patterns(
-    '',
-    url('^accounts/', include('django.contrib.auth.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-
-    url(r'^api/', include(api_urls)),
     url(r'^global/data/', include(grid_urls)),
     url(r'^global/map/', include(map_urls)),
     url(r'^global/charts/', include(charts_urls)),
@@ -85,6 +65,9 @@ urlpatterns = patterns(
     url(r'^deal/compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^deal/edit/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
 
+    url(r'^region/(?P<region_slug>[A-Za-z\-]+)/$', RegionView.as_view(), name='region'),
+    url(r'^country/(?P<country_slug>[A-Za-z\-]+)/$', CountryView.as_view(), name='country'),
+
     url(r'^deal/comments/', include('django_comments.urls')),
 
     url(r'^stakeholder/add$', StakeholderView.as_view(), name='stakeholder_form'),
@@ -92,7 +75,12 @@ urlpatterns = patterns(
 
     url(r'^editor/', include(editor_urls)),
     #url(r'^filters$', FilterView.as_view(), name='filterdebug'),
-    # url(r'^', include('cms.urls')),
-) + non_i18n_patterns +\
-              wagtail_patterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +\
-              static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    url(r'', include(wagtail_urls)),
+)
+# Non i18n patterns
+urlpatterns += patterns('',
+    url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(),
+            name='ajax_widget'),
+)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

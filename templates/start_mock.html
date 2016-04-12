@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load staticfiles wagtailcore_tags %}
 
 {% block page_title %}Homepage{% endblock %}
 {% block title %}Land Matrix Global Observatory{% endblock %}
@@ -74,7 +74,7 @@
                 constantly evolving; to make this resource more accurate and comprehensive, we encourage your
                 participation.
             </p>
-            <a href="{% url 'help' %}" class="btn btn-large" type="button">Read more</a>
+            <a href="{% slugurl 'help' %}" class="btn btn-large" type="button">Read more</a>
 
         </div> <!-- Carousel & Explanation -->
     </div>

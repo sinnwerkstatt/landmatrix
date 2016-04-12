@@ -9,10 +9,14 @@ from wagtail.wagtailcore.blocks import Block, URLBlock, RawHTMLBlock, StreamBloc
 
 from django.utils.html import format_html, format_html_join, force_text
 from django.conf import settings
+from django import forms
+from django.db import models
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.whitelist import attribute_rule, check_url, allow_without_attributes
 from blog.models import BlogPage
+
+from landmatrix.models import Region, Country
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -244,7 +248,11 @@ CONTENT_BLOCKS = CONTENT_BLOCKS + [
     ('gallery', GalleryBlock()),
     ('slider', SliderBlock()),
 ]
-
+CONTENT_BLOCKS = CONTENT_BLOCKS + [
+    ('columns_1_1', Columns1To1Block()),
+    ('columns_2_1', Columns2To1Block()),
+    ('columns_1_2', Columns1To2Block())
+]
 class FullWidthContainerBlock(StructBlock):
     color = blocks.ChoiceBlock(choices=[
         ('white', 'White'),
@@ -268,12 +276,7 @@ CONTENT_BLOCKS += [
 ]
 
 class WagtailRootPage(Page):
-    body = NoWrapsStreamField(CONTENT_BLOCKS + [
-            ('columns_1_1', Columns1To1Block()),
-            ('columns_2_1', Columns2To1Block()),
-            ('columns_1_2', Columns1To2Block())
-        ]
-    )
+    body = NoWrapsStreamField(CONTENT_BLOCKS)
     footer_column_1 = RichTextField(blank=True)
     footer_column_2 = RichTextField(blank=True)
     footer_column_3 = RichTextField(blank=True)
@@ -296,6 +299,62 @@ class WagtailPage(Page):
         ]
     )
     content_panels = Page.content_panels + [StreamFieldPanel('body')]
+
+class RegionIndex(Page):
+    template = 'wagtailcms/region.html'
+
+    body = NoWrapsStreamField(CONTENT_BLOCKS + [
+            ('columns_1_1', Columns1To1Block()),
+            ('columns_2_1', Columns2To1Block()),
+            ('columns_1_2', Columns1To2Block())
+        ]
+    )
+    content_panels = Page.content_panels + [
+        StreamFieldPanel('body')
+    ]
+    subpage_types = ['wagtailcms.Region']
+
+class Region(Page):
+    region = models.ForeignKey(Region, null=True, blank=True)
+    body = NoWrapsStreamField(CONTENT_BLOCKS + [
+            ('columns_1_1', Columns1To1Block()),
+            ('columns_2_1', Columns2To1Block()),
+            ('columns_1_2', Columns1To2Block())
+        ]
+    )
+    content_panels = Page.content_panels + [
+        FieldPanel('region'),
+        StreamFieldPanel('body')
+    ]
+    parent_page_types = ['wagtailcms.RegionIndex']
+
+class CountryIndex(Page):
+    template = 'wagtailcms/country.html'
+
+    body = NoWrapsStreamField(CONTENT_BLOCKS + [
+            ('columns_1_1', Columns1To1Block()),
+            ('columns_2_1', Columns2To1Block()),
+            ('columns_1_2', Columns1To2Block())
+        ]
+    )
+    content_panels = Page.content_panels + [
+        StreamFieldPanel('body')
+    ]
+    subpage_types = ['wagtailcms.Country']
+
+class Country(Page):
+    country = models.ForeignKey(Country, null=True, blank=True)
+    body = NoWrapsStreamField(CONTENT_BLOCKS + [
+            ('columns_1_1', Columns1To1Block()),
+            ('columns_2_1', Columns2To1Block()),
+            ('columns_1_2', Columns1To2Block())
+        ]
+    )
+    content_panels = Page.content_panels + [
+        FieldPanel('country'),
+        StreamFieldPanel('body')
+    ]
+    parent_page_types = ['wagtailcms.CountryIndex']
 
 #FIXME: Move hooks to wagtail_hooks.py
 @hooks.register('insert_editor_js')
