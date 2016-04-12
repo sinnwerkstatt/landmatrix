@@ -6,16 +6,34 @@ from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from grid.views import AllDealsView, TableGroupView, DealDetailView
+from grid.views.filter_widget_mixin import FilterWidgetMixin
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-class ExportView(TemplateView):
+
+class ExportView(TemplateView, FilterWidgetMixin):
     template_name = 'export.html'
     FORMATS = ['csv', 'xml', 'xls']
+    DOWNLOAD_COLUMNS = [
+        "deal_id", "target_country", "location", "stakeholder_name", "stakeholder_country", "intention", "negotiation_status",
+        "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal",
+        "data_source_type", "data_source_url", "data_source_date", "data_source_organisation",
+        "contract_farming", "crop"
+    ]
+    GROUP_COLUMNS_LIST = [
+        "deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country", "intention",
+        "negotiation_status", "implementation_status", "intended_size", "contract_size",
+    ]
+
+    def get(self, request, *args, **kwargs):
+        self.request = request
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+        return super().get(request, args, kwargs)
 
     def export(self, items, columns, format, filename="test"):
         if format not in self.FORMATS:
-            raise RuntimeError('Download format not recognized: ' + format)
+            raise RuntimeError('Download format not recognized: ' + str(format))
 
         return getattr(self, 'export_%s' % format)(
             columns, self.format_items_for_download(items, columns), "%s.%s" % (filename, format)
@@ -34,7 +52,6 @@ class ExportView(TemplateView):
                 ws.write(i+1, j, d)
         wb.save(response)
         return response
-
 
     def export_xml(self, header, data, filename):
         try:
@@ -111,6 +128,7 @@ class ExportView(TemplateView):
 
 class AllDealsExportView(AllDealsView, ExportView):
     def dispatch(self, request, *args, **kwargs):
+        self.request = request
         format = kwargs.pop('format')
         kwargs['group'] = 'all'
         context = super(AllDealsExportView, self).get_context_data(*args, **kwargs)
@@ -118,12 +136,14 @@ class AllDealsExportView(AllDealsView, ExportView):
 
 class TableGroupExportView(TableGroupView, ExportView):
     def dispatch(self, request, *args, **kwargs):
+        self.request = request
         format = kwargs.pop('format')
         context = super(TableGroupExportView, self).get_context_data(*args, **kwargs)
         return self.export(context['data']['items'], context['columns'], format, filename=kwargs['group'])
 
 class DealDetailExportView(DealDetailView, ExportView):
     def dispatch(self, request, *args, **kwargs):
+        self.request = request
         format = kwargs.pop('format')
         context = super(DealDetailExportView, self).get_context_data(*args, **kwargs)
         attrs = context['deal']['attributes']
