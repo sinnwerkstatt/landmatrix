@@ -9,6 +9,7 @@ class WithClientMixin:
         self.client = Client()
 
     def _get_url_following_redirects(self, url):
+        print('_get_url_following_redirects', url)
         response = self.client.get(url)
         while response.status_code in range(300, 308):
             response = self.client.get(response.url)

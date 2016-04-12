@@ -1,3 +1,5 @@
+from landmatrix.models.filter_condition import get_filter_vars
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.test import TestCase
@@ -75,7 +77,7 @@ class TestBrowseConditionForm(TestCase):
 
     def test_all_fields_and_ops(self):
         from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
-        for field in FILTER_VAR_ACT+FILTER_VAR_INV:
+        for field in get_filter_vars():
             for op in FilterToSQL.OPERATION_MAP.keys():
                 formset = self.Formset(
                     MultiValueDict(
@@ -99,9 +101,7 @@ class TestBrowseConditionForm(TestCase):
             self._check_all_operators_present(extract_tag(f.as_ul()[f.as_ul().find('<select')+1:], '<select', '</select>'))
 
     def _check_all_variables_present(self, variable_select):
-        for var in FILTER_VAR_ACT:
-            self.assertIn(var, variable_select)
-        for var in FILTER_VAR_INV:
+        for var in get_filter_vars():
             self.assertIn(var, variable_select)
 
     def _check_all_operators_present(self, operator_select):
