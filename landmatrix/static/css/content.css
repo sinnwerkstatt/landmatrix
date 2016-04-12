@@ -2148,8 +2148,20 @@ a.remove-ybd:hover {
 }
 
 #filter_value,
-#filter_value > select {
+#filter_value > select[multiple],
+#filter_value > ul {
     height: 100%;
+    max-height: 188px;
+}
+
+.bootstrap-datetimepicker-widget table th {
+    height: 15px !important;
+    line-height: 15px !important;
+}
+
+.bootstrap-datetimepicker-widget table td.day {
+    height: 12px !important;
+    line-height: 12px !important;
 }
 
 .form-horizontal .checkbox,
