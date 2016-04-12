@@ -109,7 +109,7 @@ def _update_filters(filter_dict, filter):
     name = _get_filter_type(filter)
     definition = _get_filter_definition(filter)
     definition_key = list(definition.keys())[0]
-    if filter[1].variable == 'deal_scope':
+    if filter[1]['variable'] == 'deal_scope':
         filter_dict['deal_scope'] = filter[1].value
     elif filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
         filter_dict[name]['tags'][definition_key].extend(definition[definition_key])

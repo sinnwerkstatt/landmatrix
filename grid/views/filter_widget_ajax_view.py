@@ -1,7 +1,7 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from grid.views.browse_filter_conditions import get_field_by_key
-from grid.widgets import LocationWidget, YearBasedSelect, YearBasedMultipleSelect, NumberInput
+from grid.widgets import LocationWidget, YearBasedSelect, YearBasedMultipleSelect, YearBasedTextInput, NumberInput
 from grid.forms.deal_primary_investor_form import DealPrimaryInvestorForm
 
 from django.http import HttpResponse
@@ -27,20 +27,24 @@ class FilterWidgetAjaxView(View):
 
         # TODO: Cleanup this hog of a method
 
+        fc_attrs = {'class': 'valuefield form-control'}
+        vf_attrs = {'class': 'valuefield'}
+
         value = request.GET.get("value", "")
         key_id = request.GET.get("key_id", "")
         operation = request.GET.get("operation", "")
         field = None
         value = value and value.split(",") or []
-        widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs={"class": "form-control"})
+        widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
+
         if operation == 'is_empty':
             return HttpResponse('', content_type="text/plain")
         # ID
         elif key_id == "-1":
             if operation in ("in", "not_in"):
-                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs={"class": "form-control"})
+                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
             else:
-                widget = NumberInput().render(request.GET.get("name", ""), ",".join(value), attrs={"class": "form-control"})
+                widget = NumberInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
         # deal scope
         elif key_id == "-2":
             widget = CheckboxSelectMultiple()
@@ -48,7 +52,7 @@ class FilterWidgetAjaxView(View):
                 (10, "Domestic"),
                 (20, "Transnational")
             )
-            widget = widget.render(request.GET.get("name", ""), value)
+            widget = widget.render(request.GET.get("name", ""), value, attrs=vf_attrs)
 
         elif key_id == "fully_updated" or key_id == "last_modification":
             value = len(value) > 0 and value[0] or ""
@@ -67,7 +71,7 @@ class FilterWidgetAjaxView(View):
                     $(function(){$("#%(picker_id)s:has(input:not([readonly],[disabled]))").datetimepicker(%(options)s);});
             </script>"""
             widget = widgetObject.render(
-                    request.GET.get("name", ""), value=value, attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"}
+                    request.GET.get("name", ""), value=value, attrs={"id": "id_%s" % request.GET.get("name", "")}
             )
 
         elif key_id == "fully_updated_by":
@@ -101,7 +105,7 @@ class FilterWidgetAjaxView(View):
                 widget = Select(choices=field.choices)
             if type(widget) == LocationWidget:
                 field.widget = TextInput()
-                widget = field.widget.render(request.GET.get("name", ""), len(value) > 0 and value[0] or "")
+                widget = field.widget.render(request.GET.get("name", ""), len(value) > 0 and value[0] or "", attrs=fc_attrs)
             elif operation in ("in", "not_in"):
                 if type(widget) == YearBasedSelect:
                     field.widget = YearBasedMultipleSelect(choices=field.widget.choices)
@@ -110,6 +114,10 @@ class FilterWidgetAjaxView(View):
                     value = [value, ""]
                     widget = field.widget.render(request.GET.get("name", ""), value,
                                                  attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
+
+                elif type(widget) == YearBasedTextInput:
+                    widget = widget.render(request.GET.get("name", ""), ",".join(value),
+                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
                 elif type(widget) == RadioSelect:
                     widget = CheckboxSelectMultiple()
                     widget.choices = field.widget.choices
@@ -122,14 +130,19 @@ class FilterWidgetAjaxView(View):
                     widget = widget.render(request.GET.get("name", ""), value)
                 else:
                     widget = widget.render(request.GET.get("name", ""), ",".join(value),
-                                           attrs={"id": "id_%s" % request.GET.get("name", "")})
+                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "valuefield form-control"})
             elif operation in ("contains",):
-                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs={"class": "form-control"})
+                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
             else:
-                if issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple)):
+
+                if issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple, RadioSelect)):
                     widget = widget.render(request.GET.get("name", ""), value)
+                elif issubclass(type(field.widget), (YearBasedMultipleSelect, YearBasedSelect, YearBasedTextInput)):
+                    widget = widget.render(request.GET.get("name", ""), ",".join(value),
+                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
                 else:
                     widget = widget.render(request.GET.get("name", ""), ",".join(value),
-                                           attrs={"id": "id_%s" % request.GET.get("name", "")})
+                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "valuefield form-control"})
 
+            print(type(field.widget))
         return HttpResponse(widget, content_type="text/plain")
