@@ -2147,6 +2147,11 @@ a.remove-ybd:hover {
     height: 1.5em;
 }
 
+#filter_value,
+#filter_value > select {
+    height: 100%;
+}
+
 .form-horizontal .checkbox,
 .form-horizontal .radio {
     padding-top: 0;
