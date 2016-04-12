@@ -13,3 +13,5 @@ class Region(models.Model, DefaultStringRepresentation):
     point_lat_max = models.DecimalField(_("Latitude of southernmost point"), max_digits=18, decimal_places=12, blank=True, null=True)
     point_lon_max = models.DecimalField(_("Longitude of easternmost point"), max_digits=18, decimal_places=12, blank=True, null=True)
 
+    def __str__(self):
+    	return self.name
