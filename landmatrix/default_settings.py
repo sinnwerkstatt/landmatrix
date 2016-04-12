@@ -161,7 +161,6 @@ WSGI_APPLICATION = 'landmatrix.wsgi.application'
 LANGUAGE_CODE = 'en'
 LANGUAGES = [
     ('en', 'English'),
-    ('de', 'Deutsch'),
     ('es', 'Espagnol'),
 ]
 
