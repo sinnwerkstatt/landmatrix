@@ -41,7 +41,7 @@
                                     <li class="filter_item">
                                         <a href="javascript:loadPreset('{{ item.id }}')"
                                            title="{{ groupname }}: {{ item.label }}">
-                                            <label>{% trans item.label %}</label>
+                                            {% trans item.label %}
                                         </a>
                                     </li>
                                 {% endfor %}
