@@ -1,1 +1,2 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+from .region_view import *
+from .country_view import *
