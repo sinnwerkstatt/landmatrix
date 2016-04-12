@@ -37,7 +37,11 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     group = None
     group_value = None
 
-    def get_context_data(self, group, group_value=None):
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        return super().dispatch(request, args, kwargs)
+
+    def get_context_data(self, group=None, group_value=None):
         context = super(TableGroupView, self).get_context_data()
         self.group = group or self.DEFAULT_GROUP
         self.group = self.group.replace("by-", "").replace("-", "_")
@@ -178,7 +182,6 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         return order_by
 
     def _columns(self):
-        print('_columns')
         if self.request.GET.get('columns'):
             return self.request.GET.getlist('columns')
 
