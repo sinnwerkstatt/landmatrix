@@ -1,7 +1,5 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-""" he `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.8/topics/http/urls/
+"""The `urlpatterns` list routes URLs to views. For more information please
+   see: https://docs.djangoproject.com/en/1.8/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -16,13 +14,31 @@ Including another URLconf
 from django.conf.urls import url, patterns
 from .views import *
 
-urlpatterns = patterns('chart.views',
-	url(r'^$', TransnationalDealsChartView.as_view(), name='chart_transnational_deals'),
-    url(r'^transnational_deals\.pdf$', TransnationalDealsPDFView.as_view(),
-        name='chart_transnational_deals_pdf'),
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
+
+urlpatterns = patterns(
+    'chart.views',
+    url(r'^$', TransnationalDealsChartView.as_view(),
+        name='chart_transnational_deals'),
     url(r'^overview$', OverviewChartView.as_view(), name='chart_overview'),
-	url(r'^map-of-investments/$', MapOfInvestmentsChartView.as_view(), name='chart_map_of_investments'),
-	url(r'^agricultural-drivers/$', AgriculturalDriversChartView.as_view(), name='chart_agricultural_drivers'),
-	url(r'^perspective/$', PerspectiveChartView.as_view(), name='chart_perspective'),
+    url(r'^map-of-investments/$', MapOfInvestmentsChartView.as_view(),
+        name='chart_map_of_investments'),
+    url(r'^agricultural-drivers/$', AgriculturalDriversChartView.as_view(),
+        name='chart_agricultural_drivers'),
+    url(r'^perspective/$', PerspectiveChartView.as_view(),
+        name='chart_perspective'),
     url(r'^all(?P<type>\.csv)?/$', ChartView.as_view(), name='all_charts'),
+    # PDF views for charts
+    url(r'^overview\.pdf$', OverviewChartView.as_view(),
+        {'is_pdf_export': True}, name='chart_overview_pdf'),
+    url(r'^transnational-deals\.pdf$', TransnationalDealsChartView.as_view(),
+        {'is_pdf_export': True}, name='chart_transnational_deals_pdf'),
+    url(r'^map-of-investments\.pdf$', MapOfInvestmentsChartView.as_view(),
+        {'is_pdf_export': True}, name='chart_map_of_investments_pdf'),
+    url(r'^agricultural-drivers\.pdf$', AgriculturalDriversChartView.as_view(),
+        {'is_pdf_export': True}, name='chart_agricultural_drivers_pdf'),
+    url(r'^perspective\.pdf$', PerspectiveChartView.as_view(),
+        {'is_pdf_export': True}, name='chart_perspective_pdf'),
 )
