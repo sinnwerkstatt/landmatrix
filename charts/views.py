@@ -16,35 +16,31 @@ class ChartView(TemplateView, FilterWidgetMixin):
         context = self.get_context_data(**kwargs)
         self.add_filter_context_data(context, request)
 
-        return self.render_response(request, context)
+        if 'is_pdf_export' in kwargs and kwargs['is_pdf_export'] is True:
+            chart_url = request.build_absolute_uri(reverse(self.chart))
+            pdf_filename = "{}.pdf".format(self.chart)
+            response = pdfize_url(chart_url, pdf_filename)
+        else:
+            response = render_to_response(self.template_name, context,
+                                          RequestContext(request))
+
+        return response
 
     def get_context_data(self, **kwargs):
         context = super(ChartView, self).get_context_data(**kwargs)
         context.update({
             "view": "chart view",
-            "chart": self.chart
+            "export_formats": ("XML", "CSV", "XLS", "PDF"),
+            "chart": self.chart,
+            # Use the convention 'chart_name_pdf' for PDF exports
+            "pdf_chart_url": "{}_pdf".format(self.chart),
         })
         return context
 
-    def render_response(self, request, context):
-        request_context = RequestContext(request)
-        response = render_to_response(self.template_name, context,
-                                      request_context)
-
-        return response
-
     def _set_filters(self, GET):
-        self.current_formset_conditions = self.get_formset_conditions(self._filter_set(GET), GET)
+        self.current_formset_conditions = self.get_formset_conditions(
+            self._filter_set(GET), GET)
         self.filters = self.get_filter_context(self.current_formset_conditions)
-
-
-class ChartPDFView(ChartView):
-
-    def render_response(self, request, context):
-        chart_url = request.build_absolute_uri(reverse(self.chart))
-        response = pdfize_url(chart_url, self.chart)
-
-        return response
 
 
 class OverviewChartView(ChartView):
@@ -53,11 +49,6 @@ class OverviewChartView(ChartView):
 
 
 class TransnationalDealsChartView(ChartView):
-    template_name = "charts/transnational-deals.html"
-    chart = "chart_transnational_deals"
-
-
-class TransnationalDealsPDFView(ChartPDFView):
     template_name = "charts/transnational-deals.html"
     chart = "chart_transnational_deals"
 
