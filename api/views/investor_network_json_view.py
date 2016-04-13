@@ -12,6 +12,7 @@ class InvestorNetworkJSONView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         operational_stakeholder = Investor.objects.get(pk=int(request.GET.get('operational_stakeholder')))
+        investordiagram = int(request.GET.get('operational_stakeholder_diagram'))
         involvements = InvestorVentureInvolvement.objects.filter(fk_venture=operational_stakeholder)
         print(operational_stakeholder)
         print(involvements)
@@ -64,4 +65,4 @@ class InvestorNetworkJSONView(TemplateView):
                 'value': involvement.percentage
             })
 
-        return HttpResponse(json.dumps({'nodes': nodes, 'links': links}))
+        return HttpResponse(json.dumps({'index': investordiagram, 'nodes': nodes, 'links': links}))
