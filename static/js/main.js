@@ -417,13 +417,13 @@ $(document).ready(function () {
     setupSharePopover();
     setupDownloadPopover()
 
-    // Set width of headings to make them horizontally centerable
+    /*// Set width of headings to make them horizontally centerable
     $("h1.separator span").each(function () {
         $(this).css("width", $(this).textWidth() + 80);
     });
     $("h2.separator span").each(function () {
         $(this).css("width", $(this).textWidth() + 30);
-    });
+    });*/
     // Toogle links for collapsible sections
     $(".collapsible .toggle").click(function (e) {
         e.preventDefault();
