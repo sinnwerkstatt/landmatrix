@@ -73,6 +73,8 @@ INSTALLED_APPS += (
     'compressor',
     'taggit',
 
+    'sass_processor',
+
     'bootstrap3_datetime',
 
     'django.contrib.admin',
@@ -178,6 +180,14 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
 
+#SASS_PATH = os.path.join(BASE_DIR, 'landmatrix/static/css'),
+#print(SASS_PATH)
+# SASS include paths
+#SASS_PROCESSOR_INCLUDE_DIRS = (
+#    SASS_PATH,
+#    os.path.join(PROJECT_PATH, 'node_modules'),
+#)
+
 #STATICFILES_DIRS = (
 #    os.path.join(BASE_DIR, "landmatrix", "static", "vendor"),
 #)
@@ -185,7 +195,8 @@ STATIC_URL = '/static/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder'
+    'compressor.finders.CompressorFinder',
+    'sass_processor.finders.CssFinder'
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
