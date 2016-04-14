@@ -51,4 +51,9 @@
   {% endif %}
     <i class=""></i>XSL
   </a>
+  {% if 'PDF' in export_formats and pdf_chart_url %}
+  <a class="btn-media pdf" href="{% url pdf_chart_url %}">
+      <i class=""></i>PDF
+  </a>
+  {% endif %}
 </span>
