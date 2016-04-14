@@ -24,8 +24,6 @@ class TestViewBase(DealsTestData):
 
     def test_view_loads(self):
         response = self._get_url_following_redirects(self.VIEW_URL)
-        if not response.status_code == 200: print(self.VIEW_URL, response.status_code)
-
         self.assertEqual(200, response.status_code)
 
     def test_view_contains_data(self):

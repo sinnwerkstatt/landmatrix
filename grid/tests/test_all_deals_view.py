@@ -11,7 +11,7 @@ from django.test import TestCase
 class TestAllDealsView(TestViewBase, TestCase):
 
     # we use grid as defined in landmatrix.url here because django-cms pages are not configured in test db
-    VIEW_URL = '/global/data/all'
+    VIEW_URL = '/global/grid/all'
 
     "Sadly, every class derived from TestViewBase needs to explicitly call TestViewBase.setUp()"
     def setUp(self):
