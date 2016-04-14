@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.utils.encoding import force_text
 
+from editor.models import UserRegionalInfo
 from grid.views.activity_protocol import ActivityProtocol
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
@@ -252,6 +253,17 @@ class ChangesetProtocol(View):
                 fk_region_id__in=self.request.session.get('dashboard_filters', {}).get('region')
             ).values_list('id', flat=True).distinct()
             changesets = _filter_changesets_by_countries(changesets, [str(c) for c in country_ids])
+        elif self.request.session.get('dashboard_filters', {}).get('user'):
+            user = self.request.session.get('dashboard_filters', {}).get('user')
+            if isinstance(user, list) and len(user):
+                user = user[0]
+            print('User:', user)
+            if UserRegionalInfo.objects.filter(user_id=user).exists():
+                country = UserRegionalInfo.objects.get(user_id=user).country.all()
+                print('country', country)
+                if len(country):
+                    changesets = _filter_changesets_by_countries(changesets, country[0].id)
+                    print(list(changesets))
         return changesets
 
     def handle_inserts(self, a_changesets, changesets, inserts_page, limit):
