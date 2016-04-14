@@ -43,6 +43,7 @@
 {% block content %}
 
     {% if deal %}
+        <input type="hidden" id="deal-stakeholder" value="{{ deal.operational_stakeholder.id }}">
         <div class="panel-group" id="accordion">
             {% if forms %}
                 {% for form in forms %}
@@ -50,7 +51,8 @@
                     <div class="panel panel-default">
 
                         <div class="panel-heading">
-                            <a id="{{ form.form_title|slugify }}" data-toggle="collapse" data-parent="#accordion"
+
+                            <a id="#{{ form.form_title|slugify }}" data-toggle="collapse" data-parent="#accordion"
                                href="#collapse_{{ forloop.counter }}">
                                 <h5 class="panel-title">
                                     {{ form.form_title }}
@@ -181,6 +183,7 @@
     </p>
 {% endif %}
 
+
 <script type="text/javascript">
 $(document).ready(function () {
     var count = 0;
@@ -191,6 +194,10 @@ $(document).ready(function () {
         $(this).attr('id', 'map-' + count);
         initializeMap(count, lat, lon);
     })
+
+    $('.operational_stakeholder').append('<div id="chart0"></div>');
+
+    loadSankey(0, $('#deal-stakeholder').val())
 })
 </script>
 {% endblock %}
