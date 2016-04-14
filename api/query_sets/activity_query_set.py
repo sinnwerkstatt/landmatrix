@@ -15,7 +15,6 @@ class ActivityQuerySet:
     def __init__(self, request):
         data = request.POST.get('data', '{"filters": {}, "columns": {}}')
         self.data = json.loads(data)
-        # print('ActivityQuerySet', self.data)
         apply_filters_from_session(request, self.data['filters'])
         if self.DEBUG: pprint(self.data['filters'], width=120, compact=True)
         if 'columns' not in self.data:
