@@ -77,7 +77,7 @@ class ParentInvestorForm(BaseForm):
         if isinstance(investor, list) and len(investor):
             investor = investor[0]
         self.fields["parent_investor"].initial = investor
-        self._fill_investor_choices()
+        #self._fill_investor_choices()
 
     def _fill_investor_choices(self):
         self.investor_choices = [

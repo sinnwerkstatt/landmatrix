@@ -26,6 +26,7 @@ function updateFilters(json) {
         console.log("No filters.");
         label = '<label>No active filters</label>';
         tags.append(label);
+
         return
     } else {
         console.log("Json not empty");
@@ -143,7 +144,8 @@ function get_filter_options(operatorfield, variablefield, key_id) {
 
         if (operatorfield.find(':selected').attr('disabled')) {
             console.log("Old selected is invalid now - resetting");
-            operatorfield.val("");
+            // TODO: This doesn't work
+            operatorfield.find('option:first-child:not(hidden)').attr("selected", "selected");
         }
         
     });
