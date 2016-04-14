@@ -144,5 +144,5 @@ class FilterWidgetAjaxView(View):
                     widget = widget.render(request.GET.get("name", ""), ",".join(value),
                                            attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "valuefield form-control"})
 
-            print(type(field.widget))
+            #print(type(field.widget))
         return HttpResponse(widget, content_type="text/plain")
