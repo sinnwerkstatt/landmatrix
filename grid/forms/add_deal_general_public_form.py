@@ -10,7 +10,7 @@ class AddDealGeneralPublicForm(AddDealGeneralForm):
     form_title = _('General Info')
 
     class Meta:
-        name = 'general_information'
+    	name = 'general_information'
         fields = (
             "tg_land_area", "intended_size", "tg_land_area_comment",
             "tg_intention", "intention", "tg_intention_comment",
