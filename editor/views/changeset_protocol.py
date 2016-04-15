@@ -1,4 +1,5 @@
 from datetime import timedelta
+from pprint import pprint
 
 from django.utils.encoding import force_text
 
@@ -199,6 +200,7 @@ class ChangesetProtocol(View):
             self.handle_a_changesets(deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user)
         if "sh_changesets" in self.data:
             self.handle_sh_changesets(deletions_page, limit, res)
+        print('_changeset_to_json'); pprint(res)
         return res
 
     def handle_a_changesets(self, deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user):
@@ -212,6 +214,7 @@ class ChangesetProtocol(View):
         if "deletes" in self.data["a_changesets"]:
             handle_deletes(changesets, ActivityChangeset.objects, deletions_page, limit)
         if changesets:
+            _uniquify_changesets_dict(changesets)
             res["a_changesets"] = changesets
 
     def handle_my_deals(self, a_changesets, changesets, limit, my_deals_page, user):
@@ -257,14 +260,12 @@ class ChangesetProtocol(View):
             user = self.request.session.get('dashboard_filters', {}).get('user')
             if isinstance(user, list) and len(user):
                 user = user[0]
-            print('User:', user)
             if UserRegionalInfo.objects.filter(user_id=user).exists():
                 country = UserRegionalInfo.objects.get(user_id=user).country.all()
-                print('country', country)
                 if len(country):
                     changesets = _filter_changesets_by_countries(changesets, country[0].id)
-                    print(list(changesets))
-        return changesets
+
+        return _uniquify_changesets_by_deal(changesets)
 
     def handle_inserts(self, a_changesets, changesets, inserts_page, limit):
         changesets_insert = changesets.filter(fk_activity__fk_status__name="pending")  #  previous_version__isnull=True)
@@ -305,6 +306,31 @@ class ChangesetProtocol(View):
                 sh_changesets["deletes"] = deletes
         if sh_changesets:
             res["sh_changesets"] = sh_changesets
+
+
+def _uniquify_changesets_dict(changesets):
+    unique, deals = [], []
+    for cs in changesets.get('inserts', {}).get('cs', []):
+        if cs['deal_id'] not in deals:
+            unique.append(cs)
+            deals.append(cs['deal_id'])
+    changesets.get('inserts', {})['cs'] = unique
+    unique = []
+    for cs in changesets.get('updates', {}).get('cs', []):
+        if cs['deal_id'] not in deals:
+            unique.append(cs)
+            deals.append(cs['deal_id'])
+    changesets.get('updates', {})['cs'] = unique
+
+
+def _uniquify_changesets_by_deal(changesets):
+    unique, deals = [], []
+    for changeset in changesets:
+        print(unique, deals)
+        if not changeset.fk_activity.activity_identifier in deals:
+            unique.append(changeset)
+            deals.append(changeset.fk_activity.activity_identifier)
+    return unique
 
 
 def _filter_changesets_by_countries(changesets, countries):
