@@ -1,4 +1,4 @@
-{% load i18n static wagtailcore_tags %}<!DOCTYPE html>
+{% load i18n static wagtailcore_tags sass_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -14,11 +14,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="{% static "vendor/bootstrap/dist/css/bootstrap.min.css" %}">
-    <link rel="stylesheet" href="{% static "css/content.css" %}">
+    <!-- <link rel="stylesheet" href="{% static "css/content.css" %}"> -->
     <link rel="stylesheet" href="{% static "vendor/select2/dist/css/select2.min.css" %}"/>
     <link rel="stylesheet" href="{% static "vendor/font-awesome/css/font-awesome.css" %}">
     <link rel="stylesheet" href="{% static "vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" %}">
     <link rel="stylesheet" href="{% static "css/icons.css" %}">
+    <link href="{% sass_src 'css/main.scss' %}" rel="stylesheet" type="text/css" />
     <link rel="icon" href="{% static "img/favicon.ico" %}">
 
     <script src="{% static "vendor/jquery/dist/jquery.js" %}"></script>
