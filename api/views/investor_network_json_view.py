@@ -7,6 +7,7 @@ from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+VERBOSE = True
 
 class InvestorNetworkJSONView(TemplateView):
 
@@ -14,8 +15,9 @@ class InvestorNetworkJSONView(TemplateView):
         operational_stakeholder = Investor.objects.get(pk=int(request.GET.get('operational_stakeholder')))
         investordiagram = int(request.GET.get('operational_stakeholder_diagram'))
         involvements = InvestorVentureInvolvement.objects.filter(fk_venture=operational_stakeholder)
-        print(operational_stakeholder)
-        print(involvements)
+        if VERBOSE:
+            print(operational_stakeholder)
+            print(involvements)
         stakeholder_involvements = involvements.filter(role='ST')
         investor_involvements = involvements.filter(role='IN')
 
@@ -48,7 +50,8 @@ class InvestorNetworkJSONView(TemplateView):
                 'name': involvement.fk_investor.name,
                 'id': 'investor_{}'.format(involvement.fk_investor_id)
             })
-        print(nodes)
+        if VERBOSE:
+            print(nodes)
 
         links = []
 

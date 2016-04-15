@@ -1,0 +1,273 @@
+
+/* ==========================================================================
+ *    FORMS
+ * ========================================================================== */
+
+.control-group {
+  margin-bottom: 10px;
+}
+.control-group .input-group {
+  margin-top: 10px;
+  width: 30%;
+}
+.control-group .input-group:first-child {
+  margin-top: 0;
+}
+.control-group:before {
+  display: table;
+  content: " ";
+}
+.control-group:after {
+  clear: both;
+}
+
+.control-group .control-label {
+  padding: 5px 0 0 30px;
+}
+
+.form-control {
+  width: auto;
+  display: inline-block;
+  border: solid 1px $lm_medium2;
+  height: 3em;
+}
+
+.form-control:focus {
+  border-color: #B9D635;
+}
+
+.control-group.url .input-group {
+  width: 100%;
+}
+
+textarea.form-control {
+  width: 100%;
+}
+
+.control-group .input-group-addon {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.controls .select2-container--default .select2-selection--single {
+  border: solid 1px $lm_medium2;
+  height: 3em;
+  padding: 8px 12px;
+}
+
+.select2-container--default .select2-selection--single span.select2-selection__arrow {
+  right: 10px;
+  top: 10px;
+}
+
+.controls > ul {
+  padding: 0;
+  margin: 0;
+}
+
+.help-block {
+  display: inline-block;
+}
+
+.checkboxes input[type=checkbox] {
+  display: none;
+}
+
+.checkboxes label:before {
+  font-weight: normal;
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 10px;
+  position: absolute;
+  left: 0;
+  bottom: 6px;
+  background-color: $lm_offwhite;
+  border: solid 1px $lm_dark;
+}
+
+.checkboxes .checkbox label:before {
+  border-radius: 4px;
+}
+
+.checkboxes input[type=checkbox]:checked + label:before {
+  content: 'x';
+  color: $lm_dark;
+  text-align: center;
+}
+
+.checkboxes label {
+  padding: 0px 25px !important;
+}
+
+ul.form.empty {
+  display: none;
+}
+
+.form ul {
+  margin: 0;
+}
+
+form ul li,
+.panel ul li {
+  background: none;
+  padding-left: 0;
+  list-style: none;
+}
+
+.helptext {
+  border-top-right-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
+}
+
+#id_crops, #id_animals, #id_minerals {
+  max-height: 30vh;
+  max-width: 66%;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+ul.form.condition li.field label {
+  display: none;
+}
+
+input,
+select,
+textarea {
+  border-radius: 4px;
+  border: 1px solid;
+  border-color: $lm_medium2;
+
+  background-color: $lm_offwhite;
+  box-shadow: none !important;
+  color: $lm_dark;
+  max-width: 100%;
+  padding: 5px 5px;
+}
+
+.investorops {
+  float: right;
+  display: inline-block;
+}
+
+.with-error .panel-heading h5,
+.errorlist li {
+  color: red;
+}
+
+.control-group.with-error .form-control {
+  border-color: red;
+}
+
+.with-error .panel-collapse {
+  display: block;
+}
+
+/* YEAR BASED DATA AND FORMSETS */
+
+a.add-form,
+a.remove-form,
+a.add-ybd,
+a.remove-ybd {
+  height: 42px;
+  padding: 8px 12px;
+  border-color: transparent;
+  visibility: collapse;
+  margin-left: 20px;
+  float: right;
+  color: #414141;
+  width: 120px;
+  text-align: left;
+}
+
+a.add-form i,
+a.remove-form i,
+a.add-ybd i,
+a.remove-ybd i {
+  visibility: visible;
+}
+
+a.add-form:hover,
+a.remove-form:hover,
+a.add-ybd:hover,
+a.remove-ybd:hover {
+  border-color: $lm_orange;
+  visibility: visible;
+  color: $lm_orange;
+}
+
+.input-group .form-control.year-based {
+  width: 70%;
+}
+.input-group .form-control.year-based-year {
+  width: 30%;
+}
+
+.negotiation_status .input-group,
+.implementation_status .input-group {
+  width: 80%;
+}
+.negotiation_status .input-group .year-based,
+.implementation_status .input-group .year-based {
+  width: 40%;
+}
+.negotiation_status .input-group .year-based-year,
+.implementation_status .input-group .year-based-year {
+  width: 30%;
+}
+
+.agreement_duration .input-group,
+.total_jobs_current .input-group,
+.total_jobs_current_employees .input-group,
+.total_jobs_current_daily_workers .input-group,
+.domestic_jobs_current .input-group,
+.domestic_jobs_current_employees .input-group,
+.domestic_jobs_current_daily_workers .input-group,
+.foreign_jobs_current .input-group,
+.foreign_jobs_current_employees .input-group,
+.foreign_jobs_current_daily_workers .input-group {
+  width: 80%;
+}
+
+.agreement_duration .input-group .year-based,
+.total_jobs_current .input-group .year-based,
+.total_jobs_current_employees .input-group .year-based,
+.total_jobs_current_daily_workers .input-group .year-based,
+.domestic_jobs_current .input-group .year-based,
+.domestic_jobs_current_employees .input-group .year-based,
+.domestic_jobs_current_daily_workers .input-group .year-based,
+.foreign_jobs_current .input-group .year-based,
+.foreign_jobs_current_employees .input-group .year-based,
+.foreign_jobs_current_daily_workers .input-group .year-based {
+  width: 62%;
+}
+.agreement_duration .input-group .year-based-year,
+.total_jobs_current .input-group .year-based-year,
+.total_jobs_current_employees .input-group .year-based-year,
+.total_jobs_current_daily_workers .input-group .year-based-year,
+.domestic_jobs_current .input-group .year-based-year,
+.domestic_jobs_current_employees .input-group .year-based-year,
+.domestic_jobs_current_daily_workers .input-group .year-based-year,
+.foreign_jobs_current .input-group .year-based-year,
+.foreign_jobs_current_employees .input-group .year-based-year,
+.foreign_jobs_current_daily_workers .input-group .year-based-year {
+  width: 38%;
+}
+
+.dynamic-form .remove-form {
+  display: none;
+}
+
+.dynamic-form + .dynamic-form .remove-form {
+  display: block;
+}
+
+.dynamic-form + .dynamic-form .add-form {
+  display: none;
+}
+
+.control-group.parent-stakeholder-form .input-group,
+.control-group.parent-investor-form .input-group {
+  width: auto;
+}
