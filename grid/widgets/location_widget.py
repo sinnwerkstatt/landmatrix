@@ -10,7 +10,7 @@ class LocationWidget(forms.TextInput):
         final_attrs = self.build_attrs(attrs, name=name)
         return """
         <input id="id_%(name)s" name="%(name)s" type="text" value="%(value)s" %(attrs)s/>
-        <div class="map"></div>
+        <div class="maptemplate"></div>
         """ % {
             "name": str(name or ""),
             "value": str(value or ""),
