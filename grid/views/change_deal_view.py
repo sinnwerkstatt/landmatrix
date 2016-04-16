@@ -52,15 +52,15 @@ class ChangeDealView(SaveDealView):
         context['deal_id'] = kwargs.pop('deal_id')
         return context
 
-    def get_forms(self, data=None):
-        return [self.get_form(form, data) for form in self.FORMS]
+    def get_forms(self, data=None, files=None):
+        return [self.get_form(form, data, files=files) for form in self.FORMS]
 
-    def get_form(self, form_class, data=None):
+    def get_form(self, form_class, data=None, files=None):
         deal = Deal(self.activity.activity_identifier)
         initial = form_class.get_data(deal)
         #if issubclass(form_class[1], BaseFormSet):
         #    data = to_formset_data(data)
-        return form_class(initial=initial, data=data)
+        return form_class(initial=initial, data=data, files=files)
 
 
 def to_formset_data(data):
@@ -72,4 +72,3 @@ def to_formset_data(data):
             for key, value in data[index].items():
                 returned['form-{}-{}'.format(index, key)] = value
     return returned
-
