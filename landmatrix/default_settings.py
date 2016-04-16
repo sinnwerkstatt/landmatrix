@@ -257,3 +257,8 @@ CACHES = {
 COMMENTS_APP = 'threadedcomments'
 
 WAGTAIL_SITE_NAME = 'Land Matrix'
+
+# Limit all uploads to 20MB, and data sources to 1MB
+MAX_UPLOAD_SIZE = 20971520
+DATA_SOURCE_MAX_UPLOAD_SIZE = 1048576
+DATA_SOURCE_DIR = 'uploads'  # appended to MEDIA_ROOT/MEDIA_URL

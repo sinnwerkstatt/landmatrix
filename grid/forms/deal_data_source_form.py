@@ -1,29 +1,29 @@
-from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-from landmatrix.models.deal_history import DealHistoryItem
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-from grid.forms.base_form import BaseForm
-from grid.forms.file_field_with_initial import FileFieldWithInitial, FileInputWithInitial
-from grid.widgets import TitleField, CommentInput
+import os
+import re
+import urllib.request
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.base import File
 from django.forms.models import formset_factory
 from django.template.defaultfilters import slugify
-from django.core.files.storage import default_storage
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.contrib import messages
-
 from wkhtmltopdf import wkhtmltopdf
 
-import urllib.request
+from landmatrix.models.activity import Activity
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.deal_history import DealHistoryItem
+from landmatrix.storage import data_source_storage
+from grid.forms.base_form import BaseForm
+from grid.forms.file_field_with_initial import (
+    FileFieldWithInitial, FileInputWithInitial,
+)
+from grid.widgets import TitleField, CommentInput
 
-import os
-import re
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 
 class DealDataSourceForm(BaseForm):
@@ -216,27 +216,17 @@ class PublicViewDealDataSourceForm(DealDataSourceForm):
 class PublicViewDealDataSourceFormSet(
     formset_factory(PublicViewDealDataSourceForm, formset=AddDealDataSourceFormSet, extra=0)
 ):
-
     form_title = _('Data sources')
-
 
 
 def get_file_from_upload(files, form_index):
     try:
         key = next(k for k in files.keys() if 'form-{}-file'.format(form_index))
         file = files.getlist(key)[0]
-        handle_uploaded_file(file, file.name, FileInputWithInitial.UPLOAD_BASE_DIR)
-        return file.name
+        return data_source_storage.save(file.name, file)
     except (StopIteration, IndexError, AttributeError):
         return None
 
-
-def handle_uploaded_file(uploaded_file, file_name, base_dir):
-    if not os.path.exists(base_dir):
-        os.makedirs(base_dir)
-    with open(base_dir+file_name, 'wb+') as destination:
-        for chunk in uploaded_file.chunks():
-            destination.write(chunk)
 
 def handle_url(form_data, request):
     url = form_data['url']
@@ -250,15 +240,13 @@ def handle_url(form_data, request):
     del form_data['file']
 
     # Create file for URL
-    uploaded_pdf_path = os.path.join(settings.MEDIA_ROOT, "uploads", url_slug)
-    if not default_storage.exists(uploaded_pdf_path):
+    if not data_source_storage.exists(url_slug):
         try:
             # Check if URL changed and no file given
             if url.endswith(".pdf"):
                 response = urllib.request.urlopen(url)
-                default_storage.save(
-                    uploaded_pdf_path, ContentFile(response.read())
-                )
+                data_source_storage.save(url_slug,
+                                         ContentFile(response.read()))
             else:
                 # Create PDF from URL
                 output = wkhtmltopdf(pages=url, output=uploaded_pdf_path)

@@ -1,54 +1,78 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from django import forms
-from django.core.files.uploadedfile import UploadedFile, SimpleUploadedFile
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 
-import os
+from landmatrix.storage import data_source_storage
+
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 class FileInputWithInitial(forms.ClearableFileInput):
-
-    NUM_DISPLAYED_CHARS = 40
-    # UPLOAD_BASE_DIR = os.path.join(settings.MEDIA_ROOT, 'uploads')
-    UPLOAD_BASE_DIR = '/media/uploads'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    displayed_chars = 40
+    existing_file_template = """
+    <dl>
+        <dt>{label}:</dt>
+        <dd>
+            <a href="{url}" target="_blank">{name}</a>
+        </dd>
+    </dl>
+    """
+    new_upload_template = "{}-new"
 
     def render(self, name, value, attrs=None):
         if attrs is None:
             attrs = {}
-        output = []
+
+        output = ""
+
         if value:
-            value = isinstance(value, UploadedFile) and value.name or value
-            output.extend([
-                "<dl>",
-                "<dt>{}:</dt>".format(_("Saved file")),
-                "<dd>",
-                '<a href="{}/{}" target="_blank">{}...</a>'.format(
-                    self.UPLOAD_BASE_DIR, value, value[:self.NUM_DISPLAYED_CHARS]
-                ),
-                '<input type="hidden" name="{}" value="{}">'.format(name, value),
-                "</dd>",
-                "</dl>"
-            ])
-        output.append(super().render("%s-new" % name, value, attrs))
-        return "\n".join(output)
+            if self.is_initial(value):
+                # previously uploaded file
+                value_name = str(value.name)
+                value_url = value.url
+            else:
+                value_name = str(value)
+                value_url = data_source_storage.url(value)
+
+            if len(value_name) > self.displayed_chars:
+                display_name = value_name[:self.displayed_chars] + '...'
+            else:
+                display_name = value_name
+
+            output += self.existing_file_template.format(label=_("Saved file"),
+                                                         url=value_url,
+                                                         name=display_name)
+
+        file_input = super().render(self.new_upload_template.format(name),
+                                    None, attrs)
+        output += file_input
+
+        return output
 
     def value_from_datadict(self, data, files, name):
-        new_file = files.get("%s-new" % name)
-        if new_file:
-            return new_file
-        value = data.get(name)
-        if value:
-            return SimpleUploadedFile(name=value, content=b'test')
-        return ""
+        new_file_name = self.new_upload_template.format(name)
+
+        try:
+            value = files[new_file_name]
+        except KeyError:
+            value = None
+
+        return value
 
 
 class FileFieldWithInitial(forms.FileField):
     widget = FileInputWithInitial
     show_hidden_initial = True
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def validate(self, value):
+        '''
+        For new uploads only, check that size is less than our max.
+
+        This doesn't prevent DOS attacks (for that we'd need to limit the
+        webserver) but it does let us give the user a nice error message.
+        '''
+        if value and value._size > settings.DATA_SOURCE_MAX_UPLOAD_SIZE:
+            raise ValidationError(_("Uploaded files must be less than 1MB."))
