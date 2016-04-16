@@ -76,7 +76,7 @@ class SaveDealView(TemplateView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        forms = self.get_forms(self.request.POST)
+        forms = self.get_forms(self.request.POST, files=self.request.FILES)
         if all(form.is_valid() for form in forms):
             action_comment = self.update_deal(forms, request)
             self.activity.fk_status = Status.objects.get(name='pending')

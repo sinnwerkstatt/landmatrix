@@ -18,8 +18,8 @@ class AddDealView(SaveDealView):
         )
         return super(AddDealView, self).post(request, *args, **kwargs)
 
-    def get_forms(self, data=None):
+    def get_forms(self, data=None, files=None):
         forms = []
         for form in self.FORMS:
-            forms.append(form(data or None))
+            forms.append(form(data, files=files))
         return forms
