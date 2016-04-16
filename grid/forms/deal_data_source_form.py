@@ -232,12 +232,16 @@ def handle_url(form_data, request):
     url = form_data['url']
     url_slug = get_url_slug(request, url)
 
-    # if not url_slug or form_data['file'] or url_slug == form_data['file']:
-    if not url_slug or url_slug == form_data['file']:
+    # TODO: this is a quick and dirty KeyError fix, needs some cleanup
+    if not url_slug:
         return
 
-    # Remove file from taggroup
-    del form_data['file']
+    if 'file' in form_data:
+        if url_slug == form_data['file']:
+            return
+        else:
+            # Remove file from taggroup
+            del form_data['file']
 
     # Create file for URL
     if not data_source_storage.exists(url_slug):
