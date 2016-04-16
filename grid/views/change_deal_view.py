@@ -19,6 +19,8 @@ from grid.forms.deal_produce_info_form import DealProduceInfoForm
 from grid.forms.deal_spatial_form import ChangeDealSpatialFormSet
 from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
+from grid.forms.country_specific_forms import get_country_specific_form
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -53,14 +55,23 @@ class ChangeDealView(SaveDealView):
         return context
 
     def get_forms(self, data=None, files=None):
-        return [self.get_form(form, data, files=files) for form in self.FORMS]
-
-    def get_form(self, form_class, data=None, files=None):
         deal = Deal(self.activity.activity_identifier)
+        forms = [
+            self.get_form(deal, form, data, files=files) for form in self.FORMS
+        ]
+
+        country_specific_form = get_country_specific_form(deal)
+
+        if country_specific_form:
+            forms.append(country_specific_form)
+
+        return forms
+
+    def get_form(self, deal, form_class, data=None, files=None):
         initial = form_class.get_data(deal)
-        #if issubclass(form_class[1], BaseFormSet):
-        #    data = to_formset_data(data)
-        return form_class(initial=initial, data=data, files=files)
+        form = form_class(initial=initial, data=data, files=files)
+
+        return form
 
 
 def to_formset_data(data):
