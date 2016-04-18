@@ -1,3 +1,5 @@
+@import 'colors';
+
 .ol-full-screen {
     left: 0.5em;
     top: 4.5em;
@@ -142,6 +144,11 @@ div.layer-group > a:hover {
     border: none !important;
     padding-left: 10px;
     padding-top: 10px;
+}
+
+#legendstuff {
+    max-height: 75vh;
+    overflow-y: auto;
 }
 
 .ol-control,
