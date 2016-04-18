@@ -42,7 +42,7 @@
 }
 
 .navbar-default {
-    background-color: $lm_light; /*  rgba(156, 156, 156, 0.26); */
+    background-color: $lm_light;
 }
 
 .navbar-main {
@@ -51,11 +51,6 @@
 
 .navbar-default .navbar-inner {
     background-color: #1d1d1d;
-    background-image: none;
-    background-image: none;
-    background-image: none;
-    background-image: none;
-    background-image: none;
     background-image: none;
     background-repeat: no-repeat;
     filter: none;
@@ -98,10 +93,13 @@
     color: $lm_dark;
 }
 
-.nav-text {
-    display: block;
-    float: right;
-    /*margin-top: -1px;*/
+
+@media (min-width: 768px) {
+
+    .nav-text {
+        display: block;
+        float: right;
+    }
 }
 
 .nav-circle {
@@ -204,6 +202,11 @@
     padding-right: 10px;
     display: inline-block;
 }
+.messages {
+    margin-top: 10px;
+    color: $lm_medium2;
+    display: block;
+}
 
 .lm-nav.lm-regions,
 .lm-nav.lm-flag {
@@ -218,6 +221,22 @@
     top: 16px;
     right: 12px;
     position: absolute;
+}
+
+.select2-main {
+    position: relative;
+    top: 24px !important;
+    left: -53px !important;
+    width: 180px !important;
+}
+
+.select2-search {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
 }
 
 
