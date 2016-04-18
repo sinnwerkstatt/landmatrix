@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n custom_tags %}
+{% load i18n custom_tags sass_tags %}
 {% load humanize %}
 {% load static %}
 
@@ -8,7 +8,9 @@
 
     <link rel="stylesheet" href="{% static "css/nprogress.css" %}"/>
     <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/map.css" %}"/>
+    <!-- <link rel="stylesheet" href="{% static "css/map.css" %}"/> -->
+    <link href="{% sass_src 'css/map.scss' %}" rel="stylesheet" type="text/css" />
+
 
 {% endblock %}
 
