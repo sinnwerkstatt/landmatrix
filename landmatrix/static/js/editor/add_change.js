@@ -105,7 +105,7 @@ function dismissChangePopup(win, newId, newRepr) {
 $(document).ready(function(){
 
     /* Overall: Enable checkboxes again on checking the parent input */
-    $("input#id_general_information-intention_0,input#id_general_information-intention_1,input#id_water-source_of_water_extraction_1").click(function(){
+    $("input#id_intention_0,input#id_intention_1,input#id_source_of_water_extraction_1").click(function(){
         if($(this).is(":checked")) {
           $(this).parent().parent().children("ul").find("input:checkbox").prop("disabled",false);
         }
@@ -127,11 +127,11 @@ $(document).ready(function(){
       }).filter(":checked").addClass("on");
 
     /* Overall: Disable checkboxes on "change" pages */
-    if($("input#id_general_information-intention_0, input#id_general_information-intention_1, input#id_water-source_of_water_extraction_1").is(":checked")) {
-      $("input#id_general_information-intention_0:checked, input#id_general_information-intention_1:checked, input#id_water-source_of_water_extraction_1:checked").parent().parent().children("ul").find("input:checkbox").prop("disabled",false);
+    if($("input#id_intention_0, input#id_intention_1, input#id_source_of_water_extraction_1").is(":checked")) {
+      $("input#id_intention_0:checked, input#id_intention_1:checked, input#id_source_of_water_extraction_1:checked").parent().parent().children("ul").find("input:checkbox").prop("disabled",false);
     }
     else {
-      $("input#id_general_information-intention_0, input#id_general_information-intention_1, input#id_water-source_of_water_extraction_1").parent().parent().children("ul").find("input:checkbox").prop("disabled",true);
+      $("input#id_intention_0, input#id_intention_1, input#id_source_of_water_extraction_1").parent().parent().children("ul").find("input:checkbox").prop("disabled",true);
     }
 
     /* Spatial data: Initialize map */
@@ -175,67 +175,67 @@ $(document).ready(function(){
     });
 
     /* General information: Leasing fees area only visible if "for specified area" is selected */
-    $("li.annual_leasing_fee_area, li.purchase_price_area").css("display","none");
-    $("select#id_general_information-purchase_price_type").change(function (){
+    $("div.annual_leasing_fee_area, div.purchase_price_area").css("display","none");
+    $("select#id_purchase_price_type").change(function (){
       if ( $(this).find("option:eq(2)").is(":selected") ){
-        $("li.purchase_price_area").slideDown("fast");
+        $("div.purchase_price_area").slideDown("fast");
       }
       else {
-        $("li.purchase_price_area").slideUp("fast");
-        $("li.purchase_price_area div input").val("");
+        $("div.purchase_price_area").slideUp("fast");
+        $("div.purchase_price_area div input").val("");
       }
     });
-    $("select#id_general_information-annual_leasing_fee_type").change(function (){
+    $("select#id_annual_leasing_fee_type").change(function (){
       if ( $(this).find("option:eq(2)").is(":selected") ){
-        $("li.annual_leasing_fee_area").slideDown("fast");
+        $("div.annual_leasing_fee_area").slideDown("fast");
       }
       else {
-        $("li.annual_leasing_fee_area").slideUp("fast");
-        $("li.annual_leasing_fee_area div input").val("");
+        $("div.annual_leasing_fee_area").slideUp("fast");
+        $("div.annual_leasing_fee_area div input").val("");
       }
     });
 
     /* General information: Contract farming everything invisible until "Yes" selected */
-    if( !$("input#id_general_information-contract_farming_0").is(":checked") ){
-      $("li.on_the_lease, li.off_the_lease, li.lease_type, li.on_the_lease_area, li.on_the_lease_farmers, li.off_the_lease_area, li.off_the_lease_farmers").css("display", "none");
+    if( !$("input#id_contract_farming_0").is(":checked") ){
+      $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.off_the_lease_area, div.off_the_lease_farmers").css("display", "none");
     }
-    $("input#id_general_information-contract_farming_0").click(function (){
+    $("input#id_contract_farming_0").click(function (){
       if ( $(this).is(":checked")){
-        $("li.on_the_lease, li.off_the_lease, li.lease_type, li.on_the_lease_area, li.on_the_lease_farmers, li.off_the_lease_area, li.off_the_lease_farmers").slideDown("fast");
+        $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.off_the_lease_area, div.off_the_lease_farmers").slideDown("fast");
       }
       else {
-        $("li.on_the_lease, li.off_the_lease, li.lease_type, li.on_the_lease_area, li.on_the_lease_farmers, li.off_the_lease_area, li.off_the_lease_farmers").slideUp("fast");
+        $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.off_the_lease_area, div.off_the_lease_farmers").slideUp("fast");
       }
     });
-    $("input#id_general_information-contract_farming_1").click(function (){
-      $("li.on_the_lease, li.off_the_lease, li.lease_type, li.on_the_lease_area, li.on_the_lease_farmers, li.off_the_lease_area, li.off_the_lease_farmers").slideUp("fast");
+    $("input#id_contract_farming_1").click(function (){
+      $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.off_the_lease_area, div.off_the_lease_farmers").slideUp("fast");
     });
 
     /* Employment: toggle visibility of subfields on click*/
     if($("body").hasClass("public")) {
-      if(!$('#id_employment-total_jobs_created').is(":checked")) {
-        $('#id_employment-total_jobs_created').parent().parent().nextAll().slice(0,2).css("display","none");
+      if(!$('#id_total_jobs_created').is(":checked")) {
+        $('#id_total_jobs_created').parent().parent().nextAll().slice(0,2).css("display","none");
       }
-      if(!$('#id_employment-foreign_jobs_created').is(":checked")) {
-        $('#id_employment-foreign_jobs_created').parent().parent().nextAll().slice(0,2).css("display","none");
+      if(!$('#id_foreign_jobs_created').is(":checked")) {
+        $('#id_foreign_jobs_created').parent().parent().nextAll().slice(0,2).css("display","none");
       }
-      if(!$('#id_employment-domestic_jobs_created').is(":checked")) {
-        $('#id_employment-domestic_jobs_created').parent().parent().nextAll().slice(0,2).css("display","none");
+      if(!$('#id_domestic_jobs_created').is(":checked")) {
+        $('#id_domestic_jobs_created').parent().parent().nextAll().slice(0,2).css("display","none");
       }
-      $('#id_employment-total_jobs_created, #id_employment-foreign_jobs_created, #id_employment-domestic_jobs_created').click(function() {
+      $('#id_total_jobs_created, #id_foreign_jobs_created, #id_domestic_jobs_created').click(function() {
         $(this).parent().parent().nextAll().slice(0,2).slideToggle('fast');
       });
     } else {
-      if(!$('#id_employment-total_jobs_created').is(":checked")) {
-        $('#id_employment-total_jobs_created').parent().parent().nextAll().slice(0,7).css("display","none");
+      if(!$('#id_total_jobs_created').is(":checked")) {
+        $('#id_total_jobs_created').parent().parent().nextAll().slice(0,7).css("display","none");
       }
-      if(!$('#id_employment-foreign_jobs_created').is(":checked")) {
-        $('#id_employment-foreign_jobs_created').parent().parent().nextAll().slice(0,7).css("display","none");
+      if(!$('#id_foreign_jobs_created').is(":checked")) {
+        $('#id_foreign_jobs_created').parent().parent().nextAll().slice(0,7).css("display","none");
       }
-      if(!$('#id_employment-domestic_jobs_created').is(":checked")) {
-        $('#id_employment-domestic_jobs_created').parent().parent().nextAll().slice(0,7).css("display","none");
+      if(!$('#id_domestic_jobs_created').is(":checked")) {
+        $('#id_domestic_jobs_created').parent().parent().nextAll().slice(0,7).css("display","none");
       }
-      $('#id_employment-total_jobs_created, #id_employment-foreign_jobs_created, #id_employment-domestic_jobs_created').click(function() {
+      $('#id_total_jobs_created, #id_foreign_jobs_created, #id_domestic_jobs_created').click(function() {
         $(this).parent().parent().nextAll().slice(0,7).slideToggle('fast');
       });
     }
@@ -251,27 +251,27 @@ $(document).ready(function(){
         return false;
     });
 
-    $('#id_action_comment-not_public').click(function(){
+    $('#id_not_public').click(function(){
         if ($(this).is(":checked")) {
             $(".field.control-group.not_public_reason ").slideDown("fast");
         } else {
             $(".field.control-group.not_public_reason ").slideUp("fast");
         }
     });
-    if ($('#id_action_comment-not_public').is(':checked')) {
+    if ($('#id_not_public').is(':checked')) {
         $(".field.control-group.not_public_reason ").show();
     } else {
         $(".field.control-group.not_public_reason ").hide();
     }
 
-    $('#id_action_comment-assign_to_user').change(function() {
+    $('#id_assign_to_user').change(function() {
         if($(this).find("option:selected").val()){
             $(".field.control-group.tg_feedback_comment ").slideDown("fast");
         } else {
             $(".field.control-group.tg_feedback_comment ").slideUp("fast");
         }
     });
-    if($('#id_action_comment-assign_to_user option:selected').val()) {
+    if($('#id_assign_to_user option:selected').val()) {
         $(".field.control-group.tg_feedback_comment ").slideDown("fast");
     } else {
         $(".field.control-group.tg_feedback_comment ").slideUp("fast");
