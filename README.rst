@@ -45,6 +45,13 @@ After the database is ready, Run the migrations - just to make sure:
 
 $ python manage.py migrate
 
+We upgraded to Sass, so compilation of the stylesheets has become a necessity (until the builtin automation is fixed):
+
+$ python manage.py compilescss
+
+This will generate a "main.css" which should already be included in the repository. You'll mostly need this to
+regenerate after changes to the CSS.
+
 Also collecting the statics is essential:
 
 $ python manage.py collectstatic
@@ -58,6 +65,8 @@ Upgrading
 
 After upgrading, you may have to update the static files to see changes e.g. to the CSS:
 
+$ bower install                 # If you upgraded or added any 3rd party javascript libraries
+$ python manage.py compilescss  # if you changed the sass stylesheet scss
 $ python manage.py collectstatic
 
 Backup to dump
