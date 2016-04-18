@@ -52,8 +52,10 @@ if __name__ == '__main__':
         # MapComment.map_all(save=True)
         # MapInvestor._done = True
         # MapInvestorActivityInvolvement.map_all(save=True)
-        MapAnimal.map_all(save=True)
-        MapMineral.map_all(save=True)
+        # MapAnimal.map_all(save=True)
+        # MapMineral.map_all(save=True)
+        MapRegion.map_all(save=True)
+        MapCountry.map_all(save=True)
 
         if False:
             MapActivity._done = True
