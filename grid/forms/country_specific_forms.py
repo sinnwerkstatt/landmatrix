@@ -6,24 +6,33 @@ from grid.forms.base_form import BaseForm
 from grid.widgets import TitleField, NumberInput
 
 
-def get_country_specific_form(deal, data=None, files=None):
-    # TODO: move country finding to models
-    form = None
+def get_country_specific_form_class(deal, data=None, files=None):
+    print('got deal', deal)
+    target_country_slug = _get_deal_target_country_slug(deal)
 
     try:
-        target_country = deal.attributes['target_country']
+        form_class = COUNTRY_FORMS[target_country_slug]
+    except KeyError:
+        return None
+    else:
+        return form_class
+
+
+def _get_deal_target_country_slug(deal):
+    # TODO: move to models, once I understand things a bit better
+    try:
+        target_country_name = deal.attributes['target_country']
     except (KeyError, AttributeError):
         pass
     else:
-        country = Country.objects.get(name=target_country)
         try:
-            form_cls = COUNTRY_FORMS[country.slug]
-        except KeyError:
+            target_country = Country.objects.get(name=target_country_name)
+        except Country.DoesNotExist:
             pass
         else:
-            form = form_cls(data, files=files)
+            return target_country.slug
 
-    return form
+    return None
 
 
 class GermanyForm(BaseForm):
@@ -32,6 +41,12 @@ class GermanyForm(BaseForm):
     intended_size = forms.IntegerField(required=False,
                                        label=_("Intended size"),
                                        help_text=_("ha"), widget=NumberInput)
+    test_integer = forms.IntegerField(required=False,
+                                      label=_("Test integer"),
+                                      widget=NumberInput)
+
+    class Meta:
+        name = 'germany specific info'
 
 
 COUNTRY_FORMS = {
