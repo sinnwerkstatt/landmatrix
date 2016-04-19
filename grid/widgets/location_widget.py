@@ -1,7 +1,8 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from django import forms
-from django.forms.util import flatatt
+from django.forms.utils import flatatt
+
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class LocationWidget(forms.TextInput):
