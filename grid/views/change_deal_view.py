@@ -19,7 +19,7 @@ from grid.forms.deal_produce_info_form import DealProduceInfoForm
 from grid.forms.deal_spatial_form import ChangeDealSpatialFormSet
 from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
-from grid.forms.country_specific_forms import get_country_specific_form
+from grid.forms.country_specific_forms import get_country_specific_form_class
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -60,9 +60,12 @@ class ChangeDealView(SaveDealView):
             self.get_form(deal, form, data, files=files) for form in self.FORMS
         ]
 
-        country_specific_form = get_country_specific_form(deal)
+        country_specific_form_class = get_country_specific_form_class(deal)
 
-        if country_specific_form:
+        if country_specific_form_class:
+            country_specific_form = self.get_form(deal,
+                                                  country_specific_form_class,
+                                                  data=data, files=files)
             forms.append(country_specific_form)
 
         return forms
