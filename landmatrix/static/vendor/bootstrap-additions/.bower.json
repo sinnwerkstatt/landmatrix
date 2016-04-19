@@ -41,7 +41,7 @@
     "tag": "v0.3.1",
     "commit": "e0ce1871fe1c88f7d395ba4849ef77c8bd80d1fb"
   },
-  "_source": "git://github.com/mgcrea/bootstrap-additions.git",
+  "_source": "https://github.com/mgcrea/bootstrap-additions.git",
   "_target": "~0.3.1",
   "_originalSource": "bootstrap-additions"
 }
