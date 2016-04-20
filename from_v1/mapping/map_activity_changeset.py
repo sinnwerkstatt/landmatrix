@@ -1,5 +1,4 @@
 from mapping.map_model import MapModel
-from mapping.map_status import MapStatus
 import landmatrix.models
 import old_editor.models
 from migrate import V1, V2
@@ -15,7 +14,7 @@ def find_attached_activity(activity_id):
         filter(activity_identifier=old_activity.activity_identifier).\
         order_by('id').\
         last()
-    print(old_activity.activity_identifier, new_activity.id)
+    # print('find_attached_activity', old_activity.activity_identifier, new_activity.id)
     return new_activity.id
 
 
