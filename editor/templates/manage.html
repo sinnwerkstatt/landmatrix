@@ -335,7 +335,7 @@
                         {% for changeset in sh_deletes.cs %}
                             <tr class="deletes">
                                 <td class="investor"><a
-                                        href="/investor/{{ changeset.investor_id }}/">#{{ changeset.investor_id }}</a>
+                                        href="{% url 'stakeholder_form' investor_id=changeset.investor_id %}">#{{ changeset.investor_id }}</a>
                                 </td>
                                 <td class="user">{{ changeset.user }}</td>
                                 <td class="comment" title="{{ changeset.comment }}">{{ changeset.comment }}</td>
