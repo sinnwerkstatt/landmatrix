@@ -21,8 +21,8 @@
                                aria-haspopup="true"
                                aria-expanded="false"><span>{% trans "By Target" %}<span class="caret"></span></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="/global/data/by-target-region/">{% trans "By Target Region" %}</a></li>
-                                <li><a href="/global/data/by-target-country/">{% trans "By Target Country" %}</a></li>
+                                <li><a href="{% url 'table_list' group='by-target-region' %}">{% trans "By Target Region" %}</a></li>
+                                <li><a href="{% url 'table_list' group='by-target-country' %}">{% trans "By Target Country" %}</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -30,23 +30,23 @@
                                aria-haspopup="true"
                                aria-expanded="false"><span>{% trans "By Stakeholder" %} <span class="caret"></span></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="/global/data/by-stakeholder-name/">{% trans "By Stakeholder" %}</a></li>
-                                <li><a href="/global/data/by-stakeholder-region/">{% trans "By Stakeholder Region" %}</a></li>
-                                <li><a href="/global/data/by-stakeholder-country/">{% trans "By Stakeholder Country" %}</a></li>
+                                <li><a href="{% url 'table_list' group='by-stakeholder-name' %}">{% trans "By Stakeholder" %}</a></li>
+                                <li><a href="{% url 'table_list' group='by-stakeholder-region' %}">{% trans "By Stakeholder Region" %}</a></li>
+                                <li><a href="{% url 'table_list' group='by-stakeholder-country' %}">{% trans "By Stakeholder Country" %}</a></li>
                             </ul>
                         </li>
                         <li>
-                            <a href="/global/data/by-data-source-type/" role="button">
+                            <a href="{% url 'table_list' group='by-data-source-type' %}" role="button">
                                 {% trans "By Data Source" %}
                             </a>
                         </li>
                         <li>
-                            <a href="/global/data/by-intention/" role="button">
+                            <a href="{% url 'table_list' group='by-intention' %}" role="button">
                                {% trans "By Intention" %}
                            </a>
                         </li>
                         <li>
-                            <a href="/global/data/by-crop/" role="button">
+                            <a href="{% url 'table_list' group='by-crop' %}" role="button">
                                 {% trans "By Crop" %}
                             </a>
                         </li>

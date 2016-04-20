@@ -404,7 +404,7 @@
                                 {% for changeset in manage.sh_changesets.deletes.cs %}
                                     <tr class="deletes">
                                         <td class="investor"><a
-                                                href="/investor/{{ changeset.investor_id }}/">#{{ changeset.investor_id }}</a>
+                                                href="{% url 'stakeholder_form' investor_id=changeset.investor_id %}">#{{ changeset.investor_id }}</a>
                                         </td>
                                         <td class="user">{{ changeset.user }}</td>
                                         <td class="state">{% trans "Delete" %}</td>
@@ -442,7 +442,7 @@
                             {% for feedback in feedbacks.feeds %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="/deal/{{ feedback.deal_id }}/">#{{ feedback.deal_id }}</a></td>
+                                            href="{% url 'deal_detail' deal_id=feedback.deal_id %}">#{{ feedback.deal_id }}</a></td>
                                     <td class="user">{{ feedback.from_user }}</td>
                                     <td class="comment" title="{{ feedback.comment }}"><span
                                             class="truncate">{{ feedback.comment }}</span></td>
