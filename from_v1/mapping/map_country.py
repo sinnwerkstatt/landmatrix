@@ -2,7 +2,10 @@ from mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
 
+# from old_editor.models.region import Region as OldRegion
 from landmatrix.models.region import Region
+
+from migrate import V1, V2
 
 from django.utils.text import slugify
 
@@ -38,7 +41,7 @@ RESLUGGED_COUNTRIES = {slugify(old_name): slugify(new_name) for (old_name, new_n
 
 REGIONS = {
     "Eastern Africa": (2, 'Africa'),
-    "Middle Africa": (2, 'Africa'),
+    "Central Africa": (2, 'Africa'),
     "Northern Africa": (2, 'Africa'),
     "Southern Africa": (2, 'Africa'),
     "Western Africa": (2, 'Africa'),
@@ -48,9 +51,10 @@ REGIONS = {
     "Northern America": (21, "Northern America"),
     "Central Asia": (142, "Asia"),
     "Eastern Asia": (142, "Asia"),
-    "Southern Asia": (142, "Asia"),
-    "South-Eastern Asia": (142, "Asia"),
+    "South Asia": (142, "Asia"),
+    "South-East Asia": (142, "Asia"),
     "Western Asia": (142, "Asia"),
+    "Middle East": (142, "Asia"),
     "Eastern Europe": (150, "Europe"),
     "Northern Europe": (150, "Europe"),
     "Southern Europe": (150, "Europe"),
@@ -71,27 +75,20 @@ def old_country_slug_to_new(slug):
 
 
 def old_region_to_new(fk_region_id):
-    # print(fk_region_id)
-    return fk_region_id
-    pass
+    region = old_editor.models.Region.objects.using(V1).get(pk=fk_region_id)
+    # region = Region.objects.using(V1).get(pk=fk_region_id)
+    new_region = REGIONS[region.name]
+    if not landmatrix.models.Region.objects.using(V2).filter(pk=new_region[0]).exists():
+        landmatrix.models.Region(id=new_region[0], name=new_region[1]).save(using=V2)
+    print(region.name, '->', landmatrix.models.Region.objects.using(V2).get(pk=new_region[0]))
+    return new_region[0]
+
 
 class MapCountry(MapModel):
     old_class = old_editor.models.Country
     new_class = landmatrix.models.Country
     attributes = {
-        # 'name': 'name',
         'name': ('name', old_country_name_to_new),
         'slug': ('slug', old_country_slug_to_new),
         'region_id': ('fk_region_id', old_region_to_new),
     }
-    # depends = [ MapRegion ]
-
-    # @classmethod
-    # def map_all(cls, save=False, verbose=False):
-    #     # cls.map_regions()
-    #     super().map_all(save, verbose)
-
-    # @classmethod
-    # def map_regions(cls):
-    #     for region_definition in set(REGIONS.values()):
-    #         Region(id=region_definition[0], name=region_definition[1], slug=slugify(region_definition[1])).save()
