@@ -35,7 +35,7 @@ class MapInvestorActivityInvolvement(MapModel):
             filter(fk_stakeholder__in=stakeholder_ids).\
             filter(fk_primary_investor__in=primary_investor_ids).values()
         cls._count = len(records)
-        print(records)
+        # print('all_records', records)
         return records
 
     @classmethod
