@@ -41,7 +41,7 @@ __pycache__/
 
 # Distribution / packaging
 bin/
-build/
+./build/
 develop-eggs/
 ./dist/
 eggs/

@@ -8,8 +8,7 @@
     "tag": "v0.2.0",
     "commit": "da512b935413164ee408a920c6b24d4081032ea8"
   },
-  "_source": "git://github.com/mhemesath/r2d3.git",
+  "_source": "https://github.com/mhemesath/r2d3.git",
   "_target": "~0.2.0",
-  "_originalSource": "r2d3",
-  "_direct": true
+  "_originalSource": "r2d3"
 }
