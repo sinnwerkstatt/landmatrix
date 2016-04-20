@@ -19,7 +19,7 @@
 {% block title %}{% trans "Change Deal" %} #{{ deal_id }}{% endblock %}
 
 {% block breadcrumb_inner %}
-    <li><a href="/manage/">Manage</a></li>
+    <li><a href="{% url 'manage' %}">Manage</a></li>
     <li>{% trans "Deal" %} #{{ deal_id }}</li>
 {% endblock %}
 
