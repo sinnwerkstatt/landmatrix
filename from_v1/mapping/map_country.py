@@ -1,8 +1,10 @@
-from django.utils.text import slugify
 from mapping.map_model import MapModel
-from mapping.map_region import MapRegion
 import landmatrix.models
 import old_editor.models
+
+from landmatrix.models.region import Region
+
+from django.utils.text import slugify
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -34,6 +36,32 @@ RENAMED_COUNTRIES = {
 RESLUGGED_COUNTRIES = {slugify(old_name): slugify(new_name) for (old_name, new_name) in RENAMED_COUNTRIES.items()}
 
 
+REGIONS = {
+    "Eastern Africa": (2, 'Africa'),
+    "Middle Africa": (2, 'Africa'),
+    "Northern Africa": (2, 'Africa'),
+    "Southern Africa": (2, 'Africa'),
+    "Western Africa": (2, 'Africa'),
+    "Caribbean": (419, "Latin America and the Caribbean"),
+    "Central America": (419, "Latin America and the Caribbean"),
+    "South America": (419, "Latin America and the Caribbean"),
+    "Northern America": (21, "Northern America"),
+    "Central Asia": (142, "Asia"),
+    "Eastern Asia": (142, "Asia"),
+    "Southern Asia": (142, "Asia"),
+    "South-Eastern Asia": (142, "Asia"),
+    "Western Asia": (142, "Asia"),
+    "Eastern Europe": (150, "Europe"),
+    "Northern Europe": (150, "Europe"),
+    "Southern Europe": (150, "Europe"),
+    "Western Europe": (150, "Europe"),
+    "Australia and New Zealand": (9, "Oceania"),
+    "Melanesia": (9, "Oceania"),
+    "Micronesia": (9, "Oceania"),
+    "Polynesia": (9, "Oceania"),
+}
+
+
 def old_country_name_to_new(name):
     return RENAMED_COUNTRIES.get(name, name)
 
@@ -42,12 +70,28 @@ def old_country_slug_to_new(slug):
     return RESLUGGED_COUNTRIES.get(slug, slug)
 
 
+def old_region_to_new(fk_region_id):
+    # print(fk_region_id)
+    return fk_region_id
+    pass
+
 class MapCountry(MapModel):
     old_class = old_editor.models.Country
     new_class = landmatrix.models.Country
     attributes = {
-        'region': 'fk_region',
+        # 'name': 'name',
         'name': ('name', old_country_name_to_new),
         'slug': ('slug', old_country_slug_to_new),
+        'region_id': ('fk_region_id', old_region_to_new),
     }
-    depends = [ MapRegion ]
+    # depends = [ MapRegion ]
+
+    # @classmethod
+    # def map_all(cls, save=False, verbose=False):
+    #     # cls.map_regions()
+    #     super().map_all(save, verbose)
+
+    # @classmethod
+    # def map_regions(cls):
+    #     for region_definition in set(REGIONS.values()):
+    #         Region(id=region_definition[0], name=region_definition[1], slug=slugify(region_definition[1])).save()
