@@ -12,7 +12,7 @@ from django.db import models, transaction
     - optionally:
       - set the class variable depends to a list of mappings that need to be run before this
       - set the class variable attributes to a dict of mappings of old attribute names to new attribute names
-      - optionally, the second parameter of the mapping can be a pir of (new_attribute_name, processing_function)
+      - optionally, the second parameter of the mapping can be a pair of (new_attribute_name, processing_function)
     - run map_all() (or map() to convert a single record)
 
     Example:
@@ -64,10 +64,15 @@ class MapModel:
     def map_record(cls, record, save=False, verbose=False):
         new = cls.new_class()
         for attribute, value in record.items():
-            cls.set_attribute_processed(new, cls._new_fieldname(attribute), value)
+            new_fieldname = cls._new_fieldname(attribute)
+            cls.set_attribute_processed(new, new_fieldname, value)
             if verbose:
-                print("%s: '%s' -> %s: '%s'" % (attribute, value, cls._new_fieldname(attribute), getattr(new, cls._new_fieldname(attribute))))
-        if (save): new.save(using=V2)
+                if isinstance(new_fieldname, tuple):
+                    new_fieldname = new_fieldname[0]
+                print("%s: '%s' -> %s: '%s'" % (attribute, value, new_fieldname, getattr(new, new_fieldname)))
+
+        if save:
+            new.save(using=V2)
 
     @classmethod
     def set_attribute_processed(cls, object, attribute, value):
