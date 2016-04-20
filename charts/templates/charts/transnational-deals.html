@@ -167,6 +167,7 @@ function get_top_10() {
     var json_query = "/api/top-10-countries.json" + query_params;
     jQuery.getJSON(json_query, function(data) {
         var investor_countries = $(".top-10-countries #investor-countries .table");
+        // TODO: FIX THESE LINKS:
         for (var i = 0; i < data.investor_country.length; i++) {
             investor_countries.append('<tr><td><a href="/get-the-detail/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + '</td></tr>');
         };

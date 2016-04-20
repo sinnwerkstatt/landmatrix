@@ -245,3 +245,9 @@ def decimalgroupstring(obj):
         return str(new + " " + " ".join(origs))
     except ValueError:
         return obj
+
+
+@register.filter
+def addstr(arg1, arg2):
+    """concatenate arg1 & arg2"""
+    return str(arg1) + str(arg2)
