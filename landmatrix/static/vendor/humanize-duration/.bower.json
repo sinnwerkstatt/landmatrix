@@ -45,7 +45,7 @@
     "tag": "v3.1.0",
     "commit": "41f2656fab16233d88747a3d6c7f8ec33e5dfb89"
   },
-  "_source": "git://github.com/EvanHahn/HumanizeDuration.js.git",
+  "_source": "https://github.com/EvanHahn/HumanizeDuration.js.git",
   "_target": "3.1.0",
   "_originalSource": "humanize-duration"
 }
