@@ -20,7 +20,7 @@
 {% block title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
 
 {% block breadcrumb_inner %}
-    <li><a href="/global/data">{% trans 'Global' %}</a></li>
+    <li><a href="{% url 'app_main' %}">{% trans 'Global' %}</a></li>
     <li>{% trans "Deal" %} #{{ deal.activity_identifier }}</li>
 {% endblock %}
 
@@ -116,19 +116,21 @@
                                         <td>availability: {{ item.activity.availability }}</td>
                                         <td>history id: {{ item.activity.history_id }}</td>
                                         -->
+                                        {% with dealid=item.activity.activity_identifier|addstr:"_"|addstr:changedate %}
                                         <td>
+
                                             {# TODO: Insert correct link and maybe disable button for currently version displayed  #}
                                             <a type="button" class="btn"
-                                               href="/deal/{{ item.activity.activity_identifier }}_{{ changedate }}">
+                                               href="{% url 'deal_detail' deal_id=dealid %}">
                                                 <i class="glyphicon glyphicon-eye-open"></i> {% trans "Show this version" %}
                                             </a>
                                         </td>
 
                                         <td>
-                                            {# TODO: include as AJAX call #}
+
                                             <a type="button" class="btn"
                                                     {% if not forloop.last %}
-                                               href="/deal/compare/{{ item.activity.activity_identifier }}_{{ changedate }}"
+                                               href="{% url 'compare_deals' activity_1=dealid %}"
                                                         >
                                                         <i class="glyphicon glyphicon-transfer"></i>
                                                         {% trans "Compare with previous version" %}
@@ -139,6 +141,7 @@
                                                     {% endif %}
                                             </a>
                                         </td>
+                                        {% endwith %}
                                     </tr>
                                 {% endfor %}
                             </table>
