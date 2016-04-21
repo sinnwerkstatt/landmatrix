@@ -90,7 +90,7 @@
   height: 20px;
   text-transform: uppercase;
   display: block;
-  margin-top: 13px;
+  margin-top: 10px;
   border-radius: 50%;
   color: #ebebeb;
   text-align: center;
@@ -171,10 +171,11 @@
   padding-right: 10px;
   display: inline-block; }
 
-.messages {
+.navbar-right .fa {
   margin-top: 10px;
   color: #919191;
-  display: block; }
+  display: block;
+  font-size: 20px; }
 
 .lm-nav.lm-regions,
 .lm-nav.lm-flag {
