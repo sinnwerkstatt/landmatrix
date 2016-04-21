@@ -30,8 +30,9 @@
     </div>
 
     <div id="manage-filters" class="clearfix collapse">
-        <div id="filterrow" class="row">
+        <div id="filterrow">
             <div class="col-md-3 filterbox presetbox no-pad">
+                <h6>{% trans "Use a filter preset" %}</h6>
                 <ul class="presets variables">
                     {% for groupname, items in presets.items %}
                         <li>
@@ -51,6 +52,7 @@
                 </ul>
             </div>
             <div class="col-md-3 filterbox no-pad">
+                <h6>{% trans "or create a custom filter" %}</h6>
                 <ul class="variables">
                     {% for group in variables %}
                         <li>
