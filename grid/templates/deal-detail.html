@@ -25,14 +25,11 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation"><a href="{% url 'map' %}">
-        <i class="lm lm-map-marker"></i>{% trans "Map" %}
+    <li role="presentation"><a href="#history">
+        <i class="fa fa-history"></i> {% trans "History" %}
     </a></li>
-    <li role="presentation"><a href="{% url 'app_main' %}">
-        <i class="lm lm-table"></i>{% trans "Data" %}
-    </a></li>
-    <li role="presentation"><a href="{% url 'chart_transnational_deals' %}">
-        <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+    <li role="presentation"><a href="#comments">
+        <i class="fa fa-comments"></i> {% trans "Comments" %}
     </a></li>
     <li class="divider"></li>
     <li role="presentation">
