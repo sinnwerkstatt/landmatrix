@@ -70,8 +70,9 @@
                 </ul>
 
             </div>
-            <form class="form">
+            <form class="form" style="display:none">
                 <div class="col-md-2 filterbox filtercontrolbox">
+                    <h6>&nbsp;</h6>
                     <input id="filter_variable" type="hidden" name="variable" value=""/>
                     <div class="">
                         <select id="filter_operator" name="operator" class="form-control">
@@ -89,10 +90,9 @@
                     </div>
                     <button id="filter_submit" type="submit" class="btn btn-primary" name="add"
                             value="add">{% trans "Add Filter" %}</button>
-
-
                 </div>
                 <div class="col-md-4 filtervaluebox filterbox">
+                    <h6>&nbsp;</h6>
                     <div class="" id="filter_value"> <!-- class="form-inline"> -->
                         <input type="text" class="form-control"/>
                     </div>
