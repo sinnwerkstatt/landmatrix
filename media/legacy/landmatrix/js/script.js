@@ -111,19 +111,6 @@ function update_widget (el, key_id, form) {
   });
 };
 
-function new_update_widget (el, key_id, form) {
-    console.log("here");
-    var value = form.find("input[type='hidden']").val(),
-        name = el.find(":input").attr("name"),
-        op = el.parents("li").prev().find("option:selected").val();
-    console.log(name);
-    $.get("/ajax/widget/values", {key_id:  key_id, value: value, name: name, operation: op}, function (data) {
-        console.log("Widget call returned:", data);
-        el.html(data);
-    });
-};
-
-
 var geocoders = new Array();
 var maps = new Array();
 var markers = new Array();
