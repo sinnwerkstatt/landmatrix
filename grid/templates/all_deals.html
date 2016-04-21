@@ -1,5 +1,5 @@
 {% extends "global_base.html" %}
-{% load i18n custom_tags %}
+{% load i18n custom_tags wagtailcore_tags %}
 {% load humanize %}
 
 {% block page_title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}
@@ -9,13 +9,12 @@
 
 {% block breadcrumb %}
     <ul class="breadcrumb">
-        <li><a href="//">{% trans 'Home' %}</a></li>
+        <li><a href="/">{% trans 'Home' %}</a></li>
         <li><a href="{% url 'app_main' %}">{% trans 'Global' %}</a></li>
         {% if group == "all" %}
             <li>{% trans "All deals" %}</li>
         {% elif filters.group_value %}
-            <li><a href="/global/data/
-                    {{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">{% trans "By" %} {{ group }}</a>
+            <li><a href="{% url 'table_list' group=group_slug %}/?{% add_or_update_param request.GET 'order_by' '' %}">{% trans "By" %} {{ group }}</a>
             </li>
             <li>{{ name }}</li>
         {% else %}
@@ -227,7 +226,7 @@
                                    {% elif data.order_by == '-availability' %}class="desc"
                                    href="?{% add_or_update_param request.GET 'order_by' 'availability' %}"{% else %}
                                    href="?{% add_or_update_param request.GET 'order_by' 'availability' %}"{% endif %}>{% trans "Availability" %}</a><a
-                                    href="/about/#what-does-data-availability-mean" class="toggle-tooltip noul"
+                                    href="{% slugurl 'about' %}#what-does-data-availability-mean" class="toggle-tooltip noul"
                                     title="{% trans "This column shows the percentage of information about deals we have collected.<br/>Click to read more." %}">
                                 <i class="lm lm-question-circle"> </i></a></th>
                         {% elif "intended_size" == column %}
@@ -271,7 +270,7 @@
                         {% for column in columns %}
                             {% if column == "deal_id" %}
                                 <td class="deal-id">
-                                    <a href="{% url 'deal_detail' item.deal_id %}/">{{ item.deal_id }}</a>
+                                    <a href="{% url 'deal_detail' item.deal_id %}">{{ item.deal_id }}</a>
                                 </td>
                             {% elif column == "crop" %}
                                 <td style="width:341px">
@@ -289,7 +288,7 @@
                                         {% if item.intention %}
                                             {% for i in item.intention %}
                                                 <li>
-                                                    <a href="/global/data/all?variable=intention&operator=is&value={{ i }}"
+                                                    <a href="{% url 'app_main' %}?variable=intention&operator=is&value={{ i }}"
                                                        {% if group != "intention" %}class="intention-icon {{ i|slugify }}"
                                                        data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a>
                                                 </li>
@@ -311,7 +310,7 @@
                                 <td style="width:183px">
                                     {% if item.stakeholder_name %}
                                         {% for i in item.stakeholder_name %}
-                                            <a href="/global/data/all?variable=investor&operator=is&value={{ i.id }}">{{ i.name }}</a>
+                                            <a href="{% url 'app_main' %}?variable=investor&operator=is&value={{ i.id }}">{{ i.name }}</a>
                                             <br/>
                                         {% endfor %}
                                         {% else %}{% trans "unknown" %}
@@ -321,7 +320,7 @@
                                 <td class="investor-country">
                                     {% if item.stakeholder_country %}
                                         {% for stakeholder_country  in item.stakeholder_country %}
-                                            <a href="/global/data/all?variable=stakeholder_country&operator=is&value={{ stakeholder_country|slugify }}">{{ stakeholder_country }}</a>
+                                            <a href="{% url 'app_main' %}?variable=stakeholder_country&operator=is&value={{ stakeholder_country|slugify }}">{{ stakeholder_country }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}{% trans "unknown country" %}{% endif %}
@@ -330,7 +329,7 @@
                                 <td class="investor-country">
                                     {% if item.investor_country %}
                                         {% for investor_country  in item.investor_country %}
-                                            <a href="/global/data/all?variable=investor_country&operator=is&value={{ investor_country|slugify }}">{{ investor_country }}</a>
+                                            <a href="{% url 'app_main' %}?variable=investor_country&operator=is&value={{ investor_country|slugify }}">{{ investor_country }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}{% trans "unknown country" %}{% endif %}
@@ -339,7 +338,7 @@
                                 <td class="investor-region">
                                     {% if item.investor_region %}
                                         {% for investor_region  in item.investor_region %}
-                                            <a href="/global/data/all?variable=investor_region&operator=is&value={{ investor_region|slugify }}">{{ investor_region }}</a>
+                                            <a href="{% url 'app_main' %}?variable=investor_region&operator=is&value={{ investor_region|slugify }}">{{ investor_region }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}{% trans "unknown region" %}{% endif %}
@@ -348,7 +347,7 @@
                                 <td>
                                     {% if item.target_country %}
                                         {% for target_country  in item.target_country %}
-                                            <a href="/global/data/all?variable=target_country&operator=is&value={{ target_country|slugify }}">{{ target_country }}</a>
+                                            <a href="{% url 'app_main' %}?variable=target_country&operator=is&value={{ target_country|slugify }}">{{ target_country }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}
@@ -359,7 +358,7 @@
                                 <td>
                                     {% if item.target_region %}
                                         {% for target_region  in item.target_region %}
-                                            <a href="/global/data/all?variable=target_region&operator=is&value={{ target_region|slugify }}">{{ target_region }}</a>
+                                            <a href="{% url 'app_main' %}?variable=target_region&operator=is&value={{ target_region|slugify }}">{{ target_region }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}
@@ -369,7 +368,7 @@
                             {% elif column == "year" %}
                                 <td>
                                     {% if item.year %}
-                                        <a href="/global/data/all?variable=year&operator=is&value={{ item.year }}">{{ item.year }}</a>
+                                        <a href="{% url 'app_main' %}?variable=year&operator=is&value={{ item.year }}">{{ item.year }}</a>
                                         <br/>
                                     {% else %}
                                         {% trans "unknown" %}
@@ -379,7 +378,7 @@
                                 <td>
                                     {% if item.data_source_type %}
                                         {% for data_source_type in item.data_source_type %}
-                                            <a href="/global/data/all?variable=data_source_type&operator=is&value={{ data_source_type }}">{{ data_source_type }}</a>
+                                            <a href="{% url 'app_main' %}?variable=data_source_type&operator=is&value={{ data_source_type }}">{{ data_source_type }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}
