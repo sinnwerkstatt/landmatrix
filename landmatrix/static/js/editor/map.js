@@ -27,15 +27,20 @@ function unlockMaps() {
     lock = false;
 }
 
-function getLocationFields(mapId) {
-    const target = "map" + mapId;
+function getLocationFields(mapIdStr) {
+    const target = "map" + mapIdStr;
 
-    var mapParent = $("#map"+mapId).parentsUntil(".panel-collapse");
+    const mapId = parseInt(mapIdStr);
 
+    var mapParent = $(".map-location-form .dynamic-form-" + (mapId) +"").parentsUntil(".panel-collapse");
+
+    console.log("Lookin for ", ".form-" + (mapId - 1) + "-point_lat input");
     var result = {
-        lat: mapParent.find(".point_lat input"),
-        lon: mapParent.find(".point_lon input")
+        lat: mapParent.find(".form-" + (mapId - 1) + "-point_lat input"),
+        lon: mapParent.find(".form-" + (mapId - 1) + "-point_lon input")
     };
+
+    console.log("Fields:", result);
 
     return result;
 }
