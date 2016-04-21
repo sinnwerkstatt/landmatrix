@@ -138,13 +138,13 @@
         {% for column in columns %}
           {% if column == "deal_id" %}
             <td class="deal-id">
-                <a href="/global/data/{{ item.deal_id }}/">{{ item.deal_id }}</a>
+                <a href="{%  url 'deal_detail' deal_id=item.deal_id %}">{{ item.deal_id }}</a>
             </td>
           {% elif column == "crop" %}
               <td style="width:341px">
               {% if  item.crop %}
               {% for c in item.crop %}
-                <a href="/global/data/by-crop/{{ c|slugify }}/">{{ c }}</a></br>
+                <a href="{% url 'table_list' group='by-crop' %}{{ c|slugify }}/">{{ c }}</a></br>
               {% endfor %}
               {% else %}{% trans "unknown" %}
               {% endif %}
@@ -297,7 +297,7 @@
         {% endfor %}
     {% if "deal_id" in columns %}
     <td>
-        <a href="/deal/{{ item.deal_id }}/" class="btn btn-small">Details</a>
+        <a href="{% url 'deal_detail' deal_id=item.deal_id %}" class="btn btn-small">Details</a>
     </td>
     {% endif %}
     </tr>

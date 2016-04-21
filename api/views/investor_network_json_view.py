@@ -59,13 +59,13 @@ class InvestorNetworkJSONView(TemplateView):
             links.append({
                 'source': stakeholder_index,
                 'target': stakeholder_start_index+i,
-                'value': involvement.percentage
+                'value': max(0.001, involvement.percentage)
             })
         for i, involvement in enumerate(investor_involvements):
             links.append({
                 'source': investor_index,
                 'target': investor_start_index+i,
-                'value': involvement.percentage
+                'value': max(0.001, involvement.percentage)
             })
 
         return HttpResponse(json.dumps({'index': investordiagram, 'nodes': nodes, 'links': links}))

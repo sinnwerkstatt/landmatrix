@@ -47,14 +47,13 @@ if __name__ == '__main__':
         # MapStatus.map_all(save=True)
         # MapLanguage.map_all(save=True)
         # MapActivity.map_all(save=True)
-        # MapActivity._done = True
+        # MapActivityChangeset.map_all(save=True)
         # MapActivityAttributeGroup.map_all(save=True)
         # MapComment.map_all(save=True)
         # MapInvestor._done = True
         # MapInvestorActivityInvolvement.map_all(save=True)
         # MapAnimal.map_all(save=True)
         # MapMineral.map_all(save=True)
-        MapRegion.map_all(save=True)
         MapCountry.map_all(save=True)
 
         if False:

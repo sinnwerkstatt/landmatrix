@@ -64,7 +64,7 @@ urlpatterns = patterns('grid.views',
     ),
     # needs to come last, regexp catches all expressions
     url(
-        r'^(?P<group>.+)/(?P<list>.+)/$',
+        r'^(?P<group>.+)/(?P<group_value>.+)/$',
         vary_on_cookie(cache_page(CACHE_TIMEOUT)(TableGroupView.as_view())),
         name='table_list'
     ),
