@@ -38,6 +38,7 @@
                         if (map) {
                             var formId = form.find('h3 small').text().replace('#', ''),
                                 mapId = form.attr('class') + '-' + formId;
+                            console.log("Ahoi: ", mapId);
                             map.attr('id', 'map-' + mapId);
                             initializeMap(mapId);
                         }
