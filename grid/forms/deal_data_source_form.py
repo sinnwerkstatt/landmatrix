@@ -94,10 +94,11 @@ class DealDataSourceForm(BaseForm):
             for key in tag.keys():
                 if key in attributes and attributes[key] != tag[key]:
                     # raise RuntimeError()
-                    print(
-                        'ALERT: found different values under the same tag group. Deal ID {}, taggroup {}, tags {}'.format(
-                            deal.activity.activity_identifier, taggroup.id, str(tags)
-                        ))
+                    # print(
+                    #     'ALERT: found different values under the same tag group. Deal ID {}, taggroup {}, tags {}'.format(
+                    #         deal.activity.activity_identifier, taggroup.id, str(tags)
+                    #     ))
+                    pass
                 attributes[key] = tag[key]
 
         return attributes
