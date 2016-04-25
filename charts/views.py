@@ -12,14 +12,14 @@ from grid.views.view_aux_functions import render_to_response
 class ChartView(PDFViewMixin, TemplateView, FilterWidgetMixin):
     chart = ""
 
-    def get_pdf_filename(self, request):
+    def get_pdf_filename(self, request, *args, **kwargs):
         return '{}.pdf'.format(self.chart)
 
-    def get_pdf_export_url(self, request):
+    def get_pdf_export_url(self, request, *args, **kwargs):
         return '{}_pdf'.format(self.chart)
 
-    def get_pdf_render_url(self, request):
-        return self.chart
+    def get_pdf_render_url(self, request, *args, **kwargs):
+        return reverse(self.chart)
 
     def get_context_data(self, **kwargs):
         self._set_filters(self.request.GET)
