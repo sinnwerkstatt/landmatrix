@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n menu_tags_addons %}
+{% load i18n %}
 
 {% block head %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -105,8 +105,4 @@ function draw (callback, chart_data) {
 
 <!-- subnav -->
 {% block subnav %}
-{% endblock %}
-
-{% block content %}
-	{% placeholder "content" %}
 {% endblock %}
