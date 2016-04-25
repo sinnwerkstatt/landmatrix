@@ -4,13 +4,15 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 negotiation_status_choices = (
     (0, _("---------")),
-    (10, _("Intended (Expression of interest)")),
-    (20, _("Intended (Under negotiation)")),
-    (30, _("Concluded (Oral Agreement)")),
-    (40, _("Concluded (Contract signed)")),
-    (50, _("Failed (Negotiations failed)")),
-    (60, _("Failed (Contract canceled)")),
-    (70, _("Sold"))
+    (10, _("Expression of interest")),
+    (20, _("Under negotiation")),
+    (30, _("Memorandum of understanding")),
+    (40, _("Oral Agreement")),
+    (50, _("Contract signed")),
+    (60, _("Negotiations failed")),
+    (70, _("Contract canceled")),
+    (80, _("Contract expired")),
+    (90, _("Change of ownership"))
 )
 
 implementation_status_choices = (
