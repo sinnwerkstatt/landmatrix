@@ -70,6 +70,8 @@ function updateFilters(json) {
         $(finalHtml).appendTo(tags);
         console.log("Tag appended.", tag, tags);
     }
+
+    $("#filterrow form").hide()
 }
 
 
@@ -88,6 +90,7 @@ function removeFilter(filterName) {
 }
 
 function createFilter(variable) {
+    $("#filterrow form").show()
     get_filter_options($("#filter_operator"), $("#filter_value"), variable);
     $('#filter_variable').val(variable);
     currentVariable = variable;
@@ -103,7 +106,7 @@ function get_filter_options(operatorfield, variablefield, key_id) {
 
     const request = {key_id: key_id, value: "", name: 'value', operation: op_value};
     $.get("/ajax/widget/values", request, function (data) {
-        console.log('Got this from django:', data);
+        //console.log('Got this from django:', data);
         variablefield.html(data);
         var is_number = (variablefield.find(":input[type=number]:not(.year-based-year)").length > 0);
         var is_list = (variablefield.find("select,ul").length > 0);
