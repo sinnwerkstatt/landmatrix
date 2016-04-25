@@ -19,21 +19,44 @@ from django.utils.translation import ugettext_lazy as _
 class DealSpatialForm(BaseForm):
 
     form_title = _('Location')
-    tg_location = TitleField(required=False, label="", initial=_("Location"))
-    level_of_accuracy = forms.TypedChoiceField(required=False, label=_("Spatial accuracy level"), choices=(
-        (0, _("---------")),
-        (10, _("Country")),
-        (30, _("Administrative region")),
-        (30, _("Approximate location")),
-        (40, _("Exact location")),
-        (50, _("Coordinates")),
-    ), coerce=int)
-    location = forms.CharField(required=False, label=_("Location"), widget=LocationWidget)
-    point_lat = forms.CharField(required=False, label=_("Latitude"), widget=forms.TextInput, initial="")
-    point_lon = forms.CharField(required=False, label=_("Longitude"), widget=forms.TextInput, initial="")
-    target_country = CountryField(required=False, label=_("Target Country"))
-    target_region = forms.ModelChoiceField(required=False, label=_("Target Region"), widget=forms.HiddenInput, queryset=Region.objects.all().order_by("name"))
-    tg_location_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+    tg_location = TitleField(
+        required=False, label="", initial=_("Location")
+    )
+    level_of_accuracy = forms.TypedChoiceField(
+        required=False, label=_("Spatial accuracy level"), choices=(
+            (0, _("---------")),
+            (10, _("Country")),
+            (30, _("Administrative region")),
+            (30, _("Approximate location")),
+            (40, _("Exact location")),
+            (50, _("Coordinates")),
+        ),
+        coerce=int)
+    location = forms.CharField(
+        required=False, label=_("Location"), widget=LocationWidget
+    )
+    point_lat = forms.CharField(
+        required=False, label=_("Latitude"), widget=forms.TextInput, initial=""
+    )
+    point_lon = forms.CharField(
+        required=False, label=_("Longitude"), widget=forms.TextInput, initial=""
+    )
+    facility_name = forms.CharField(
+        required=False, label=_("Facility name"), widget=forms.TextInput, initial=""
+    )
+    target_country = CountryField(
+        required=False, label=_("Target Country")
+    )
+    target_region = forms.ModelChoiceField(
+        required=False, label=_("Target Region"), widget=forms.HiddenInput,
+        queryset=Region.objects.all().order_by("name")
+    )
+    location_description = forms.CharField(
+        required=False, label=_("Location description"), widget=forms.TextInput, initial=""
+    )
+    tg_location_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
 
     class Meta:
         name = 'spatial_data'
