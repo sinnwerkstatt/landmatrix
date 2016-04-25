@@ -32,13 +32,13 @@ urlpatterns = patterns(
     url(r'^all(?P<type>\.csv)?/$', ChartView.as_view(), name='all_charts'),
     # PDF views for charts
     url(r'^overview\.pdf$', OverviewChartView.as_view(),
-        {'is_pdf_export': True}, name='chart_overview_pdf'),
+        {'format': 'PDF'}, name='chart_overview_pdf'),
     url(r'^transnational-deals\.pdf$', TransnationalDealsChartView.as_view(),
-        {'is_pdf_export': True}, name='chart_transnational_deals_pdf'),
+        {'format': 'PDF'}, name='chart_transnational_deals_pdf'),
     url(r'^map-of-investments\.pdf$', MapOfInvestmentsChartView.as_view(),
-        {'is_pdf_export': True}, name='chart_map_of_investments_pdf'),
+        {'format': 'PDF'}, name='chart_map_of_investments_pdf'),
     url(r'^agricultural-drivers\.pdf$', AgriculturalDriversChartView.as_view(),
-        {'is_pdf_export': True}, name='chart_agricultural_drivers_pdf'),
+        {'format': 'PDF'}, name='chart_agricultural_drivers_pdf'),
     url(r'^perspective\.pdf$', PerspectiveChartView.as_view(),
-        {'is_pdf_export': True}, name='chart_perspective_pdf'),
+        {'format': 'PDF'}, name='chart_perspective_pdf'),
 )
