@@ -160,32 +160,32 @@ class ChangeDealGeneralForm(BaseForm):
     on_the_lease = forms.BooleanField(
         required=False, label=_("On the lease")
     )
-    on_the_lease_area = forms.IntegerField(
+    on_the_lease_area = YearBasedIntegerField(
         required=False, label=_("On leased / purchased area"), help_text=_("ha"),
-        widget=YearBasedIntegerField
+        widget=NumberInput
     )
-    on_the_lease_farmers = forms.IntegerField(
+    on_the_lease_farmers = YearBasedIntegerField(
         required=False, label=_("On leased / purchased farmers"), help_text=_("farmers"),
-        widget=YearBasedIntegerField
+        widget=NumberInput
     )
-    on_the_lease_households = forms.IntegerField(
+    on_the_lease_households = YearBasedIntegerField(
         required=False, label=_("On leased / purchased households"), help_text=_("households"),
-        widget=YearBasedIntegerField
+        widget=NumberInput
     )
     off_the_lease = forms.BooleanField(
         required=False, label=_("Not on the lease")
     )
-    off_the_lease_area = forms.IntegerField(
+    off_the_lease_area = YearBasedIntegerField(
         required=False, label=_("Not on leased / purchased area (out-grower)"), help_text=_("ha"),
-        widget=YearBasedIntegerField
+        widget=NumberInput
     )
-    off_the_lease_farmers = forms.IntegerField(
+    off_the_lease_farmers = YearBasedIntegerField(
         required=False, label=_("Not on leased / purchased farmers (out-grower)"),
-        help_text=_("farmers"), widget=YearBasedIntegerField
+        help_text=_("farmers"), widget=NumberInput
     )
-    off_the_lease_households = forms.IntegerField(
+    off_the_lease_households = YearBasedIntegerField(
         required=False, label=_("Not on leased / purchased households (out-grower)"),
-        help_text=_("households"), widget=YearBasedIntegerField
+        help_text=_("households"), widget=NumberInput
     )
     tg_contract_farming_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
