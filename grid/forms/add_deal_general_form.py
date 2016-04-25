@@ -24,11 +24,11 @@ class AddDealGeneralForm(BaseForm):
         required=False, label=_("Intended size"), help_text=_("ha"), widget=NumberInput
     )
     contract_size = forms.IntegerField(
-        required=False, label=_("Current size under contract (leased or purchased area)"),
+        required=False, label=_("Size under contract (leased or purchased area)"),
         help_text=_("ha"), widget=NumberInput
     )
     production_size = forms.IntegerField(
-        required=False, label=_("Current size in operation (production)"), help_text=_("ha"),
+        required=False, label=_("Size in operation (production)"), help_text=_("ha"),
         widget=NumberInput
     )
     tg_land_area_comment = forms.CharField(
@@ -36,21 +36,32 @@ class AddDealGeneralForm(BaseForm):
     )
 
     # Intention of investment
-    tg_intention = TitleField(required=False, label="", initial=_("Intention of investment"))
+    tg_intention = TitleField(
+        required=False, label="", initial=_("Intention of investment")
+    )
     intention = NestedMultipleChoiceField(
         required=False, label=_("Intention of the investment"), choices=intention_choices
     )
-    tg_intention_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+    tg_intention_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
 
     # Nature of the deal
-    tg_nature = TitleField(required=False, label="", initial=_("Nature of the deal"))
-    nature = forms.MultipleChoiceField(
-        required=False, label=_("Nature of the deal"), choices=nature_choices, widget=forms.CheckboxSelectMultiple
+    tg_nature = TitleField(
+        required=False, label="", initial=_("Nature of the deal")
     )
-    tg_nature_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+    nature = forms.MultipleChoiceField(
+        required=False, label=_("Nature of the deal"), choices=nature_choices,
+        widget=forms.CheckboxSelectMultiple
+    )
+    tg_nature_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
 
     # Negotiation status,
-    tg_negotiation_status = TitleField(required=False, label="", initial=_("Negotiation status"))
+    tg_negotiation_status = TitleField(
+        required=False, label="", initial=_("Negotiation status")
+    )
     negotiation_status = YearBasedChoiceField(
         required=False, label=_("Negotiation status"), choices=negotiation_status_choices
     )
