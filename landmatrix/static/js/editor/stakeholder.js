@@ -58,11 +58,8 @@ function openInvestorPopup(investorId) {
 
 function generateButtons(field, index) {
     var investorId = field.val();
+    console.log("Setting up buttons!");
 
-    field.on("change", function() {
-        var investorId = field.val();
-        loadSankey(index, investorId);
-    });
 
     var buttons = '<a onClick="openInvestorPopup()" href="javascript:void(0);" class="noul"><i class="lm lm-plus"></i></a>';
     if (field.val() !== '') {
@@ -98,6 +95,10 @@ function loadSankey(index, investorId) {
 }
 
 function setupSankey(index) {
+    var data = sankeydata[index];
+    if (typeof data === 'undefined') {
+        return;
+    }
     var margin = {top: 1, right: 1, bottom: 6, left: 1},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
@@ -121,6 +122,8 @@ function setupSankey(index) {
 
     console.log("Appending d3 sankey chart for index ", index);
 
+    var chart = $("#chart" + index).empty();
+
     var svg = d3.select("#chart" + index).append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -134,10 +137,9 @@ function setupSankey(index) {
 
     var path = sankey.link();
 
-    var data = sankeydata[index];
 
-    //d3.json("apiurl", function (data) {
-    function setupStatic() {
+    function setupData(data) {
+
         sankey
             .nodes(data.nodes)
             .links(data.links)
@@ -215,8 +217,9 @@ function setupSankey(index) {
             sankey.relayout();
             link.attr("d", path);
         }
-    }  // });
-    setupStatic();
+    }
+
+    setupData(data);
 }
 
 
@@ -243,4 +246,33 @@ $(document).ready(function () {
             init_investor_form(row);
         },
     }).each(function () { init_investor_form($(this)); });
+
+    $(".investorfield").each(function (index) {
+        console.log("Initializing investorfield with select and sankey.");
+        var investorId = $(this).val();
+        $(this).select2({
+            placeholder: 'Select Investor'
+        });
+        /*
+         var investorId = $(this).val();
+         $(this).select2({
+         placeholder: 'Select Investor',
+         ajax: {
+         url: '/api/investors.json',
+         cache: true
+         }
+         });
+         */
+        console.log('Investor:', investorId);
+
+        generateButtons($(this), index);
+
+        $(this).on('change', function () {
+            generateButtons($(this), index);
+            loadSankey(index, $(this).val());
+        });
+
+        loadSankey(index, investorId);
+
+    });
 });

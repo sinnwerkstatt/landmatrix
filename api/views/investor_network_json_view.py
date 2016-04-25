@@ -12,8 +12,12 @@ VERBOSE = True
 class InvestorNetworkJSONView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
-        operational_stakeholder = Investor.objects.get(pk=int(request.GET.get('operational_stakeholder')))
-        investordiagram = int(request.GET.get('operational_stakeholder_diagram'))
+        try:
+            operational_stakeholder = Investor.objects.get(pk=int(request.GET.get('operational_stakeholder')))
+            investordiagram = int(request.GET.get('operational_stakeholder_diagram'))
+        except ValueError as e:
+            return HttpResponse("Stakeholder not available or malformed request.", status=404)
+
         involvements = InvestorVentureInvolvement.objects.filter(fk_venture=operational_stakeholder)
         if VERBOSE:
             print(operational_stakeholder)
@@ -67,5 +71,8 @@ class InvestorNetworkJSONView(TemplateView):
                 'target': investor_start_index+i,
                 'value': max(0.001, involvement.percentage)
             })
+
+        if VERBOSE:
+            print(links)
 
         return HttpResponse(json.dumps({'index': investordiagram, 'nodes': nodes, 'links': links}))
