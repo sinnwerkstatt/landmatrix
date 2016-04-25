@@ -147,6 +147,7 @@ class AddDealGeneralForm(BaseForm):
     tg_leasing_fees_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
     )
+
     # Contract farming
     tg_contract_farming = TitleField(
         required=False, label="", initial=_("Contract farming")
@@ -157,7 +158,9 @@ class AddDealGeneralForm(BaseForm):
             (20, _("No")),
         ), widget=forms.RadioSelect
     )
-    on_the_lease = forms.BooleanField(required=False, label=_("On leased / purchased area"))
+    on_the_lease = forms.BooleanField(
+        required=False, label=_("On leased / purchased area")
+    )
     on_the_lease_area = forms.IntegerField(
         required=False, label=_("On leased / purchased area"), help_text=_("ha"),
         widget=YearBasedIntegerField
