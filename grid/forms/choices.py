@@ -47,8 +47,10 @@ intention_choices = (
 
 nature_choices = (
     (10, _("Outright Purchase")),
-    (20, _("Lease / Concession")),
-    (30, _("Exploitation license")),
+    (20, _("Lease")),
+    (30, _("Resource exploitation license / concession")),
+    (40, _("Logging concession")),
+    (50, _("Pure contract farming")),
 )
 
 price_type_choices = (
