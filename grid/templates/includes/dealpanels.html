@@ -35,25 +35,26 @@
                         });
                         // Init map
                         var map = form.find('.map');
-                        if (map) {
-                            var formId = form.find('h3 small').text().replace('#', ''),
+                        if (map.length > 0) {
+                            console.log(map);
+                            var formId = parseInt(form.find('h3 small').text().replace('#', '')),
                                 mapId = form.attr('class') + '-' + formId;
-                            console.log("Ahoi: ", mapId);
+                            console.log("Ahoi, the map has an id: ", formId, mapId);
                             map.attr('id', 'map-' + mapId);
-                            initializeMap(mapId);
+                            initializeMap(mapId, 0, 0, formId);
                         }
 
                         var investor = form.find('.operational_stakeholder');
-                        if (investor) {
+                        if (investor.length > 0) {
                             var index = 0;
-                            var alreadyInitizalized = form.find("#chart" + index).find('svg') > 0;
-                            if (alreadyInitizalized)
                             setupSankey(index);
                         }
                     }
                     $(document).ready(function () {
-                        $('.{{ form.form_title|slugify }}-form').formset({
-                            prefix: '{{ form.form_title|slugify }}',
+                    {% with form.form_title|slugify as formname %}
+                        console.log("{{ formname }}");
+                        $('.{{ formname }}-form').formset({
+                            prefix: '{{ formname }}',
                             addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
                             addCssClass: 'formset-add-form hidden',
                             deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
@@ -61,7 +62,7 @@
                             added: function (row) {
                                 // Update form counters
                                 var form_count = 1;
-                                $('.{{ form.form_title|slugify }}-form h3 small').each(function () {
+                                $('.{{ formname }}-form h3 small').each(function () {
                                     $(this).text('#' + form_count++);
                                 });
                                 init_form(row);
@@ -69,11 +70,12 @@
                             removed: function () {
                                 // Update form counters
                                 var form_count = 1;
-                                $('.{{ form.form_title|slugify }}-form h3 small').each(function () {
+                                $('.{{ formname }}-form h3 small').each(function () {
                                     $(this).text('#' + form_count++);
                                 });
                             }
                         }).each(function () { init_form($(this)); });
+                        {% endwith %}
                     });
                     </script>
                 {% else %}
