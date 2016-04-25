@@ -62,6 +62,11 @@ urlpatterns = patterns('grid.views',
     url(
         r'^(?P<deal_id>[\d_\.]+)/$', cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), name='deal_detail'
     ),
+    url(
+        r'^(?P<deal_id>[\d]+)\.pdf$',
+        cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), {'format': 'PDF'},
+        name='deal_detail_pdf'
+    ),
     # needs to come last, regexp catches all expressions
     url(
         r'^(?P<group>.+)/(?P<group_value>.+)/$',
