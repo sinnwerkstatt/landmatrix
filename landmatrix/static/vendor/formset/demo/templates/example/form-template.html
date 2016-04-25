@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Formset with `extra = 0` (pre Django 1.2){% endblock %}
+
+{% block extrahead %}
+<script type="text/javascript">
+    $(function() {
+        $('form div').formset({
+            formTemplate: '#id_form_template'
+        });
+    });
+</script>
+<style type="text/css">
+    .add-row {
+        padding-left:18px;
+        background:url({{ MEDIA_URL }}images/add.png) no-repeat left center;
+    }
+    .delete-row {
+        display:block;
+        margin:6px 0 0 0;
+        padding-left:18px;
+        background:url({{ MEDIA_URL }}images/delete.png) no-repeat left center;
+    }
+    .dynamic-form {
+        margin-bottom:6px;
+        padding-bottom:6px;
+        border-bottom:1px dotted #ccc;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div>
+    <div class="entry">
+        <div id="id_form_template" style="display:none;">
+            {{ form.type.label_tag }}<br />
+            {{ form.type }}
+            {{ form.value.label_tag }}<br />
+            {{ form.value }}
+            {{ form.preferred }} {{ form.preferred.label_tag }}
+        </div>
+        <form method="post" action="">
+            <div></div>
+            <p>
+                {{ formset.management_form }}
+                <input type="submit" value="Submit" />
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<p>
+    If you'd rather not have extra forms in your template, pass `extra = 0` to `formset_factory`, and supply a custom form template.
+    Take a look at the source for `formset_with_template` in views.py, to see how this works.
+</p>
+<p>
+    If you're using Django 1.2+, this is much easier, using the new
+    <a href="http://docs.djangoproject.com/en/dev/topics/forms/formsets/#empty-form">`empty_form`</a> property.
+</p>
+{% endblock %}
