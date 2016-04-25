@@ -502,6 +502,10 @@ a.remove-ybd:hover {
   font-weight: 300;
   margin-top: 10px; }
 
+#filters h6 {
+    margin: 0 15px;
+}
+
 .filterbox,
 .filterwidgetbox {
   color: #c6c6c6 !important;
@@ -524,9 +528,6 @@ a.remove-ybd:hover {
   padding: 0; }
 
 @media (min-width: 992px) {
-  #filters ul.presets a,
-  #filters ul.presets h4 {
-    margin-left: 15px !important; }
   #filters ul.variables,
   #filters ul.variables ul {
     padding: 0;
