@@ -25,21 +25,24 @@ intention_choices = (
     (10, _("Agriculture"), (
         (11, _("Biofuels")),
         (12, _("Food crops")),
-        (13, _("Livestock")),
-        (14, _("Non-food agricultural commodities")),
-        (15, _("Agriunspecified")),
+        (13, _("Fodder")),
+        (14, _("Livestock")),
+        (15, _("Non-food agricultural commodities")),
+        # (16, _("Agriunspecified")),
     )),
     (20, _("Forestry"), (
         (21, _("For wood and fibre")),
         (22, _("For carbon sequestration/REDD")),
-        (23, _("Forestunspecified")),
+        # (23, _("Forestunspecified")),
     )),
-    (30, _("Mining"), None),
-    (40, _("Tourism"), None),
+    (30, _("Logging"), None),
+    (40, _("Resource extraction (Oil, Gas, Minerals)"), None),
+    (50, _("Tourism"), None),
     (60, _("Industry"), None),
     (70, _("Conservation"), None),
-    (80, _("Renewable Energy"), None),
-    (90, _("Other (please specify)"), None),
+    (80, _("Land speculation"), None),
+    (90, _("Renewable Energy"), None),
+    (100, _("Other (please specify)"), None),
 )
 
 nature_choices = (
