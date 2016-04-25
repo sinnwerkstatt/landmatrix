@@ -69,14 +69,19 @@ class PDFViewMixin:
     pdf_rendering_context_name = 'is_pdf_export'
 
     def get(self, request, *args, **kwargs):
+        print(args, kwargs)
         if 'format' in kwargs and kwargs['format'].upper() == 'PDF':
             # build a URL to generate HTML for the PDF view
-            pdf_rendering_url = self.get_pdf_rendering_url(request)
-            pdf_filename = self.get_pdf_filename(request)
+            pdf_rendering_url = self.build_full_pdf_rendering_url(request,
+                                                                  *args,
+                                                                  **kwargs)
+            pdf_filename = self.get_pdf_filename(request, *args, **kwargs)
             response = self.render_url_to_pdf_response(pdf_rendering_url,
                                                        pdf_filename)
         else:
             context = self.get_context_data(**kwargs)
+            pdf_export_url = self.get_pdf_export_url(request, *args, **kwargs)
+            context['pdf_export_url'] = pdf_export_url
 
             if self.pdf_rendering_context_name in request.GET:
                 # Render the PDF HTML
@@ -86,25 +91,21 @@ class PDFViewMixin:
 
         return response
 
-    def get_pdf_filename(self, request):
+    def get_pdf_filename(self, request, *args, **kwargs):
         return self.pdf_filename
 
-    def get_pdf_export_url(self, request):
+    def get_pdf_export_url(self, request, *args, **kwargs):
         return self.pdf_export_url
 
-    def get_pdf_render_url(self, request):
-        return self.pdf_render_url
+    def get_pdf_render_url(self, request, *args, **kwargs):
+        '''Strip out the format arg, and reverse the URL'''
+        kwargs_copy = copy.copy(kwargs)
+        if 'format' in kwargs_copy:
+            del kwargs_copy['format']
+        return reverse(self.pdf_render_url, args=args, kwargs=kwargs_copy)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        pdf_export_url = self.get_pdf_export_url(self.request)
-        if pdf_export_url:
-            context['pdf_export_url'] = pdf_export_url
-
-        return context
-
-    def get_pdf_rendering_url(self, request):
-        pdf_render_url = reverse(self.get_pdf_render_url(request))
+    def build_full_pdf_rendering_url(self, request, *args, **kwargs):
+        pdf_render_url = self.get_pdf_render_url(request, *args, **kwargs)
 
         url = request.build_absolute_uri(pdf_render_url)
         url = _update_querystring(url, {self.pdf_rendering_context_name: 1})
