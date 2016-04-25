@@ -1,9 +1,9 @@
-from grid.forms.choices import negotiation_status_choices, implementation_status_choices, intention_choices, \
-    nature_choices, price_type_choices
+from grid.forms.choices import negotiation_status_choices, implementation_status_choices, \
+    intention_choices, nature_choices, price_type_choices
 
 from grid.forms.base_form import BaseForm
-from grid.widgets import TitleField, CommentInput, NumberInput, NestedMultipleChoiceField, YearBasedChoiceField, \
-    YearBasedIntegerField
+from grid.widgets import TitleField, CommentInput, NumberInput, NestedMultipleChoiceField, \
+    YearBasedChoiceField, YearBasedIntegerField
 from landmatrix.models.currency import Currency
 
 from django import forms
@@ -106,21 +106,31 @@ class AddDealGeneralForm(BaseForm):
     )
 
     # Purchase price
-    tg_purchase_price = TitleField(required=False, label="", initial=_("Purchase price"))
-    purchase_price = forms.DecimalField(max_digits=19, decimal_places=2, required=False, label=_("Purchase price"))
+    tg_purchase_price = TitleField(
+        required=False, label="", initial=_("Purchase price")
+    )
+    purchase_price = forms.DecimalField(
+        max_digits=19, decimal_places=2, required=False, label=_("Purchase price")
+    )
     purchase_price_currency = forms.ModelChoiceField(
-        required=False, label=_("Purchase price currency"), queryset=Currency.objects.all().order_by("ranking", "name")
+        required=False, label=_("Purchase price currency"),
+        queryset=Currency.objects.all().order_by("ranking", "name")
     )
     purchase_price_type = forms.TypedChoiceField(
         required=False, label=_("Purchase price area type"), choices=price_type_choices, coerce=int
     )
     purchase_price_area = forms.IntegerField(
-        required=False, label=_("Purchase price area"), help_text=_("ha"), widget=NumberInput(attrs={'class': 'test'})
+        required=False, label=_("Purchase price area"), help_text=_("ha"),
+        widget=NumberInput(attrs={'class': 'test'})
     )
-    tg_purchase_price_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+    tg_purchase_price_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
 
     # Leasing fees
-    tg_leasing_fees = TitleField(required=False, label="", initial=_("Leasing fees"))
+    tg_leasing_fees = TitleField(
+        required=False, label="", initial=_("Leasing fees")
+    )
     annual_leasing_fee = forms.DecimalField(
         max_digits=19, decimal_places=2, required=False, label=_("Annual leasing fee")
     )
@@ -134,36 +144,59 @@ class AddDealGeneralForm(BaseForm):
     annual_leasing_fee_area = forms.IntegerField(
         required=False, label=_("Purchase price area"), help_text=_("ha"), widget=NumberInput
     )
-    tg_leasing_fees_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+    tg_leasing_fees_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
     # Contract farming
-    tg_contract_farming = TitleField(required=False, label="", initial=_("Contract farming"))
-    contract_farming = forms.ChoiceField(required=False, label=_("Contract farming"), choices=(
-        (10, _("Yes")),
-        (20, _("No")),
-    ), widget=forms.RadioSelect)
+    tg_contract_farming = TitleField(
+        required=False, label="", initial=_("Contract farming")
+    )
+    contract_farming = forms.ChoiceField(
+        required=False, label=_("Contract farming"), choices=(
+            (10, _("Yes")),
+            (20, _("No")),
+        ), widget=forms.RadioSelect
+    )
     on_the_lease = forms.BooleanField(required=False, label=_("On leased / purchased area"))
     on_the_lease_area = forms.IntegerField(
-        required=False, label=_("On leased / purchased area"), help_text=_("ha"), widget=NumberInput
+        required=False, label=_("On leased / purchased area"), help_text=_("ha"),
+        widget=YearBasedIntegerField
     )
     on_the_lease_farmers = forms.IntegerField(
-        required=False, label=_("On leased / purchased farmers"), help_text=_("farmers"), widget=NumberInput
+        required=False, label=_("On leased / purchased farmers"), help_text=_("farmers"),
+        widget=YearBasedIntegerField
     )
-    off_the_lease = forms.BooleanField(required=False, label=_("Not on leased / purchased area (out-grower)"))
+    on_the_lease_households = forms.IntegerField(
+        required=False, label=_("On leased / purchased households"), help_text=_("households"),
+        widget=YearBasedIntegerField
+    )
+    off_the_lease = forms.BooleanField(
+        required=False, label=_("Not on leased / purchased area (out-grower)")
+    )
     off_the_lease_area = forms.IntegerField(
-        required=False, label=_("Not on leased / purchased area (out-grower)"), help_text=_("ha"), widget=NumberInput
+        required=False, label=_("Not on leased / purchased area (out-grower)"), help_text=_("ha"),
+        widget=YearBasedIntegerField
     )
     off_the_lease_farmers = forms.IntegerField(
-        required=False, label=_("Not on leased / purchased farmers (out-grower)"), help_text=_("farmers"),
-        widget=NumberInput
+        required=False, label=_("Not on leased / purchased farmers (out-grower)"),
+        help_text=_("farmers"), widget=YearBasedIntegerField
     )
-    tg_contract_farming_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+    off_the_lease_households = forms.IntegerField(
+        required=False, label=_("Not on leased / purchased households (out-grower)"),
+        help_text=_("households"), widget=YearBasedIntegerField
+    )
+    tg_contract_farming_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
 
     def clean_contract_date(self):
         date = self.cleaned_data["contract_date"]
         try:
             return date and date.strftime("%Y-%m-%d") or ""
         except:
-            raise forms.ValidationError(_("Invalid date. Please enter a date in the format [dd:mm:yyyy]"))
+            raise forms.ValidationError(
+                _("Invalid date. Please enter a date in the format [dd:mm:yyyy]")
+            )
 
     class Meta:
         name = 'general_information'
