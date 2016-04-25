@@ -20,12 +20,13 @@ class DealSpatialForm(BaseForm):
 
     form_title = _('Location')
     tg_location = TitleField(required=False, label="", initial=_("Location"))
-    level_of_accuracy = forms.TypedChoiceField(required=False, label=_("Level of accuracy"), choices=(
+    level_of_accuracy = forms.TypedChoiceField(required=False, label=_("Spatial accuracy level"), choices=(
         (0, _("---------")),
         (10, _("Country")),
-        (20, _("Approximate level")),
-        (30, _("Exact location")),
-        (40, _("Exact coordinates")),
+        (30, _("Administrative region")),
+        (30, _("Approximate location")),
+        (40, _("Exact location")),
+        (50, _("Coordinates")),
     ), coerce=int)
     location = forms.CharField(required=False, label=_("Location"), widget=LocationWidget)
     point_lat = forms.CharField(required=False, label=_("Latitude"), widget=forms.TextInput, initial="")
