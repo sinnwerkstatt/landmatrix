@@ -3,7 +3,6 @@ from django.http.response import HttpResponse
 from django.db.models import Max
 from django.views.generic import TemplateView
 from django.template import RequestContext
-from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models import Deal
 from landmatrix.models.activity import Activity
@@ -22,10 +21,10 @@ from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from grid.forms.deal_produce_info_form import PublicViewDealProduceInfoForm
 from grid.forms.deal_spatial_form import PublicViewDealSpatialForm
 from grid.forms.deal_water_form import DealWaterForm
+from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.views.view_aux_functions import render_to_string, render_to_response
 from grid.forms.country_specific_forms import get_country_specific_form_class
-
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -40,6 +39,7 @@ FORMS = [
     ("former_use", DealFormerUseForm),
     ("produce_info", PublicViewDealProduceInfoForm),
     ("water", DealWaterForm),
+    ("vggt", DealVGGTForm),
     ("gender-related_info", DealGenderRelatedInfoForm),
 ]
 
