@@ -72,6 +72,11 @@ class MapModel:
                     new_fieldname = new_fieldname[0]
                 print("%s: '%s' -> %s: '%s'" % (attribute, value, new_fieldname, getattr(new, new_fieldname)))
 
+        cls.save_record(new, save)
+
+    @classmethod
+    def save_record(cls, new, save):
+        """Extracted because subclasses might need to pass extra parameters to Model.save()"""
         if save:
             new.save(using=V2)
 
