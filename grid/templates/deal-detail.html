@@ -181,7 +181,7 @@
 
 {% else %}
     <p>
-        {% trans "There are currently no deals matching your search criteria." %} 
+        {% trans "There are currently no deals matching your search criteria." %}
         <a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.
     </p>
 {% endif %}
@@ -190,13 +190,14 @@
 <script type="text/javascript">
 $(document).ready(function () {
     var count = 0;
-    $('.map').each(function () {
-        count++;
+    $('.map').each(function (idx) {
+        console.log("Setting up detail map: ", idx, count);
         var lat = parseFloat($('.point_lat div:last-child').text()),
             lon = parseFloat($('.point_lon div:last-child').text());
-        $(this).attr('id', 'map-' + count);
+        $(this).attr('id', 'map' + count);
         initializeMap(count, lat, lon);
-    })
+        count++;
+    });
 
     $('.operational_stakeholder').append('<div id="chart0"></div>');
 
