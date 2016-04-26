@@ -30,12 +30,12 @@ var detailviews = {
         'worse than 100km': '#700'
     },
     'Negotiation Status': {
-        'Failed (Contract canceled)': '#0f0',
-        'Failed (Negotiations failed)': '#00f',
-        'Concluded (Contract signed)': '#0a0',
-        'Concluded (Oral agreement)': '#b00',
-        'Intended (Expression of interest)': '#500',
-        'Intended (Under negotiation)': '#700'
+        'Contract canceled': '#0f0',
+        'Negotiations failed': '#00f',
+        'Contract signed': '#0a0',
+        'Oral agreement': '#b00',
+        'Expression of interest': '#500',
+        'Under negotiation': '#700'
     },
     'Deal Intention': {
         'Agriculture': '#1D6914',
