@@ -3,46 +3,30 @@ from grid.forms.add_deal_employment_form import AddDealEmploymentForm
 from grid.forms.add_deal_general_form import AddDealGeneralForm
 from grid.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
 from grid.forms.change_deal_action_comment_form import ChangeDealActionCommentForm
-from grid.forms.deal_data_source_form import AddDealDataSourceFormSet, DealDataSourceForm
+from grid.forms.deal_data_source_form import AddDealDataSourceFormSet
 from grid.forms.deal_former_use_form import DealFormerUseForm
 from grid.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
 from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from grid.forms.deal_produce_info_form import DealProduceInfoForm
 from grid.forms.deal_spatial_form import AddDealSpatialFormSet
 from grid.forms.deal_water_form import DealWaterForm
-from grid.forms.investor_formset import InvestorFormSet
+from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.activity_changeset import ActivityChangeset
-from landmatrix.models.country import Country
-from landmatrix.models.investor import InvestorActivityInvolvement, Investor
+from landmatrix.models.investor import InvestorActivityInvolvement
 from landmatrix.models.language import Language
 from landmatrix.models.status import Status
-from .view_aux_functions import render_to_response
 
 from django.views.generic import TemplateView
-from django.template import RequestContext
 
-from django.db.models.query import QuerySet
-from django.http.response import HttpResponseRedirect
 from django.db import transaction
-from django.db.models import Model
 from django.contrib import messages
-from django.conf import settings
-from django.core.files.base import ContentFile
 from django.core.exceptions import MultipleObjectsReturned
-from django.core.files.storage import default_storage
-from django.core.files.uploadedfile import UploadedFile
 from django.utils.translation import ugettext_lazy as _
 
-from wkhtmltopdf import wkhtmltopdf
-
 from datetime import date, datetime
-import urllib.request
-import urllib.error
-
-import os
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -59,6 +43,7 @@ class SaveDealView(TemplateView):
         DealProduceInfoForm,
         DealWaterForm,
         DealGenderRelatedInfoForm,
+        DealVGGTForm,
         AddDealOverallCommentForm,
         ChangeDealActionCommentForm,
     ]
