@@ -85,13 +85,14 @@ function addSankeyData(data, response, jqxhdr) {
 }
 
 function loadSankey(index, investorId) {
-    // TODO: This should grab the new Investor data from the api and feed it to the sankey d3
-    console.log("Loading new Investornetwork diagram data ");
+    if (investorId > 0) {
+        console.log("Loading new Investornetwork diagram data ");
 
-    $.get(
-        "/api/investor_network.json?operational_stakeholder=" + investorId + '&operational_stakeholder_diagram=' + index,
-        addSankeyData
-    );
+        $.get(
+            "/api/investor_network.json?operational_stakeholder=" + investorId + '&operational_stakeholder_diagram=' + index,
+            addSankeyData
+        );
+    }
 }
 
 function setupSankey(index) {
