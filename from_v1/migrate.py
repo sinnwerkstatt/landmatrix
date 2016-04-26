@@ -55,7 +55,8 @@ if __name__ == '__main__':
         # MapAnimal.map_all(save=True)
         # MapMineral.map_all(save=True)
         # MapCountry.map_all(save=True)
-        MapDjangoComments.map_all(save=False, verbose=True)
+        MapDjangoComments.map_all(save=True)
+        MapThreadedComments.map_all(save=True)
 
         if False:
             MapActivity._done = True
