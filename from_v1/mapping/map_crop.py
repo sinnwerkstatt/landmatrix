@@ -1,9 +1,20 @@
 from mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
-from mapping.map_agricultural_produce import MapAgriculturalProduce
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
+
+def map_crop_name(name):
+    return name
+
+
+def map_crop_code(code):
+    return code
+
+
+def map_crop_slug(slug):
+    return slug
 
 
 class MapCrop(MapModel):
@@ -11,8 +22,16 @@ class MapCrop(MapModel):
     new_class = landmatrix.models.Crop
     attributes = {
         'agricultural_produce': 'fk_agricultural_produce',
+        'name': ('name', map_crop_name),
+        'code': ('code', map_crop_code),
+        'slug': ('slug', map_crop_slug)
     }
-    depends = [ MapAgriculturalProduce ]
+    depends = [MapAgriculturalProduce]
+
+
+class MapAgriculturalProduce(MapModel):
+    old_class = old_editor.models.AgriculturalProduce
+    new_class = landmatrix.models.AgriculturalProduce
 
 
 class MapAnimal(MapModel):

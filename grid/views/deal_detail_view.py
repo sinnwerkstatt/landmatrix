@@ -1,32 +1,33 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http.response import HttpResponse
+from django.db.models import Max
+from django.views.generic import TemplateView
+from django.template import RequestContext
+
+from landmatrix.models import Deal
+from landmatrix.models.activity import Activity
+from landmatrix.models.country import Country
+from landmatrix.models.deal_history import DealHistoryItem
+from landmatrix.pdfgen import PDFViewMixin
 
 from grid.forms.change_deal_employment_form import ChangeDealEmploymentForm
 from grid.forms.change_deal_general_form import ChangeDealGeneralForm
-from grid.forms.deal_data_source_form import PublicViewDealDataSourceFormSet, DealDataSourceForm
+from grid.forms.deal_data_source_form import (
+    PublicViewDealDataSourceFormSet, DealDataSourceForm,
+)
 from grid.forms.deal_former_use_form import DealFormerUseForm
 from grid.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
 from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from grid.forms.deal_produce_info_form import PublicViewDealProduceInfoForm
 from grid.forms.deal_spatial_form import PublicViewDealSpatialForm
 from grid.forms.deal_water_form import DealWaterForm
+from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.views.view_aux_functions import render_to_string, render_to_response
 from grid.forms.country_specific_forms import get_country_specific_form_class
 
-from landmatrix.models import Deal
-from landmatrix.models.activity import Activity
-from landmatrix.models.country import Country
-from landmatrix.models.deal_history import DealHistoryItem
-
-from django.db.models import Max
-
-from django.views.generic import TemplateView
-from django.template import RequestContext
-from django.utils.translation import ugettext_lazy as _
-
-
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 FORMS = [
     ("spatial_data", PublicViewDealSpatialForm),
@@ -38,13 +39,19 @@ FORMS = [
     ("former_use", DealFormerUseForm),
     ("produce_info", PublicViewDealProduceInfoForm),
     ("water", DealWaterForm),
+    ("vggt", DealVGGTForm),
     ("gender-related_info", DealGenderRelatedInfoForm),
 ]
 
 
-class DealDetailView(TemplateView):
+class DealDetailView(PDFViewMixin, TemplateView):
 
     template_name = 'deal-detail.html'
+    pdf_export_url = 'deal_detail_pdf'
+    pdf_render_url = 'deal_detail'
+
+    def get_pdf_filename(self, request, *args, **kwargs):
+        return 'deal_{deal_id}.pdf'.format(**kwargs)
 
     def get_context_data(self, deal_id):
         try:
@@ -71,6 +78,9 @@ class DealDetailView(TemplateView):
             context['history'] = DealHistoryItem.get_history_for(deal)
         except AttributeError:
             pass
+
+        context['export_formats'] = ("XML", "CSV", "XLS", "PDF",)
+
         return context
 
     def render_forms(self, request, context):
