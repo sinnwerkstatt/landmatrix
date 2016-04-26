@@ -16,10 +16,10 @@ class DealLocalCommunitiesForm(BaseForm):
         required=False, label="", initial=_("Names of communities / indigenous peoples affected")
     )
     name_of_community = forms.CharField(
-        required=False, label=_("Name of community")
+        required=False, label=_("Name of community"), widget=forms.TextInput
     )
     name_of_indigenous_people = forms.CharField(
-        required=False, label=_("Name of indigenous people")
+        required=False, label=_("Name of indigenous people"), widget=forms.TextInput
     )
     tg_affected_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
