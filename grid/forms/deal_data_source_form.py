@@ -1,5 +1,3 @@
-import os
-import re
 import urllib.request
 
 from django import forms
@@ -7,56 +5,80 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.files.base import File
 from django.forms.models import formset_factory
 from django.template.defaultfilters import slugify
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from wkhtmltopdf import wkhtmltopdf
 
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-from landmatrix.models.deal_history import DealHistoryItem
 from landmatrix.storage import data_source_storage
 from grid.forms.base_form import BaseForm
-from grid.forms.file_field_with_initial import (
-    FileFieldWithInitial, FileInputWithInitial,
-)
+from grid.forms.file_field_with_initial import FileFieldWithInitial
 from grid.widgets import TitleField, CommentInput
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-
 class DealDataSourceForm(BaseForm):
 
     DEBUG = False
-    tg_data_source = TitleField(required=False, label="", initial=_("Data source"))
-    type = forms.TypedChoiceField(required=False, label=_("Data source type"), choices=(
-        (10, _("Media report")),
-        (20, _("Research Paper / Policy Report")),
-        (30, _("Government sources")),
-        (40, _("Company sources")),
-        (50, _("Contract")),
-        (60, _("Personal information")),
-        (70, _("Crowdsourcing")),
-        (80, _("Other (Please specify in comment  field)")),
-    ), coerce=int)
-    url = forms.URLField(required=False, label=_("New URL"), help_text=_("PDF will be generated automatically, leave empty for file upload"))
-    file = FileFieldWithInitial(required=False, label=_("New file"))
-    date = forms.DateField(required=False, label=_("Date"), help_text="[dd:mm:yyyy]", input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"])
+    tg_data_source = TitleField(
+        required=False, label="", initial=_("Data source")
+    )
+    type = forms.TypedChoiceField(
+        required=False, label=_("Data source type"), choices=(
+            (10, _("Media report")),
+            (20, _("Research Paper / Policy Report")),
+            (30, _("Government sources")),
+            (40, _("Company sources")),
+            (50, _("Contract")),
+            (60, _("Contract (contract farming agreement)")),
+            (70, _("Personal information")),
+            (80, _("Crowdsourcing")),
+            (90, _("Other (Please specify in comment  field)")),
+        ), coerce=int
+    )
+    url = forms.URLField(
+        required=False, label=_("New URL"),
+        help_text=_("PDF will be generated automatically, leave empty for file upload")
+    )
+    file = FileFieldWithInitial(
+        required=False, label=_("New file")
+    )
+    pdf_not_public = forms.BooleanField(
+        required=False, label=_("Keep PDF not public")
+    )
+    publication_title = forms.CharField(
+        required=False, label=_("Publication title")
+    )
+    date = forms.DateField(
+        required=False, label=_("Date"), help_text="[dd:mm:yyyy]",
+        input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
+    )
+
     # Optional personal information for Crowdsourcing and Personal information
     name = forms.CharField(required=False, label=_("Name"))
     company = forms.CharField(required=False, label=_("Organisation"))
     email = forms.CharField(required=False, label=_("Email"))
     phone = forms.CharField(required=False, label=_("Phone"))
-    includes_in_country_verified_information = forms.BooleanField(required=False, label=_("Includes in-country-verified information"))
-    tg_data_source_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+    includes_in_country_verified_information = forms.BooleanField(
+        required=False, label=_("Includes in-country-verified information")
+    )
+    open_land_contracts_id = forms.CharField(
+        required=False, label=_("OpenLandContracts ID")
+    )
+    tg_data_source_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
 
     def clean_date(self):
         date = self.cleaned_data["date"]
         try:
             return date and date.strftime("%Y-%m-%d") or ""
         except:
-            raise forms.ValidationError(_("Invalid date. Please enter a date in the format [dd:mm:yyyy]"))
+            raise forms.ValidationError(
+                _("Invalid date. Please enter a date in the format [dd:mm:yyyy]")
+            )
 
     def clean_file(self):
         file = self.cleaned_data["file"]
@@ -94,10 +116,11 @@ class DealDataSourceForm(BaseForm):
             for key in tag.keys():
                 if key in attributes and attributes[key] != tag[key]:
                     # raise RuntimeError()
-                    print(
-                        'ALERT: found different values under the same tag group. Deal ID {}, taggroup {}, tags {}'.format(
-                            deal.activity.activity_identifier, taggroup.id, str(tags)
-                        ))
+                    # print(
+                    #     'ALERT: found different values under the same tag group. Deal ID {}, taggroup {}, tags {}'.format(
+                    #         deal.activity.activity_identifier, taggroup.id, str(tags)
+                    #     ))
+                    pass
                 attributes[key] = tag[key]
 
         return attributes
@@ -175,22 +198,18 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
         taggroups = deal.attribute_groups().filter(belongs_to_data_source).order_by('name')
 
         data = []
-        #data = {
-        #    'form-TOTAL_FORMS': len(taggroups),
-        #    'form-INITIAL_FORMS': len(taggroups),
-        #    'form-MAX_NUM_FORMS': 1000
-        #}
         for i, taggroup in enumerate(taggroups):
             form_data = DealDataSourceForm.get_data(deal, taggroup, taggroups[i+1] if i < len(taggroups)-1 else None)
-            # print('AddDealDataSourceFormSet form', i, ':    ', form_data)
             data.append(form_data)
         return data
 
     class Meta:
         name = 'data_sources'
 
+
 class ChangeDealDataSourceFormSet(AddDealDataSourceFormSet):
     extra = 0
+
 
 class PublicViewDealDataSourceForm(DealDataSourceForm):
 
@@ -282,6 +301,8 @@ def get_url_slug(request, url):
 def error_could_not_upload(request, url, message=''):
     messages.error(
         request,
-        _("Data source <a target='_blank' href='{0}'>URL</a> could not be uploaded as a PDF file. {1} <br>Please upload manually.").format(url, message)
+        _("Data source <a target='_blank' href='{0}'>URL</a> "
+          "could not be uploaded as a PDF file. {1} <br>"
+          "Please upload manually.").format(url, message)
     )
 

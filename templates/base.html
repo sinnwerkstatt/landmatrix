@@ -89,10 +89,10 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% slugurl 'help' %}" role="button"><span class="nav-circle nav-help">?</span></a></li>
+                    <li><a href="{% slugurl 'help' %}" role="button"><i class="fa fa-question-circle"></i></a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><i class="fa lm-envelope messages"></i></a>
+                           aria-expanded="false"><i class="fa fa-bell"></i></a>
                         <ul class="dropdown-menu">
                             <li><a href="{% slugurl 'news' %}">{% trans "News" %}</a></li>
                             <li><a href="{% slugurl 'newsletter' %}">{% trans "Newsletter" %}</a></li>
@@ -145,6 +145,19 @@
                     {% block subnav %}
                         <ul class="subnav nav nav-pills pull-right">
                             {% block subnav_inner %}
+                            <li role="presentation"><a href="{% url 'map' %}">
+                                <i class="lm lm-map-marker"></i>{% trans "Map" %}
+                            </a></li>
+                            <li role="presentation"><a href="{% url 'app_main' %}">
+                                <i class="lm lm-table"></i>{% trans "Data" %}
+                            </a></li>
+                            <li role="presentation"><a href="{% url 'chart_transnational_deals' %}">
+                                <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+                            </a></li>
+                            <li class="divider"></li>
+                            <li role="presentation">
+                                {% include "export.html" %}
+                            </li>
                             {% endblock %}
                             <li role="presentation">
                                 {% include "share.html" %}
