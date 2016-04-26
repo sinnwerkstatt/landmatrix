@@ -54,7 +54,8 @@ if __name__ == '__main__':
         # MapInvestorActivityInvolvement.map_all(save=True)
         # MapAnimal.map_all(save=True)
         # MapMineral.map_all(save=True)
-        MapCountry.map_all(save=True)
+        # MapCountry.map_all(save=True)
+        MapDjangoComments.map_all(save=False, verbose=True)
 
         if False:
             MapActivity._done = True
