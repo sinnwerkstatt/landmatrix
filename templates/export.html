@@ -51,8 +51,8 @@
   {% endif %}
     <i class=""></i>XSL
   </a>
-  {% if 'PDF' in export_formats and pdf_chart_url %}
-  <a class="btn-media pdf" href="{% url pdf_chart_url %}">
+  {% if 'PDF' in export_formats %}
+  <a class="btn-media pdf" href="{% if deal and pdf_export_url %}{% url pdf_export_url deal_id=deal.activity_identifier %}{% elif pdf_export_url %}{% url pdf_export_url %}{% endif %}">
       <i class=""></i>PDF
   </a>
   {% endif %}
