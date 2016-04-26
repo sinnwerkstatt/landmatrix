@@ -105,6 +105,9 @@ class DealProduceInfoForm(BaseForm):
                 "ethanol distillery, biomass power plant etc.)"),
         widget=CommentInput
     )
+    in_country_end_products = forms.CharField(
+        required=False, label=_("In-country end products of the project"), widget=CommentInput
+    )
 
     class Meta:
         name = 'produce_info'
