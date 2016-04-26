@@ -1,5 +1,3 @@
-import os
-import re
 import urllib.request
 
 from django import forms
@@ -7,19 +5,15 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.files.base import File
 from django.forms.models import formset_factory
 from django.template.defaultfilters import slugify
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from wkhtmltopdf import wkhtmltopdf
 
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-from landmatrix.models.deal_history import DealHistoryItem
 from landmatrix.storage import data_source_storage
 from grid.forms.base_form import BaseForm
-from grid.forms.file_field_with_initial import (
-    FileFieldWithInitial, FileInputWithInitial,
-)
+from grid.forms.file_field_with_initial import FileFieldWithInitial
 from grid.widgets import TitleField, CommentInput
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
