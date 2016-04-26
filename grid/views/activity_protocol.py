@@ -193,8 +193,8 @@ def _is_deal_older_y2k(activity_identifier):
     negotiation_stati = attributes_for_activity(activity_identifier, "negotiation_status"). \
         filter(attributes__contains={
                 'negotiation_status': [
-                    "Intended (Expression of interest)", "Intended (Under negotiation)", "Concluded (Oral Agreement)",
-                    "Concluded (Contract signed)"
+                    "Expression of interest", "Under negotiation", "Oral Agreement",
+                    "Memorandum of understanding", "Contract signed"
                 ]
             }
         ). \
@@ -241,26 +241,26 @@ def _calculate_deal_size(activity_identifier, negotiation_status):
     contract_size = len(contract_size) > 0 and contract_size[0].value or None
     production_size = nonnull_attributes_for_activity(activity_identifier, "production_size").order_by("-date")
     production_size = len(production_size) > 0 and production_size[0].value or None
-    if negotiation_status in ("Intended (Expression of interest)", "Intended (Under negotiation)"):
+    if negotiation_status in ("Expression of interest", "Under negotiation", "Memorandum of understanding"):
         # intended deal
         if not intended_size and contract_size:
             intended_size = contract_size
         elif not intended_size and not contract_size and production_size:
             intended_size = production_size
         return intended_size
-    elif negotiation_status in ("Concluded (Oral Agreement)", "Concluded (Contract signed)"):
+    elif negotiation_status in ("Oral Agreement", "Contract signed"):
         # concluded deal
         if not contract_size and production_size:
             contract_size = production_size
         return contract_size
-    elif negotiation_status == "Failed (Negotiations failed)":
+    elif negotiation_status == "Negotiations failed":
         # intended but failed deal
         if not intended_size and contract_size:
             intended_size = contract_size
         elif not intended_size and not contract_size and production_size:
             intended_size = production_size
         return intended_size
-    elif negotiation_status == "Failed (Contract canceled)":
+    elif negotiation_status == "Contract canceled":
         # concluded but failed
         if not contract_size and production_size:
             contract_size = production_size
