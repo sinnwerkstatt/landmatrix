@@ -18,6 +18,7 @@ from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from grid.forms.deal_produce_info_form import DealProduceInfoForm
 from grid.forms.deal_spatial_form import ChangeDealSpatialFormSet
 from grid.forms.deal_water_form import DealWaterForm
+from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.forms.country_specific_forms import get_country_specific_form_class
 
@@ -38,6 +39,7 @@ class ChangeDealView(SaveDealView):
         DealProduceInfoForm,
         DealWaterForm,
         DealGenderRelatedInfoForm,
+        DealVGGTForm,
         AddDealOverallCommentForm,
         ChangeDealActionCommentForm,
     ]
