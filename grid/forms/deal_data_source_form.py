@@ -36,12 +36,15 @@ class DealDataSourceForm(BaseForm):
         (30, _("Government sources")),
         (40, _("Company sources")),
         (50, _("Contract")),
-        (60, _("Personal information")),
-        (70, _("Crowdsourcing")),
-        (80, _("Other (Please specify in comment  field)")),
+        (60, _("Contract (contract farming agreement)")),
+        (70, _("Personal information")),
+        (80, _("Crowdsourcing")),
+        (90, _("Other (Please specify in comment  field)")),
     ), coerce=int)
     url = forms.URLField(required=False, label=_("New URL"), help_text=_("PDF will be generated automatically, leave empty for file upload"))
     file = FileFieldWithInitial(required=False, label=_("New file"))
+    pdf_not_public = forms.BooleanField(required=False, label=_("Keep PDF not public"))
+    publication_title = forms.CharField(required=False, label=_("Publication title"))
     date = forms.DateField(required=False, label=_("Date"), help_text="[dd:mm:yyyy]", input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"])
     # Optional personal information for Crowdsourcing and Personal information
     name = forms.CharField(required=False, label=_("Name"))
@@ -49,6 +52,7 @@ class DealDataSourceForm(BaseForm):
     email = forms.CharField(required=False, label=_("Email"))
     phone = forms.CharField(required=False, label=_("Phone"))
     includes_in_country_verified_information = forms.BooleanField(required=False, label=_("Includes in-country-verified information"))
+    open_land_contracts_id = forms.CharField(required=False, label=_("OpenLandContracts ID"))
     tg_data_source_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
     def clean_date(self):
