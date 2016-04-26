@@ -18,10 +18,59 @@ class DealProduceInfoForm(BaseForm):
     form_title = _('Produce info')
 
     # Detailed crop, animal and mineral information
-    tg_crop_animal_mineral = TitleField(required=False, label="", initial=_("Detailed crop, animal and mineral information"))
-    crops = forms.ModelMultipleChoiceField(required=False, label=_("Crops"), queryset=Crop.objects.all())
-    animals = forms.ModelMultipleChoiceField(required=False, label=_("Animals"), queryset=Animal.objects.all())
-    minerals = forms.ModelMultipleChoiceField(required=False, label=_("Minerals"), queryset=Mineral.objects.all())
+    tg_crop_animal_mineral = TitleField(
+        required=False, label="", initial=_("Detailed crop, animal and mineral information")
+    )
+    crops = forms.ModelMultipleChoiceField(
+        required=False, label=_("Crops"), queryset=Crop.objects.all()
+    )
+    crops_other = forms.CharField(
+        required=False, label=_("Other crops")
+    )
+    tg_crops_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
+    animals = forms.ModelMultipleChoiceField(
+        required=False, label=_("Livestock"), queryset=Animal.objects.all()
+    )
+    animals_other = forms.CharField(
+        required=False, label=_("Other livestock")
+    )
+    tg_animals_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
+    minerals = forms.ModelMultipleChoiceField(
+        required=False, label=_("Resources"), queryset=Mineral.objects.all()
+    )
+    minerals_other = forms.CharField(
+        required=False, label=_("Other resources")
+    )
+    tg_minerals_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
+    contract_farming_crops = forms.ModelMultipleChoiceField(
+        required=False, label=_("Contract farming crops"), queryset=Crop.objects.all()
+    )
+    contract_farming_crops_other = forms.CharField(
+        required=False, label=_("Other contract farming crops")
+    )
+
+    # Detailed contract farming crop, animal and mineral information
+    tg_contract_farming_crop_animal_mineral = TitleField(
+        required=False, initial=_("Detailed contract farming crop, animal and mineral information")
+    )
+    tg_contract_farming_crops_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
+    contract_farming_animals = forms.ModelMultipleChoiceField(
+        required=False, label=_("Contract farming livestock"), queryset=Animal.objects.all()
+    )
+    contract_farming_animals_other = forms.CharField(
+        required=False, label=_("Other contract farming livestock")
+    )
+    tg_contract_farming_animals_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
 
     # Use of produce
     tg_use_of_produce = TitleField(required=False, label="", initial=_("Use of produce"))
@@ -38,15 +87,28 @@ class DealProduceInfoForm(BaseForm):
     tg_use_of_produce_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
     # In-country processing of produce
-    tg_in_country_processing = TitleField(required=False, label="", initial=_("In country processing of produce"))
-    in_country_processing = forms.ChoiceField(required=False, label=_("In country processing of produce"), choices=(
-        (10, _("Yes")),
-        (20, _("No")),
-    ), widget=forms.RadioSelect)
-    tg_in_country_processing_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+    tg_in_country_processing = TitleField(
+        required=False, label="", initial=_("In country processing of produce")
+    )
+    in_country_processing = forms.ChoiceField(
+        required=False, label=_("In country processing of produce"), choices=(
+            (10, _("Yes")),
+            (20, _("No")),
+        ), widget=forms.RadioSelect
+    )
+    tg_in_country_processing_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
+    processing_facilities = forms.CharField(
+        required=False,
+        label=_("Processing facilities / production infrastructure of the project (e.g. oil mill, "
+                "ethanol distillery, biomass power plant etc.)"),
+        widget=CommentInput
+    )
 
     class Meta:
         name = 'produce_info'
+
 
 class PublicViewDealProduceInfoForm(DealProduceInfoForm):
 
