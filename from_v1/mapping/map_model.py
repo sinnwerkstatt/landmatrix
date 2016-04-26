@@ -1,37 +1,38 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from migrate import V1, V2
 
 from django.db import models, transaction
 
-"""
-    Map a model from Landmatrix V1 to Landmatrix V2.
-    Usage:
-    - Subclass MapModel
-    - set the class variables old_class and new_class to the models in V1 and V2
-    - optionally:
-      - set the class variable depends to a list of mappings that need to be run before this
-      - set the class variable attributes to a dict of mappings of old attribute names to new attribute names
-      - optionally, the second parameter of the mapping can be a pair of (new_attribute_name, processing_function)
-    - run map_all() (or map() to convert a single record)
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-    Example:
 
-        def year_to_date(year):
-            return None if year is None else str(year)+'-01-07'
-
-        class MapActivityAttributeGroup(MapModel):
-            old_class = editor.models.ActivityAttributeGroup
-            new_class = landmatrix.models.ActivityAttributeGroup
-            attributes = {
-                'activity': 'fk_activity',
-                'language': 'fk_language',
-                'year': ('date', year_to_date)
-            }
-            depends = [ MapActivity, MapLanguage ]
-
-"""
 class MapModel:
+    """
+        Map a model from Landmatrix V1 to Landmatrix V2.
+        Usage:
+        - Subclass MapModel
+        - set the class variables old_class and new_class to the models in V1 and V2
+        - optionally:
+          - set the class variable depends to a list of mappings that need to be run before this
+          - set the class variable attributes to a dict of mappings of old attribute names to new attribute names
+          - optionally, the second parameter of the mapping can be a pair of (new_attribute_name, processing_function)
+        - run map_all() (or map() to convert a single record)
+
+        Example:
+
+            def year_to_date(year):
+                return None if year is None else str(year)+'-01-07'
+
+            class MapActivityAttributeGroup(MapModel):
+                old_class = editor.models.ActivityAttributeGroup
+                new_class = landmatrix.models.ActivityAttributeGroup
+                attributes = {
+                    'activity': 'fk_activity',
+                    'language': 'fk_language',
+                    'year': ('date', year_to_date)
+                }
+                depends = [ MapActivity, MapLanguage ]
+
+    """
 
     attributes = { }
     depends = []
