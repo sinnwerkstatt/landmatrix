@@ -5,6 +5,11 @@ import old_editor.models
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
+class MapAgriculturalProduce(MapModel):
+    old_class = old_editor.models.AgriculturalProduce
+    new_class = landmatrix.models.AgriculturalProduce
+
+
 def map_crop_name(name):
     return name
 
@@ -27,11 +32,6 @@ class MapCrop(MapModel):
         'slug': ('slug', map_crop_slug)
     }
     depends = [MapAgriculturalProduce]
-
-
-class MapAgriculturalProduce(MapModel):
-    old_class = old_editor.models.AgriculturalProduce
-    new_class = landmatrix.models.AgriculturalProduce
 
 
 class MapAnimal(MapModel):
