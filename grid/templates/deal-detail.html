@@ -4,18 +4,6 @@
 
 {% load threadedcomments_tags %}
 
-{% block global_head %}
-
-    {# bootstrap #}
-    {% comment %}
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  {% endcomment %}
-
-{% endblock %}
-
 {% block page_title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
 {% block title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
 
@@ -178,7 +166,7 @@
 
 {% else %}
     <p>
-        {% trans "There are currently no deals matching your search criteria." %} 
+        {% trans "There are currently no deals matching your search criteria." %}
         <a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.
     </p>
 {% endif %}
@@ -187,13 +175,14 @@
 <script type="text/javascript">
 $(document).ready(function () {
     var count = 0;
-    $('.map').each(function () {
-        count++;
+    $('.map').each(function (idx) {
+        console.log("Setting up detail map: ", idx, count);
         var lat = parseFloat($('.point_lat div:last-child').text()),
             lon = parseFloat($('.point_lon div:last-child').text());
-        $(this).attr('id', 'map-' + count);
+        $(this).attr('id', 'map' + count);
         initializeMap(count, lat, lon);
-    })
+        count++;
+    });
 
     $('.operational_stakeholder').append('<div id="chart0"></div>');
 
