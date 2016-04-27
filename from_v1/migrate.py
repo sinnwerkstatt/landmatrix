@@ -59,7 +59,7 @@ if __name__ == '__main__':
         # MapCrop.map_all(save=True, verbose=False)
         # MapAnimal.map_all(save=True, verbose=False)
         # MapMineral.map_all(save=True, verbose=False)
-        MapActivityAttributeGroup.map_all(save=True)
+        MapActivityAttributeGroup.map_all(save=False)
 
         # a number of possible uses listed here as examples
         if False:
