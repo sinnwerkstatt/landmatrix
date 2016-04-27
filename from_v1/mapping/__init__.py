@@ -7,6 +7,7 @@ from mapping.map_activity_changeset import MapActivityChangeset
 from mapping.map_activity_attribute_group import MapActivityAttributeGroup
 from mapping.map_region import MapRegion
 from mapping.map_country import MapCountry
+from mapping.map_currency import MapCurrency
 from mapping.map_browse_rule import MapBrowseRule
 from mapping.map_browse_condition import MapBrowseCondition
 from mapping.map_crop import MapCrop, MapAnimal, MapMineral, MapAgriculturalProduce

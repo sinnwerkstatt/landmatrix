@@ -1,9 +1,6 @@
 from mapping.map_model import MapModel
-import landmatrix.models
-import old_editor.models
 from migrate import V1, V2
 
-from django.db import models, transaction
 from django_comments.models import Comment
 from threadedcomments.models import ThreadedComment
 
@@ -28,7 +25,6 @@ class MapThreadedComments(MapModel):
     @classmethod
     def all_records(cls):
         comment_ids = list(Comment.objects.using(V2).values_list('id', flat=True))
-        print(comment_ids, len(comment_ids))
         return ThreadedComment.objects.using(V1).filter(pk__in=comment_ids).values()
 
     @classmethod
