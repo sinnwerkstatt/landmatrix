@@ -48,19 +48,20 @@ if __name__ == '__main__':
         # MapLanguage.map_all(save=True)
         # MapActivity.map_all(save=True)
         # MapActivityChangeset.map_all(save=True)
-        # MapActivityAttributeGroup.map_all(save=True)
         # MapComment.map_all(save=True)
         # MapInvestor._done = True
         # MapInvestorActivityInvolvement.map_all(save=True)
-        # MapAnimal.map_all(save=True)
-        # MapMineral.map_all(save=True)
         # MapCountry.map_all(save=True)
         # MapDjangoComments.map_all(save=True)
         # MapThreadedComments.map_all(save=True)
         # MapCurrency.map_all(save=True, verbose=True)
-        MapAgriculturalProduce._done = True
-        MapCrop.map_all(save=True, verbose=True)
+        MapAgriculturalProduce.map_all(save=True, verbose=False)
+        MapCrop.map_all(save=True, verbose=False)
+        MapAnimal.map_all(save=True)
+        MapMineral.map_all(save=True)
+        MapActivityAttributeGroup.map_all(save=True)
 
+        # a number of possible uses listed here as examples
         if False:
             MapActivity._done = True
             MapInvestor._done = True
@@ -81,7 +82,6 @@ if __name__ == '__main__':
             ]:
                 map_class.map_all(save=True)
 
-        # a number of possible uses listed here as examples
         if False:
             for map_class in [
                 MapLanguage, MapStatus,
