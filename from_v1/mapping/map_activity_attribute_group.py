@@ -62,6 +62,6 @@ if V1 == 'v1_pg':
             'year': ('date', year_to_date),
             'attributes': ('attributes', clean_crops_and_target_country)
         }
-        depends = [ MapActivity, MapLanguage ]
+        depends = [MapActivity, MapLanguage]
 else:
     MapActivityAttributeGroup = MapActivityTagGroup
