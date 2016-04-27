@@ -82,6 +82,18 @@ def rename_changed_attributes(attrs):
 
 
 def rename_negotiation_status(attrs):
+    RENAMED_STATUS= {
+        'Intended (Expression of interest)': 'Expression of interest',
+        'Intended (Under negotiation)': 'Under negotiation',
+        'Concluded (Oral Agreement)': 'Oral agreement',
+        'Concluded (Contract signed)': 'Contract signed',
+        'Failed (Contract canceled)': 'Contract canceled',
+        'Failed (Negotiations failed)': 'Negotiations failed',
+    }
+    if 'negotiation_status' in attrs:
+        attrs['negotiation_status'] = RENAMED_STATUS.get(
+            attrs['negotiation_status'], attrs['negotiation_status']
+        )
     return attrs
 
 
