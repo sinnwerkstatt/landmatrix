@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "global_base.html" %}
 {% load i18n custom_tags static %}
 {% load humanize %}
 
@@ -87,9 +87,4 @@
         </div>
     </form>
 </div>
-{% endblock %}
-
-{% block js %}
-    <script src="{% static "js/editor/jquery.formset.custom.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}

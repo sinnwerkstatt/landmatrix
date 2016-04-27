@@ -6,16 +6,17 @@ var autocompletes = new Array();
 var latChanged = new Array();
 var lonChanged = new Array();
 var lock = true;;
-
+/*
 $(document).ready(function () {
     $(".maptemplate").each(function (index) {
         $(this).attr('id', 'map' + (index + 1)).removeClass("maptemplate").addClass("map");
         initializeMap(index + 1);
     });
-
+});*/
+$(document).ready(function () {
     $('#accordion').on("shown.bs.collapse", function(things) {
         var mapId = String(things.target.id).split("_")[1];
-        //console.log("collapsehandler: ", mapId, maps);
+        console.log("collapsehandler: ", mapId, maps);
         var map = maps[mapId];
         if (typeof map !== 'undefined') {
             map.updateSize();
@@ -28,15 +29,10 @@ function unlockMaps() {
 }
 
 function getLocationFields(mapId) {
-    const target = "map" + mapId;
-
-    var mapParent = $("#map"+mapId).parentsUntil(".panel-collapse");
-
     var result = {
-        lat: mapParent.find(".point_lat input"),
-        lon: mapParent.find(".point_lon input")
+        lat: $('#id_form-'+(mapId)+'-point_lat'),
+        lon: $('#id_form-'+(mapId)+'-point_lon')
     };
-
     return result;
 }
 
@@ -92,28 +88,24 @@ function updateLocationFields(mapId, coords) {
 
 function updateGeocoding(mapId) {
     var fields = getLocationFields(mapId);
-    //console.log(fields, parseFloat(fields.lat));
     var latLng = new google.maps.LatLng(parseFloat(fields.lat.val()), parseFloat(fields.lon.val()));
 
     var map = $("#map"+mapId);
 
     // changed lan or lon value, request target Country
 
-    var mapParent = $("#map"+mapId).parentsUntil(".panel-collapse");
-
-    var accuracy = mapParent.find(".level_of_accuracy select :selected").first().val();
+    var acc = $("#id_form-"+mapId+"-level_of_accuracy :selected");
+    var accuracy = acc.val();
 
     //console.log(accuracy);
 
     if (accuracy == "40" && fields.lat != null && fields.lat != "" && fields.lon != null && fields.lon != "") {
-        //console.log(latLng);
         geocoders[mapId].geocode({"latLng" : latLng, "language": "en"}, function(results, status) {
-            //console.log("Google gave us: ", results, status);
             for(var i = 0; i < results[0].address_components.length; i++) {
                 if (results[0].address_components[i].types.indexOf("country") != -1) {
-                    country = results[0].address_components[i].short_name;
-                    mapParent.find(".target_country option[title='" + country + "']").attr('selected', 'selected');
-                    mapParent.find(".target_country option:not([title='" + country + "'])").removeAttr("selected");
+                    var country = results[0].address_components[i].short_name;
+                    $("#id_form-"+mapId+"-target_country option[title='" + country + "']").attr('selected', 'selected');
+                    $("#id_form-"+mapId+"-target_country option:not([title='" + country + "'])").removeAttr("selected");
                 }
             }
             map.prev().val(results[0].formatted_address);
@@ -122,61 +114,11 @@ function updateGeocoding(mapId) {
         console.log("NOT updating anything")
     }*/
 
-     try {
-        var autocomplete = new google.maps.places.Autocomplete(map.prev());
-
-        autocomplete.addListener('place_changed', function () {
-            var place = autocomplete.getPlace();
-            if (!place.geometry) {
-                $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>Sorry, that place cannot be found.</span></div>')
-
-                //window.alert("Autocomplete's returned place contains no geometry");
-                return;
-            }
-
-            // If the place has a geometry, then present it on a map.
-            if (place.geometry.viewport) {
-                console.log(place.geometry);
-
-                fitBounds(place.geometry.viewport);
-            } else {
-                console.log(place.geometry.location);
-                console.log(place.geometry.location.lat());
-                console.log(place.geometry.location.lng());
-                var target = [place.geometry.location.lng(), place.geometry.location.lat()]
-                target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
-                map.getView().setCenter(target);
-                map.getView().setZoom(17);  // Why 17? Because it looks good.
-            }
-
-            var address = '';
-            if (place.address_components) {
-                address = [
-                    (place.address_components[0] && place.address_components[0].short_name || ''),
-                    (place.address_components[1] && place.address_components[1].short_name || ''),
-                    (place.address_components[2] && place.address_components[2].short_name || '')
-                ].join(' ');
-            }
-
-            //infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
-            //infowindow.open(map, marker);
-        });
-    }
-    catch (err) {
-        console.log('No google libs loaded, replacing with a hint.');
-        /*b
-
-        var hint = '<a title="If you allow Google javascript, a geolocation search field would appear here." href="#" class="toggle-tooltip noul">';
-        hint = hint + '<i class="lm lm-question-circle"></i></a>';
-
-        $(map.prev()).replaceWith(hint);*/
-
-    }
 
     //switched level of accuracy fire event on lan and lon input fields
-    $(map).parents("div").find(".level_of_accuracy select").change(function() {
-        if ($(map).find(":selected").val() == "40") {
-            $(map).parents("div").find(".point_lat input, .point_lon input").change();
+    $("#id_form-"+mapId+"-level_of_accuracy").change(function() {
+        if ($("#id_form-"+mapId+"-level_of_accuracy").find(":selected").val() == "40") {
+            $('#id_form-'+(mapId)+'-point_lat, #id_form-'+(mapId)+'-point_lon').change();
         }
     });
 
@@ -195,13 +137,12 @@ var markerStyle = new ol.style.Style({
 
 
 function initializeMap (mapId, lat, lon) {
-    const target = "map-" + mapId;
+    const target = "map" + mapId;
 
     var fields = getLocationFields(mapId);
-    if (typeof lat === 'undefined') {
+
+    if (typeof lat === 'undefined' && typeof lon === 'undefined') {
       lat =  parseFloat(fields.lat.val());
-    }
-    if (typeof lon === 'undefined') {
       lon =  parseFloat(fields.lon.val());
     }
 
@@ -234,6 +175,8 @@ function initializeMap (mapId, lat, lon) {
         source: source
     });
 
+    console.log("Building map: ", target);
+
     var map = new ol.Map({
        target: target,
        layers: [
@@ -247,7 +190,6 @@ function initializeMap (mapId, lat, lon) {
         ],
         view: view
     });
-
 
     maps[mapId] = map;
     views[mapId] = view;
@@ -267,13 +209,50 @@ function initializeMap (mapId, lat, lon) {
         updateMapLocation(mapId);
     });
 
+    console.log("Map built.");
+    map.updateSize();
+
 }
 
 function initGeocoder(mapId) {
     try {
-        geocoders[mapId] = new google.maps.Geocoder();
-        //TODO: This should probably not be done (Data is either stored (=edit/view) or not available(=add)):
-        // updateGeocoding(mapId);
+
+        var inputfield = $("#id_form-" + mapId + "-location");
+
+        if (inputfield.length > 0) {
+            geocoders[mapId] = new google.maps.Geocoder();
+            var el = inputfield.get(0);
+            var autocomplete = new google.maps.places.Autocomplete(el);
+
+            autocomplete.addListener('place_changed', function () {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>Sorry, that place cannot be found.</span></div>')
+
+                    //window.alert("Autocomplete's returned place contains no geometry");
+                    return;
+                }
+                var map = maps[mapId];
+
+                // If the place has a geometry, then present it on a map.
+                if (place.geometry.viewport) {
+                    function fitBounds(geom) {
+                        var bounds = new ol.extent.boundingExtent([[geom.j.j, geom.R.R], [geom.j.R, geom.R.j]]);
+
+                        bounds = ol.proj.transformExtent(bounds, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
+
+                        map.getView().fit(bounds, map.getSize());
+                    }
+
+                    fitBounds(place.geometry.viewport);
+                } else {
+                    var target = [place.geometry.location.lng(), place.geometry.location.lat()]
+                    target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
+                    map.getView().setCenter(target);
+                    map.getView().setZoom(17);  // Why 17? Because it looks good.
+                }
+            });
+        }
     }
     catch (err) {
         console.log('No google libs loaded, giving a hint.');
