@@ -39,7 +39,7 @@ CHANGED_CROPS = {
     'Trees': 'Trees (unspecified)',
     'Vegetables': 'Vegetables (unspecified)',
 }
-NEW_CROPS = ['Oats', 'Spices (unspecified)', 'Other crops (please secify)']
+NEW_CROPS = ['Oats', 'Spices (unspecified)', 'Other crops (please specify)']
 
 
 def add_new_crops_if_not_present():
@@ -100,12 +100,24 @@ CHANGED_ANIMALS = {
     'Aquaculture': 'Aquaculture (animals)',
     'Tilapia Fish': None,
 }
-NEW_ANIMALS = ['Beef Cattle', 'Shrimp', 'Other crops (please secify)']
+NEW_ANIMALS = ['Beef Cattle', 'Shrimp', 'Other crops (please specify)']
 
 
 class MapAnimal(MapModel):
     old_class = old_editor.models.Animal
     new_class = landmatrix.models.Animal
+
+
+CHANGED_MINERALS = {
+    'Diamond mining': 'Diamonds',
+    'Petroleum': 'Hydrocarbons (e.g. crude oil)',
+    'Iron': 'Iron ore',
+    'Pyrolisis Plant': None,
+}
+NEW_MINERALS = [
+    'Aluminum', 'Bentonite', 'Chromite', 'Heavy Mineral Sands', 'Lithium', 'Magnetite', 'Rutile',
+    'Tin', 'Other minerals (please specify)'
+]
 
 
 class MapMineral(MapModel):
