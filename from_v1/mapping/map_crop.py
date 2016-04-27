@@ -27,7 +27,7 @@ CHANGED_CROPS = {
     'Glucose Syrup': None,
     'Grains': 'Grains (unspecified)',
     'Herbs (no specification)': 'Herbs (unspecified)',
-    'Mariculture': (None, 'Aquaculture (unspecified crops)'),
+    'Mariculture': None,
     'Oil Seeds': 'Oil Seeds (unspecified)',
     'Peanut': 'Peanut (groundnut)',
     'Pulses': 'Pulses (unspecified)',
@@ -97,15 +97,55 @@ class MapCrop(MapModel):
 
 
 CHANGED_ANIMALS = {
+    'Abalone': None,
     'Aquaculture': 'Aquaculture (animals)',
+    'Chicken': None,
+    'Cows': None,
+    'Mariculture': None,
     'Tilapia Fish': None,
 }
 NEW_ANIMALS = ['Beef Cattle', 'Shrimp', 'Other crops (please specify)']
 
 
+def add_new_animals_if_not_present():
+    for animal_name in NEW_ANIMALS:
+        if not landmatrix.models.Animal.objects.using(V2).filter(name=animal_name).exists():
+            # create() somehow does not set a correct pk so i have to find out a free one myself
+            last_id = landmatrix.models.Animal.objects.using(V2).values().aggregate(Max('id'))['id__max']
+            landmatrix.models.Animal.objects.using(V2).create(
+                name=animal_name, code=animal_name[:3].upper(), id=last_id+1
+            )
+
+
+def map_animal_name(name):
+    return CHANGED_ANIMALS.get(name, name)
+
 class MapAnimal(MapModel):
     old_class = old_editor.models.Animal
     new_class = landmatrix.models.Animal
+    attributes = {'name': ('name', map_animal_name)}
+
+    @classmethod
+    @transaction.atomic(using=V2)
+    def map_all(cls, save=False, verbose=False):
+        cls._check_dependencies()
+        cls._start_timer()
+
+        for index, record in enumerate(cls.all_records()):
+            cls.map_record(record, save, verbose)
+            cls._print_status(record, index)
+
+        add_new_animals_if_not_present()
+
+        cls._done = True
+        cls._print_summary()
+
+    @classmethod
+    def all_records(cls):
+        to_delete = [
+            key for key, value in CHANGED_ANIMALS.items() if value is None or isinstance(value, tuple)
+            ]
+        return old_editor.models.Animal.objects.using(V1).exclude(name__in=to_delete).values()
 
 
 CHANGED_MINERALS = {
@@ -120,6 +160,44 @@ NEW_MINERALS = [
 ]
 
 
+def add_new_minerals_if_not_present():
+    for mineral_name in NEW_MINERALS:
+        if not landmatrix.models.Mineral.objects.using(V2).filter(name=mineral_name).exists():
+            # create() somehow does not set a correct pk so i have to find out a free one myself
+            last_id = landmatrix.models.Mineral.objects.using(V2).values().aggregate(Max('id'))['id__max']
+            landmatrix.models.Mineral.objects.using(V2).create(
+                name=mineral_name, code=mineral_name[:3].upper(), id=last_id+1
+            )
+
+
+def map_mineral_name(name):
+    return CHANGED_MINERALS.get(name, name)
+
+
 class MapMineral(MapModel):
     old_class = old_editor.models.Mineral
     new_class = landmatrix.models.Mineral
+    attributes = {'name': ('name', map_mineral_name)}
+
+    @classmethod
+    def all_records(cls):
+        to_delete = [
+            key for key, value in CHANGED_MINERALS.items() if value is None or isinstance(value, tuple)
+            ]
+        return old_editor.models.Mineral.objects.using(V1).exclude(name__in=to_delete).values()
+
+
+    @classmethod
+    @transaction.atomic(using=V2)
+    def map_all(cls, save=False, verbose=False):
+        cls._check_dependencies()
+        cls._start_timer()
+
+        for index, record in enumerate(cls.all_records()):
+            cls.map_record(record, save, verbose)
+            cls._print_status(record, index)
+
+        add_new_minerals_if_not_present()
+
+        cls._done = True
+        cls._print_summary()
