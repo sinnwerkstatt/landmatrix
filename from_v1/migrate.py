@@ -57,7 +57,9 @@ if __name__ == '__main__':
         # MapCountry.map_all(save=True)
         # MapDjangoComments.map_all(save=True)
         # MapThreadedComments.map_all(save=True)
-        MapCurrency.map_all(save=True, verbose=True)
+        # MapCurrency.map_all(save=True, verbose=True)
+        MapAgriculturalProduce._done = True
+        MapCrop.map_all(save=True, verbose=True)
 
         if False:
             MapActivity._done = True

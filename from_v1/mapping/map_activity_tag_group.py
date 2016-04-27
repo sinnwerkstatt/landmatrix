@@ -83,9 +83,6 @@ class MapActivityTagGroup(MapTagGroups):
 
     @classmethod
     def write_activity_attribute_group(cls, attrs, activity_id, year, name):
-
-        from mapping.map_activity_attribute_group import clean_crops_and_target_country
-
         aag = ActivityAttributeGroup(
             fk_activity_id=activity_id, fk_language=Language.objects.get(pk=1),
             date=year_to_date(year), attributes=attrs, name=name
