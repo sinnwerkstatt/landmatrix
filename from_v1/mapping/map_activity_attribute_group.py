@@ -55,6 +55,10 @@ def replace_obsolete_crops(attrs):
     return attrs
 
 
+def clean_crops_and_target_country(attributes):
+    return clean_coordinates(clean_crops(clean_target_country(attributes)))
+
+
 def replace_obsolete_animals(attrs):
     ANIMALS_TO_REPLACE = {
         'Chicken': 'Poultry', 'Cows': 'Dairy Cattle', 'Mariculture': 'Aquaculture (animals)'
@@ -64,13 +68,28 @@ def replace_obsolete_animals(attrs):
     return attrs
 
 
-def clean_crops_and_target_country(attributes):
-    return clean_coordinates(clean_crops(clean_target_country(attributes)))
+def rename_changed_attributes(attrs):
+    RENAMED_ATTRIBUTES = {
+        'community_compensation': 'promised_compensation',
+        'community_benefits': 'promised_benefits',
+        'community_benefits_comment': 'promised_benefits_comment'
+    }
+    for attr in RENAMED_ATTRIBUTES.keys():
+        if attr in attrs:
+            attrs[RENAMED_ATTRIBUTES[attr]] = attrs[attr]
+            del attrs[attr]
+    return attrs
+
+
+def rename_negotiation_status(attrs):
+    return attrs
 
 
 def clean_attributes(attributes):
     attributes = clean_crops_and_target_country(attributes)
     attributes = replace_obsolete_animals(attributes)
+    attributes = rename_changed_attributes(attributes)
+    attributes = rename_negotiation_status(attributes)
     return attributes
 
 

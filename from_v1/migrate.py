@@ -55,11 +55,11 @@ if __name__ == '__main__':
         # MapDjangoComments.map_all(save=True)
         # MapThreadedComments.map_all(save=True)
         # MapCurrency.map_all(save=True, verbose=True)
-        MapAgriculturalProduce.map_all(save=True, verbose=False)
-        MapCrop.map_all(save=True, verbose=False)
-        MapAnimal.map_all(save=True, verbose=False)
-        MapMineral.map_all(save=True, verbose=False)
-        # MapActivityAttributeGroup.map_all(save=True)
+        # MapAgriculturalProduce.map_all(save=True, verbose=False)
+        # MapCrop.map_all(save=True, verbose=False)
+        # MapAnimal.map_all(save=True, verbose=False)
+        # MapMineral.map_all(save=True, verbose=False)
+        MapActivityAttributeGroup.map_all(save=True)
 
         # a number of possible uses listed here as examples
         if False:
