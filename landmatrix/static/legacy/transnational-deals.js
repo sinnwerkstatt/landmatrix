@@ -130,12 +130,15 @@ function mouseup() {
   } else {
       // country clicked: show country info box
       var n;
-      n = ("toElement" in d3.event && d3.event.toElement.parentElement) || (d3.event.relatedTarget && d3.event.relatedTarget.parentNode) || (d3.event.target.parentNode);
+      n = ('toElement' in d3.event && d3.event.toElement.parentElement) || (d3.event.relatedTarget && d3.event.relatedTarget.parentNode) || (d3.event.target.parentNode);
+      console.log('Hmm:', n);
       var info = $(".country-info");
       info.hide();
       $(".top-10-countries").hide();
       $(".show-all").removeClass("disabled");
+      console.log("Country clicked, working..");
       if (n.id !== "" && parent) {
+          console.log("Country selecting..");
           info.find(".country").text(n.textContent);
           // FIXME there should be a more elegent way
           if (typeof(get_query_params) == typeof(Function)) {
