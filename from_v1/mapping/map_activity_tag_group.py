@@ -66,9 +66,9 @@ class MapActivityTagGroup(MapTagGroups):
             return
 
         # print('WRITING', name, attrs)
-        from mapping.map_activity_attribute_group import clean_crops_and_target_country
+        from mapping.map_activity_attribute_group import clean_attributes
 
-        attrs = clean_crops_and_target_country(attrs)
+        attrs = clean_attributes(attrs)
 
         aag = cls.write_activity_attribute_group(attrs, tag_group.fk_activity.pk, year, name)
 

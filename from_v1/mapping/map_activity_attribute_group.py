@@ -44,12 +44,34 @@ def clean_target_country(attributes):
 
 def clean_crops(attributes):
     from old_editor.models import Crop
-    return replace_model_name_with_id(Crop, attributes, 'crops')
+    attrs = replace_model_name_with_id(Crop, attributes, 'crops')
+    attrs = replace_obsolete_crops(attrs)
+    return attrs
+
+
+def replace_obsolete_crops(attrs):
+    if attrs.get('crops', 0) == 42:
+        attrs['crops'] = 7
+    return attrs
+
+
+def replace_obsolete_animals(attrs):
+    ANIMALS_TO_REPLACE = {
+        'Chicken': 'Poultry', 'Cows': 'Dairy Cattle', 'Mariculture': 'Aquaculture (animals)'
+    }
+    if attrs.get('animals', 0) in ANIMALS_TO_REPLACE.keys():
+        attrs['animals'] = ANIMALS_TO_REPLACE[attrs['animals']]
+    return attrs
 
 
 def clean_crops_and_target_country(attributes):
     return clean_coordinates(clean_crops(clean_target_country(attributes)))
 
+
+def clean_attributes(attributes):
+    attributes = clean_crops_and_target_country(attributes)
+    attributes = replace_obsolete_animals(attributes)
+    return attributes
 
 
 if V1 == 'v1_pg':
