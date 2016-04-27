@@ -57,9 +57,9 @@ if __name__ == '__main__':
         # MapCurrency.map_all(save=True, verbose=True)
         MapAgriculturalProduce.map_all(save=True, verbose=False)
         MapCrop.map_all(save=True, verbose=False)
-        MapAnimal.map_all(save=True)
-        MapMineral.map_all(save=True)
-        MapActivityAttributeGroup.map_all(save=True)
+        MapAnimal.map_all(save=True, verbose=False)
+        MapMineral.map_all(save=True, verbose=False)
+        # MapActivityAttributeGroup.map_all(save=True)
 
         # a number of possible uses listed here as examples
         if False:
