@@ -13,12 +13,12 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 def get_country_for_primary_investor(pi_id):
 
-    activity_ids = editor.models.Involvement.objects.using(V1).filter(fk_primary_investor=pi_id).values_list('fk_activity', flat=True)
+    activity_ids = old_editor.models.Involvement.objects.using(V1).filter(fk_primary_investor=pi_id).values_list('fk_activity', flat=True)
     if not activity_ids or None in activity_ids:
         return None
 
     max_activity = max(activity_ids)
-    stakeholder_ids = list(editor.models.Involvement.objects.using(V1).filter(fk_activity=max_activity).order_by('-investment_ratio').values_list('fk_stakeholder', flat=True))
+    stakeholder_ids = list(old_editor.models.Involvement.objects.using(V1).filter(fk_activity=max_activity).order_by('-investment_ratio').values_list('fk_stakeholder', flat=True))
     while stakeholder_ids:
         stakeholder_with_greatest_investment_ratio = stakeholder_ids.pop(0)
 

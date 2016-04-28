@@ -147,7 +147,7 @@ class MapModel:
         if index % 10 == 0:
             print(
                 "%-50s: %8d (%d/%d)" % (
-                    mapping_name(cls), int(record.get('id', 0)), (index + 1), cls._count
+                    mapping_name(cls), record.get('id') if record.get('id') else 0, (index + 1), cls._count
                 ),
                 end="\r"
             )
