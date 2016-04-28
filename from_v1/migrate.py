@@ -33,6 +33,40 @@ def map_classes(*args):
         map_class.map_all(save=True)
 
 
+def read_options():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--save", action='store_true',
+        help="Actually save the objects created during the migration, otherwise dry run"
+    )
+    parser.add_argument(
+        "--verbose", action='store_true', help="Print info about the migrated objects"
+    )
+    parser.add_argument(
+        "--country", action='store_true', help="Migrate countries and regions"
+    )
+    parser.add_argument(
+        "--produce", action='store_true', help="Migrate crops, animals and minerals"
+    )
+    parser.add_argument(
+        "--investor", action='store_true', help="Migrate investors and relations"
+    )
+    parser.add_argument(
+        "--deal", action='store_true', help="Migrate deals and dependent objects"
+    )
+    parser.add_argument(
+        "--comment", action='store_true', help="Migrate comments on deals"
+    )
+    parser.add_argument(
+        "--stuff", action='store_true', help="Migrate other tables"
+    )
+    parser.add_argument(
+        "--all", action='store_true', help="Migrate all tables"
+    )
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
 
     from django.db.utils import ConnectionDoesNotExist
@@ -44,37 +78,43 @@ if __name__ == '__main__':
         if V1 == 'v1_pg':
             from editor.models import ActivityAttributeGroup
 
-        # MapStatus.map_all(save=True)
-        # MapLanguage.map_all(save=True)
-        # MapActivity.map_all(save=True)
-        # MapActivityChangeset.map_all(save=True)
-        # MapActivityAttributeGroup.map_all(save=True)
-        # MapComment.map_all(save=True)
-        # MapInvestor._done = True
-        # MapInvestorActivityInvolvement.map_all(save=True)
-        # MapAnimal.map_all(save=True)
-        # MapMineral.map_all(save=True)
-        MapCountry.map_all(save=True)
+        options = read_options()
+        print(options)
 
-        if False:
-            MapActivity._done = True
-            MapInvestor._done = True
-            MapInvestorActivityInvolvement.map_all(save=True)
-            MapStakeholderVentureInvolvement.map_all()
+        if options.deal or options.all:
+            MapStatus.map_all(save=options.save, verbose=options.verbose)
+            MapLanguage.map_all(save=options.save, verbose=options.verbose)
+            MapActivity.map_all(save=options.save, verbose=options.verbose)
+            MapActivityChangeset.map_all(save=options.save, verbose=options.verbose)
+            MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
+            MapPublicInterfaceCache.map_all(save=options.save, verbose=options.verbose)
+            MapComment.map_all(save=options.save, verbose=options.verbose)
 
-            for map_class in [
-                MapLanguage, MapStatus,
-                MapActivity,
-                MapActivityAttributeGroup,
-                # MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
-                # MapStakeholder, MapPrimaryInvestor, MapInvolvement,
-                # MapStakeholderAttributeGroup,
-                # MapAgriculturalProduce, MapCrop, MapComment,
-                # MapInvestor, MapInvestorActivityInvolvement,
-                MapPublicInterfaceCache,
-                # MapStakeholderInvestor,
-            ]:
-                map_class.map_all(save=True)
+        if options.investor or options.all:
+            if not MapStatus._done: MapStatus.map_all(save=options.save, verbose=options.verbose)
+            MapInvestor.map_all(save=options.save, verbose=options.verbose)
+            if not MapActivity._done: MapActivity.map_all(save=options.save, verbose=options.verbose)
+            MapInvestorActivityInvolvement.map_all(save=options.save, verbose=options.verbose)
+            MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
+            MapStakeholderVentureInvolvement.map_all(save=options.save, verbose=options.verbose)
+
+        if options.country or options.all:
+            MapCountry.map_all(save=options.save, verbose=options.verbose)
+
+        if options.comment or options.all:
+            MapDjangoComments.map_all(save=options.save, verbose=options.verbose)
+            MapThreadedComments.map_all(save=options.save, verbose=options.verbose)
+
+        if options.produce or options.all:
+            MapAgriculturalProduce.map_all(save=options.save, verbose=options.verbose)
+            MapCrop.map_all(save=options.save, verbose=options.verbose)
+            MapAnimal.map_all(save=options.save, verbose=options.verbose)
+            MapMineral.map_all(save=options.save, verbose=options.verbose)
+            MapCurrency.map_all(save=options.save, verbose=options.verbose)
+
+        if options.stuff or options.all:
+            MapBrowseRule.map_all(save=options.save, verbose=options.verbose)
+            MapBrowseCondition.map_all(save=options.save, verbose=options.verbose)
 
         # a number of possible uses listed here as examples
         if False:
@@ -86,7 +126,7 @@ if __name__ == '__main__':
                 MapCountry,
                 MapBrowseRule, MapBrowseCondition,
                 MapAgriculturalProduce, MapCrop,
-                # MapComment,
+                MapComment,
                 MapInvestor, MapInvestorActivityInvolvement,
                 MapStakeholderInvestor,
             ]:
@@ -102,22 +142,13 @@ if __name__ == '__main__':
         if False:   # example for migrating just one record
             MapActivityAttributeGroup.map(ActivityAttributeGroup.objects.using(V1).last().id)
 
-        if False:   # migrate all data
-            for map_class in [
-                MapLanguage, MapStatus,
-                MapActivity, MapActivityAttributeGroup,
-                MapRegion, MapCountry, MapBrowseRule, MapBrowseCondition,
-                MapAgriculturalProduce, MapCrop, MapComment,
-            ]:
-                map_class.map_all(save=False)
-
     except ConnectionDoesNotExist as e:
         print('You need to set CONVERT_DB to True in settings.py!')
         print(e)
-    # except AttributeError as e:
-    #     print('You need to check out branch "postgres" of the old land-matrix project under')
-    #     print(BASE_PATH+'/land-matrix!')
-    #     print(e)
+    except AttributeError as e:
+        print('You need to check out branch "postgres" of the old land-matrix project under')
+        print(BASE_PATH+'/land-matrix!')
+        print(e)
     except (AttributeError, ImportError) as e:
         print('To migrate the original MySQL data you need to check out branch "master" of the')
         print('old land-matrix project under '+BASE_PATH+'/land-matrix!')

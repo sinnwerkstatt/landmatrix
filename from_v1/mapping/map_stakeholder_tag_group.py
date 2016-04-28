@@ -1,7 +1,7 @@
 from migrate import V1, V2
 from mapping.map_tag_groups import MapTagGroups
 
-from mapping.map_stakeholder import MapStakeholder
+from mapping.aux_functions import stakeholder_ids
 from landmatrix.models import Language, StakeholderAttributeGroup, Country
 
 if V1 == 'v1_my':
@@ -16,7 +16,7 @@ class MapStakeholderTagGroup(MapTagGroups):
     if V1 == 'v1_my':
         old_class = SH_Tag_Group
         tag_groups = SH_Tag_Group.objects.using(V1).select_related('fk_stakeholder').filter(
-            fk_stakeholder__pk__in=MapStakeholder.all_ids()
+            fk_stakeholder__pk__in=stakeholder_ids()
         )
 
     @classmethod

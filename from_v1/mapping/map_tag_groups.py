@@ -17,7 +17,7 @@ class MapTagGroups(MapModel):
     language = Language.objects.get(pk=1)
 
     @classmethod
-    def map_all(cls, save=False):
+    def map_all(cls, save=False, verbose=False):
 
         cls._check_dependencies()
         cls._start_timer()
