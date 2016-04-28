@@ -20,7 +20,7 @@ class MapPublicInterfaceCache(MapModel):
 
     @classmethod
     @transaction.atomic(using=V2)
-    def map_all(cls, save=False):
+    def map_all(cls, save=False, verbose=False):
 
         cls._check_dependencies()
         cls._start_timer()
@@ -74,7 +74,8 @@ ORDER BY activity_identifier
 
 
 def get_activity_for_identifier(activity_identifier):
-        return landmatrix.models.Activity.objects.using(V2).filter(activity_identifier=activity_identifier).filter(version=_get_latest_version(activity_identifier))[0]
+        return landmatrix.models.Activity.objects.using(V2).filter(activity_identifier=activity_identifier)[0]
+        # return landmatrix.models.Activity.objects.using(V2).filter(activity_identifier=activity_identifier).filter(version=_get_latest_version(activity_identifier))[0]
 
 def _get_latest_version(deal_id):
     from django.db.models import Max
