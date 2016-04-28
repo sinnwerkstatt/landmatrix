@@ -21,7 +21,7 @@ class TransnationalDealsQuerySetBase(FakeQuerySetWithSubquery):
 
     def all(self):
         if self.country:
-            self._additional_wheres.append("%s.id = %s " % (self.country, self.COUNTRY_FIELD))
+            self._additional_wheres.append("%s.id = %s " % (self.COUNTRY_FIELD, self.country))
         return super().all()
 
 
