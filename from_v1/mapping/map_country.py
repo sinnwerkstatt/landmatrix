@@ -76,11 +76,10 @@ def old_country_slug_to_new(slug):
 
 def old_region_to_new(fk_region_id):
     region = old_editor.models.Region.objects.using(V1).get(pk=fk_region_id)
-    # region = Region.objects.using(V1).get(pk=fk_region_id)
     new_region = REGIONS[region.name]
     if not landmatrix.models.Region.objects.using(V2).filter(pk=new_region[0]).exists():
         landmatrix.models.Region(id=new_region[0], name=new_region[1]).save(using=V2)
-    print(region.name, '->', landmatrix.models.Region.objects.using(V2).get(pk=new_region[0]))
+    # print(region.name, '->', landmatrix.models.Region.objects.using(V2).get(pk=new_region[0]))
     return new_region[0]
 
 
