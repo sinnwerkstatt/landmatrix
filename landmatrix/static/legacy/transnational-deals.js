@@ -1,13 +1,15 @@
 var rx,
     ry,
     m0,
+    m0obj,
     rotate = 0;
 var cluster,
     bundle,
     line,
+    link,
+    node,
     div,
     svg;
-
 
 
 var splines = [];
@@ -15,9 +17,177 @@ var splines = [];
 function convertToSlug(Text) {
     return Text
         .toLowerCase()
-        .replace(/[^\w ]+/g,'')
-        .replace(/ +/g,'-')
+        .replace(/[^\w ]+/g, '')
+        .replace(/ +/g, '-')
         ;
+}
+
+function create_d3(diameter) {
+    var radius = diameter / 2,
+        innerRadius = radius - 120;
+
+    var cluster = d3.layout.cluster()
+        .size([360, innerRadius])
+        .sort(null)
+        .value(function (d) {
+            return d.size;
+        });
+
+    var bundle = d3.layout.bundle();
+
+    var line = d3.svg.line.radial()
+        .interpolate("bundle")
+        .tension(.85)
+        .radius(function (d) {
+            return d.y;
+        })
+        .angle(function (d) {
+            return d.x / 180 * Math.PI;
+        });
+
+    div = d3.select("div.canvas");
+
+    svg = div.append("svg")
+        .attr("width", diameter)
+        .attr("height", diameter)
+        .append("g")
+        .attr("transform", "translate(" + radius + "," + radius + ")");
+
+    link = svg.append("g").selectAll(".link");
+    node = svg.append("g").selectAll(".node");
+
+    get_top_10();
+    var query_params = "?deal_scope=transnational";
+    var json_query = "/api/transnational_deals.json" + query_params;
+
+    console.log("Beginning d3 setup.");
+    d3.json(json_query, function (error, classes) {
+        console.log("Setting up d3.");
+        if (error) throw error;
+
+        var nodes = cluster.nodes(packageHierarchy(classes)),
+            links = packageImports(nodes);
+
+        link = link
+            .data(bundle(links))
+            .enter().append("path")
+            .each(function (d) {
+                d.source = d[0], d.target = d[d.length - 1];
+            })
+            .attr("class", function(d) { return "link source-" + d.source.id + " target-" + d.target.id; })
+            .attr("d", line);
+
+        node = node
+            .data(nodes.filter(function (n) {
+                return !n.children;
+            }))
+            .enter().append("text")
+            .attr("class", "node")
+            .attr("id", function(d) { return "node-" + d.id; })
+            .attr("dy", ".31em")
+            .attr("transform", function (d) {
+                return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? ""
+                        : "rotate(180)");
+            })
+            .style("text-anchor", function (d) {
+                return d.x < 180 ? "start" : "end";
+            })
+            .text(function (d) {
+                return d.key;
+            })
+            .on("mouseover", mouseovered)
+            .on("mouseout", mouseouted)
+            .on("mouseup", mouseup)
+            .on("mousedown", mousedown)
+            .on("mousemove", mousemove)
+    });
+
+    function mouseovered(d) {
+        if (clicked) return;
+        node
+            .each(function (n) {
+                n.target = n.source = false;
+            });
+
+        link
+            .classed("link--target", function (l) {
+                if (l.target === d) return l.source.source = true;
+            })
+            .classed("link--source", function (l) {
+                if (l.source === d) return l.target.target = true;
+            })
+            .filter(function (l) {
+                return l.target === d || l.source === d;
+            })
+            .each(function () {
+                this.parentNode.appendChild(this);
+            });
+
+        node
+            .classed("node--target", function (n) {
+                return n.target;
+            })
+            .classed("node--source", function (n) {
+                return n.source;
+            });
+    }
+
+    function mouseouted(d) {
+        if (clicked) return;
+        link
+            .classed("link--target", false)
+            .classed("link--source", false);
+
+        node
+            .classed("node--target", false)
+            .classed("node--source", false);
+    }
+
+    d3.select(self.frameElement).style("height", diameter + "px");
+
+    // Lazily construct the package hierarchy from class names.
+    function packageHierarchy(classes) {
+        var map = {};
+
+        function find(name, data) {
+            var node = map[name], i;
+            if (!node) {
+                node = map[name] = data || {name: name, children: []};
+                if (name.length) {
+                    node.parent = find(name.substring(0, i = name.lastIndexOf(".")));
+                    node.parent.children.push(node);
+                    node.key = name.substring(i + 1);
+                }
+            }
+            return node;
+        }
+
+        classes.forEach(function (d) {
+            find(d.name, d);
+        });
+
+        return map[""];
+    }
+
+    // Return a list of imports for the given array of nodes.
+    function packageImports(nodes) {
+        var map = {},
+            imports = [];
+
+        // Compute a map from name to node.
+        nodes.forEach(function (d) {
+            map[d.name] = d;
+        });
+
+        // For each import, construct a link from the source to target node.
+        nodes.forEach(function (d) {
+            if (d.imports) d.imports.forEach(function (i) {
+                imports.push({source: map[d.name], target: map[i]});
+            });
+        });
+
+        return imports;
+    }
 }
 
 function init_canvas(width, height) {
@@ -25,40 +195,52 @@ function init_canvas(width, height) {
     height = typeof height !== 'undefined' ? height : 960;
     rx = width / 2;
     ry = height / 2;
+
+    var diameter = Math.min(width, height);
+
+    var boxleft = diameter / 4.3,
+        boxtop =  -(diameter/(3/2));
+    console.log(width, height, boxleft, boxtop, diameter);
     $("div.canvas").empty();
-    cluster = d3.layout.cluster()
-        .size([360, ry - 120])
-        .sort(function(a, b) { return d3.ascending(a.key, b.key); });
+    $(".chart-box")
+        .css("left", boxleft)
+        .css("top", boxtop);
 
-    bundle = d3.layout.bundle();
+    create_d3(diameter);
 
-    line = d3.svg.line.radial()
-        .interpolate("bundle")
-        .tension(.85)
-        .radius(function(d) { return d.y; })
-        .angle(function(d) { return d.x / 180 * Math.PI; });
+    //cluster = d3.layout.cluster()
+    //    .size([360, ry - 120])
+    //    .sort(function(a, b) { return d3.ascending(a.key, b.key); });
+
+    //bundle = d3.layout.bundle();
+
+    /*line = d3.svg.line.radial()
+     .interpolate("bundle")
+     .tension(.85)
+     .radius(function(d) { return d.y; })
+     .angle(function(d) { return d.x / 180 * Math.PI; }); */
 
     // Chrome 15 bug: <http://code.google.com/p/chromium/issues/detail?id=98951>
-    div = d3.select("div.canvas");
+    //div = d3.select("div.canvas");
 
-    svg = div.append("svg:svg")
-        .attr("width", width)
-        .attr("height", height)
-      .append("svg:g")
-        .attr("transform", "translate(" + rx + "," + ry + ")");
+    /*svg = div.append("svg:svg")
+     .attr("width", width)
+     .attr("height", height)
+     .append("svg:g")
+     .attr("transform", "translate(" + rx + "," + ry + ")");
 
-    svg.append("svg:path")
-        .attr("class", "arc")
-        .attr("d", d3.svg.arc().outerRadius(ry - 120).innerRadius(0).startAngle(0).endAngle(2 * Math.PI))
-        .on("mousedown", mousedown);
+     svg.append("svg:path")
+     .attr("class", "arc")
+     .attr("d", d3.svg.arc().outerRadius(ry - 120).innerRadius(0).startAngle(0).endAngle(2 * Math.PI))
+     .on("mousedown", mousedown);*/
 }
 
 function draw_transnational_deals(callback, classes) {
     if (classes.length == 0) {
-      callback();
-      return;
+        callback();
+        return;
     } else {
-      $(".top-10-countries").show();
+        $(".top-10-countries").show();
     }
     var nodes = cluster.nodes(packages.root(classes)),
         links = packages.imports(nodes),
@@ -66,179 +248,231 @@ function draw_transnational_deals(callback, classes) {
 
     var path = svg.selectAll("path.link")
         .data(links)
-      .enter().append("svg:path")
-        .attr("class", function(d) { return "link source-" + d.source.id + " target-" + d.target.id; })
-        .attr("d", function(d, i) { return line(splines[i]); });
+        .enter().append("svg:path")
+        .attr("class", function (d) {
+            return "link source-" + d.source.id + " target-" + d.target.id;
+        })
+        .attr("d", function (d, i) {
+            return line(splines[i]);
+        });
     svg.selectAll("g.node")
-        .data(nodes.filter(function(n) { return !n.children; }))
-      .enter().append("svg:g")
+        .data(nodes.filter(function (n) {
+            return !n.children;
+        }))
+        .enter().append("svg:g")
         .attr("class", "node")
-        .attr("id", function(d) { return "node-" + d.id; })
-        .attr("data-slug", function(d) { return d.slug; })
-        .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
-      .append("svg:text")
-        .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+        .attr("id", function (d) {
+            return "node-" + d.id;
+        })
+        .attr("data-slug", function (d) {
+            return d.slug;
+        })
+        .attr("transform", function (d) {
+            return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
+        })
+        .append("svg:text")
+        .attr("dx", function (d) {
+            return d.x < 180 ? 8 : -8;
+        })
         .attr("dy", ".31em")
-        .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-        .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
-        .text(function(d) { return d.key; })
+        .attr("text-anchor", function (d) {
+            return d.x < 180 ? "start" : "end";
+        })
+        .attr("transform", function (d) {
+            return d.x < 180 ? null : "rotate(180)";
+        })
+        .text(function (d) {
+            return d.key;
+        })
         .on("mouseover", mouseover)
         .on("mouseout", mouseout);
 
-    d3.select("input[type=range]").on("change", function() {
-      line.tension(this.value / 100);
-      path.attr("d", function(d, i) { return line(splines[i]); });
+    d3.select("input[type=range]").on("change", function () {
+        line.tension(this.value / 100);
+        path.attr("d", function (d, i) {
+            return line(splines[i]);
+        });
     });
     callback();
 }
 
 function mouse(e) {
-  return [e.pageX - rx, e.pageY - ry];
+    return [e.clientX, e.clientY];
 }
 
-function mousedown() {
-  m0 = mouse(d3.event);
-  d3.event.preventDefault();
+function mousedown(d) {
+    m0 = mouse(d3.event);
+    m0obj = d;
+    console.log(m0, d, d3.event);
+    d3.event.preventDefault();
 }
 
 function mousemove() {
-  if (m0) {
-    var m1 = mouse(d3.event),
-        dm = Math.atan2(cross(m0, m1), dot(m0, m1)) * 180 / Math.PI;
-    div.style("-webkit-transform", "translate3d(0," + (ry - rx) + "px,0)rotate3d(0,0,0," + dm + "deg)translate3d(0," + (rx - ry) + "px,0)");
-  }
+    if (m0) {
+        var m1 = mouse(d3.event),
+            dm = Math.atan2(cross(m0, m1), dot(m0, m1)) * 180 / Math.PI;
+        div.style("-webkit-transform", "translate3d(0," + (ry - rx) + "px,0)rotate3d(0,0,0," + dm + "deg)translate3d(0," + (rx - ry) + "px,0)");
+    }
 }
 
-function mouseup() {
-  if (m0) {
-    var m1 = mouse(d3.event),
-        dm = Math.atan2(cross(m0, m1), dot(m0, m1)) * 180 / Math.PI;
+function mouseup(d) {
+    if (m0) {
+        var m1 = mouse(d3.event),
+            dm = Math.atan2(cross(m0, m1), dot(m0, m1)) * 180 / Math.PI;
+        console.log("Movement:", m1, dm);
+        rotate += dm;
+        if (rotate > 360) rotate -= 360;
+        else if (rotate < 0) rotate += 360;
+        m0 = null;
 
-    rotate += dm;
-    if (rotate > 360) rotate -= 360;
-    else if (rotate < 0) rotate += 360;
-    m0 = null;
+        div.style("-webkit-transform", "rotate3d(0,0,0,0deg)");
 
-    div.style("-webkit-transform", "rotate3d(0,0,0,0deg)");
+        svg
+            .attr("transform", "translate(" + rx + "," + ry + ")rotate(" + rotate + ")")
+            .selectAll("g.node text")
+            .attr("dx", function (d) {
+                return (d.x + rotate) % 360 < 180 ? 8 : -8;
+            })
+            .attr("text-anchor", function (d) {
+                return (d.x + rotate) % 360 < 180 ? "start" : "end";
+            })
+            .attr("transform", function (d) {
+                return (d.x + rotate) % 360 < 180 ? null : "rotate(180)";
+            });
+    } else {
+        // country clicked: show country info box
+        var n;
+        n = m0obj; // ('toElement' in d3.event && d3.event.toElement.parentElement) || (d3.event.relatedTarget && d3.event.relatedTarget.parentNode) || (d3.event.target.parentNode);
+        console.log('Hmm:', n);
+        var info = $(".country-info");
+        info.hide();
+        $(".top-10-countries").hide();
+        $(".show-all").removeClass("disabled");
+        console.log("Country clicked, working..");
+        if (n.id !== "" && parent) {
+            console.log("Country selecting..",n, info);
+            info.find(".country").text(n.key);
+            // FIXME there should be a more elegent way
+            if (typeof(get_query_params) == typeof(Function)) {
+                var query_params = get_query_params(get_base_filter(), "country=" + n.id);
+                //var query_params = "?negotiation_status=concluded&deal_scope=transnational&country=" + n.id;
+                console.log(query_params);
+            } else {
+                var query_params = "?negotiation_status=concluded&deal_scope=transnational&country=" + n.id;
+            }
+            console.log("Getting ", "/api/transnational_deals_by_country.json" + query_params);
+            jQuery.getJSON("/api/transnational_deals_by_country.json" + query_params, function (data) {
+                var target_regions = "",
+                    r;
+                if (data.investor_country.length > 1) {
+                    for (var i = 0; i < data.investor_country.length; i++) {
+                        r = data.investor_country[i];
+                        if (data.investor_country.length == 2 && r.region == "Total") continue;
+                        target_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") + "></tr>";
 
-    svg
-        .attr("transform", "translate(" + rx + "," + ry + ")rotate(" + rotate + ")")
-      .selectAll("g.node text")
-        .attr("dx", function(d) { return (d.x + rotate) % 360 < 180 ? 8 : -8; })
-        .attr("text-anchor", function(d) { return (d.x + rotate) % 360 < 180 ? "start" : "end"; })
-        .attr("transform", function(d) { return (d.x + rotate) % 360 < 180 ? null : "rotate(180)"; });
-  } else {
-      // country clicked: show country info box
-      var n;
-      n = ('toElement' in d3.event && d3.event.toElement.parentElement) || (d3.event.relatedTarget && d3.event.relatedTarget.parentNode) || (d3.event.target.parentNode);
-      console.log('Hmm:', n);
-      var info = $(".country-info");
-      info.hide();
-      $(".top-10-countries").hide();
-      $(".show-all").removeClass("disabled");
-      console.log("Country clicked, working..");
-      if (n.id !== "" && parent) {
-          console.log("Country selecting..");
-          info.find(".country").text(n.textContent);
-          // FIXME there should be a more elegent way
-          if (typeof(get_query_params) == typeof(Function)) {
-            var query_params = get_query_params(get_base_filter(), "country=" + n.id.replace("node-", ""));
-          } else {
-            var query_params = "?negotiation_status=concluded&deal_scope=transnational&country=" + n.id.replace("node-", "");
-          }
-          jQuery.getJSON("/api/transnational_deals_by_country.json" + query_params, function(data) {
-              var target_regions = "",
-                  r;
-              if (data.investor_country.length > 1) {
-                  for (var i = 0; i < data.investor_country.length; i++) {
-                      r = data.investor_country[i];
-                      if (data.investor_country.length == 2 && r.region == "Total") continue;
-                      target_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") +  "></tr>";
+                    }
+                    info.find(".target-regions a.inbound").attr("href", "/get-the-detail/by-target-country/" + $(n).data("slug") + "/")
+                    info.find(".target-regions").show().find("table").html(target_regions);
+                } else {
+                    info.find(".target-regions").hide();
+                }
+                if (data.target_country.length > 1) {
+                    var investor_regions = "";
+                    for (i = 0; i < data.target_country.length; i++) {
+                        r = data.target_country[i];
+                        if (data.target_country.length == 2 && r.region == "Total") continue;
+                        investor_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") + "></tr>";
+                    }
+                    info.find(".investor-regions a.outbound").attr("href", "/get-the-detail/by-investor-country/" + $(n).data("slug") + "/")
+                    info.find(".investor-regions").show().find("table").html(investor_regions);
+                } else {
+                    info.find(".investor-regions").hide();
+                }
+                info.show();
+            });
 
-                  }
-                  info.find(".target-regions a.inbound").attr("href", "/get-the-detail/by-target-country/" + $(n).data("slug") + "/")
-                  info.find(".target-regions").show().find("table").html(target_regions);
-              } else {
-                  info.find(".target-regions").hide();
-              }
-              if (data.target_country.length > 1) {
-                  var investor_regions = "";
-                  for (i = 0; i < data.target_country.length; i++) {
-                      r = data.target_country[i];
-                      if (data.target_country.length == 2 && r.region == "Total") continue;
-                      investor_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") +  "></tr>";
-                  }
-                  info.find(".investor-regions a.outbound").attr("href", "/get-the-detail/by-investor-country/"  + $(n).data("slug") + "/")
-                  info.find(".investor-regions").show().find("table").html(investor_regions);
-              } else {
-                  info.find(".investor-regions").hide();
-              }
-              info.show();
-          });
+            // highlight pathes
+            var id = n.id;
+            //console.log("path.link.source-" + id);
+            //console.log( svg.selectAll("path.link.source-" + id));
+            // deselect (as in mouseout)
 
-  // highlight pathes
-  var id = n.id.replace("node-", "");
-  //console.log("path.link.source-" + id);
-  //console.log( svg.selectAll("path.link.source-" + id));
-  // deselect (as in mouseout)
-  svg.select("#node-" + clicked).attr("class", "node");
-  svg.selectAll("path.link.source-" + clicked)
-      .classed("source", false)
-      .each(updateNodes("target", false));
+            link
+                .classed("link--target", false)
+                .classed("link--source", false)
+                .style('display', 'none');
 
-  svg.selectAll("path.link.target-" + clicked)
-      .classed("target", false)
-      .each(updateNodes("source", false));
-  // select (as in mouseover)
-  svg.select("#node-" + id).attr("class", "node active");
-  svg.selectAll("path").style("display", "none")
-  svg.selectAll("path.link.target-" + id)
-      .classed("target", true)
-      .each(updateNodes("source", true))
-      .style("display", "block");
+            node
+                .classed("node--target", false)
+                .classed("node--source", false);
 
-  svg.selectAll("path.link.source-" + id)
-      .classed("source", true)
-      .each(updateNodes("target", true))
-      .style("display", "block");
-      }
-  }
-  clicked = id;
+            node
+                .each(function (n) {
+                    n.target = n.source = false;
+                });
+
+            link
+                .classed("link--target", function (l) {
+                    if (l.target === m0obj) return l.source.source = true;
+                })
+                .classed("link--source", function (l) {
+                    if (l.source === m0obj) return l.target.target = true;
+                })
+                .filter(function (l) {
+                    return l.target === m0obj || l.source === m0obj;
+                })
+                .style('display', 'block')
+                .each(function () {
+                    this.parentNode.appendChild(this);
+                });
+
+
+            node
+                .classed("node--target", function (n) {
+                    return n.target;
+                })
+                .classed("node--source", function (n) {
+                    return n.source;
+                });
+
+        }
+    }
+    clicked = id;
 }
 
-function mouseover(d) {
-  if (clicked) return;
-  svg.selectAll("path.link.target-" + d.id)
-      .classed("target", true)
-      .each(updateNodes("source", true));
+ function mouseover(d) {
+ if (clicked) return;
+ svg.selectAll("path.link.target-" + d.id)
+ .classed("target", true)
+ .each(updateNodes("source", true));
 
-  svg.selectAll("path.link.source-" + d.id)
-      .classed("source", true)
-      .each(updateNodes("target", true));
-}
+ svg.selectAll("path.link.source-" + d.id)
+ .classed("source", true)
+ .each(updateNodes("target", true));
+ }
 
-function mouseout(d) {
-  if (clicked) return;
-  svg.selectAll("path.link.source-" + d.id)
-      .classed("source", false)
-      .each(updateNodes("target", false));
+ function mouseout(d) {
+ if (clicked) return;
+ svg.selectAll("path.link.source-" + d.id)
+ .classed("source", false)
+ .each(updateNodes("target", false));
 
-  svg.selectAll("path.link.target-" + d.id)
-      .classed("target", false)
-      .each(updateNodes("source", false));
-}
+ svg.selectAll("path.link.target-" + d.id)
+ .classed("target", false)
+ .each(updateNodes("source", false));
+ }
 
 function updateNodes(name, value) {
-  return function(d) {
-    if (value) this.parentNode.appendChild(this);
-    svg.select("#node-" + d[name].id).classed(name, value);
-  };
+    return function (d) {
+        if (value) this.parentNode.appendChild(this);
+        svg.select("#node-" + d[name].id).classed(name, value);
+    };
 }
 
 function cross(a, b) {
-  return a[0] * b[1] - a[1] * b[0];
+    return a[0] * b[1] - a[1] * b[0];
 }
 
 function dot(a, b) {
-  return a[0] * b[0] + a[1] * b[1];
+    return a[0] * b[0] + a[1] * b[1];
 }
