@@ -1,4 +1,7 @@
 from mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
+from mapping.map_activity import MapActivity
+from mapping.map_investor import MapPrimaryInvestor
+from mapping.aux_functions import stakeholder_ids
 import landmatrix.models
 import old_editor.models
 #from mapping.map_involvement import MapInvolvement
@@ -46,19 +49,30 @@ class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
     new_class = landmatrix.models.InvestorActivityInvolvement
 
     @classmethod
-    def map_all(cls, save=False):
+    def map_all(cls, save=False, verbose=False):
 
         cls._check_dependencies()
         cls._start_timer()
         cls._save = save
 
         # migrate original values. in case of conflict, original values overwrite cached values.
-        involvements = MapInvolvement.all_records()
+        involvements = cls.all_involvements()
         cls._count = len(involvements)
         cls.migrate(involvements)
 
         cls._done = True
         cls._print_summary()
+
+    @classmethod
+    def all_involvements(cls):
+        activity_ids = MapActivity.all_ids()
+
+        primary_investor_ids = MapPrimaryInvestor.all_ids()
+        records = cls.old_class.objects.using(V1). \
+            filter(fk_activity__in=activity_ids). \
+            filter(fk_primary_investor__in=primary_investor_ids). \
+            filter(fk_stakeholder__in=stakeholder_ids()).values()
+        return records
 
     @classmethod
     def migrate(cls, involvements):
