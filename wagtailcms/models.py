@@ -42,7 +42,7 @@ class LinkBlock(StructBlock):
 
 #FIXME: Move blocks to blocks.py
 CONTENT_BLOCKS = [
-    ('heading', blocks.CharBlock(classname="full title", icon="title")),
+    #('heading', blocks.CharBlock(classname="full title", icon="title")),
     ('paragraph', blocks.RichTextBlock()),
     ('image', ImageChooserBlock(icon="image")),
     ('media', EmbedBlock(icon="media")),
