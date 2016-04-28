@@ -91,9 +91,9 @@ if __name__ == '__main__':
             MapComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.investor or options.all:
-            MapStatus.map_all(save=options.save, verbose=options.verbose)
+            if not MapStatus._done: MapStatus.map_all(save=options.save, verbose=options.verbose)
             MapInvestor.map_all(save=options.save, verbose=options.verbose)
-            MapActivity.map_all(save=options.save, verbose=options.verbose)
+            if not MapActivity._done: MapActivity.map_all(save=options.save, verbose=options.verbose)
             MapInvestorActivityInvolvement.map_all(save=options.save, verbose=options.verbose)
             MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
             MapStakeholderVentureInvolvement.map_all(save=options.save, verbose=options.verbose)
