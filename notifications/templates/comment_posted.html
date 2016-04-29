@@ -1,0 +1,14 @@
+{% load i18n %}
+<html>
+<body>
+{% trans "Hello" %} <b>{{ name }}</b>,<br>
+<b>{{ comment.name }}</b> {% trans "has posted a new comment on" %} <b>{% trans "Activity" %} {{ comment.content_object.activity_identifier }}</b>:
+<div>
+    <blockquote>
+    {{ comment.comment }}
+    </blockquote>
+</div>
+{% trans "Yours" %},<br>
+Land Matrix
+<body>
+</html>
