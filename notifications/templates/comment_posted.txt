@@ -1,0 +1,10 @@
+{% load i18n %}
+
+{% trans "Hello" %} {{ name }},
+
+{{ comment.name }} {% trans "has posted a new comment on" %} {% trans "Activity" %} {{ comment.content_object.activity_identifier }}:
+
+{{ comment.comment }}
+
+{% trans "Yours"},
+Land Matrix
