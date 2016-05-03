@@ -3,6 +3,7 @@ from grid.forms.add_deal_employment_form import AddDealEmploymentForm
 from grid.forms.add_deal_general_form import AddDealGeneralForm
 from grid.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
 from grid.forms.change_deal_action_comment_form import ChangeDealActionCommentForm
+from grid.forms.deal_contract_form import DealContractFormSet
 from grid.forms.deal_data_source_form import AddDealDataSourceFormSet
 from grid.forms.deal_former_use_form import DealFormerUseForm
 from grid.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
@@ -35,6 +36,7 @@ class SaveDealView(TemplateView):
     FORMS = [
         AddDealSpatialFormSet,
         AddDealGeneralForm,
+        DealContractFormSet,
         AddDealEmploymentForm,
         OperationalStakeholderForm,
         AddDealDataSourceFormSet,
