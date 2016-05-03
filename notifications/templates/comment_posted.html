@@ -4,6 +4,7 @@
 {% trans "Hello" %} <b>{{ name }}</b>,<br>
 <b>{{ comment.name }}</b> {% trans "has posted a new comment on" %} <b>{% trans "Activity" %} {{ comment.content_object.activity_identifier }}</b>:
 <div>
+    <h1>{{ comment.title }}</h1>
     <blockquote>
     {{ comment.comment }}
     </blockquote>
