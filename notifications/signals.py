@@ -1,23 +1,22 @@
-from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.translation import ugettext as _
-from threadedcomments.models import ThreadedComment
+from django_comments.signals import comment_was_posted
 
-from .models import NotificationEmail
+from landmatrix.models import Activity
+from .distribution import (
+    get_recipients_for_comment_on_activity,
+    send_notifications_for_comment_on_activity
+)
 
 
-@receiver(post_save, sender=ThreadedComment, dispatch_uid='comment_saved')
-def handle_comment_saved(sender, instance, created, **kwargs):
+@receiver(comment_was_posted, dispatch_uid='comment_on_activity_posted')
+def handle_comment_on_activity_posted(comment, request, **kwargs):
     '''
-    TODO: This is not really complete yet. It needs to properly figure out
-    who should recieve notifications, and maybe should fire on comment will be
-    posted instead (not sure if we're using moderation).
+    If we get a new comment, check that it was on an activity, and if so
+    send any notifications required.
     '''
-    context = {
-        'comment': instance,
-    }
-    subject = _("landmatrix: A comment was posted")
-    to = 'test@example.com'  # TODO: real to email
-
-    NotificationEmail.objects.send(template_name='comment_posted',
-                                   context=context, subject=subject, to=to)
+    activity = comment.content_object
+    if isinstance(activity, Activity):
+        recipients = get_recipients_for_comment_on_activity(comment, activity)
+        if recipients:
+            send_notifications_for_comment_on_activity(comment, request,
+                                                       activity, recipients)
