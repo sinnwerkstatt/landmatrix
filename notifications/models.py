@@ -37,7 +37,7 @@ class NotificationEmail(models.Model):
         -   body_text: plain text body string
         -   body_html: optional HTML body string
 
-    Exceptions saved in the database and not raised.
+    Exceptions are saved in the database and not raised.
     '''
     STATUS_NEW = 1
     STATUS_SENT = 2
@@ -71,6 +71,9 @@ class NotificationEmail(models.Model):
     body_html = models.TextField(blank=True, verbose_name=_("Body HTML"))
 
     objects = NotificationEmailManager()
+
+    class Meta:
+        get_latest_by = 'created_on'
 
     def __init__(self, *args, template_name=None, context=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -128,5 +131,6 @@ class NotificationEmail(models.Model):
         else:
             self.sent_status = self.STATUS_SENT
             self.sent_on = timezone.now()
+            self.sent_exception = ''
 
         self.save()
