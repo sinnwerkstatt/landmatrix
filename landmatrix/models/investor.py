@@ -17,18 +17,49 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class Investor(DefaultStringRepresentation, models.Model):
 
     classification_choices = (
+        # for operating company
         ('10', _("Private company")),
         ('20', _("Stock-exchange listed company")),
         ('30', _("Individual entrepreneur")),
         ('40', _("Investment fund")),
         ('50', _("Semi state-owned company")),
-        ('60', _("State-/government(owned)")),
-        ('70', _("Other (please specify in comment field)"))
+        ('60', _("State-/government(owned) company")),
+        ('70', _("Other (please specify in comment field)")),
+        # for parent companies
+        ('110', _("Government")),
+        ('120', _("Government institution")),
+        ('130', _("Multilateral Development Bank(MDB)")),
+        ('140', _("Bilateral Development Bank / Development Finance Institution")),
+        ('150', _("Commercial Bank")),
+        ('160', _("Investment Bank")),
+        ('170', _(
+            "Investment Fund(all types incl.pension, hedge, mutual, private equity funds etc.)"
+        )),
+        ('180', _("Insurance firm")),
+        ('190', _("Private equity firm")),
+        ('200', _("Asset management firm")),
+        ('210', _("Non - Profit organization(e.g.Church, University etc.)")),
     )
-    investor_identifier = models.IntegerField(_("Investor id"), db_index=True)
-    name = models.CharField(_("Name"), max_length=1024)
-    fk_country = models.ForeignKey("Country", verbose_name=_("Country"), blank=True, null=True)
-    classification = models.CharField(max_length=2, choices=classification_choices, blank=True, null=True)
+
+    investor_identifier = models.IntegerField(
+        _("Investor id"), db_index=True
+    )
+    name = models.CharField(
+        _("Name"), max_length=1024
+    )
+    fk_country = models.ForeignKey(
+        "Country", verbose_name=_("Country of registration/origin"), blank=True, null=True
+    )
+    classification = models.CharField(
+        max_length=3, choices=classification_choices, blank=True, null=True
+    )
+    homepage = models.URLField(
+        _("Investor homepage"), blank=True, null=True
+    )
+    opencorporates_link = models.URLField(
+        _("Opencorporates link"), blank=True, null=True
+    )
+
     comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
@@ -48,9 +79,25 @@ class InvestorVentureInvolvement(models.Model):
     fk_venture = models.ForeignKey("Investor", db_index=True, related_name='+')
     fk_investor = models.ForeignKey("Investor", db_index=True, related_name='+')
     percentage = models.FloatField(
-        _('Percentage'), blank=True, null=True, validators=[MinValueValidator(0.0), MaxValueValidator(100.0)]
+        _('Ownership share'), blank=True, null=True,
+        validators=[MinValueValidator(0.0), MaxValueValidator(100.0)]
     )
-    role = models.CharField(max_length=2, choices=(('ST', _('Stakeholder')), ('IN', _('Investor'))))
+    role = models.CharField(
+        max_length=2, choices=(('ST', _('Stakeholder')), ('IN', _('Investor')))
+    )
+    investment_type = models.CharField(
+        max_length=2, choices=(('10', 'Shares/Equity'), ('20', 'Debt financing')),
+        blank=True, null=True
+    )
+    loans_amount = models.FloatField(
+        _("Loan amount"), blank=True, null=True
+    )
+    loans_currency = models.ForeignKey(
+        "Currency", verbose_name=_("Loan curency"), blank=True, null=True
+    )
+    lonas_date = models.DateField(
+        "Loan date", blank=True, null=True
+    )
     comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
