@@ -154,8 +154,13 @@
                                     <p class="alert alert-info">{% trans "There are no comments to this deal yet." %}</p>
                                 {% endif %}
                             </div>
-                            <form method="." action="POST">
+                            <form method="post" action="{% url 'comments-post-comment' %}">
                             {% get_comment_form for deal.activity as comment_form %}
+                            {% csrf_token %}
+                            {% for hidden in comment_form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                            <input type="hidden" name="next" value="{% url 'deal_detail' deal.activity_identifier %}">
                             {% include "form.html" with form=comment_form %}
                             <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
                             </form>
