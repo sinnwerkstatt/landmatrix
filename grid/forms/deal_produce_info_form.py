@@ -73,18 +73,41 @@ class DealProduceInfoForm(BaseForm):
     )
 
     # Use of produce
-    tg_use_of_produce = TitleField(required=False, label="", initial=_("Use of produce"))
-    has_domestic_use = forms.BooleanField(required=False, label=_("Has domestic use"))
-    domestic_use = forms.IntegerField(required=False, label=_("Domestic use"), help_text=_("%"), widget=NumberInput)
-    has_export = forms.BooleanField(required=False, label=_("Has export"))
-    export = forms.IntegerField(required=False, label=_("Export"), help_text=_("%"), widget=NumberInput)
-    export_country1 = forms.ModelChoiceField(required=False, label=_("Country 1"), queryset=Country.objects.all().order_by("name"))
-    export_country1_ratio = forms.IntegerField(required=False, label=_("Country 1 ratio"), help_text=_("%"), widget=NumberInput)
-    export_country2 = forms.ModelChoiceField(required=False, label=_("Country 2"), queryset=Country.objects.all().order_by("name"))
-    export_country2_ratio = forms.IntegerField(required=False, label=_("Country 2 ratio"), help_text=_("%"), widget=NumberInput)
-    export_country3 = forms.ModelChoiceField(required=False, label=_("Country 3"), queryset=Country.objects.all().order_by("name"))
-    export_country3_ratio = forms.IntegerField(required=False, label=_("Country 3 ratio"), help_text=_("%"), widget=NumberInput)
-    tg_use_of_produce_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
+    tg_use_of_produce = TitleField(
+        required=False, label="", initial=_("Use of produce")
+    )
+    has_domestic_use = forms.BooleanField(
+        required=False, label=_("Has domestic use"))
+    domestic_use = forms.IntegerField(
+        required=False, label=_("Domestic use"), help_text=_("%"), widget=NumberInput
+    )
+    has_export = forms.BooleanField(
+        required=False, label=_("Has export")
+    )
+    export = forms.IntegerField(
+        required=False, label=_("Export"), help_text=_("%"), widget=NumberInput
+    )
+    export_country1 = forms.ModelChoiceField(
+        required=False, label=_("Country 1"), queryset=Country.objects.all().order_by("name")
+    )
+    export_country1_ratio = forms.IntegerField(
+        required=False, label=_("Country 1 ratio"), help_text=_("%"), widget=NumberInput
+    )
+    export_country2 = forms.ModelChoiceField(
+        required=False, label=_("Country 2"), queryset=Country.objects.all().order_by("name")
+    )
+    export_country2_ratio = forms.IntegerField(
+        required=False, label=_("Country 2 ratio"), help_text=_("%"), widget=NumberInput
+    )
+    export_country3 = forms.ModelChoiceField(
+        required=False, label=_("Country 3"), queryset=Country.objects.all().order_by("name")
+    )
+    export_country3_ratio = forms.IntegerField(
+        required=False, label=_("Country 3 ratio"), help_text=_("%"), widget=NumberInput
+    )
+    tg_use_of_produce_comment = forms.CharField(
+        required=False, label=_("Additional comments"), widget=CommentInput
+    )
 
     # In-country processing of produce
     tg_in_country_processing = TitleField(
