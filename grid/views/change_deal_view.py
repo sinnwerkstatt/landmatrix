@@ -3,6 +3,7 @@ from pprint import pprint
 from django.forms.formsets import BaseFormSet
 
 from grid.forms.change_deal_general_form import ChangeDealGeneralForm
+from grid.forms.deal_contract_form import DealContractFormSet
 from .save_deal_view import SaveDealView
 from landmatrix.models.activity import Activity
 from landmatrix.models.deal import Deal
@@ -31,6 +32,7 @@ class ChangeDealView(SaveDealView):
     FORMS = [
         ChangeDealSpatialFormSet,
         ChangeDealGeneralForm,
+        DealContractFormSet,
         AddDealEmploymentForm,
         OperationalStakeholderForm,
         AddDealDataSourceFormSet,
