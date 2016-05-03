@@ -1,5 +1,7 @@
+from cms.cache import choices
 from django.core.exceptions import ValidationError
 from django.forms import CharField
+from django.forms.fields import ChoiceField
 from django.forms.widgets import Select
 from django.forms.models import ModelChoiceField
 from django.utils.datastructures import MultiValueDict
@@ -7,6 +9,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from grid.forms.base_form import BaseForm
 from grid.widgets.title_field import TitleField
+from grid.widgets.year_based_checkbox_input import YearBasedCheckboxInput
+from grid.widgets.year_based_integer_field import YearBasedActorField
+from grid.widgets.year_based_text_input import YearBasedTextInput
 from landmatrix.models.country import Country
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 
@@ -26,6 +31,20 @@ class OperationalStakeholderForm(BaseForm):
             widget=Select(
                 attrs={'class': 'form-control investorfield'}
             )
+    )
+    actors_involved = YearBasedActorField(
+        help_text=_("Actors involved in the negotiation / admission process"),# blank=True, null=True
+    )
+    actors_classification = YearBasedActorField(
+        help_text=_("Actors involved in the negotiation / admission process"),# blank=True, null=True
+    )
+    relationship_to_parent = ChoiceField(
+        label=_('Relationship to parent'),
+        choices=(
+            ('10', 'Subsidiary of parent company'),
+            ('20', 'Local branch of parent company'),
+            ('30', 'Joint venture of parent companies')
+        )
     )
     project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)
 
