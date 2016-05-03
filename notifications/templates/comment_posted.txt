@@ -4,7 +4,9 @@
 
 {{ comment.name }} {% trans "has posted a new comment on" %} {% trans "Activity" %} {{ comment.content_object.activity_identifier }}:
 
+{{ comment.title }}
+
 {{ comment.comment }}
 
-{% trans "Yours"},
+{% trans "Yours" %},
 Land Matrix
