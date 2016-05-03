@@ -1,9 +1,10 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from django import forms
 from grid.widgets.year_based_widget import YearBasedWidget
 
 import re
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 class YearBasedTextInput(YearBasedWidget):
 
