@@ -2,7 +2,7 @@
 {% load i18n custom_tags static %}
 {% load humanize %}
 
-{% load threadedcomments_tags %}
+{% load comments threadedcomments_tags %}
 
 {% block page_title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
 {% block title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
@@ -154,12 +154,13 @@
                                     <p class="alert alert-info">{% trans "There are no comments to this deal yet." %}</p>
                                 {% endif %}
                             </div>
-                            <form method="post" action="{% url 'comments-post-comment' %}">
+                            <form method="post" action="{% comment_form_target %}">
                             {% get_comment_form for deal.activity as comment_form %}
                             {% csrf_token %}
                             {% for hidden in comment_form.hidden_fields %}
                                 {{ hidden }}
                             {% endfor %}
+                            {# TODO: move next into the form logic #}
                             <input type="hidden" name="next" value="{% url 'deal_detail' deal.activity_identifier %}">
                             {% include "form.html" with form=comment_form %}
                             <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
