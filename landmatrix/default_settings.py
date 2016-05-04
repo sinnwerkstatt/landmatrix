@@ -90,6 +90,7 @@ INSTALLED_APPS += (
     'wkhtmltopdf',
     'threadedcomments',
     'django_comments',
+    'captcha',
 
 #   apps of the actual landmatrix project
     'landmatrix',
@@ -99,6 +100,8 @@ INSTALLED_APPS += (
     'editor',
     'wagtailcms',
     'api',
+    'notifications',
+    'public_comments',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -254,7 +257,7 @@ CACHES = {
     }
 }
 
-COMMENTS_APP = 'threadedcomments'
+COMMENTS_APP = 'public_comments'
 
 WAGTAIL_SITE_NAME = 'Land Matrix'
 
@@ -262,3 +265,12 @@ WAGTAIL_SITE_NAME = 'Land Matrix'
 MAX_UPLOAD_SIZE = 20971520
 DATA_SOURCE_MAX_UPLOAD_SIZE = 1048576
 DATA_SOURCE_DIR = 'uploads'  # appended to MEDIA_ROOT/MEDIA_URL
+
+DEFAULT_FROM_EMAIL = 'noreply@beta.landmatrix.org'
+
+# Recaptcha spam protection for comments
+# Replace these with real keys and don't commit them
+RECAPTCHA_PUBLIC_KEY = '6LfmBB8TAAAAAPntejlNyxcW86R7uBUFH_yAyofS'
+RECAPTCHA_PRIVATE_KEY = '6LfmBB8TAAAAAGksxrVZdp7xIBLb6rNlOL6cocPK'
+NOCAPTCHA = True
+RECAPTCHA_USE_SSL = True

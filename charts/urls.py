@@ -23,6 +23,7 @@ urlpatterns = patterns(
     url(r'^$', TransnationalDealsChartView.as_view(),
         name='chart_transnational_deals'),
     url(r'^overview$', OverviewChartView.as_view(), name='chart_overview'),
+    url(r'^specialinterest$', SpecialInterestView.as_view(), name='special_interest'),
     url(r'^map-of-investments/$', MapOfInvestmentsChartView.as_view(),
         name='chart_map_of_investments'),
     url(r'^agricultural-drivers/$', AgriculturalDriversChartView.as_view(),
@@ -41,4 +42,7 @@ urlpatterns = patterns(
         {'format': 'PDF'}, name='chart_agricultural_drivers_pdf'),
     url(r'^perspective\.pdf$', PerspectiveChartView.as_view(),
         {'format': 'PDF'}, name='chart_perspective_pdf'),
+    url(r'^specialinterest\.pdf$', SpecialInterestView.as_view(),
+        {'format': 'PDF'}, name='special_interest_pdf'),
+
 )
