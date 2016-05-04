@@ -656,6 +656,7 @@ table td {
 }
 
 table button,
+/* .panel-body .btn, */
 table a.btn {
   color: $lm_offwhite !important;
   border-color: $lm_orange !important;
@@ -667,9 +668,18 @@ table a.btn {
   padding: 2px 5px;
   margin-left: 5px;
   margin-top: 5px;
-  margin-bottom: 2px;
+  margin-bottom: 5px;
   vertical-align: inherit;
 }
+
+/* TODO: This would help for responsivity but breaks the deal-add buttons:
+.panel-body .btn {
+  white-space: normal;
+  word-wrap: normal;
+  display: inline-block;
+  max-width: 30vw;
+  line-height: 18px;
+} */
 
 table {
   width: 100%;
