@@ -17,7 +17,8 @@
     "nprogress": "~0.2.0",
     "d3-sankey": "*",
     "eonasdan-bootstrap-datetimepicker": "~4.17.37",
-    "formset": "https://github.com/elo80ka/django-dynamic-formset/archive/master.zip"
+    "formset": "https://github.com/elo80ka/django-dynamic-formset/archive/master.zip",
+    "bootstrap-switch": "~3.3.2"
   },
   "devDependencies": {},
   "appPath": "app",
