@@ -5,6 +5,24 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
+class CountryManager(models.Manager):
+
+    def get_target_countries_by_activity(self, activity):
+        '''
+        Seems like there should be a way to do this using PostgreSQL hvals
+        but it doesn't seem like django-hstore has implemented it.
+        '''
+        attribute_groups = activity.activityattributegroup_set.filter(
+            attributes__contains=['target_country'])
+        country_ids = {
+            int(attribute_group.attributes['target_country'])
+            for attribute_group in attribute_groups
+        }
+        matching_countries = self.filter(pk__in=country_ids)
+
+        return matching_countries
+
+
 class Country(models.Model):
 
     fk_region = models.ForeignKey("Region", verbose_name=_("Region"))
@@ -32,6 +50,8 @@ class Country(models.Model):
     )
     high_income = models.BooleanField(_("High income"), default=False)
     is_target_country = models.BooleanField(_("Is target country"), default=False)
+
+    objects = CountryManager()
 
     def __str__(self):
         return self.name
