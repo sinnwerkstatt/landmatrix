@@ -62,6 +62,9 @@ def read_options():
         "--stuff", action='store_true', help="Migrate other tables"
     )
     parser.add_argument(
+        "--activity", action='store_true', help="Migrate activities only"
+    )
+    parser.add_argument(
         "--all", action='store_true', help="Migrate all tables"
     )
     return parser.parse_args()
@@ -80,6 +83,10 @@ if __name__ == '__main__':
 
         options = read_options()
         print(options)
+
+        if options.activity:
+            MapStatus._done = True
+            MapActivity.map_all(save=options.save, verbose=options.verbose)
 
         if options.deal or options.all:
             MapStatus.map_all(save=options.save, verbose=options.verbose)
