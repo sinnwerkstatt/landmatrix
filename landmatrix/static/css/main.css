@@ -502,10 +502,6 @@ a.remove-ybd:hover {
   font-weight: 300;
   margin-top: 10px; }
 
-#filters h6 {
-    margin: 0 15px;
-}
-
 .filterbox,
 .filterwidgetbox {
   color: #c6c6c6 !important;
@@ -685,7 +681,7 @@ body {
 .wrap h1 {
   position: relative;
   text-align: center;
-  text-color: #fc941f; }
+  color: #fc941f; }
 
 .wrap h1 span {
   background: #ffffff;
@@ -980,10 +976,23 @@ p a {
 .controls .select2,
 .controls .select2-container,
 .controls .select2-main {
-  min-width: 90% !important;
-  max-width: 90% !important;
+  min-width: 90%;
+  max-width: 90%;
   height: 3em;
   margin-bottom: 1em; }
+  #comparison > .input-group .investorfield, #comparison >
+  .input-group .select2, #comparison >
+  .input-group .select2-container, #comparison >
+  .input-group .select2-main, #comparison >
+  .investorfield, #comparison >
+  .controls .select2, #comparison >
+  .controls .select2-container, #comparison >
+  .controls .select2-main {
+    min-width: 45% !important;
+    max-width: 45% !important; }
+
+#comparison .investorfield {
+  background: hotpink; }
 
 .container .lm {
   padding-left: 0.5em;
@@ -996,11 +1005,10 @@ p a {
   margin: 36px 0 18px; }
 
 .panel {
-  border: 0px none;
-  border-top: solid 2px #c1c1c1;
-  border-bottom: 0px none;
+  border: 0 none;
+  border-top: 2px solid #c1c1c1;
   box-shadow: none;
-  border-radius: 0px !important;
+  border-radius: 0 !important;
   background: none !important;
   width: 100%;
   height: 100%; }
@@ -1025,8 +1033,7 @@ div.panel.panel-default:last-child {
   border-bottom: solid 2px #c1c1c1; }
 
 form > .in {
-  border-top: dashed 2px #c1c1c1 !important;
-  border-top-width: 2px !important; }
+  border-top: dashed 2px #c1c1c1 !important; }
 
 /* ==========================================================================
  *    FOOTER (including Sticky Footer by Ryan Fait http://ryanfait.com/)
@@ -1185,7 +1192,7 @@ table th,
 table td {
   padding: 10px 20px 8px;
   /*border-bottom: 1px solid #c1c1c1; */
-  border: 0px none; }
+  border: 0 none; }
 
 .table > tbody > tr > td,
 .table > tbody > tr > th,
@@ -1207,9 +1214,17 @@ table a.btn {
   padding: 2px 5px;
   margin-left: 5px;
   margin-top: 5px;
-  margin-bottom: 2px;
+  margin-bottom: 5px;
   vertical-align: inherit; }
 
+/* TODO: This would help for responsivity but breaks the deal-add buttons:
+.panel-body .btn {
+  white-space: normal;
+  word-wrap: normal;
+  display: inline-block;
+  max-width: 30vw;
+  line-height: 18px;
+} */
 table {
   width: 100%; }
 
@@ -1242,8 +1257,7 @@ table th a {
   float: left; }
 
 form .panel-body {
-  padding: 0px;
-  padding-top: 5px; }
+  padding: 5px 0px 0px; }
 
 .popup table th,
 .panel-body table th {
@@ -1695,6 +1709,42 @@ h4 .icon {
  * ========================================================================== */
 .bootstrap-datetimepicker-widget table th {
   border-radius: 0px !important; }
+
+/* ==========================================================================
+ *    BOOTSTRAP-SWITCH
+ * ========================================================================== */
+/*
+  background: $lm_orange !important;
+}*/
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
+  color: #fff;
+  background: #44c42d; }
+
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-info,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-info {
+  color: #fff;
+  background: #4bbb87; }
+
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-success,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-success {
+  color: #fff;
+  background: #179961; }
+
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-warning,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-warning {
+  background: #fc941f;
+  color: #fff; }
+
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-danger,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-danger {
+  color: #fff;
+  background: red; }
+
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-default,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-default {
+  color: #000;
+  background: #eeeeee; }
 
 /* For reminiscence */
 /*
