@@ -25,3 +25,4 @@ django-threadedcomments
 django-wkhtmltopdf
 django-sekizai>=0.9.0
 django-sass-processor>=0.3.4
+django-recaptcha>=1.0.5

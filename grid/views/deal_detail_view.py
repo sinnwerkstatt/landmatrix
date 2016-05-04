@@ -12,6 +12,7 @@ from landmatrix.pdfgen import PDFViewMixin
 
 from grid.forms.change_deal_employment_form import ChangeDealEmploymentForm
 from grid.forms.change_deal_general_form import ChangeDealGeneralForm
+from grid.forms.deal_contract_form import DealContractFormSet
 from grid.forms.deal_data_source_form import (
     PublicViewDealDataSourceFormSet, DealDataSourceForm,
 )
@@ -32,6 +33,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 FORMS = [
     ("spatial_data", PublicViewDealSpatialForm),
     ("general_information", ChangeDealGeneralForm),
+    ("contracts", DealContractFormSet),
     ("employment", ChangeDealEmploymentForm),
     ("investor_info", OperationalStakeholderForm),
     ("data_sources", PublicViewDealDataSourceFormSet),
