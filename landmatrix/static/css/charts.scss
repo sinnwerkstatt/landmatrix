@@ -61,3 +61,22 @@
   overflow-y: auto;
   max-height: 40vh;
 }
+
+svg g {
+  z-index: 50;
+}
+
+svg text {
+  font-size: 12px;
+  font-weight: 100;
+  z-index: 99;
+}
+
+.legend i {
+  margin-right: 5px;
+  border: 0px none;
+}
+
+ul.media-list.legend > li > span {
+  font-size: 12px;
+}
