@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% load i18n sass_tags %}
+{% load i18n static sass_tags %}
 
 {% block css %}
 <link href="{% sass_src 'css/charts.scss' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'vendor/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block page_title %}{% trans "Chart" %}{% endblock %}
@@ -59,7 +60,12 @@
 {% endblock %}
 
 {% block after %}
-<script type="text/javascript">
+
+    <!--[if lte IE 8]--><script src="/media/js/vendor/r2d3.js" charset="utf-8"></script><!--[endif]-->
+    <!--[if gte IE 9]--><script type="text/javascript" src="{% static "vendor/d3/d3.js" %}"></script><!--<![endif]-->
+    <script type="text/javascript" src="{% static "vendor/bootstrap-switch/dist/js/bootstrap-switch.min.js" %}"></script>
+
+    <script type="text/javascript">
 function get_base_filter() {
     var filters = "";
     // negotiation status (concluded, intended, failed)

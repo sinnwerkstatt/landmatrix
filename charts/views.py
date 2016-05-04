@@ -64,3 +64,8 @@ class AgriculturalDriversChartView(ChartView):
 class PerspectiveChartView(ChartView):
     template_name = "charts/perspective.html"
     chart = "chart_perspective"
+
+
+class SpecialInterestView(ChartView):
+    template_name = "charts/special-interest.html"
+    chart = "special_interest"

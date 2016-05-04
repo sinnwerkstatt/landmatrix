@@ -7,7 +7,6 @@ from grid.widgets import TitleField, NumberInput
 
 
 def get_country_specific_form_class(deal, data=None, files=None):
-    print('got deal', deal)
     target_country_slug = _get_deal_target_country_slug(deal)
 
     try:
