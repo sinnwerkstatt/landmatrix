@@ -22,15 +22,27 @@
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
+                                <li><a class="change-variable" href="{% url "chart_overview" %}?variable=intention_of_investment">{% trans "Intention of investment" %}</a></li>
                                 <li><a class="change-variable" href="{% url "chart_overview" %}?variable=negotiation_status">{% trans "Negotiation status" %}</a></li>
                                 <li><a class="change-variable" href="{% url "chart_overview" %}?variable=implementation_status">{% trans "Implementation status" %}</a></li>
-                                <li><a class="change-variable" href="{% url "chart_overview" %}?variable=intention_of_investment">{% trans "Intention of investment" %}</a></li>
                                 <li><a class="change-variable" href="{% url "chart_overview" %}?variable=investment_in_agriculture">{% trans "Investment in Agriculture" %}</a></li>
                             </ul>
                         </li>
                         <li{% if chart == "chart_map_of_investments" %} class="active"{% endif %}><a href="{% url "chart_map_of_investments" %}">{% trans "Global map of investments" %}</a></li>
-                        <li{% if chart == "chart_agricultural_drivers" %} class="active"{% endif %}><a href="{% url "chart_agricultural_drivers" %}">{% trans "Agricultural drivers" %}</a></li>
                         <li{% if chart == "chart_perspective" %} class="active"{% endif %}><a href="{% url "chart_perspective" %}">{% trans "It's a big deal" %}</a></li>
+                        <li class="dropdown{% if chart == "special_interest" %} active{% endif %}">
+                            <a href="{% url "special_interest" %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                {% trans "Special Interest" %}
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="change-special_variable" href="{% url "special_interest" %}?variable=agricultural_drivers">{% trans "Agricultural Drivers" %}</a></li>
+                                <li><a class="change-special_variable" href="{% url "special_interest" %}?variable=produce_info">{% trans "Produce Info" %}</a></li>
+                                <li><a class="change-special_variable" href="{% url "special_interest" %}?variable=resource_extraction">{% trans "Resource Extraction" %}</a></li>
+                                <li><a class="change-special_variable" href="{% url "special_interest" %}?variable=logging">{% trans "Logging" %}</a></li>
+                                <li><a class="change-special_variable" href="{% url "special_interest" %}?variable=contract_farming">{% trans "Contract Farming" %}</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>

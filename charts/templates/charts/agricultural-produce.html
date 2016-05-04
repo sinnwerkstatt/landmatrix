@@ -4,220 +4,26 @@
 {% block page_title %}{% trans "Agricultural drivers" %}{% endblock %}
 {% block title %}{% trans "Agricultural drivers" %}{% endblock %}
 {% block breadcrumb_inner %}
-{{ block.super }}
-<li>{% trans "Agricultural drivers" %}</li>
+    {{ block.super }}
+    <li>{% trans "Agricultural drivers" %}</li>
 {% endblock %}
 
 {% block legend %}
-<ul class="media-list legend offset">
-    <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span> {% trans "Food-Crops" %}</span></li>
-    <li><i class="icon icon-none" style="background-color: #225559;"></i><span> {% trans "Non-Food Crops" %}</span></li>
-    <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span> {% trans "Flex-Crops" %}</span></li>
-    <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span> {% trans "Multiple Use - Several crops in different categories" %}</span></li>
-</ul>
+
 {% endblock %}
 
 {% block data %}
-<div class="row data">
-    <div class="span6">
-            <div class="row">
-                <div class="span6">
-                    <h2>All Continents <span>(0 ha)</span></h2>
-                </div>
-            </div>
-            <div class="row">
-                <div class="span3">
-                    <canvas id="pie-overall" width="300" height="300"></canvas>
-                </div>
-                <div class="span3">
-                    <ul class="media-list legend">
-                        <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span class="food-crop"></span></li>
-                        <li><i class="icon icon-none" style="background-color: #225559;"></i><span class="non-food-crop"></span></li>
-                        <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span class="flex-crop"></span></li>
-                        <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span class="multiple-crop"></span></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
 
-        <div class="span6">
-            <div class="row">
-                <div class="span3">
-                    <div class="row">
-                        <div class="span3">
-                            <h2>Africa <span>(0 ha)</span></h2>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span1">
-                            <canvas id="pie-africa" width="72" height="72"></canvas>
-                        </div>
-                        <div class="span2">
-                            <ul class="media-list legend">
-                                <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span class="food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #225559;"></i><span class="non-food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span class="flex-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span class="multiple-crop"></span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="span3">
-                    <div class="row">
-                        <div class="span3">
-                            <h2>Europe <span>(0 ha)</span></h2>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span1">
-                            <canvas id="pie-europe" width="72" height="72"></canvas>
-                        </div>
-                        <div class="span2">
-                            <ul class="media-list legend">
-                                <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span class="food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #225559;"></i><span class="non-food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span class="flex-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span class="multiple-crop"></span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="span3">
-                    <div class="row">
-                        <div class="span3">
-                            <h2>America <span>(0 ha)</span></h2>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span1">
-                            <canvas id="pie-america" width="72" height="72"></canvas>
-                        </div>
-                        <div class="span2">
-                            <ul class="media-list legend">
-                                <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span class="food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #225559;"></i><span class="non-food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span class="flex-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span class="multiple-crop"></span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="span3">
-                    <div class="row">
-                        <div class="span3">
-                            <h2>Oceania <span>(0 ha)</span></h2>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span1">
-                            <canvas id="pie-oceania" width="72" height="72"></canvas>
-                        </div>
-                        <div class="span2">
-                            <ul class="media-list legend">
-                                <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span class="food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #225559;"></i><span class="non-food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span class="flex-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span class="multiple-crop"></span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="span3">
-                    <div class="row">
-                        <div class="span3">
-                            <h2>Asia <span>(0 ha)</span></h2>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="span1">
-                            <canvas id="pie-asia" width="72" height="72"></canvas>
-                        </div>
-                        <div class="span2">
-                            <ul class="media-list legend">
-                                <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span class="food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #225559;"></i><span class="non-food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span class="flex-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span class="multiple-crop"></span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="span3"></div>
-            </div>
-        </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block after %}
-{{ block.super }}
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.pie.js" %}"></script>
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.core.js" %}"></script>
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.effects.js" %}"></script>
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.dynamic.js" %}"></script>
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.tooltips.js" %}"></script>
-<script type="text/javascript">
-function draw(callback) {
-    RGraph.ObjectRegistry.Clear();
-    var query_params = get_query_params(get_base_filter(), get_filter());
-    var json_query = "/api/agricultural-produce.json" + query_params;
-    jQuery.getJSON(json_query, function(data) {
-        // show/hide data availability
-        var sum = 0;
-        $(data).each(function (i) { sum += data[i].available + data[i].not_available; });
-        sum && $(".data-availability, .data").show() || $(".data-availability, .data").hide();
+    {{ block.super }}
 
-        var pie_data = [];
-        for (var i = 0; i < data.length; i++) {
-            pie_data = [];
-            $('#pie-' + data[i]["region"]).parent().next().find('.food-crop').text(data[i]["agricultural_produce"]["food_crop"] + "%" + " (" + numberWithCommas(data[i]["hectares"]["food_crop"]) + " ha)");
-            $('#pie-' + data[i]["region"]).parent().next().find('.non-food-crop').text(data[i]["agricultural_produce"]["non_food"] + "%" + " (" + numberWithCommas(data[i]["hectares"]["non_food"]) + " ha)");
-            $('#pie-' + data[i]["region"]).parent().next().find('.flex-crop').text(data[i]["agricultural_produce"]["flex_crop"] + "%" + " (" + numberWithCommas(data[i]["hectares"]["flex_crop"]) + " ha)");
-            $('#pie-' + data[i]["region"]).parent().next().find('.multiple-crop').text(data[i]["agricultural_produce"]["multiple_use"] + "%" + " (" + numberWithCommas(data[i]["hectares"]["multiple_use"]) + " ha)");
-            var sum = data[i]["hectares"]["food_crop"]+data[i]["hectares"]["non_food"]+data[i]["hectares"]["flex_crop"]+data[i]["hectares"]["multiple_use"];
-            $('#pie-' + data[i]["region"]).closest(".row").prev().find("h2 span").text("(" + numberWithCommas(sum) + " ha)");
-            pie_data.push(data[i]["agricultural_produce"]["food_crop"]);
-            pie_data.push(data[i]["agricultural_produce"]["non_food"]);
-            pie_data.push(data[i]["agricultural_produce"]["flex_crop"]);
-            pie_data.push(data[i]["agricultural_produce"]["multiple_use"]);
-
-            var pie = new RGraph.Pie('pie-' + data[i]["region"], pie_data);
-            pie.Set('chart.colors', ['#060c0f', '#225559', '#46b2bf', '#acd4dc']);
-            pie.Set('chart.strokestyle', '#bbb');
-            pie.Set('chart.text.font', 'Open Sans');
-            pie.Set('chart.text.size', '9');
-            if (data[i]["region"] == "overall") {
-                pie.Set('chart.radius', 149);
-                pie_data = []
-                pie_data.push(data[i]["available"]);
-                pie_data.push(data[i]["not_available"]);
-                var pie2 = new RGraph.Pie('pie-availability', pie_data);
-                pie2.Set('chart.colors', ['#1e1e1e', '#828282;']);
-                pie2.Set('chart.radius', 15);
-                pie2.Set('chart.strokestyle', '#bbb');
-                pie2.Set('chart.text.font', 'Open Sans');
-                pie2.Set('chart.text.size', '9');
-                RGraph.Effects.Fade.In(pie2, {'duration': 250});
-                var sum = data[i]["available"] + data[i]["not_available"],
-                    available_per = parseInt(data[i]["available"] / sum * 100, 10),
-                    not_available_per = parseInt(data[i]["not_available"] / sum * 100, 10);
-                $("ul.legend:first li:first span").text(" (" + numberWithCommas(data[i]["available"]) + " hectares, " + available_per + "%)");
-                $("ul.legend:first li:last span").text(" (" + numberWithCommas(data[i]["not_available"]) + " hectares, " + not_available_per + "%)");
-            } else {
-                pie.Set('chart.radius', 35);
-            }
-            RGraph.Effects.Fade.In(pie, {'duration': 250});
-        }
-        callback();
-    })
-};
-$(document).ready(function () {
-    draw(function () {});
-});
-</script>
+    <script type="text/javascript">
+        ;
+        $(document).ready(function () {
+            draw(function () {
+            });
+        });
+    </script>
 {% endblock %}

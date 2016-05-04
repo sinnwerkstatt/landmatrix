@@ -556,7 +556,7 @@ $(document).ready(function () {
                 for (var dealtype in deals) {
                     popup += "<tr><td>" + dealtype + "</td><td>" + deals[dealtype] + "</td></tr>";
                 }
-                popup += '</table><br>Zoom here for more details.</div>';
+                popup += '</table>Zoom here for more details.</div>';
                 console.log(popup);
                 content.innerHTML = popup;
             } else {
