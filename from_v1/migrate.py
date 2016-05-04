@@ -87,6 +87,7 @@ if __name__ == '__main__':
         if options.activity:
             MapStatus._done = True
             MapActivity.map_all(save=options.save, verbose=options.verbose)
+            MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
 
         if options.deal or options.all:
             MapStatus.map_all(save=options.save, verbose=options.verbose)

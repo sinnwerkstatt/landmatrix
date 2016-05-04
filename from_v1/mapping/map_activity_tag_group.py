@@ -21,10 +21,10 @@ class MapActivityTagGroup(MapTagGroups):
         # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity').filter(
         #     fk_activity__pk__in=MapActivity.all_ids()
         # ).filter(fk_activity__activity_identifier=11)
-
-        tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity').filter(
-            fk_activity__pk__in=MapActivity.all_ids()
-        )
+        # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity').filter(
+        #     fk_activity__pk__in=MapActivity.all_ids()
+        # )
+        tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')
         key_value_lookup = A_Key_Value_Lookup
 
     @classmethod
@@ -65,12 +65,13 @@ class MapActivityTagGroup(MapTagGroups):
         if (len(attrs) == 1) and attrs.get('name'):
             return
 
-        # print('WRITING', name, attrs)
         from mapping.map_activity_attribute_group import clean_attributes
 
         attrs = clean_attributes(attrs)
 
-        aag = cls.write_activity_attribute_group(attrs, tag_group.fk_activity.pk, year, name)
+        aag = cls.write_activity_attribute_group(
+            attrs, cls.matching_activity_id(tag_group), year, name
+        )
 
         comments = cls.get_comments(tag_group)
         if comments:
@@ -80,6 +81,23 @@ class MapActivityTagGroup(MapTagGroups):
 
             if cls._save:
                 aag.save(using=V2)
+
+    @classmethod
+    def matching_activity_id(cls, tag_group):
+        if MapActivity.new_class.objects.using(V2).filter(pk=tag_group.fk_activity.pk):
+            return tag_group.fk_activity.pk
+
+        activity_identifier = MapActivity.new_class.history.using(V2).filter(
+            id=tag_group.fk_activity.pk
+        ).values_list(
+            'activity_identifier', flat=True
+        ).distinct().first()
+        current_activity = MapActivity.new_class.objects.using(V2).filter(
+            activity_identifier=activity_identifier
+        ).values_list('id', flat=True).distinct().first()
+        # print(activity_identifier, current_activity)
+
+        return current_activity
 
     @classmethod
     def write_activity_attribute_group(cls, attrs, activity_id, year, name):

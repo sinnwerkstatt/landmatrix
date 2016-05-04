@@ -36,38 +36,32 @@ ORDER BY activity_identifier
 
     @classmethod
     def save_record(cls, new, save):
-        # print('save_record', new)
+        """Save all versions of an activity as HistoricalActivity records."""
+        if not save:
+            return
+
         versions = get_activity_versions(new)
-        if save:
-            for i, version in enumerate(versions):
-                if not version['id'] == new.id:
-                    landmatrix.models.Activity.history.using(V2).create(
-                        id=version['id'],
-                        activity_identifier=version['activity_identifier'],
-                        availability=version['availability'],
-                        fk_status_id=version['fk_status_id'],
-                        fully_updated=version['fully_updated'],
-                        history_date=cls.calculate_history_date(versions, i)
-                    )
-            new.save(using=V2)
-        # print(
-        #     'activities',
-        #     landmatrix.models.Activity.objects.using(V2).filter(activity_identifier=new.activity_identifier)
-        # )
-        # print(
-        #     'history   ',
-        #     landmatrix.models.Activity.history.using(V2).filter(activity_identifier=new.activity_identifier).order_by('history_date')
-        # )
+        for i, version in enumerate(versions):
+            if not version['id'] == new.id:
+                landmatrix.models.Activity.history.using(V2).create(
+                    id=version['id'],
+                    activity_identifier=version['activity_identifier'],
+                    availability=version['availability'],
+                    fk_status_id=version['fk_status_id'],
+                    fully_updated=version['fully_updated'],
+                    history_date=calculate_history_date(versions, i)
+                )
+        new.save(using=V2)
 
-    @classmethod
-    def calculate_history_date(cls, versions, i):
-        if versions[i]['fully_updated']:
-            return versions[i]['fully_updated']
-        changeset = old_editor.models.A_Changeset.objects.using(V1).filter(fk_activity=versions[i]['id']).last()
-        if changeset:
-            return changeset.timestamp
 
-        return cls.calculate_history_date(versions, i+1) - timedelta(minutes=1)
+def calculate_history_date(versions, i):
+    if versions[i]['fully_updated']:
+        return versions[i]['fully_updated']
+    changeset = old_editor.models.A_Changeset.objects.using(V1).filter(fk_activity=versions[i]['id']).last()
+    if changeset:
+        return changeset.timestamp
+    # could not find any time information. use next newer version and arbitrarily subtract 1 minute.
+    return calculate_history_date(versions, i+1) - timedelta(minutes=1)
 
 
 def get_activity_versions(activity):
