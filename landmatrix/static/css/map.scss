@@ -27,6 +27,7 @@
 
 .popover-content {
     min-width: 180px;
+    font-size: 12px;
 }
 
 p {
@@ -42,7 +43,12 @@ p {
 }
 */
 
+#map {
+    height: 75vh;
+}
+
 .ol-popup {
+    font-size: 12px;
     position: absolute;
     background-color: white;
     -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
@@ -53,6 +59,10 @@ p {
     bottom: 12px;
     left: -50px;
     min-width: 280px;
+}
+
+.ol-popup > table {
+    margin-bottom: 0px;
 }
 
 .ol-popup:after, .ol-popup:before {
