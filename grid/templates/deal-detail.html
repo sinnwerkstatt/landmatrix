@@ -2,7 +2,7 @@
 {% load i18n custom_tags static %}
 {% load humanize %}
 
-{% load threadedcomments_tags %}
+{% load comments threadedcomments_tags %}
 
 {% block page_title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
 {% block title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
@@ -30,132 +30,139 @@
     {% if deal %}
         <input type="hidden" id="deal-stakeholder" value="{{ deal.operational_stakeholder.id }}">
         <div class="panel-group" id="accordion">
-        {% if forms %}
-            {% for form in forms %}
-                {% if form.get_fields_display %}
-                    <div class="panel panel-default">
+            {% if forms %}
+                {% for form in forms %}
+                    {% if form.get_fields_display %}
+                        <div class="panel panel-default">
 
-                        <div class="panel-heading">
+                            <div class="panel-heading">
 
-                            <a id="#{{ form.form_title|slugify }}" data-toggle="collapse" data-parent="#accordion"
-                               href="#collapse_{{ forloop.counter }}">
-                                <h5 class="panel-title">
-                                    {{ form.form_title }}
+                                <a id="#{{ form.form_title|slugify }}" data-toggle="collapse" data-parent="#accordion"
+                                   href="#collapse_{{ forloop.counter }}">
+                                    <h5 class="panel-title">
+                                        {{ form.form_title }}
                                     <span id="collapsebtn_{{ forloop.counter }}"
                                           class="lm-chevron-circle-down pull-right mgrey1"></span>
-                                </h5>
-                            </a>
-                        </div>
+                                    </h5>
+                                </a>
+                            </div>
 
-                        <div id="collapse_{{ forloop.counter }}"
-                             class="panel-collapse collapse{% if forloop.first %} in {% endif %}">
-                            <div class="panel-body">
-                                {% for field in form.get_fields_display %}
-                                    {% if field.name == 'tg' %}
-                                        <h3>{{ field.value }}</h3>
-                                    {% else %}
-                                        <div class="row {{ field.name }}">
-                                            <div class="col-md-3">
-                                                {{ field.label }}
+                            <div id="collapse_{{ forloop.counter }}"
+                                 class="panel-collapse collapse{% if forloop.first %} in {% endif %}">
+                                <div class="panel-body">
+                                    {% for field in form.get_fields_display %}
+                                        {% if field.name == 'tg' %}
+                                            <h3>{{ field.value }}</h3>
+                                        {% else %}
+                                            <div class="row {{ field.name }}">
+                                                <div class="col-md-3">
+                                                    {{ field.label }}
+                                                </div>
+                                                <div class="col-md-9">
+                                                    {{ field.value|safe|decimalgroupstring }}
+                                                </div>
                                             </div>
-                                            <div class="col-md-9">
-                                                {{ field.value|safe|decimalgroupstring }}
-                                            </div>
-                                        </div>
-                                        {% if field.name == 'location' %}
-                                            <div class="map"></div>
+                                            {% if field.name == 'location' %}
+                                                <div class="map"></div>
+                                            {% endif %}
                                         {% endif %}
-                                    {% endif %}
-                                {% endfor %}
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
 
-        {% if history|length > 1 %}
+            {% if history|length > 1 %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a id="history" data-toggle="collapse" data-parent="#accordion" href="#collapse_history">
+                            <h5 class="panel-title">
+                                {% trans "History" %}
+                                <span id="collapsebtn_history"
+                                      class="lm-chevron-circle-down pull-right mgrey1"></span>
+                            </h5>
+                        </a>
+                    </div>
+                    <div id="collapse_history" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            {% for changedate, item in history.items %}
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        {% if forloop.counter == 1 %}<strong>{% endif %}
+                                        {{ changedate|timestamp_from_epoch }}
+                                        {% if forloop.counter == 1 %}</strong>{% endif %}
+                                    </div>
+                                    <!-- <td>{{ item.activity_changed_by }}</td>
+                                    <td>activity identifier: {{ item.activity.activity_identifier }}</td>
+                                    <td>availability: {{ item.activity.availability }}</td>
+                                    <td>history id: {{ item.activity.history_id }}</td>
+                                    -->
+                                    {% with dealid=item.activity.activity_identifier|addstr:"_"|addstr:changedate %}
+                                        <div class="col-sm-4">
+
+                                            {# TODO: Insert correct link and maybe disable button for currently version displayed  #}
+                                            <a type="button" class="btn"
+                                               href="{% url 'deal_detail' deal_id=dealid %}">
+                                                <i class="glyphicon glyphicon-eye-open"></i> {% trans "Show this version" %}
+                                            </a>
+                                        </div>
+
+                                        <div class="col-sm-4">
+
+                                            <a type="button" class="btn"
+                                                    {% if not forloop.last %}
+                                               href="{% url 'compare_deals' activity_1=dealid %}"
+                                                        >
+                                                        <i class="glyphicon glyphicon-transfer"></i>
+                                                        {% trans "Compare with previous version" %}
+                                                    {% else %}
+                                                        disabled>
+                                                        <i class="glyphicon glyphicon-transfer"></i>
+                                                        {% trans "First version" %}
+                                                    {% endif %}
+                                            </a>
+                                        </div>
+                                    {% endwith %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <a id="history" data-toggle="collapse" data-parent="#accordion" href="#collapse_history">
+                    <a id="comments" data-toggle="collapse" data-parent="#accordion" href="#collapse_comments">
                         <h5 class="panel-title">
-                            {% trans "History" %}
+                            {% trans "Comments" %}
                                 <span id="collapsebtn_history"
                                       class="lm-chevron-circle-down pull-right mgrey1"></span>
                         </h5>
                     </a>
                 </div>
-                <div id="collapse_history" class="panel-collapse collapse">
+                <div id="collapse_comments" class="panel-collapse collapse">
                     <div class="panel-body">
-                        {% for changedate, item in history.items %}
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    {% if forloop.counter == 1 %}<strong>{% endif %}
-                                    {{ changedate|timestamp_from_epoch }}
-                                    {% if forloop.counter == 1 %}</strong>{% endif %}
-                                </div>
-                                <!-- <td>{{ item.activity_changed_by }}</td>
-                                    <td>activity identifier: {{ item.activity.activity_identifier }}</td>
-                                    <td>availability: {{ item.activity.availability }}</td>
-                                    <td>history id: {{ item.activity.history_id }}</td>
-                                    -->
-                                {% with dealid=item.activity.activity_identifier|addstr:"_"|addstr:changedate %}
-                                    <div class="col-sm-4">
-
-                                        {# TODO: Insert correct link and maybe disable button for currently version displayed  #}
-                                        <a type="button" class="btn"
-                                           href="{% url 'deal_detail' deal_id=dealid %}">
-                                            <i class="glyphicon glyphicon-eye-open"></i> {% trans "Show this version" %}
-                                        </a>
-                                    </div>
-
-                                    <div class="col-sm-4">
-
-                                        <a type="button" class="btn"
-                                                {% if not forloop.last %}
-                                           href="{% url 'compare_deals' activity_1=dealid %}"
-                                                    >
-                                                    <i class="glyphicon glyphicon-transfer"></i>
-                                                    {% trans "Compare with previous version" %}
-                                                {% else %}
-                                                    disabled>
-                                                    <i class="glyphicon glyphicon-transfer"></i>
-                                                    {% trans "First version" %}
-                                                {% endif %}
-                                        </a>
-                                    </div>
-                                {% endwith %}
-                            </div>
-                        {% endfor %}
+                        <div class="col-sm-12">
+                            {% get_comment_count for deal.activity as comment_count %}
+                            {% if comment_count > 0 %}
+                                {% render_comment_list for deal.activity %}
+                            {% else %}
+                                <p class="alert alert-info">{% trans "There are no comments to this deal yet." %}</p>
+                            {% endif %}
+                        </div>
+                        <form method="post" action="{% comment_form_target %}">
+                            {% get_comment_form for deal.activity as comment_form %}
+                            {% csrf_token %}
+                            {% for hidden in comment_form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                            {# TODO: move next into the form logic #}
+                            <input type="hidden" name="next" value="{% url 'deal_detail' deal.activity_identifier %}">
+                            {% include "form.html" with form=comment_form %}
+                            <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
+                        </form>
                     </div>
-                </div>
-            </div>
-        {% endif %}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <a id="comments" data-toggle="collapse" data-parent="#accordion" href="#collapse_comments">
-                    <h5 class="panel-title">
-                        {% trans "Comments" %}
-                                <span id="collapsebtn_history"
-                                      class="lm-chevron-circle-down pull-right mgrey1"></span>
-                    </h5>
-                </a>
-            </div>
-            <div id="collapse_comments" class="panel-collapse collapse">
-                <div class="panel-body">
-                    <div class="col-sm-12">
-                        {% get_comment_count for deal.activity as comment_count %}
-                        {% if comment_count > 0 %}
-                            {% render_comment_list for deal.activity %}
-                        {% else %}
-                            <p class="alert alert-info">{% trans "There are no comments to this deal yet." %}</p>
-                        {% endif %}
-                    </div>
-                    <form method="." action="POST">
-                        {% get_comment_form for deal.activity as comment_form %}
-                        {% include "form.html" with form=comment_form %}
-                        <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
-                    </form>
                 </div>
             </div>
         </div>
