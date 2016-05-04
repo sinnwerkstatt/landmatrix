@@ -315,7 +315,7 @@ class RegionIndex(Page):
     subpage_types = ['wagtailcms.Region']
 
 class Region(Page):
-    region = models.ForeignKey(Region, null=True, blank=True)
+    region = models.ForeignKey(Region, null=True, blank=True, on_delete=models.SET_NULL)
     body = NoWrapsStreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
             ('columns_2_1', Columns2To1Block()),
@@ -343,7 +343,7 @@ class CountryIndex(Page):
     subpage_types = ['wagtailcms.Country']
 
 class Country(Page):
-    country = models.ForeignKey(Country, null=True, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True, on_delete=models.SET_NULL)
     body = NoWrapsStreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
             ('columns_2_1', Columns2To1Block()),
