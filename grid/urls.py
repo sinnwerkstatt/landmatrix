@@ -16,7 +16,7 @@ urlpatterns = patterns('grid.views',
     url(
         r'^$',
         vary_on_cookie(cache_page(CACHE_TIMEOUT)(AllDealsView.as_view())),
-        name='app_main'
+        name='data'
     ),
     url(
         r'^all\.(?P<format>(csv|xml|xls))/$',

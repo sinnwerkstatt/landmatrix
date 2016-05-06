@@ -14,12 +14,11 @@ from django.db import models
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.whitelist import attribute_rule, check_url, allow_without_attributes
-from blog.models import BlogPage
+from blog.models import BlogPage, BlogCategory, BlogCategoryBlogPage
 
-from landmatrix.models import Region, Country
+from landmatrix.models import Region as DataRegion, Country as DataCountry
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 
 class LinkBlock(StructBlock):
     cls = blocks.ChoiceBlock(choices=[
@@ -39,16 +38,6 @@ class LinkBlock(StructBlock):
         context['class'] = value.get('cls')
         return context
     ('link', URLBlock(icon="link")),
-
-#FIXME: Move blocks to blocks.py
-CONTENT_BLOCKS = [
-    #('heading', blocks.CharBlock(classname="full title", icon="title")),
-    ('paragraph', blocks.RichTextBlock()),
-    ('image', ImageChooserBlock(icon="image")),
-    ('media', EmbedBlock(icon="media")),
-    ('html', RawHTMLBlock(icon="code")),
-    ('link', LinkBlock(icon="link")),
-]
 
 # Overwrite Stream block to disable wrapping DIVs
 class NoWrapsStreamBlock(StreamBlock):
@@ -103,83 +92,6 @@ class LinkedImageBlock(StructBlock):
         context['name'] = value.title
         return context
 
-class StatisticsBlock(StructBlock):
-    class Meta:
-        icon = 'fa fa-list'
-        label = 'Statistics'
-        template = 'widgets/statistics.html'
-
-CONTENT_BLOCKS += [
-    ('statistics', StatisticsBlock()),
-]
-
-class LatestDatabaseModificationsBlock(StructBlock):
-    count = blocks.CharBlock()
-
-    class Meta:
-        icon = 'fa fa-list'
-        label = 'Latest database modifications'
-        template = 'widgets/latest-database-modifications.html'
-
-    def get_context(self, value):
-        context = super().get_context(value)
-        context['count'] = value.get('count')
-        return context
-
-CONTENT_BLOCKS += [
-    ('latest_database_modifications', LatestDatabaseModificationsBlock()),
-]
-
-class LatestNewsBlock(StructBlock):
-    count = blocks.CharBlock()
-
-    class Meta:
-        icon = 'fa fa-list'
-        label = 'Latest news'
-        template = 'widgets/latest-news.html'
-
-    def get_context(self, value):
-        context = super().get_context(value)
-        count = value.get('count')
-        context['news'] = BlogPage.objects.all()[:int(count)]
-        return context
-
-CONTENT_BLOCKS += [
-    ('latest_news', LatestNewsBlock()),
-]
-
-class ColumnsBlock(StructBlock):
-    left_column = blocks.StreamBlock(CONTENT_BLOCKS)
-    right_column = blocks.StreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
-
-    def get_context(self, value):
-        context = super().get_context(value)
-        context['left_column'] = value.get('left_column')
-        context['right_column'] = value.get('right_column')
-        return context
-
-    class Meta:
-        icon = 'fa fa-columns'
-        label = 'Columns 1-1'
-        template = None
-
-
-class Columns1To1Block(ColumnsBlock):
-    class Meta:
-        label = 'Columns 1:1'
-        template = 'widgets/columns-1-1.html'
-
-
-class Columns2To1Block(ColumnsBlock):
-    class Meta:
-        label = 'Columns 2:1'
-        template = 'widgets/columns-2-1.html'
-
-
-class Columns1To2Block(ColumnsBlock):
-    class Meta:
-        label = 'Columns 1:2'
-        template = 'widgets/columns-1-2.html'
 
 class SliderBlock(StructBlock):
     images = blocks.ListBlock(LinkedImageBlock())
@@ -236,19 +148,120 @@ class GalleryBlock(StructBlock):
         label = 'Gallery'
         template = 'widgets/gallery.html'
 
-class MapDataChartsBlock(StructBlock):
+#FIXME: Move blocks to blocks.py
+CONTENT_BLOCKS = [
+    #('heading', blocks.CharBlock(classname="full title", icon="title")),
+    ('paragraph', blocks.RichTextBlock()),
+    ('image', ImageChooserBlock(icon="image")),
+    ('media', EmbedBlock(icon="media")),
+    ('html', RawHTMLBlock(icon="code")),
+    ('link', LinkBlock(icon="link")),
+    ('gallery', GalleryBlock()),
+    ('slider', SliderBlock()),
+    ('section_divider', SectionDivider()),
+]
+
+class CountryRegionStructBlock(StructBlock):
+    country_slug = None
+    region_slug = None
+
+    def __init__(self, *args, **kwargs):
+        self.country_slug = kwargs.pop('country_slug', None)
+        self.region_slug = kwargs.pop('region_slug', None)
+        return super(CountryRegionStructBlock, self).__init__(*args, **kwargs)
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        if self.country_slug:
+            slug = self.country_slug
+            context['country'] = DataCountry.objects.get(slug=self.country_slug)
+        if self.region_slug:
+            context['region'] = DataRegion.objects.get(slug=self.region_slug)
+        return context
+
+class LatestNewsBlock(CountryRegionStructBlock):
+    blog_categories = models.ManyToManyField(
+        BlogCategory, through=BlogCategoryBlogPage, blank=True)
+    limit = blocks.CharBlock()
+
+    class Meta:
+        icon = 'fa fa-list'
+        label = 'Latest news'
+        template = 'widgets/latest-news.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        limit = value.get('limit')
+        context['news'] = BlogPage.objects.all()[:int(limit)]
+        return context
+
+class StatisticsBlock(CountryRegionStructBlock):
+    class Meta:
+        icon = 'fa fa-list'
+        label = 'Statistics'
+        template = 'widgets/statistics.html'
+
+class MapDataChartsBlock(CountryRegionStructBlock):
     class Meta:
         icon = 'fa fa-chain'
         label = 'Map / Grid / Charts'
         template = 'widgets/map-data-charts.html'
 
-CONTENT_BLOCKS = CONTENT_BLOCKS + [
-    ('section_divider', SectionDivider()),
+class LatestDatabaseModificationsBlock(CountryRegionStructBlock):
+    limit = blocks.CharBlock()
+
+    class Meta:
+        icon = 'fa fa-list'
+        label = 'Latest database modifications'
+        template = 'widgets/latest-database-modifications.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['limit'] = value.get('limit')
+        return context
+
+
+DATA_BLOCKS = [
+    ('latest_news', LatestNewsBlock()),
+    ('statistics', StatisticsBlock()),
     ('map_data_charts', MapDataChartsBlock()),
-    ('gallery', GalleryBlock()),
-    ('slider', SliderBlock()),
+    ('latest_database_modifications', LatestDatabaseModificationsBlock()),
 ]
-CONTENT_BLOCKS = CONTENT_BLOCKS + [
+
+class ColumnsBlock(StructBlock):
+    left_column = blocks.StreamBlock(CONTENT_BLOCKS)
+    right_column = blocks.StreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['left_column'] = value.get('left_column')
+        context['right_column'] = value.get('right_column')
+        return context
+
+    class Meta:
+        icon = 'fa fa-columns'
+        label = 'Columns 1-1'
+        template = None
+
+
+class Columns1To1Block(ColumnsBlock):
+    class Meta:
+        label = 'Columns 1:1'
+        template = 'widgets/columns-1-1.html'
+
+
+class Columns2To1Block(ColumnsBlock):
+    class Meta:
+        label = 'Columns 2:1'
+        template = 'widgets/columns-2-1.html'
+
+
+class Columns1To2Block(ColumnsBlock):
+    class Meta:
+        label = 'Columns 1:2'
+        template = 'widgets/columns-1-2.html'
+
+COLUMN_BLOCKS = [
     ('columns_1_1', Columns1To1Block()),
     ('columns_2_1', Columns2To1Block()),
     ('columns_1_2', Columns1To2Block())
@@ -259,7 +272,7 @@ class FullWidthContainerBlock(StructBlock):
         ('lightgrey', 'Light grey'),
         ('darkgrey', 'Dark grey')
     ], default='white')
-    content = NoWrapsStreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
+    content = NoWrapsStreamBlock(COLUMN_BLOCKS + DATA_BLOCKS + CONTENT_BLOCKS, form_classname='pull-right')
 
     def get_context(self, value):
         context = super().get_context(value)
@@ -276,7 +289,7 @@ CONTENT_BLOCKS += [
 ]
 
 class WagtailRootPage(Page):
-    body = NoWrapsStreamField(CONTENT_BLOCKS)
+    body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     footer_column_1 = RichTextField(blank=True)
     footer_column_2 = RichTextField(blank=True)
     footer_column_3 = RichTextField(blank=True)
@@ -292,36 +305,29 @@ class WagtailRootPage(Page):
 
 
 class WagtailPage(Page):
-    body = NoWrapsStreamField(CONTENT_BLOCKS + [
-            ('columns_1_1', Columns1To1Block()),
-            ('columns_2_1', Columns2To1Block()),
-            ('columns_1_2', Columns1To2Block())
-        ]
-    )
+    body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [StreamFieldPanel('body')]
 
 class RegionIndex(Page):
     template = 'wagtailcms/region.html'
 
-    body = NoWrapsStreamField(CONTENT_BLOCKS + [
-            ('columns_1_1', Columns1To1Block()),
-            ('columns_2_1', Columns2To1Block()),
-            ('columns_1_2', Columns1To2Block())
-        ]
-    )
+    body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [
         StreamFieldPanel('body')
     ]
     subpage_types = ['wagtailcms.Region']
 
+    def serve(self, request):
+        kwargs = request.resolver_match.kwargs
+        region_slug = kwargs.get('region_slug', None)
+        for data in DATA_BLOCKS:
+            self.body.stream_block.child_blocks[data[0]] = type(data[1])(region_slug=region_slug)
+        return super(CountryIndex, self).serve(request)
+
 class Region(Page):
-    region = models.ForeignKey(Region, null=True, blank=True, on_delete=models.SET_NULL)
-    body = NoWrapsStreamField(CONTENT_BLOCKS + [
-            ('columns_1_1', Columns1To1Block()),
-            ('columns_2_1', Columns2To1Block()),
-            ('columns_1_2', Columns1To2Block())
-        ]
-    )
+    region = models.ForeignKey(DataRegion, null=True, blank=True, on_delete=models.SET_NULL)
+
+    body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [
         FieldPanel('region'),
         StreamFieldPanel('body')
@@ -331,19 +337,24 @@ class Region(Page):
 class CountryIndex(Page):
     template = 'wagtailcms/country.html'
 
-    body = NoWrapsStreamField(CONTENT_BLOCKS + [
-            ('columns_1_1', Columns1To1Block()),
-            ('columns_2_1', Columns2To1Block()),
-            ('columns_1_2', Columns1To2Block())
-        ]
-    )
+    body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [
         StreamFieldPanel('body')
     ]
     subpage_types = ['wagtailcms.Country']
 
+    country_slug = None
+    region_slug = None
+
+    def serve(self, request):
+        kwargs = request.resolver_match.kwargs
+        country_slug = kwargs.get('country_slug', None)
+        for data in DATA_BLOCKS:
+            self.body.stream_block.child_blocks[data[0]] = type(data[1])(country_slug=country_slug)
+        return super(CountryIndex, self).serve(request)
+
 class Country(Page):
-    country = models.ForeignKey(Country, null=True, blank=True, on_delete=models.SET_NULL)
+    country = models.ForeignKey(DataCountry, null=True, blank=True, on_delete=models.SET_NULL)
     body = NoWrapsStreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
             ('columns_2_1', Columns2To1Block()),

@@ -10,7 +10,7 @@
 {% block breadcrumb %}
     <ul class="breadcrumb">
         <li><a href="/">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'app_main' %}">{% trans 'Global' %}</a></li>
+        <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
         {% if group == "all" %}
             <li>{% trans "All deals" %}</li>
         {% elif filters.group_value %}
@@ -276,7 +276,7 @@
                                 <td style="width:341px">
                                     {% if  item.crop %}
                                         {% for c in item.crop %}
-                                            <a href="{% url 'app_main' variable='crop' operator='is' value=c|slugify %}">{{ c }}</a>
+                                            <a href="{% url 'data' variable='crop' operator='is' value=c|slugify %}">{{ c }}</a>
                                             </br>
                                         {% endfor %}
                                         {% else %}{% trans "unknown" %}
@@ -288,7 +288,7 @@
                                         {% if item.intention %}
                                             {% for i in item.intention %}
                                                 <li>
-                                                    <a href="{% url 'app_main' %}?variable=intention&operator=is&value={{ i }}"
+                                                    <a href="{% url 'data' %}?variable=intention&operator=is&value={{ i }}"
                                                        {% if group != "intention" %}class="intention-icon {{ i|slugify }}"
                                                        data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a>
                                                 </li>
@@ -310,7 +310,7 @@
                                 <td style="width:183px">
                                     {% if item.stakeholder_name %}
                                         {% for i in item.stakeholder_name %}
-                                            <a href="{% url 'app_main' %}?variable=investor&operator=is&value={{ i.id }}">{{ i.name }}</a>
+                                            <a href="{% url 'data' %}?variable=investor&operator=is&value={{ i.id }}">{{ i.name }}</a>
                                             <br/>
                                         {% endfor %}
                                         {% else %}{% trans "unknown" %}
@@ -320,7 +320,7 @@
                                 <td class="investor-country">
                                     {% if item.stakeholder_country %}
                                         {% for stakeholder_country  in item.stakeholder_country %}
-                                            <a href="{% url 'app_main' %}?variable=stakeholder_country&operator=is&value={{ stakeholder_country|slugify }}">{{ stakeholder_country }}</a>
+                                            <a href="{% url 'data' %}?variable=stakeholder_country&operator=is&value={{ stakeholder_country|slugify }}">{{ stakeholder_country }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}{% trans "unknown country" %}{% endif %}
@@ -329,7 +329,7 @@
                                 <td class="investor-country">
                                     {% if item.investor_country %}
                                         {% for investor_country  in item.investor_country %}
-                                            <a href="{% url 'app_main' %}?variable=investor_country&operator=is&value={{ investor_country|slugify }}">{{ investor_country }}</a>
+                                            <a href="{% url 'data' %}?variable=investor_country&operator=is&value={{ investor_country|slugify }}">{{ investor_country }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}{% trans "unknown country" %}{% endif %}
@@ -338,7 +338,7 @@
                                 <td class="investor-region">
                                     {% if item.investor_region %}
                                         {% for investor_region  in item.investor_region %}
-                                            <a href="{% url 'app_main' %}?variable=investor_region&operator=is&value={{ investor_region|slugify }}">{{ investor_region }}</a>
+                                            <a href="{% url 'data' %}?variable=investor_region&operator=is&value={{ investor_region|slugify }}">{{ investor_region }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}{% trans "unknown region" %}{% endif %}
@@ -347,7 +347,7 @@
                                 <td>
                                     {% if item.target_country %}
                                         {% for target_country  in item.target_country %}
-                                            <a href="{% url 'app_main' %}?variable=target_country&operator=is&value={{ target_country|slugify }}">{{ target_country }}</a>
+                                            <a href="{% url 'data' %}?variable=target_country&operator=is&value={{ target_country|slugify }}">{{ target_country }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}
@@ -358,7 +358,7 @@
                                 <td>
                                     {% if item.target_region %}
                                         {% for target_region  in item.target_region %}
-                                            <a href="{% url 'app_main' %}?variable=target_region&operator=is&value={{ target_region|slugify }}">{{ target_region }}</a>
+                                            <a href="{% url 'data' %}?variable=target_region&operator=is&value={{ target_region|slugify }}">{{ target_region }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}
@@ -368,7 +368,7 @@
                             {% elif column == "year" %}
                                 <td>
                                     {% if item.year %}
-                                        <a href="{% url 'app_main' %}?variable=year&operator=is&value={{ item.year }}">{{ item.year }}</a>
+                                        <a href="{% url 'data' %}?variable=year&operator=is&value={{ item.year }}">{{ item.year }}</a>
                                         <br/>
                                     {% else %}
                                         {% trans "unknown" %}
@@ -378,7 +378,7 @@
                                 <td>
                                     {% if item.data_source_type %}
                                         {% for data_source_type in item.data_source_type %}
-                                            <a href="{% url 'app_main' %}?variable=data_source_type&operator=is&value={{ data_source_type }}">{{ data_source_type }}</a>
+                                            <a href="{% url 'data' %}?variable=data_source_type&operator=is&value={{ data_source_type }}">{{ data_source_type }}</a>
                                             <br/>
                                         {% endfor %}
                                     {% else %}

@@ -10,7 +10,7 @@
 {% block title %}{% trans "Chart" %}{% endblock %}
 
 {% block breadcrumb_inner %}
-<li><a href="{% url 'app_main' %}">{% trans 'Global' %}</a></li>
+<li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
 <li><a href="{% url 'chart_transnational_deals' %}">{% trans 'Charts' %}</a></li>
 {% endblock %}
 
@@ -18,7 +18,7 @@
     <li role="presentation"><a href="{% url 'map' %}">
         <i class="lm lm-map-marker"></i>{% trans "Map" %}
     </a></li>
-    <li role="presentation"><a href="{% url 'app_main' %}">
+    <li role="presentation"><a href="{% url 'data' %}">
         <i class="lm lm-table"></i>{% trans "Data" %}
     </a></li>
     <li role="presentation" class="active"><span>
