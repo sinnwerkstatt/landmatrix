@@ -22,6 +22,8 @@ urlpatterns = patterns(
     'chart.views',
     url(r'^$', TransnationalDealsChartView.as_view(),
         name='charts'),
+    url(r'^$', TransnationalDealsChartView.as_view(),
+        name='chart_transnational_deals'),
     url(r'^overview$', OverviewChartView.as_view(), name='chart_overview'),
     url(r'^specialinterest$', SpecialInterestView.as_view(), name='special_interest'),
     url(r'^map-of-investments/$', MapOfInvestmentsChartView.as_view(),
