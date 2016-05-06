@@ -66,14 +66,14 @@
                     <li class="dropdown">
                         <span>
                             <i class="lm-nav lm-regions"></i>
-                            <select class="nav-select" id="nav-region-select">
+                            <select class="nav-select" id="nav-region-select" style="display:none">
                             </select>
                         </span>
                     </li>
                     <li class="dropdown">
                         <span>
                             <i class="lm-nav lm-flag"></i>
-                            <select class="nav-select" id="nav-country-select">
+                            <select class="nav-select" id="nav-country-select" style="display:none">
                             </select>
                         </span>
                     </li>
@@ -262,10 +262,7 @@
                 placeholder: "{% trans 'Regions' %}",
                 dropdownCssClass: "select2-main"
             }).on('select2:open', select2_open)
-              .on('select2:close', select2_close)
-              .on('change', function () {
-                location.href = '/region/' + $(this).val();
-              });
+              .on('select2:close', select2_close);
             var region_request = $.ajax({
               url: '/api/regions.json'
             });
@@ -275,26 +272,40 @@
                 var option = new Option(item[2], item[1], false, false);
                 region_select.append(option);
               }
+              region_select.select2('val', '');
+              region_select.on('change', function () {
+                location.href = '/region/' + $(this).val();
+              });
               //$element.trigger('change');
             });
             // Countries
             var country_select = $('#nav-country-select').select2({
                 placeholder: "{% trans 'Countries' %}",
-                dropdownCssClass: "select2-main"
+                dropdownCssClass: "select2-main",
+                allowClear: true
             }).on('select2:open', select2_open)
-              .on('select2:close', select2_close)
-              .change(function () {
-                location.href = '/country/' + $(this).val();
-              });
+              .on('select2:close', select2_close);
             var country_request = $.ajax({
               url: '/api/countries.json'
-            });
+            }),
+                group, opt_group,
+                item, option;
             country_request.then(function (data) {
+                country_select.data(data);
               for (var d = 0; d < data.length; d++) {
-                var item = data[d];
-                var option = new Option(item[2], item[1], false, false);
-                country_select.append(option);
+                group = data[d];
+                opt_group = $('<optgroup label="' + group.text + '"></optgroup>');
+                for (var o = 0; o < group.children.length; o++) {
+                    item = group.children[o];
+                    option = new Option(item[2], item[1], false, false);
+                    opt_group.append(option);
+                }
+                country_select.append(opt_group);
               }
+              country_select.select2('val', '');
+              country_select.on('change', function (e) {
+                location.href = '/country/' + $(this).val();
+              });
               //$element.trigger('change');
             });
         });
