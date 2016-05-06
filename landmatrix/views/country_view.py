@@ -8,5 +8,5 @@ class CountryView(View):
     	try:
     		country = Country.objects.get(slug=kwargs.get('country_slug'))
     	except:
-	    	country = CountryIndex.objects.get(slug='country')
+	    	country = CountryIndex.objects.get(slug='countries')
     	return country.serve(self.request)
