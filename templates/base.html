@@ -83,8 +83,8 @@
                                 class="caret"></span></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'add_deal' %}">{% trans "Report a deal" %}</a></li>
-                            <li><a href="{% slugurl 'contact' %}">{% trans "Get in touch" %}</a></li>
-                            <li><a href="{% slugurl 'download' %}">{% trans "Download" %}</a></li>
+                            <li><a href="/contact/">{% trans "Get in touch" %}</a></li>
+                            <li><a href="/download/">{% trans "Download" %}</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -94,9 +94,8 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false"><i class="fa fa-bell"></i></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% slugurl 'news' %}">{% trans "News" %}</a></li>
-                            <li><a href="{% slugurl 'newsletter' %}">{% trans "Newsletter" %}</a></li>
-                            <li><a href="{% slugurl 'publications' %}">{% trans "Publications" %}</a></li>
+                            <li><a href="/news/">{% trans "News" %}</a></li>
+                            <li><a href="/newsletter/">{% trans "Newsletter" %}</a></li>
                         </ul>
                     </li>
                     {% include "language_chooser.html" %}
@@ -201,7 +200,7 @@
 
     <footer>
         <div class="container">
-
+            {% block footer_pages %}
             {# reads the four footer columns from the WagtailRootPage assigned #}
             {# to the context by the context processor #}
             {# wagtailcms.context_processors.add_root_page #}
@@ -228,6 +227,7 @@
                     <hr/>
                 </div>
             </div>
+            {% endblock %}
 
             <div id="footer-etc" class="row">
                 <div class="col-md-5">
