@@ -34,15 +34,15 @@
             <form method="POST" action="{% url 'api_dashboard_filter' %}" id="dashboard-filter">
                 {% csrf_token %}
                 <div class="controls col-sm-2">
-                    <select id="dashboard-filter-region">
+                    <select id="dashboard-filter-region" multiple="multiple">
                     </select>
                 </div>
                 <div class="controls col-sm-2">
-                    <select id="dashboard-filter-country">
+                    <select id="dashboard-filter-country" multiple="multiple">
                     </select>
                 </div>
                 <div class="controls col-sm-2">
-                    <select id="dashboard-filter-user">
+                    <select id="dashboard-filter-user" multiple="multiple">
                     </select>
                 </div>
                 <div class="controls col-sm-2">
@@ -115,7 +115,7 @@
             $(document).ready(function () {
                 // Regions
                 var region_select = $('#dashboard-filter-region').select2({
-                    placeholder: "{% trans 'Region' %}"
+                    placeholder: "{% trans 'Regions' %}"
                 });
                 var region_request = $.ajax({
                   url: '/api/regions.json'
@@ -130,22 +130,29 @@
                 });
                 // Countries
                 var country_select = $('#dashboard-filter-country').select2({
-                    placeholder: "{% trans 'Country' %}"
+                    placeholder: "{% trans 'Countries' %}"
                 });
                 var country_request = $.ajax({
                   url: '/api/countries.json'
-                });
+                }),
+                    group, opt_group,
+                    item, option;
                 country_request.then(function (data) {
+                    country_select.data(data);
                   for (var d = 0; d < data.length; d++) {
-                    var item = data[d];
-                    var option = new Option(item[2], item[0], false, false);
-                    country_select.append(option);
-                  };
-                  //$element.trigger('change');
+                    group = data[d];
+                    opt_group = $('<optgroup label="' + group.text + '"></optgroup>');
+                    for (var o = 0; o < group.children.length; o++) {
+                        item = group.children[o];
+                        option = new Option(item[2], item[1], false, false);
+                        opt_group.append(option);
+                    }
+                    country_select.append(opt_group);
+                  }
                 });
                 // Users
                 var user_select = $('#dashboard-filter-user').select2({
-                    placeholder: "{% trans 'User' %}"
+                    placeholder: "{% trans 'Users' %}"
                 });
                 var user_request = $.ajax({
                   url: '/api/users.json'
