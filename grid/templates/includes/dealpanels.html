@@ -67,6 +67,10 @@
                                     $(this).text('#' + form_count++);
                                 });
                                 init_form(row);
+                                // Scroll to the new row
+                                $('html, body').animate({
+                                    scrollTop: row.offset().top
+                                }, 600);
                             },
                             removed: function () {
                                 // Update form counters
