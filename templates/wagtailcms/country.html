@@ -1,1 +1,4 @@
 {% extends "wagtailcms/wagtail_page.html" %}
+
+{% block page_title %}{% if country %}{{ country }}{% else %}{% if region %}{{ region }}{% else %}{{ page.title }}{% endif %}{% endif %}{% endblock %}
+{% block title %}{% if country %}{{ country }}{% else %}{% if region %}{{ region }}{% else %}{{ page.title }}{% endif %}{% endif %}{% endblock %}

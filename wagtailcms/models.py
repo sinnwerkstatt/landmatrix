@@ -162,21 +162,20 @@ CONTENT_BLOCKS = [
 ]
 
 class CountryRegionStructBlock(StructBlock):
-    country_slug = None
-    region_slug = None
+    country = None
+    region = None
 
     def __init__(self, *args, **kwargs):
-        self.country_slug = kwargs.pop('country_slug', None)
-        self.region_slug = kwargs.pop('region_slug', None)
+        self.country = kwargs.pop('country', None)
+        self.region = kwargs.pop('region', None)
         return super(CountryRegionStructBlock, self).__init__(*args, **kwargs)
 
     def get_context(self, value):
         context = super().get_context(value)
-        if self.country_slug:
-            slug = self.country_slug
-            context['country'] = DataCountry.objects.get(slug=self.country_slug)
-        if self.region_slug:
-            context['region'] = DataRegion.objects.get(slug=self.region_slug)
+        if self.country:
+            context['country'] = country
+        if self.region:
+            context['region'] = region
         return context
 
 class LatestNewsBlock(CountryRegionStructBlock):
@@ -317,12 +316,20 @@ class RegionIndex(Page):
     ]
     subpage_types = ['wagtailcms.Region']
 
+    def get_context(self, request):
+        context = super(RegionIndex, self).get_context(request)
+        if self.region:
+            context['region'] = self.region
+        return context
+
     def serve(self, request):
         kwargs = request.resolver_match.kwargs
         region_slug = kwargs.get('region_slug', None)
-        for data in DATA_BLOCKS:
-            self.body.stream_block.child_blocks[data[0]] = type(data[1])(region_slug=region_slug)
-        return super(CountryIndex, self).serve(request)
+        if region_slug:
+            self.region = DataRegion.objects.get(slug=region_slug)
+            for data in DATA_BLOCKS:
+                self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
+        return super(RegionIndex, self).serve(request)
 
 class Region(Page):
     region = models.ForeignKey(DataRegion, null=True, blank=True, on_delete=models.SET_NULL)
@@ -343,14 +350,21 @@ class CountryIndex(Page):
     ]
     subpage_types = ['wagtailcms.Country']
 
-    country_slug = None
-    region_slug = None
+    country = None
+
+    def get_context(self, request):
+        context = super(CountryIndex, self).get_context(request)
+        if self.country:
+            context['country'] = self.country
+        return context
 
     def serve(self, request):
         kwargs = request.resolver_match.kwargs
         country_slug = kwargs.get('country_slug', None)
-        for data in DATA_BLOCKS:
-            self.body.stream_block.child_blocks[data[0]] = type(data[1])(country_slug=country_slug)
+        if country_slug:
+            self.country = DataCountry.objects.get(slug=country_slug)
+            for data in DATA_BLOCKS:
+                self.body.stream_block.child_blocks[data[0]] = type(data[1])(country=self.country)
         return super(CountryIndex, self).serve(request)
 
 class Country(Page):
