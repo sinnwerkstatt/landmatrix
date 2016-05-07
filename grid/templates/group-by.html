@@ -138,7 +138,7 @@
         {% for column in columns %}
           {% if column == "deal_id" %}
             <td class="deal-id">
-                <a href="{%  url 'deal_detail' deal_id=item.deal_id %}">{{ item.deal_id }}</a>
+                <a href="{% url 'deal_detail' deal_id=item.deal_id %}">{{ item.deal_id }}</a>
             </td>
           {% elif column == "crop" %}
               <td style="width:341px">

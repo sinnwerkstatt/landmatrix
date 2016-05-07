@@ -49,7 +49,7 @@
     <a href="{% url "export" format="xls" %}" class="btn-media xls">
     {% endif %}
   {% endif %}
-    <i class=""></i>XSL
+    <i class=""></i>XLS
   </a>
   {% if 'PDF' in export_formats %}
   <a class="btn-media pdf" href="{% if deal and pdf_export_url %}{% url pdf_export_url deal_id=deal.activity_identifier %}{% elif pdf_export_url %}{% url pdf_export_url %}{% endif %}">
