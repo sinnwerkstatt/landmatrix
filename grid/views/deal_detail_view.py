@@ -83,12 +83,15 @@ class DealDetailView(PDFViewMixin, TemplateView):
 
         context['export_formats'] = ("XML", "CSV", "XLS", "PDF")
 
+        raise IOError("ok")
         return context
 
     def render_forms(self, request, context):
+        raise IOError("ok")
         return render_to_response(self.template_name, context, RequestContext(request))
 
     def render_forms_to_string(self, request, context):
+        raise IOError("ok")
         return render_to_string(self.template_name, context, RequestContext(request))
 
 

@@ -16,12 +16,12 @@ class CountriesQuerySet(SimpleFakeQuerySet):
         response = []
         countries = WagtailCountry.objects.all().order_by('title')
         response.append({
-        	'text': str(_('Country observatories')),
+        	'text': str(_('Observatories')),
         	'children': [[country.id, country.slug, country.title] for country in countries]
         })
         countries = Country.objects.exclude(id__in=[c.country.id for c in countries]).order_by('name')
         response.append({
-        	'text': str(_('Other countries')),
+        	'text': str(_('Other')),
         	'children': [[country.id, country.slug, country.name] for country in countries]
         })
         return response

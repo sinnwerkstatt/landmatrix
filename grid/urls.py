@@ -38,35 +38,7 @@ urlpatterns = patterns('grid.views',
         vary_on_cookie(cache_page(CACHE_TIMEOUT)(TableGroupExportView.as_view())),
         name='export'
     ),
-    url(
-        r'^compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$',
-        cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
-        name='compare_deals'
-    ),
-    url(
-        r'^compare/(?P<activity_1>[\d_\.]+)/$',
-        cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
-        name='compare_deals'
-    ),
-    url(
-        r'^compare/(?P<activity_1>.+)/$',
-        cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
-        name='compare_deals'
-    ),
-    url(r'^add/$', AddDealView.as_view(), name='add_deal'),
 
-    url(r'^change/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
-    url(
-        r'^(?P<deal_id>[\d]+)/$', cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), name='deal_detail'
-    ),
-    url(
-        r'^(?P<deal_id>[\d_\.]+)/$', cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), name='deal_detail'
-    ),
-    url(
-        r'^(?P<deal_id>[\d]+)\.pdf$',
-        cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()), {'format': 'PDF'},
-        name='deal_detail_pdf'
-    ),
     # needs to come last, regexp catches all expressions
     url(
         r'^(?P<group>.+)/(?P<group_value>.+)/$',

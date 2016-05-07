@@ -19,6 +19,7 @@ from django.conf.urls import include, url, patterns
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.views.decorators.cache import cache_page
 
 from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
@@ -33,6 +34,8 @@ from editor import urls as editor_urls
 from landmatrix.views import CountryView, RegionView
 #from landmatrix.views.filterdebug_view import FilterView
 from grid.views.stakeholder_view import StakeholderView
+
+CACHE_TIMEOUT = 24*3600
 
 urlpatterns = patterns('',
     url('^accounts/', include('django.contrib.auth.urls')),
@@ -56,14 +59,50 @@ urlpatterns = patterns('',
     # url(r'^country/(?P<country_slug>)/map/', include(map_urls)),
     # url(r'^country/(?P<country_slug>)/charts/', include(charts_urls)),
 
-    url(r'^deal/(?P<deal_id>[\d]+)/$', DealDetailView.as_view(), name='deal_detail'),
-    url(r'^deal/(?P<deal_id>[\d_\.]+)/$', DealDetailView.as_view(), name='deal_detail'),
-    url(r'^deal/add/$', AddDealView.as_view(), name='add_deal'),
-    url(r'^deal/compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$', DealComparisonView.as_view(),
-        name='compare_deals'),
-    url(r'^deal/compare/(?P<activity_1>[\d_\.]+)/$', DealComparisonView.as_view(), name='compare_deals'),
-    url(r'^deal/compare/(?P<activity_1>.+)/$', DealComparisonView.as_view(), name='compare_deals'),
-    url(r'^deal/edit/(?P<deal_id>[\d]+)/$', ChangeDealView.as_view(), name='change_deal'),
+    url(
+        r'^deal/(?P<deal_id>[\d]+)/$',
+        DealDetailView.as_view(),
+        name='deal_detail'
+    ),
+    url(
+        r'^deal/(?P<deal_id>[\d_\.]+)/$',
+        DealDetailView.as_view(),
+        name='deal_detail'
+    ),
+    url(
+        r'^(?P<deal_id>[\d]+)\.pdf$',
+        cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()),
+        {'format': 'PDF'},
+        name='deal_detail_pdf'
+    ),
+    url(
+        r'^deal/edit/(?P<deal_id>[\d]+)/$',
+        ChangeDealView.as_view(),
+        name='change_deal'
+    ),
+
+    url(
+        r'^deal/add/$',
+        AddDealView.as_view(),
+        name='add_deal'
+    ),
+
+    url(
+        r'^compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$',
+        cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
+        name='compare_deals'
+    ),
+    url(
+        r'^compare/(?P<activity_1>[\d_\.]+)/$',
+        cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
+        name='compare_deals'
+    ),
+    url(
+        r'^compare/(?P<activity_1>.+)/$',
+        cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
+        name='compare_deals'
+    ),
+
 
     url(r'^region/(?P<region_slug>[A-Za-z\-]+)/$', RegionView.as_view(), name='region'),
     url(r'^country/(?P<country_slug>[A-Za-z\-]+)/$', CountryView.as_view(), name='country'),
