@@ -81,7 +81,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
         except AttributeError:
             pass
 
-        context['export_formats'] = ("XML", "CSV", "XLS", "PDF",)
+        context['export_formats'] = ("XML", "CSV", "XLS", "PDF")
 
         return context
 
