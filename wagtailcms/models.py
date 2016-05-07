@@ -173,14 +173,12 @@ class CountryRegionStructBlock(StructBlock):
     def get_context(self, value):
         context = super().get_context(value)
         if self.country:
-            context['country'] = country
+            context['country'] = self.country
         if self.region:
-            context['region'] = region
+            context['region'] = self.region
         return context
 
 class LatestNewsBlock(CountryRegionStructBlock):
-    blog_categories = models.ManyToManyField(
-        BlogCategory, through=BlogCategoryBlogPage, blank=True)
     limit = blocks.CharBlock()
 
     class Meta:
@@ -190,8 +188,16 @@ class LatestNewsBlock(CountryRegionStructBlock):
 
     def get_context(self, value):
         context = super().get_context(value)
+        queryset = BlogPage.objects.all()
+        if self.country or self.region:
+            tag = self.country.slug or self.region.slug
+            filter_queryset = queryset.filter(tags__slug=tag)
+            if filter_queryset.count() > 0:
+                queryset = filter_queryset
+            else:
+                queryset = queryset.filter(tags__isnull=True)
         limit = value.get('limit')
-        context['news'] = BlogPage.objects.all()[:int(limit)]
+        context['news'] = queryset[:int(limit)]
         return context
 
 class StatisticsBlock(CountryRegionStructBlock):
@@ -228,8 +234,8 @@ DATA_BLOCKS = [
 ]
 
 class ColumnsBlock(StructBlock):
-    left_column = blocks.StreamBlock(CONTENT_BLOCKS)
-    right_column = blocks.StreamBlock(CONTENT_BLOCKS, form_classname='pull-right')
+    left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
+    right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
     def get_context(self, value):
         context = super().get_context(value)
