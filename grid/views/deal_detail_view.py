@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.http.response import HttpResponse
+from django.http import Http404
 from django.db.models import Max
 from django.views.generic import TemplateView
 from django.template import RequestContext
@@ -46,7 +46,7 @@ FORMS = [
 ]
 
 
-class DealDetailView(PDFViewMixin, TemplateView):
+class DealDetailView(TemplateView):
 
     template_name = 'deal-detail.html'
     pdf_export_url = 'deal_detail_pdf'
@@ -62,7 +62,8 @@ class DealDetailView(PDFViewMixin, TemplateView):
             else:
                 deal = get_latest_valid_deal(deal_id)
         except ObjectDoesNotExist as e:
-            return HttpResponse('Deal {} does not exist ({})'.format(deal_id, e), status=404)
+            #raise IOError(e)
+            raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e)))
 
         context = super(DealDetailView, self).get_context_data()
         context['deal'] = {
@@ -83,15 +84,12 @@ class DealDetailView(PDFViewMixin, TemplateView):
 
         context['export_formats'] = ("XML", "CSV", "XLS", "PDF")
 
-        raise IOError("ok")
         return context
 
     def render_forms(self, request, context):
-        raise IOError("ok")
         return render_to_response(self.template_name, context, RequestContext(request))
 
     def render_forms_to_string(self, request, context):
-        raise IOError("ok")
         return render_to_string(self.template_name, context, RequestContext(request))
 
 

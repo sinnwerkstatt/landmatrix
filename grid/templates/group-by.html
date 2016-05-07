@@ -127,9 +127,6 @@
           <th class="number"><a {% if data.order_by == 'negotiation_status' %}class="asc" href="?{% add_or_update_param request.GET 'order_by' '-negotiation_status' %}" {% elif data.order_by == '-negotiation_status' %}class="desc" href="?{% add_or_update_param request.GET 'order_by' 'negotiation_status' %}"{% else %} href="?{% add_or_update_param request.GET 'order_by' 'negotiation_status' %}"{% endif %}>{% trans "Negotiation status" %}</a></th>
         {% endif %}
       {% endfor %}
-        {% if "deal_id" in columns %}
-        <th></th>
-        {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -138,7 +135,7 @@
         {% for column in columns %}
           {% if column == "deal_id" %}
             <td class="deal-id">
-                <a href="{% url 'deal_detail' deal_id=item.deal_id %}">{{ item.deal_id }}</a>
+                <a href="{% url 'deal_detail' deal_id=item.deal_id %}" class="label label-default">{{ item.deal_id }}</a>
             </td>
           {% elif column == "crop" %}
               <td style="width:341px">
@@ -295,11 +292,6 @@
             </td>
           {% endif %}
         {% endfor %}
-    {% if "deal_id" in columns %}
-    <td>
-        <a href="{% url 'deal_detail' deal_id=item.deal_id %}" class="btn btn-small">Details</a>
-    </td>
-    {% endif %}
     </tr>
     {% endfor %}
   </tbody>
