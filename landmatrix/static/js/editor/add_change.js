@@ -310,4 +310,13 @@ $(document).ready(function(){
         $('.sold_as_deal').hide();
       }
     }).change();
+
+    // Prevent submit on enter
+    $('form input').on('keyup keypress', function(e) {
+      var keyCode = e.keyCode || e.which;
+      if (keyCode === 13) { 
+        e.preventDefault();
+        return false;
+      }
+    });
 });
