@@ -11,3 +11,9 @@ class UserRegionalInfo(models.Model):
     country = models.ManyToManyField(Country)
     region = models.ManyToManyField(Region)
 
+    class Meta:
+	    permissions = (
+            ("editor", "Editor"),
+            ("editor_filter", "Filter dashboard"),
+        )
+

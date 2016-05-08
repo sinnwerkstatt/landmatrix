@@ -14,7 +14,7 @@ from django.db import models
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.whitelist import attribute_rule, check_url, allow_without_attributes
-from blog.models import BlogPage, BlogCategory, BlogCategoryBlogPage
+from blog.models import BlogPage
 
 from landmatrix.models import Region as DataRegion, Country as DataCountry
 

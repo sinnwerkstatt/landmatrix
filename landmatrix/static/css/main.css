@@ -34,6 +34,10 @@
 .lm-nav.lm-regions {
   font-size: 40px; }
 
+.wagtail-userbar {
+  top: 180px;
+}
+
 .subnav {
   font-size: 14px; }
 
