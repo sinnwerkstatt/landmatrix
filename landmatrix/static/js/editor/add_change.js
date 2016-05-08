@@ -240,6 +240,29 @@ $(document).ready(function(){
       });
     }
 
+    /* Employment: Update totals */
+    $('#id_total_jobs_planned_employees,#id_total_jobs_planned_daily_workers').change(function () {
+      var field = $('#id_total_jobs_planned'),
+          total = parseInt($('#id_total_jobs_planned_employees').val() || 0) + parseInt($('#id_total_jobs_planned_daily_workers').val() || 0);
+      if (field.val() == '' || parseInt(field.val() || 0) < total) {
+        field.val(total);
+      }
+    });
+    $('#id_foreign_jobs_planned_employees,#id_foreign_jobs_planned_daily_workers').change(function () {
+      var field = $('#id_foreign_jobs_planned'),
+        total = parseInt($('#id_foreign_jobs_planned_employees').val() || 0) + parseInt($('#id_foreign_jobs_planned_daily_workers').val() || 0);
+      if (field.val() == '' || parseInt(field.val() || 0) < total) {
+        field.val(total);
+      }
+    });
+    $('#id_domestic_jobs_planned_employees,#id_domestic_jobs_planned_daily_workers').change(function () {
+      var field = $('#id_domestic_jobs_planned'),
+        total = parseInt($('#id_domestic_jobs_planned_employees').val() || 0) + parseInt($('#id_domestic_jobs_planned_daily_workers').val() || 0);
+      if (field.val() == '' || parseInt(field.val() || 0) < total) {
+        field.val(total);
+      }
+    });
+
     /* Collapse existing investor fields on page load */
     $(".form.existing-investor:not(.empty) li.investor div ul li a:not(.selected-investor)").hide();
 
