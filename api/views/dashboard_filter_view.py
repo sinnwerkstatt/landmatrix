@@ -27,22 +27,16 @@ class DashboardFilterView(TemplateView):
             return HttpResponse(str(e), status=404)
 
     def get(self, *args, **kwargs):
-        stored_filters = self.request.session['dashboard_filters']
+        stored_filters = self.request.session.get('dashboard_filters', {})
         return HttpResponse(json.dumps(stored_filters))
 
     def get_filters(self):
         filters = {}
         data = self.request.POST
         if 'country' in data:
-            country = Country.objects.get(pk=data.get('country'))
-            if country:
-                filters['country'] = [country.id,]
+            filters['country'] = data.getlist('country')
         elif 'region' in data:
-            region = Region.objects.get(pk=data.get('region'))
-            if region:
-                filters['region'] = [region.id,]
-        elif data.get('user'):
-            user = User.objects.get(pk=data.get('user'))
-            if user:
-                filters['user'] = [user.id,]
+            filters['region'] = data.getlist('region')
+        elif 'user' in data:
+            filters['user'] = data.getlist('user')
         return filters

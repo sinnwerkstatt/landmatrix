@@ -56,13 +56,13 @@
                     return;
                 }
                 if ('region' in data) {
-                    $('#dashboard-filter-region').val(data.region[0]).trigger('change');
+                    $('#dashboard-filter-region').val(data.region).trigger('change');
                 }
                 if ('country' in data) {
-                    $('#dashboard-filter-country').val(data.country[0]).trigger('change');
+                    $('#dashboard-filter-country').val(data.country).trigger('change');
                 }
                 if ('user' in data) {
-                    $('#dashboard-filter-user').val(data.user[0]).trigger('change');
+                    $('#dashboard-filter-user').val(data.user).trigger('change');
                 }
                 $('#dashboard-filter-region').change(function () {
                     $.post({
@@ -145,7 +145,7 @@
                     opt_group = $('<optgroup label="' + group.text + '"></optgroup>');
                     for (var o = 0; o < group.children.length; o++) {
                         item = group.children[o];
-                        option = new Option(item[2], item[1], false, false);
+                        option = new Option(item[2], item[0], false, false);
                         opt_group.append(option);
                     }
                     country_select.append(opt_group);

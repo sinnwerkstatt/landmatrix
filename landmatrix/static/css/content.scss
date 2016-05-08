@@ -377,7 +377,7 @@ p a {
 .controls .select2-main {
   min-width: 90%;
   max-width: 90%;
-  height: 3em;
+  min-height: 3em;
   margin-bottom: 1em;
   #comparison > & {
 

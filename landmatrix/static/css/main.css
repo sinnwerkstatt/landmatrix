@@ -293,7 +293,7 @@
   width: auto;
   display: inline-block;
   border: solid 1px #919191;
-  height: 3em; }
+  min-height: 3em; }
 
 .form-control:focus {
   border-color: #B9D635; }
@@ -310,7 +310,7 @@ textarea.form-control {
 
 .controls .select2-container--default .select2-selection--single {
   border: solid 1px #919191;
-  height: 3em;
+  min-height: 3em;
   padding: 8px 12px; }
 
 .select2-container--default .select2-selection--single span.select2-selection__arrow {
@@ -982,7 +982,7 @@ p a {
 .controls .select2-main {
   min-width: 90%;
   max-width: 90%;
-  height: 3em;
+  min-height: 3em;
   margin-bottom: 1em; }
   #comparison > .input-group .investorfield, #comparison >
   .input-group .select2, #comparison >
@@ -1409,7 +1409,7 @@ a.btn {
 
 /* BUTTONS ARE SAME HEIGHT AS FORM INPUTS */
 .btn {
-  height: 3em;
+  min-height: 3em;
   padding: 8px 12px; }
 
 .btn-large {

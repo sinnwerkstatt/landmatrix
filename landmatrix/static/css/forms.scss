@@ -29,7 +29,7 @@
   width: auto;
   display: inline-block;
   border: solid 1px $lm_medium2;
-  height: 3em;
+  min-height: 3em;
 }
 
 .form-control:focus {
@@ -51,7 +51,7 @@ textarea.form-control {
 
 .controls .select2-container--default .select2-selection--single {
   border: solid 1px $lm_medium2;
-  height: 3em;
+  min-height: 3em;
   padding: 8px 12px;
 }
 
