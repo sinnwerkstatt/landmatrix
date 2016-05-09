@@ -17,6 +17,15 @@ class Activity(DefaultStringRepresentation, models.Model):
 
     history = HistoricalRecords()
 
+    # http://django-simple-history.readthedocs.io/en/latest/advanced.html#recording-which-user-changed-a-model
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
     @classmethod
     def get_latest_activity(cls, activity_identifier):
         return cls.objects.filter(activity_identifier=activity_identifier).order_by('-id').first()
