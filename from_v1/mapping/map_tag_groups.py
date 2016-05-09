@@ -6,15 +6,15 @@ from migrate import V1, V2, load_project, BASE_PATH
 from mapping.map_model import MapModel
 
 load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
-load_project(BASE_PATH+'/land-matrix', 'editor')
+load_project(BASE_PATH+'/land-matrix', 'old_editor')
 
-from landmatrix.models import Language
+from old_editor.models import Language
 
 
 class MapTagGroups(MapModel):
 
     key_value_lookup = None
-    language = Language.objects.get(pk=1)
+    language = Language.objects.using(V1).get(pk=1)
 
     @classmethod
     def map_all(cls, save=False, verbose=False):
