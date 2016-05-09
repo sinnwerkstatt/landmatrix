@@ -140,7 +140,12 @@ class Compare:
         self._compare_all_items(query_result, records)
 
     def _prepare_request(self, postdata):
+        from django.conf import settings
+        from django.utils.importlib import import_module
         request = HttpRequest()
+        engine = import_module(settings.SESSION_ENGINE)
+        session_key = None
+        request.session = engine.SessionStore(session_key)
         postdata = self._adjust_postdata_to_new_investor_model(postdata)
         request.POST = {'data': postdata}
         return request
