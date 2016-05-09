@@ -1,9 +1,15 @@
+from pprint import pprint
+
+from django.db.models.aggregates import Max
+from functools import lru_cache
 from mapping.map_activity import MapActivity
 from mapping.aux_functions import year_to_date
 from migrate import V1, V2
 from mapping.map_tag_groups import MapTagGroups
 
 from landmatrix.models import Language, Activity, ActivityAttributeGroup
+import landmatrix.models
+
 if V1 == 'v1_my':
     from old_editor.models import A_Tag, A_Tag_Group, A_Key_Value_Lookup, Comment
 
@@ -18,12 +24,17 @@ class MapActivityTagGroup(MapTagGroups):
     if V1 == 'v1_my':
         old_class = A_Tag_Group
 
+        # to migrate latest versions for one activity only
         # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity').filter(
         #     fk_activity__pk__in=MapActivity.all_ids()
         # ).filter(fk_activity__activity_identifier=11)
+        # to migrate latest versions only
         # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity').filter(
         #     fk_activity__pk__in=MapActivity.all_ids()
         # )
+        # to migrate a subset of versioned taggroups
+        # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')[:30000]
+        # to migrate all tag groups including old versions
         tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')
         key_value_lookup = A_Key_Value_Lookup
 
@@ -70,7 +81,7 @@ class MapActivityTagGroup(MapTagGroups):
         attrs = clean_attributes(attrs)
 
         aag = cls.write_activity_attribute_group(
-            attrs, cls.matching_activity_id(tag_group), year, name
+            attrs, tag_group, year, name
         )
 
         comments = cls.get_comments(tag_group)
@@ -83,6 +94,7 @@ class MapActivityTagGroup(MapTagGroups):
                 aag.save(using=V2)
 
     @classmethod
+    @lru_cache(maxsize=128, typed=True)
     def matching_activity_id(cls, tag_group):
         if MapActivity.new_class.objects.using(V2).filter(pk=tag_group.fk_activity.pk):
             return tag_group.fk_activity.pk
@@ -95,21 +107,53 @@ class MapActivityTagGroup(MapTagGroups):
         current_activity = MapActivity.new_class.objects.using(V2).filter(
             activity_identifier=activity_identifier
         ).values_list('id', flat=True).distinct().first()
-        # print(activity_identifier, current_activity)
 
         return current_activity
 
     @classmethod
-    def write_activity_attribute_group(cls, attrs, activity_id, year, name):
+    def write_activity_attribute_group(cls, attrs, tag_group, year, name):
+        activity_id = cls.matching_activity_id(tag_group)
         aag = ActivityAttributeGroup(
             fk_activity_id=activity_id, fk_language=Language.objects.get(pk=1),
             date=year_to_date(year), attributes=attrs, name=name
         )
-
         if cls._save:
-            aag.save(using=V2)
+            if not cls.is_current_version(tag_group):
+                aag = landmatrix.models.ActivityAttributeGroup.history.using(V2).create(
+                    id=cls.get_last_id() + 1,
+                    history_date=cls.get_history_date(tag_group),
+                    fk_activity_id=activity_id, fk_language=Language.objects.get(pk=1),
+                    date=year_to_date(year), attributes=attrs, name=name
+                )
+            else:
+                aag.save(using=V2)
 
         return aag
+
+    @classmethod
+    def get_last_id(cls):
+        last_id = ActivityAttributeGroup.objects.using(V2).values().aggregate(Max('id'))['id__max']
+        return 0 if last_id is None else last_id
+
+    @classmethod
+    def get_history_date(cls, tag_group):
+        from from_v1.mapping.map_activity import get_activity_versions
+        activity = Activity.objects.using(V2).get(pk=cls.matching_activity_id(tag_group))
+        versions = list(get_activity_versions(activity))
+        for version in versions:
+            if version['id'] == activity.id:
+                historical_activity = Activity.history.filter(
+                    activity_identifier=activity.activity_identifier
+                ).filter(id=activity.id).first()
+                return historical_activity.history_date
+        # no matching version found
+        print('taggroup id, activity id:', tag_group.id, activity.id)
+        print('versions:', end=' ')
+        pprint(versions)
+
+    @classmethod
+    def is_current_version(cls, tag_group):
+        return tag_group.fk_activity.pk == cls.matching_activity_id(tag_group)
 
     @classmethod
     def get_comments(cls, tag_group):
