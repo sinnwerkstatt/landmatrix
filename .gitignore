@@ -11,6 +11,8 @@ media
 media/*
 media/js
 
+reference_data.sql
+
 # Ignore global javascript vendor packages
 # no, don't, we dont want to add them manually on server
 #landmatrix/static/vendor/
