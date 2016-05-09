@@ -49,7 +49,8 @@ ORDER BY activity_identifier
                     availability=version['availability'],
                     fk_status_id=version['fk_status_id'],
                     fully_updated=version['fully_updated'],
-                    history_date=calculate_history_date(versions, i)
+                    history_date=calculate_history_date(versions, i),
+                    history_user=get_history_user(version)
                 )
         new.save(using=V2)
 
@@ -57,11 +58,17 @@ ORDER BY activity_identifier
 def calculate_history_date(versions, i):
     if versions[i]['fully_updated']:
         return versions[i]['fully_updated']
-    changeset = old_editor.models.A_Changeset.objects.using(V1).filter(fk_activity=versions[i]['id']).last()
+    changeset = get_changeset(versions[i])
     if changeset:
         return changeset.timestamp
     # could not find any time information. use next newer version and arbitrarily subtract 1 minute.
     return calculate_history_date(versions, i+1) - timedelta(minutes=1)
+
+
+def get_changeset(activity_record):
+    return old_editor.models.A_Changeset.objects.using(V1).filter(
+        fk_activity=activity_record['id']
+    ).last()
 
 
 def get_activity_versions(activity):
@@ -72,3 +79,8 @@ def get_activity_versions(activity):
     )
     ids = [id[0] for id in cursor.fetchall()]
     return MapActivity.old_class.objects.using(V1).filter(pk__in=ids).values()
+
+def get_history_user(activity_record):
+    changeset = get_changeset(activity_record)
+    if changeset:
+        return changeset.fk_user
