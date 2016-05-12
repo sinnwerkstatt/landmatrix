@@ -1,11 +1,10 @@
-from pprint import pprint
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from landmatrix.models import *
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from api.query_sets.sql_generation.join_functions import *
 from api.query_sets.sql_generation.sql_builder_data import SQLBuilderData
+
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def list_view_wanted(filters):

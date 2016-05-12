@@ -1,11 +1,9 @@
-from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-
 from django_comments.models import Comment
 
-import json
-
+from landmatrix.models.activity import Activity
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.country import Country
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 

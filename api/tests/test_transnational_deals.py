@@ -1,5 +1,4 @@
 from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.country import Country
 
 from .api_test_functions import ApiTestFunctions

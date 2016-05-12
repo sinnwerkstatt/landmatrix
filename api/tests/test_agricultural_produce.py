@@ -1,6 +1,4 @@
 from api.query_sets.agricultural_produce_query_set import AllAgriculturalProduceQuerySet
-from api.query_sets.fake_query_set import FakeQuerySet
-from api.query_sets.sql_generation.record_reader import RecordReader
 from landmatrix.models.agricultural_produce import AgriculturalProduce
 from landmatrix.models.crop import Crop
 

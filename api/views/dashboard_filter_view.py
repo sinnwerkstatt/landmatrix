@@ -2,13 +2,12 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.http.response import HttpResponse
 from django.views.generic.base import TemplateView
-from django.contrib.auth.models import User
-
-from landmatrix.models import Region, Country
 
 import json
 
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 class DashboardFilterView(TemplateView):
     filters = {}

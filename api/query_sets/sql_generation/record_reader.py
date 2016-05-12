@@ -1,5 +1,3 @@
-from traceback import print_last
-
 from api.query_sets.sql_generation.sql_builder import list_view_wanted, SQLBuilder
 from api.query_sets.sql_generation.subquery_builder import SubqueryBuilder
 from grid.views.profiling_decorators import print_execution_time_and_num_queries, print_last_query
