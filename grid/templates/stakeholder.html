@@ -107,7 +107,7 @@
                                     <td>availability: {{ item.activity.availability }}</td>
                                     <td>history id: {{ item.activity.history_id }}</td>
                                     -->
-                                    {% with dealid=item.id|addstr:"_"|addstr:changedate %}
+                                    {% with investorid=item.id|addstr:"_"|addstr:changedate %}
                                         <div class="col-sm-3">
 
                                             {{ item.changed_by }}
@@ -117,13 +117,13 @@
 
                                             {# TODO: Insert correct link and maybe disable button for currently version displayed  #}
                                             <a type="button" class="btn"
-                                               href="{% url 'stakeholder' investor_id=dealid %}">
+                                               href="{% url 'stakeholder_form' investor_id=investorid %}">
                                                 <i class="glyphicon glyphicon-eye-open"></i> {% trans "Show this version" %}
                                             </a>
                                         </div>
 
                                         <div class="col-sm-3">
-
+{% comment %}
                                             <a type="button" class="btn"
                                                     {% if not forloop.last %}
                                                href="{% url 'compare_deals' activity_1=dealid %}"
@@ -136,6 +136,7 @@
                                                         {% trans "First version" %}
                                                     {% endif %}
                                             </a>
+{% endcomment %}
                                         </div>
                                     {% endwith %}
                                 </div>
