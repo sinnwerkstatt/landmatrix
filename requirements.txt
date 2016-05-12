@@ -26,3 +26,4 @@ django-wkhtmltopdf
 django-sekizai>=0.9.0
 django-sass-processor>=0.3.4
 django-recaptcha>=1.0.5
+djangorestframework>=3.3.3
