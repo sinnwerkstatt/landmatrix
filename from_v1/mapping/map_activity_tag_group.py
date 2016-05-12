@@ -28,11 +28,7 @@ class MapActivityTagGroup(MapTagGroups):
         # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity').filter(
         #     fk_activity__pk__in=MapActivity.all_ids()
         # ).filter(fk_activity__activity_identifier=11)
-        # to migrate latest versions only
-        # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity').filter(
-        #     fk_activity__pk__in=MapActivity.all_ids()
-        # )
-        # to migrate a subset of versioned taggroups
+        # to migrate a subset of versioned tag groups
         # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')[:30000]
         # to migrate all tag groups including old versions
         tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')
