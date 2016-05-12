@@ -22,7 +22,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class TestTransnationalDeals(ApiTestFunctions, DealsTestData):
 
-    PREFIX = '/en/api/'
+    PREFIX = '/api/'
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational'
     DEAL_SCOPE = 'transnational'
     DEAL_SIZE = 12345

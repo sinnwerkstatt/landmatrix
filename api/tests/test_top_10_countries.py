@@ -22,7 +22,7 @@ from api.tests.deals_test_data import DealsTestData
 
 class TestTop10Countries(ApiTestFunctions, DealsTestData):
 
-    PREFIX = '/en/api/'
+    PREFIX = '/api/'
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational'
     DEAL_SCOPE = 'transnational'
     NEGOTIATION_STATUS = 'concluded (oral agreement)'

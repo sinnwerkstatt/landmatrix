@@ -9,7 +9,7 @@ import json
 
 class ApiTestFunctions(TestCase):
 
-    PREFIX = '/en/api/'
+    PREFIX = '/api/'
 
     def url(self, resource): return self.PREFIX + resource + self.POSTFIX
 

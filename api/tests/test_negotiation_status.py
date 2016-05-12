@@ -6,7 +6,7 @@ from api.tests.deals_test_data import DealsTestData
 
 class TestNegotiationStatus(ApiTestFunctions, DealsTestData):
 
-    PREFIX = '/en/api/'
+    PREFIX = '/api/'
     POSTFIX = '.json?deal_scope=transnational&deal_scope=domestic'
     DEAL_SCOPE = 'transnational'
     DEAL_SIZE = 12345
