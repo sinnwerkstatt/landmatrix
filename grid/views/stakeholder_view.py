@@ -1,3 +1,6 @@
+from pprint import pprint
+
+from collections import OrderedDict
 from django.core.exceptions import ObjectDoesNotExist
 
 from grid.forms.investor_formset import InvestorForm
@@ -29,6 +32,8 @@ class StakeholderView(TemplateView):
         context['investor_form'] = InvestorForm(InvestorForm.get_data(investor))
         context['parent_stakeholders'] = ParentStakeholderFormSet(initial=ParentStakeholderFormSet.get_data(investor, role='ST'), prefix='parent-stakeholder-form')
         context['parent_investors'] = ParentInvestorFormSet(initial=ParentInvestorFormSet.get_data(investor, role='IN'), prefix='parent-investor-form')
+        context['history'] = get_investor_history(investor)
+        pprint(context)
 
         if request.POST:
             save_from_post(request.POST)
@@ -143,3 +148,16 @@ def investor_from_id(id):
 def get_form(deal, form_class):
     data = form_class[1].get_data(deal)
     return form_class[1](initial=data)
+
+
+def get_investor_history(investor):
+    return OrderedDict(reversed(sorted(_investor_history(investor), key=lambda item: item[0])))
+
+
+def _investor_history(investor):
+    date_and_investor = []
+    for investor in list(investor.history.all().order_by('history_date')):
+        date_and_investor.append((investor.history_date.timestamp(), investor))
+
+    return sorted(date_and_investor, key=lambda entry: entry[0])
+

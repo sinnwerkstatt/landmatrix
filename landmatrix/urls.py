@@ -111,8 +111,13 @@ urlpatterns = patterns('',
 
     url(r'^stakeholder/add$', StakeholderView.as_view(), name='stakeholder_form'),
     url(r'^stakeholder/(?P<investor_id>[\d]+)/$', StakeholderView.as_view(), name='stakeholder_form'),
+    url(
+        r'^stakeholder/(?P<investor_id>[\d_\.]+)/$',
+        StakeholderView.as_view(),
+        name='stakeholder_form'
+    ),
 
-    url(r'^editor/', include(editor_urls)),
+                       url(r'^editor/', include(editor_urls)),
     #url(r'^filters$', FilterView.as_view(), name='filterdebug'),
     url(r'', include(wagtail_urls)),
 )
