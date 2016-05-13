@@ -108,13 +108,12 @@
                                     <td>history id: {{ item.activity.history_id }}</td>
                                     -->
                                     {% with investorid=item.id|addstr:"_"|addstr:changedate %}
-                                        <div class="col-sm-3">
 
+                                        <div class="col-sm-3">
                                             {{ item.changed_by }}
                                         </div>
 
                                         <div class="col-sm-3">
-
                                             {# TODO: Insert correct link and maybe disable button for currently version displayed  #}
                                             <a type="button" class="btn"
                                                href="{% url 'stakeholder_form' investor_id=investorid %}">
@@ -123,10 +122,9 @@
                                         </div>
 
                                         <div class="col-sm-3">
-{% comment %}
                                             <a type="button" class="btn"
                                                     {% if not forloop.last %}
-                                               href="{% url 'compare_deals' activity_1=dealid %}"
+                                               href="{% url 'compare_investors' investor_1=investorid %}"
                                                         >
                                                         <i class="glyphicon glyphicon-transfer"></i>
                                                         {% trans "Compare with previous version" %}
@@ -136,8 +134,8 @@
                                                         {% trans "First version" %}
                                                     {% endif %}
                                             </a>
-{% endcomment %}
                                         </div>
+
                                     {% endwith %}
                                 </div>
                             {% endfor %}
