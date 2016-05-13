@@ -2,7 +2,23 @@ from collections import OrderedDict
 
 from rest_framework import serializers
 
+from landmatrix.models.filter_preset import FilterPreset
 from landmatrix.models.investor import InvestorVentureInvolvement
+
+
+class PassThruSerializer(serializers.BaseSerializer):
+    '''
+    Read only serializer that does nothing, just passed the JSON object
+    we already have through.
+    '''
+    def to_representation(self, obj):
+        return obj
+
+
+class FilterPresetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FilterPreset
+        exclude = ('is_default', 'overrides_default')
 
 
 class DealDetailSerializer(serializers.BaseSerializer):

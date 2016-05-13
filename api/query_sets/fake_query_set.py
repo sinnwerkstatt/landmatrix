@@ -6,7 +6,6 @@ from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 
 from django.db.models.query import QuerySet
 from django.db import connection
-from django.http.request import HttpRequest
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -159,8 +158,6 @@ class FakeQuerySet(QuerySet):
         self.filters["starts_with"] = GET.get("starts_with", None)
 
     def _get_filter(self, request):
-        assert isinstance(request, HttpRequest)
-
         get_data = request.GET
 
         negotiation_status = get_data.getlist("negotiation_status", [])
