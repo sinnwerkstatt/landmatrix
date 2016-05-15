@@ -4,7 +4,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
-from landmatrix.models.filter_preset import FilterPreset
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -70,7 +69,7 @@ def get_filter_vars():
 
 
 class FilterCondition(models.Model):
-    fk_rule = models.ForeignKey(FilterPreset)
+    fk_rule = models.ForeignKey('landmatrix.FilterPreset')
     variable = models.CharField(
         _("Variable"), max_length=32,
         choices=([(var, ' '.join(v.title() for v in var.split('_'))) for var in get_filter_vars()])
@@ -85,6 +84,7 @@ class FilterCondition(models.Model):
         return '{} {} {}'.format(self.variable, self.operator, self.value)
 
     def to_filter(self):
+        # TODO: sort out import resolution
         from api.views.filter import Filter
         return Filter(self.variable, self.operator, self.value, str(self))
 

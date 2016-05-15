@@ -1,6 +1,8 @@
 from django.db.models import Model, CharField, BooleanField
 from django.utils.translation import ugettext_lazy as _
 
+from landmatrix.models.filter_condition import FilterCondition
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -15,6 +17,5 @@ class FilterPreset(Model):
         return self.group + ': ' + self.name
 
     def conditions(self):
-        from landmatrix.models.filter_condition import FilterCondition
+        # TODO: why not just use self.filtercondition_set ?
         return FilterCondition.objects.filter(fk_rule=self)
-

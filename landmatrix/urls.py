@@ -41,6 +41,7 @@ CACHE_TIMEOUT = 24*3600
 urlpatterns = patterns('',
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/docs/', include('rest_framework_docs.urls')),
     url(r'^api/', include(api_urls)),
 
     # Wagtail

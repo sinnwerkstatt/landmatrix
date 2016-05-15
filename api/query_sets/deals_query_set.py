@@ -40,7 +40,7 @@ class DealsQuerySet(FakeQuerySetFlat):
     ]
 
     def __init__(self, request):
-        if 'deal_scope' not in request:
+        if 'deal_scope' not in request.GET:
             request.GET = request.GET.copy()
             request.GET.setlist('deal_scope', ['domestic', 'transnational'])
         super().__init__(request)

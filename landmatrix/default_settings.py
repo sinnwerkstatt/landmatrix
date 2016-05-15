@@ -91,6 +91,8 @@ INSTALLED_APPS += (
     'threadedcomments',
     'django_comments',
     'captcha',
+    'rest_framework.authtoken',
+    'rest_framework_docs',
 
 #   apps of the actual landmatrix project
     'landmatrix',
@@ -274,3 +276,11 @@ RECAPTCHA_PUBLIC_KEY = '6LfmBB8TAAAAAPntejlNyxcW86R7uBUFH_yAyofS'
 RECAPTCHA_PRIVATE_KEY = '6LfmBB8TAAAAAGksxrVZdp7xIBLb6rNlOL6cocPK'
 NOCAPTCHA = True
 RECAPTCHA_USE_SSL = True
+
+# Django REST Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}

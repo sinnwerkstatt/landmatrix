@@ -4,7 +4,9 @@ from time import time
 from django.db import connection
 
 from grid.views.browse_filter_conditions import BrowseFilterConditions
-from grid.views.view_aux_functions import create_condition_formset
+from grid.views.view_aux_functions import (
+    create_condition_formset, create_preset_table,
+)
 
 from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.browse_condition import BrowseCondition
@@ -26,7 +28,6 @@ class FilterWidgetMixin:
     def create_preset_table(self):
         # moved the function to view_aux_functions because it is static
         # redirected from here in order to keep the interface
-        from api.views.filter_preset_view import create_preset_table
         return create_preset_table()
 
     def create_variable_table(self):

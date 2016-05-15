@@ -1,19 +1,15 @@
 from django.conf.urls import url
 from django.views.decorators.cache import cache_page
 
-from api.views.deal_detail_view import DealDetailView
-from api.views.investor_network_view import InvestorNetworkView
-from api.views.list_views import (
+from api.views import (
     ActivityListView, AgriculturalProduceListView, CountryListView,
-    DealListView, HectareListView, ImplementationStatusListView,
+    DashboardFilterView, DealDetailView, DealListView, FilterView,
+    FilterPresetView, HectaresView, ImplementationStatusListView,
     InvestmentIntentionListView, InvestorCountrySummaryListView,
-    InvestorListView, LatestChangesListView, NegotiationStatusListView,
-    RegionListView, StatisticsListView, TargetCountrySummaryListView,
-    Top10CountriesListView, TransnationalDealListView,
-    TransnationalDealsByCountryListView, UserListView,
-)
-from api.views.filter_views import (
-    FilterView, FilterPresetView, DashboardFilterView,
+    InvestorListView, InvestorNetworkView, LatestChangesListView,
+    NegotiationStatusListView, RegionListView, StatisticsListView,
+    TargetCountrySummaryListView, Top10CountriesView,
+    TransnationalDealListView, TransnationalDealsByCountryView, UserListView,
 )
 
 
@@ -38,7 +34,7 @@ urlpatterns = [
         {'format': 'json'}, name='api_investor_network'),
     url(r'^latest_changes\.json', cache_view_class(LatestChangesListView),
         {'format': 'json'}, name='latest_changes_api'),
-    url(r'^agricultural_produce\.json',
+    url(r'^agricultural-produce\.json',
         cache_view_class(AgriculturalProduceListView), {'format': 'json'},
         name='agricultural_produce_api'),
     url(r'^negotiation_status\.json',
@@ -59,10 +55,10 @@ urlpatterns = [
     url(r'^transnational_deals\.json',
         cache_view_class(TransnationalDealListView), {'format': 'json'},
         name='transnational_deals_api'),
-    url(r'^top-10-countries\.json', cache_view_class(Top10CountriesListView),
+    url(r'^top-10-countries\.json', cache_view_class(Top10CountriesView),
         {'format': 'json'}, name='top_10_countries_api'),
     url(r'^transnational_deals_by_country\.json',
-        cache_view_class(TransnationalDealsByCountryListView),
+        cache_view_class(TransnationalDealsByCountryView),
         {'format': 'json'}, name='transnational_deals_by_country_api'),
     url(r'^investor_country_summaries\.json',
         cache_view_class(InvestorCountrySummaryListView),
@@ -70,7 +66,7 @@ urlpatterns = [
     url(r'^target_country_summaries\.json',
         cache_view_class(TargetCountrySummaryListView),
         {'format': 'json'}, name='target_country_summaries_api'),
-    url(r'^hectares\.json', cache_view_class(HectareListView),
+    url(r'^hectares\.json', cache_view_class(HectaresView),
         {'format': 'json'}, name='hectares_api'),
     url(r'^deals\.json', cache_view_class(DealListView), {'format': 'json'},
         name='deals_api'),
