@@ -30,17 +30,22 @@ function updateFilters(json) {
         return
     } else {
         console.log("Json not empty");
-        data = JSON.parse(json);
-        if (Object.keys(data).length > 0) {
-            console.log("Filters: ",data);
-            label = '<label>Active Filters:</label>';
-            tags.append(label);
-        } else {
-            console.log("No filters: ", data);
-            label = '<label>No active filters</label>';
-            tags.append(label);
-            return
+        try {
+            data = JSON.parse(json);
+            if (Object.keys(data).length > 0) {
+                console.log("Filters: ",data);
+                label = '<label>Active Filters:</label>';
+                tags.append(label);
+            } else {
+                console.log("No filters: ", data);
+                label = '<label>No active filters</label>';
+                tags.append(label);
+                return
+            }
+        } catch(err) {
+            console.log("Exception during filterjson evaluation: ", err, json);
         }
+
     }
 
     console.log("Filterdata:", data);
