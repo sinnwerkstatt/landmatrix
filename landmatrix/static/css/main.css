@@ -34,10 +34,6 @@
 .lm-nav.lm-regions {
   font-size: 40px; }
 
-.wagtail-userbar {
-  top: 180px;
-}
-
 .subnav {
   font-size: 14px; }
 
@@ -265,6 +261,9 @@
 .navbar-subnav .navbar-nav > li > a:hover {
   background-color: #fff;
   color: #4a4a4a; }
+
+.wagtail-userbar {
+  top: 180px; }
 
 /* ==========================================================================
  *    FORMS
@@ -1554,7 +1553,7 @@ img {
 
 #btn-download .popover .popover-content,
 #btn-share .popover .popover-content {
-  width: 321px;
+  width: 312px;
   height: 49px;
   margin: 0;
   padding: 0; }
@@ -1593,9 +1592,10 @@ img {
   border-left: 11px solid transparent;
   border-right: 11px solid transparent;
   border-bottom: 10px solid #4a4a4a; }
+
 #btn-download .popover .popover-content .btn-media.csv:before {
-  margin-left: 38px;
-}
+  margin-left: 38px; }
+
 #btn-share .popover .popover-content .btn-media:hover,
 #btn-share .popover .popover-content .btn-media:focus,
 #btn-download .popover .popover-content .btn-media:hover,
