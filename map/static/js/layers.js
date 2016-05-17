@@ -71,18 +71,6 @@ var contextLayers = [
         visible: false,
         opacity: 0.6
     }),
-    new ol.layer.Tile({
-        title: "Population Density 2008",
-        source: new ol.source.TileWMS({
-            url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
-            params: {
-                'srs': 'EPSG%3a900913',
-                'layers': 'lspop_2008'
-            }
-        }),
-        visible: false,
-        opacity: 0.6
-    }),
 
     // LAOS LOCAL LAYER! TODO!
 
