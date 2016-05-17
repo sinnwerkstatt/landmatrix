@@ -38,13 +38,13 @@ class StakeholderView(TemplateView):
             pass
 
         if request.POST:
-            save_from_post(request.POST)
+            save_from_post(request.POST, kwargs["investor_id"])
 
         return render_to_response(self.template_name, context, RequestContext(request))
 
 
-def save_from_post(POST):
-    investor = investor_from_id(POST['investor'])
+def save_from_post(POST, investor_id):
+    investor = investor_from_id(POST.get('investor', investor_id))
     if not investor:
         return
 
