@@ -114,13 +114,14 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     @print_execution_time_and_num_queries
     def _set_filters(self):
+        data = self.request.GET.copy()
         self.current_formset_conditions = self.get_formset_conditions(
-            self._filter_set(self.request.GET), self.request.GET, self.group
+            self._filter_set(data), data, self.group
         )
 
         self.filters = self.get_filter_context(
             self.current_formset_conditions, self._order_by(), self.group, self.group_value,
-            self.request.GET.get("starts_with")
+            data.get("starts_with")
         )
 
     @print_execution_time_and_num_queries

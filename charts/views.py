@@ -22,7 +22,7 @@ class ChartView(PDFViewMixin, TemplateView, FilterWidgetMixin):
         return reverse(self.chart)
 
     def get_context_data(self, **kwargs):
-        self._set_filters(self.request.GET)
+        self._set_filters()
 
         context = super(ChartView, self).get_context_data(**kwargs)
         context.update({
@@ -35,9 +35,10 @@ class ChartView(PDFViewMixin, TemplateView, FilterWidgetMixin):
 
         return context
 
-    def _set_filters(self, GET):
+    def _set_filters(self):
+        data = self.request.GET.copy()
         self.current_formset_conditions = self.get_formset_conditions(
-            self._filter_set(GET), GET)
+            self._filter_set(data), data)
         self.filters = self.get_filter_context(self.current_formset_conditions)
 
 

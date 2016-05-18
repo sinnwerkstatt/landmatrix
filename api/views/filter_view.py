@@ -13,10 +13,14 @@ class FilterView(TemplateView):
     filters = {}
 
     def dispatch(self, request, *args, **kwargs):
+        data = request.GET.copy()
+        data.update(request.POST)
+        action = ''
+        if 'action' in data:
+            action = data.get('action', '')
+            data.pop('action')
 
-        action, values = _extract_parameters(request)
-
-        unique_user = _get_unique_frontend_user(request)
+        unique_user = get_unique_frontend_user(request)
 
         if unique_user not in FilterView.filters:
             FilterView.filters[unique_user] = {}
@@ -24,11 +28,11 @@ class FilterView(TemplateView):
         try:
             stored_filters = request.session.get('filters', {})
             if action.lower() == 'set':
-                set_filter(stored_filters, values)
+                set_filter(stored_filters, data)
             elif action.lower() == 'remove':
-                remove_filter(stored_filters, values)
+                remove_filter(stored_filters, data.get('name'))
 
-            _update_stored_filters(request, stored_filters, unique_user)
+            update_stored_filters(request, stored_filters, unique_user)
             return HttpResponse(json.dumps(stored_filters))
         except ValueError as e:
             return HttpResponse(str(e), status=404)
@@ -36,35 +40,24 @@ class FilterView(TemplateView):
 
 def set_filter(stored_filters, filter_values):
     if 'preset' in filter_values:
-        new_filter = PresetFilter(filter_values['preset'], filter_values.get('name', [None]).pop())
+        new_filter = PresetFilter(filter_values['preset'], filter_values.get('name', None))
     else:
         new_filter = Filter(
             filter_values['variable'], filter_values['operator'], filter_values['value'],
-            filter_values.get('name', [None]).pop()
+            filter_values.get('name', None)
         )
     stored_filters[new_filter.name] = new_filter
 
 
-def remove_filter(stored_filters, filter_values):
-    name = filter_values.get('name').pop()
-    stored_filters.pop(name, None)
+def remove_filter(stored_filters, filter_name):
+    stored_filters.pop(filter_name, None)
 
-
-def _extract_parameters(request):
-    values = dict(request.GET)
-    values.update(request.POST)
-    action = values.pop('action', '')
-    if isinstance(action, list):
-        action = action.pop()
-    return action, values
-
-
-def _update_stored_filters(request, stored_filters, unique_user):
+def update_stored_filters(request, stored_filters, unique_user):
     request.session['filters'] = stored_filters
     FilterView.filters[unique_user] = stored_filters
 
 
-def _get_unique_frontend_user(request):
+def get_unique_frontend_user(request):
     if request.user.is_authenticated():
         return request.user.username
     if not request.COOKIES:

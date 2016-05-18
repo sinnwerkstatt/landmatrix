@@ -131,8 +131,8 @@ def _get_filter_definition(filter_data):
         {'variable__operator': value}
         """
     filter_data = filter_data[1]
-    variable = filter_data['variable'][0]
-    operator = filter_data['operator'][0]
+    variable = filter_data['variable']
+    operator = filter_data['operator']
     value = _parse_value(filter_data['value'])
     if 'country' in variable and not value.isnumeric():
         value = str(Country.objects.get(name__iexact=value).pk)
