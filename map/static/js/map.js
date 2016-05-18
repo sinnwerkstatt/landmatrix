@@ -538,25 +538,8 @@ $(document).ready(function () {
             var features = feature.getProperties().features;
 
             if (features.length > 1) {
-                var popup = '<div><p>Cluster of investments: ' + features.length + ' total</p>';
-                popup += '<table class="table table-condensed"><tr><th>Intention</th><th>Count</th></tr>';
-
-                var deals = {};
-
-                for (feat in features) {
-                    var intention = features[feat].attributes.intention;
-
-                    if (intention in deals) {
-                        deals[intention]++;
-                    } else {
-                        deals[intention] = 1;
-                    }
-                }
-
-                for (var dealtype in deals) {
-                    popup += "<tr><td>" + dealtype + "</td><td>" + deals[dealtype] + "</td></tr>";
-                }
-                popup += '</table>Zoom here for more details.</div>';
+                var popup = '<div><span><strong>Cluster of ' + features.length + ' deals.</strong></span>';
+                popup += '<br><span>Zoom here for more details.</span></div>';
                 console.log(popup);
                 content.innerHTML = popup;
             } else {
