@@ -23,10 +23,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
     <p class="implementation_status" style="display: none">{%trans 'Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %} <a href="{% slugurl 'about' %}#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left noul" title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i class="lm lm-question-circle"> </i></a></p>
     <p class="agriculture" style="display: none">{% trans 'Deals having „agriculture“ as main intention of investment disaggregated into sub-sections.' %}</p>
 
-    <div class="btn-group views">
-      <button type="submit" class="btn active" name="filter" value="deals">{% trans "No. of deals" %}</button>
-      <button type="submit" class="btn" name="filter" value="hectares">{% trans "Size in hectares" %}</button>
-    </div>
+    <input type="checkbox" name="use_deal_size" checked>
 
 </div>
 {% endblock %}
@@ -50,6 +47,9 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.dynamic.js" %}"></script>
 <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.tooltips.js" %}"></script>
 <script type="text/javascript">
+
+var datatype = 'size';
+
 $(document).ready(function () {
     $("a.change-variable").click(function (e) {
         e.preventDefault();
@@ -62,17 +62,25 @@ $(document).ready(function () {
         return false;
     });
     $("a.change-variable:first").click();
-    $(".views .btn").click(function (e) {
-        e.preventDefault();
-        var c_self = this;
-        $(".views .active").removeClass("active");
-        $(c_self).addClass("active");
-        draw();
-        return false;
+
+    var dataSwitch = $("[name='use_deal_size']");
+    dataSwitch.bootstrapSwitch({
+        onText: 'Size',
+        offText: 'Count',
+        offColor: 'info',
+        onSwitchChange: function(event, state) {
+            if (state) {
+                datatype = 'size';
+            } else {
+                datatype = 'count';
+            }
+            draw();
+        }
     });
     $(".views .btn.active").click();
 });
 var storage = {};
+
 function draw (callback, chart_data) {
 /* chart_data: optional */
     RGraph.ObjectRegistry.Clear();
@@ -80,7 +88,7 @@ function draw (callback, chart_data) {
     if (chart_data) {
         var bar_labels = [], bar_labels_ingraph = [], bar_data = [];
 
-        var show_deals = ($(".views .active").attr("value") == "deals");
+        var show_deals = (datatype == "count");
         for (var i = 0; i < chart_data.length; i++) {
             if (chart_data[i]["name"] !== "") {
                 var label = chart_data[i]["name"];
