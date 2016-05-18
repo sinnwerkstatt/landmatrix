@@ -60,11 +60,9 @@
                             addCssClass: 'formset-add-form hidden',
                             deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
                             deleteCssClass: 'formset-remove-form hidden',
-                            {% if form.prefix != 'form' %}
-                            {# handle multiple formsets by prefixing and setting a CSS class, see https://github.com/elo80ka/django-dynamic-formset/blob/master/docs/usage.rst #}
                             prefix: '{{ form.prefix }}',
-                            formCssClass: '{{ form.prefix }}-dynamic-form',
-                            {% endif %}
+                            formCssClass: '{{ form.prefix }}-form',
+                            extraClasses: ['dynamic-form'],
                             added: function (row) {
                                 // Update form counters
                                 var form_count = 1;
