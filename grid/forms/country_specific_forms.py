@@ -6,32 +6,29 @@ from grid.forms.base_form import BaseForm
 from grid.widgets import TitleField, NumberInput
 
 
-def get_country_specific_form_class(deal, data=None, files=None):
-    target_country_slug = _get_deal_target_country_slug(deal)
-
-    try:
-        form_class = COUNTRY_FORMS[target_country_slug]
-    except KeyError:
-        return None
-    else:
-        return form_class
-
-
-def _get_deal_target_country_slug(deal):
-    # TODO: move to models, once I understand things a bit better
-    try:
-        target_country_name = deal.attributes['target_country']
-    except (KeyError, AttributeError):
-        pass
-    else:
+def get_country_specific_form_classes(activity, data=None, files=None):
+    for target_country_slug in _get_deal_target_country_slugs(activity):
         try:
-            target_country = Country.objects.get(name=target_country_name)
+            form_class = COUNTRY_FORMS[target_country_slug]
+        except KeyError:
+            pass
+        else:
+            yield form_class
+
+
+def _get_deal_target_country_slugs(activity):
+    # TODO: move to models, once I understand things a bit better
+    attr_groups = activity.activityattributegroup_set.all()
+    attr_groups = attr_groups.filter(attributes__contains='target_country')
+
+    for attr_group in attr_groups:
+        target_country_id = attr_group.attributes['target_country']
+        try:
+            target_country = Country.objects.get(id=target_country_id)
         except Country.DoesNotExist:
             pass
         else:
-            return target_country.slug
-
-    return None
+            yield target_country.slug
 
 
 class GermanyForm(BaseForm):

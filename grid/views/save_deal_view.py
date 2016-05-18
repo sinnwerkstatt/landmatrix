@@ -1,4 +1,3 @@
-
 from grid.forms.add_deal_employment_form import AddDealEmploymentForm
 from grid.forms.add_deal_general_form import AddDealGeneralForm
 from grid.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
@@ -9,7 +8,7 @@ from grid.forms.deal_former_use_form import DealFormerUseForm
 from grid.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
 from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from grid.forms.deal_produce_info_form import DealProduceInfoForm
-from grid.forms.deal_spatial_form import AddDealSpatialFormSet
+from grid.forms.deal_spatial_form import DealSpatialFormSet
 from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
@@ -34,7 +33,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class SaveDealView(TemplateView):
     FORMS = [
-        AddDealSpatialFormSet,
+        DealSpatialFormSet,
         AddDealGeneralForm,
         DealContractFormSet,
         AddDealEmploymentForm,
@@ -55,10 +54,28 @@ class SaveDealView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**self.kwargs)
-        if self.request.method != 'post':
+        if self.request.method != 'POST':
             context['forms'] = self.get_forms()
         context['kwargs'] = self.kwargs
         return context
+
+    def get_forms(self, data=None, files=None):
+        raise NotImplementedError("get_forms must be implemented in "
+                                  "subclasses.")
+
+    def get_form_prefix(self, form_class):
+        if form_class == DealSpatialFormSet:
+            prefix = 'location'
+        # TODO: rename AddDealDataSourceFormSet, it is used for both add and
+        # change
+        elif form_class == AddDealDataSourceFormSet:
+            prefix = 'data_source'
+        elif form_class == DealContractFormSet:
+            prefix = 'contract'
+        else:
+            prefix = None
+
+        return prefix
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
