@@ -34,10 +34,6 @@
 .lm-nav.lm-regions {
   font-size: 40px; }
 
-.wagtail-userbar {
-  top: 180px;
-}
-
 .subnav {
   font-size: 14px; }
 
@@ -265,6 +261,9 @@
 .navbar-subnav .navbar-nav > li > a:hover {
   background-color: #fff;
   color: #4a4a4a; }
+
+.wagtail-userbar {
+  top: 180px; }
 
 /* ==========================================================================
  *    FORMS
@@ -502,7 +501,6 @@ a.remove-ybd:hover {
   margin-bottom: 20px; }
 
 #manage-filters {
-  border: solid 1px #919191;
   font-weight: 300;
   margin-top: 10px; }
 
@@ -512,6 +510,19 @@ a.remove-ybd:hover {
   height: 200px;
   padding: 0;
   padding: 5px 15px; }
+
+#filterrow {
+  margin: 0px;
+  border: solid 1px #919191; }
+  #filterrow h6 {
+    margin: 10px 0 5px; }
+
+#columnsrow h6 {
+  color: #c6c6c6;
+  margin: 15px 0 5px; }
+
+#columnsrow .select2 {
+  width: 100% !important; }
 
 #filters ul.variables h4 {
   font-size: 14px;
@@ -540,8 +551,6 @@ a.remove-ybd:hover {
     border-left: none; } }
 
 @media (max-width: 992px) {
-  #filterrow {
-    margin: 0px 0px !important; }
   .filterbox:nth-child(2) {
     border-top: solid 1px #919191;
     border-bottom: solid 1px #919191; }
@@ -614,6 +623,9 @@ a.remove-ybd:hover {
 
 .filterbox.no-pad {
   padding: 5px 0 15px; }
+
+.filterbox.no-pad h6 {
+  padding: 0 15px; }
 
 #filters ul.presets.ul.variables li a,
 #filters ul.variables li a {
@@ -1554,7 +1566,7 @@ img {
 
 #btn-download .popover .popover-content,
 #btn-share .popover .popover-content {
-  width: 321px;
+  width: 312px;
   height: 49px;
   margin: 0;
   padding: 0; }
@@ -1593,9 +1605,10 @@ img {
   border-left: 11px solid transparent;
   border-right: 11px solid transparent;
   border-bottom: 10px solid #4a4a4a; }
+
 #btn-download .popover .popover-content .btn-media.csv:before {
-  margin-left: 38px;
-}
+  margin-left: 38px; }
+
 #btn-share .popover .popover-content .btn-media:hover,
 #btn-share .popover .popover-content .btn-media:focus,
 #btn-download .popover .popover-content .btn-media:hover,

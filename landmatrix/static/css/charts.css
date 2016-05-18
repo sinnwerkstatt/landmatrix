@@ -34,7 +34,8 @@
 
 .chart-box {
   position: relative;
-  opacity: 0.9; }
+  opacity: 0.9;
+  overflow: auto; }
 
 .chart-box h3 {
   margin-bottom: 0px;
@@ -42,10 +43,6 @@
 
 .chart-box .modal-header {
   padding: 5px; }
-
-.chart-box-content {
-  overflow-y: auto;
-  max-height: 40vh; }
 
 svg g {
   z-index: 50; }

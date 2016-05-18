@@ -30,17 +30,22 @@ function updateFilters(json) {
         return
     } else {
         console.log("Json not empty");
-        data = JSON.parse(json);
-        if (Object.keys(data).length > 0) {
-            console.log("Filters: ",data);
-            label = '<label>Active Filters:</label>';
-            tags.append(label);
-        } else {
-            console.log("No filters: ", data);
-            label = '<label>No active filters</label>';
-            tags.append(label);
-            return
+        try {
+            data = JSON.parse(json);
+            if (Object.keys(data).length > 0) {
+                console.log("Filters: ",data);
+                label = '<label>Active Filters:</label>';
+                tags.append(label);
+            } else {
+                console.log("No filters: ", data);
+                label = '<label>No active filters</label>';
+                tags.append(label);
+                return
+            }
+        } catch(err) {
+            console.log("Exception during filterjson evaluation: ", err, json);
         }
+
     }
 
     console.log("Filterdata:", data);
@@ -56,14 +61,14 @@ function updateFilters(json) {
             finalHtml = finalHtml + '">' + label + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
         } else {
-            var tag = data[item].variable[0];
+            var tag = data[item].variable;
 
             if (filternames.indexOf(tag) >= 0) {
-                tag = data[item].variable[0] + " " + data[item].operator[0];
+                tag = data[item].variable + " " + data[item].operator;
             }
             filternames.push(tag);
             var finalHtml = '<a class="delete-row" href="javascript:removeFilter(\'' + data[item].name + '\')" title="'
-            var filterPopup = data[item].variable[0] + " " + data[item].operator[0] + " " + data[item].value[0];
+            var filterPopup = data[item].variable + " " + data[item].operator + " " + data[item].value;
             finalHtml = finalHtml + filterPopup + '">' + tag + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
         }
@@ -215,5 +220,7 @@ $(document).ready(function () {
             updateFilters
         );
     });
+
+    $("#id_columns").select2();
 
 });

@@ -62,17 +62,30 @@
                     <h3 class="country">{% trans "Country" %}</h3>
                 </div>
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="target-regions">
-                            <h4 style="color: #6cc9d3">{% trans "Regions investing in " %}<span
-                                    class="country">{% trans "Country" %}</span></h4>
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#inbound" aria-controls="inbound" role="tab" data-toggle="tab">
+                                <div style="color: #6cc9d3">{% trans "Regions investing in " %}
+                                    <span class="country">{% trans "Country" %}</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#outbound" aria-controls="outbound" role="tab" data-toggle="tab">
+                                <div style="color: #ed881b">{% trans "Regions" %}
+                                    <span class="country">{% trans "Country" %}</span>
+                                    {% trans "invests in" %}
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane target-regions active" id="inbound">
                             <table class="table">
                             </table>
                             <a href="" class="inbound">{% trans "Show all inbound deals" %}</a>
                         </div>
-                        <div class="investor-regions">
-                            <h4 style="color: #ed881b">{% trans "Regions" %} <span
-                                    class="country">{% trans "Country" %}</span> {% trans "invests in" %}</h4>
+                        <div role="tabpanel" class="tab-pane investor-regions" id="outbound">
                             <table class="table">
                             </table>
                             <a href="" class="outbound">{% trans "Show all outbound deals" %}</a>
@@ -97,7 +110,6 @@
 {% block after %}
     {{ block.super }}
     <style>
-
 
 
     </style>
@@ -178,16 +190,15 @@ path.arc {
                 var investor_countries = $(".top-10-countries #investor-countries .table");
                 // TODO: FIX THESE LINKS:
                 for (var i = 0; i < data.investor_country.length; i++) {
-                    investor_countries.append('<tr><td><a href="/get-the-detail/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + '</td></tr>');
+                    investor_countries.append('<tr><td><a href="/global/data/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + '</td></tr>');
                 }
 
                 var target_countries = $(".top-10-countries #target-countries .table");
                 for (var i = 0; i < data.target_country.length; i++) {
-                    target_countries.append('<tr><td><a href="/get-the-detail/by-target-country/' + data.target_country[i]["slug"] + '/">' + data.target_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.target_country[i]["hectares"]) + ' ha</td></tr>');
+                    target_countries.append('<tr><td><a href="/global/data/by-target-country/' + data.target_country[i]["slug"] + '/">' + data.target_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.target_country[i]["hectares"]) + ' ha</td></tr>');
                 }
             });
         }
-
 
 
         $(".show-all").click(function (e) {
@@ -195,7 +206,8 @@ path.arc {
             clicked = false;
             $(".country-info").css("display", "none");
             $(".top-10-countries").css("display", "block");
-            draw(function () {});
+            draw(function () {
+            });
             $(".show-all").addClass("disabled");
             return false;
         });
@@ -209,8 +221,8 @@ path.arc {
             var query_params = get_query_params(get_base_filter(), "");
             var json_query = "/api/transnational_deals.json" + query_params;
             /*d3.json(json_query, function(classes) {
-                draw_transnational_deals(callback, classes, 650);
-            }); */
+             draw_transnational_deals(callback, classes, 650);
+             }); */
             d3.select("div.canvas")
                     .on("mousemove", mousemove)
                     .on("mouseup", mouseup);

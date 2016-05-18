@@ -5,7 +5,6 @@
 }
 
 #manage-filters {
-    border: solid 1px $lm_medium2;
     font-weight: 300;
     margin-top: 10px;
 }
@@ -18,7 +17,24 @@
     padding: 5px 15px;
 }
 
+#filterrow {
+    margin: 0px;
+    border: solid 1px $lm_medium2;
 
+    h6 {
+        margin: 10px 0 5px;
+    }
+}
+
+#columnsrow {
+    h6 {
+        color: $lm_medium1;
+        margin: 15px 0 5px;
+    }
+    .select2 {
+        width: 100% !important;
+    }
+}
 
 
 #filters ul.variables h4 {
@@ -59,10 +75,6 @@
 }
 
 @media (max-width: 992px) {
-    #filterrow {
-        margin: 0px 0px !important;
-    }
-
 
     .filterbox:nth-child(2) {
         border-top: solid 1px $lm_medium2;
@@ -160,6 +172,10 @@
 
 .filterbox.no-pad {
     padding: 5px 0 15px;
+}
+
+.filterbox.no-pad h6 {
+    padding: 0 15px;
 }
 
 

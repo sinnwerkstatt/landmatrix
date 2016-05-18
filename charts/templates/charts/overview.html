@@ -79,11 +79,18 @@ function draw (callback, chart_data) {
     // Cached data?
     if (chart_data) {
         var bar_labels = [], bar_labels_ingraph = [], bar_data = [];
-        var pie_data = [], pie_labels = [];
+
         var show_deals = ($(".views .active").attr("value") == "deals");
         for (var i = 0; i < chart_data.length; i++) {
             if (chart_data[i]["name"] !== "") {
-                bar_labels.push(chart_data[i]["name"]);
+                var label = chart_data[i]["name"];
+                if (String(label).indexOf('(') > 0) {
+                    label = label.replace('(', '\n(');
+                } else if (String(label).length > 15) {
+                    label = label.replace(' ', '\n');
+                }
+
+                bar_labels.push(label);
                 bar_data.push(show_deals && parseInt(chart_data[i]["deals"], 10) || parseInt(chart_data[i]["hectares"], 10));
             }
         }
@@ -107,6 +114,7 @@ function draw (callback, chart_data) {
         bar.Set('chart.axis.color', '#3b3b3b');
         bar.Set('chart.text.Angle', 45);
         bar.Set('chart.text.size', '8');
+        bar.Set('chart.xlabels.offset', 15);
         bar.Set('chart.tooltips', bar_labels_ingraph);
         bar.Set('chart.tooltips.css.class', 'graph-popover');
         bar.Set('chart.gutter.left', (Math.max.apply(Math, bar_data).toString().length * 11));

@@ -5,7 +5,7 @@
     var presets = {};
     {% for groupname, items in presets.items %}
         {% for item in items %}
-            presets[{{ item.id }}] = '{{ groupname }}:{{ item.label }}';
+            presets[{{ item.id }}] = '{{ groupname }}: {{ item.label }}';
         {% endfor %}
     {% endfor %}
 </script>
@@ -31,9 +31,9 @@
     </div>
 
     <div id="manage-filters" class="clearfix collapse">
-        <div id="filterrow">
+        <div id="filterrow" class="row">
             <div class="col-md-3 filterbox presetbox no-pad">
-                <h6>{% trans "Use a filter preset" %}</h6>
+                <h6>{% trans "Select a filter preset" %}</h6>
                 <ul class="presets variables">
                     {% for groupname, items in presets.items %}
                         <li>
@@ -53,7 +53,7 @@
                 </ul>
             </div>
             <div class="col-md-3 filterbox no-pad">
-                <h6>{% trans "or create a custom filter" %}</h6>
+                <h6>{% trans "Create a custom filter" %}</h6>
                 <ul class="variables">
                     {% for group in variables %}
                         <li>
@@ -99,6 +99,14 @@
                     </div>
                 </div>
             </form>
+        </div>
+        <div id="columnsrow" class="row">
+            <div class="col-sm-12">
+                <h6>{% trans "Select columns for the result table" %}</h6>
+                <select id="id_columns" name="columns" multiple="multiple">
+                    <option value="1">Example</option>
+                </select>
+            </div>
         </div>
     </div>
 </div>

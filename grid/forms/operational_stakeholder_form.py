@@ -1,4 +1,3 @@
-from cms.cache import choices
 from django.core.exceptions import ValidationError
 from django.forms import CharField
 from django.forms.fields import ChoiceField

@@ -2,6 +2,9 @@ from pprint import pprint
 from time import time
 
 from django.db import connection
+from django.utils.datastructures import MultiValueDict
+from django.http import Http404
+from django.utils.translation import ugettext_lazy as _
 
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from grid.views.view_aux_functions import (
@@ -10,8 +13,8 @@ from grid.views.view_aux_functions import (
 
 from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.browse_condition import BrowseCondition
+from api.views.filter_view import set_filter, remove_filter, update_stored_filters, get_unique_frontend_user
 
-from django.utils.datastructures import MultiValueDict
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -65,12 +68,38 @@ class FilterWidgetMixin:
         filters["starts_with"] = starts_with
         return filters
 
+    def set_country_region_filter(self, data):
+        filter_values = {}
+        # Country or region filter set?
+        if 'country' in data or 'region' in data:
+            stored_filters = self.request.session.get('filters', {})
+            unique_user = get_unique_frontend_user(self.request)
+            if data.get('country'):
+                filter_values['variable'] = 'target_country'
+                filter_values['operator'] = 'is'
+                filter_values['value'] = data.get('country')
+                filter_values['name'] = str(_('Target country'))
+                data.pop('country')
+            elif data.get('region'):
+                filter_values['variable'] = 'target_region'
+                filter_values['operator'] = 'is'
+                filter_values['value'] = data.get('region')
+                filter_values['name'] = str(_('Target region'))
+                data.pop('region')
+            # Remove existing target country/region filters
+            filters = filter(lambda f: f['variable'] in ('target_country', 'target_region'), stored_filters.values())
+            for stored_filter in list(filters):
+                remove_filter(stored_filters, stored_filter['name'])
+            set_filter(stored_filters, filter_values)
+            update_stored_filters(self.request, stored_filters, unique_user)
+
     @print_execution_time_and_num_queries
-    def get_formset_conditions(self, filter_set, GET, group_by=None):
+    def get_formset_conditions(self, filter_set, data, group_by=None):
+        self.set_country_region_filter(data)
         ConditionFormset = create_condition_formset()
         if filter_set:
             # set given filters
-            result = ConditionFormset(GET, prefix="conditions_empty")
+            result = ConditionFormset(data, prefix="conditions_empty")
         else:
             if group_by == "database":
                 result = None
@@ -78,8 +107,8 @@ class FilterWidgetMixin:
                 result = ConditionFormset(self._get_filter_dict(self.rules), prefix="conditions_empty")
         return result
 
-    def _filter_set(self, GET):
-        return GET and GET.get("filtered") and not GET.get("reset", None)
+    def _filter_set(self, data):
+        return data and data.get("filtered") and not data.get("reset", None)
 
     def _get_filter_dict(self, browse_rules):
         filter_dict = MultiValueDict()
