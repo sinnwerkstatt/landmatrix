@@ -159,7 +159,6 @@ function get_filter_options(operatorfield, variablefield, key_id) {
     });
 }
 
-
 $(document).ready(function () {
     /*
      // add sticky header to table
@@ -221,6 +220,8 @@ $(document).ready(function () {
         );
     });
 
-    $("#id_columns").select2();
-
+    $("#id_columns").select2()
+        .on('change', function () {
+            window.location.href = location.protocol + '//' + location.host + location.pathname + '?' + $('#id_columns').serialize();
+        });
 });
