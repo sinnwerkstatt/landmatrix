@@ -13,7 +13,7 @@ from grid.views.view_aux_functions import (
 
 from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.browse_condition import BrowseCondition
-from api.views.filter_view import set_filter, remove_filter, update_stored_filters, get_unique_frontend_user
+from api.filters import Filter
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -73,7 +73,6 @@ class FilterWidgetMixin:
         # Country or region filter set?
         if 'country' in data or 'region' in data:
             stored_filters = self.request.session.get('filters', {})
-            unique_user = get_unique_frontend_user(self.request)
             if data.get('country'):
                 filter_values['variable'] = 'target_country'
                 filter_values['operator'] = 'is'
@@ -89,9 +88,14 @@ class FilterWidgetMixin:
             # Remove existing target country/region filters
             filters = filter(lambda f: f['variable'] in ('target_country', 'target_region'), stored_filters.values())
             for stored_filter in list(filters):
-                remove_filter(stored_filters, stored_filter['name'])
-            set_filter(stored_filters, filter_values)
-            update_stored_filters(self.request, stored_filters, unique_user)
+                stored_filters.pop(stored_filter['name'], None)
+            # Set filter
+            new_filter = Filter(
+                filter_values['variable'], filter_values['operator'],
+                filter_values['value'], filter_values.get('name', None)
+            )
+            stored_filters[new_filter.name] = new_filter
+            self.request.session['filters'] = stored_filters
 
     @print_execution_time_and_num_queries
     def get_formset_conditions(self, filter_set, data, group_by=None):
