@@ -44,7 +44,7 @@ from api.tests.deals_test_data import DealsTestData
 
 class TestIntention(ApiTestFunctions, DealsTestData):
 
-    PREFIX = '/en/api/'
+    PREFIX = '/api/'
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational'
     DEAL_SCOPE = 'transnational'
     DEAL_SIZE = 12345

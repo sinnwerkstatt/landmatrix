@@ -80,6 +80,70 @@
                 {% endfor %}
             </div>
         </div>
+
+
+            {% if history|length > 1 %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a id="history" data-toggle="collapse" data-parent="#accordion" href="#collapse_history">
+                            <h5 class="panel-title">
+                                {% trans "History" %}
+                                <span id="collapsebtn_history"
+                                      class="lm-chevron-circle-down pull-right mgrey1"></span>
+                            </h5>
+                        </a>
+                    </div>
+                    <div id="collapse_history" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            {% for changedate, item in history.items %}
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        {% if forloop.counter == 1 %}<strong>{% endif %}
+                                        {{ changedate|timestamp_from_epoch }}
+                                        {% if forloop.counter == 1 %}</strong>{% endif %}
+                                    </div>
+                                    <!-- <td>{{ item.activity_changed_by }}</td>
+                                    <td>activity identifier: {{ item.activity.activity_identifier }}</td>
+                                    <td>availability: {{ item.activity.availability }}</td>
+                                    <td>history id: {{ item.activity.history_id }}</td>
+                                    -->
+                                    {% with investorid=item.id|addstr:"_"|addstr:changedate %}
+
+                                        <div class="col-sm-3">
+                                            {{ item.changed_by }}
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            {# TODO: Insert correct link and maybe disable button for currently version displayed  #}
+                                            <a type="button" class="btn"
+                                               href="{% url 'stakeholder_form' investor_id=investorid %}">
+                                                <i class="glyphicon glyphicon-eye-open"></i> {% trans "Show this version" %}
+                                            </a>
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <a type="button" class="btn"
+                                                    {% if not forloop.last %}
+                                               href="{% url 'compare_investors' investor_1=investorid %}"
+                                                        >
+                                                        <i class="glyphicon glyphicon-transfer"></i>
+                                                        {% trans "Compare with previous version" %}
+                                                    {% else %}
+                                                        disabled>
+                                                        <i class="glyphicon glyphicon-transfer"></i>
+                                                        {% trans "First version" %}
+                                                    {% endif %}
+                                            </a>
+                                        </div>
+
+                                    {% endwith %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
         <div class="row">
             <div class="col-sm-12">
                 <input type="submit" class="btn btn-primary" value="{% trans "Submit" %}">

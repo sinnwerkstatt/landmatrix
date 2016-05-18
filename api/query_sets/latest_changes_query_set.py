@@ -1,11 +1,9 @@
-from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-
 from django_comments.models import Comment
 
-import json
-
+from landmatrix.models.activity import Activity
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.country import Country
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -55,7 +53,7 @@ def status_string(status):
 
 def deal_to_data(activity, change_date, action):
     return {
-        'deal_id': activity.activity_identifier, 'change_date': change_date.strftime('%Y-%m-%d %H:%M'), 'action': action,
+        'deal_id': activity.activity_identifier, 'change_date': change_date, 'action': action,
         'target_country': target_country(activity)
     }
 

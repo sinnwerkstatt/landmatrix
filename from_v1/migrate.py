@@ -98,6 +98,9 @@ if __name__ == '__main__':
             MapPublicInterfaceCache.map_all(save=options.save, verbose=options.verbose)
             MapComment.map_all(save=options.save, verbose=options.verbose)
 
+        if options.country or options.all:
+            MapCountry.map_all(save=options.save, verbose=options.verbose)
+
         if options.investor or options.all:
             if not MapStatus._done: MapStatus.map_all(save=options.save, verbose=options.verbose)
             MapInvestor.map_all(save=options.save, verbose=options.verbose)
@@ -105,9 +108,6 @@ if __name__ == '__main__':
             MapInvestorActivityInvolvement.map_all(save=options.save, verbose=options.verbose)
             MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
             MapStakeholderVentureInvolvement.map_all(save=options.save, verbose=options.verbose)
-
-        if options.country or options.all:
-            MapCountry.map_all(save=options.save, verbose=options.verbose)
 
         if options.comment or options.all:
             MapDjangoComments.map_all(save=options.save, verbose=options.verbose)

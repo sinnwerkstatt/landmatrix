@@ -1,5 +1,4 @@
 from api.query_sets.transnational_deals_query_set import TransnationalDealsQuerySet
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.country import Country
 
 from .api_test_functions import ApiTestFunctions
@@ -22,7 +21,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class TestTransnationalDeals(ApiTestFunctions, DealsTestData):
 
-    PREFIX = '/en/api/'
+    PREFIX = '/api/'
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational'
     DEAL_SCOPE = 'transnational'
     DEAL_SIZE = 12345

@@ -1,4 +1,4 @@
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 from api.query_sets.simple_fake_query_set import SimpleFakeQuerySet
 from landmatrix.models.country import Country

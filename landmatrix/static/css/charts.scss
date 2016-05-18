@@ -46,6 +46,7 @@
 .chart-box {
   position: relative;
   opacity: 0.9;
+  overflow: auto;
 }
 
 .chart-box h3 {
@@ -55,11 +56,6 @@
 
 .chart-box .modal-header {
   padding: 5px;
-}
-
-.chart-box-content {
-  overflow-y: auto;
-  max-height: 40vh;
 }
 
 svg g {

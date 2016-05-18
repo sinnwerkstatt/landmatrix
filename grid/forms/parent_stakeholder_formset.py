@@ -98,7 +98,8 @@ class ParentStakeholderFormSet(formset_factory(ParentStakeholderForm, extra=0, m
 
     @classmethod
     def get_data(cls, investor, role):
-        parent_investors = InvestorVentureInvolvement.objects.filter(fk_venture=investor).filter(role=role).\
+        parent_investors = InvestorVentureInvolvement.objects.\
+            filter(fk_venture_id=investor.id).filter(role=role).\
             values_list('fk_investor_id', flat=True).distinct()
 
         if not parent_investors:
@@ -115,7 +116,8 @@ class ParentInvestorFormSet(formset_factory(ParentInvestorForm, extra=0, min_num
 
     @classmethod
     def get_data(cls, investor, role):
-        parent_investors = InvestorVentureInvolvement.objects.filter(fk_venture=investor).filter(role=role).\
+        parent_investors = InvestorVentureInvolvement.objects.\
+            filter(fk_venture_id=investor.id).filter(role=role).\
             values_list('fk_investor_id', flat=True).distinct()
 
         if not parent_investors:

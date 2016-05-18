@@ -3,7 +3,7 @@ from pprint import pprint
 from landmatrix.models import *
 
 from django.db import connection
-from django.conf import settings
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 

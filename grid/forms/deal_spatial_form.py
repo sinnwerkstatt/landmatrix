@@ -1,19 +1,17 @@
-from pprint import pprint
+from django import forms
+from django.forms.models import formset_factory, BaseFormSet
+from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.country import Country
 from landmatrix.models.deal import Deal
+from landmatrix.models.region import Region
+from grid.widgets import TitleField, LocationWidget, CountryField, CommentInput
+from .base_form import BaseForm
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-from .base_form import BaseForm
-from grid.widgets import TitleField, LocationWidget, CountryField, CommentInput
-from landmatrix.models.region import Region
-
-from django import forms
-from django.forms.models import formset_factory
-from django.utils.translation import ugettext_lazy as _
 
 
 class DealSpatialForm(BaseForm):
@@ -33,7 +31,7 @@ class DealSpatialForm(BaseForm):
         ),
         coerce=int)
     location = forms.CharField(
-        required=False, label=_("Location"), widget=LocationWidget
+        required=True, label=_("Location"), widget=LocationWidget
     )
     point_lat = forms.CharField(
         required=False, label=_("Latitude"), widget=forms.TextInput, initial=""
@@ -71,7 +69,9 @@ class DealSpatialForm(BaseForm):
         return attributes
 
 
-class DealSpatialBaseFormSet(formset_factory(DealSpatialForm, extra=0)):
+class DealSpatialBaseFormSet(BaseFormSet):
+
+    form_title = _('Location')
 
     @classmethod
     def get_data(cls, activity):
@@ -83,31 +83,21 @@ class DealSpatialBaseFormSet(formset_factory(DealSpatialForm, extra=0)):
         else:
             taggroups = []
         data = []
-        #data = {
-        #    'form-TOTAL_FORMS': max(len(taggroups), 1),
-        #    'form-INITIAL_FORMS': max(len(taggroups), 1),
-        #    'form-MAX_NUM_FORMS': 1000
-        #}
         for i, taggroup in enumerate(taggroups):
             form_data = DealSpatialForm.get_data(activity, taggroup=taggroup)
-            # print('DealSpatialBaseFormSet form', i, ':    ', form_data)
             data.append(form_data)
         return data
-
-    class Meta:
-        name = 'spatial_data'
-
-class AddDealSpatialFormSet(DealSpatialBaseFormSet):
-
-    form_title = _('Location')
-    extra = 1
 
     def get_attributes(self, request=None):
         return [form.get_attributes(request) for form in self.forms]
 
+    class Meta:
+        name = 'spatial_data'
 
-class ChangeDealSpatialFormSet(AddDealSpatialFormSet):
-    extra = 0
+
+DealSpatialFormSet = formset_factory(DealSpatialForm, min_num=1,
+                                     validate_min=True, extra=0,
+                                     formset=DealSpatialBaseFormSet)
 
 
 class PublicViewDealSpatialForm(DealSpatialForm):
@@ -115,9 +105,12 @@ class PublicViewDealSpatialForm(DealSpatialForm):
     class Meta:
         name = 'spatial_data'
         fields = (
-            "tg_location", "location", "point_lat", "point_lon", 'tg_location_comment'
+            "tg_location", "location", "point_lat", "point_lon",
+            'tg_location_comment'
         )
         readonly_fields = fields
 
 
-PublicViewDealSpatialFormSet = formset_factory(PublicViewDealSpatialForm, formset=AddDealSpatialFormSet, extra=0)
+PublicViewDealSpatialFormSet = formset_factory(PublicViewDealSpatialForm,
+                                               formset=DealSpatialBaseFormSet,
+                                               extra=0)

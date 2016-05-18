@@ -25,7 +25,7 @@ from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.views.view_aux_functions import render_to_string, render_to_response
-from grid.forms.country_specific_forms import get_country_specific_form_class
+from grid.forms.country_specific_forms import get_country_specific_form_classes
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -151,13 +151,9 @@ def display_invalid_forms(forms):
 def get_forms(deal):
     forms = [get_form(deal, form) for form in FORMS]
 
-    country_specific_form_class = get_country_specific_form_class(deal)
-    if country_specific_form_class:
-        country_specific_form_class_tuple = (
-            country_specific_form_class.Meta.name, country_specific_form_class,
-        )
+    for form_class in get_country_specific_form_classes(deal.activity):
         country_specific_form = get_form(deal,
-                                         country_specific_form_class_tuple)
+                                         (form_class.Meta.name, form_class))
         forms.append(country_specific_form)
 
     return forms

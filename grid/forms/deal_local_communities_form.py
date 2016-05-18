@@ -31,10 +31,10 @@ class DealLocalCommunitiesForm(BaseForm):
     )
     recognition_status = forms.MultipleChoiceField(
         required=False, label=_("Recognition status of community land tenure"), choices=(
-            (10, _("Community land formally recognized by law or decree")),
-            (20, _("Community land not formally recognized")),
-            (30, _("Indigenous land formally recognized by law or decree")),
-            (40, _("Indigenous land not formally recognized")),
+            (10, _("Indigenous Peoples traditional or customary rights recognized by government")),
+            (20, _("Indigenous Peoples traditional or customary rights not recognized by government")),
+            (30, _("Community traditional or customary rights recognized by government")),
+            (40, _("Community traditional or customary rights not recognized by government")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_recognition_status_comment = forms.CharField(

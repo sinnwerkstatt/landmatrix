@@ -28,6 +28,7 @@ from wagtail.wagtailcore import urls as wagtail_urls
 from grid.views import AddDealView, ChangeDealView, DealComparisonView, DealDetailView, FilterWidgetAjaxView
 from api import urls as api_urls
 from grid import urls as grid_urls
+from grid.views.investor_comparison_view import InvestorComparisonView
 from map import urls as map_urls
 from charts import urls as charts_urls
 from editor import urls as editor_urls
@@ -40,6 +41,7 @@ CACHE_TIMEOUT = 24*3600
 urlpatterns = patterns('',
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/docs/', include('rest_framework_docs.urls')),
     url(r'^api/', include(api_urls)),
 
     # Wagtail
@@ -111,6 +113,26 @@ urlpatterns = patterns('',
 
     url(r'^stakeholder/add$', StakeholderView.as_view(), name='stakeholder_form'),
     url(r'^stakeholder/(?P<investor_id>[\d]+)/$', StakeholderView.as_view(), name='stakeholder_form'),
+    url(
+        r'^stakeholder/(?P<investor_id>[\d_\.]+)/$',
+        StakeholderView.as_view(),
+        name='stakeholder_form'
+    ),
+    url(
+        r'^compare_investors/(?P<investor_1_id>[\d]+)/(?P<investor_2_id>[\d]+)/$',
+        cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
+        name='compare_investors'
+    ),
+    url(
+        r'^compare_investors/(?P<investor_1>[\d_\.]+)/$',
+        cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
+        name='compare_investors'
+    ),
+    url(
+        r'^compare_investors/(?P<investor_1>.+)/$',
+        cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
+        name='compare_investors'
+    ),
 
     url(r'^editor/', include(editor_urls)),
     #url(r'^filters$', FilterView.as_view(), name='filterdebug'),

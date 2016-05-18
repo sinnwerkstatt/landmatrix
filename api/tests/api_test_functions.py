@@ -1,15 +1,13 @@
-from django.db import connection
-from django.db.utils import ProgrammingError
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 from django.test import TestCase
 import json
 
 
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
+
 class ApiTestFunctions(TestCase):
 
-    PREFIX = '/en/api/'
+    PREFIX = '/api/'
 
     def url(self, resource): return self.PREFIX + resource + self.POSTFIX
 

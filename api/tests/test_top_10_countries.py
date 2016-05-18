@@ -1,13 +1,12 @@
-from api.query_sets.top_10_countries_query_set import Top10InvestorCountriesQuerySet, Top10TargetCountriesQuerySet
-from landmatrix.models.activity import Activity
+from api.query_sets.top_10_countries_query_set import Top10InvestorCountriesQuerySet
 from landmatrix.models.country import Country
-from landmatrix.models.investor import Investor
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 
 from .api_test_functions import ApiTestFunctions
 from api.tests.deals_test_data import DealsTestData
+
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 """
 /en/api/top-10-countries.json?negotiation_status=concluded&deal_scope=transnational
@@ -22,7 +21,7 @@ from api.tests.deals_test_data import DealsTestData
 
 class TestTop10Countries(ApiTestFunctions, DealsTestData):
 
-    PREFIX = '/en/api/'
+    PREFIX = '/api/'
     POSTFIX = '.json?negotiation_status=concluded&deal_scope=transnational'
     DEAL_SCOPE = 'transnational'
     NEGOTIATION_STATUS = 'concluded (oral agreement)'

@@ -1,3 +1,6 @@
+from pprint import pprint
+
+from collections import OrderedDict
 from django.core.exceptions import ObjectDoesNotExist
 
 from grid.forms.investor_formset import InvestorForm
@@ -11,7 +14,7 @@ from django.views.generic.base import TemplateView
 from landmatrix.models.status import Status
 
 
-VERBOSE = True
+VERBOSE = False
 
 
 class StakeholderView(TemplateView):
@@ -29,6 +32,10 @@ class StakeholderView(TemplateView):
         context['investor_form'] = InvestorForm(InvestorForm.get_data(investor))
         context['parent_stakeholders'] = ParentStakeholderFormSet(initial=ParentStakeholderFormSet.get_data(investor, role='ST'), prefix='parent-stakeholder-form')
         context['parent_investors'] = ParentInvestorFormSet(initial=ParentInvestorFormSet.get_data(investor, role='IN'), prefix='parent-investor-form')
+        try:
+            context['history'] = get_investor_history(investor)
+        except AttributeError:
+            pass
 
         if request.POST:
             save_from_post(request.POST)
@@ -133,9 +140,12 @@ def get_investor(request):
     return investor_from_id(request.GET.get('investor_id', 0))
 
 
-def investor_from_id(id):
+def investor_from_id(investor_id):
     try:
-        return Investor.objects.get(pk=id)
+        if '_' in investor_id:
+            return _investor_from_id_and_timestamp(investor_id)
+        else:
+            return Investor.objects.get(pk=investor_id)
     except ObjectDoesNotExist:
         return None
 
@@ -143,3 +153,34 @@ def investor_from_id(id):
 def get_form(deal, form_class):
     data = form_class[1].get_data(deal)
     return form_class[1](initial=data)
+
+
+def get_investor_history(investor):
+    return OrderedDict(reversed(sorted(_investor_history(investor), key=lambda item: item[0])))
+
+
+def _investor_history(investor):
+    date_and_investor = []
+    for investor in list(investor.history.all().order_by('history_date')):
+        date_and_investor.append((investor.history_date.timestamp(), investor))
+
+    return sorted(date_and_investor, key=lambda entry: entry[0])
+
+
+def _investor_from_id_and_timestamp(id_and_timestamp):
+    from datetime import datetime
+    from dateutil.tz import tzlocal
+    if '_' in id_and_timestamp:
+        investor_id, timestamp = id_and_timestamp.split('_')
+
+        investor = Investor.objects.get(pk=investor_id)
+
+        old_version = investor.history.filter(
+            history_date__lte=datetime.fromtimestamp(float(timestamp), tz=tzlocal())
+        ).last()
+        if old_version is None:
+            raise ObjectDoesNotExist('Investor %s as of timestamp %s' % (investor_id, timestamp))
+
+        return old_version
+
+    raise RuntimeError('should contain _ separating investor id and timestamp: ' + id_and_timestamp)

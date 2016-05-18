@@ -199,12 +199,14 @@ function init_canvas(width, height) {
     var diameter = Math.min(width, height);
 
     var boxleft = diameter / 4.3,
-        boxtop =  -(diameter/(3/2));
+        boxtop =  -(diameter/(3/2)),
+        boxheight = height + boxtop;
     console.log(width, height, boxleft, boxtop, diameter);
     $("div.canvas").empty();
     $(".chart-box")
         .css("left", boxleft)
-        .css("top", boxtop);
+        .css("top", boxtop)
+        .css("height", boxheight);
 
     create_d3(diameter);
 
@@ -371,10 +373,8 @@ function mouseup(d) {
                         target_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") + "></tr>";
 
                     }
-                    info.find(".target-regions a.inbound").attr("href", "/get-the-detail/by-target-country/" + $(n).data("slug") + "/")
-                    info.find(".target-regions").show().find("table").html(target_regions);
-                } else {
-                    info.find(".target-regions").hide();
+                    info.find(".target-regions a.inbound").attr("href", "/global/data/by-target-country/" + n.slug + "/");
+                    info.find(".target-regions").find("table").html(target_regions);
                 }
                 if (data.target_country.length > 1) {
                     var investor_regions = "";
@@ -383,10 +383,8 @@ function mouseup(d) {
                         if (data.target_country.length == 2 && r.region == "Total") continue;
                         investor_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") + "></tr>";
                     }
-                    info.find(".investor-regions a.outbound").attr("href", "/get-the-detail/by-investor-country/" + $(n).data("slug") + "/")
-                    info.find(".investor-regions").show().find("table").html(investor_regions);
-                } else {
-                    info.find(".investor-regions").hide();
+                    info.find(".investor-regions a.outbound").attr("href", "/global/data/by-stakeholder-country/" + n.slug + "/");
+                    info.find(".investor-regions").find("table").html(investor_regions);
                 }
                 info.show();
             });

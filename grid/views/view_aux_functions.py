@@ -1,8 +1,11 @@
 from pprint import pprint
 
 from landmatrix.models.country import Country
-from landmatrix.models.filter_condition import FILTER_VAR_ACT, FILTER_VAR_INV, get_filter_vars, FilterCondition
+from landmatrix.models.filter_condition import FILTER_VAR_ACT, \
+    FILTER_VAR_INV, get_filter_vars, FilterCondition
+from landmatrix.models.filter_preset import FilterPreset
 from grid.views.browse_condition_form import BrowseConditionForm
+from api.filters import PresetFilter
 
 from django.template import loader
 from django.http import HttpResponse
@@ -10,6 +13,23 @@ from django.http import HttpResponse
 import json
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
+
+def create_preset_table():
+    groups = FilterPreset.objects.values_list().distinct()
+
+    table = {}
+    for item in groups:
+        newitem = {
+            'id': item[0],
+            'label': item[2]
+        }
+        if item[1] not in table:
+            table[item[1]] = [newitem]
+        else:
+            table[item[1]].append(newitem)
+
+    return table
 
 
 def create_condition_formset():
@@ -73,7 +93,6 @@ def apply_filters_from_session(request, filter_dict):
     """Reads filter values stored in the current FE user's session and stores
        them in filter_dict. Used in ActivityQuerySet for the grid views and in
        FakeQuerySet for the API calls."""
-    from api.views.filter import PresetFilter
 
     for filter in request.session.get('filters', {}).items():
         if 'variable' in filter[1]:

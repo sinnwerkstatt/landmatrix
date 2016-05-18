@@ -20,6 +20,9 @@ class AddDealView(SaveDealView):
 
     def get_forms(self, data=None, files=None):
         forms = []
-        for form in self.FORMS:
-            forms.append(form(data, files=files))
+        for form_class in self.FORMS:
+            prefix = self.get_form_prefix(form_class)
+            form = form_class(data=data, files=files, prefix=prefix)
+            forms.append(form)
+
         return forms

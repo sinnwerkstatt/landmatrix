@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 from mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
@@ -27,16 +29,36 @@ class MapInvestorActivityInvolvement(MapModel):
 
     @classmethod
     def all_records(cls):
-        activity_ids = MapActivity.all_ids()
-        stakeholder_ids = cls.all_stakeholder_ids()
-        primary_investor_ids = MapInvestor.all_ids()
-        records = cls.old_class.objects.using(V1).\
-            filter(fk_activity__in=activity_ids).\
-            filter(fk_stakeholder__in=stakeholder_ids).\
-            filter(fk_primary_investor__in=primary_investor_ids).values()
+        records_with_duplicates = cls.old_class.objects.using(V1). \
+            filter(fk_activity__in=MapActivity.all_ids()). \
+            filter(fk_stakeholder__in=cls.all_stakeholder_ids()). \
+            filter(fk_primary_investor__in=MapInvestor.all_ids()).values()
+        records = {}
+        for record in records_with_duplicates:
+            latest = cls.latest_involvement_for(record, records_with_duplicates)
+            if record['fk_activity_id'] == 129899:
+                print('record', record)
+                print('latest', latest)
+            records[latest['id']] = latest
+
+        print('max len relevant involvements:', cls._max_len)
         cls._count = len(records)
-        # print('all_records', records)
-        return records
+        print('num records', cls._count, 'num activities', len(MapActivity.all_ids()))
+        return records.values()
+
+    _max_len = 0
+    @classmethod
+    def latest_involvement_for(cls, record, all_records):
+        relevant_involvements = [
+            involvement for involvement in all_records
+            if involvement['fk_activity_id'] == record['fk_activity_id']
+            if involvement['fk_primary_investor_id'] == record['fk_primary_investor_id']
+        ]
+        if record['fk_activity_id'] == 129899:
+            print('relevant', relevant_involvements)
+        if len(relevant_involvements) > cls._max_len:
+            cls._max_len = len(relevant_involvements)
+        return max(relevant_involvements, key=lambda i: i['id'])
 
     @classmethod
     def all_stakeholder_ids(cls):
