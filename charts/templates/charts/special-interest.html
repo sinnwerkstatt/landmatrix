@@ -23,14 +23,16 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
     <p class="resource_extraction" style="display: none">{%trans 'Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %} <a href="{% slugurl 'about' %}#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left noul" title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i class="lm lm-question-circle"> </i></a></p>
     <p class="produce_info" style="display: none">{% trans 'Deals divided by intention of investment.' %}</p>
     <p class="contract_farming" style="display: none">{% trans 'Deals having „agriculture“ as main intention of investment disaggregated into sub-sections.' %}</p>
+    <p class="logging" style="display: none">{% trans 'Wood chopping.' %}</p>
 
     <span id="deal_data_selector">
         Show infos about:
         <input type="checkbox" name="use_deal_size" checked> of
         <select name="deal_types">
-            <option>Concluded</option>
-            <option>Contract</option>
+            <option>Size in operation</option>
+            <option>Size under contract</option>
             <option>Under Construction</option>
+            <option>Intended Size</option>
         </select>
     </span>
 
@@ -221,6 +223,104 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
         <div id="BarChart" class="charts" align="center">
         </div>
 
+        <div id="logging"  class="hidden" align="center">
+            <div class="col-sm-12 text-center">
+                <h3>{% trans "Logging: " %} <a class="toggle-tooltip bottom" href="/about/#what-is-a-land-deal" data-original-title="" title=""><i class="icon icon-question-sign"></i></a></h3>
+            </div>
+            <div class="col-sm-6 size">
+                <h4>{% trans "Size" %}</h4>
+                <p class="number number-concluded">39,453,030 ha</p>
+                <div class="progress progress-concluded">
+                    <div class="bar" style="width: 61%;"></div>
+                </div>
+                <p class="percentage percentage-concluded">61%</p>
+                <p class="number number-intended">19,032,857 ha</p>
+                <div class="progress progress-intended">
+                    <div class="bar" style="width: 29%;"></div>
+                </div>
+                <p class="percentage percentage-intended">29%</p>
+                <p class="number number-failed">6,597,171 ha</p>
+                <div class="progress progress-failed">
+                    <div class="bar" style="width: 10%;"></div>
+                </div>
+                <p class="percentage percentage-failed">10%</p>
+            </div>
+            <div class="col-sm-6 deals">
+                <h4>{% trans "Number of deals" %}</h4>
+                <p class="number number-concluded">1,158</p>
+                <div class="progress progress-concluded">
+                    <div class="bar" style="width: 80%;"></div>
+                </div>
+                <p class="percentage percentage-concluded">80%</p>
+                <p class="number number-intended">203</p>
+                <div class="progress progress-intended">
+                    <div class="bar" style="width: 14%;"></div>
+                </div>
+                <p class="percentage percentage-intended">14%</p>
+                <p class="number number-failed">92</p>
+                <div class="progress progress-failed">
+                    <div class="bar" style="width: 6%;"></div>
+                </div>
+                <p class="percentage percentage-failed">6%</p>
+            </div>
+            <div class="well-square legend">
+                <ul class="list-inline">
+                    <li><i class="icon icon-none" style="background-color: #ed881b;"></i> Concluded</li>
+                    <li><i class="icon icon-none" style="background-color: #b96c12;"></i> Intended</li>
+                    <li><i class="icon icon-none" style="background-color: #884e0e;"></i> Failed</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="resource_extraction"  class="hidden" align="center">
+            <div class="col-sm-12 text-center">
+                <h3>{% trans "Resource extraction:" %} <a class="toggle-tooltip bottom" href="/about/#what-is-a-land-deal" data-original-title="" title=""><i class="icon icon-question-sign"></i></a></h3>
+            </div>
+            <div class="col-sm-6 size">
+                <h4>{% trans "Size" %}</h4>
+                <p class="number number-concluded">39,453,030 ha</p>
+                <div class="progress progress-concluded">
+                    <div class="bar" style="width: 61%;"></div>
+                </div>
+                <p class="percentage percentage-concluded">61%</p>
+                <p class="number number-intended">19,032,857 ha</p>
+                <div class="progress progress-intended">
+                    <div class="bar" style="width: 29%;"></div>
+                </div>
+                <p class="percentage percentage-intended">29%</p>
+                <p class="number number-failed">6,597,171 ha</p>
+                <div class="progress progress-failed">
+                    <div class="bar" style="width: 10%;"></div>
+                </div>
+                <p class="percentage percentage-failed">10%</p>
+            </div>
+            <div class="col-sm-6 deals">
+                <h4>{% trans "Number of deals" %}</h4>
+                <p class="number number-concluded">1,158</p>
+                <div class="progress progress-concluded">
+                    <div class="bar" style="width: 80%;"></div>
+                </div>
+                <p class="percentage percentage-concluded">80%</p>
+                <p class="number number-intended">203</p>
+                <div class="progress progress-intended">
+                    <div class="bar" style="width: 14%;"></div>
+                </div>
+                <p class="percentage percentage-intended">14%</p>
+                <p class="number number-failed">92</p>
+                <div class="progress progress-failed">
+                    <div class="bar" style="width: 6%;"></div>
+                </div>
+                <p class="percentage percentage-failed">6%</p>
+            </div>
+            <div class="well-square legend">
+                <ul class="list-inline">
+                    <li><i class="icon icon-none" style="background-color: #ed881b;"></i> Concluded</li>
+                    <li><i class="icon icon-none" style="background-color: #b96c12;"></i> Intended</li>
+                    <li><i class="icon icon-none" style="background-color: #884e0e;"></i> Failed</li>
+                </ul>
+            </div>
+        </div>
+
 
     </div>
 </div>
@@ -293,11 +393,123 @@ function draw (charttype) {
         }
     });
 
+    $("#resource_extraction").addClass("hidden");
+    $("#logging").addClass("hidden");
+
+
     $("#deal_data_selector").show();
 
     if (charttype == "resource_extraction") {
-        $("#AreaChart").show();
-        buildAreaChart();
+
+        $.get('/api/statistics.json', function (data) {
+            var stats = $('#resource_extraction'),
+                    size = stats.find('.size'),
+                    deals = stats.find('.deals'),
+                    by_deals = [0, 0, 0, 0],
+                    by_size = [0, 0, 0, 0],
+                    item;
+            for (var i = 0; i < data.length; i++) {
+                item = data[i];
+                // Update numbers
+                if (item[0].startsWith('Concluded')) {
+                    by_deals[1] += item[1];
+                    by_size[1] += item[2];
+                } else if (item[0].startsWith('Intended')) {
+                    by_deals[2] += item[1];
+                    by_size[2] += item[2];
+                } else if (item[0].startsWith('Failed')) {
+                    by_deals[3] += item[1];
+                    by_size[3] += item[2];
+                }
+                // Update totals
+                by_deals[0] += item[1];
+                by_size[0] += item[2];
+            };
+            // Update by size
+            size.find('.number-concluded').text(by_size[1] + ' ha');
+            percentage = parseInt(by_size[1] / by_size[0] * 100) + '%';
+            size.find('.progress-concluded .bar').css('width', percentage);
+            size.find('.percentage-concluded').text(percentage);
+            size.find('.number-intended').text(by_size[2] + ' ha');
+            percentage = parseInt(by_size[2] / by_size[0] * 100) + '%';
+            size.find('.progress-intended .bar').css('width', percentage);
+            size.find('.percentage-intended').text(percentage);
+            size.find('.number-failed').text(by_size[3] + ' ha');
+            percentage = parseInt(by_size[3] / by_size[0] * 100) + '%';
+            size.find('.progress-failed .bar').css('width', percentage);
+            size.find('.percentage-failed').text(percentage);
+
+            // Update by deals
+            deals.find('.number-concluded').text(by_deals[1]);
+            percentage = parseInt(by_deals[1] / by_deals[0] * 100) + '%';
+            deals.find('.progress-concluded .bar').css('width', percentage);
+            deals.find('.percentage-concluded').text(percentage);
+            deals.find('.number-intended').text(by_deals[2]);
+            percentage = parseInt(by_deals[2] / by_deals[0] * 100) + '%';
+            deals.find('.progress-intended .bar').css('width', percentage);
+            deals.find('.percentage-intended').text(percentage);
+            deals.find('.number-failed').text(by_deals[3]);
+            percentage = parseInt(by_deals[3] / by_deals[0] * 100) + '%';
+            deals.find('.progress-failed .bar').css('width', percentage);
+            deals.find('.percentage-failed').text(percentage);
+        });
+
+        $("#resource_extraction").removeClass("hidden");
+    } else if (charttype == "logging") {
+        $.get('/api/statistics.json', function (data) {
+            var stats = $('#logging'),
+                    size = stats.find('.size'),
+                    deals = stats.find('.deals'),
+                    by_deals = [0, 0, 0, 0],
+                    by_size = [0, 0, 0, 0],
+                    item;
+            for (var i = 0; i < data.length; i++) {
+                item = data[i];
+                // Update numbers
+                if (item[0].startsWith('Concluded')) {
+                    by_deals[1] += item[1];
+                    by_size[1] += item[2];
+                } else if (item[0].startsWith('Intended')) {
+                    by_deals[2] += item[1];
+                    by_size[2] += item[2];
+                } else if (item[0].startsWith('Failed')) {
+                    by_deals[3] += item[1];
+                    by_size[3] += item[2];
+                }
+                // Update totals
+                by_deals[0] += item[1];
+                by_size[0] += item[2];
+            };
+            // Update by size
+            size.find('.number-concluded').text(by_size[1] + ' ha');
+            percentage = parseInt(by_size[1] / by_size[0] * 100) + '%';
+            size.find('.progress-concluded .bar').css('width', percentage);
+            size.find('.percentage-concluded').text(percentage);
+            size.find('.number-intended').text(by_size[2] + ' ha');
+            percentage = parseInt(by_size[2] / by_size[0] * 100) + '%';
+            size.find('.progress-intended .bar').css('width', percentage);
+            size.find('.percentage-intended').text(percentage);
+            size.find('.number-failed').text(by_size[3] + ' ha');
+            percentage = parseInt(by_size[3] / by_size[0] * 100) + '%';
+            size.find('.progress-failed .bar').css('width', percentage);
+            size.find('.percentage-failed').text(percentage);
+
+            // Update by deals
+            deals.find('.number-concluded').text(by_deals[1]);
+            percentage = parseInt(by_deals[1] / by_deals[0] * 100) + '%';
+            deals.find('.progress-concluded .bar').css('width', percentage);
+            deals.find('.percentage-concluded').text(percentage);
+            deals.find('.number-intended').text(by_deals[2]);
+            percentage = parseInt(by_deals[2] / by_deals[0] * 100) + '%';
+            deals.find('.progress-intended .bar').css('width', percentage);
+            deals.find('.percentage-intended').text(percentage);
+            deals.find('.number-failed').text(by_deals[3]);
+            percentage = parseInt(by_deals[3] / by_deals[0] * 100) + '%';
+            deals.find('.progress-failed .bar').css('width', percentage);
+            deals.find('.percentage-failed').text(percentage);
+        });
+
+        $("#logging").removeClass('hidden');
     } else if (charttype == "produce_info") {
         $("#TreeChart").show();
         buildTreeChart();
@@ -315,5 +527,6 @@ function draw (charttype) {
         buildAgriculturalPies();
     }
 }
+
 </script>
 {% endblock %}
