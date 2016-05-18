@@ -29,7 +29,7 @@ class MapActivityTagGroup(MapTagGroups):
         #     fk_activity__pk__in=MapActivity.all_ids()
         # ).filter(fk_activity__activity_identifier=11)
         # to migrate a subset of versioned tag groups
-        # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')[:30000]
+        # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')[:10000]
         # to migrate all tag groups including old versions
         tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')
         key_value_lookup = A_Key_Value_Lookup
@@ -106,6 +106,8 @@ class MapActivityTagGroup(MapTagGroups):
 
         return current_activity
 
+    tag_group_to_attribute_group_ids = {}
+
     @classmethod
     def write_activity_attribute_group(cls, attrs, tag_group, year, name):
         activity_id = cls.matching_activity_id(tag_group)
@@ -124,6 +126,7 @@ class MapActivityTagGroup(MapTagGroups):
             else:
                 aag.save(using=V2)
 
+        cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
         return aag
 
     @classmethod

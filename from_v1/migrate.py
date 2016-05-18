@@ -65,6 +65,9 @@ def read_options():
         "--activity", action='store_true', help="Migrate activities only"
     )
     parser.add_argument(
+        "--old_comment", action='store_true', help="Migrate activity & stakeholder comments only"
+    )
+    parser.add_argument(
         "--all", action='store_true', help="Migrate all tables"
     )
     return parser.parse_args()
@@ -83,6 +86,10 @@ if __name__ == '__main__':
 
         options = read_options()
         print(options)
+
+        if options.old_comment:
+            MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
+            MapComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.activity:
             MapStatus._done = True
