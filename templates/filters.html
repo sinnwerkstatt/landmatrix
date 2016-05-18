@@ -100,6 +100,7 @@
                 </div>
             </form>
         </div>
+        {% if columns %}
         <div id="columnsrow" class="row">
             <div class="col-sm-12">
                 <h6>{% trans "Select columns for the result table" %}</h6>
@@ -108,6 +109,7 @@
                 </select>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 

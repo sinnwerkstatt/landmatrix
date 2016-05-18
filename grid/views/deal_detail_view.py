@@ -73,7 +73,7 @@ class DealDetailView(TemplateView):
             'attributes': deal.attributes,
             'operational_stakeholder': deal.operational_stakeholder,
             'stakeholders': deal.stakeholders,
-            'object': deal
+            'object': deal,
         }
         context['forms'] = get_forms(deal)
         context['investor'] = deal.stakeholders
@@ -83,6 +83,7 @@ class DealDetailView(TemplateView):
             pass
 
         context['export_formats'] = ("XML", "CSV", "XLS", "PDF")
+        context['pdf_export_url'] = self.pdf_export_url
 
         return context
 
