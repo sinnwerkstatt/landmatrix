@@ -4,7 +4,7 @@ from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from grid.forms.deal_former_use_form import DealFormerUseForm
 from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
-from grid.forms.deal_spatial_form import ChangeDealSpatialFormSet
+from grid.forms.deal_spatial_form import DealSpatialFormSet
 from grid.forms.change_deal_general_form import ChangeDealGeneralForm
 from grid.forms.change_deal_employment_form import ChangeDealEmploymentForm
 from grid.forms.deal_data_source_form import ChangeDealDataSourceFormSet
@@ -203,7 +203,7 @@ debug_found_form.printed = False
 
 
 CHANGE_FORMS = [
-    ChangeDealSpatialFormSet,
+    DealSpatialFormSet,
     ChangeDealGeneralForm,
     ChangeDealEmploymentForm,
     InvestorForm,

@@ -506,7 +506,6 @@ select:not([multiple]) {
   margin-bottom: 20px; }
 
 #manage-filters {
-  border: solid 1px #919191;
   font-weight: 300;
   margin-top: 10px; }
 
@@ -516,6 +515,19 @@ select:not([multiple]) {
   height: 200px;
   padding: 0;
   padding: 5px 15px; }
+
+#filterrow {
+  margin: 0px;
+  border: solid 1px #919191; }
+  #filterrow h6 {
+    margin: 10px 0 5px; }
+
+#columnsrow h6 {
+  color: #c6c6c6;
+  margin: 15px 0 5px; }
+
+#columnsrow .select2 {
+  width: 100% !important; }
 
 #filters ul.variables h4 {
   font-size: 14px;
@@ -624,6 +636,9 @@ select:not([multiple]) {
 
 .filterbox.no-pad {
   padding: 5px 0 15px; }
+
+.filterbox.no-pad h6 {
+  padding: 0 15px; }
 
 #filters ul.presets.ul.variables li a,
 #filters ul.variables li a {

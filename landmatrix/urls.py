@@ -49,9 +49,9 @@ urlpatterns = patterns('',
     url(r'^news/', include('blog.urls', namespace='news')),
     url(r'^documents/', include(wagtaildocs_urls)),
 
-    url(r'^global/data/', include(grid_urls)),
-    url(r'^global/map/', include(map_urls)),
-    url(r'^global/charts/', include(charts_urls)),
+    url(r'^data/', include(grid_urls)),
+    url(r'^map/', include(map_urls)),
+    url(r'^charts/', include(charts_urls)),
 
     # url(r'^region/(?P<region_slug>)/data/', include(grid_urls)),
     # url(r'^region/(?P<region_slug>)/map/', include(map_urls)),

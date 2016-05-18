@@ -2,6 +2,7 @@ import urllib.request
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 from django.core.files.base import File
 from django.forms.models import formset_factory
 from django.template.defaultfilters import slugify
@@ -272,9 +273,9 @@ def handle_url(form_data, request):
                                          ContentFile(response.read()))
             else:
                 # Create PDF from URL
+                # TODO: fix NameError (uploaded_pdf_path)
                 output = wkhtmltopdf(pages=url, output=uploaded_pdf_path)
-                print('wkhtmltopdf output:', output)
-            form_data['date'] = date.today().strftime("%Y-%m-%d")
+            form_data['date'] = timezone.now().strftime("%Y-%m-%d")
             form_data['file'] = url_slug
         except Exception as e:
             print(e)

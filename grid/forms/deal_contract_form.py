@@ -74,5 +74,8 @@ class DealContractFormSet(formset_factory(DealContractForm, extra=0)):
             data.append(form_data)
         return data
 
+    def get_attributes(self, request=None):
+        return [form.get_attributes(request) for form in self.forms]
+
     class Meta:
         name = 'contract_data'

@@ -30,6 +30,9 @@
 
         <div class="panel-group" id="accordion">
             {% include "includes/dealpanels.html" %}
+            {% if history|length > 1 %}
+                {% include "includes/deal-history.html" %}
+            {% endif %}
         </div>
 
         <input type="submit" class="btn btn-primary" value="{% trans 'Submit' %}"/>

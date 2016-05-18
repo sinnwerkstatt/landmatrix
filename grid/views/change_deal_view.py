@@ -17,11 +17,11 @@ from grid.forms.deal_former_use_form import DealFormerUseForm
 from grid.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
 from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from grid.forms.deal_produce_info_form import DealProduceInfoForm
-from grid.forms.deal_spatial_form import ChangeDealSpatialFormSet
+from grid.forms.deal_spatial_form import DealSpatialFormSet
 from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
-from grid.forms.country_specific_forms import get_country_specific_form_class
+from grid.forms.country_specific_forms import get_country_specific_form_classes
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -30,7 +30,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class ChangeDealView(SaveDealView):
 
     FORMS = [
-        ChangeDealSpatialFormSet,
+        DealSpatialFormSet,
         ChangeDealGeneralForm,
         DealContractFormSet,
         AddDealEmploymentForm,
@@ -60,23 +60,24 @@ class ChangeDealView(SaveDealView):
 
     def get_forms(self, data=None, files=None):
         deal = Deal(self.activity.activity_identifier)
-        forms = [
-            self.get_form(deal, form, data, files=files) for form in self.FORMS
-        ]
+        forms = []
 
-        country_specific_form_class = get_country_specific_form_class(deal)
+        for form_class in self.FORMS:
+            form = self.get_form(deal, form_class, data=data, files=files)
+            forms.append(form)
 
-        if country_specific_form_class:
-            country_specific_form = self.get_form(deal,
-                                                  country_specific_form_class,
+        for form_class in get_country_specific_form_classes(self.activity):
+            country_specific_form = self.get_form(deal, form_class,
                                                   data=data, files=files)
             forms.append(country_specific_form)
 
         return forms
 
-    def get_form(self, deal, form_class, data=None, files=None):
-        initial = form_class.get_data(deal)
-        form = form_class(initial=initial, data=data, files=files)
+    def get_form(self, deal, form_class, **kwargs):
+        kwargs['initial'] = form_class.get_data(deal)
+        if 'prefix' not in kwargs:
+            kwargs['prefix'] = self.get_form_prefix(form_class)
+        form = form_class(**kwargs)
 
         return form
 

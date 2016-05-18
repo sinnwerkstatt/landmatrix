@@ -11,9 +11,9 @@ class Filter(dict):
 
     def __init__(self, variable, operator, value, name=None):
 
-        if operator[0] not in FilterToSQL.OPERATION_MAP:
+        if operator not in FilterToSQL.OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
-        if variable[0] not in get_filter_vars():
+        if variable not in get_filter_vars():
             raise ValueError('No such variable: {}'.format(variable))
 
         Filter.filter_number += 1
