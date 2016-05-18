@@ -497,6 +497,11 @@ a.remove-ybd:hover {
 .control-group.parent-investor-form .input-group {
   width: auto; }
 
+/* Chrome-on-OSX (only!) bugfix, select fields are (weirdly) not high enough on that platform: */
+select:not([multiple]) {
+  height: 42px !important;
+  /* A good number.. */ }
+
 #filters {
   margin-bottom: 20px; }
 
@@ -550,12 +555,18 @@ a.remove-ybd:hover {
     margin-left: 15px !important; }
   .filtercontrolbox {
     border-bottom: none !important;
-    height: 100px; }
+    height: inherit; }
   .filtervaluebox {
     border-top: none !important;
     border-bottom: none !important;
     height: auto;
-    /* 300px; */ } }
+    /* 300px; */ }
+  /* TODO: Might make sense to hide those (they're empty), to conserve vertical space:
+  .filtervaluebox > h6,
+  .filtercontrolbox > h6 {
+    display: none;
+  }
+  */ }
 
 #filter_operator,
 #filter_submit {
@@ -574,7 +585,7 @@ a.remove-ybd:hover {
   width: 95%; }
 
 #filter_value .bootstrap-datetimepicker-widget {
-  display: inline-block !important; }
+  display: flex !important; }
 
 #filter_value > ul:nth-child(1) {
   overflow-y: auto;

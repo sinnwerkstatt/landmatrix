@@ -271,3 +271,8 @@ a.remove-ybd:hover {
 .control-group.parent-investor-form .input-group {
   width: auto;
 }
+
+/* Chrome-on-OSX (only!) bugfix, select fields are (weirdly) not high enough on that platform: */
+select:not([multiple]) {
+  height: 42px !important; /* A good number.. */
+}
