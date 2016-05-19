@@ -14,6 +14,7 @@ from mapping.map_crop import MapCrop, MapAnimal, MapMineral, MapAgriculturalProd
 from mapping.map_comment import MapComment
 from mapping.map_investor import MapInvestor
 from mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
+from mapping.map_land_observatory import MapLandObservatory
 from mapping.map_stakeholder_investor import MapStakeholderInvestor
 from mapping.map_stakeholder_venture_involvement import MapStakeholderVentureInvolvement
 from mapping.map_public_interface_cache import MapPublicInterfaceCache
