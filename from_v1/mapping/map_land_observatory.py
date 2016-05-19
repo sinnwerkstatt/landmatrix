@@ -3,6 +3,7 @@ from .land_observatory_objects.activity import Activity
 from .land_observatory_objects.stakeholder import Stakeholder
 from .land_observatory_objects.changeset import Changeset
 from .land_observatory_objects.involvement import Involvement
+from .map_model import MapModel
 
 from migrate import V1, V2
 
@@ -30,64 +31,72 @@ class MapLandObservatory:
         MapLOInvolvements.map_all(save, verbose)
 
 
+class MapLOModel(MapModel):
+
+    DB = 'lo'
+
+    @classmethod
+    def map_record(cls, record, save=False, verbose=False):
+        print(record)
+        
+
 def map_status_id(id):
     return id
 
 
-class MapLOActivities:
+class MapLOActivities(MapLOModel):
 
+    old_class = Activity
     attributes = {
         'fk_status': ('fk_status_id', map_status_id),
     }
-    activities = Activity.objects.using('lo').all()
 
     @classmethod
-    def map_all(cls, save=False, verbose=False):
-        print(cls.activities)
+    def all_records(cls):
+        return Activity.objects.using('lo').all().values()
 
 
-class MapLOATagGroups:
+class MapLOATagGroups(MapLOModel):
 
-    tag_groups = A_Tag_Group.objects.using('lo').all()
-
-    @classmethod
-    def map_all(cls, save=False, verbose=False):
-        for tg in cls.tag_groups:
-            print(tg)
-
-
-class MapLOStakeholders:
-
-    stakeholders = Stakeholder.objects.using('lo').all()
+    old_class = A_Tag_Group
 
     @classmethod
-    def map_all(cls, save=False, verbose=False):
-        print(cls.stakeholders)
+    def all_records(cls):
+        return A_Tag_Group.objects.using('lo').all().values()
 
 
-class MapLOSTagGroups:
+class MapLOStakeholders(MapLOModel):
 
-    tag_groups = SH_Tag_Group.objects.using('lo').all()
-
-    @classmethod
-    def map_all(cls, save=False, verbose=False):
-        for tg in cls.tag_groups:
-            print(tg)
-
-
-class MapLOChangesets:
-
-    changesets = Changeset.objects.using('lo').all()
+    old_class = Stakeholder
 
     @classmethod
-    def map_all(cls, save=False, verbose=False):
-        print(cls.changesets)
+    def all_records(cls):
+        return Stakeholder.objects.using('lo').all().values()
 
-class MapLOInvolvements:
 
-    involvements = Involvement.objects.using('lo').all()
+class MapLOSTagGroups(MapLOModel):
+
+    old_class = SH_Tag_Group
 
     @classmethod
-    def map_all(cls, save=False, verbose=False):
-        for tg in cls.involvements:
-            print(tg)
+    def all_records(cls):
+        return SH_Tag_Group.objects.using('lo').all().values()
+
+
+class MapLOChangesets(MapLOModel):
+
+    old_class = Changeset
+
+    @classmethod
+    def all_records(cls):
+        return Changeset.objects.using('lo').all().values()
+
+
+class MapLOInvolvements(MapLOModel):
+
+    old_class = Involvement
+
+    @classmethod
+    def all_records(cls):
+        return Involvement.objects.using('lo').all().values()
+
