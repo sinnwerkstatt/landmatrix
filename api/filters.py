@@ -2,25 +2,34 @@ from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from grid.views.view_aux_functions import get_filter_vars
 from landmatrix.models.filter_preset import FilterPreset
 
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
+
+# TODO: this counter is shared by all users, and is per thread.
+# It should probably be moved to the session
+FILTER_COUNTER = 0
+
+
+def generate_filter_name():
+    global FILTER_COUNTER
+    FILTER_COUNTER += 1
+    return 'filter_{}'.format(FILTER_COUNTER)
 
 
 class Filter(dict):
 
-    filter_number = 0
-
     def __init__(self, variable, operator, value, name=None):
-
         if operator not in FilterToSQL.OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
         if variable not in get_filter_vars():
             raise ValueError('No such variable: {}'.format(variable))
 
-        Filter.filter_number += 1
-        super().__init__(
-            {'name': name if name else 'filter_{}'.format(Filter.filter_number),
-             'variable': variable, 'operator': operator, 'value': value}
-        )
+        if name is None:
+            name = generate_filter_name()
+
+        super().__init__(name=name, variable=variable, operator=operator,
+                         value=value)
 
     @property
     def name(self):
@@ -30,20 +39,16 @@ class Filter(dict):
 class PresetFilter(dict):
 
     def __init__(self, preset_id, name=None):
+        self.preset_id = preset_id
+        # Store this obj during init, rather than doing seperate validation
+        # and a get method
+        self.filter = FilterPreset.objects.get(id=self.preset_id)
 
-        self.preset_id = preset_id.pop()
-        if not FilterPreset.objects.filter(id=self.preset_id).exists():
-            raise ValueError('No such preset filter: {}'.format(self.preset_id))
+        if name is None:
+            name = generate_filter_name()
 
-        Filter.filter_number += 1
-        super().__init__(
-            {'name': name if name else 'filter_{}'.format(Filter.filter_number), 'preset_id': self.preset_id}
-        )
+        super().__init__(name=name, preset_id=self.preset_id)
 
     @property
     def name(self):
         return self['name']
-
-    @property
-    def filter(self):
-        return FilterPreset.objects.get(id=self.preset_id)
