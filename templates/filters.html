@@ -100,14 +100,22 @@
                 </div>
             </form>
         </div>
+        {% if columns %}
         <div id="columnsrow" class="row">
             <div class="col-sm-12">
                 <h6>{% trans "Select columns for the result table" %}</h6>
                 <select id="id_columns" name="columns" multiple="multiple">
-                    <option value="1">Example</option>
+                    {% for group in variables %}
+                    <optgroup label="{{ group.label }}">
+                        {% for variable in group.items %}
+                        <option value="{{ variable.name }}"{% if variable.name in columns %} selected="selected"{% endif %}>{% trans variable.label %}</option>
+                        {% endfor %}
+                    </optgroup>
+                    {% endfor %}
                 </select>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 

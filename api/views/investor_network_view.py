@@ -14,7 +14,7 @@ class InvestorNetworkView(APIView):
 
     def get_object(self):
         '''
-        Returns an investor object and a validated investor_diagram int.
+        Returns an investor object.
         '''
         try:
             investor_id = int(
