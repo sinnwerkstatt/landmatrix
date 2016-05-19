@@ -188,7 +188,7 @@
             <td class="investor-country">
               {% if item.stakeholder_country %}
               {% for stakeholder_country  in item.stakeholder_country %}
-                <a href="/data/by-investor-country/{{stakeholder_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ stakeholder_country }}</a><br/>
+                <a href="/data/by-stakeholder-country/{{stakeholder_country|slugify}}/?{% add_or_update_param request.GET 'order_by' '' %}">{{ stakeholder_country }}</a><br/>
               {% endfor %}
               {% else %}{% trans "unknown country" %}{% endif %}
             </td>
