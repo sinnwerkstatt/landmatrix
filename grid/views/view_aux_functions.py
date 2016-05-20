@@ -93,7 +93,6 @@ def apply_filters_from_session(request, filter_dict):
     """Reads filter values stored in the current FE user's session and stores
        them in filter_dict. Used in ActivityQuerySet for the grid views and in
        FakeQuerySet for the API calls."""
-
     for filter in request.session.get('filters', {}).items():
         if 'variable' in filter[1]:
             _update_filters(filter_dict, filter)
@@ -150,8 +149,8 @@ def _get_filter_definition(filter_data):
         {'variable__operator': value}
         """
     filter_data = filter_data[1]
-    variable = filter_data['variable']
-    operator = filter_data['operator']
+    variable = filter_data['variable'][0]
+    operator = filter_data['operator'][0]
     value = _parse_value(filter_data['value'])
     if 'country' in variable and not value.isnumeric():
         value = str(Country.objects.get(name__iexact=value).pk)
