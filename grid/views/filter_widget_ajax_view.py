@@ -3,6 +3,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from grid.views.browse_filter_conditions import get_field_by_key
 from grid.widgets import LocationWidget, YearBasedSelect, YearBasedMultipleSelect, YearBasedTextInput, NumberInput
 from grid.forms.deal_primary_investor_form import DealPrimaryInvestorForm
+from grid.forms.choices import intention_choices, int_choice_to_string
 
 from django.http import HttpResponse
 from django.views.generic.edit import View
@@ -136,6 +137,11 @@ class FilterWidgetAjaxView(View):
             else:
 
                 if issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple, RadioSelect)):
+                    # TODO: this is a quick hack to get intention filters
+                    # working. In future we should align the form values (ints)
+                    # and DB representations (strings)
+                    if key_id == 'intention':
+                        field.choices = int_choice_to_string(intention_choices)
                     widget = widget.render(request.GET.get("name", ""), value)
                 elif issubclass(type(field.widget), (YearBasedMultipleSelect, YearBasedSelect, YearBasedTextInput)):
                     widget = widget.render(request.GET.get("name", ""), ",".join(value),

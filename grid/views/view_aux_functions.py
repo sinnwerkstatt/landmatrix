@@ -129,10 +129,10 @@ def _get_filter_definition(filter_data):
        into the format used by FilterToSql:
         {'variable__operator': value}
         """
-    filter_data = filter_data[1]
-    variable = filter_data['variable']
-    operator = filter_data['operator']
-    value = _parse_value(filter_data['value'])
+    filter_data = filter_data
+    variable = filter_data[1]['variable']
+    operator = filter_data[1]['operator']
+    value = _parse_value(filter_data[1]['value'])
     if 'country' in variable and not value.isnumeric():
         value = str(Country.objects.get(name__iexact=value).pk)
     if 'in' in operator and not isinstance(value, list):

@@ -63,5 +63,12 @@ price_type_choices = (
 
 
 def int_choice_to_string(choices):
-    return ((value, value) for (key, value) in choices)
-
+    if choices and len(choices[0]) == 3:
+        for key, value, sub_choices in choices:
+            if sub_choices:
+                yield (value, value, int_choice_to_string(sub_choices))
+            else:
+                yield (value, value, None)
+    elif choices and len(choices[0]) == 2:
+        for key, value in choices:
+            yield (value, value)
