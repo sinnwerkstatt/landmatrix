@@ -41,44 +41,6 @@
 {% include "filters.html" %}
 
 {% if data.items %}
-{% if not group_value %}
-{% if group == "investor name" or group == "investor country" or group == "target country" %}
-<div class="btn-toolbar">
-    <div class="btn-group" data-toggle="buttons-radio">
-      <a class="btn btn-mini{% if filters.starts_with == 'A' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'A' %}">A</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'B' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'B' %}">B</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'C' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'C' %}">C</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'D' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'D' %}">D</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'E' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'E' %}">E</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'F' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'F' %}">F</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'G' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'G' %}">G</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'H' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'H' %}">H</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'I' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'I' %}">I</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'J' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'J' %}">J</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'K' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'K' %}">K</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'L' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'L' %}">L</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'M' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'M' %}">M</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'N' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'N' %}">N</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'O' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'O' %}">O</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'P' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'P' %}">P</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'Q' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Q' %}">Q</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'R' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'R' %}">R</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'S' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'S' %}">S</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'T' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'T' %}">T</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'U' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'U' %}">U</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'V' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'V' %}">V</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'W' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'W' %}">W</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'X' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'X' %}">X</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'Y' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Y' %}">Y</a>
-      <a class="btn btn-mini{% if filters.starts_with == 'Z' %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' 'Z' %}">Z</a>
-    </div>
-    <div class="btn-group" data-toggle="buttons-radio">
-      <a class="btn btn-mini{% if not filters.starts_with %} active{% endif %}" href="?{% add_or_update_param request.GET 'starts_with' '' %}">{% trans "ALL" %}</a>
-    </div>
-    <a href="#" class="toggle-tooltip" title="{% trans 'You can filter by initial letter.' %}"> <i class="lm lm-question-circle"> </i></a>
-</div>
-{% endif %}
-{% endif %}
 <table id="summary" class="table table-striped">
   <thead>
     <tr>
