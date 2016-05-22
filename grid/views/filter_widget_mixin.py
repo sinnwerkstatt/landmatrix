@@ -8,11 +8,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from grid.views.view_aux_functions import (
-    create_condition_formset, create_preset_table,
+    create_condition_formset
 )
 
 from .profiling_decorators import print_execution_time_and_num_queries
-from landmatrix.models.browse_condition import BrowseCondition
+from landmatrix.models import BrowseCondition, FilterPresetGroup
 from api.filters import Filter
 
 
@@ -27,11 +27,6 @@ class FilterWidgetMixin:
 
     current_formset_conditions = None
     filters = None
-
-    def create_preset_table(self):
-        # moved the function to view_aux_functions because it is static
-        # redirected from here in order to keep the interface
-        return create_preset_table()
 
     def create_variable_table(self):
         # moved the function to view_aux_functions because it is static
@@ -57,8 +52,7 @@ class FilterWidgetMixin:
 
         variables = self.create_variable_table()
         context['variables'] = variables
-        presets = self.create_preset_table()
-        context['presets'] = presets
+        context['presets'] = FilterPresetGroup.objects.all()
 
     @print_execution_time_and_num_queries
     def get_filter_context(self, formset_conditions, order_by=None, group_by=None, group_value=None, starts_with=None):

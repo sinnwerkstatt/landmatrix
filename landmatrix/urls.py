@@ -119,17 +119,17 @@ urlpatterns = patterns('',
         name='stakeholder_form'
     ),
     url(
-        r'^compare_investors/(?P<investor_1_id>[\d]+)/(?P<investor_2_id>[\d]+)/$',
+        r'^stakeholders/compare/(?P<investor_1_id>[\d]+)/(?P<investor_2_id>[\d]+)/$',
         cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
         name='compare_investors'
     ),
     url(
-        r'^compare_investors/(?P<investor_1>[\d_\.]+)/$',
+        r'^stakeholders/compare/(?P<investor_1>[\d_\.]+)/$',
         cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
         name='compare_investors'
     ),
     url(
-        r'^compare_investors/(?P<investor_1>.+)/$',
+        r'^stakeholders/compare/(?P<investor_1>.+)/$',
         cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
         name='compare_investors'
     ),

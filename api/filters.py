@@ -1,5 +1,4 @@
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
-from grid.views.view_aux_functions import get_filter_vars
 from landmatrix.models.filter_preset import FilterPreset
 
 
@@ -19,17 +18,17 @@ def generate_filter_name():
 
 class Filter(dict):
 
-    def __init__(self, variable, operator, value, name=None):
+    def __init__(self, variable, operator, value, name=None, label=None):
         if operator not in FilterToSQL.OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
-        if variable not in get_filter_vars():
-            raise ValueError('No such variable: {}'.format(variable))
+        #if variable not in get_filter_vars():
+        #    raise ValueError('No such variable: {}'.format(variable))
 
         if name is None:
             name = generate_filter_name()
 
         super().__init__(name=name, variable=variable, operator=operator,
-                         value=value)
+                         value=value, label=label)
 
     @property
     def name(self):
@@ -38,7 +37,7 @@ class Filter(dict):
 
 class PresetFilter(dict):
 
-    def __init__(self, preset_id, name=None):
+    def __init__(self, preset_id, name=None, label=None):
         self.preset_id = preset_id
         # Store this obj during init, rather than doing seperate validation
         # and a get method
@@ -47,7 +46,7 @@ class PresetFilter(dict):
         if name is None:
             name = generate_filter_name()
 
-        super().__init__(name=name, preset_id=self.preset_id)
+        super().__init__(name=name, preset_id=self.preset_id, label=label)
 
     @property
     def name(self):

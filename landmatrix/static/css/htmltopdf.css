@@ -1,9 +1,11 @@
 /*  Styling for PDF exports goes here */
 .navbar-main,
+.navbar-subnav,
 .wrap > .container > .row:first-child,
 footer,
 #collapsebtn_history,
-#collapse_comments form {
+#collapse_comments form,
+#filters {
     display: none;
 }
 .collapse {

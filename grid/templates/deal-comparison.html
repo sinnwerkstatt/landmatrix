@@ -25,7 +25,7 @@
 
             <div class="panel-group" id="accordion">
 
-            {% if not comparison_forms.2 %}<strong>{% trans "DIFFERENT" %}</strong>{% endif %}
+            {% if not comparison_forms.2 %}<strong>{% trans "Different" %}</strong>{% endif %}
             {% if comparison_forms.0 %}
 
                 <div class="panel panel-default">
@@ -44,9 +44,7 @@
 
                       <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                         <div class="panel-body">
-                          <table>
-                              {{ form }}
-                          </table>
+                          {% include "form.html" with form=form %}
                         </div>
                       </div>
 
@@ -64,11 +62,7 @@
 
                     <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                       <div class="panel-body">
-                        <table>
-
-                          {{ comparison_forms.0.as_table }}
-
-                        </table>
+                        {% include "form.html" with comparison_forms.0 %}
                       </div>
                     </div>
 
@@ -106,9 +100,7 @@
 
                   <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                     <div class="panel-body">
-                      <table>
-                          {{ form }}
-                      </table>
+                        {% include "form.html" with form=form %}
                     </div>
                   </div>
 
@@ -126,11 +118,7 @@
 
                 <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                   <div class="panel-body">
-                    <table>
-
-                      {{ comparison_forms.1.as_table }}
-
-                    </table>
+                    {% include "form.html" with form=comparison_forms.1 %}
                   </div>
                 </div>
 
