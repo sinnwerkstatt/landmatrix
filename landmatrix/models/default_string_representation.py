@@ -1,11 +1,12 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-""" Needs to be the first class inherited from when using it for multiple inheritance,
-    if the other classes define a ___str___ method too the implementation of the class
-    first in the list of base classes is used.
-"""
 class DefaultStringRepresentation:
+
+    """ Needs to be the first class inherited from when using it for multiple inheritance,
+        if the other classes define a ___str___ method too the implementation of the class
+        first in the list of base classes is used.
+    """
 
     indent_depth = 0
 
@@ -37,7 +38,7 @@ class DefaultStringRepresentation:
         try:
             return object_class.objects.get(id=int(value))
         except Exception:
-            return str(object_class)+'.get('+str(id)+') does not exist, last id is '+str(object_class.objects.last().id)
+            return str(object_class)+'.get('+str(id)+') does not exist'
 
     def is_database_relation(self, key):
         return key.startswith('fk_')
@@ -49,7 +50,10 @@ def fk_to_class_name(str):
 def str_to_class(str):
         import importlib
         module = importlib.import_module('landmatrix.models')
-        instance = getattr(module, str)()
+        try:
+            instance = getattr(module, str)()
+        except AttributeError:
+            return None
         return type(instance)
 
 def to_camel_case(snake_str):

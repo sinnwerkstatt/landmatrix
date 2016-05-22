@@ -166,10 +166,10 @@ if __name__ == '__main__':
     except ConnectionDoesNotExist as e:
         print('You need to set CONVERT_DB to True in settings.py!')
         print(e)
-    except AttributeError as e:
-        print('You need to check out branch "postgres" of the old land-matrix project under')
-        print(BASE_PATH+'/land-matrix!')
-        print(e)
+    # except AttributeError as e:
+    #     print('You need to check out branch "postgres" of the old land-matrix project under')
+    #     print(BASE_PATH+'/land-matrix!')
+    #     print(e)
     except (AttributeError, ImportError) as e:
         print('To migrate the original MySQL data you need to check out branch "master" of the')
         print('old land-matrix project under '+BASE_PATH+'/land-matrix!')
