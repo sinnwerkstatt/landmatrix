@@ -1,4 +1,3 @@
-from types import new_class
 
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.investor import Investor
@@ -9,7 +8,7 @@ from .land_observatory_objects.involvement import Involvement
 from .map_lo_model import MapLOModel
 from .map_lo_activities import MapLOActivities
 
-from migrate import V1, V2
+from migrate import V2
 
 from django.db import transaction
 
@@ -28,11 +27,10 @@ class MapLandObservatory:
     @transaction.atomic(using=V2)
     def map_all(cls, save=False, verbose=False):
         MapLOActivities.map_all(save, verbose)
-        MapLOATagGroups.map_all(save, verbose)
-        MapLOStakeholders.map_all(save, verbose)
-        MapLOSTagGroups.map_all(save, verbose)
-        MapLOChangesets.map_all(save, verbose)
-        MapLOInvolvements.map_all(save, verbose)
+        # MapLOStakeholders.map_all(save, verbose)
+        # MapLOSTagGroups.map_all(save, verbose)
+        # MapLOChangesets.map_all(save, verbose)
+        # MapLOInvolvements.map_all(save, verbose)
 
 
 class MapLOATagGroups(MapLOModel):
