@@ -785,6 +785,8 @@ form .panel-body {
   margin-top: -5px;
 }
 
+#logging .bar,
+#resource_extraction .bar,
 #stats .bar {
   padding: 0 8px 2px;
   text-align: left;
@@ -794,11 +796,15 @@ form .panel-body {
   height: 100%;
 }
 
+#logging .number,
+#resource_extraction .number,
 #stats .number {
   font-weight: bold;
   display: block;
 }
 
+#logging .progress,
+#resource_extraction .progress,
 #stats .progress {
   margin-bottom: 10px;
 }
@@ -836,6 +842,8 @@ form .panel-body {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#884e0e', endColorstr='#884e0e', GradientType=0);
 }
 
+#logging .legend ul,
+#resource_extraction .legend ul,
 #stats .legend ul {
   width: 300px;
   margin: 0 auto;
