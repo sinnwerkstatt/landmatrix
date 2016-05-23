@@ -72,3 +72,16 @@ def int_choice_to_string(choices):
     elif choices and len(choices[0]) == 2:
         for key, value in choices:
             yield (value, value)
+
+
+def get_choice_parent(selected_choice, choices):
+    for parent_choice in int_choice_to_string(choices):
+        if len(parent_choice) != 3:
+            break
+        child_choices = parent_choice[2]
+        if child_choices:
+            for child_choice in child_choices:
+                if child_choice[0] == selected_choice:
+                    return parent_choice[0]
+
+    return None

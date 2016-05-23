@@ -1,5 +1,6 @@
 from django.utils.translation import ugettext_lazy as _
 
+from grid.forms.choices import intention_choices, get_choice_parent
 from api.query_sets.sql_generation.join_functions import join_attributes
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -121,6 +122,39 @@ class FilterToSQL:
                                     "year": year and "AND attr_%i.year = '%s' " % (i, year) or ""
                                 }
                             )
+                # TODO: move this somewhere else, this function is too complicated
+                # TODO: optimize SQL? This query seems painful, it could be
+                # better as an array_agg possibly
+                if operation == 'is':
+                    # 'Is' operations requires that we exclude other values,
+                    # otherwise it's just the same as contains
+
+                    allowed_values = None
+                    if variable == 'intention':
+                        # intentions can be nested, for example all biofuels
+                        # deals are also agriculture (parent of biofuels)
+                        parent_value = get_choice_parent(v, intention_choices)
+                        if parent_value:
+                            allowed_values = (
+                                parent_value,
+                                v.replace("'", "\\'"),
+                            )
+
+                    if not allowed_values:
+                        allowed_values = (v.replace("'", "\\'"),)
+
+                    where.append("""
+                        AND a.id NOT IN (
+                            SELECT fk_activity_id
+                            FROM landmatrix_activityattributegroup 
+                            WHERE landmatrix_activityattributegroup.attributes ? '%(variable)s'
+                            AND landmatrix_activityattributegroup.attributes->'%(variable)s' NOT IN ('%(value)s')
+                        )
+                        """ % {
+                        'variable': variable,
+                        'value': "', '".join(allowed_values),
+                    })
+
         return '\n'.join(where)
 
     def where_investor(self):
