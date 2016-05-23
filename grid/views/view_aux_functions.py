@@ -2,8 +2,8 @@ from pprint import pprint
 
 from landmatrix.models.country import Country
 from landmatrix.models.filter_condition import FILTER_VAR_ACT, \
-    FILTER_VAR_INV, get_filter_vars, FilterCondition
-from landmatrix.models.filter_preset import FilterPreset
+    FILTER_VAR_INV, FilterCondition
+from landmatrix.models.filter_preset import FilterPresetGroup
 from grid.views.browse_condition_form import BrowseConditionForm
 from api.filters import PresetFilter
 
@@ -13,24 +13,6 @@ from django.http import HttpResponse
 import json
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-
-def create_preset_table():
-    groups = FilterPreset.objects.values_list().distinct()
-
-    table = {}
-    for item in groups:
-        newitem = {
-            'id': item[0],
-            'label': item[2]
-        }
-        if item[1] not in table:
-            table[item[1]] = [newitem]
-        else:
-            table[item[1]].append(newitem)
-
-    return table
-
 
 def create_condition_formset():
     from django.forms.formsets import formset_factory
@@ -97,10 +79,9 @@ def apply_filters_from_session(request, filter_dict):
         if 'variable' in filter[1]:
             _update_filters(filter_dict, filter)
         elif 'preset_id' in filter[1]:
-            preset = PresetFilter([filter[1]['preset_id']], filter[1].get('name'))
+            preset = PresetFilter(filter[1].get('preset_id'), filter[1].get('name'))
             for i, condition in enumerate(preset.filter.conditions()):
                 _update_filters(filter_dict, (filter[1].get('name') + '_{}'.format(i), condition))
-
     for filter in filters_via_url(request):
         _update_filters(filter_dict, filter)
 
@@ -149,8 +130,8 @@ def _get_filter_definition(filter_data):
         {'variable__operator': value}
         """
     filter_data = filter_data[1]
-    variable = filter_data['variable'][0]
-    operator = filter_data['operator'][0]
+    variable = filter_data['variable']
+    operator = filter_data['operator']
     value = _parse_value(filter_data['value'])
     if 'country' in variable and not value.isnumeric():
         value = str(Country.objects.get(name__iexact=value).pk)
@@ -163,7 +144,10 @@ def _parse_value(filter_value):
     """Necessary due to the different ways single values and lists are stored in DB and session."""
     if len(filter_value) > 1:
         return filter_value
-    value = filter_value[0]
+    if filter_value:
+        value = filter_value[0]
+    else:
+        value = ''
     if '[' in value:
         value = [str(v) for v in json.loads(value)]
     return value

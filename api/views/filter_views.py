@@ -8,7 +8,7 @@ from rest_framework import serializers
 from landmatrix.models.filter_preset import FilterPreset as FilterPresetModel
 from api.filters import Filter, PresetFilter
 from api.serializers import FilterPresetSerializer
-
+from grid.views.save_deal_view import SaveDealView
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -33,12 +33,23 @@ class FilterView(APIView):
 
         if action.lower() == 'set':
             if 'preset' in request_data:
-                new_filter = PresetFilter(request_data['preset'], name=name)
+                label = FilterPresetModel.objects.get(id=request_data['preset']).name
+                new_filter = PresetFilter(request_data['preset'],
+                    label=label, name=name)
             else:
                 try:
-                    new_filter = Filter(request_data['variable'],
-                                        request_data['operator'],
-                                        request_data['value'], name=name)
+                    label = ''
+                    for form in SaveDealView.FORMS:
+                        # FormSet (Spatial Data und Data source)
+                        if hasattr(form, 'form'):
+                            form = form.form
+                        if request_data['variable'] in form.base_fields:
+                            label = str(form.base_fields[request_data['variable']].label)
+                    new_filter = Filter(variable=request_data['variable'],
+                                        operator=request_data['operator'],
+                                        value=request_data['value'],
+                                        label=label,
+                                        name=name)
                 except KeyError as err:
                     raise serializers.ValidationError(
                         {err.args[0]: _("This field is required.")})

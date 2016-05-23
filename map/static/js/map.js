@@ -368,31 +368,31 @@ $(document).ready(function () {
         style: styleFunction
     });
 
-    map = new ol.Map({
-        target: 'map',
-        // Base Maps Layers. To change the default Layer : "visible: true or false".
-        // ol.layer.Group defines the LayerSwitcher organisation
-        layers: [
-            new ol.layer.Group({
-                title: 'Base Maps',
-                layers: baseLayers
-            }),
-            // Context Layers from the Landobservatory Geoserver.
-            new ol.layer.Group({
-                title: 'Context Layers',
-                layers: contextLayers
-            }),
-            new ol.layer.Group({
-                title: 'Deals',
-                layers: [
-                    intendedareaLayer,
-                    contractareaLayer,
-                    currentareaLayer,
-                    cluster
-                ]
-            })
-        ],
-        controls: [
+    var layers = [
+        new ol.layer.Group({
+            title: 'Base Maps',
+            layers: baseLayers
+        }),
+        // Context Layers from the Landobservatory Geoserver.
+        new ol.layer.Group({
+            title: 'Context Layers',
+            layers: contextLayers
+        }),
+        new ol.layer.Group({
+            title: 'Deals',
+            layers: [
+                intendedareaLayer,
+                contractareaLayer,
+                currentareaLayer,
+                cluster
+            ]
+        })
+    ];
+    var controls = [],
+        interactions = [];
+
+    if (typeof mapDisableInteraction === 'undefined') {
+        controls = [
             new ol.control.FullScreen(),
             new ol.control.Zoom(),
             new ol.control.ScaleLine(),
@@ -405,17 +405,31 @@ $(document).ready(function () {
             new ol.control.FullScreen(),
             new ol.control.Attribution
             // new ol.control.ZoomToExtent({
-            // 				extent:undefined
+            //              extent:undefined
             // }),
-        ],
-        interactions: [
+        ];
+
+        interactions = [
             new ol.interaction.Select(),
             new ol.interaction.MouseWheelZoom(),
             new ol.interaction.PinchZoom(),
             new ol.interaction.DragZoom(),
             new ol.interaction.DoubleClickZoom(),
             new ol.interaction.DragPan()
-        ],
+        ];
+    } else {
+        interactions = [
+            new ol.interaction.Select()
+        ];
+    }
+
+    map = new ol.Map({
+        target: 'map',
+        // Base Maps Layers. To change the default Layer : "visible: true or false".
+        // ol.layer.Group defines the LayerSwitcher organisation
+        layers: layers,
+        controls: controls,
+        interactions: interactions,
         overlays: [PopupOverlay],
         // Set the map view : here it's set to see the all world.
         view: new ol.View({
@@ -427,75 +441,96 @@ $(document).ready(function () {
         })
     });
 
-    //var styleCache = {};
-
+    // Set boundaries if given
+    if (typeof mapBounds !== 'undefined') {
+        var extent = ol.extent.applyTransform(mapBounds, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+        map.getView().fit(extent, map.getSize());
+    }
 
     // LayerSwitcher Control by https://github.com/walkermatt/ol3-layerswitcher
-    var layerSwitcher = new ol.control.LayerSwitcher({
-        tipLabel: 'Legend'
-    });
-    map.addControl(layerSwitcher);
-    $(".areaLabel").each(function (index) {
-        const context = $(this).context.innerHTML;
-        const colors = GeoJSONColors[context];
-
-        var legendSpan = document.createElement('span');
-        legendSpan.className = 'legend-symbol';
-        legendSpan.setAttribute('style', 'color: ' + colors[0] + ';' +
-                                'background-color:' + colors[0] + ';' +
-                                'border-color: ' + colors[1] + ';' +
-                                'border: solid 3px ' + colors[1] + ';');
-        legendSpan.innerHTML = " ";
-
-        $(this).append(legendSpan);
-    });
-    layerSwitcher.showPanel();
-
-    function updateVariableSelection(variableName) {
-        var legend = document.getElementById('legend');
-
-        var variableSet = detailviews[variableName];
-
-        while (legend.hasChildNodes()) {
-            legend.removeChild(legend.lastChild)
-        }
-
-        for (name in variableSet) {
-            var varItem = document.createElement('li');
-            varItem.className = 'legend-entry';
-
-            var varName = name;
-            var varColor = variableSet[name];
+    if (typeof mapDisableInteraction === 'undefined') {
+        var layerSwitcher = new ol.control.LayerSwitcher({
+            tipLabel: 'Legend'
+        });
+        map.addControl(layerSwitcher);
+        $(".areaLabel").each(function (index) {
+            const context = $(this).context.innerHTML;
+            const colors = GeoJSONColors[context];
 
             var legendSpan = document.createElement('span');
             legendSpan.className = 'legend-symbol';
-            legendSpan.setAttribute('style', 'color: ' + varColor + '; background-color:' + varColor + ";");
-            legendSpan.innerHTML = ".";
+            legendSpan.setAttribute('style', 'color: ' + colors[0] + ';' +
+                                    'background-color:' + colors[0] + ';' +
+                                    'border-color: ' + colors[1] + ';' +
+                                    'border: solid 3px ' + colors[1] + ';');
+            legendSpan.innerHTML = " ";
 
-            var legendLabel = document.createElement('div');
-            legendLabel.innerHTML = varName;
+            $(this).append(legendSpan);
+        });
+        layerSwitcher.showPanel();
 
-            varItem.appendChild(legendSpan);
-            varItem.appendChild(legendLabel);
+        function updateVariableSelection(variableName) {
+            var legend = document.getElementById('legend');
 
-            legend.appendChild(varItem);
+            var variableSet = detailviews[variableName];
+
+            while (legend.hasChildNodes()) {
+                legend.removeChild(legend.lastChild)
+            }
+
+            for (name in variableSet) {
+                var varItem = document.createElement('li');
+                varItem.className = 'legend-entry';
+
+                var varName = name;
+                var varColor = variableSet[name];
+
+                var legendSpan = document.createElement('span');
+                legendSpan.className = 'legend-symbol';
+                legendSpan.setAttribute('style', 'color: ' + varColor + '; background-color:' + varColor + ";");
+                legendSpan.innerHTML = ".";
+
+                var legendLabel = document.createElement('div');
+                legendLabel.innerHTML = varName;
+
+                varItem.appendChild(legendSpan);
+                varItem.appendChild(legendLabel);
+
+                legend.appendChild(varItem);
+            }
         }
-    }
 
-    var variableLabel = document.getElementById('legendLabel');
+        var variableLabel = document.getElementById('legendLabel');
 
-    var innerHTML = '';
-    for (key in detailviews) {
-        innerHTML = innerHTML + '<option';
-        if (key === currentVariable) {
-            innerHTML = innerHTML + ' selected';
+        var innerHTML = '';
+        for (key in detailviews) {
+            innerHTML = innerHTML + '<option';
+            if (key === currentVariable) {
+                innerHTML = innerHTML + ' selected';
+            }
+            innerHTML = innerHTML + '>' + key + '</option>';
         }
-        innerHTML = innerHTML + '>' + key + '</option>';
-    }
 
-    var dropdown = document.createElement('select');
-    dropdown.id = 'mapVariableSelect';
-    dropdown.value = currentVariable;
+        var dropdown = document.createElement('select');
+        dropdown.id = 'mapVariableSelect';
+        dropdown.value = currentVariable;
+
+        function pickNewVariable() {
+            currentVariable = dropdown.value;
+            console.log(currentVariable);
+            updateVariableSelection(currentVariable);
+            getApiData();
+        }
+
+        dropdown.onchange = pickNewVariable;
+
+        dropdown.innerHTML = innerHTML;
+
+        newlegendlabel = variableLabel.parentNode.replaceChild(dropdown, variableLabel);
+
+        updateVariableSelection(currentVariable);
+
+    }
 
     NProgress.configure(
         {
@@ -516,21 +551,6 @@ $(document).ready(function () {
 
         NProgress.set(0.2);
     }
-
-    function pickNewVariable() {
-        currentVariable = dropdown.value;
-        console.log(currentVariable);
-        updateVariableSelection(currentVariable);
-        getApiData();
-    }
-
-    dropdown.onchange = pickNewVariable;
-
-    dropdown.innerHTML = innerHTML;
-
-    newlegendlabel = variableLabel.parentNode.replaceChild(dropdown, variableLabel);
-
-    updateVariableSelection(currentVariable);
 
     map.on('click', function (evt) {
         var handleFeatureClick = function (feature, layer) {
