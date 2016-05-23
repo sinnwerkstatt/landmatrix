@@ -265,7 +265,7 @@ function buildPieChart() {
         {label: 'None', value: 0.1}
     ];
 
-    var w = 500,                        //width
+    var w = 800,                        //width
         h = 500,                            //height
         r = 180;                            //radius
         color = LMColor();     //builtin range of colors
@@ -276,7 +276,7 @@ function buildPieChart() {
         .attr("width", w)           //set the width and height of our visualization (these will be attributes of the <svg> tag
         .attr("height", h)
         .append("svg:g")                //make a group to hold our pie chart
-        .attr("transform", "translate(" + r + "," + r + ")")    //move the center of the pie chart from 0, 0 to radius, radius
+        .attr("transform", "translate(" + w/2 + "," + h/2 + ")");    //move the center of the pie chart from 0, 0 to radius, radius
 
     var arc = d3.svg.arc()              //this will create <path> elements for us using arc data
         .outerRadius(r);
