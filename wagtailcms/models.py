@@ -212,6 +212,12 @@ class MapDataChartsBlock(CountryRegionStructBlock):
         label = 'Map / Grid / Charts'
         template = 'widgets/map-data-charts.html'
 
+class LinkMapBlock(CountryRegionStructBlock):
+    class Meta:
+        icon = 'fa fa-map-marker'
+        label = 'Map'
+        template = 'widgets/map.html'
+
 class LatestDatabaseModificationsBlock(CountryRegionStructBlock):
     limit = blocks.CharBlock()
 
@@ -228,19 +234,30 @@ class LatestDatabaseModificationsBlock(CountryRegionStructBlock):
 
 DATA_BLOCKS = [
     ('latest_news', LatestNewsBlock()),
+    ('link_map', LinkMapBlock()),
     ('statistics', StatisticsBlock()),
     ('map_data_charts', MapDataChartsBlock()),
     ('latest_database_modifications', LatestDatabaseModificationsBlock()),
 ]
 
-class ColumnsBlock(StructBlock):
+class ColumnsBlock(CountryRegionStructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
-    def get_context(self, value):
+    def get_context(self, value, columns=['left_column', 'right_column']):
         context = super().get_context(value)
-        context['left_column'] = value.get('left_column')
-        context['right_column'] = value.get('right_column')
+        
+        for column in columns:
+            context[column] = value.get(column)
+        if self.country or self.region:
+            country_or_region = {}
+            if self.country:
+                country_or_region['country'] = self.country
+            elif self.region:
+                country_or_region['region'] = self.region
+            for column in columns:
+                for data in DATA_BLOCKS:
+                    context[column].stream_block.child_blocks[data[0]] = type(data[1])(**country_or_region)
         return context
 
     class Meta:
@@ -333,7 +350,7 @@ class RegionIndex(Page):
         region_slug = kwargs.get('region_slug', None)
         if region_slug:
             self.region = DataRegion.objects.get(slug=region_slug)
-            for data in DATA_BLOCKS:
+            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
         return super(RegionIndex, self).serve(request)
 
@@ -369,7 +386,7 @@ class CountryIndex(Page):
         country_slug = kwargs.get('country_slug', None)
         if country_slug:
             self.country = DataCountry.objects.get(slug=country_slug)
-            for data in DATA_BLOCKS:
+            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(country=self.country)
         return super(CountryIndex, self).serve(request)
 

@@ -37,10 +37,11 @@ class MapModel:
     attributes = { }
     depends = []
     DEBUG = False
+    DB = V1
 
     @classmethod
     def map(cls, id, save=False):
-        record = cls.old_class.objects.using(V1).filter(id=id).values()[0]
+        record = cls.old_class.objects.using(cls.DB).filter(id=id).values()[0]
         cls.map_record(record, save)
 
     @classmethod
@@ -59,7 +60,7 @@ class MapModel:
 
     @classmethod
     def all_records(cls):
-        return cls.old_class.objects.using(V1).values()
+        return cls.old_class.objects.using(cls.DB).values()
 
     @classmethod
     def map_record(cls, record, save=False, verbose=False):
@@ -143,7 +144,7 @@ class MapModel:
     @classmethod
     def _print_status(cls, record, index):
         if not cls._count:
-            cls._count = cls.old_class.objects.using(V1).count()
+            cls._count = cls.old_class.objects.using(cls.DB).count()
         if index % 10 == 0:
             print(
                 "%-50s: %8d (%d/%d)" % (

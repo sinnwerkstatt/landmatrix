@@ -46,7 +46,7 @@ FORMS = [
 ]
 
 
-class DealDetailView(TemplateView):
+class DealDetailView(PDFViewMixin, TemplateView):
 
     template_name = 'deal-detail.html'
     pdf_export_url = 'deal_detail_pdf'
@@ -62,7 +62,6 @@ class DealDetailView(TemplateView):
             else:
                 deal = get_latest_valid_deal(deal_id)
         except ObjectDoesNotExist as e:
-            #raise IOError(e)
             raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e)))
 
         context = super(DealDetailView, self).get_context_data()
@@ -73,7 +72,7 @@ class DealDetailView(TemplateView):
             'attributes': deal.attributes,
             'operational_stakeholder': deal.operational_stakeholder,
             'stakeholders': deal.stakeholders,
-            'object': deal
+            'object': deal,
         }
         context['forms'] = get_forms(deal)
         context['investor'] = deal.stakeholders

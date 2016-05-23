@@ -24,7 +24,7 @@ class InvestorComparisonView(StakeholderView):
         investor_2 = previous_history_state(investor_1)
         context = super().get_context_data(**kwargs)
         context['investors'] = [investor_1, investor_2]
-        context['forms'] = get_comparison(investor_1, investor_2)
+        context['comparison_forms'] = get_comparison(investor_1, investor_2)
 
         return render_to_response('investor-comparison.html', context, RequestContext(request))
 
@@ -48,7 +48,7 @@ def investor_from_historical(old_version):
 def get_comparison(investor_1, investor_2):
     form_1 = get_form(investor_1)
     form_2 = get_form(investor_2)
-    return [(form_1, form_2, is_different(form_1, form_2))]
+    return (form_1, form_2, is_different(form_1, form_2))
 
 
 def get_form(investor):

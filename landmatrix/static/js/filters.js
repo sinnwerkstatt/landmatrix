@@ -4,34 +4,31 @@
 
 var currentVariable = "";
 
-function updatePresets(json) {
-    if (json === undefined || json.length === 0) {
-        console.log("No presets.");
-        return
-    }
+//function updatePresets(json) {
+//    if (json === undefined || json.length === 0) {
+//        console.log("No presets.");
+//        return
+//    }
+//
+//    presets = JSON.parse(json);
+//    console.log("These are the presets:", presets);
+//}
 
-    presets = JSON.parse(json);
-    console.log("These are the presets:", presets);
-}
-
-function updateFilters(json) {
+function updateFilters(data) {
 
     var label;
-    var data;
 
     var tags = $("#filterlist");
     tags.empty();
 
-    if (json === undefined || json.length === 0) {
+    if (data === undefined || data.length === 0) {
         console.log("No filters.");
         label = '<label>No active filters</label>';
         tags.append(label);
 
         return
     } else {
-        console.log("Json not empty");
         try {
-            data = JSON.parse(json);
             if (Object.keys(data).length > 0) {
                 console.log("Filters: ",data);
                 label = '<label>Active Filters:</label>';
@@ -53,15 +50,15 @@ function updateFilters(json) {
 
     for (var item in data) {
         if ("preset_id" in data[item]) {
-            var tag = data[item].name;
-            var label = presets[data[item].preset_id];
-            console.log("I have a preset in the filters: ", tag, label);
-            var finalHtml = '<a class="delete-row" href="javascript:removeFilter(\'' + tag + '\')" title="'
+            var tag = data[item].name,
+                label = data[item].label,
+                finalHtml = '<a class="delete-row" href="javascript:removeFilter(\'' + tag + '\')" title="'
 
             finalHtml = finalHtml + '">' + label + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
         } else {
-            var tag = data[item].variable;
+            var tag = data[item].variable
+                label = data[item].label;
 
             if (filternames.indexOf(tag) >= 0) {
                 tag = data[item].variable + " " + data[item].operator;
@@ -69,36 +66,40 @@ function updateFilters(json) {
             filternames.push(tag);
             var finalHtml = '<a class="delete-row" href="javascript:removeFilter(\'' + data[item].name + '\')" title="'
             var filterPopup = data[item].variable + " " + data[item].operator + " " + data[item].value;
-            finalHtml = finalHtml + filterPopup + '">' + tag + '<i class="lm lm-times"></i></a>';
+            finalHtml = finalHtml + filterPopup + '">' + label + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
         }
         $(finalHtml).appendTo(tags);
-        console.log("Tag appended.", tag, tags);
     }
 
     $("#filterrow form").hide()
 }
 
 
-function loadPreset(presetId) {
+function loadPreset(presetId, label) {
     $.post(
         "/api/filter.json?action=set&preset=" + presetId,
-        updateFilters
+        function () {
+            window.location.reload();
+        }
     );
 }
 
 function removeFilter(filterName) {
     $.post(
         "/api/filter.json?action=remove&name=" + filterName,
-        updateFilters
+        function () {
+            window.location.reload();
+        }
     );
 }
 
-function createFilter(variable) {
+function createFilter(variable, label) {
     $("#filterrow form").show()
     get_filter_options($("#filter_operator"), $("#filter_value"), variable);
     $('#filter_variable').val(variable);
     currentVariable = variable;
+    $('#filter_label').val(label);
 
     $(".filter_active").removeClass('filter_active');
     $("#filter_" + variable).addClass('filter_active');
@@ -150,15 +151,10 @@ function get_filter_options(operatorfield, variablefield, key_id) {
             }
         });
 
-        if (operatorfield.find(':selected').attr('disabled')) {
-            console.log("Old selected is invalid now - resetting");
-            // TODO: This doesn't work
-            operatorfield.find('option:first-child:not(hidden)').attr("selected", "selected");
-        }
+        operatorfield.find(':selected').removeAttr('selected');
         
     });
 }
-
 
 $(document).ready(function () {
     /*
@@ -217,10 +213,14 @@ $(document).ready(function () {
 
         $.post(
             '/api/filter.json?action=set&' + data,
-            updateFilters
+            function () {
+                window.location.reload();
+            }
         );
     });
 
-    $("#id_columns").select2();
-
+    $("#id_columns").select2()
+        .on('change', function () {
+            window.location.href = location.protocol + '//' + location.host + location.pathname + '?' + $('#id_columns').serialize();
+        });
 });

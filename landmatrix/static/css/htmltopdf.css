@@ -1,1 +1,22 @@
 /*  Styling for PDF exports goes here */
+.navbar-main,
+.navbar-subnav,
+.wrap > .container > .row:first-child,
+footer,
+#collapsebtn_history,
+#collapse_comments form,
+#filters {
+    display: none;
+}
+.collapse {
+    display: block;
+}
+.col-md-9,
+.col-md-3 {
+    display: block;
+    float: left;
+    width: 50%;
+}
+.row {
+    clear: both;
+}

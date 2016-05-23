@@ -1,15 +1,6 @@
 {% load i18n custom_tags static crispy_forms_tags %}
 {% load humanize %}
 
-<script>
-    var presets = {};
-    {% for groupname, items in presets.items %}
-        {% for item in items %}
-            presets[{{ item.id }}] = '{{ groupname }}: {{ item.label }}';
-        {% endfor %}
-    {% endfor %}
-</script>
-
 <div id="filters">
     {% csrf_token %}
     <div id="list-filters" class="row">
@@ -35,15 +26,20 @@
             <div class="col-md-3 filterbox presetbox no-pad">
                 <h6>{% trans "Select a filter preset" %}</h6>
                 <ul class="presets variables">
-                    {% for groupname, items in presets.items %}
+                    {% for group in presets %}
                         <li>
-                            <h4>{{ groupname }}</h4>
+                            <h4>
+                                {{ group.name }}
+                                <a href="#" class="toggle-tooltip pull-right" title="{{ group.name }}">
+                                    <i class="fa fa-question-circle"> </i>
+                                </a>
+                            </h4>
                             <ul>
-                                {% for item in items %}
+                                {% for preset in group.filter_presets.all %}
                                     <li class="filter_item">
-                                        <a href="javascript:loadPreset('{{ item.id }}')"
-                                           title="{{ groupname }}: {{ item.label }}">
-                                            {% trans item.label %}
+                                        <a href="javascript:loadPreset('{{ preset.id }}', '{{ preset.name }}')"
+                                           title="{{ group.name }}: {{ preset.name }}">
+                                            {% trans preset.name %}
                                         </a>
                                     </li>
                                 {% endfor %}
@@ -61,7 +57,7 @@
                             <ul>
                                 {% for variable in group.items %}
                                     <li id="filter_{{ variable.name }}" class="filter_item"><a
-                                            href="javascript:createFilter('{{ variable.name }}')"
+                                            href="javascript:createFilter('{{ variable.name }}', '{{ variable.label }}')"
                                             id="filter_{{ variable.name }}_link">{% trans variable.label %}</a>
                                     </li>
                                 {% endfor %}
@@ -100,14 +96,22 @@
                 </div>
             </form>
         </div>
+        {% if columns and group == 'all' %}
         <div id="columnsrow" class="row">
             <div class="col-sm-12">
                 <h6>{% trans "Select columns for the result table" %}</h6>
                 <select id="id_columns" name="columns" multiple="multiple">
-                    <option value="1">Example</option>
+                    {% for group in variables %}
+                    <optgroup label="{{ group.label }}">
+                        {% for variable in group.items %}
+                        <option value="{{ variable.name }}"{% if variable.name in columns %} selected="selected"{% endif %}>{% trans variable.label %}</option>
+                        {% endfor %}
+                    </optgroup>
+                    {% endfor %}
                 </select>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 

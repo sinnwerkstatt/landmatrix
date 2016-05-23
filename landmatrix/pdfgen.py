@@ -69,7 +69,6 @@ class PDFViewMixin:
     pdf_rendering_context_name = 'is_pdf_export'
 
     def get(self, request, *args, **kwargs):
-        print(args, kwargs)
         if 'format' in kwargs and kwargs['format'].upper() == 'PDF':
             # build a URL to generate HTML for the PDF view
             pdf_rendering_url = self.build_full_pdf_rendering_url(request,

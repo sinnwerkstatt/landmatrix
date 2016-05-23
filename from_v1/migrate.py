@@ -68,6 +68,9 @@ def read_options():
         "--old_comment", action='store_true', help="Migrate activity & stakeholder comments only"
     )
     parser.add_argument(
+        "--lo", action='store_true', help="Migrate land observatory data"
+    )
+    parser.add_argument(
         "--all", action='store_true', help="Migrate all tables"
     )
     return parser.parse_args()
@@ -86,6 +89,9 @@ if __name__ == '__main__':
 
         options = read_options()
         print(options)
+
+        if options.lo:
+            MapLandObservatory.map_all(save=options.save, verbose=options.verbose)
 
         if options.old_comment:
             MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
@@ -160,10 +166,10 @@ if __name__ == '__main__':
     except ConnectionDoesNotExist as e:
         print('You need to set CONVERT_DB to True in settings.py!')
         print(e)
-    except AttributeError as e:
-        print('You need to check out branch "postgres" of the old land-matrix project under')
-        print(BASE_PATH+'/land-matrix!')
-        print(e)
+    # except AttributeError as e:
+    #     print('You need to check out branch "postgres" of the old land-matrix project under')
+    #     print(BASE_PATH+'/land-matrix!')
+    #     print(e)
     except (AttributeError, ImportError) as e:
         print('To migrate the original MySQL data you need to check out branch "master" of the')
         print('old land-matrix project under '+BASE_PATH+'/land-matrix!')

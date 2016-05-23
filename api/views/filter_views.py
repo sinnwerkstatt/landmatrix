@@ -8,7 +8,7 @@ from rest_framework import serializers
 from landmatrix.models.filter_preset import FilterPreset as FilterPresetModel
 from api.filters import Filter, PresetFilter
 from api.serializers import FilterPresetSerializer
-
+from grid.views.save_deal_view import SaveDealView
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -25,25 +25,35 @@ class FilterView(APIView):
 
         # TODO: This works, but it's not very standard DRF.
         # Maybe convert to using the POST body for args in future?
-        values = dict(request.query_params)
-        values.update(request.data)
+        request_data = request.query_params.copy()
+        request_data.update(request.data)
 
-        action = values.pop('action', '')
-        if isinstance(action, list):
-            action = action.pop()
-        name = values.get('name', [None]).pop()
+        action = request_data.get('action', 'nothing')
+        name = request_data.get('name', None)
 
         if action.lower() == 'set':
-            if 'preset' in values:
-                new_filter = PresetFilter(values['preset'], name)
+            if 'preset' in request_data:
+                label = FilterPresetModel.objects.get(id=request_data['preset']).name
+                new_filter = PresetFilter(request_data['preset'],
+                    label=label, name=name)
             else:
                 try:
-                    new_filter = Filter(
-                        values['variable'], values['operator'],
-                        values['value'], name)
+                    label = ''
+                    for form in SaveDealView.FORMS:
+                        # FormSet (Spatial Data und Data source)
+                        if hasattr(form, 'form'):
+                            form = form.form
+                        if request_data['variable'] in form.base_fields:
+                            label = str(form.base_fields[request_data['variable']].label)
+                    new_filter = Filter(variable=request_data['variable'],
+                                        operator=request_data['operator'],
+                                        value=request_data['value'],
+                                        label=label,
+                                        name=name)
                 except KeyError as err:
                     raise serializers.ValidationError(
                         {err.args[0]: _("This field is required.")})
+
             stored_filters[new_filter.name] = new_filter
         elif action.lower() == 'remove':
             stored_filters.pop(name)
@@ -53,7 +63,11 @@ class FilterView(APIView):
         return Response(stored_filters)
 
     def get(self, request, *args, **kwargs):
-        filters = self.get_object()
+        if 'clear' in request.query_params:
+            filters = {}
+            request.session['filters'] = filters
+        else:
+            filters = self.get_object()
 
         return Response(filters)
 
@@ -99,7 +113,7 @@ class DashboardFilterView(APIView):
         '''
         new_filters = {}
 
-        request_data = dict(request.query_params)
+        request_data = request.query_params.copy()
         request_data.update(request.data)
 
         action = request_data.get('action', 'clear').lower()

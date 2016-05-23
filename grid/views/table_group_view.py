@@ -1,4 +1,4 @@
-
+from api.query_sets.sql_generation.sql_builder import SQLBuilder
 from grid.views.filter_widget_mixin import FilterWidgetMixin
 
 from .view_aux_functions import render_to_response
@@ -111,6 +111,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             self.columns = self.GROUP_COLUMNS_LIST
         else:
             self.columns = self._columns()
+        self.columns = [col for col in self.columns if col in SQLBuilder.SQL_COLUMN_MAP.keys()]
 
     @print_execution_time_and_num_queries
     def _set_filters(self):
@@ -179,7 +180,6 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         return order_by
 
     def _columns(self):
-        print('_columns')
         if self.request.GET.get('columns'):
             return self.request.GET.getlist('columns')
 

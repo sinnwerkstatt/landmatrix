@@ -100,7 +100,7 @@ ol.control.LayerSwitcher.prototype.showPanel = function() {
  */
 ol.control.LayerSwitcher.prototype.hidePanel = function() {
    if (this.element.className != this.hiddenClassName) {
-        //this.element.className = this.hiddenClassName;
+        this.element.className = this.hiddenClassName;
     }
 };
 

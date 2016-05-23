@@ -6,7 +6,7 @@ from migrate import V1, V2
 
 from django.db import connections
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -56,8 +56,12 @@ ORDER BY activity_identifier
 
 
 def calculate_history_date(versions, i):
-    if versions[i]['fully_updated']:
+    if i >= len(versions):
+        return datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
+    if versions[i].get('fully_updated'):
         return versions[i]['fully_updated']
+    if versions[i].get('timestamp_review'):
+        return timezone.make_aware(versions[i]['timestamp_review'], timezone.get_current_timezone())
     changeset = get_changeset(versions[i])
     if changeset:
         return changeset.timestamp

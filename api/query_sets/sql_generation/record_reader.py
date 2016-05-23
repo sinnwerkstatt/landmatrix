@@ -76,7 +76,7 @@ class RecordReader:
         column_data = self.get_all_columns()
 
         final_data = []
-        for i in range(0, len(column_data[self.columns[0]])):
+        for i in range(0, len(column_data.get(self.columns[0], []))):
             self._ensure_records_equal(column_data, i)
             record = assemble(column_data, i)
             final_data.append(record)

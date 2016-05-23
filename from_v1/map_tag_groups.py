@@ -18,6 +18,7 @@ if V1 == 'v1_my':
 MAX_LOOKUP_OBJECTS = 1000000
 SPECIFIC_ACTIVITY_IDENTIFIER = 12
 
+
 class MapTagGroups(MapModel):
 
     key_value_lookup = None

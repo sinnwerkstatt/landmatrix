@@ -18,54 +18,7 @@ from django.db import transaction
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class MapActivityTagGroup(MapTagGroups):
-
-    # prevent error if postgres branch of landmatrix 1 is checked out
-    if V1 == 'v1_my':
-        old_class = A_Tag_Group
-
-        # to migrate latest versions for one activity only
-        # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity').filter(
-        #     fk_activity__pk__in=MapActivity.all_ids()
-        # ).filter(fk_activity__activity_identifier=11)
-        # to migrate a subset of versioned tag groups
-        # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')[:10000]
-        # to migrate all tag groups including old versions
-        tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')
-        key_value_lookup = A_Key_Value_Lookup
-
-    @classmethod
-    def relevant_tag_sets(cls, tag_group):
-        return [
-            [tag_group.fk_a_tag],
-            A_Tag.objects.using(V1).
-                filter(fk_a_tag_group=tag_group).select_related('fk_a_key', 'fk_a_value'),
-        ]
-
-    @classmethod
-    def migrate_tags(cls, relevant_tags, tag_group):
-        attrs = {}
-        year = None
-        taggroup_name = tag_group.fk_a_tag.fk_a_value.value
-        # print(
-        #     '\nmigrate_tags',
-        #     ["{}: {}".format(tag.fk_a_key.key, tag.fk_a_value.value) for tag in relevant_tags],
-        #     "tag group {}: {}".format(tag_group.fk_a_tag.fk_a_key.key, taggroup_name)
-        # )
-        for tag in relevant_tags:
-
-            key = tag.fk_a_key.key
-            value = tag.fk_a_value.value
-            year = tag.fk_a_value.year
-
-            if key in attrs and value != attrs[key]:
-                cls.write_activity_attribute_group_with_comments(attrs, tag_group, year, taggroup_name)
-                attrs = {}
-
-            attrs[key] = value
-
-        if attrs:
-            cls.write_activity_attribute_group_with_comments(attrs, tag_group, year, taggroup_name)
+class MapActivityTagGroupBase:
 
     @classmethod
     def write_activity_attribute_group_with_comments(cls, attrs, tag_group, year, name):
@@ -158,6 +111,56 @@ class MapActivityTagGroup(MapTagGroups):
     def get_comments(cls, tag_group):
         queryset = Comment.objects.using(V1).filter(fk_a_tag_group=tag_group)
         return [comment.comment for comment in queryset]
+
+
+class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
+
+    # prevent error if postgres branch of landmatrix 1 is checked out
+    if V1 == 'v1_my':
+        old_class = A_Tag_Group
+
+        # to migrate latest versions for one activity only
+        # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity').filter(
+        #     fk_activity__pk__in=MapActivity.all_ids()
+        # ).filter(fk_activity__activity_identifier=11)
+        # to migrate a subset of versioned tag groups
+        # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')[:10000]
+        # to migrate all tag groups including old versions
+        tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')
+        key_value_lookup = A_Key_Value_Lookup
+
+    @classmethod
+    def relevant_tag_sets(cls, tag_group):
+        return [
+            [tag_group.fk_a_tag],
+            A_Tag.objects.using(V1).
+                filter(fk_a_tag_group=tag_group).select_related('fk_a_key', 'fk_a_value'),
+        ]
+
+    @classmethod
+    def migrate_tags(cls, relevant_tags, tag_group):
+        attrs = {}
+        year = None
+        taggroup_name = tag_group.fk_a_tag.fk_a_value.value
+        # print(
+        #     '\nmigrate_tags',
+        #     ["{}: {}".format(tag.fk_a_key.key, tag.fk_a_value.value) for tag in relevant_tags],
+        #     "tag group {}: {}".format(tag_group.fk_a_tag.fk_a_key.key, taggroup_name)
+        # )
+        for tag in relevant_tags:
+
+            key = tag.fk_a_key.key
+            value = tag.fk_a_value.value
+            year = tag.fk_a_value.year
+
+            if key in attrs and value != attrs[key]:
+                cls.write_activity_attribute_group_with_comments(attrs, tag_group, year, taggroup_name)
+                attrs = {}
+
+            attrs[key] = value
+
+        if attrs:
+            cls.write_activity_attribute_group_with_comments(attrs, tag_group, year, taggroup_name)
 
     @classmethod
     @transaction.atomic(using=V2)
