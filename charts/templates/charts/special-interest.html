@@ -26,9 +26,11 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
     <p class="logging" style="display: none">{% trans 'Wood chopping.' %}</p>
 
     <span id="deal_data_selector">
-        Show infos about:
-        <input type="checkbox" name="use_deal_size" checked> of
-        <select name="deal_types">
+        <div id="deal_kinds">
+            Show infos about:
+            <input type="checkbox" name="use_deal_size" checked>
+        </div>
+        <select id="deal_types" name="deal_types">
             <option>Size in operation</option>
             <option>Size under contract</option>
             <option>Under Construction</option>
@@ -223,7 +225,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
         <div id="BarChart" class="charts" align="center">
         </div>
 
-        <div id="logging"  class="hidden" align="center">
+        <div id="logging"  class="hidden">
             <div class="col-sm-12 text-center">
                 <h3>{% trans "Logging: " %} <a class="toggle-tooltip bottom" href="/about/#what-is-a-land-deal" data-original-title="" title=""><i class="icon icon-question-sign"></i></a></h3>
             </div>
@@ -272,7 +274,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
             </div>
         </div>
 
-        <div id="resource_extraction"  class="hidden" align="center">
+        <div id="resource_extraction"  class="hidden">
             <div class="col-sm-12 text-center">
                 <h3>{% trans "Resource extraction:" %} <a class="toggle-tooltip bottom" href="/about/#what-is-a-land-deal" data-original-title="" title=""><i class="icon icon-question-sign"></i></a></h3>
             </div>
@@ -398,8 +400,10 @@ function draw (charttype) {
 
 
     $("#deal_data_selector").show();
+    $('#deal_kinds').show();
 
     if (charttype == "resource_extraction") {
+        $('#deal_kinds').hide();
 
         $.get('/api/statistics.json', function (data) {
             var stats = $('#resource_extraction'),
@@ -456,6 +460,8 @@ function draw (charttype) {
 
         $("#resource_extraction").removeClass("hidden");
     } else if (charttype == "logging") {
+
+        $('#deal_kinds').hide();
         $.get('/api/statistics.json', function (data) {
             var stats = $('#logging'),
                     size = stats.find('.size'),

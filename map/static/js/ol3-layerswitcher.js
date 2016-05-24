@@ -32,21 +32,19 @@ ol.control.LayerSwitcher = function(opt_options) {
     var formdiv = document.createElement('div');
 
     var formgroup = document.createElement('div');
-    formgroup.setAttribute('id', 'search');
-    formgroup.className = 'panel form-group';
+    formgroup.setAttribute('class', 'searchWrapper');
 
     var searchfield = document.createElement('input');
     searchfield.setAttribute('id', 'mapsearch');
-    searchfield.setAttribute('class', 'form-control');
     searchfield.setAttribute('type', 'search');
 
-    var searchicon = document.createElement('i');
-    searchicon.className = 'lm lm-search';
+    var searchicon = document.createElement('span');
+    searchicon.className = 'lm lm-search searchAddon';
 
     formgroup.appendChild(searchfield);
     formgroup.appendChild(searchicon);
 
-    formdiv.appendChild(formgroup);
+    element.appendChild(formgroup);
 
     this.layerpanel = document.createElement('div');
     // TODO: Complete the collapse panel combo
