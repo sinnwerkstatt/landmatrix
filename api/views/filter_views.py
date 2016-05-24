@@ -56,7 +56,10 @@ class FilterView(APIView):
 
             stored_filters[new_filter.name] = new_filter
         elif action.lower() == 'remove':
-            stored_filters.pop(name)
+            try:
+                del stored_filters[name]
+            except KeyError:
+                pass
 
         request.session['filters'] = stored_filters
 
