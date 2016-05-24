@@ -514,6 +514,7 @@ $(document).ready(function () {
         var dropdown = document.createElement('select');
         dropdown.id = 'mapVariableSelect';
         dropdown.value = currentVariable;
+        dropdown.classname = 'form-control';
 
         function pickNewVariable() {
             currentVariable = dropdown.value;
@@ -531,6 +532,7 @@ $(document).ready(function () {
         updateVariableSelection(currentVariable);
 
     }
+
 
     NProgress.configure(
         {

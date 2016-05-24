@@ -11,7 +11,7 @@ from mapping.map_currency import MapCurrency
 from mapping.map_browse_rule import MapBrowseRule
 from mapping.map_browse_condition import MapBrowseCondition
 from mapping.map_crop import MapCrop, MapAnimal, MapMineral, MapAgriculturalProduce
-from mapping.map_comment import MapComment
+from mapping.map_comment import MapComment, MapStakeholderComment
 from mapping.map_investor import MapInvestor
 from mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
 from mapping.map_land_observatory import MapLandObservatory

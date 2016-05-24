@@ -135,21 +135,36 @@ div.layer-group > a:hover {
   padding-top: 10px; }
 
 #legendstuff {
-  max-height: 75vh;
-  overflow-y: auto; }
+  min-width: 20vw;
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 8px; }
 
 .ol-control,
 .ol-control:focus,
 .ol-control:hover {
   background-color: #fcfcfc; }
 
-#search-location > form > div > i {
-  top: 5px;
-  right: 5px; }
+#mapsearch {
+  margin-top: 8px;
+  margin-left: 8px; }
 
 #mapVariableSelect {
   border: none;
   padding: 0px;
   margin-top: 0px;
   margin-left: -4px;
-  margin-bottom: 10px; }
+  margin-bottom: 0px; }
+
+select:not([multiple])#mapVariableSelect {
+  height: 20px !important; }
+
+#mapVariableSelect,
+#legendstuff .form-control,
+#legendstuff .input-group-addon {
+  height: 32px !important; }
+
+.searchAddon {
+  margin-left: -30px;
+  margin-top: 10px;
+  position: relative; }

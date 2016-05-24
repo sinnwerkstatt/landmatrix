@@ -1,4 +1,6 @@
 .layer-switcher {
+    font-size: 12px;
+    line-height: 14px;
     position: absolute;
     top: 2.5em;
     right: 0.5em;
@@ -6,7 +8,6 @@
 }
 
 .layer-switcher .panel {
-    padding-right: 50px;
     border: 1px solid #cccccc;
     background-color: white;
     margin: 0;

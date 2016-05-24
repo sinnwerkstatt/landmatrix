@@ -24,7 +24,7 @@ var contextLayers = [
     // Global layers
 
     new ol.layer.Tile({
-        title: "Accessibility",
+        title: 'Accessibility<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
         source: new ol.source.TileWMS({
             url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
             params: {
@@ -36,7 +36,7 @@ var contextLayers = [
         opacity: 0.6
     }),
     new ol.layer.Tile({
-        title: "Global Land Cover 2009",
+        title: 'Global Land Cover 2009<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
         source: new ol.source.TileWMS({
             url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
             params: {
@@ -48,7 +48,7 @@ var contextLayers = [
         opacity: 0.6
     }),
     new ol.layer.Tile({
-        title: "Global Cropland",
+        title: 'Global Cropland<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
         source: new ol.source.TileWMS({
             url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
             params: {
@@ -60,7 +60,7 @@ var contextLayers = [
         opacity: 0.6
     }),
     new ol.layer.Tile({
-        title: "Global Pasture Land",
+        title: 'Global Pasture Land<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
         source: new ol.source.TileWMS({
             url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
             params: {
@@ -75,7 +75,7 @@ var contextLayers = [
     // LAOS LOCAL LAYER! TODO!
 
     new ol.layer.Tile({
-        title: "Incidence of poverty",
+        title: 'Incidence of poverty<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
         source: new ol.source.TileWMS({
             url: "http://sdi.cde.unibe.ch/geoserver/gwc/service/wms",
             params: {

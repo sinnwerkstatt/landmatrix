@@ -271,9 +271,15 @@
 .control-group {
   margin-bottom: 10px; }
 
-.control-group .input-group {
-  margin-top: 10px;
-  width: 30%; }
+@media (max-width: 992px) {
+  .control-group .input-group {
+    margin-top: 10px;
+    width: 100%; } }
+
+@media (min-width: 992px) {
+  .control-group .input-group {
+    margin-top: 10px;
+    width: 30%; } }
 
 .control-group .input-group:first-child {
   margin-top: 0; }
@@ -430,59 +436,53 @@ a.remove-ybd:hover {
   visibility: visible;
   color: #fc941f; }
 
-.input-group .form-control.year-based {
-  width: 70%; }
-
-.input-group .form-control.year-based-year {
-  width: 30%; }
-
-.negotiation_status .input-group,
-.implementation_status .input-group {
-  width: 80%; }
-
-.negotiation_status .input-group .year-based,
-.implementation_status .input-group .year-based {
-  width: 40%; }
-
-.negotiation_status .input-group .year-based-year,
-.implementation_status .input-group .year-based-year {
-  width: 30%; }
-
-.agreement_duration .input-group,
-.total_jobs_current .input-group,
-.total_jobs_current_employees .input-group,
-.total_jobs_current_daily_workers .input-group,
-.domestic_jobs_current .input-group,
-.domestic_jobs_current_employees .input-group,
-.domestic_jobs_current_daily_workers .input-group,
-.foreign_jobs_current .input-group,
-.foreign_jobs_current_employees .input-group,
-.foreign_jobs_current_daily_workers .input-group {
-  width: 80%; }
-
-.agreement_duration .input-group .year-based,
-.total_jobs_current .input-group .year-based,
-.total_jobs_current_employees .input-group .year-based,
-.total_jobs_current_daily_workers .input-group .year-based,
-.domestic_jobs_current .input-group .year-based,
-.domestic_jobs_current_employees .input-group .year-based,
-.domestic_jobs_current_daily_workers .input-group .year-based,
-.foreign_jobs_current .input-group .year-based,
-.foreign_jobs_current_employees .input-group .year-based,
-.foreign_jobs_current_daily_workers .input-group .year-based {
-  width: 62%; }
-
-.agreement_duration .input-group .year-based-year,
-.total_jobs_current .input-group .year-based-year,
-.total_jobs_current_employees .input-group .year-based-year,
-.total_jobs_current_daily_workers .input-group .year-based-year,
-.domestic_jobs_current .input-group .year-based-year,
-.domestic_jobs_current_employees .input-group .year-based-year,
-.domestic_jobs_current_daily_workers .input-group .year-based-year,
-.foreign_jobs_current .input-group .year-based-year,
-.foreign_jobs_current_employees .input-group .year-based-year,
-.foreign_jobs_current_daily_workers .input-group .year-based-year {
-  width: 38%; }
+@media (min-width: 992px) {
+  .input-group .form-control.year-based {
+    width: 70%; }
+  .input-group .form-control.year-based-year {
+    width: 30%; }
+  .negotiation_status .input-group,
+  .implementation_status .input-group {
+    width: 80%; }
+  .negotiation_status .input-group .year-based,
+  .implementation_status .input-group .year-based {
+    width: 40%; }
+  .negotiation_status .input-group .year-based-year,
+  .implementation_status .input-group .year-based-year {
+    width: 30%; }
+  .agreement_duration .input-group,
+  .total_jobs_current .input-group,
+  .total_jobs_current_employees .input-group,
+  .total_jobs_current_daily_workers .input-group,
+  .domestic_jobs_current .input-group,
+  .domestic_jobs_current_employees .input-group,
+  .domestic_jobs_current_daily_workers .input-group,
+  .foreign_jobs_current .input-group,
+  .foreign_jobs_current_employees .input-group,
+  .foreign_jobs_current_daily_workers .input-group {
+    width: 80%; }
+  .agreement_duration .input-group .year-based,
+  .total_jobs_current .input-group .year-based,
+  .total_jobs_current_employees .input-group .year-based,
+  .total_jobs_current_daily_workers .input-group .year-based,
+  .domestic_jobs_current .input-group .year-based,
+  .domestic_jobs_current_employees .input-group .year-based,
+  .domestic_jobs_current_daily_workers .input-group .year-based,
+  .foreign_jobs_current .input-group .year-based,
+  .foreign_jobs_current_employees .input-group .year-based,
+  .foreign_jobs_current_daily_workers .input-group .year-based {
+    width: 62%; }
+  .agreement_duration .input-group .year-based-year,
+  .total_jobs_current .input-group .year-based-year,
+  .total_jobs_current_employees .input-group .year-based-year,
+  .total_jobs_current_daily_workers .input-group .year-based-year,
+  .domestic_jobs_current .input-group .year-based-year,
+  .domestic_jobs_current_employees .input-group .year-based-year,
+  .domestic_jobs_current_daily_workers .input-group .year-based-year,
+  .foreign_jobs_current .input-group .year-based-year,
+  .foreign_jobs_current_employees .input-group .year-based-year,
+  .foreign_jobs_current_daily_workers .input-group .year-based-year {
+    width: 38%; } }
 
 .dynamic-form .remove-form {
   display: none; }
@@ -1339,6 +1339,8 @@ form .panel-body {
 #stats h4 .icon {
   margin-top: -5px; }
 
+#logging .bar,
+#resource_extraction .bar,
 #stats .bar {
   padding: 0 8px 2px;
   text-align: left;
@@ -1347,10 +1349,14 @@ form .panel-body {
   line-height: 22px;
   height: 100%; }
 
+#logging .number,
+#resource_extraction .number,
 #stats .number {
   font-weight: bold;
   display: block; }
 
+#logging .progress,
+#resource_extraction .progress,
 #stats .progress {
   margin-bottom: 10px; }
 
@@ -1384,6 +1390,8 @@ form .panel-body {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#884e0e', endColorstr='#884e0e', GradientType=0); }
 
+#logging .legend ul,
+#resource_extraction .legend ul,
 #stats .legend ul {
   width: 300px;
   margin: 0 auto; }

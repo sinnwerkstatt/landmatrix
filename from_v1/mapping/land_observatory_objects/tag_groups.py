@@ -16,6 +16,10 @@ class A_Tag_Group(models.Model):
     valid_to = models.DateTimeField()
 
     @property
+    def tag(self):
+        return A_Tag.objects.using('lo').get(pk=self.fk_a_tag)
+
+    @property
     def tags(self):
         return A_Tag.objects.using('lo').filter(fk_a_tag_group=self.id)
 
