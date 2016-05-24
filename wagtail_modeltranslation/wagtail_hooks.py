@@ -52,7 +52,7 @@ def return_translation_target_field_rendered_html(request, page_id):
         target_field_patched = []
         for item in origin_field_serialized:
             patched_item = None
-            for att in item.iteritems():
+            for att in item.items():
                 target_value = att[1]
                 if att[0] == 'name':
                     target_value = att[1].replace(
