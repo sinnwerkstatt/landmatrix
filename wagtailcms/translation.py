@@ -7,6 +7,10 @@ from .models import *
 class WagtailRootPageTR(TranslationOptions):
     fields = (
         'body',
+        'footer_column_1',
+    	'footer_column_2',
+    	'footer_column_3',
+    	'footer_column_4',
     )
 
 @register(WagtailPage)
