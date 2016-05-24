@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.gis.db import models as gismodels
 
+from .tag_groups import A_Tag_Group
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
@@ -26,6 +28,10 @@ class Activity(models.Model):
     @property
     def identifier(self):
         return self.activity_identifier
+
+    @property
+    def tag_groups(self):
+        return A_Tag_Group.objects.using('lo').filter(fk_activity=self.id)
 
     def __str__(self):
         """
