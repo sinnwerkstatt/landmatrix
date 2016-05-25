@@ -30,10 +30,12 @@ intention_choices = (
         (_("Fodder"), _("Fodder")),
         (_("Livestock"), _("Livestock")),
         (_("Non-food agricultural commodities"), _("Non-food agricultural commodities")),
+        (_("Unspecified"), _("Unspecified")),
     )),
     (_("Forestry"), _("Forestry"), (
         (_("For wood and fibre"), _("For wood and fibre")),
         (_("For carbon sequestration/REDD"), _("For carbon sequestration/REDD")),
+        (_("Unspecified"), _("Unspecified")),
     )),
     (_("Logging"), _("Logging"), None),
     (_("Resource extraction (Oil, Gas, Minerals)"), _("Resource extraction (Oil, Gas, Minerals)"), None),
