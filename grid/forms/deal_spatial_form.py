@@ -30,16 +30,6 @@ class DealSpatialForm(BaseForm):
             (_("Coordinates"), _("Coordinates")),
         )
     )
-    # level_of_accuracy = forms.TypedChoiceField(
-    #     required=False, label=_("Spatial accuracy level"), choices=(
-    #         (0, _("---------")),
-    #         (10, _("Country")),
-    #         (30, _("Administrative region")),
-    #         (30, _("Approximate location")),
-    #         (40, _("Exact location")),
-    #         (50, _("Coordinates")),
-    #     ),
-    #     coerce=int)
     location = forms.CharField(
         required=True, label=_("Location"), widget=LocationWidget
     )

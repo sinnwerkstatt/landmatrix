@@ -152,7 +152,7 @@ class FilterToSQL:
                         )
                         """ % {
                         'variable': variable,
-                        'value': "', '".join(allowed_values),
+                        'value': "', '".join([str(v) for v in allowed_values]),
                     })
 
         return '\n'.join(where)
