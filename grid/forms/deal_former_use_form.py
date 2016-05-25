@@ -16,11 +16,11 @@ class DealFormerUseForm(BaseForm):
     )
     land_owner = forms.MultipleChoiceField(
         required=False, label=_("Former land owner"), choices=(
-            (10, _("State")),
-            (20, _("Private (smallholders)")),
-            (30, _("Private (large-scale)")),
-            (40, _("Community")),
-            (50, _("Other")),
+            (_("State"), _("State")),
+            (_("Private (smallholders)"), _("Private (smallholders)")),
+            (_("Private (large-scale)"), _("Private (large-scale)")),
+            (_("Community"), _("Community")),
+            (_("Other"), _("Other")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_land_owner_comment = forms.CharField(
@@ -32,14 +32,14 @@ class DealFormerUseForm(BaseForm):
     )
     land_use = forms.MultipleChoiceField(
         required=False, label=_("Former land use"), choices=(
-            (10, _("Commercial (large-scale) agriculture")),
-            (20, _("Smallholder agriculture")),
-            (30, _("Shifting cultivation")),
-            (40, _("Pastoralism")),
-            (50, _("Hunting/Gathering")),
-            (60, _("Forestry")),
-            (70, _("Conservation")),
-            (80, _("Other")),
+            (_("Commercial (large-scale) agriculture"), _("Commercial (large-scale) agriculture")),
+            (_("Smallholder agriculture"), _("Smallholder agriculture")),
+            (_("Shifting cultivation"), _("Shifting cultivation")),
+            (_("Pastoralism"), _("Pastoralism")),
+            (_("Hunting/Gathering"), _("Hunting/Gathering")),
+            (_("Forestry"), _("Forestry")),
+            (_("Conservation"), _("Conservation")),
+            (_("Other"), _("Other")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_land_use_comment = forms.CharField(
@@ -51,13 +51,13 @@ class DealFormerUseForm(BaseForm):
     )
     land_cover = forms.MultipleChoiceField(
         required=False, label=_("Former land cover"), choices=(
-            (10, _("Cropland")),
-            (20, _("Forest land")),
-            (30, _("Pasture")),
-            (40, _("Shrub land/Grassland (Rangeland)")),
-            (50, _("Marginal land")),
-            (60, _("Wetland")),
-            (70, _("Other land[e.g. developed land – specify in comment field]")),
+            (_("Cropland"), _("Cropland")),
+            (_("Forest land"), _("Forest land")),
+            (_("Pasture"), _("Pasture")),
+            (_("Shrub land/Grassland (Rangeland)"), _("Shrub land/Grassland (Rangeland)")),
+            (_("Marginal land"), _("Marginal land")),
+            (_("Wetland"), _("Wetland")),
+            (_("Other land[e.g. developed land – specify in comment field]"), _("Other land[e.g. developed land – specify in comment field]")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_land_cover_comment = forms.CharField(

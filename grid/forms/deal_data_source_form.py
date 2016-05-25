@@ -28,15 +28,15 @@ class DealDataSourceForm(BaseForm):
     )
     type = forms.TypedChoiceField(
         required=False, label=_("Data source type"), choices=(
-            (10, _("Media report")),
-            (20, _("Research Paper / Policy Report")),
-            (30, _("Government sources")),
-            (40, _("Company sources")),
-            (50, _("Contract")),
-            (60, _("Contract (contract farming agreement)")),
-            (70, _("Personal information")),
-            (80, _("Crowdsourcing")),
-            (90, _("Other (Please specify in comment  field)")),
+            (_("Media report"), _("Media report")),
+            (_("Research Paper / Policy Report"), _("Research Paper / Policy Report")),
+            (_("Government sources"), _("Government sources")),
+            (_("Company sources"), _("Company sources")),
+            (_("Contract"), _("Contract")),
+            (_("Contract (contract farming agreement)"), _("Contract (contract farming agreement)")),
+            (_("Personal information"), _("Personal information")),
+            (_("Crowdsourcing"), _("Crowdsourcing")),
+            (_("Other (Please specify in comment  field)"), _("Other (Please specify in comment  field)")),
         ), coerce=int
     )
     url = forms.URLField(
