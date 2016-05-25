@@ -21,8 +21,6 @@ class Filter(dict):
     def __init__(self, variable, operator, value, name=None, label=None):
         if operator not in FilterToSQL.OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
-        #if variable not in get_filter_vars():
-        #    raise ValueError('No such variable: {}'.format(variable))
 
         if name is None:
             name = generate_filter_name()

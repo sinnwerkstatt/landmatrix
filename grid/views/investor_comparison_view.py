@@ -1,17 +1,19 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.formsets import BaseFormSet
 from django.template.context import RequestContext
+from django.views.generic.base import TemplateView
+
 
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.views.deal_detail_view import get_forms
-from grid.views.stakeholder_view import StakeholderView, _investor_from_id_and_timestamp
+from grid.views.stakeholder_view import _investor_from_id_and_timestamp
 from grid.views.view_aux_functions import render_to_response
 from landmatrix.models.investor import Investor
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class InvestorComparisonView(StakeholderView):
+class InvestorComparisonView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         investor_1_id = kwargs.pop('investor_1', None)

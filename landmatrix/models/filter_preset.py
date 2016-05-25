@@ -15,7 +15,7 @@ class FilterPresetGroup(models.Model):
 
 class FilterPreset(models.Model):
     name = models.CharField(_("Name"), max_length=255)
-    group = models.ForeignKey(FilterPresetGroup, related_name='filter_presets')
+    group = models.ForeignKey(FilterPresetGroup, related_name='filter_presets', null=True)
     is_default = models.BooleanField(default=False)
     overrides_default = models.BooleanField(default=False)
 

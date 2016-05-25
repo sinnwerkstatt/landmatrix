@@ -32,15 +32,20 @@ from grid.views.investor_comparison_view import InvestorComparisonView
 from map import urls as map_urls
 from charts import urls as charts_urls
 from editor import urls as editor_urls
-from landmatrix.views import CountryView, RegionView
+from landmatrix.views import *
 #from landmatrix.views.filterdebug_view import FilterView
-from grid.views.stakeholder_view import StakeholderView
+from grid.views.stakeholder_view import (
+    AddStakeholderView, ChangeStakeholderView,
+)
 
 CACHE_TIMEOUT = 24*3600
 
 urlpatterns = patterns('',
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
+
+    url(r'^language/(?P<language>[^/]+)/$', SwitchLanguageView.as_view(), name='switch_language'),
+
     url(r'^api/docs/', include('rest_framework_docs.urls')),
     url(r'^api/', include(api_urls)),
 
@@ -111,11 +116,11 @@ urlpatterns = patterns('',
 
     url(r'^deal/comments/', include('django_comments.urls')),
 
-    url(r'^stakeholder/add$', StakeholderView.as_view(), name='stakeholder_form'),
-    url(r'^stakeholder/(?P<investor_id>[\d]+)/$', StakeholderView.as_view(), name='stakeholder_form'),
+    url(r'^stakeholder/add$', AddStakeholderView.as_view(), name='add_stakeholder_form'),
+    url(r'^stakeholder/(?P<investor_id>[\d]+)/$', ChangeStakeholderView.as_view(), name='stakeholder_form'),
     url(
         r'^stakeholder/(?P<investor_id>[\d_\.]+)/$',
-        StakeholderView.as_view(),
+        ChangeStakeholderView.as_view(),
         name='stakeholder_form'
     ),
     url(

@@ -9,13 +9,14 @@
     -->
     <a href="#" class="" data-toggle="dropdown" role="button" aria-haspopup="true"
        aria-expanded="false">
-        <span class="nav-circle">EN</span>
+       {% get_current_language as LANGUAGE_CODE %}
+        <span class="nav-circle">{{ LANGUAGE_CODE|upper }}</span>
     </a>
     <ul class="dropdown-menu">
-        <li class="active">
-            <a href="/en/" title="{% trans "Change to language:" %} English">
-                <span>English</span>
-            </a>
-        </li>
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% for language in languages %}
+        <li{% if language.code == LANGUAGE_CODE %} class="active"{% endif %}><a href="{% url 'switch_language' language=language.code %}?next={{ request.path }}">{{ language.name_local|title }}</a></li>
+        {% endfor %}
     </ul>
 </li>

@@ -1,158 +1,123 @@
-from pprint import pprint
-
 from collections import OrderedDict
+import datetime
+
 from django.core.exceptions import ObjectDoesNotExist
+from django.views.generic.base import TemplateResponseMixin
+from django.views.generic.detail import BaseDetailView
+from django.http import Http404
+from django.utils.translation import ugettext as _
+from django.utils.timezone import utc
 
 from grid.forms.investor_formset import InvestorForm
-from grid.forms.parent_stakeholder_formset import ParentStakeholderFormSet, ParentInvestorFormSet
-from grid.views.view_aux_functions import render_to_response
+from grid.forms.parent_stakeholder_formset import (
+    ParentStakeholderFormSet, ParentInvestorFormSet,
+)
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
-
-from django.template.context import RequestContext
-from django.views.generic.base import TemplateView
-
-from landmatrix.models.status import Status
 
 
 VERBOSE = False
 
 
-class StakeholderView(TemplateView):
-
+class ChangeStakeholderView(TemplateResponseMixin, BaseDetailView):
     template_name = 'stakeholder.html'
+    pk_url_kwarg = 'investor_id'
+    context_object_name = 'investor'
+    queryset = Investor.objects.all()
 
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            investor = investor_from_id(kwargs["investor_id"])
-        except KeyError:
-            investor = None
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get(self.pk_url_kwarg)
 
-        context = super(StakeholderView, self).get_context_data(**kwargs)
-        context['investor'] = investor
-        context['investor_form'] = InvestorForm(InvestorForm.get_data(investor))
-        context['parent_stakeholders'] = ParentStakeholderFormSet(initial=ParentStakeholderFormSet.get_data(investor, role='ST'), prefix='parent-stakeholder-form')
-        context['parent_investors'] = ParentInvestorFormSet(initial=ParentInvestorFormSet.get_data(investor, role='IN'), prefix='parent-investor-form')
+        if pk and '_' in pk:
+            investor_id, timestamp = pk.split('_')
+            investor_date = datetime.datetime.utcfromtimestamp(
+                float(timestamp), tzinfo=utc)
+
+            if queryset is None:
+                queryset = self.get_queryset()
+
+            try:
+                investor = queryset.get(pk=investor_id)
+                old_versions = investor.history.filter(
+                    history_date__lte=investor_date)
+                obj = old_versions.get()
+            except queryset.model.DoesNotExist:
+                raise Http404(_("No matching stakeholder found."))
+        elif pk:
+            obj = super().get_object(queryset=queryset)
+
+        return obj
+
+    def get_form(self, form_class, **kwargs):
+        if self.request.method == 'POST':
+            form = form_class(self.request.POST, **kwargs)
+        else:
+            form = form_class(**kwargs)
+
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # TODO: move some of this to models.
+        involvements_queryset = InvestorVentureInvolvement.objects.filter(
+                fk_venture=self.object,
+                fk_status__name__in=('pending', 'active', 'overwritten'))
+        stakeholders_queryset = involvements_queryset.filter(role='ST')
+        investors_queryset = involvements_queryset.filter(role='IN')
+
+        investor_form = self.get_form(InvestorForm, instance=self.object)
+        parent_stakeholder_formset = self.get_form(
+            ParentStakeholderFormSet, queryset=stakeholders_queryset,
+            prefix='parent-stakeholder-form')
+        parent_investor_formset = self.get_form(
+            ParentInvestorFormSet, queryset=investors_queryset,
+            prefix='parent-investor-form')
+
         try:
-            context['history'] = get_investor_history(investor)
+            history = get_investor_history(self.object)
         except AttributeError:
-            pass
+            history = None
 
-        if request.POST:
-            save_from_post(request.POST, kwargs["investor_id"])
+        context.update({
+            'investor_form': investor_form,
+            'parent_stakeholders': parent_stakeholder_formset,
+            'parent_investors': parent_investor_formset,
+            'history': history,
+        })
 
-        return render_to_response(self.template_name, context, RequestContext(request))
+        return context
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
 
-def save_from_post(POST, investor_id):
-    investor = investor_from_id(POST.get('investor', investor_id))
-    if not investor:
-        return
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(**kwargs)
+        investor_form = context['investor_form']
+        stakeholders_formset = context['parent_stakeholders']
+        investors_formset = context['parent_investors']
 
-    save_investor_changes(investor, POST)
-    save_involvement_changes(investor, POST)
+        forms = (investor_form, stakeholders_formset, investors_formset)
+        if all([form.is_valid() for form in forms]):
+            self.object = investor_form.save()
 
+            # Save a generated name to the DB if necessary
+            if not investor_form.cleaned_data['name']:
+                self.object.name = _("Unknown (#%s)") % (self.object.pk,)
+                self.object.save()
 
-def extract_formset_data(POST):
-    return {key: POST[key] for key in POST.keys() if key.startswith('form-') and not key[5].istitle()}
+            stakeholders_formset.save(self.object, 'ST')
+            investors_formset.save(self.object, 'IN')
 
-
-def save_investor_changes(investor, POST):
-    investor_form = InvestorForm(POST)
-    if investor_form.is_valid():
-        classification = investor_form.cleaned_data['classification']
-        investor_name = investor_form.cleaned_data['investor_name']
-        country_id = investor_form.cleaned_data['country']
-        if investor_name != investor.name:
-            investor.name = investor_name
-        if classification != investor.classification:
-            investor.classification = classification
-        if investor.fk_country_id != country_id:
-            investor.fk_country_id = country_id
-
-        investor.save()
-        # TODO create changeset
-
-
-def save_involvement_changes(investor, POST):
-    stakeholder_data = get_separate_form_data(extract_formset_data(POST))
-
-    delete_involvements_removed_in_frontend(investor, stakeholder_data)
-
-    involvements = get_active_involvements(investor)
-
-    for stakeholder in stakeholder_data:
-        corresponding_involvements = involvements.filter(fk_investor_id=stakeholder['stakeholder'])
-        if not len(corresponding_involvements):
-            if VERBOSE:
-                print('CREATING involvement for ', stakeholder, ', not in', [i.id for i in involvements])
-            InvestorVentureInvolvement.objects.create(
-                fk_venture=investor, fk_investor_id=stakeholder['stakeholder'], percentage=stakeholder['percentage'],
-                fk_status=Status.objects.get(name='pending')
-            )
-        else:
-            for involvement in corresponding_involvements:
-                if VERBOSE:
-                    print(
-                        'UPDATING stakeholder %i percentage from %f to %f' % (
-                            involvement.id, float(involvement.percentage), float(stakeholder['percentage'])
-                        )
-                    )
-                involvement.percentage = stakeholder['percentage']
-                involvement.fk_status = Status.objects.get(name='pending')
-                involvement.save()
-
-    # TODO create changeset
+        return self.render_to_response(context)
 
 
-def delete_involvements_removed_in_frontend(investor, stakeholder_data):
-    involvements = get_active_involvements(investor)
-    for involvement in involvements:
-        if int(involvement.fk_investor_id) not in [int(stakeholder['stakeholder']) for stakeholder in stakeholder_data]:
-            if VERBOSE:
-                print('DELETING |', str(involvement)[:51], '|, not in', stakeholder_data)
-            involvement.fk_status = Status.objects.get(name='deleted')
-            involvement.save()
-    # TODO create changeset
+class AddStakeholderView(ChangeStakeholderView):
 
-
-def get_active_involvements(investor):
-    return InvestorVentureInvolvement.objects.filter(fk_venture=investor). \
-        filter(fk_status__name__in=('pending', 'active', 'overwritten'))
-
-
-def get_separate_form_data(formset_post):
-    # in:  { form-0-key: value, form-1-key: value }
-    # out: [{key: value}, {key: value}]
-    i = 0
-    out = []
-    while True:
-        valid_keys = [key for key in formset_post.keys() if key.startswith('form-%i' % i)]
-        if not valid_keys:
-            return out
-        form_data = {key.replace('form-%i-' % i, ''): formset_post[key] for key in valid_keys}
-        out.append(form_data)
-        i += 1
-        if i > 1000:
-            return out
-
-
-def get_investor(request):
-    return investor_from_id(request.GET.get('investor_id', 0))
-
-
-def investor_from_id(investor_id):
-    try:
-        if '_' in investor_id:
-            return _investor_from_id_and_timestamp(investor_id)
-        else:
-            return Investor.objects.get(pk=investor_id)
-    except ObjectDoesNotExist:
+    def get_object(self, queryset=None):
         return None
-
-
-def get_form(deal, form_class):
-    data = form_class[1].get_data(deal)
-    return form_class[1](initial=data)
 
 
 def get_investor_history(investor):
@@ -165,6 +130,19 @@ def _investor_history(investor):
         date_and_investor.append((investor.history_date.timestamp(), investor))
 
     return sorted(date_and_investor, key=lambda entry: entry[0])
+
+
+# TODO: remove in future. These methods are imported and used elsewhere
+# currently however.
+
+def investor_from_id(investor_id):
+    try:
+        if '_' in investor_id:
+            return _investor_from_id_and_timestamp(investor_id)
+        else:
+            return Investor.objects.get(pk=investor_id)
+    except ObjectDoesNotExist:
+        return None
 
 
 def _investor_from_id_and_timestamp(id_and_timestamp):

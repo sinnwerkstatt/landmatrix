@@ -11,14 +11,42 @@ from django.utils.html import format_html, format_html_join, force_text
 from django.conf import settings
 from django import forms
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
+from wagtail_modeltranslation.models import TranslationMixin
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.whitelist import attribute_rule, check_url, allow_without_attributes
+from wagtail.wagtailadmin.edit_handlers import ObjectList
+from wagtail.wagtailadmin.views.pages import PAGE_EDIT_HANDLERS
 from blog.models import BlogPage
 
 from landmatrix.models import Region as DataRegion, Country as DataCountry
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+class SplitMultiLangTabsMixin(object):
+    """ This mixin detects multi-language fields and splits them into seperate tabs per language """
+    
+    def _split_i18n_wagtail_translated_panels(self, content_panels):
+        """ For use with wagtail and wagtail-modeltranslation. This will encapsulate all translatable
+            Page content fields in a seperate tab for each language in the wagtail admin.
+         """
+        object_lists = []
+        for (lang, _lang_label) in getattr(settings, 'MODELTRANSLATION_LANGUAGES', getattr(settings, 'LANGUAGES', [])):
+            i18n_content_panels = []
+            for field_panel in content_panels:
+                if field_panel.field_name.endswith(lang):
+                    panel_kwargs = {'classname': field_panel.classname} if hasattr(field_panel, 'classname') else {}
+                    mod = type(field_panel)(field_panel.field_name, **panel_kwargs)
+                    i18n_content_panels.append( mod )
+            object_lists.append(ObjectList(i18n_content_panels, heading=_('Content') + ' (%(language)s)' % {'language': lang}))
+        return object_lists 
+    
+    def __init__(self, *args, **kwargs):
+        super(SplitMultiLangTabsMixin, self).__init__(*args, **kwargs)
+        if self.__class__ in PAGE_EDIT_HANDLERS and not getattr(PAGE_EDIT_HANDLERS[self.__class__], '_MULTILANG_TABS_PATCHED', False):
+            handler = PAGE_EDIT_HANDLERS[self.__class__]
+            tabs = [tab_handler.bind_to_model(self.__class__) for tab_handler in self._split_i18n_wagtail_translated_panels(self.content_panels)]
+            handler.children = tabs + handler.children[1:]
+            handler._MULTILANG_TABS_PATCHED = True
 
 class LinkBlock(StructBlock):
     cls = blocks.ChoiceBlock(choices=[
@@ -310,7 +338,7 @@ CONTENT_BLOCKS += [
     ('full_width_container', FullWidthContainerBlock(form_classname='')),
 ]
 
-class WagtailRootPage(Page):
+class WagtailRootPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     footer_column_1 = RichTextField(blank=True)
     footer_column_2 = RichTextField(blank=True)
@@ -326,11 +354,11 @@ class WagtailRootPage(Page):
     ]
 
 
-class WagtailPage(Page):
+class WagtailPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [StreamFieldPanel('body')]
 
-class RegionIndex(Page):
+class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
     template = 'wagtailcms/region.html'
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
@@ -354,7 +382,7 @@ class RegionIndex(Page):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
         return super(RegionIndex, self).serve(request)
 
-class Region(Page):
+class Region(TranslationMixin, SplitMultiLangTabsMixin, Page):
     region = models.ForeignKey(DataRegion, null=True, blank=True, on_delete=models.SET_NULL)
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
@@ -364,7 +392,7 @@ class Region(Page):
     ]
     parent_page_types = ['wagtailcms.RegionIndex']
 
-class CountryIndex(Page):
+class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
     template = 'wagtailcms/country.html'
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
@@ -390,7 +418,7 @@ class CountryIndex(Page):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(country=self.country)
         return super(CountryIndex, self).serve(request)
 
-class Country(Page):
+class Country(TranslationMixin, SplitMultiLangTabsMixin, Page):
     country = models.ForeignKey(DataCountry, null=True, blank=True, on_delete=models.SET_NULL)
     body = NoWrapsStreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
