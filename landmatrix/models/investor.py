@@ -70,14 +70,7 @@ class Investor(DefaultStringRepresentation, models.Model):
         ordering = ('-name',)
 
     def __str__(self):
-        if self.name:
-            name = self.name
-        elif self.pk:
-            name = _("Unknown (#%s)") % (self.pk,)
-        else:
-            name = _("Unknown")
-
-        return name
+        return self.name
 
     def get_subinvestors(self):
         investor_ids = InvestorVentureInvolvement.objects.filter(fk_venture=self.id).\

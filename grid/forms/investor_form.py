@@ -26,13 +26,6 @@ class InvestorForm(BaseModelForm):
         model = Investor
         fields = ['name', 'fk_country', 'classification', 'tg_general_comment']
 
-    def clean_name(self):
-        value = self.cleaned_data['name']
-        if (not value) and self.instance and self.instance.pk:
-            value = self.instance.get_display_name()
-
-        return value
-
     def get_attributes(self, **kwargs):
         '''
         Attempt to copy the BaseForm API here.

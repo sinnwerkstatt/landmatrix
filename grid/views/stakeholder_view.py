@@ -103,6 +103,11 @@ class ChangeStakeholderView(TemplateResponseMixin, BaseDetailView):
         if all([form.is_valid() for form in forms]):
             self.object = investor_form.save()
 
+            # Save a generated name to the DB if necessary
+            if not investor_form.cleaned_data['name']:
+                self.object.name = _("Unknown (#%s)") % (self.object.pk,)
+                self.object.save()
+
             stakeholders_formset.save(self.object, 'ST')
             investors_formset.save(self.object, 'IN')
 
