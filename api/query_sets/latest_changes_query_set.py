@@ -31,7 +31,11 @@ class LatestChangesQuerySet:
 
     def get_latest_commented(self):
         latest_comments = Comment.objects.filter(is_public=True).order_by('-submit_date')[:self.num_changes]
-        return [(Activity.objects.get(pk=comment.object_pk), comment) for comment in latest_comments]
+        return [
+            (Activity.objects.get(pk=comment.object_pk), comment)
+            for comment in latest_comments
+            if Activity.objects.filter(pk=comment.object_pk).exists()
+        ]
 
     def get_latest_activities(self):
         return Activity.history.filter(fk_status_id__in=(2, 3, 4)).order_by('-history_date')[:self.num_changes]
