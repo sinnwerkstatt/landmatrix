@@ -14,6 +14,8 @@ class LatestChangesQuerySet:
 
     def __init__(self, request):
         self.num_changes = int(request.GET.get('n', self.DEFAULT_NUM_CHANGES))
+        self.country = request.GET.get('target_country')
+        self.region = request.GET.get('target_region')
 
     def all(self):
         deal_data = [
@@ -34,11 +36,25 @@ class LatestChangesQuerySet:
         return [
             (Activity.objects.get(pk=comment.object_pk), comment)
             for comment in latest_comments
-            if Activity.objects.filter(pk=comment.object_pk).exists()
+            if self.is_in_desired_region(comment)
         ]
 
+    def is_in_desired_region(self, comment):
+        base_query = Activity.objects.filter(pk=comment.object_pk)
+        if self.country:
+            base_query = base_query.filter(pk__in=self.activity_ids_by_country())
+        return base_query.exists()
+
     def get_latest_activities(self):
-        return Activity.history.filter(fk_status_id__in=(2, 3, 4)).order_by('-history_date')[:self.num_changes]
+        all_activities = Activity.history.filter(fk_status_id__in=(2, 3, 4))
+        if self.country:
+            all_activities = all_activities.filter(id__in=self.activity_ids_by_country())
+        return all_activities.order_by('-history_date')[:self.num_changes]
+
+    def activity_ids_by_country(self):
+        return ActivityAttributeGroup.objects.filter(
+            attributes__contains={'target_country': self.country}
+        ).values_list('fk_activity_id', flat=True).distinct()
 
 
 def remove_duplicates(deal_data):
