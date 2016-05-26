@@ -80,7 +80,7 @@ def apply_filters_from_session(request, filter_dict):
             _update_filters(filter_dict, filter)
         elif 'preset_id' in filter[1]:
             preset = PresetFilter(filter[1].get('preset_id'), filter[1].get('name'))
-            for i, condition in enumerate(preset.filter.conditions()):
+            for i, condition in enumerate(preset.filter.conditions.all()):
                 _update_filters(filter_dict, (filter[1].get('name') + '_{}'.format(i), condition))
     for filter in filters_via_url(request):
         _update_filters(filter_dict, filter)
