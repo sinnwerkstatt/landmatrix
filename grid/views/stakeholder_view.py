@@ -106,7 +106,11 @@ class ChangeStakeholderView(TemplateResponseMixin, BaseDetailView):
             # Save a generated name to the DB if necessary
             if not investor_form.cleaned_data['name']:
                 self.object.name = _("Unknown (#%s)") % (self.object.pk,)
-                self.object.save()
+
+            # set status to "pending"
+            self.object.fk_status_id = 1
+
+            self.object.save()
 
             stakeholders_formset.save(self.object, 'ST')
             investors_formset.save(self.object, 'IN')

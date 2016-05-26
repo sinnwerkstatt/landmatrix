@@ -96,6 +96,7 @@ if __name__ == '__main__':
         if options.old_comment:
             MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
             MapComment.map_all(save=options.save, verbose=options.verbose)
+            MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
             MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.activity:

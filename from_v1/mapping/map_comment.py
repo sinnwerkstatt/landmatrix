@@ -3,7 +3,7 @@ from pprint import pprint
 from migrate import V1, V2
 from .map_model import MapModel
 from .map_activity_tag_group import MapActivityTagGroup
-from .map_investor import MapInvestor
+from .map_stakeholder_investor import MapStakeholderInvestor
 
 import landmatrix.models
 import old_editor.models
@@ -16,7 +16,6 @@ def map_tag_group_id(tag_group_id):
     id = MapActivityTagGroup.tag_group_to_attribute_group_ids.get(tag_group_id)
     if not landmatrix.models.ActivityAttributeGroup.objects.using(V2).filter(id=id).exists():
         id = None
-    if id is not None: print(id)
     return id
 
 class MapComment(MapModel):
@@ -52,7 +51,6 @@ def map_sh_tag_group_id(tag_group_id):
     id = MapActivityTagGroup.tag_group_to_attribute_group_ids.get(tag_group_id)
     if not landmatrix.models.ActivityAttributeGroup.objects.using(V2).filter(id=id).exists():
         id = None
-    if id is not None: print(id)
     return id
 
 
@@ -61,7 +59,7 @@ class MapStakeholderComment(MapComment):
     attributes = {
         'fk_sh_tag_group_id': ('fk_activity_attribute_group_id', map_sh_tag_group_id),
     }
-    depends = [MapInvestor]
+    depends = [MapStakeholderInvestor]
 
     @classmethod
     def map_record(cls, record, save=False, verbose=False):
