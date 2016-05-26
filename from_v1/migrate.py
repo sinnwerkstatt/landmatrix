@@ -118,11 +118,11 @@ if __name__ == '__main__':
         if options.investor or options.all:
             if not MapStatus._done: MapStatus.map_all(save=options.save, verbose=options.verbose)
             MapInvestor.map_all(save=options.save, verbose=options.verbose)
-            MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)
             if not MapActivity._done: MapActivity.map_all(save=options.save, verbose=options.verbose)
             MapInvestorActivityInvolvement.map_all(save=options.save, verbose=options.verbose)
             MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
             MapStakeholderVentureInvolvement.map_all(save=options.save, verbose=options.verbose)
+            MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.comment or options.all:
             MapDjangoComments.map_all(save=options.save, verbose=options.verbose)

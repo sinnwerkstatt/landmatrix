@@ -65,10 +65,11 @@ class MapStakeholderComment(MapComment):
 
     @classmethod
     def map_record(cls, record, save=False, verbose=False):
+        sh_tag_group = old_editor.models.SH_Tag_Group.objects.using(V1).get(
+            id=record['fk_sh_tag_group_id']
+        )
         investor = landmatrix.models.Investor.objects.using(V2).get(
-            pk=old_editor.models.SH_Tag_Group.objects.using(V1).get(
-                id=record['fk_sh_tag_group_id']
-            ).fk_stakeholder_id
+            pk=sh_tag_group.fk_stakeholder_id
         )
         investor.comment = record['comment']
         if save:
