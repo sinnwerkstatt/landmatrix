@@ -20,7 +20,7 @@ class LatestChangesQuerySet:
     def all(self):
         deal_data = [
             deal_to_data(activity, activity.history_date, status_string(activity.fk_status))
-            for activity in (self.get_latest_activities())
+            for activity in self.get_latest_activities()
         ]
         deal_data += [
             deal_to_data(activity, comment.submit_date, 'comment')
@@ -43,12 +43,16 @@ class LatestChangesQuerySet:
         base_query = Activity.objects.filter(pk=comment.object_pk)
         if self.country:
             base_query = base_query.filter(pk__in=self.activity_ids_by_country())
+        if self.region:
+            base_query = base_query.filter(pk__in=self.activity_ids_by_region())
         return base_query.exists()
 
     def get_latest_activities(self):
         all_activities = Activity.history.filter(fk_status_id__in=(2, 3, 4))
         if self.country:
             all_activities = all_activities.filter(id__in=self.activity_ids_by_country())
+        if self.region:
+            all_activities = all_activities.filter(id__in=self.activity_ids_by_region())
         return all_activities.order_by('-history_date')[:self.num_changes]
 
     def activity_ids_by_country(self):
@@ -56,6 +60,11 @@ class LatestChangesQuerySet:
             attributes__contains={'target_country': self.country}
         ).values_list('fk_activity_id', flat=True).distinct()
 
+    def activity_ids_by_region(self):
+        countries_in_region = Country.objects.filter(fk_region_id=self.region).values_list('id', flat=True).distinct()
+        return ActivityAttributeGroup.objects.filter(
+            attributes__contains={'target_country': list(countries_in_region)}
+        ).values_list('fk_activity_id', flat=True).distinct()
 
 def remove_duplicates(deal_data):
     deal_ids = []
