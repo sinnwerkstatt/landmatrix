@@ -2,10 +2,10 @@ from collections import OrderedDict
 import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.generic.base import TemplateResponseMixin
-from django.views.generic.detail import BaseDetailView
-from django.http import Http404
+from django.views.generic.edit import CreateView, UpdateView
+from django.http import Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse_lazy
 from django.utils.timezone import utc
 
 from grid.forms.investor_formset import InvestorForm
@@ -15,16 +15,130 @@ from grid.forms.parent_stakeholder_formset import (
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 
 
-VERBOSE = False
+class StakeholderFormsMixin:
+    '''
+    Handle the shared form behaviour for create and update.
+    '''
+
+    def get_formset_kwargs(self):
+        kwargs = {}
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'data': self.request.POST,
+                'files': self.request.FILES,
+            })
+
+        return kwargs
+
+    def get_stakeholders_formset(self):
+        kwargs = self.get_formset_kwargs()
+        kwargs['prefix'] = 'parent-stakeholder-form'
+
+        if self.object:
+            queryset = self.object.venture_involvements.all()
+            queryset = queryset.active().stakeholders()
+        else:
+            queryset = InvestorVentureInvolvement.objects.none()
+        kwargs['queryset'] = queryset
+
+        formset = ParentStakeholderFormSet(**kwargs)
+
+        return formset
+
+    def get_investors_formset(self):
+        kwargs = self.get_formset_kwargs()
+        kwargs['prefix'] = 'parent-investor-form'
+
+        if self.object:
+            queryset = self.object.venture_involvements.all()
+            queryset = queryset.active().investors()
+        else:
+            queryset = InvestorVentureInvolvement.objects.none()
+        kwargs['queryset'] = queryset
+
+        formset = ParentInvestorFormSet(**kwargs)
+
+        return formset
+
+    def get_investor_history(self):
+        def _investor_history(investor):
+            date_and_investor = []
+            history_items = investor.history.all().order_by('history_date')
+            for investor in list(history_items):
+                date_and_investor.append(
+                    (investor.history_date.timestamp(), investor))
+
+            return sorted(date_and_investor, key=lambda entry: entry[0])
+
+        try:
+            history = _investor_history(self.object)
+            history = OrderedDict(
+                reversed(sorted(history, key=lambda item: item[0])))
+        except AttributeError:
+            history = None
+
+        return history
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if 'form' not in context:
+            context['form'] = self.get_form(form_class=self.get_form_class())
+
+        if 'parent_stakeholders' not in context:
+            context['parent_stakeholders'] = self.get_stakeholders_formset()
+
+        if 'parent_investors' not in context:
+            context['parent_investors'] = self.get_investors_formset()
+
+        if 'history' not in context:
+            context['history'] = self.get_investor_history()
+
+        return context
+
+    def form_invalid(self, investor_form, stakeholders_formset,
+                     investors_formset):
+        context = self.get_context_data(
+            form=investor_form, parent_stakeholders=stakeholders_formset,
+            parent_investors=investors_formset)
+
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        '''
+        Override standard post behaviour to check all three forms.
+        '''
+        self.object = self.get_object()
+
+        investor_form = self.get_form()
+        stakeholders_formset = self.get_stakeholders_formset()
+        investors_formset = self.get_investors_formset()
+        forms_valid = [
+            form.is_valid() for form in
+            (investor_form, stakeholders_formset, investors_formset)
+        ]
+        if all(forms_valid):
+            response = self.form_valid(investor_form, stakeholders_formset,
+                                       investors_formset)
+        else:
+            response = self.form_invalid(investor_form, stakeholders_formset,
+                                         investors_formset)
+
+        return response
 
 
-class ChangeStakeholderView(TemplateResponseMixin, BaseDetailView):
+class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
     template_name = 'stakeholder.html'
     pk_url_kwarg = 'investor_id'
     context_object_name = 'investor'
-    queryset = Investor.objects.all()
+    model = Investor
+    form_class = InvestorForm
 
     def get_object(self, queryset=None):
+        '''
+        Handle retrieval of old versions via id_timestamp url key.
+        TODO: test this works.
+        '''
         pk = self.kwargs.get(self.pk_url_kwarg)
 
         if pk and '_' in pk:
@@ -47,93 +161,38 @@ class ChangeStakeholderView(TemplateResponseMixin, BaseDetailView):
 
         return obj
 
-    def get_form(self, form_class, **kwargs):
-        if self.request.method == 'POST':
-            form = form_class(self.request.POST, **kwargs)
-        else:
-            form = form_class(**kwargs)
-
-        return form
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        # TODO: move some of this to models.
-        involvements_queryset = InvestorVentureInvolvement.objects.filter(
-                fk_venture=self.object,
-                fk_status__name__in=('pending', 'active', 'overwritten'))
-        stakeholders_queryset = involvements_queryset.filter(role='ST')
-        investors_queryset = involvements_queryset.filter(role='IN')
-
-        investor_form = self.get_form(InvestorForm, instance=self.object)
-        parent_stakeholder_formset = self.get_form(
-            ParentStakeholderFormSet, queryset=stakeholders_queryset,
-            prefix='parent-stakeholder-form')
-        parent_investor_formset = self.get_form(
-            ParentInvestorFormSet, queryset=investors_queryset,
-            prefix='parent-investor-form')
-
-        try:
-            history = get_investor_history(self.object)
-        except AttributeError:
-            history = None
-
-        context.update({
-            'investor_form': investor_form,
-            'parent_stakeholders': parent_stakeholder_formset,
-            'parent_investors': parent_investor_formset,
-            'history': history,
-        })
-
-        return context
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        context = self.get_context_data(**kwargs)
-        investor_form = context['investor_form']
-        stakeholders_formset = context['parent_stakeholders']
-        investors_formset = context['parent_investors']
-
-        forms = (investor_form, stakeholders_formset, investors_formset)
-        if all([form.is_valid() for form in forms]):
-            self.object = investor_form.save()
-
-            # Save a generated name to the DB if necessary
-            if not investor_form.cleaned_data['name']:
-                self.object.name = _("Unknown (#%s)") % (self.object.pk,)
-
-            # set status to "pending"
-            self.object.fk_status_id = 1
-
-            self.object.save()
-
-            stakeholders_formset.save(self.object, 'ST')
-            investors_formset.save(self.object, 'IN')
+    def form_valid(self, investor_form, stakeholders_formset,
+                   investors_formset):
+        self.object = investor_form.save()
+        stakeholders_formset.save(self.object)
+        investors_formset.save(self.object)
+        context = self.get_context_data(
+            form=investor_form, parent_stakeholders=stakeholders_formset,
+            parent_investors=investors_formset)
 
         return self.render_to_response(context)
 
 
-class AddStakeholderView(ChangeStakeholderView):
+class AddStakeholderView(StakeholderFormsMixin, CreateView):
+    model = Investor
+    form_class = InvestorForm
+    template_name = 'stakeholder.html'
+    context_object_name = 'investor'
+
+    def get_success_url(self):
+        return reverse_lazy('stakeholder_form',
+                            kwargs={'investor_id': self.object.pk})
 
     def get_object(self, queryset=None):
         return None
 
+    def form_valid(self, investor_form, stakeholders_formset,
+                   investors_formset):
+        self.object = investor_form.save()
+        stakeholders_formset.save(self.object)
+        investors_formset.save(self.object)
 
-def get_investor_history(investor):
-    return OrderedDict(reversed(sorted(_investor_history(investor), key=lambda item: item[0])))
-
-
-def _investor_history(investor):
-    date_and_investor = []
-    for investor in list(investor.history.all().order_by('history_date')):
-        date_and_investor.append((investor.history_date.timestamp(), investor))
-
-    return sorted(date_and_investor, key=lambda entry: entry[0])
+        return HttpResponseRedirect(self.get_success_url())
 
 
 # TODO: remove in future. These methods are imported and used elsewhere
