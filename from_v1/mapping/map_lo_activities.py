@@ -197,8 +197,8 @@ class MapLOActivities(MapLOModel):
                 )
             else:
                 aag.save(using=V2)
-        else:
-            print(aag)
+        # else:
+        #     print(aag)
 
         cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
         return aag
@@ -265,8 +265,8 @@ class MapLOActivities(MapLOModel):
 
 def clean_attributes(attrs):
     attrs = {
-        clean_key(key): clean_attribute(key, value) for key, value in attrs.items()
-    }
+        rename_key(key): clean_attribute(key, value) for key, value in attrs.items()
+        }
 
 
     return attrs
@@ -274,10 +274,11 @@ def clean_attributes(attrs):
 
 def clean_attribute(key, value):
     if isinstance(value, str):
+        # HSTORE attribute values can not take strings longer than that due to index constraints :-(
         return value[:3000]
 
 
-def clean_key(key):
+def rename_key(key):
     return LM_ATTRIBUTES.get(key, key)
 
 
