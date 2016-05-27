@@ -41,9 +41,9 @@ class InvestorCountrySummariesQuerySet(FakeQuerySetFlat):
 
     def to_json_record(self, c, country):
         c['name'] = c['country']
-        c["country_slug"] =c['country'].lower().replace(" ", "-")
-        c["region_slug"] =c['region'].lower().replace(" ", "-")
-        c['url'] = reverse("table_list", kwargs={"group": "by-target-country", "list": c['country'].lower().replace(" ", "-")})
+        c["country_slug"] = c['country'].lower().replace(" ", "-")
+        c["region_slug"] = c['region'].lower().replace(" ", "-")
+        c['url'] = reverse("table_list", kwargs={"group": "by-target-country", "group_value": c['country'].lower().replace(" ", "-")})
         c[c['deal_scope']] = c['deals'] + country.get(c['deal_scope'], 0)
         c['deals'] = c['deals'] + country.get("deals", 0)
 

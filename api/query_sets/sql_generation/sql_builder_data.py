@@ -125,7 +125,6 @@ class SQLBuilderData:
         ],
         "deal_availability": ["a.availability AS availability", "a.availability AS availability"],
         "data_source_type": [
-#            "ARRAY_AGG(DISTINCT CONCAT(data_source_type.attributes->'type', '#!#', data_source_type.group)) AS data_source_type",
             "ARRAY_AGG(DISTINCT data_source_type.attributes->'type') AS data_source_type",
             "data_source_type.attributes->'type' AS data_source_type"
         ],
@@ -150,7 +149,8 @@ class SQLBuilderData:
                                     "ARRAY_AGG(DISTINCT operational_stakeholder.name) AS operational_stakeholder"],
         "negotiation_status": [
             """ARRAY_AGG(DISTINCT CONCAT(
-                        negotiation_status.attributes->'negotiation_status',        '#!#',
+                        negotiation_status.attributes->'negotiation_status',
+                        '#!#',
                         EXTRACT(YEAR FROM negotiation_status.date)
                 )) AS negotiation_status"""
         ],
@@ -158,13 +158,15 @@ class SQLBuilderData:
             """CASE WHEN (
                 ARRAY_AGG(
                     DISTINCT CONCAT(
-                        implementation_status.attributes->'implementation_status',  '#!#',
+                        implementation_status.attributes->'implementation_status',
+                        '#!#',
                         EXTRACT(YEAR FROM implementation_status.date)
                     )
                 ) = '{#!#}') THEN NULL
                 ELSE ARRAY_AGG(
                     DISTINCT CONCAT(
-                        implementation_status.attributes->'implementation_status',  '#!#',
+                        implementation_status.attributes->'implementation_status',
+                        '#!#',
                         EXTRACT(YEAR FROM implementation_status.date)
                     )
                 ) END AS implementation_status"""
