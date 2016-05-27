@@ -63,7 +63,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
                 deal = get_latest_valid_deal(deal_id)
         except ObjectDoesNotExist as e:
             raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e)))
-
+        raise IOError(deal)
         context = super(DealDetailView, self).get_context_data()
         context['deal'] = {
             'id': deal.activity.id,

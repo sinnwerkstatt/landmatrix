@@ -196,7 +196,7 @@ class CountryRegionStructBlock(StructBlock):
     def __init__(self, *args, **kwargs):
         self.country = kwargs.pop('country', None)
         self.region = kwargs.pop('region', None)
-        return super(CountryRegionStructBlock, self).__init__(*args, **kwargs)
+        super(CountryRegionStructBlock, self).__init__(*args, **kwargs)
 
     def get_context(self, value):
         context = super().get_context(value)
@@ -352,7 +352,6 @@ class WagtailRootPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
         FieldPanel('footer_column_3'),
         FieldPanel('footer_column_4')
     ]
-
 
 class WagtailPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
