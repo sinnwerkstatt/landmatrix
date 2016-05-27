@@ -424,10 +424,8 @@ $(document).ready(function () {
         })
     ];
     var controls = [],
-        interactions = [];
-
-    if (typeof mapDisableInteraction === 'undefined') {
         interactions = [
+            new ol.interaction.Select(),
             new ol.interaction.MouseWheelZoom(),
             new ol.interaction.PinchZoom(),
             new ol.interaction.DragZoom(),
@@ -435,6 +433,7 @@ $(document).ready(function () {
             new ol.interaction.DragPan()
         ];
 
+    if (typeof mapDisableControls === 'undefined') {
         if (typeof mapShowPerspective !== 'undefined') {
             console.log('About to show a perspective bubble with size: ', bigdealArea);
             layers.push(bigdealVectorLayer)
@@ -455,13 +454,7 @@ $(document).ready(function () {
                 //              extent:undefined
                 // }),
             ];
-            interactions.push(new ol.interaction.Select())
         }
-
-    } else {
-        interactions = [
-            new ol.interaction.Select()
-        ];
     }
 
     map = new ol.Map({
@@ -489,7 +482,7 @@ $(document).ready(function () {
     }
 
     // LayerSwitcher Control by https://github.com/walkermatt/ol3-layerswitcher
-    if (typeof mapDisableInteraction === 'undefined') {
+    if (typeof mapDisableControls === 'undefined') {
         var layerSwitcher = new ol.control.LayerSwitcher({
             tipLabel: 'Legend'
         });
@@ -588,7 +581,7 @@ $(document).ready(function () {
         markerSource.clear();
 
         $.get(
-            "/api/deals.json?limit=500&attributes=" + fieldnames[currentVariable], //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+            "/api/deals.json?limit=500&attributes=" + fieldnames[currentVariable] + mapParams, //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
             addData
         );
 

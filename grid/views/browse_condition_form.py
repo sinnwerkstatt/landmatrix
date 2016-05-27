@@ -56,8 +56,8 @@ class BrowseConditionForm(BaseModelForm):
                      ("fully_updated_by", "Fully updated by"),
                      ("last_modification", "Last modification"),
                      ("inv_-2", "Primary investor")]
-        variables.extend([(f[0], str(f[1].label)) for f in self.a_fields])
-        variables.extend([(f[0], "Investor %s" % str(f[1].label)) for f in self.sh_fields])
+        variables.extend([(f[0], (f[1] and str(f[1].label)) or '') for f in self.a_fields])
+        variables.extend([(f[0], "Investor %s" % (f[1] and str(f[1].label)) or '') for f in self.sh_fields])
         variables = sorted(variables, key=lambda x: x[1])
         return variables
 

@@ -19,7 +19,7 @@ $(document).ready(function () {
         for (var i = 0; i < data.length; i++) {
             item = data[i];
             row = '<tr>';
-            row += '<td><a href="/deal/' + item.deal_id + '/">' + item.deal_id + '</a></td>';
+            row += '<td><a class="label label-default" href="/deal/' + item.deal_id + '/">' + item.deal_id + '</a></td>';
             date = new Date(item.change_date);
             row += '<td>' + date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate() + '</td>';
             action = item.action.charAt(0).toUpperCase() + item.action.slice(1);
