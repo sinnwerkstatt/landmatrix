@@ -114,9 +114,9 @@ urlpatterns = patterns('',
     url(r'^region/(?P<region_slug>[A-Za-z\-]+)/$', RegionView.as_view(), name='region'),
     url(r'^country/(?P<country_slug>[A-Za-z\-]+)/$', CountryView.as_view(), name='country'),
 
-    url(r'^deal/comments/', include('django_comments.urls')),
+    url(r'^deal/comments/', include('public_comments.urls')),
 
-    url(r'^stakeholder/add$', AddStakeholderView.as_view(), name='add_stakeholder_form'),
+    url(r'^stakeholder/add/$', AddStakeholderView.as_view(), name='add_stakeholder_form'),
     url(r'^stakeholder/(?P<investor_id>[\d]+)/$', ChangeStakeholderView.as_view(), name='stakeholder_form'),
     url(
         r'^stakeholder/(?P<investor_id>[\d_\.]+)/$',
