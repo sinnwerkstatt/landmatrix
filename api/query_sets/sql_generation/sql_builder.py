@@ -200,7 +200,7 @@ LEFT JOIN landmatrix_activityattributegroup AS intention ON a.id = intention.fk_
 #            cls.max_version_condition(),
             cls.status_active_condition(), cls.is_deal_condition()
         ]) + """
-        AND intention.attributes->'intention' = 'Mining'"""
+        AND SPLIT_PART(intention.attributes->'intention', '#', 1) = 'Mining'"""
 
         cursor = connection.cursor()
         cursor.execute(sql)

@@ -16,13 +16,19 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
                 SELECT COUNT(DISTINCT ap.name)
                 FROM landmatrix_crop                   AS c
                 JOIN landmatrix_agriculturalproduce    AS ap ON c.fk_agricultural_produce_id = ap.id
-                JOIN landmatrix_activityattributegroup AS kv ON a.id = kv.fk_activity_id AND kv.attributes ? 'crops' AND CAST(kv.attributes->'crops' AS NUMERIC) = c.id
+                JOIN landmatrix_activityattributegroup AS kv
+                    ON a.id = kv.fk_activity_id
+                    AND kv.attributes ? 'crops'
+                    AND CAST(SPLIT_PART(kv.attributes->'crops', '#', 1) AS NUMERIC) = c.id
             ) > 1 THEN 'Multiple use'
             ELSE (
                 SELECT ap.name
                 FROM landmatrix_crop                   AS c
                 JOIN landmatrix_agriculturalproduce    AS ap ON c.fk_agricultural_produce_id = ap.id
-                JOIN landmatrix_activityattributegroup AS kv ON a.id = kv.fk_activity_id AND kv.attributes ? 'crops' AND CAST(kv.attributes->'crops' AS NUMERIC) = c.id
+                JOIN landmatrix_activityattributegroup AS kv
+                    ON a.id = kv.fk_activity_id
+                    AND kv.attributes ? 'crops'
+                    AND CAST(SPLIT_PART(kv.attributes->'crops', '#', 1) AS NUMERIC) = c.id
                 LIMIT 1
             )
         END"""),
@@ -49,11 +55,11 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
 class AllAgriculturalProduceQuerySet:
 
     REGIONS = {
-        'america': ["5","13","21"],
-        'africa':  ["11","14","15","17","18"],
-        'asia':    ["30","34","35","143","145"],
-        'oceania': ["53","54","57","61","29"],
-        'europe':  ["151","154","155","39"],
+        'america': ['21', '419'],
+        'africa':  ["2"],
+        'asia':    ["142"],
+        'oceania': ["9"],
+        'europe':  ["150"],
         'overall': None
     }
 

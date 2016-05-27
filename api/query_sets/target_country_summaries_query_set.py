@@ -59,7 +59,7 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         c['name'] = c['country']
         c["country_slug"] =c['country'].lower().replace(" ", "-")
         c["region_slug"] =c['region'].lower().replace(" ", "-")
-        c["country_url"] = reverse("table_list", kwargs={"group": "by-target-country", "list": c['country'].lower().replace(" ", "-")})
+        c["country_url"] = reverse("table_list", kwargs={"group": "by-target-country", "group_value": c['country'].lower().replace(" ", "-")})
 
         filtered_intentions = [i for i in c['intentions'] if i]
         sorted_intentions = [self.map_intention(c) for c in sorted(filtered_intentions)]
