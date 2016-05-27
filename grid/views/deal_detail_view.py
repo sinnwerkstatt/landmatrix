@@ -149,11 +149,11 @@ def display_invalid_forms(forms):
 
 def get_forms(deal):
     forms = [get_form(deal, form) for form in FORMS]
-
-    for form_class in get_country_specific_form_classes(deal.activity):
-        country_specific_form = get_form(deal,
-                                         (form_class.Meta.name, form_class))
-        forms.append(country_specific_form)
+    if deal:
+        for form_class in get_country_specific_form_classes(deal.activity):
+            form_tuple = (form_class.Meta.name, form_class)
+            country_specific_form = get_form(deal, form_tuple)
+            forms.append(country_specific_form)
 
     return forms
 
