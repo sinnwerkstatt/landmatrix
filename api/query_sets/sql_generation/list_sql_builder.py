@@ -44,7 +44,7 @@ class ListSQLBuilder(SQLBuilder):
         sub_columns_sql = ''
         for c in self.columns:
             if c in ("intended_size", "contract_size", "production_size"):
-                sub_columns_sql += "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.attributes->'%(name)s'), ', '), '') AS %(name)s,\n" % {"name": c}
+                sub_columns_sql += "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT SPLIT_PART(%(name)s.attributes->'%(name)s', '#', 1)), ', '), '') AS %(name)s,\n" % {"name": c}
             elif c == "data_source":
                 sub_columns_sql += "sub.data_source_type AS data_source_type, sub.data_source_url AS data_source_url, sub.data_source_date AS data_source_date, sub.data_source_organisation AS data_source_organisation,\n"
             else:

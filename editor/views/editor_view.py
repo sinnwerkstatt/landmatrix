@@ -73,21 +73,21 @@ LEFT JOIN landmatrix_activityattributegroup AS a2 ON a.id = a2.fk_activity_id AN
 LEFT JOIN landmatrix_activityattributegroup AS a1 ON a.id = a1.fk_activity_id AND a1.attributes ? 'implementation_status'
 WHERE a.fk_status_id = st.id
 AND st.name IN ('active', 'overwritten')
-AND (CAST(a5.attributes->'production_size' AS NUMERIC) >= 200 OR (a5.attributes->'production_size') IS NULL)
-AND (CAST(a4.attributes->'contract_size' AS NUMERIC) >= 200 OR (a4.attributes->'contract_size') IS NULL)
+AND (CAST(SPLIT_PART(a5.attributes->'production_size', '#', 1) AS NUMERIC) >= 200 OR (a5.attributes->'production_size') IS NULL)
+AND (CAST(SPLIT_PART(a4.attributes->'contract_size', '#', 1) AS NUMERIC) >= 200 OR (a4.attributes->'contract_size') IS NULL)
 AND ((a4.attributes->'contract_size') IS NULL
     AND ((a5.attributes->'production_size') IS NULL)
-    AND CAST(a6.attributes->'intended_size' AS NUMERIC) >= 200 OR (a6.attributes->'intended_size') IS NULL
+    AND CAST(SPLIT_PART(a6.attributes->'intended_size', '#', 1) AS NUMERIC) >= 200 OR (a6.attributes->'intended_size') IS NULL
 )
 AND (a3.attributes->'not_public' NOT IN ('True', 'on') OR (a3.attributes->'not_public') IS NULL)
 AND (
-    a2.attributes->'negotiation_status' IN ('Oral Agreement', 'Contract signed')
+    SPLIT_PART(a2.attributes->'negotiation_status', '#', 1) IN ('Oral Agreement', 'Contract signed')
     AND a2.date >= '2000-01-01'
     OR (a2.attributes->'negotiation_status') IS NULL
 )
 AND (
-    a1.attributes->'implementation_status' <> 'Project abandoned'
-    OR (a1.attributes->'implementation_status') IS NULL
+    SPLIT_PART(a1.attributes->'implementation_status', '#', 1) <> 'Project abandoned'
+    OR (SPLIT_PART(a1.attributes->'implementation_status', '#', 1)) IS NULL
 );
 """)
     row = cursor.fetchone()

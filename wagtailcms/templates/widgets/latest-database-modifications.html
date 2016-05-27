@@ -12,8 +12,8 @@
 </table>
 <script type="text/javascript">
 $(document).ready(function () {
-    var count = {{ count }} || 5;
-    $.get('/api/latest_changes.json?n=' + count, function (data) {
+    var count = {{ limit|default_if_none:5 }};
+    $.get('/api/latest_changes.json?n=' + count{% if country %} + '&target_country={{ country.id }}'{% else %}{% if country %} + '?target_region={{ region.id }}'{% endif %}{% endif %}, function (data) {
         var tbody = $('#latest-database-modifications tbody').empty();
         var item, row;
         for (var i = 0; i < data.length; i++) {

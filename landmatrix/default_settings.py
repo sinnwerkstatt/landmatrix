@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from django.utils.translation import ugettext_lazy as _
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -100,6 +101,7 @@ INSTALLED_APPS += (
     'map',
     'charts',
     'editor',
+    'wagtail_modeltranslation',
     'wagtailcms',
     'api',
     'notifications',
@@ -167,8 +169,9 @@ WSGI_APPLICATION = 'landmatrix.wsgi.application'
 
 LANGUAGE_CODE = 'en'
 LANGUAGES = [
-    ('en', 'English'),
-    ('es', 'Espagnol'),
+    ('en', _('English')),
+    ('es', _('Español')),
+    ('fr', _('Français')),
 ]
 
 TIME_ZONE = 'Europe/Berlin'

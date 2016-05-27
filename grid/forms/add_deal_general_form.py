@@ -154,8 +154,8 @@ class AddDealGeneralForm(BaseForm):
     )
     contract_farming = forms.ChoiceField(
         required=False, label=_("Contract farming"), choices=(
-            (10, _("Yes")),
-            (20, _("No")),
+            (_("Yes"), _("Yes")),
+            (_("No"), _("No")),
         ), widget=forms.RadioSelect
     )
     on_the_lease = forms.BooleanField(

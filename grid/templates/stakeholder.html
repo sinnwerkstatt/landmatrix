@@ -13,10 +13,10 @@
 
 {% block content %}
 <div class="popup">
-    <form action="." method="post" enctype="multipart/form-data">
+    <form action="{% if investor %}{% url 'stakeholder_form' investor.id %}{% else %}{% url 'add_stakeholder_form' %}{% endif %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row">
-            {% include "form.html" with form=investor_form %}
+            {% include "form.html" %}
         </div>
         <div class="row">
             <div class="col-sm-12">
@@ -27,8 +27,11 @@
                 {% for form in parent_stakeholders %}
                 <div class="parent-stakeholder-form row control-group {{ field.name }}">
                     <div class="controls col-md-6">
-                        {{ form.stakeholder|add_class:'form-control' }}
-                        {{ form.stakeholder.errors }}
+                        {{ form.fk_investor|add_class:'form-control' }}
+                        {{ form.fk_investor.errors }}
+                        {# ID is hidden, but must be in the form #}
+                        {{ form.id }}
+                        {{ form.id.errors }}
                     </div>
                     <div class="controls col-md-4">
                         <div class="input-group">
@@ -44,6 +47,7 @@
                             </a>
                         </div>
                         {{ form.percentage.errors }}
+
                     </div>
                 </div>
                 {% endfor %}
@@ -58,13 +62,16 @@
                 {% for form in parent_investors %}
                     <div class="parent-investor-form row control-group {{ field.name }}">
                         <div class="controls col-md-6">
-                            {{ form.parent_investor|add_class:'form-control' }}
-                            {{ form.parent_investor.errors }}
+                            {{ form.fk_investor|add_class:'form-control' }}
+                            {{ form.fk_investor.errors }}
+                            {# ID is hidden, but must be in the form #}
+                            {{ form.id }}
+                            {{ form.id.errors }}
                         </div>
                         <div class="controls col-md-4">
                             <div class="input-group">
-                                {{ form.parent_investor_percentage|add_class:'form-control' }}
-                                <div class="input-group-addon">{{ form.parent_investor_percentage.help_text }}</div>
+                                {{ form.percentage|add_class:'form-control' }}
+                                <div class="input-group-addon">{{ form.percentage.help_text }}</div>
                                 <a class="btn pull-right add-form">
                                     <i class="fa fa-plus"></i>
                                     {% trans "Add another" %}
@@ -75,7 +82,7 @@
                                 </a>
                             </div>
                         </div>
-                        {{ form.parent_investor_percentage.errors }}
+                        {{ form.percentage.errors }}
                     </div>
                 {% endfor %}
             </div>

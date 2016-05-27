@@ -1,3 +1,4 @@
+# TODO: move to forms
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
@@ -55,8 +56,8 @@ class BrowseConditionForm(BaseModelForm):
                      ("fully_updated_by", "Fully updated by"),
                      ("last_modification", "Last modification"),
                      ("inv_-2", "Primary investor")]
-        variables.extend([(f[0], str(f[1].label)) for f in self.a_fields])
-        variables.extend([(f[0], "Investor %s" % str(f[1].label)) for f in self.sh_fields])
+        variables.extend([(f[0], str(f[1].label)) for f in self.a_fields if f[1]])
+        variables.extend([(f[0], "Investor %s" % str(f[1].label)) for f in self.sh_fields if f[1]])
         variables = sorted(variables, key=lambda x: x[1])
         return variables
 

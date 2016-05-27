@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.aggregates import Max
+from functools import lru_cache
 
 from .land_observatory_objects.tags import A_Value
 from .land_observatory_objects.tags import A_Tag
@@ -33,8 +34,19 @@ class MapLOActivities(MapLOModel):
     @classmethod
     def all_records(cls):
         ids = cls.all_ids()
-        cls._count = len(ids)
-        return Activity.objects.using(cls.DB).filter(pk__in=ids).values()
+        # exclude the deals that have been imported from landmatrix and not changed
+        # ...
+
+        all_deals = Activity.objects.using(cls.DB).filter(pk__in=ids)
+        deals = [
+            deal
+            for deal in all_deals
+            if get_deal_country(deal) not in ['China', 'Myanmar', 'Tanzania', 'Viet Nam']
+        ]
+        cls._count = len(deals)
+
+        return Activity.objects.using(cls.DB).filter(pk__in=[deal.id for deal in deals]).values()
+
 
     @classmethod
     def all_ids(cls):
@@ -161,7 +173,6 @@ class MapLOActivities(MapLOModel):
             return
 
         attrs = clean_attributes(attrs)
-
         aag = cls.write_activity_attribute_group(
             attrs, tag_group, year, name
         )
@@ -169,6 +180,9 @@ class MapLOActivities(MapLOModel):
     @classmethod
     def write_activity_attribute_group(cls, attrs, tag_group, year, name):
         activity_id = cls.matching_activity_id(tag_group)
+        if 'YEAR' in attrs:
+            year = attrs['YEAR']
+            del attrs['YEAR']
         aag = landmatrix.models.ActivityAttributeGroup(
             fk_activity_id=activity_id, fk_language=landmatrix.models.Language.objects.get(pk=1),
             date=year, attributes=attrs, name=name
@@ -183,6 +197,8 @@ class MapLOActivities(MapLOModel):
                 )
             else:
                 aag.save(using=V2)
+        else:
+            print(aag)
 
         cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
         return aag
@@ -192,7 +208,7 @@ class MapLOActivities(MapLOModel):
         return tag_group.fk_activity == cls.matching_activity_id(tag_group)
 
     @classmethod
-    # @lru_cache(maxsize=128, typed=True)
+    @lru_cache(maxsize=128, typed=True)
     def matching_activity_id(cls, tag_group):
         if landmatrix.models.Activity.objects.using(V2).filter(pk=tag_group.fk_activity):
             return tag_group.fk_activity
@@ -251,6 +267,8 @@ def clean_attributes(attrs):
     attrs = {
         clean_key(key): clean_attribute(key, value) for key, value in attrs.items()
     }
+
+
     return attrs
 
 
@@ -258,5 +276,70 @@ def clean_attribute(key, value):
     if isinstance(value, str):
         return value[:3000]
 
+
 def clean_key(key):
-    return key
+    return LM_ATTRIBUTES.get(key, key)
+
+
+LM_ATTRIBUTES = {
+    'Animals':                          'animals',
+    'Annual leasing fee area (ha)':     'annual_leasing_fee_area',
+    'Announced amount of investement':  'ANNOUNCED_AMOUNT_OF_INVESTMENT',
+    'Announced amount of investment':   'ANNOUNCED_AMOUNT_OF_INVESTMENT',
+    'Area (ha)':                        'AREA',
+    'Benefits for local communities':   'promised_benefits',
+    'Consultation of local community':  'community_consultation',
+    'Contract area (ha)':               'contract_size',
+    'Contract date':                    'contract_date',
+    'Contract farming':                 'contract_farming',
+    'Contract Number':                  'contract_number',
+    'Country':                          'target_country',
+    'Crop':                             'crops',
+    'Current area in operation (ha)':   'production_size',
+    'Current Number of daily/seasonal workers': 'total_jobs_current_daily_workers',
+    'Current number of employees':      'total_jobs_current_employees',
+    'Current total number of jobs':     'total_jobs_current',
+    'Data source':                      'data_source',
+    'Date':                             'date',
+    'Duration of Agreement (years)':    'agreement_duration',
+    'Files':                            'file',
+    'Former predominant land cover':    'land_cover',
+    'Former predominant land owner':    'land_owner',
+    'Former predominant land use':      'land_use',
+    'How did community react':          'community_reaction',
+    'How much do investors pay for water': 'how_much_do_investors_pay_comment',
+    'How much water is extracted (m3/year)': 'water_extraction_amount',
+    'Implementation status':            'implementation_status',
+    'Intended area (ha)':               'INTENDED_AREA',
+    'Intention of Investment':          'intention',
+    'Leasing fee (per year)':           'annual_leasing_fee',
+    'Mineral':                          'minerals',
+    'Name':                             'NAME',
+    'Nature of the deal':               'nature',
+    'Negotiation Status':               'negotiation_status',
+    'Number of farmers':                'NUMBER_OF_FARMERS',
+    'Number of people actually displaced': 'number_of_displaced_people',
+    'Original reference number':        'ORIGINAL_REFERENCE_NUMBER',
+    'Percentage':                       'PERCENTAGE',
+    'Planned Number of daily/seasonal workers': 'total_jobs_planned_daily_workers',
+    'Planned number of employees':      'total_jobs_planned_employees',
+    'Planned total number of jobs':     'total_jobs_planned',
+    'Promised or received compensation': 'promised_compensation',
+    'Purchase price':                   'purchase_price',
+    'Purchase price area (ha)':         'purchase_price_area',
+    'Remark':                           'REMARK',
+    'Scope of agriculture':             'SCOPE_OF_AGRICULTURE',
+    'Scope of forestry':                'SCOPE_OF_FORESTRY',
+    'Spatial Accuracy':                 'level_of_accuracy',
+    'URL / Web':                        'url',
+    'Use of produce':                   'use_of_produce_comment',
+    'Water extraction':                 'water_extraction_envisaged',
+    'Year':                             'YEAR',
+}
+
+
+def get_deal_country(deal):
+    for group in deal.tag_groups:
+        for tag in group.tags:
+            if tag.key.key == 'Country':
+                return tag.value.value
