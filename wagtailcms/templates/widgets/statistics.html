@@ -5,39 +5,39 @@
     </div>
     <div class="col-sm-6 size">
         <h4>{% trans "Size" %}</h4>
-        <p class="number number-concluded">39,453,030 ha</p>
+        <p class="number number-concluded">0 ha</p>
         <div class="progress progress-concluded">
-          <div class="bar" style="width: 61%;"></div>
+          <div class="bar" style="width: 0%;"></div>
         </div>
-        <p class="percentage percentage-concluded">61%</p>
-        <p class="number number-intended">19,032,857 ha</p>
+        <p class="percentage percentage-concluded">0%</p>
+        <p class="number number-intended">0 ha</p>
         <div class="progress progress-intended">
-          <div class="bar" style="width: 29%;"></div>
+          <div class="bar" style="width: 0%;"></div>
         </div>
-        <p class="percentage percentage-intended">29%</p>
-        <p class="number number-failed">6,597,171 ha</p>
+        <p class="percentage percentage-intended">0%</p>
+        <p class="number number-failed">0 ha</p>
         <div class="progress progress-failed">
-          <div class="bar" style="width: 10%;"></div>
+          <div class="bar" style="width: 0%;"></div>
         </div>
-        <p class="percentage percentage-failed">10%</p>
+        <p class="percentage percentage-failed">0%</p>
     </div>
     <div class="col-sm-6 deals">
         <h4>{% trans "Number of deals" %}</h4>
-        <p class="number number-concluded">1,158</p>
+        <p class="number number-concluded">0</p>
         <div class="progress progress-concluded">
-          <div class="bar" style="width: 80%;"></div>
+          <div class="bar" style="width: 0%;"></div>
         </div>
-        <p class="percentage percentage-concluded">80%</p>
-        <p class="number number-intended">203</p>
+        <p class="percentage percentage-concluded">0%</p>
+        <p class="number number-intended">0</p>
         <div class="progress progress-intended">
-          <div class="bar" style="width: 14%;"></div>
+          <div class="bar" style="width: 0%;"></div>
         </div>
-        <p class="percentage percentage-intended">14%</p>
-        <p class="number number-failed">92</p>
+        <p class="percentage percentage-intended">0%</p>
+        <p class="number number-failed">0</p>
         <div class="progress progress-failed">
-          <div class="bar" style="width: 6%;"></div>
+          <div class="bar" style="width: 0%;"></div>
         </div>
-        <p class="percentage percentage-failed">6%</p>
+        <p class="percentage percentage-failed">0%</p>
     </div>
     <div class="well-square legend">
           <ul class="list-inline">
@@ -49,7 +49,7 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function () {
-  $.get('/api/statistics.json{% if country %}?country={{ country.id }}{% else %}{% if country %}?region={{ region.id }}{% endif %}{% endif %}', function (data) {
+  $.get('/api/statistics.json{% if country %}?target_country={{ country.id }}{% else %}{% if country %}?target_region={{ region.id }}{% endif %}{% endif %}', function (data) {
     var stats = $('#stats'),
         size = stats.find('.size'),
         deals = stats.find('.deals'),

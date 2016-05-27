@@ -438,7 +438,6 @@ $(document).ready(function () {
         if (typeof mapShowPerspective !== 'undefined') {
             console.log('About to show a perspective bubble with size: ', bigdealArea);
             layers.push(bigdealVectorLayer)
-            var mapDisableInteraction = true;
         } else {
             controls = [
                 new ol.control.FullScreen(),
