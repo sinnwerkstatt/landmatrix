@@ -20,6 +20,8 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class MapActivityTagGroupBase:
 
+    YEAR_BASED_DATA_SEPARATOR = '#'
+
     @classmethod
     def write_activity_attribute_group_with_comments(cls, attrs, tag_group, year, name):
         if (len(attrs) == 1) and attrs.get('name'):
@@ -64,6 +66,13 @@ class MapActivityTagGroupBase:
     @classmethod
     def write_activity_attribute_group(cls, attrs, tag_group, year, name):
         activity_id = cls.matching_activity_id(tag_group)
+
+        if year:
+            attrs = {
+                key: value+cls.YEAR_BASED_DATA_SEPARATOR+year_to_date(year)
+                for key, value in attrs.items()
+            }
+
         aag = ActivityAttributeGroup(
             fk_activity_id=activity_id, fk_language=Language.objects.get(pk=1),
             date=year_to_date(year), attributes=attrs, name=name

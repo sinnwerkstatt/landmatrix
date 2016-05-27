@@ -29,7 +29,8 @@ class StatisticsQuerySet:
     DEBUG = False
 
     def __init__(self, request):
-        pass
+        self.country = request.GET.get('target_country')
+        self.region = request.GET.get('target_region')
 
     def all(self):
         cursor = connection.cursor()
@@ -46,7 +47,7 @@ LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON
         pi.deal_size AS deal_size
     FROM """ + Activity._meta.db_table + """ AS a
     """ + BASE_JOIN + """
-    WHERE """ + BASE_CONDITON + """
+    WHERE """ + BASE_CONDITON + ' ' + self.regional_condition() + """
     AND pi.negotiation_status IS NOT NULL
     GROUP BY a.activity_identifier, a.id, pi.negotiation_status, pi.deal_size
 ) AS sub
@@ -58,3 +59,15 @@ GROUP BY sub.negotiation_status"""
         result = cursor.fetchall()
         if self.DEBUG: pprint(result)
         return result
+
+    def regional_condition(self):
+        if self.country:
+            return """
+    AND activity_attrs.attributes->'target_country' = '{}'
+            """.format(self.country)
+        elif self.region:
+            return """
+    AND deal_country.fk_region_id = {}
+            """.format(self.region)
+        return ''
+

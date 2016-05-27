@@ -16,6 +16,7 @@ investor_involvement_ids = InvestorVentureInvolvement.objects.values(
     'fk_investor_id').distinct()
 existing_investors = Investor.objects.filter(pk__in=investor_involvement_ids)
 existing_investors = existing_investors.order_by('name')
+
 investor_widget = Select(attrs={'class': 'form-control investorfield'})
 
 
@@ -48,10 +49,10 @@ class ParentInvestorForm(ParentStakeholderForm):
 
 class BaseInvolvementFormSet(forms.BaseModelFormSet):
 
-    def save(self, fk_venture, role, commit=True):
+    def save(self, fk_venture, commit=True):
         '''
         We are sort of emulating an inline formset here. Save will update
-        everything with the relevant role and associated venture.
+        everything with the relevant associated venture.
         '''
         instances = super().save(commit=False)
 
@@ -60,7 +61,7 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
 
         for instance in instances:
             instance.fk_venture = fk_venture
-            instance.role = role
+            instance.role = self.ROLE
             instance.fk_status = pending_status
             if commit:
                 instance.save()
@@ -76,10 +77,18 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
         return instances
 
 
+class BaseStakeholderFormSet(BaseInvolvementFormSet):
+    ROLE = InvestorVentureInvolvement.STAKEHOLDER_ROLE
+
+
+class BaseInvestorFormSet(BaseInvolvementFormSet):
+    ROLE = InvestorVentureInvolvement.INVESTOR_ROLE
+
+
 ParentStakeholderFormSet = forms.modelformset_factory(
     InvestorVentureInvolvement, form=ParentStakeholderForm,
-    formset=BaseInvolvementFormSet, extra=1, min_num=0, can_delete=True)
+    formset=BaseStakeholderFormSet, extra=1, min_num=0, can_delete=True)
 
 ParentInvestorFormSet = forms.modelformset_factory(
     InvestorVentureInvolvement, form=ParentInvestorForm,
-    formset=BaseInvolvementFormSet, extra=1, min_num=0, can_delete=True)
+    formset=BaseInvestorFormSet, extra=1, min_num=0, can_delete=True)

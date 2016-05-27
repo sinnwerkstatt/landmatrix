@@ -1,21 +1,18 @@
-from django.db.models.manager import Manager
-
-from landmatrix.models.default_string_representation import DefaultStringRepresentation
-from landmatrix.models.activity import Activity
-from landmatrix.models.country import Country
-from landmatrix.models.status import Status
-
-from simple_history.models import HistoricalRecords
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import MaxValueValidator, MinValueValidator
+
+from landmatrix.models.default_string_representation import \
+    DefaultStringRepresentation
+from simple_history.models import HistoricalRecords
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class Investor(DefaultStringRepresentation, models.Model):
 
+    investor_identifier_default = 2147483647  # max safe int
     classification_choices = (
         # for operating company
         ('10', _("Private company")),
@@ -42,7 +39,7 @@ class Investor(DefaultStringRepresentation, models.Model):
     )
 
     investor_identifier = models.IntegerField(
-        _("Investor id"), db_index=True
+        _("Investor id"), db_index=True, default=investor_identifier_default,
     )
     name = models.CharField(
         _("Name"), max_length=1024
@@ -77,8 +74,59 @@ class Investor(DefaultStringRepresentation, models.Model):
             values_list('fk_investor_id', flat=True).distinct()
         return Investor.objects.filter(pk__in=investor_ids)
 
+    def save(self, *args, **kwargs):
+        '''
+        investor_identifier needs to be set to the PK, which we don't yet have
+        for new records. So, set it to a default and then update.
+
+        This is not super efficient (updateing an index column twice)
+        and may result in duplicate investor_identifiers due to crash or
+        query timing, but it should be good enough for our purposes.
+
+        Same thing goes for the name.
+        '''
+        update_fields = []
+        super().save(*args, **kwargs)
+
+        if self.investor_identifier == self.investor_identifier_default:
+            self.investor_identifier = self.pk
+            update_fields.append('investor_identifier')
+
+        if not self.name:
+            self.name = _("Unknown (#%s)") % (self.pk,)
+            update_fields.append('name')
+
+        if update_fields:
+            super().save(update_fields=update_fields)
+
+
+    @property
+    def venture_involvements(self):
+        # TODO: not sure why this isn't a related name?
+        return InvestorVentureInvolvement.objects.filter(fk_venture=self)
+
+
+class InvestorVentureQuerySet(models.QuerySet):
+    ACTIVE_STATUS_NAMES = ('pending', 'active', 'overwritten')
+
+    def active(self):
+        return self.filter(fk_status__name__in=self.ACTIVE_STATUS_NAMES)
+
+    def stakeholders(self):
+        return self.filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
+
+    def investors(self):
+        return self.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
+
 
 class InvestorVentureInvolvement(models.Model):
+    STAKEHOLDER_ROLE = 'ST'
+    INVESTOR_ROLE = 'IN'
+    ROLE_CHOICES = (
+        (STAKEHOLDER_ROLE, _('Stakeholder')),
+        (INVESTOR_ROLE, _('Investor')),
+    )
+
     fk_venture = models.ForeignKey("Investor", db_index=True, related_name='+')
     fk_investor = models.ForeignKey("Investor", db_index=True, related_name='+',
                                     limit_choices_to={'fk_status_id__in': (2, 3)})
@@ -86,9 +134,7 @@ class InvestorVentureInvolvement(models.Model):
         _('Ownership share'), blank=True, null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(100.0)]
     )
-    role = models.CharField(
-        max_length=2, choices=(('ST', _('Stakeholder')), ('IN', _('Investor')))
-    )
+    role = models.CharField(max_length=2, choices=ROLE_CHOICES)
     investment_type = models.CharField(
         max_length=2, choices=(('10', 'Shares/Equity'), ('20', 'Debt financing')),
         blank=True, null=True
@@ -106,6 +152,8 @@ class InvestorVentureInvolvement(models.Model):
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
 
+    objects = InvestorVentureQuerySet.as_manager()
+
     def __str__(self):
         return 'venture: %i stakeholder: %i percentage: %s role: %s timestamp: %s' % \
                (self.fk_venture_id, self.fk_investor_id, self.percentage, self.role, self.timestamp)
@@ -113,7 +161,7 @@ class InvestorVentureInvolvement(models.Model):
 
 class InvestorActivityInvolvement(models.Model):
 
-    class IAIManager(Manager):
+    class IAIManager(models.Manager):
 
         def get_involvements_for_activity(self, activity):
             def original_sql():

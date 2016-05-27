@@ -16,7 +16,7 @@
     <form action="{% if investor %}{% url 'stakeholder_form' investor.id %}{% else %}{% url 'add_stakeholder_form' %}{% endif %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row">
-            {% include "form.html" with form=investor_form %}
+            {% include "form.html" %}
         </div>
         <div class="row">
             <div class="col-sm-12">

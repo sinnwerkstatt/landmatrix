@@ -86,6 +86,18 @@ class FilterToSQL:
                                 'variable': variable
                             }
                         )
+
+                    # Special hack for weird results in data source filtering
+                    if variable == 'type' and 'data_source_type' in self.columns:
+                        # This is results in a pretty broken query, but it's a
+                        # way to get the exclude media reports filter working
+                        # without major surgery. Works by lining up the
+                        # columns that we're joining twice :(
+                        where.append(
+                            """AND attr_%(count)i.attributes->'type'
+                             = data_source_type.attributes->'type'""" % {
+                                "count": i,
+                            })
                 else:
 
                     if self.DEBUG: print('_where_activity', index, tag, value)
@@ -225,7 +237,7 @@ class FilterToSQL:
                         "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i, countries AS ac%(count)i, regions AS ar%(count)i \n" % {"count": i} +\
                         " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? 'target_country' AND attr_%(count)i.value = ac%(count)i.name AND ar%(count)i.id = ac%(count)i.fk_region)"%{"count": i, "key": variable}
                     )
-                if variable.isdigit():
+                elif variable.isdigit():
                     tables_from.append(
                         "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i\n" % {"count": i} +\
                         " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
