@@ -19,7 +19,8 @@ from django.db import transaction
 import json
 
 from landmatrix.models.country import Country
-from landmatrix.models.investor import InvestorActivityInvolvement, InvestorVentureInvolvement
+from landmatrix.models.investor import InvestorActivityInvolvement, InvestorVentureInvolvement, \
+    Investor
 from landmatrix.models.status import Status
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -103,40 +104,8 @@ class ChangesetProtocol(View):
     def approve(self, request, *args, **kwargs):
         res = {"errors": []}
         self._approve_a_changesets(request)
-        self._approve_sh_changesets(request)
+        _approve_investor_changes(request)
         return HttpResponse(json.dumps(res), content_type="application/json")
-
-    def _approve_sh_changesets(self, request):
-        for cs in self.data.get("sh_changesets", []):
-            cs_id = cs.get("id")
-            cs_comment = cs.get("comment")
-            changeset = SH_Changeset.objects.get(id=cs_id)
-            stakeholder = changeset.fk_stakeholder
-            if stakeholder.fk_status.name == "pending":
-                if changeset.previous_version:
-                    # approval of updated or active stakeholder
-                    stakeholder.fk_status = Status.objects.get(name="overwritten")
-                else:
-                    # approval of new deal
-                    stakeholder.fk_status = Status.objects.get(name="active")
-                stakeholder.save()
-                review_decision = Review_Decision.objects.get(name="approved")
-                sh_changeset_review = SH_Changeset_Review.objects.create(
-                    fk_sh_changeset=changeset,
-                    fk_user=request.user,
-                    fk_review_decision=review_decision,
-                    comment=cs_comment
-                )
-            elif stakeholder.fk_status.name == "to_delete":
-                stakeholder.fk_status = Status.objects.get(name="deleted")
-                stakeholder.save()
-                review_decision = Review_Decision.objects.get(name="deleted")
-                a_changeset_review = SH_Changeset_Review.objects.create(
-                    fk_sh_changeset=changeset,
-                    fk_user=request.user,
-                    fk_review_decision=review_decision,
-                    comment=cs_comment
-                )
 
     def _approve_a_changesets(self, request):
         for cs in self.data.get("a_changesets", {}):
@@ -147,17 +116,15 @@ class ChangesetProtocol(View):
             elif activity.fk_status.name == "to_delete":
                 _approve_activity_deletion(activity, changeset, cs.get("comment"), request)
 
+            _approve_investor_changes(get_activity_investor(activity), changeset)
+
     @transaction.atomic
     def reject(self, request, *args, **kwargs):
         res = {"errors": []}
         print('reject:', self.data)
         self._reject_a_changesets(request)
-        self._reject_sh_changesets(request)
+        _reject_investor_changes(request)
         return HttpResponse(json.dumps(res), content_type="application/json")
-
-    def _reject_sh_changesets(self, request):
-        if "sh_changesets" in self.data:
-            raise NotImplementedError
 
     def _reject_a_changesets(self, request):
         for cs in self.data.get("a_changesets", {}):
@@ -165,6 +132,7 @@ class ChangesetProtocol(View):
             activity = changeset.fk_activity
             if activity.fk_status.name in ("pending", "to_delete"):
                 _reject_activity_change(activity, changeset, cs.get('comment'), request)
+            _reject_investor_changes(get_activity_investor(activity))
 
     def get_paged_results(self, records, page_number, per_page=10):
         paginator = Paginator(records, per_page)
@@ -306,6 +274,31 @@ class ChangesetProtocol(View):
                 sh_changesets["deletes"] = deletes
         if sh_changesets:
             res["sh_changesets"] = sh_changesets
+
+
+def _approve_investor_changes(investor, changeset):
+    _update_investor_status(
+        investor,
+        Status.objects.get(name="overwritten" if changeset.previous_version else "active")
+    )
+
+
+def _reject_investor_changes(investor):
+    _update_investor_status(investor, Status.objects.get(name="rejected"))
+
+
+def _update_investor_status(investor, status):
+    if not investor:
+        return
+    investor.fk_status = status
+    investor.save()
+
+
+def get_activity_investor(activity):
+    iai = InvestorActivityInvolvement.objects.filter(fk_activity=activity).first()
+    if iai:
+        return Investor.objects.filter(id=iai.fk_investor).first()
+    return None
 
 
 def _uniquify_changesets_dict(changesets):
