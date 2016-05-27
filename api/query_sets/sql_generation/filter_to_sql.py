@@ -80,7 +80,7 @@ class FilterToSQL:
                         )
                     else:
                         where.append(
-                            "AND attr_%(count)i.attributes->'%(variable)s' %(op)s " % {
+                            "AND SPLIT_PART(attr_%(count)i.attributes->'%(variable)s', '#', 1) %(op)s " % {
                                 "count": i,
                                 "op": self.OPERATION_MAP[operation][0] % in_values,
                                 'variable': variable
@@ -118,21 +118,18 @@ class FilterToSQL:
                             )
                         else:
                             if operation in ['lt', 'lte', 'gt', 'gte'] or operation == 'is' and str(v).isnumeric():
-                                comparator = "CAST(attr_%(count)i.attributes->'%(variable)s' AS NUMERIC)" % {
+                                comparator = "CAST(SPLIT_PART(attr_%(count)i.attributes->'%(variable)s', '#', 1) AS NUMERIC)" % {
                                     "count": i, 'variable': variable
                                 }
                             else:
-                                comparator = "attr_%(count)i.attributes->'%(variable)s'" % {
+                                comparator = "SPLIT_PART(attr_%(count)i.attributes->'%(variable)s', '#', 1)" % {
                                     "count": i, 'variable': variable
                                 }
                             where.append(
-                                "  %(value)s  %(year)s " % {
-                                    "value": v and "AND %(comparator)s %(op)s " % {
+                                v and "AND %(comparator)s %(op)s " % {
                                         'comparator': comparator,
                                         "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"),
-                                    } or "",
-                                    "year": year and "AND attr_%i.year = '%s' " % (i, year) or ""
-                                }
+                                    } or ""
                             )
                 # TODO: move this somewhere else, this function is too complicated
                 # TODO: optimize SQL? This query seems painful, it could be
@@ -160,7 +157,7 @@ class FilterToSQL:
                             SELECT fk_activity_id
                             FROM landmatrix_activityattributegroup 
                             WHERE landmatrix_activityattributegroup.attributes ? '%(variable)s'
-                            AND landmatrix_activityattributegroup.attributes->'%(variable)s' NOT IN ('%(value)s')
+                            AND SPLIT_PART(landmatrix_activityattributegroup.attributes->'%(variable)s', '#', 1) NOT IN ('%(value)s')
                         )
                         """ % {
                         'variable': variable,

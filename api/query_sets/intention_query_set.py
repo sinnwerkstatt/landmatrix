@@ -15,8 +15,8 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
     ]
     SUBQUERY_FIELDS = [
         ('intention', """CASE
-            WHEN COUNT(DISTINCT intention.attributes->'intention') > 1 THEN 'Multiple intention'
-            ELSE intention.attributes->'intention'
+            WHEN COUNT(DISTINCT SPLIT_PART(intention.attributes->'intention', '#', 1)) > 1 THEN 'Multiple intention'
+            ELSE SPLIT_PART(intention.attributes->'intention', '#', 1)
         END""")
     ]
     ADDITIONAL_JOINS = [
@@ -38,7 +38,11 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
         filter_intentions = parent_intention.lower() == "agriculture" and self.INTENTIONS_AGRICULTURE[:] or self.INTENTIONS[:]
         filter_intentions.append("Multiple intention")
 
-        intention_filter_sql = "\nAND (intention.attributes->'intention' IN ('%s')\nOR intention.attributes->'intention' = '')" % "', '".join(filter_intentions)
+        intention_filter_sql = """
+        AND (
+            SPLIT_PART(intention.attributes->'intention', '#', 1) IN ('%s')
+            OR intention.attributes->'intention' = ''
+        )""" % "', '".join(filter_intentions)
         self._filter_sql += intention_filter_sql
 
         found = FakeQuerySet.all(self)
