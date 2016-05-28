@@ -853,7 +853,6 @@ function buildAgriculturalPies() {
             pie.Set('chart.text.font', 'Open Sans');
             pie.Set('chart.text.size', '9');
             if (data[i]["region"] == "overall") {
-                debugger;
                 pie.Set('chart.radius', 209);
                 pie_data = []
                 pie_data.push(data[i]["available"]);
