@@ -124,17 +124,21 @@ class DashboardFilterView(APIView):
 
         if action == 'set':
             if 'country' in request_data:
-                new_filters['country'] = request_data.getlist('country')
+                new_filters['country'] = list(filter(lambda i: i, request_data.getlist('country')))
             elif 'region' in request_data:
-                new_filters['region'] = request_data.getlist('region')
+                new_filters['region'] = list(filter(lambda i: i, request_data.getlist('region')))
             elif 'user' in request_data:
-                new_filters['user'] = request_data.getlist('user')
+                new_filters['user'] = list(filter(lambda i: i, request_data.getlist('user')))
 
         self.request.session['dashboard_filters'] = new_filters
 
         return Response(new_filters)
 
     def get(self, request, *args, **kwargs):
-        filters = self.get_object()
+        if 'clear' in request.query_params:
+            filters = {}
+            request.session['dashboard_filters'] = filters
+        else:
+            filters = self.get_object()
 
         return Response(filters)

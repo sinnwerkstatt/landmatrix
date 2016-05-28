@@ -3,6 +3,7 @@ import copy
 from django.views.generic.base import TemplateView
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
+from django.views.generic.base import RedirectView
 
 from landmatrix.pdfgen import PDFViewMixin
 from grid.views.filter_widget_mixin import FilterWidgetMixin
@@ -40,6 +41,17 @@ class ChartView(PDFViewMixin, TemplateView, FilterWidgetMixin):
         self.current_formset_conditions = self.get_formset_conditions(
             self._filter_set(data), data)
         self.filters = self.get_filter_context(self.current_formset_conditions)
+
+class ChartRedirectView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        params = self.request.GET
+        if 'country' in params or 'region' in params:
+            return '%s?%s' % (
+                reverse('chart_overview'),
+                params.urlencode()
+            )
+        else:
+            return reverse('chart_transnational_deals')
 
 
 class OverviewChartView(ChartView):
