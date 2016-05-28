@@ -61,8 +61,7 @@ $(document).ready(function () {
     initGeocoder(document.getElementById("search"));
 
     function updateBigDealData() {
-        var query_params = get_query_params(get_base_filter(), "");
-        var json_query = "/api/hectares.json" + query_params;
+        var json_query = "/api/hectares.json";
         jQuery.getJSON(json_query, function (data) {
             bigdealArea = parseFloat(data["hectares"]);
 

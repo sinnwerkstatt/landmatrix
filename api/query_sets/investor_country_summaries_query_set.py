@@ -10,6 +10,8 @@ class InvestorCountrySummariesQuerySet(FakeQuerySetFlat):
         ('country_id', 'investor_country.id'),
         ('country',    'investor_country.name'),
         ('region',     'investor_region.name'),
+        ('lat',        'investor_country.point_lat'),
+        ('lon',        'investor_country.point_lon'),
         ('lat_min',    'investor_country.point_lat_min'),
         ('lon_min',    'investor_country.point_lon_min'),
         ('lat_max',    'investor_country.point_lat_max'),

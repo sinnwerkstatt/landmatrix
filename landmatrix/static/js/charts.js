@@ -825,8 +825,7 @@ function buildBiBarChart() {
 
 function buildAgriculturalPies() {
     RGraph.ObjectRegistry.Clear();
-    var query_params = get_query_params(get_base_filter(), get_filter());
-    var json_query = "/api/agricultural-produce.json" + query_params;
+    var json_query = "/api/agricultural-produce.json";
     jQuery.getJSON(json_query, function (data) {
         // show/hide data availability
         var sum = 0;

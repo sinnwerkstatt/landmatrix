@@ -184,8 +184,7 @@ path.arc {
 
         function get_top_10() {
             $(".top-10-countries .table").empty();
-            var query_params = get_query_params(get_base_filter(), "");
-            var json_query = "/api/top-10-countries.json" + query_params;
+            var json_query = "/api/top-10-countries.json";
             jQuery.getJSON(json_query, function (data) {
                 var investor_countries = $(".top-10-countries #investor-countries .table");
                 // TODO: FIX THESE LINKS:
@@ -218,8 +217,7 @@ path.arc {
             init_canvas(960, 960);
             get_top_10();
 
-            var query_params = get_query_params(get_base_filter(), "");
-            var json_query = "/api/transnational_deals.json" + query_params;
+            var json_query = "/api/transnational_deals.json";
             /*d3.json(json_query, function(classes) {
              draw_transnational_deals(callback, classes, 650);
              }); */

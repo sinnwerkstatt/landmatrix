@@ -162,7 +162,6 @@ function draw (callback, chart_data) {
     } else {
         var json_query = $(".navbar-subnav li .active a").attr("href").replace(/.*\?variable=/, "") + ".json";
         var query_params = "";
-        query_params = get_query_params(get_base_filter(), "");
         // rename agriculture
         if (json_query == "agriculture.json") {
             json_query = "intention_of_investment.json";

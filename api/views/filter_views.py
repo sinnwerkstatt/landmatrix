@@ -45,6 +45,7 @@ class FilterView(APIView):
                             form = form.form
                         if request_data['variable'] in form.base_fields:
                             label = str(form.base_fields[request_data['variable']].label)
+                            break
                     new_filter = Filter(variable=request_data['variable'],
                                         operator=request_data['operator'],
                                         value=request_data['value'],

@@ -1,4 +1,4 @@
-<table class="table table-striped" id="latest-database-modifications">
+<table class="table table-striped" id="latest-database-modifications" style="display:none">
     <thead>
         <tr>
             <th>Deal #</th>
@@ -14,19 +14,25 @@
 $(document).ready(function () {
     var count = {{ limit|default_if_none:5 }};
     $.get('/api/latest_changes.json?n=' + count{% if country %} + '&target_country={{ country.id }}'{% else %}{% if country %} + '?target_region={{ region.id }}'{% endif %}{% endif %}, function (data) {
-        var tbody = $('#latest-database-modifications tbody').empty();
-        var item, row;
-        for (var i = 0; i < data.length; i++) {
-            item = data[i];
-            row = '<tr>';
-            row += '<td><a class="label label-default" href="/deal/' + item.deal_id + '/">' + item.deal_id + '</a></td>';
-            date = new Date(item.change_date);
-            row += '<td>' + date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate() + '</td>';
-            action = item.action.charAt(0).toUpperCase() + item.action.slice(1);
-            row += '<td>' + action + '</td>';
-            row += '<td>' + item.target_country + '</td>';
-            tbody.append(row);
-        };
+        var table = $('#latest-database-modifications');
+        if (data.length > 0) {
+            var tbody = table.find('tbody').empty(),
+                item, row;
+            for (var i = 0; i < data.length; i++) {
+                item = data[i];
+                row = '<tr>';
+                row += '<td><a class="label label-default" href="/deal/' + item.deal_id + '/">' + item.deal_id + '</a></td>';
+                date = new Date(item.change_date);
+                row += '<td>' + date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate() + '</td>';
+                action = item.action.charAt(0).toUpperCase() + item.action.slice(1);
+                row += '<td>' + action + '</td>';
+                row += '<td>' + item.target_country + '</td>';
+                tbody.append(row);
+            };
+            table.show();
+        } else {
+            table.hide();
+        }
     })
 });
 </script>

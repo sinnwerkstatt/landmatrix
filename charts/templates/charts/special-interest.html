@@ -344,8 +344,6 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 
     <script type="text/javascript">
         $(document).ready(function () {
-            console.log("Query params:", get_query_params(get_base_filter(), ""));
-
             var dataSwitch = $("[name='use_deal_size']");
             dataSwitch.bootstrapSwitch({
                 onText: 'Size',

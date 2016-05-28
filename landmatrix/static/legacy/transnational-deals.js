@@ -354,14 +354,7 @@ function mouseup(d) {
         if (n.id !== "" && parent) {
             console.log("Country selecting..",n, info);
             info.find(".country").text(n.key);
-            // FIXME there should be a more elegent way
-            if (typeof(get_query_params) == typeof(Function)) {
-                var query_params = get_query_params(get_base_filter(), "country=" + n.id);
-                //var query_params = "?negotiation_status=concluded&deal_scope=transnational&country=" + n.id;
-                console.log(query_params);
-            } else {
-                var query_params = "?negotiation_status=concluded&deal_scope=transnational&country=" + n.id;
-            }
+            var query_params = '?country=' + n.id;
             console.log("Getting ", "/api/transnational_deals_by_country.json" + query_params);
             jQuery.getJSON("/api/transnational_deals_by_country.json" + query_params, function (data) {
                 var target_regions = "",
