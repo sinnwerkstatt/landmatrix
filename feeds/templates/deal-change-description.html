@@ -1,4 +1,122 @@
 {% load i18n %}
-{% trans "The following change was made to deal" %} {{ deal.id }}:
 
-{{ obj.get_history_type_display }}
+{# copied straight up from deal-comparison.html #}
+{% block content %}
+  {% for comparison_forms in forms %}
+    <div class="row" id="comparison">
+
+        <div class="col-md-6{% if not comparison_forms.2 %} bg-warning{% endif %}">
+
+            <div class="panel-group" id="accordion">
+
+            {% if not comparison_forms.2 %}
+            {% if comparison_forms.0 %}
+
+                <div class="panel panel-default">
+
+                  {% if comparison_forms.0.forms %}                                                      {# this is a formset #}
+
+                    {% for form in comparison_forms.0.forms %}
+
+                      <div class="panel-heading">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                            {{ form.form_title }}:
+                          </a>
+                        </h4>
+                      </div>
+
+                      <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
+                        <div class="panel-body">
+                          {% include "form.html" with form=form %}
+                        </div>
+                      </div>
+
+                    {% endfor %}
+
+                  {% else %}      {# comparison_forms.0.forms #}
+
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                          {{ comparison_forms.0.form_title }}:
+                        </a>
+                      </h4>
+                    </div>
+
+                    <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
+                      <div class="panel-body">
+                        {% include "form.html" with form=comparison_forms.0 %}
+                      </div>
+                    </div>
+
+                  {% endif %}     {# form.forms #}
+
+                </div>            {# class="panel panel-default" #}
+
+            {% endif %}           {# comparison_forms.0 #}
+            {% endif %}           {# not comparison_forms.2 #}
+          </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="panel-group" id="accordion">
+
+        {% if not comparison_forms.2 %}
+
+        {% if comparison_forms.1 %}
+
+            <div class="panel panel-default">
+
+              {% if comparison_forms.1.forms %}                                                      {# this is a formset #}
+
+                {% for form in comparison_forms.1.forms %}
+
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                        {{ form.form_title }}:
+                      </a>
+                    </h4>
+                  </div>
+
+                  <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
+                    <div class="panel-body">
+                        {% include "form.html" with form=form %}
+                    </div>
+                  </div>
+
+                {% endfor %}
+
+              {% else %}      {# comparison_forms.1.forms #}
+
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
+                      {{ comparison_forms.1.form_title }}:
+                    </a>
+                  </h4>
+                </div>
+
+                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
+                  <div class="panel-body">
+                    {% include "form.html" with form=comparison_forms.1 %}
+                  </div>
+                </div>
+
+              {% endif %}     {# form.forms #}
+
+            </div>            {# class="panel panel-default" #}
+
+            {% endif %}           {# comparison_forms.1 #}
+            {% endif %}           {# not comparison_forms.2 #}
+          </div>
+        </div>
+
+    </div>
+
+  {% endfor %}
+
+{% endblock %}
