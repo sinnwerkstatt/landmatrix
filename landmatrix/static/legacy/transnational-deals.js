@@ -57,8 +57,7 @@ function create_d3(diameter) {
     node = svg.append("g").selectAll(".node");
 
     get_top_10();
-    var query_params = "?deal_scope=transnational";
-    var json_query = "/api/transnational_deals.json" + query_params;
+    var json_query = "/api/transnational_deals.json?deal_scope=transnational";
 
     console.log("Beginning d3 setup.");
     d3.json(json_query, function (error, classes) {

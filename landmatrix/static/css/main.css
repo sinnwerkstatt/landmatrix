@@ -736,11 +736,11 @@ body {
 /*
 .get-the-idea h1,
 .get-the-idea a:hover {
-    color: #44b7b6;
+    color: #44c42d;
 }
 */
 .get-the-idea ::selection {
-  background-color: #44b7b6; }
+  background-color: #44c42d; }
 
 .get-the-detail h1,
 .get-the-detail a:hover,
@@ -1759,17 +1759,17 @@ h4 .icon {
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
   color: #fff;
-  background: #44c42d; }
+  background: #44c42d !important; }
 
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-info,
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-info {
   color: #fff;
-  background: #4bbb87; }
+  background: #fc941f !important; }
 
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-success,
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-success {
   color: #fff;
-  background: #179961; }
+  background: #fc941f !important; }
 
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-warning,
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-warning {

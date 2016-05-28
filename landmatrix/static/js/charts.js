@@ -825,8 +825,7 @@ function buildBiBarChart() {
 
 function buildAgriculturalPies() {
     RGraph.ObjectRegistry.Clear();
-    var json_query = "/api/agricultural-produce.json";
-    jQuery.getJSON(json_query, function (data) {
+    $.get("/api/agricultural-produce.json", function (data) {
         // show/hide data availability
         var sum = 0;
         $(data).each(function (i) {
@@ -849,11 +848,12 @@ function buildAgriculturalPies() {
             pie_data.push(data[i]["agricultural_produce"]["multiple_use"]);
 
             var pie = new RGraph.Pie('pie-' + data[i]["region"], pie_data);
-            pie.Set('chart.colors', ['#060c0f', '#225559', '#46b2bf', '#acd4dc']);
+            pie.Set('chart.colors', ['#44c42d', '#4bbb87', '#179961', '#7c9a61']);
             pie.Set('chart.strokestyle', '#bbb');
             pie.Set('chart.text.font', 'Open Sans');
             pie.Set('chart.text.size', '9');
             if (data[i]["region"] == "overall") {
+                debugger;
                 pie.Set('chart.radius', 209);
                 pie_data = []
                 pie_data.push(data[i]["available"]);

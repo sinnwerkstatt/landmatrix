@@ -407,7 +407,7 @@ class BaseForm(forms.Form):
                 value = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) == str(value)])
             if year:
                 value += ' ({})'.format(year[:4])
-
+                
         return value
 
     def get_display_value_choice_field(self, field, field_name):
