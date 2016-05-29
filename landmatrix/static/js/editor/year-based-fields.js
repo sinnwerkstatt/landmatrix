@@ -44,7 +44,7 @@ $(document).ready(function () {
     e.preventDefault();
   });
   /* Overall: Quick placeholder for year-based data year field */
-  $("input.year-based-year").prop("placeholder","Year");
+  $("input.year-based-year").prop("placeholder", "YYYY-MM-DD");
 
   $(".add-ybd").click(function () { cloneYBDfield($(this)); });
   $(".remove-ybd").click(function () { removeYBDfield($(this)); });

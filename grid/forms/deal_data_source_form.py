@@ -22,22 +22,21 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class DealDataSourceForm(BaseForm):
 
-    DEBUG = False
     tg_data_source = TitleField(
         required=False, label="", initial=_("Data source")
     )
     type = forms.TypedChoiceField(
         required=False, label=_("Data source type"), choices=(
-            (_("Media report"), _("Media report")),
-            (_("Research Paper / Policy Report"), _("Research Paper / Policy Report")),
-            (_("Government sources"), _("Government sources")),
-            (_("Company sources"), _("Company sources")),
-            (_("Contract"), _("Contract")),
-            (_("Contract (contract farming agreement)"), _("Contract (contract farming agreement)")),
-            (_("Personal information"), _("Personal information")),
-            (_("Crowdsourcing"), _("Crowdsourcing")),
-            (_("Other (Please specify in comment  field)"), _("Other (Please specify in comment  field)")),
-        ), coerce=int
+            ("Media report", _("Media report")),
+            ("Research Paper / Policy Report", _("Research Paper / Policy Report")),
+            ("Government sources", _("Government sources")),
+            ("Company sources", _("Company sources")),
+            ("Contract", _("Contract")),
+            ("Contract (contract farming agreement)", _("Contract (contract farming agreement)")),
+            ("Personal information", _("Personal information")),
+            ("Crowdsourcing", _("Crowdsourcing")),
+            ("Other (Please specify in comment  field)", _("Other (Please specify in comment  field)")),
+        )
     )
     url = forms.URLField(
         required=False, label=_("New URL"),
@@ -53,7 +52,7 @@ class DealDataSourceForm(BaseForm):
         required=False, label=_("Publication title")
     )
     date = forms.DateField(
-        required=False, label=_("Date"), help_text="[dd:mm:yyyy]",
+        required=False, label=_("Date"), help_text="[YYYY-MM-DD]",
         input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
 
@@ -78,7 +77,7 @@ class DealDataSourceForm(BaseForm):
             return date and date.strftime("%Y-%m-%d") or ""
         except:
             raise forms.ValidationError(
-                _("Invalid date. Please enter a date in the format [dd:mm:yyyy]")
+                _("Invalid date. Please enter a date in the format [YYYY-MM-DD]")
             )
 
     def clean_file(self):

@@ -16,11 +16,11 @@ class DealFormerUseForm(BaseForm):
     )
     land_owner = forms.MultipleChoiceField(
         required=False, label=_("Former land owner"), choices=(
-            (_("State"), _("State")),
-            (_("Private (smallholders)"), _("Private (smallholders)")),
-            (_("Private (large-scale)"), _("Private (large-scale)")),
-            (_("Community"), _("Community")),
-            (_("Other"), _("Other")),
+            ("State", _("State")),
+            ("Private (smallholders)", _("Private (smallholders)")),
+            ("Private (large-scale)", _("Private (large-scale)")),
+            ("Community", _("Community")),
+            ("Other", _("Other")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_land_owner_comment = forms.CharField(
@@ -32,14 +32,14 @@ class DealFormerUseForm(BaseForm):
     )
     land_use = forms.MultipleChoiceField(
         required=False, label=_("Former land use"), choices=(
-            (_("Commercial (large-scale) agriculture"), _("Commercial (large-scale) agriculture")),
-            (_("Smallholder agriculture"), _("Smallholder agriculture")),
-            (_("Shifting cultivation"), _("Shifting cultivation")),
-            (_("Pastoralism"), _("Pastoralism")),
-            (_("Hunting/Gathering"), _("Hunting/Gathering")),
-            (_("Forestry"), _("Forestry")),
-            (_("Conservation"), _("Conservation")),
-            (_("Other"), _("Other")),
+            ("Commercial (large-scale) agriculture", _("Commercial (large-scale) agriculture")),
+            ("Smallholder agriculture", _("Smallholder agriculture")),
+            ("Shifting cultivation", _("Shifting cultivation")),
+            ("Pastoralism", _("Pastoralism")),
+            ("Hunting/Gathering", _("Hunting/Gathering")),
+            ("Forestry", _("Forestry")),
+            ("Conservation", _("Conservation")),
+            ("Other", _("Other")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_land_use_comment = forms.CharField(
@@ -51,13 +51,13 @@ class DealFormerUseForm(BaseForm):
     )
     land_cover = forms.MultipleChoiceField(
         required=False, label=_("Former land cover"), choices=(
-            (_("Cropland"), _("Cropland")),
-            (_("Forest land"), _("Forest land")),
-            (_("Pasture"), _("Pasture")),
-            (_("Shrub land/Grassland (Rangeland)"), _("Shrub land/Grassland (Rangeland)")),
-            (_("Marginal land"), _("Marginal land")),
-            (_("Wetland"), _("Wetland")),
-            (_("Other land[e.g. developed land – specify in comment field]"), _("Other land[e.g. developed land – specify in comment field]")),
+            ("Cropland", _("Cropland")),
+            ("Forest land", _("Forest land")),
+            ("Pasture", _("Pasture")),
+            ("Shrub land/Grassland (Rangeland)", _("Shrub land/Grassland (Rangeland)")),
+            ("Marginal land", _("Marginal land")),
+            ("Wetland", _("Wetland")),
+            ("Other land[e.g. developed land – specify in comment field]", _("Other land[e.g. developed land – specify in comment field]")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_land_cover_comment = forms.CharField(

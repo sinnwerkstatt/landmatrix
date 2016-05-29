@@ -31,7 +31,7 @@
                             </ul>
                         </li>
                         {% if not request.GET.country and not request.GET.region %}
-                        <li{% if chart == "chart_map_of_investments" %} class="active"{% endif %}><a href="{% url "chart_map_of_investments" %}">{% trans "Global map of investments" %}</a></li>}
+                        <li{% if chart == "chart_map_of_investments" %} class="active"{% endif %}><a href="{% url "chart_map_of_investments" %}">{% trans "Global map of investments" %}</a></li>
                         <li{% if chart == "chart_perspective" %} class="active"{% endif %}><a href="{% url "chart_perspective" %}">{% trans "It's a big deal" %}</a></li>
                         {% endif %}
                         <li class="dropdown{% if chart == "special_interest" %} active{% endif %}">

@@ -54,6 +54,6 @@ class YearBasedActorField(forms.MultiValueField):
             for i in range(len(data_list)//2):
                 if data_list[i] or data_list[i+1]:
                     yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1])))
-            return "|".join(yb_data)
+            return "#".join(yb_data)
         else:
             self.fields = [forms.IntegerField(required=False), forms.CharField(required=False)]

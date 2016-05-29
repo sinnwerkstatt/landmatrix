@@ -32,13 +32,16 @@ class OperationalStakeholderForm(BaseForm):
             )
     )
     actors_involved = YearBasedActorField(
-        help_text=_("Actors involved in the negotiation / admission process"),# blank=True, null=True
+        required=False,
+        label=_("Actors involved in the negotiation / admission process"),# blank=True, null=True
     )
     actors_classification = YearBasedActorField(
-        help_text=_("Actors involved in the negotiation / admission process"),# blank=True, null=True
+        required=False,
+        label=_("Actors involved in the negotiation / admission process"),# blank=True, null=True
     )
     relationship_to_parent = ChoiceField(
         label=_('Relationship to parent'),
+        required=False,
         choices=(
             ('10', 'Subsidiary of parent company'),
             ('20', 'Local branch of parent company'),

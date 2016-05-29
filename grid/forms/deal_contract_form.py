@@ -26,28 +26,20 @@ class DealContractForm(BaseForm):
         required=False, label=_("Contract number")
     )
     contract_date = forms.DateField(
-        required=False, label=_("Contract date"), help_text="[dd:mm:yyyy]",
+        required=False, label=_("Contract date"), help_text="[YYYY-MM-DD]",
         input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
     contract_expiration_date = forms.DateField(
-        required=False, label=_("Contract expiration date"), help_text="[dd:mm:yyyy]",
+        required=False, label=_("Contract expiration date"), help_text="[YYYY-MM-DD]",
         input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
     sold_as_deal = forms.IntegerField(
         required=False, label=_("Sold as deal no.")
     )
-    tg_negotiation_status_comment = forms.CharField(
-        required=False, label=_("Additional comments"), widget=CommentInput
-    )
-
-    # Duration of the agreement
-    tg_agreement_duration = TitleField(
-        required=False, label="", initial=_("Duration of the agreement")
-    )
     agreement_duration = YearBasedIntegerField(
         required=False, label=_("Duration of the agreement"), help_text=_("years")
     )
-    tg_agreement_duration_comment = forms.CharField(
+    tg_contract_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
     )
 
@@ -55,7 +47,7 @@ class DealContractForm(BaseForm):
         name = 'spatial_data'
 
 
-class DealContractFormSet(formset_factory(DealContractForm, extra=0)):
+class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1)):
 
     form_title = _('Contracts')
 

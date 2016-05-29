@@ -21,7 +21,7 @@ var mapDisableControls = true,
         {{ country.point_lat_min }}, {{ country.point_lon_min }},
         {{ country.point_lat_max }}, {{ country.point_lon_max }},
     ],
-    mapParams = '&{% if country %}target_country={{ country.id }}{% else %}{% if country %}target_region={{ region.id }}{% endif %}{% endif %}';
+    mapParams = '&{% if country %}target_country={{ country.id }}{% else %}{% if region %}target_region={{ region.id }}{% endif %}{% endif %}';
 </script>
 <script type="text/javascript" src="{% static "vendor/openlayers/ol-debug.js" %}"></script>
 <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>

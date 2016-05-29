@@ -63,7 +63,6 @@ class BaseForm(forms.Form):
                 value = self.data.getlist(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
                 for v in list(value):
                     if v:
-                        v = int(v)
                         try:
                             value = str(dict([i[:2] for i in f.choices])[v])
                         except:
@@ -93,7 +92,8 @@ class BaseForm(forms.Form):
                         attributes[key] = value
                     else:
                         try:
-                            value = int(value)
+                            if hasattr(f, 'queryset'):
+                                value = int(value)
                             value = str(dict(f.choices).get(value))
                             if value:
                                 attributes[key] = value
@@ -112,7 +112,6 @@ class BaseForm(forms.Form):
                             if value and (isinstance(f.fields[0], forms.IntegerField) or value != "0"):
                                 if isinstance(f.fields[0], forms.ChoiceField):
                                     try:
-                                        value = int(value)
                                         value = str(dict(f.fields[0].choices).get(value))
                                     except:
                                         raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
@@ -152,7 +151,7 @@ class BaseForm(forms.Form):
                     value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
                     #filter default selection of choice fields
                     value = value != "0" and value or None
-                    if value and isinstance(f.choices,(list, tuple)) and int(f.choices[0][0]) != 0:
+                    if value and isinstance(f.choices,(list, tuple)) and f.choices[0][0] != 0:
                         value = None
                 # Year based data?
                 # Year based data?

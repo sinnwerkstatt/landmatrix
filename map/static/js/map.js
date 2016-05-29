@@ -541,12 +541,12 @@ $(document).ready(function () {
         NProgress.start();
         // TODO: (Later) initiate spinner before fetchin' stuff
         markerSource.clear();
-        var query_params = fieldnames[currentVariable];
+        var query_params = 'limit=500&attributes=' + fieldnames[currentVariable];
         if (typeof mapParams !== 'undefined') {
             query_params += mapParams;
         }
         $.get(
-            "/api/deals.json?limit=500&attributes=" + fieldnames[currentVariable], //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+            "/api/deals.json?" + query_params, //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
             addData
         );
 
