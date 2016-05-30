@@ -17,7 +17,7 @@ var layers = [];
 
 var bigdealVectorLayer = new ol.layer.Vector();
 var bigdealArea = 80669549;
-var bidealTarget =  {0: 0, 1: 1};
+var bigdealTarget =  {0: 0, 1: 1};
 
 var fieldnames = {
     'Geospatial Accuracy': 'accuracy',
@@ -489,7 +489,7 @@ $(document).ready(function () {
     }
 
     // LayerSwitcher Control by https://github.com/walkermatt/ol3-layerswitcher
-    if (typeof mapDisableInteraction === 'undefined') {
+    if (typeof mapDisableInteraction === 'undefined' && typeof mapShowPerspective === 'undefined') {
         var layerSwitcher = new ol.control.LayerSwitcher({
             tipLabel: 'Legend'
         });
@@ -714,8 +714,9 @@ $(document).ready(function () {
         }
         NProgress.done(true);
     };
-
-    getApiData();
+    if (typeof mapShowPerspective === 'undefined') {
+        getApiData();
+    }
 });
 
 // MARKERS in clusters. ONE MARKER = ONE DEAL
