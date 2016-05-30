@@ -15,9 +15,7 @@ var clusterSource = new ol.source.Cluster({
 
 var layers = [];
 
-var bigdealVectorLayer = new ol.layer.Vector();
-var bigdealArea = 80669549;
-var bidealTarget =  {0: 0, 1: 1};
+var autocomplete;
 
 var fieldnames = {
     'Geospatial Accuracy': 'accuracy',
@@ -59,37 +57,6 @@ const GeoJSONColors = {  // Back, Border
     'Contract area (ha)': ['rgba(128, 128, 128, 0.6)', '#575757'],
     'Intended area (ha)': ['rgba(0, 196, 0, 0.6)', '#0a0']
 };
-
-
-
-function drawCircleInMeter() {
-
-    var radius = Math.sqrt((bigdealArea * 10000) / Math.PI);
-    console.log("Radius:", radius, 'Target:', bigdealTarget);
-
-    var wgs84Sphere = new ol.Sphere(6378137);
-
-    // TODO: Clear up this projection transformation mess..
-
-    var vectorSource = new ol.source.Vector({
-        projection: 'EPSG:3857'
-    });
-    var circle3857 = ol.geom.Polygon.circular(wgs84Sphere, [bigdealTarget[0], bigdealTarget[1]], radius, 64).transform('EPSG:4326', 'EPSG:3857');
-
-    vectorSource.addFeature(new ol.Feature(circle3857));
-
-    bigdealVectorLayer.setSource(vectorSource);
-    bigdealVectorLayer.setStyle([new ol.style.Style({
-        stroke: new ol.style.Stroke({
-            color: '#fc941f',
-            width: 2
-        }),
-        fill: new ol.style.Fill({
-            color: 'rgba(252, 148, 31, 0.2)'
-        })
-    })])
-};
-
 
 //Map, Layers and Map Controls
 $(document).ready(function () {
@@ -423,44 +390,32 @@ $(document).ready(function () {
             ]
         })
     ];
-    var controls = [],
-        interactions = [];
-
-    if (typeof mapDisableInteraction === 'undefined') {
-        interactions = [
+    var interactions = [
+            new ol.interaction.Select(),
             new ol.interaction.MouseWheelZoom(),
             new ol.interaction.PinchZoom(),
             new ol.interaction.DragZoom(),
             new ol.interaction.DoubleClickZoom(),
             new ol.interaction.DragPan()
-        ];
+        ],
+        controls = [];
 
-        if (typeof mapShowPerspective !== 'undefined') {
-            console.log('About to show a perspective bubble with size: ', bigdealArea);
-            layers.push(bigdealVectorLayer)
-        } else {
-            controls = [
-                new ol.control.FullScreen(),
-                new ol.control.Zoom(),
-                new ol.control.ScaleLine(),
-                new ol.control.MousePosition({
-                    projection: 'EPSG:4326',
-                    coordinateFormat: function (coordinate) {
-                        return ol.coordinate.format(coordinate, '{y}, {x}', 4);
-                    }
-                }),
-                new ol.control.FullScreen(),
-                new ol.control.Attribution
-                // new ol.control.ZoomToExtent({
-                //              extent:undefined
-                // }),
-            ];
-            interactions.push(new ol.interaction.Select())
-        }
-
-    } else {
-        interactions = [
-            new ol.interaction.Select()
+    if (typeof mapDisableControls === 'undefined') {
+        controls = [
+            new ol.control.FullScreen(),
+            new ol.control.Zoom(),
+            new ol.control.ScaleLine(),
+            new ol.control.MousePosition({
+                projection: 'EPSG:4326',
+                coordinateFormat: function (coordinate) {
+                    return ol.coordinate.format(coordinate, '{y}, {x}', 4);
+                }
+            }),
+            new ol.control.FullScreen(),
+            new ol.control.Attribution
+            // new ol.control.ZoomToExtent({
+            //              extent:undefined
+            // }),
         ];
     }
 
@@ -489,7 +444,7 @@ $(document).ready(function () {
     }
 
     // LayerSwitcher Control by https://github.com/walkermatt/ol3-layerswitcher
-    if (typeof mapDisableInteraction === 'undefined') {
+    if (typeof mapDisableControls === 'undefined') {
         var layerSwitcher = new ol.control.LayerSwitcher({
             tipLabel: 'Legend'
         });
@@ -586,9 +541,12 @@ $(document).ready(function () {
         NProgress.start();
         // TODO: (Later) initiate spinner before fetchin' stuff
         markerSource.clear();
-
+        var query_params = 'limit=500&attributes=' + fieldnames[currentVariable];
+        if (typeof mapParams !== 'undefined') {
+            query_params += mapParams;
+        }
         $.get(
-            "/api/deals.json?limit=500&attributes=" + fieldnames[currentVariable], //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+            "/api/deals.json?" + query_params, //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
             addData
         );
 
@@ -596,19 +554,12 @@ $(document).ready(function () {
     }
 
     map.on('click', function (evt) {
-        if (typeof mapShowPerspective !== 'undefined') {
-            console.log('Drawing big deal at: ', evt);
-            //console.log(evt.coordinate.transform('EPSG:3857', 'EPSG:4326'));
-            var point = new ol.geom.Point(evt.coordinate).transform('EPSG:3857', 'EPSG:4326');
-            console.log(point.flatCoordinates[0], point.flatCoordinates[1], point.getCoordinates());
-            bigdealTarget = {0: point.flatCoordinates[0], 1: point.flatCoordinates[1]};
-            drawCircleInMeter();
-            return;
-        }
         var handleFeatureClick = function (feature, layer) {
 
             var features = feature.getProperties().features;
-
+            if (!features) {
+                return;
+            }
             if (features.length > 1) {
                 var popup = '<div><span><strong>Cluster of ' + features.length + ' deals.</strong></span>';
                 popup += '<br><span>Zoom here for more details.</span></div>';
@@ -715,7 +666,7 @@ $(document).ready(function () {
         NProgress.done(true);
     };
 
-    getApiData();
+    typeof mapDisableDeals === 'undefined' && getApiData();
 });
 
 // MARKERS in clusters. ONE MARKER = ONE DEAL
@@ -760,7 +711,7 @@ function initGeocoder(el) {
     console.log("Running geocoder init");
 
     try {
-        var autocomplete = new google.maps.places.Autocomplete(el);
+        autocomplete = new google.maps.places.Autocomplete(el);
 
         autocomplete.addListener('place_changed', function () {
             var place = autocomplete.getPlace();
@@ -782,18 +733,10 @@ function initGeocoder(el) {
 
                 fitBounds(place.geometry.viewport);
             } else*/ {
-                var zoom;
-                if (typeof mapShowPerspective !== 'undefined') {
-                    zoom = 6;
-                    drawCircleInMeter(map, mapShowPerspective, {0: place.geometry.location.lng(), 1:place.geometry.location.lat()});
-                } else {
-                    zoom = 16;
-                }
-
                 var target = [place.geometry.location.lng(), place.geometry.location.lat()]
                 target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
                 map.getView().setCenter(target);
-                map.getView().setZoom(zoom);
+                map.getView().setZoom(16);
             }
 
             var address = '';

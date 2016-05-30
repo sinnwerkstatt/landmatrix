@@ -216,7 +216,6 @@ class FilterToSQL:
                             where_inv += ' AND stakeholder.investor_identifier = {}'.format(v)
                         else:
                             where_inv += " AND skv%i.value %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
-                        #query_params.append(v)
         return where_inv
 
     def _tables_activity(self):

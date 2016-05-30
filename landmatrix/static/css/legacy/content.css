@@ -62,11 +62,11 @@ h2.separator span:first-child {
 
 .get-the-idea h1,
 .get-the-idea a:hover {
-    color: #44b7b6;
+    color: #44c42d;
 }
 
 .get-the-idea ::selection {
-    background-color: #44b7b6;
+    background-color: #44c42d;
 }
 
 .get-the-detail h1,

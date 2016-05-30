@@ -9,6 +9,7 @@
 
 {% block description %}
     {{ block.super }}
+    <p>{% trans "This interactive graph shows the global flow of transnational land acquisitions. Clicking on a single country shows its threads in the global pattern: green lines for inbound investments, orange for outbound. Country names marked with * have been shortened to improve legibility." %}</p>
     <a class="btn show-all" href="#" class="disabled">{% trans "Reset" %}</a>
 {% endblock %}
 
@@ -16,7 +17,7 @@
 
 {% block legend %}
     <ul class="media-list legend">
-        <li><i class="icon icon-none" style="background-color: #6cc9d3;"></i> {% trans "Investor Countries" %}</li>
+        <li><i class="icon icon-none" style="background-color: #44c42d;"></i> {% trans "Investor Countries" %}</li>
         <li><i class="icon icon-none" style="background-color: #ed881b;"></i> {% trans "Target Countries" %}</li>
     </ul>
 {% endblock %}
@@ -38,7 +39,7 @@
                 <div class="row">
                     <div class="chart-box-content">
                         <ul class="nav nav-tabs">
-                            <li class="active"><a style="color: #6cc9d3"
+                            <li class="active"><a style="color: #44c42d"
                                                   href="#investor-countries">{% trans "Investor countries" %}</a></li>
                             <li><a style="color: #ed881b" href="#target-countries">{% trans "Target countries" %}</a>
                             </li>
@@ -65,7 +66,7 @@
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active">
                             <a href="#inbound" aria-controls="inbound" role="tab" data-toggle="tab">
-                                <div style="color: #6cc9d3">{% trans "Regions investing in " %}
+                                <div style="color: #44c42d">{% trans "Regions investing in " %}
                                     <span class="country">{% trans "Country" %}</span>
                                 </div>
                             </a>
@@ -142,10 +143,10 @@ path.arc {
   stroke-width: 2px;
 }
 .node.target {
-  fill: #6cc9d3 !important;
+  fill: #44c42d !important;
 }
 .link.source {
-  stroke: #6cc9d3;
+  stroke: #44c42d;
 }
 .node.source {
   fill: #ed881b !important;
@@ -184,8 +185,7 @@ path.arc {
 
         function get_top_10() {
             $(".top-10-countries .table").empty();
-            var query_params = get_query_params(get_base_filter(), "");
-            var json_query = "/api/top-10-countries.json" + query_params;
+            var json_query = "/api/top-10-countries.json";
             jQuery.getJSON(json_query, function (data) {
                 var investor_countries = $(".top-10-countries #investor-countries .table");
                 // TODO: FIX THESE LINKS:
@@ -218,8 +218,7 @@ path.arc {
             init_canvas(960, 960);
             get_top_10();
 
-            var query_params = get_query_params(get_base_filter(), "");
-            var json_query = "/api/transnational_deals.json" + query_params;
+            var json_query = "/api/transnational_deals.json";
             /*d3.json(json_query, function(classes) {
              draw_transnational_deals(callback, classes, 650);
              }); */

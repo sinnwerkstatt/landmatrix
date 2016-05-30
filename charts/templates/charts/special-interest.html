@@ -3,8 +3,8 @@
 {% block page_title %}{% trans "Dynamics Overview" %}{% endblock %}
 {% block title %}{% trans "Dynamics Overview" %}{% endblock %}
 {% block breadcrumb_inner %}
-{{ block.super }}
-<li>{% trans "Dynamics Overview" %}</li>
+    {{ block.super }}
+    <li>{% trans "Dynamics Overview" %}</li>
 {% endblock %}
 
 {% comment %}
@@ -17,522 +17,513 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 {% endblock %}
 
 {% block description %}
-<div class="desc">
+    <div class="desc">
 
-    <p class="agricultural_drivers">{%  trans 'This is the short info about agricultural drivers' %}<a href="{% slugurl 'agricultural-drivers' %}"><i class="lm lm-question-circle"> </i></a></p>
-    <p class="resource_extraction" style="display: none">{%trans 'Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %} <a href="{% slugurl 'about' %}#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left noul" title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i class="lm lm-question-circle"> </i></a></p>
-    <p class="produce_info" style="display: none">{% trans 'Deals divided by intention of investment.' %}</p>
-    <p class="contract_farming" style="display: none">{% trans 'Deals having „agriculture“ as main intention of investment disaggregated into sub-sections.' %}</p>
-    <p class="logging" style="display: none">{% trans 'Wood chopping.' %}</p>
+        <p class="agricultural_drivers">{% trans 'This infographic shows how agricultural land acquisitions that include information on crops are subdivided according to destination of use.' %}<a
+                href="{% slugurl 'agricultural-drivers' %}"><i class="lm lm-question-circle"> </i></a></p>
+        <p class="produce_info" style="display: none">{% trans 'Deals divided by intention of investment.' %}</p>
+        <p class="resource_extraction"
+           style="display: none">{% trans 'Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %}
+            <a href="{% slugurl 'about' %}#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation"
+               class="toggle-tooltip left noul"
+               title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i
+                    class="lm lm-question-circle"> </i></a></p>
+        <p class="logging" style="display: none">{% trans 'Wood chopping.' %}</p>
+        <p class="contract_farming"
+           style="display: none">{% trans 'Deals having „agriculture“ as main intention of investment disaggregated into sub-sections.' %}</p>
 
     <span id="deal_data_selector">
-        <div id="deal_kinds">
-            Show infos about:
-            <input type="checkbox" name="use_deal_size" checked>
-        </div>
         <select id="deal_types" name="deal_types">
-            <option>Size in operation</option>
-            <option>Size under contract</option>
-            <option>Under Construction</option>
-            <option>Intended Size</option>
+            <option value="size_in_operation">{% trans "Size in operation" %}</option>
+            <option value="size_under_contract">{% trans "Size under contract" %}</option>
+            <option value="under_construction">{% trans "Under Construction" %}</option>
+            <option value="intended_size">{% trans "Intended Size" %}</option>
         </select>
     </span>
 
-</div>
+    </div>
 {% endblock %}
-
 {% block legend %}
-    <ul class="media-list legend offset agricultural">
-        <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span> {% trans "Food-Crops" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #225559;"></i><span> {% trans "Non-Food Crops" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span> {% trans "Flex-Crops" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span> {% trans "Multiple Use - Several crops in different categories" %}</span></li>
+    <ul class="media-list legend offset agricultural_drivers">
+        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span> {% trans "Food-Crops" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Non-Food Crops" %}</span>
+        </li>
+        <li><i class="icon icon-none" style="background-color: #179961;"></i><span> {% trans "Flex-Crops" %}</span></li>
+        <li><i class="icon icon-none"
+               style="background-color: #7c9a61;"></i><span> {% trans "Multiple Use - Several crops in different categories" %}</span>
+        </li>
+    </ul>
+    <ul class="media-list legend offset produce_info">
+        <li><i class="icon icon-none" style="background-color: #fc941f;"></i><span> {% trans "Animals" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Minerals" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #b9d635;"></i><span> {% trans "Crops" %}</span></li>
+    </ul>
+    <ul class="media-list legend offset resource_extraction logging">
+        <li><i class="icon icon-none" style="background-color: #ed881b;"></i>{% trans "Concluded" %}</li>
+        <li><i class="icon icon-none" style="background-color: #b96c12;"></i>{% trans "Intended" %}</li>
+        <li><i class="icon icon-none" style="background-color: #884e0e;"></i>{% trans "Failed" %}</li>
     </ul>
 {% endblock %}
 
 {% block data %}
-<div class="row">
-    <div class="col-md-12">
-        <div id="agricultural_drivers" class="row data charts">
-            <div class="col-md-6">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h2>All Continents <span>(0 ha)</span></h2>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="agricultural_drivers chart row data hidden">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2>All Continents <span>(0 ha)</span></h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <canvas id="pie-overall" width="420" height="420"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="media-list legend">
+                                <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                        class="food-crop"></span></li>
+                                <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                        class="non-food-crop"></span></li>
+                                <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                        class="flex-crop"></span></li>
+                                <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                        class="multiple-crop"></span></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-8">
-                        <canvas id="pie-overall" width="420" height="420"></canvas>
+
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>Africa <span>(0 ha)</span></h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <canvas id="pie-africa" width="92" height="92"></canvas>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="media-list legend">
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                                class="food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                                class="non-food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                                class="flex-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                                class="multiple-crop"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>Europe <span>(0 ha)</span></h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <canvas id="pie-europe" width="92" height="92"></canvas>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="media-list legend">
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                                class="food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                                class="non-food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                                class="flex-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                                class="multiple-crop"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <ul class="media-list legend">
-                            <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
-                                    class="food-crop"></span></li>
-                            <li><i class="icon icon-none" style="background-color: #225559;"></i><span
-                                    class="non-food-crop"></span></li>
-                            <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
-                                    class="flex-crop"></span></li>
-                            <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
-                                    class="multiple-crop"></span></li>
-                        </ul>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>America <span>(0 ha)</span></h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <canvas id="pie-america" width="92" height="92"></canvas>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="media-list legend">
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                                class="food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                                class="non-food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                                class="flex-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                                class="multiple-crop"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>Oceania <span>(0 ha)</span></h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <canvas id="pie-oceania" width="92" height="92"></canvas>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="media-list legend">
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                                class="food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                                class="non-food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                                class="flex-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                                class="multiple-crop"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>Asia <span>(0 ha)</span></h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <canvas id="pie-asia" width="92" height="92"></canvas>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="media-list legend">
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                                class="food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                                class="non-food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                                class="flex-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                                class="multiple-crop"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h2>Africa <span>(0 ha)</span></h2>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <canvas id="pie-africa" width="92" height="92"></canvas>
-                            </div>
-                            <div class="col-md-7">
-                                <ul class="media-list legend">
-                                    <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
-                                            class="food-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #225559;"></i><span
-                                            class="non-food-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
-                                            class="flex-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
-                                            class="multiple-crop"></span></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h2>Europe <span>(0 ha)</span></h2>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <canvas id="pie-europe" width="92" height="92"></canvas>
-                            </div>
-                            <div class="col-md-7">
-                                <ul class="media-list legend">
-                                    <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
-                                            class="food-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #225559;"></i><span
-                                            class="non-food-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
-                                            class="flex-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
-                                            class="multiple-crop"></span></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h2>America <span>(0 ha)</span></h2>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <canvas id="pie-america" width="92" height="92"></canvas>
-                            </div>
-                            <div class="col-md-7">
-                                <ul class="media-list legend">
-                                    <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
-                                            class="food-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #225559;"></i><span
-                                            class="non-food-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
-                                            class="flex-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
-                                            class="multiple-crop"></span></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h2>Oceania <span>(0 ha)</span></h2>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <canvas id="pie-oceania" width="92" height="92"></canvas>
-                            </div>
-                            <div class="col-md-7">
-                                <ul class="media-list legend">
-                                    <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
-                                            class="food-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #225559;"></i><span
-                                            class="non-food-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
-                                            class="flex-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
-                                            class="multiple-crop"></span></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h2>Asia <span>(0 ha)</span></h2>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <canvas id="pie-asia" width="92" height="92"></canvas>
-                            </div>
-                            <div class="col-md-7">
-                                <ul class="media-list legend">
-                                    <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
-                                            class="food-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #225559;"></i><span
-                                            class="non-food-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
-                                            class="flex-crop"></span></li>
-                                    <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
-                                            class="multiple-crop"></span></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+            <div class="produce_info chart hidden" id="TreeChart" align="center">
+            </div>
 
+            <div class="logging chart hidden" id="logging">
+                <div class="col-sm-12 text-center">
+                    <h3>{% trans "Logging: " %} <a class="toggle-tooltip bottom" href="/about/#what-is-a-land-deal"
+                                                   data-original-title="" title=""><i
+                            class="icon icon-question-sign"></i></a></h3>
+                </div>
+                <div class="col-sm-6 size">
+                    <h4>{% trans "Size" %}</h4>
+                    <p class="number number-concluded">0 ha</p>
+                    <div class="progress progress-concluded">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-concluded">0%</p>
+                    <p class="number number-intended">0 ha</p>
+                    <div class="progress progress-intended">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-intended">0%</p>
+                    <p class="number number-failed">0 ha</p>
+                    <div class="progress progress-failed">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-failed">0%</p>
+                </div>
+                <div class="col-sm-6 deals">
+                    <h4>{% trans "Number of deals" %}</h4>
+                    <p class="number number-concluded">0</p>
+                    <div class="progress progress-concluded">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-concluded">0%</p>
+                    <p class="number number-intended">0</p>
+                    <div class="progress progress-intended">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-intended">0%</p>
+                    <p class="number number-failed">0</p>
+                    <div class="progress progress-failed">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-failed">0%</p>
+                </div>
+            </div>
+
+            <div class="resource_extraction chart hidden" id="resource_extraction">
+                <div class="col-sm-12 text-center">
+                    <h3>{% trans "Resource extraction:" %} <a class="toggle-tooltip bottom"
+                                                              href="/about/#what-is-a-land-deal" data-original-title=""
+                                                              title=""><i class="icon icon-question-sign"></i></a></h3>
+                </div>
+                <div class="col-sm-6 size">
+                    <h4>{% trans "Size" %}</h4>
+                    <p class="number number-concluded">0 ha</p>
+                    <div class="progress progress-concluded">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-concluded">0%</p>
+                    <p class="number number-intended">0 ha</p>
+                    <div class="progress progress-intended">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-intended">0%</p>
+                    <p class="number number-failed">0 ha</p>
+                    <div class="progress progress-failed">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-failed">0%</p>
+                </div>
+                <div class="col-sm-6 deals">
+                    <h4>{% trans "Number of deals" %}</h4>
+                    <p class="number number-concluded">0</p>
+                    <div class="progress progress-concluded">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-concluded">0%</p>
+                    <p class="number number-intended">0</p>
+                    <div class="progress progress-intended">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-intended">0%</p>
+                    <p class="number number-failed">0</p>
+                    <div class="progress progress-failed">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                    <p class="percentage percentage-failed">0%</p>
+                </div>
+            </div>
+
+            <div class="contract_farming row chart hidden">
+                <div class="col-md-6">
+                    <div id="PieChart" class="charts" align="center">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div id="DotChart" class="charts" align="center">
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div id="TreeChart" class="charts" align="center">
-        </div>
-
-        <svg id="AreaChart" class="charts" align="center" width="400" height="400">
-        </svg>
-
-        <div id="PieChart" class="charts" align="center">
-        </div>
-
-        <div id="DotChart" class="charts" align="center">
-        </div>
-
-        <div id="BarChart" class="charts" align="center">
-        </div>
-
-        <div id="logging"  class="hidden">
-            <div class="col-sm-12 text-center">
-                <h3>{% trans "Logging: " %} <a class="toggle-tooltip bottom" href="/about/#what-is-a-land-deal" data-original-title="" title=""><i class="icon icon-question-sign"></i></a></h3>
-            </div>
-            <div class="col-sm-6 size">
-                <h4>{% trans "Size" %}</h4>
-                <p class="number number-concluded">39,453,030 ha</p>
-                <div class="progress progress-concluded">
-                    <div class="bar" style="width: 61%;"></div>
-                </div>
-                <p class="percentage percentage-concluded">61%</p>
-                <p class="number number-intended">19,032,857 ha</p>
-                <div class="progress progress-intended">
-                    <div class="bar" style="width: 29%;"></div>
-                </div>
-                <p class="percentage percentage-intended">29%</p>
-                <p class="number number-failed">6,597,171 ha</p>
-                <div class="progress progress-failed">
-                    <div class="bar" style="width: 10%;"></div>
-                </div>
-                <p class="percentage percentage-failed">10%</p>
-            </div>
-            <div class="col-sm-6 deals">
-                <h4>{% trans "Number of deals" %}</h4>
-                <p class="number number-concluded">1,158</p>
-                <div class="progress progress-concluded">
-                    <div class="bar" style="width: 80%;"></div>
-                </div>
-                <p class="percentage percentage-concluded">80%</p>
-                <p class="number number-intended">203</p>
-                <div class="progress progress-intended">
-                    <div class="bar" style="width: 14%;"></div>
-                </div>
-                <p class="percentage percentage-intended">14%</p>
-                <p class="number number-failed">92</p>
-                <div class="progress progress-failed">
-                    <div class="bar" style="width: 6%;"></div>
-                </div>
-                <p class="percentage percentage-failed">6%</p>
-            </div>
-            <div class="well-square legend">
-                <ul class="list-inline">
-                    <li><i class="icon icon-none" style="background-color: #ed881b;"></i> Concluded</li>
-                    <li><i class="icon icon-none" style="background-color: #b96c12;"></i> Intended</li>
-                    <li><i class="icon icon-none" style="background-color: #884e0e;"></i> Failed</li>
-                </ul>
-            </div>
-        </div>
-
-        <div id="resource_extraction"  class="hidden">
-            <div class="col-sm-12 text-center">
-                <h3>{% trans "Resource extraction:" %} <a class="toggle-tooltip bottom" href="/about/#what-is-a-land-deal" data-original-title="" title=""><i class="icon icon-question-sign"></i></a></h3>
-            </div>
-            <div class="col-sm-6 size">
-                <h4>{% trans "Size" %}</h4>
-                <p class="number number-concluded">39,453,030 ha</p>
-                <div class="progress progress-concluded">
-                    <div class="bar" style="width: 61%;"></div>
-                </div>
-                <p class="percentage percentage-concluded">61%</p>
-                <p class="number number-intended">19,032,857 ha</p>
-                <div class="progress progress-intended">
-                    <div class="bar" style="width: 29%;"></div>
-                </div>
-                <p class="percentage percentage-intended">29%</p>
-                <p class="number number-failed">6,597,171 ha</p>
-                <div class="progress progress-failed">
-                    <div class="bar" style="width: 10%;"></div>
-                </div>
-                <p class="percentage percentage-failed">10%</p>
-            </div>
-            <div class="col-sm-6 deals">
-                <h4>{% trans "Number of deals" %}</h4>
-                <p class="number number-concluded">1,158</p>
-                <div class="progress progress-concluded">
-                    <div class="bar" style="width: 80%;"></div>
-                </div>
-                <p class="percentage percentage-concluded">80%</p>
-                <p class="number number-intended">203</p>
-                <div class="progress progress-intended">
-                    <div class="bar" style="width: 14%;"></div>
-                </div>
-                <p class="percentage percentage-intended">14%</p>
-                <p class="number number-failed">92</p>
-                <div class="progress progress-failed">
-                    <div class="bar" style="width: 6%;"></div>
-                </div>
-                <p class="percentage percentage-failed">6%</p>
-            </div>
-            <div class="well-square legend">
-                <ul class="list-inline">
-                    <li><i class="icon icon-none" style="background-color: #ed881b;"></i> Concluded</li>
-                    <li><i class="icon icon-none" style="background-color: #b96c12;"></i> Intended</li>
-                    <li><i class="icon icon-none" style="background-color: #884e0e;"></i> Failed</li>
-                </ul>
-            </div>
-        </div>
-
-
     </div>
-</div>
 {% endblock %}
 
 {% block after %}
-{{ block.super }}
-<script type="text/javascript" src="{% static "js/charts.js" %}"></script>
-<script type="text/javascript" src="{% static "vendor/d3-areachart/rectangularAreaChart.js" %}"></script>
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.pie.js" %}"></script>
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.core.js" %}"></script>
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.effects.js" %}"></script>
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.dynamic.js" %}"></script>
-<script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.tooltips.js" %}"></script>
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "js/charts.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendor/d3-areachart/rectangularAreaChart.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/vendor/RGraph.pie.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.core.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.effects.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.dynamic.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.tooltips.js" %}"></script>
 
-<script type="text/javascript">
-$(document).ready(function () {
-    console.log("Query params:", get_query_params(get_base_filter(), ""));
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var dataSwitch = $("[name='use_deal_size']");
+            dataSwitch.bootstrapSwitch({
+                onText: 'Size',
+                offText: 'Count',
+                offColor: 'info',
+                onSwitchChange: function (event, state) {
+                    if (state) {
+                        datatype = 'size';
+                    } else {
+                        datatype = 'count;'
+                    }
+                }
+            });
 
-    var dataSwitch = $("[name='use_deal_size']");
-    dataSwitch.bootstrapSwitch({
-        onText: 'Size',
-        offText: 'Count',
-        offColor: 'info',
-        onSwitchChange: function(event, state) {
-            console.log('Deal size/count change triggered:', state);
-            if (state) {
-                datatype = 'size';
-            } else {
-                datatype = 'count;'
+            $("a.change-special_variable").click(function (e) {
+                e.preventDefault();
+                var c_self = this;
+                $(".navbar-subnav .active").removeClass("active");
+                $(".navbar-subnav a[href='" + $(this).attr("href") + "']").parents("li").addClass("active");
+                //($(".navbar-subnav .active a").attr("href").indexOf("intention") > -1 && $(".negotiation_status").show() || $(".negotiation_status").hide());
+                $(".desc p").hide().filter("." + $(this).attr("href").replace(/.*\?variable=/, "")).show();
+                draw($(this).attr("href").replace(/.*\?variable=/, ""));
+                return false;
+            });
+            $("a.change-special_variable:first").click();
+            $(".views .btn").click(function (e) {
+                e.preventDefault();
+                var c_self = this;
+                $(".views .active").removeClass("active");
+                $(c_self).addClass("active");
+                draw();
+                return false;
+            });
+            $(".views .btn.active").click();
+        });
+
+        var storage = {};
+        function draw(charttype) {
+            console.log("About to draw:", charttype);
+            $(".chart").each(function () {
+                $(this).addClass('hidden');
+                console.log($(this));
+            });
+
+            $(".legend").each(function() {
+                $(this).addClass('hidden');
+            });
+
+            $("#deal_data_selector").show();
+            $("#legendbox").show();
+
+            if (charttype == "resource_extraction") {
+
+                $.get('/api/statistics.json', function (data) {
+                    var stats = $('#resource_extraction'),
+                            size = stats.find('.size'),
+                            deals = stats.find('.deals'),
+                            by_deals = [0, 0, 0, 0],
+                            by_size = [0, 0, 0, 0],
+                            item;
+                    for (var i = 0; i < data.length; i++) {
+                        item = data[i];
+                        // Update numbers
+                        if (item[0].startsWith('Concluded')) {
+                            by_deals[1] += item[1];
+                            by_size[1] += item[2];
+                        } else if (item[0].startsWith('Intended')) {
+                            by_deals[2] += item[1];
+                            by_size[2] += item[2];
+                        } else if (item[0].startsWith('Failed')) {
+                            by_deals[3] += item[1];
+                            by_size[3] += item[2];
+                        }
+                        // Update totals
+                        by_deals[0] += item[1];
+                        by_size[0] += item[2];
+                    }
+
+                    // Update by size
+                    size.find('.number-concluded').text(by_size[1] + ' ha');
+                    percentage = parseInt(by_size[1] / by_size[0] * 100) + '%';
+                    size.find('.progress-concluded .bar').css('width', percentage);
+                    size.find('.percentage-concluded').text(percentage);
+                    size.find('.number-intended').text(by_size[2] + ' ha');
+                    percentage = parseInt(by_size[2] / by_size[0] * 100) + '%';
+                    size.find('.progress-intended .bar').css('width', percentage);
+                    size.find('.percentage-intended').text(percentage);
+                    size.find('.number-failed').text(by_size[3] + ' ha');
+                    percentage = parseInt(by_size[3] / by_size[0] * 100) + '%';
+                    size.find('.progress-failed .bar').css('width', percentage);
+                    size.find('.percentage-failed').text(percentage);
+
+                    // Update by deals
+                    deals.find('.number-concluded').text(by_deals[1]);
+                    percentage = parseInt(by_deals[1] / by_deals[0] * 100) + '%';
+                    deals.find('.progress-concluded .bar').css('width', percentage);
+                    deals.find('.percentage-concluded').text(percentage);
+                    deals.find('.number-intended').text(by_deals[2]);
+                    percentage = parseInt(by_deals[2] / by_deals[0] * 100) + '%';
+                    deals.find('.progress-intended .bar').css('width', percentage);
+                    deals.find('.percentage-intended').text(percentage);
+                    deals.find('.number-failed').text(by_deals[3]);
+                    percentage = parseInt(by_deals[3] / by_deals[0] * 100) + '%';
+                    deals.find('.progress-failed .bar').css('width', percentage);
+                    deals.find('.percentage-failed').text(percentage);
+                });
+
+                $(".resource_extraction").removeClass('hidden');
+            } else if (charttype == "logging") {
+
+                $.get('/api/statistics.json', function (data) {
+                    var stats = $('#logging'),
+                            size = stats.find('.size'),
+                            deals = stats.find('.deals'),
+                            by_deals = [0, 0, 0, 0],
+                            by_size = [0, 0, 0, 0],
+                            item;
+                    for (var i = 0; i < data.length; i++) {
+                        item = data[i];
+                        // Update numbers
+                        if (item[0].startsWith('Concluded')) {
+                            by_deals[1] += item[1];
+                            by_size[1] += item[2];
+                        } else if (item[0].startsWith('Intended')) {
+                            by_deals[2] += item[1];
+                            by_size[2] += item[2];
+                        } else if (item[0].startsWith('Failed')) {
+                            by_deals[3] += item[1];
+                            by_size[3] += item[2];
+                        }
+                        // Update totals
+                        by_deals[0] += item[1];
+                        by_size[0] += item[2];
+                    }
+
+                    // Update by size
+                    size.find('.number-concluded').text(by_size[1] + ' ha');
+                    percentage = parseInt(by_size[1] / by_size[0] * 100) + '%';
+                    size.find('.progress-concluded .bar').css('width', percentage);
+                    size.find('.percentage-concluded').text(percentage);
+                    size.find('.number-intended').text(by_size[2] + ' ha');
+                    percentage = parseInt(by_size[2] / by_size[0] * 100) + '%';
+                    size.find('.progress-intended .bar').css('width', percentage);
+                    size.find('.percentage-intended').text(percentage);
+                    size.find('.number-failed').text(by_size[3] + ' ha');
+                    percentage = parseInt(by_size[3] / by_size[0] * 100) + '%';
+                    size.find('.progress-failed .bar').css('width', percentage);
+                    size.find('.percentage-failed').text(percentage);
+
+                    // Update by deals
+                    deals.find('.number-concluded').text(by_deals[1]);
+                    percentage = parseInt(by_deals[1] / by_deals[0] * 100) + '%';
+                    deals.find('.progress-concluded .bar').css('width', percentage);
+                    deals.find('.percentage-concluded').text(percentage);
+                    deals.find('.number-intended').text(by_deals[2]);
+                    percentage = parseInt(by_deals[2] / by_deals[0] * 100) + '%';
+                    deals.find('.progress-intended .bar').css('width', percentage);
+                    deals.find('.percentage-intended').text(percentage);
+                    deals.find('.number-failed').text(by_deals[3]);
+                    percentage = parseInt(by_deals[3] / by_deals[0] * 100) + '%';
+                    deals.find('.progress-failed .bar').css('width', percentage);
+                    deals.find('.percentage-failed').text(percentage);
+                });
+
+                $(".logging").removeClass('hidden');
+            } else if (charttype == "produce_info") {
+                $(".produce_info").removeClass('hidden');
+                buildTreeChart();
+            } else if (charttype == "contract_farming") {
+                $(".contract_farming").removeClass('hidden');
+
+                buildPieChart();
+                buildDotChart();
+
+                $("#deal_data_selector").hide();
+                $("#legendbox").hide();
+
+            } else if (charttype == "agricultural_drivers") {
+                $(".agricultural_drivers").removeClass('hidden');
+                buildAgriculturalPies();
             }
         }
-    });
 
-    $("[name='deal_types']").select2({
-        multiple: true,
-        width: "20vw"
-    });
-
-    $("a.change-special_variable").click(function (e) {
-        e.preventDefault();
-        var c_self = this;
-        $(".navbar-subnav .active").removeClass("active");
-        $(".navbar-subnav a[href='" + $(this).attr("href") + "']").parents("li").addClass("active");
-        //($(".navbar-subnav .active a").attr("href").indexOf("intention") > -1 && $(".negotiation_status").show() || $(".negotiation_status").hide());
-        $(".desc p").hide().filter("." + $(this).attr("href").replace(/.*\?variable=/, "")).show();
-        draw($(this).attr("href").replace(/.*\?variable=/, ""));
-        return false;
-    });
-    $("a.change-special_variable:first").click();
-    $(".views .btn").click(function (e) {
-        e.preventDefault();
-        var c_self = this;
-        $(".views .active").removeClass("active");
-        $(c_self).addClass("active");
-        draw();
-        return false;
-    });
-    $(".views .btn.active").click();
-});
-
-var storage = {};
-function draw (charttype) {
-    console.log("About to draw:", charttype);
-    $(".charts").each(function() {
-        $(this).hide();
-        console.log($(this));
-        if ($(this)[0].id !== 'agricultural_drivers') {
-            $(this).empty();
-        }
-    });
-
-    $("#resource_extraction").addClass("hidden");
-    $("#logging").addClass("hidden");
-
-
-    $("#deal_data_selector").show();
-    $('#deal_kinds').show();
-
-    if (charttype == "resource_extraction") {
-        $('#deal_kinds').hide();
-
-        $.get('/api/statistics.json', function (data) {
-            var stats = $('#resource_extraction'),
-                    size = stats.find('.size'),
-                    deals = stats.find('.deals'),
-                    by_deals = [0, 0, 0, 0],
-                    by_size = [0, 0, 0, 0],
-                    item;
-            for (var i = 0; i < data.length; i++) {
-                item = data[i];
-                // Update numbers
-                if (item[0].startsWith('Concluded')) {
-                    by_deals[1] += item[1];
-                    by_size[1] += item[2];
-                } else if (item[0].startsWith('Intended')) {
-                    by_deals[2] += item[1];
-                    by_size[2] += item[2];
-                } else if (item[0].startsWith('Failed')) {
-                    by_deals[3] += item[1];
-                    by_size[3] += item[2];
-                }
-                // Update totals
-                by_deals[0] += item[1];
-                by_size[0] += item[2];
-            };
-            // Update by size
-            size.find('.number-concluded').text(by_size[1] + ' ha');
-            percentage = parseInt(by_size[1] / by_size[0] * 100) + '%';
-            size.find('.progress-concluded .bar').css('width', percentage);
-            size.find('.percentage-concluded').text(percentage);
-            size.find('.number-intended').text(by_size[2] + ' ha');
-            percentage = parseInt(by_size[2] / by_size[0] * 100) + '%';
-            size.find('.progress-intended .bar').css('width', percentage);
-            size.find('.percentage-intended').text(percentage);
-            size.find('.number-failed').text(by_size[3] + ' ha');
-            percentage = parseInt(by_size[3] / by_size[0] * 100) + '%';
-            size.find('.progress-failed .bar').css('width', percentage);
-            size.find('.percentage-failed').text(percentage);
-
-            // Update by deals
-            deals.find('.number-concluded').text(by_deals[1]);
-            percentage = parseInt(by_deals[1] / by_deals[0] * 100) + '%';
-            deals.find('.progress-concluded .bar').css('width', percentage);
-            deals.find('.percentage-concluded').text(percentage);
-            deals.find('.number-intended').text(by_deals[2]);
-            percentage = parseInt(by_deals[2] / by_deals[0] * 100) + '%';
-            deals.find('.progress-intended .bar').css('width', percentage);
-            deals.find('.percentage-intended').text(percentage);
-            deals.find('.number-failed').text(by_deals[3]);
-            percentage = parseInt(by_deals[3] / by_deals[0] * 100) + '%';
-            deals.find('.progress-failed .bar').css('width', percentage);
-            deals.find('.percentage-failed').text(percentage);
-        });
-
-        $("#resource_extraction").removeClass("hidden");
-    } else if (charttype == "logging") {
-
-        $('#deal_kinds').hide();
-        $.get('/api/statistics.json', function (data) {
-            var stats = $('#logging'),
-                    size = stats.find('.size'),
-                    deals = stats.find('.deals'),
-                    by_deals = [0, 0, 0, 0],
-                    by_size = [0, 0, 0, 0],
-                    item;
-            for (var i = 0; i < data.length; i++) {
-                item = data[i];
-                // Update numbers
-                if (item[0].startsWith('Concluded')) {
-                    by_deals[1] += item[1];
-                    by_size[1] += item[2];
-                } else if (item[0].startsWith('Intended')) {
-                    by_deals[2] += item[1];
-                    by_size[2] += item[2];
-                } else if (item[0].startsWith('Failed')) {
-                    by_deals[3] += item[1];
-                    by_size[3] += item[2];
-                }
-                // Update totals
-                by_deals[0] += item[1];
-                by_size[0] += item[2];
-            };
-            // Update by size
-            size.find('.number-concluded').text(by_size[1] + ' ha');
-            percentage = parseInt(by_size[1] / by_size[0] * 100) + '%';
-            size.find('.progress-concluded .bar').css('width', percentage);
-            size.find('.percentage-concluded').text(percentage);
-            size.find('.number-intended').text(by_size[2] + ' ha');
-            percentage = parseInt(by_size[2] / by_size[0] * 100) + '%';
-            size.find('.progress-intended .bar').css('width', percentage);
-            size.find('.percentage-intended').text(percentage);
-            size.find('.number-failed').text(by_size[3] + ' ha');
-            percentage = parseInt(by_size[3] / by_size[0] * 100) + '%';
-            size.find('.progress-failed .bar').css('width', percentage);
-            size.find('.percentage-failed').text(percentage);
-
-            // Update by deals
-            deals.find('.number-concluded').text(by_deals[1]);
-            percentage = parseInt(by_deals[1] / by_deals[0] * 100) + '%';
-            deals.find('.progress-concluded .bar').css('width', percentage);
-            deals.find('.percentage-concluded').text(percentage);
-            deals.find('.number-intended').text(by_deals[2]);
-            percentage = parseInt(by_deals[2] / by_deals[0] * 100) + '%';
-            deals.find('.progress-intended .bar').css('width', percentage);
-            deals.find('.percentage-intended').text(percentage);
-            deals.find('.number-failed').text(by_deals[3]);
-            percentage = parseInt(by_deals[3] / by_deals[0] * 100) + '%';
-            deals.find('.progress-failed .bar').css('width', percentage);
-            deals.find('.percentage-failed').text(percentage);
-        });
-
-        $("#logging").removeClass('hidden');
-    } else if (charttype == "produce_info") {
-        $("#TreeChart").show();
-        buildTreeChart();
-    } else if (charttype == "contract_farming") {
-        $("#PieChart").show();
-        $("#DotChart").show();
-
-        buildPieChart();
-        buildDotChart();
-        $("[name='use_deal_size']").bootstrapSwitch('state', false, true);
-        $("#deal_data_selector").hide();
-
-    } else if (charttype == "agricultural_drivers") {
-        $("#agricultural_drivers").show();
-        buildAgriculturalPies();
-    }
-}
-
-</script>
+    </script>
 {% endblock %}

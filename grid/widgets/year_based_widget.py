@@ -1,25 +1,56 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+import re
 from django import forms
 from django.utils.safestring import mark_safe
 
-
 class YearBasedWidget(forms.MultiWidget):
-
     year_based = True
+    widget = forms.TextInput(attrs={"class": "year-based"})
+
+    def __init__(self, *args, **kwargs):
+        self.help_text = kwargs.pop("help_text", "")
+        kwargs["widgets"] = self.get_widgets()
+        super(YearBasedWidget, self).__init__(*args, **kwargs)
+
+    def get_widgets(self):
+        return [
+            self.widget,
+            forms.TextInput(attrs={"class": "year-based-year"})
+        ]
+
+    def decompress(self, value):
+        if value:
+            values = value.split("#")
+
+            sorted_values = sorted(values, key=lambda v: v.split("#")[1] if '#' in v else '0')
+            splitted = []
+            for s in sorted_values:
+                splitted.extend(s.split("#"))
+            return len(splitted) == 1 and splitted.append(None) or splitted
+        return [None, None]
 
     def render_for_template(self):
         raise Exception(self.attrs)
 
-    def get_widgets(self):
-        return []
+    def format_output(self, rendered_widgets):
+        return u''.join(rendered_widgets)
+
+    def value_from_datadict(self, data, files, name):
+        #return [widget.value_from_datadict(data, files, name + '_%s' % i) for i, widget in enumerate(self.widgets)]
+        value = [data[k] for k in sorted(filter(lambda o: re.match(r"%s_\d+"%name,o), data))]
+        # update widgets
+        self.widgets = []
+        for i in range(int(len(value)/len(self.get_widgets()))):
+            self.widgets.extend(self.get_widgets())
+        return value
 
     def render(self, name, value, attrs={}):
         # update widgets
         if value:
             self.widgets = []
             value = isinstance(value, (list, tuple)) and value or self.decompress(value)
-            for i in range(int(len(value)/2)):
+            for i in range(int(len(value)/len(self.get_widgets()))):
                 self.widgets.extend(self.get_widgets())
 
         if self.is_localized:
@@ -46,7 +77,7 @@ class YearBasedWidget(forms.MultiWidget):
             attrs['class'] = ' '.join([final_attrs.get('class', ''), widget.attrs.get('class', '')])
             output.append(widget.render(name + '_%s' % i, widget_value, attrs))
             # Append helptext and close reopen div every second element
-            if ((i+1) % 2 == 0):
+            if ((i+1) % len(self.get_widgets()) == 0):
                 output.append(helptext)
                 # Add "Add more" button to first row
                 if i == 1:

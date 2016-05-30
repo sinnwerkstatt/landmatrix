@@ -103,7 +103,6 @@ function dismissChangePopup(win, newId, newRepr) {
 }
 
 $(document).ready(function(){
-
     /* Overall: Enable checkboxes again on checking the parent input */
     $("input#id_intention_0,input#id_intention_1,input#id_source_of_water_extraction_1").click(function(){
         if($(this).is(":checked")) {
@@ -197,18 +196,18 @@ $(document).ready(function(){
 
     /* General information: Contract farming everything invisible until "Yes" selected */
     if( !$("input#id_contract_farming_0").is(":checked") ){
-      $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.off_the_lease_area, div.off_the_lease_farmers").css("display", "none");
+      $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.on_the_lease_households, div.off_the_lease_area, div.off_the_lease_farmers, div.off_the_lease_households").css("display", "none");
     }
     $("input#id_contract_farming_0").click(function (){
       if ( $(this).is(":checked")){
-        $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.off_the_lease_area, div.off_the_lease_farmers").slideDown("fast");
+        $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.on_the_lease_households, div.off_the_lease_area, div.off_the_lease_farmers, div.off_the_lease_households").slideDown("fast");
       }
       else {
-        $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.off_the_lease_area, div.off_the_lease_farmers").slideUp("fast");
+        $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.on_the_lease_households, div.off_the_lease_area, div.off_the_lease_farmers, div.off_the_lease_households").slideUp("fast");
       }
     });
     $("input#id_contract_farming_1").click(function (){
-      $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.off_the_lease_area, div.off_the_lease_farmers").slideUp("fast");
+      $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.on_the_lease_households, div.off_the_lease_area, div.off_the_lease_farmers, div.off_the_lease_households").slideUp("fast");
     });
 
     /* Employment: toggle visibility of subfields on click*/
@@ -300,7 +299,7 @@ $(document).ready(function(){
         $(".field.control-group.tg_feedback_comment ").slideUp("fast");
     }
 
-    $('.crops select,.animals select,.minerals select').select2();
+    $('.crops select,.animals select,.minerals select,.contract_farming_crops select,.contract_farming_animals select').select2();
 
     $('.negotiation_status select').change(function () {
       var val = $(this).find('option:selected').val();

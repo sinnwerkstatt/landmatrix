@@ -30,6 +30,12 @@ class Country(models.Model):
     code_alpha3 = models.CharField(_("Code ISO 3166-1 alpha3"), max_length=3)
     name = models.CharField("Name", max_length=255)
     slug = models.SlugField("Slug", max_length=100)
+    point_lat = models.DecimalField(
+        _("Latitude of central point"), max_digits=18, decimal_places=12, blank=True, null=True
+    )
+    point_lon = models.DecimalField(
+        _("Longitude of central point"), max_digits=18, decimal_places=12, blank=True, null=True
+    )
     point_lat_min = models.DecimalField(
         _("Latitude of northernmost point"), max_digits=18, decimal_places=12, blank=True, null=True
     )

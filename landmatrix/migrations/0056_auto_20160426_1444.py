@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='publicinterfacecache',
             name='negotiation_status',
-            field=models.CharField(verbose_name='Negotiation status', max_length=64, db_index=True, choices=[('---------', '---------'), ('Expression of interest', 'Expression of interest'), ('Under negotiation', 'Under negotiation'), ('Memorandum of understanding', 'Memorandum of understanding'), ('Oral Agreement', 'Oral Agreement'), ('Contract signed', 'Contract signed'), ('Negotiations failed', 'Negotiations failed'), ('Contract canceled', 'Contract canceled'), ('Contract expired', 'Contract expired'), ('Change of ownership', 'Change of ownership')], null=True, blank=True),
+            field=models.CharField(verbose_name='Negotiation status', max_length=64, db_index=True, choices=[('', '---------'), ('Expression of interest', 'Expression of interest'), ('Under negotiation', 'Under negotiation'), ('Memorandum of understanding', 'Memorandum of understanding'), ('Oral Agreement', 'Oral Agreement'), ('Contract signed', 'Contract signed'), ('Negotiations failed', 'Negotiations failed'), ('Contract canceled', 'Contract canceled'), ('Contract expired', 'Contract expired'), ('Change of ownership', 'Change of ownership')], null=True, blank=True),
         ),
     ]

@@ -31,51 +31,51 @@ function buildAreaChart() {
     config1.maxValue = 100;
 
     loadRectangularAreaChart("AreaChart", data1, config1);
-/*
-    var data2 = [{value: "78", label: "Duis", valuePrefix: "Area of "}, {
-        value: "37",
-        label: "Cras",
-        valuePrefix: "Area of "
-    }, {value: "55", label: "elit sed consequat", valuePrefix: "Area of "}];
-    var config2 = rectangularAreaChartDefaultSettings();
-    config2.colorsScale = d3.scale.ordinal().range(["#fc8d59", "#ffffbf", "#91bfdb"]); //palette from colorbrewer https://github.com/mbostock/d3/tree/master/lib/colorbrewer
-    config2.textColorScale = d3.scale.ordinal().range(["#444", "#333", "#222"]);
-    config2.labelAlignDiagonal = true;
-    config2.valueTextAlignDiagonal = true;
-    config2.valueTextPadding.right = 18;
-    config2.animateDelay = 1000;
-    config2.animateDelayBetweenBoxes = 0;
-    config2.valueTextCountUp = false;
-    loadRectangularAreaChart("rectangularareachart2", data2, config2);
+    /*
+     var data2 = [{value: "78", label: "Duis", valuePrefix: "Area of "}, {
+     value: "37",
+     label: "Cras",
+     valuePrefix: "Area of "
+     }, {value: "55", label: "elit sed consequat", valuePrefix: "Area of "}];
+     var config2 = rectangularAreaChartDefaultSettings();
+     config2.colorsScale = d3.scale.ordinal().range(["#fc8d59", "#ffffbf", "#91bfdb"]); //palette from colorbrewer https://github.com/mbostock/d3/tree/master/lib/colorbrewer
+     config2.textColorScale = d3.scale.ordinal().range(["#444", "#333", "#222"]);
+     config2.labelAlignDiagonal = true;
+     config2.valueTextAlignDiagonal = true;
+     config2.valueTextPadding.right = 18;
+     config2.animateDelay = 1000;
+     config2.animateDelayBetweenBoxes = 0;
+     config2.valueTextCountUp = false;
+     loadRectangularAreaChart("rectangularareachart2", data2, config2);
 
-    var data3 = [{value: "40", label: "massa. Quisque"}, {value: "34", label: "rhoncus. Proin nisl"}, {
-        value: "45",
-        label: "ipsum nunc"
-    }, {value: "64", label: "pharetra"}, {value: "95", label: "parturient montes"}, {
-        value: "87",
-        label: "pede, ultrices"
-    }, {value: "80", label: "nascetur"}];
-    var config3 = rectangularAreaChartDefaultSettings();
-    config3.expandFromLeft = false;
-    config3.expandFromTop = true;
-    config3.maxValue = 100;
-    config3.colorsScale = d3.scale.ordinal().range(["#fff7fb", "#ece2f0", "#d0d1e6", "#a6bddb", "#67a9cf", "#3690c0", "#02818a", "#016c59", "#014636"]);  //palette from colorbrewer https://github.com/mbostock/d3/tree/master/lib/colorbrewer
-    config3.textColorScale = d3.scale.ordinal().range(["#555", "#777", "#999", "#aaa", "#ddd", "#fff", "#fff"]);
-    config3.animateDelay = 2000;
-    loadRectangularAreaChart("rectangularareachart3", data3, config3);
+     var data3 = [{value: "40", label: "massa. Quisque"}, {value: "34", label: "rhoncus. Proin nisl"}, {
+     value: "45",
+     label: "ipsum nunc"
+     }, {value: "64", label: "pharetra"}, {value: "95", label: "parturient montes"}, {
+     value: "87",
+     label: "pede, ultrices"
+     }, {value: "80", label: "nascetur"}];
+     var config3 = rectangularAreaChartDefaultSettings();
+     config3.expandFromLeft = false;
+     config3.expandFromTop = true;
+     config3.maxValue = 100;
+     config3.colorsScale = d3.scale.ordinal().range(["#fff7fb", "#ece2f0", "#d0d1e6", "#a6bddb", "#67a9cf", "#3690c0", "#02818a", "#016c59", "#014636"]);  //palette from colorbrewer https://github.com/mbostock/d3/tree/master/lib/colorbrewer
+     config3.textColorScale = d3.scale.ordinal().range(["#555", "#777", "#999", "#aaa", "#ddd", "#fff", "#fff"]);
+     config3.animateDelay = 2000;
+     loadRectangularAreaChart("rectangularareachart3", data3, config3);
 
-    var data4 = [{value: "32", label: "consectetuer adipiscing"}, {value: "62", label: "ipsum"}];
-    var config4 = rectangularAreaChartDefaultSettings();
-    config4.expandFromLeft = true;
-    config4.expandFromTop = true;
-    config4.maxValue = 100;
-    config4.labelAlignDiagonal = true;
-    config4.animateDelay = 3500;
-    config4.displayValueText = false;
-    config4.animateDelayBetweenBoxes = 0;
-    config4.colorsScale = d3.scale.ordinal().range(["#7570b3", "#e7298a", "#66a61e"]);  //palette from colorbrewer https://github.com/mbostock/d3/tree/master/lib/colorbrewer
-    config4.textColorScale = d3.scale.ordinal().range(["#e7298a", "#7570b3", "#66a61e"]);
-    loadRectangularAreaChart("rectangularareachart4", data4, config4);*/
+     var data4 = [{value: "32", label: "consectetuer adipiscing"}, {value: "62", label: "ipsum"}];
+     var config4 = rectangularAreaChartDefaultSettings();
+     config4.expandFromLeft = true;
+     config4.expandFromTop = true;
+     config4.maxValue = 100;
+     config4.labelAlignDiagonal = true;
+     config4.animateDelay = 3500;
+     config4.displayValueText = false;
+     config4.animateDelayBetweenBoxes = 0;
+     config4.colorsScale = d3.scale.ordinal().range(["#7570b3", "#e7298a", "#66a61e"]);  //palette from colorbrewer https://github.com/mbostock/d3/tree/master/lib/colorbrewer
+     config4.textColorScale = d3.scale.ordinal().range(["#e7298a", "#7570b3", "#66a61e"]);
+     loadRectangularAreaChart("rectangularareachart4", data4, config4);*/
 }
 
 function buildTreeChart() {
@@ -111,6 +111,7 @@ function buildTreeChart() {
         "children": [
             {
                 "name": "Animals",
+                "color": "#fc941f",
                 "children": [
                     {"name": "Birds", "size": 3938},
                     {"name": "Apes", "size": 3812},
@@ -120,6 +121,7 @@ function buildTreeChart() {
             },
             {
                 "name": "Minerals",
+                "color": "#4bbb87",
                 "children": [
                     {"name": "Iron", "size": 17010},
                     {"name": "Aluminium", "size": 5842},
@@ -129,27 +131,13 @@ function buildTreeChart() {
             },
             {
                 "name": "Crops",
+                "color": "#b9d635",
                 "children": [
-                    {
-                        "name": "Vegetables",
-                        "children": [
-                            {"name": "Salad", "size": 721},
-                            {"name": "Carrots", "size": 4294},
-                            {"name": "Peas", "size": 9800},
-                            {"name": "Cabbage", "size": 1314},
-                            {"name": "Radish", "size": 2220}
-                        ]
-                    },
-                    {
-                        "name": "Fruit",
-                        "children": [
-                            {"name": "Oranges", "size": 721},
-                            {"name": "Apples", "size": 4294},
-                            {"name": "Melons", "size": 9800},
-                            {"name": "Raspberries", "size": 1314},
-                            {"name": "Lemons", "size": 2220}
-                        ]
-                    }
+                    {"name": "Salad", "size": 721},
+                    {"name": "Carrots", "size": 4294},
+                    {"name": "Peas", "size": 9800},
+                    {"name": "Cabbage", "size": 1314},
+                    {"name": "Radish", "size": 2220}
                 ]
             }
         ]
@@ -182,8 +170,8 @@ function buildTreeChart() {
                 return d.dy - 1;
             })
             .style("fill", function (d) {
-                console.log("The colorbook says: ", d.parent.name, LMColor, LMColor(d.parent.name), color, color(d.parent.name));
-                return color(d.parent.name);
+                console.log("The colorbook says: ", d.parent.color);
+                return color(d.parent.color);
             });
 
         cell.append("svg:text")
@@ -268,7 +256,9 @@ function buildPieChart() {
     var w = 800,                        //width
         h = 500,                            //height
         r = 180;                            //radius
-        color = LMColor();     //builtin range of colors
+    color = LMColor();     //builtin range of colors
+
+    $("#PieChart").empty();
 
     var vis = d3.select("#PieChart")
         .append("svg:svg")              //create the SVG element inside the <body>
@@ -276,7 +266,7 @@ function buildPieChart() {
         .attr("width", w)           //set the width and height of our visualization (these will be attributes of the <svg> tag
         .attr("height", h)
         .append("svg:g")                //make a group to hold our pie chart
-        .attr("transform", "translate(" + w/2 + "," + h/2 + ")");    //move the center of the pie chart from 0, 0 to radius, radius
+        .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");    //move the center of the pie chart from 0, 0 to radius, radius
 
     var arc = d3.svg.arc()              //this will create <path> elements for us using arc data
         .outerRadius(r);
@@ -335,6 +325,8 @@ function buildDotChart() {
         }
         return str;
     }
+
+    $("#DotChart").empty();
 
     var margin = {top: 20, right: 200, bottom: 0, left: 20},
         width = 300,
@@ -833,9 +825,7 @@ function buildBiBarChart() {
 
 function buildAgriculturalPies() {
     RGraph.ObjectRegistry.Clear();
-    var query_params = get_query_params(get_base_filter(), get_filter());
-    var json_query = "/api/agricultural-produce.json" + query_params;
-    jQuery.getJSON(json_query, function (data) {
+    $.get("/api/agricultural-produce.json", function (data) {
         // show/hide data availability
         var sum = 0;
         $(data).each(function (i) {
@@ -858,7 +848,7 @@ function buildAgriculturalPies() {
             pie_data.push(data[i]["agricultural_produce"]["multiple_use"]);
 
             var pie = new RGraph.Pie('pie-' + data[i]["region"], pie_data);
-            pie.Set('chart.colors', ['#060c0f', '#225559', '#46b2bf', '#acd4dc']);
+            pie.Set('chart.colors', ['#44c42d', '#4bbb87', '#179961', '#7c9a61']);
             pie.Set('chart.strokestyle', '#bbb');
             pie.Set('chart.text.font', 'Open Sans');
             pie.Set('chart.text.size', '9');

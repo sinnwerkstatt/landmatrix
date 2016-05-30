@@ -57,8 +57,7 @@ function create_d3(diameter) {
     node = svg.append("g").selectAll(".node");
 
     get_top_10();
-    var query_params = "?deal_scope=transnational";
-    var json_query = "/api/transnational_deals.json" + query_params;
+    var json_query = "/api/transnational_deals.json?deal_scope=transnational";
 
     console.log("Beginning d3 setup.");
     d3.json(json_query, function (error, classes) {
@@ -354,14 +353,7 @@ function mouseup(d) {
         if (n.id !== "" && parent) {
             console.log("Country selecting..",n, info);
             info.find(".country").text(n.key);
-            // FIXME there should be a more elegent way
-            if (typeof(get_query_params) == typeof(Function)) {
-                var query_params = get_query_params(get_base_filter(), "country=" + n.id);
-                //var query_params = "?negotiation_status=concluded&deal_scope=transnational&country=" + n.id;
-                console.log(query_params);
-            } else {
-                var query_params = "?negotiation_status=concluded&deal_scope=transnational&country=" + n.id;
-            }
+            var query_params = '?country=' + n.id;
             console.log("Getting ", "/api/transnational_deals_by_country.json" + query_params);
             jQuery.getJSON("/api/transnational_deals_by_country.json" + query_params, function (data) {
                 var target_regions = "",

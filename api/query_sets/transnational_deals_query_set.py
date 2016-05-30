@@ -53,11 +53,11 @@ class TransnationalDealsQuerySet(FakeQuerySetFlat):
         self.regions = request.GET.getlist("region", [])
 
     def shorten_country(self, country):
-            country_parts = country.split(".")
-            country_region = country_parts[0]
-            if country_region in self.regions:
-                country_region = -1
-            return "%s.%s" % (country_region, self.LONG_COUNTRIES.get(country_parts[1], country_parts[1]))
+        country_parts = country.split(".")
+        country_region = country_parts[0]
+        if country_region in self.regions:
+            country_region = -1
+        return "%s.%s" % (country_region, self.LONG_COUNTRIES.get(country_parts[1], country_parts[1]))
 
     def all(self):
         from collections import OrderedDict

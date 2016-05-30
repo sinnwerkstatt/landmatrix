@@ -59,13 +59,13 @@ class ChangesetProtocol(View):
     def dashboard(self, request):
         res = {
             "latest_added": self.get_paged_results(
-                ActivityChangeset.objects.get_by_state("active"), request.GET.get('latest_added_page')
+                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("active")), request.GET.get('latest_added_page')
             ),
             "latest_modified": self.get_paged_results(
-                ActivityChangeset.objects.get_by_state("overwritten"), request.GET.get('latest_modified_page')
+                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("overwritten")), request.GET.get('latest_modified_page')
             ),
             "latest_deleted": self.get_paged_results(
-                ActivityChangeset.objects.get_by_state("deleted"), request.GET.get('latest_deleted_page')
+                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("deleted")), request.GET.get('latest_deleted_page')
             ),
             "manage": self._changeset_to_json(limit=2),
             "feedbacks": _feedbacks_to_json(request.user, limit=5),
@@ -187,7 +187,7 @@ class ChangesetProtocol(View):
 
     def handle_my_deals(self, a_changesets, changesets, limit, my_deals_page, user):
         changesets_my_deals = changesets.get_my_deals(user.id)
-        changesets_my_deals = self.apply_locality_filters(changesets_my_deals)
+        changesets_my_deals = self.apply_dashboard_filters(changesets_my_deals)
         changesets_my_deals = limit and changesets_my_deals[:limit] or changesets_my_deals
         paginator = Paginator(changesets_my_deals, 10)
         page = _get_page(my_deals_page, paginator)
@@ -201,7 +201,7 @@ class ChangesetProtocol(View):
 
     def handle_updates(self, a_changesets, changesets, limit, updates_page):
         changesets_update = changesets.filter(fk_activity__fk_status__name="pending")
-        changesets_update = self.apply_locality_filters(changesets_update)
+        changesets_update = self.apply_dashboard_filters(changesets_update)
         changesets_update = limit and changesets_update[:limit] or changesets_update
         paginator = Paginator(changesets_update, 10)
         page = _get_page(updates_page, paginator)
@@ -214,7 +214,7 @@ class ChangesetProtocol(View):
             updates["pagination"] = _pagination_to_json(paginator, page)
             a_changesets["updates"] = updates
 
-    def apply_locality_filters(self, changesets):
+    def apply_dashboard_filters(self, changesets):
         if self.request.session.get('dashboard_filters', {}).get('country'):
             changesets = _filter_changesets_by_countries(
                 changesets, self.request.session['dashboard_filters']['country']
@@ -231,13 +231,13 @@ class ChangesetProtocol(View):
             if UserRegionalInfo.objects.filter(user_id=user).exists():
                 country = UserRegionalInfo.objects.get(user_id=user).country.all()
                 if len(country):
-                    changesets = _filter_changesets_by_countries(changesets, country[0].id)
+                    changesets = _filter_changesets_by_countries(changesets, [c.id for c in country])
 
         return _uniquify_changesets_by_deal(changesets)
 
     def handle_inserts(self, a_changesets, changesets, inserts_page, limit):
         changesets_insert = changesets.filter(fk_activity__fk_status__name="pending")  #  previous_version__isnull=True)
-        changesets_insert = self.apply_locality_filters(changesets_insert)
+        changesets_insert = self.apply_dashboard_filters(changesets_insert)
         changesets_insert = limit and changesets_insert[:limit] or changesets_insert
         paginator = Paginator(changesets_insert, 10)
         page = _get_page(inserts_page, paginator)

@@ -58,11 +58,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='publicinterfacecache',
             name='implementation_status',
-            field=models.CharField(blank=True, verbose_name='Implementation status', max_length=64, null=True, choices=[('---------', '---------'), ('Project not started', 'Project not started'), ('Startup phase (no production)', 'Startup phase (no production)'), ('In operation (production)', 'In operation (production)'), ('Project abandoned', 'Project abandoned')], db_index=True),
+            field=models.CharField(blank=True, verbose_name='Implementation status', max_length=64, null=True, choices=[('', '---------'), ('Project not started', 'Project not started'), ('Startup phase (no production)', 'Startup phase (no production)'), ('In operation (production)', 'In operation (production)'), ('Project abandoned', 'Project abandoned')], db_index=True),
         ),
         migrations.AlterField(
             model_name='publicinterfacecache',
             name='negotiation_status',
-            field=models.CharField(blank=True, verbose_name='Negotiation status', max_length=64, null=True, choices=[('---------', '---------'), ('Intended (Expression of interest)', 'Intended (Expression of interest)'), ('Intended (Under negotiation)', 'Intended (Under negotiation)'), ('Concluded (Oral Agreement)', 'Concluded (Oral Agreement)'), ('Concluded (Contract signed)', 'Concluded (Contract signed)'), ('Failed (Negotiations failed)', 'Failed (Negotiations failed)'), ('Failed (Contract canceled)', 'Failed (Contract canceled)'), ('Sold', 'Sold')], db_index=True),
+            field=models.CharField(blank=True, verbose_name='Negotiation status', max_length=64, null=True, choices=[('', '---------'), ('Intended (Expression of interest)', 'Intended (Expression of interest)'), ('Intended (Under negotiation)', 'Intended (Under negotiation)'), ('Concluded (Oral Agreement)', 'Concluded (Oral Agreement)'), ('Concluded (Contract signed)', 'Concluded (Contract signed)'), ('Failed (Negotiations failed)', 'Failed (Negotiations failed)'), ('Failed (Contract canceled)', 'Failed (Contract canceled)'), ('Sold', 'Sold')], db_index=True),
         ),
     ]

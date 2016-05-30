@@ -25,18 +25,19 @@ from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 
-from grid.views import AddDealView, ChangeDealView, DealComparisonView, DealDetailView, FilterWidgetAjaxView
+from grid.views import (
+    AddDealView, ChangeDealView, DealComparisonView, DealDetailView,
+    FilterWidgetAjaxView, AddStakeholderView, ChangeStakeholderView,
+    InvestorComparisonView,
+)
+from feeds.views import DealChangesFeed
 from api import urls as api_urls
 from grid import urls as grid_urls
-from grid.views.investor_comparison_view import InvestorComparisonView
 from map import urls as map_urls
 from charts import urls as charts_urls
 from editor import urls as editor_urls
 from landmatrix.views import *
-#from landmatrix.views.filterdebug_view import FilterView
-from grid.views.stakeholder_view import (
-    AddStakeholderView, ChangeStakeholderView,
-)
+
 
 CACHE_TIMEOUT = 24*3600
 
@@ -81,6 +82,11 @@ urlpatterns = patterns('',
         cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()),
         {'format': 'PDF'},
         name='deal_detail_pdf'
+    ),
+    url(
+        r'^deal/(?P<deal_id>[\d]+)/changes\.rss$',
+        DealChangesFeed(),
+        name='deal_changes_feed'
     ),
     url(
         r'^deal/edit/(?P<deal_id>[\d]+)/$',

@@ -19,7 +19,7 @@
 <div id="alert_placeholder"></div>
 
 {% block description %}
-    {{ block.super }}
+    <p>{% trans "Enter a location to set the center of a circle that displays an area equal to the size of the intended, concluded or failed land acquisitions (according to the selected option)." %}</p>
     <div class="input-group col-md-6" role="group">
         <input id="search" class="location form-control" name="location" type="search" value="" placeholder="{%  trans 'Enter location...' %}"/>
         <span class="input-group-btn">
@@ -51,40 +51,66 @@
 {% block after %}
 {{ block.super }}
 <script type="text/javascript">
-    var mapShowPerspective = true;
-
-            /*mapBounds = [
-                {{ country.point_lat_min }}, {{ country.point_lon_min }},
-                {{ country.point_lat_max }}, {{ country.point_lon_max }},
-            ];*/
-$(document).ready(function () {
-    initGeocoder(document.getElementById("search"));
-
-    function updateBigDealData() {
-        var query_params = get_query_params(get_base_filter(), "");
-        var json_query = "/api/hectares.json" + query_params;
-        jQuery.getJSON(json_query, function (data) {
-            bigdealArea = parseFloat(data["hectares"]);
-
-            // Update legend
-            $(".legend li .hectares").text(number_format(circle_hectares, 0));
-            drawCircleInMeter();
-        });
-    }
-
-    console.log('Drawing big deal.');
-
-    updateBigDealData();
-
-});
+var mapDisableDeals = true,
+    mapDisableControls = true;
 </script>
-
 
 <script type="text/javascript" src="{% static "vendor/openlayers/ol-debug.js" %}"></script>
 <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
 <script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
 
 <script type="text/javascript" src="{% static "js/map.js" %}"></script>
+<script type="text/javascript">
+var bigdealVectorLayer = new ol.layer.Vector()
+    bigdealArea = 0;
+function drawCircleInMeter(coords, area) {
+    if (!coords) {
+        coords = map.getView().getCenter();
+    }
+    if (!area) {
+        area = bigdealArea;
+    }
+
+    // TODO: Clear up this projection transformation mess
+    var radius = Math.sqrt((area * 10000) / Math.PI),
+        sphere = new ol.Sphere(6378137),
+        vectorSource = new ol.source.Vector({projection: 'EPSG:3857'}),
+        circle = ol.geom.Polygon.circular(sphere, coords, radius, 64).transform('EPSG:4326', 'EPSG:3857');
+    vectorSource.addFeature(new ol.Feature(circle));
+
+    bigdealVectorLayer.setSource(vectorSource);
+    bigdealVectorLayer.setStyle([new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            color: '#fc941f',
+            width: 2
+        }),
+        fill: new ol.style.Fill({
+            color: 'rgba(252, 148, 31, 0.2)'
+        })
+    })]);
+    bigdealArea = area;
+};
+
+$(document).ready(function () {
+    initGeocoder(document.getElementById("search"));
+    $.get("/api/hectares.json", function (data) {
+        var area = parseFloat(data["hectares"]);
+        $(".legend li .hectares").text(number_format(area, 0));
+        drawCircleInMeter(null, area);
+        map.addLayer(bigdealVectorLayer);
+    });
+    map.on('click', function (evt) {
+        var point = new ol.geom.Point(evt.coordinate).transform('EPSG:3857', 'EPSG:4326');
+        drawCircleInMeter(point.flatCoordinates);
+        return;
+    });
+    autocomplete.addListener('place_changed', function () {
+        var place = autocomplete.getPlace(),
+            coords = [place.geometry.location.lng(), place.geometry.location.lat()];
+        drawCircleInMeter(coords);
+    });
+});
+</script>
 <script type="text/javascript" src="{% static "js/layers.js" %}"></script>
 <script type="text/javascript" src="{% static "js/main.js" %}"></script>
 

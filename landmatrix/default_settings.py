@@ -94,6 +94,7 @@ INSTALLED_APPS += (
     'captcha',
     'rest_framework.authtoken',
     'rest_framework_docs',
+    'django.contrib.syndication',
 
 #   apps of the actual landmatrix project
     'landmatrix',
@@ -106,6 +107,7 @@ INSTALLED_APPS += (
     'api',
     'notifications',
     'public_comments',
+    'feeds',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -89,7 +89,7 @@ class ChangeDealGeneralForm(BaseForm):
         queryset=Currency.objects.all().order_by("ranking", "name")
     )
     purchase_price_type = forms.TypedChoiceField(
-        required=False, label=_("Purchase price area type"), choices=price_type_choices, coerce=int
+        required=False, label=_("Purchase price area type"), choices=price_type_choices
     )
     purchase_price_area = forms.IntegerField(
         required=False, label=_("Purchase price area"), help_text=_("ha"), widget=NumberInput
@@ -110,7 +110,7 @@ class ChangeDealGeneralForm(BaseForm):
         queryset=Currency.objects.all().order_by("ranking", "name")
     )
     annual_leasing_fee_type = forms.TypedChoiceField(
-        required=False, label=_("Annual leasing fee type"), choices=price_type_choices, coerce=int
+        required=False, label=_("Annual leasing fee type"), choices=price_type_choices
     )
     annual_leasing_fee_area = forms.IntegerField(
         required=False, label=_("Purchase price area"), help_text=_("ha"), widget=NumberInput
@@ -125,8 +125,8 @@ class ChangeDealGeneralForm(BaseForm):
     )
     contract_farming = forms.ChoiceField(
         required=False, label=_("Contract farming"), choices=(
-            (_("Yes"), _("Yes")),
-            (_("No"), _("No")),
+            ("Yes", _("Yes")),
+            ("No", _("No")),
         ), widget=forms.RadioSelect
     )
     on_the_lease = forms.BooleanField(
@@ -169,7 +169,7 @@ class ChangeDealGeneralForm(BaseForm):
             return date and date.strftime("%Y-%m-%d") or ""
         except:
             raise forms.ValidationError(
-                _("Invalid date. Please enter a date in the format [dd:mm:yyyy]")
+                _("Invalid date. Please enter a date in the format [YYYY-MM-DD]")
             )
 
     class Meta:
