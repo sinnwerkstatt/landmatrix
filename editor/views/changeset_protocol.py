@@ -319,7 +319,6 @@ def _uniquify_changesets_dict(changesets):
 def _uniquify_changesets_by_deal(changesets):
     unique, deals = [], []
     for changeset in changesets:
-        print(unique, deals)
         if not changeset.fk_activity.activity_identifier in deals:
             unique.append(changeset)
             deals.append(changeset.fk_activity.activity_identifier)
