@@ -67,7 +67,7 @@ $(document).ready(function () {
             bigdealArea = parseFloat(data["hectares"]);
 
             // Update legend
-            $(".legend li .hectares").text(number_format(circle_hectares, 0));
+            $(".legend li .hectares").text(number_format(bigdealArea, 0));
             drawCircleInMeter();
         });
     }

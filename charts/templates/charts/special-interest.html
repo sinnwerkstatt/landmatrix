@@ -69,7 +69,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 
 {% block data %}
     <div class="row">
-        <div class="col-md-12">
+        <div id="chartarea" class="col-md-12">
             <div class="agricultural_drivers chart row data hidden">
                 <div class="col-md-6">
                     <div class="row">
@@ -370,6 +370,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 $(".navbar-subnav a[href='" + $(this).attr("href") + "']").parents("li").addClass("active");
                 //($(".navbar-subnav .active a").attr("href").indexOf("intention") > -1 && $(".negotiation_status").show() || $(".negotiation_status").hide());
                 $(".desc p").hide().filter("." + $(this).attr("href").replace(/.*\?variable=/, "")).show();
+
                 draw($(this).attr("href").replace(/.*\?variable=/, ""));
                 return false;
             });
