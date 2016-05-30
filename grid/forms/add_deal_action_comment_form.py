@@ -20,9 +20,11 @@ class AddDealActionCommentForm(BaseForm):
     tg_not_public = TitleField(required=False, label="", initial=_("Public deal"))
     not_public = forms.BooleanField(required=False, label=_("Not public"), help_text=_("Please specify in additional comment field"))
     not_public_reason = forms.ChoiceField(required=False, label=_("Reason"), choices=(
-        ("", _("---------")),
+        ("---------", _("---------")),
         ("Temporary removal from PI after criticism", _("Temporary removal from PI after criticism")),
         ("Research in progress", _("Research in progress")),
+        ('Land Observatory Import (new)', _('Land Observatory Import (new)')),
+        ('Land Observatory Import (duplicate)', _('Land Observatory Import (duplicate)')),
     ))
     tg_not_public_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
