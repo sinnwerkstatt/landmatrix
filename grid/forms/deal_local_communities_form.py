@@ -31,10 +31,22 @@ class DealLocalCommunitiesForm(BaseForm):
     )
     recognition_status = forms.MultipleChoiceField(
         required=False, label=_("Recognition status of community land tenure"), choices=(
-            ("Indigenous Peoples traditional or customary rights recognized by government", _("Indigenous Peoples traditional or customary rights recognized by government")),
-            ("Indigenous Peoples traditional or customary rights not recognized by government", _("Indigenous Peoples traditional or customary rights not recognized by government")),
-            ("Community traditional or customary rights recognized by government", _("Community traditional or customary rights recognized by government")),
-            ("Community traditional or customary rights not recognized by government", _("Community traditional or customary rights not recognized by government")),
+            (
+                "Indigenous Peoples traditional or customary rights recognized by government",
+                _("Indigenous Peoples traditional or customary rights recognized by government")
+            ),
+            (
+                "Indigenous Peoples traditional or customary rights not recognized by government",
+                _("Indigenous Peoples traditional or customary rights not recognized by government")
+            ),
+            (
+                "Community traditional or customary rights recognized by government",
+                _("Community traditional or customary rights recognized by government")
+            ),
+            (
+                "Community traditional or customary rights not recognized by government",
+                _("Community traditional or customary rights not recognized by government")
+            ),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_recognition_status_comment = forms.CharField(
@@ -49,8 +61,14 @@ class DealLocalCommunitiesForm(BaseForm):
         required=False, label=_("Community consultation"), choices=(
             ("Not consulted", _("Not consulted")),
             ("Limited consultation", _("Limited consultation")),
-            ("Free, Prior and Informed Consent (FPIC)", _("Free, Prior and Informed Consent (FPIC)")),
-            ("Certified Free, Prior and Informed Consent (FPIC)", _("Certified Free, Prior and Informed Consent (FPIC)")),
+            (
+                "Free, Prior and Informed Consent (FPIC)",
+                _("Free, Prior and Informed Consent (FPIC)")
+            ),
+            (
+                "Certified Free, Prior and Informed Consent (FPIC)",
+                _("Certified Free, Prior and Informed Consent (FPIC)")
+            ),
             ("Other", _("Other")),
         ), widget=forms.RadioSelect
     )
@@ -64,9 +82,9 @@ class DealLocalCommunitiesForm(BaseForm):
     )
     community_reaction = forms.ChoiceField(
         required=False, label=_("Community reaction"), choices=(
-            (10, _("Consent")),
-            (20, _("Mixed reaction")),
-            (30, _("Rejection")),
+            (_("Consent"), _("Consent")),
+            (_("Mixed reaction"), _("Mixed reaction")),
+            (_("Rejection"), _("Rejection")),
         ), widget=forms.RadioSelect
     )
     tg_community_reaction_comment = forms.CharField(
@@ -79,8 +97,8 @@ class DealLocalCommunitiesForm(BaseForm):
     )
     land_conflicts = forms.ChoiceField(
         required=False, label=_("Presence of land conflicts"), choices=(
-            (10, _("Yes")),
-            (20, _("No")),
+            (_("Yes"), _("Yes")),
+            (_("No"), _("No")),
         ), widget=forms.RadioSelect
     )
     tg_land_conflicts_comment = forms.CharField(
@@ -94,8 +112,8 @@ class DealLocalCommunitiesForm(BaseForm):
     )
     displacement_of_people = forms.ChoiceField(
         required=False, label=_("Displacement of people"), choices=(
-            (10, _("Yes")),
-            (20, _("No")),
+            (_("Yes"), _("Yes")),
+            (_("No"), _("No")),
         ), widget=forms.RadioSelect
     )
     number_of_displaced_people = forms.IntegerField(
@@ -130,13 +148,13 @@ class DealLocalCommunitiesForm(BaseForm):
     )
     negative_impacts = forms.MultipleChoiceField(
         required=False, label=_("Negative impacts for local communities"), choices=(
-            (10, _("Environmental degradation")),
-            (20, _("Socio-economic")),
-            (30, _("Cultural loss")),
-            (40, _("Eviction")),
-            (50, _("Displacement")),
-            (60, _("Violence")),
-            (70, _("Other")),
+            (_("Environmental degradation"), _("Environmental degradation")),
+            (_("Socio-economic"), _("Socio-economic")),
+            (_("Cultural loss"), _("Cultural loss")),
+            (_("Eviction"), _("Eviction")),
+            (_("Displacement"), _("Displacement")),
+            (_("Violence"), _("Violence")),
+            (_("Other"), _("Other")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_negative_impacts_comment = forms.CharField(
@@ -163,14 +181,20 @@ class DealLocalCommunitiesForm(BaseForm):
     )
     promised_benefits = forms.MultipleChoiceField(
         required=False, label=_("Promised benefits for local communities"), choices=(
-            (10, _("Health")),
-            (20, _("Education")),
-            (30, _("Productive infrastructure (e.g. irrigation, tractors, machinery...)")),
-            (40, _("Roads")),
-            (50, _("Capacity Building")),
-            (60, _("Financial Support")),
-            (70, _("Community shares in the investment project")),
-            (80, _("Other")),
+            (_("Health"), _("Health")),
+            (_("Education"), _("Education")),
+            (
+                _("Productive infrastructure (e.g. irrigation, tractors, machinery...)"),
+                _("Productive infrastructure (e.g. irrigation, tractors, machinery...)")
+            ),
+            (_("Roads"), _("Roads")),
+            (_("Capacity Building"), _("Capacity Building")),
+            (_("Financial Support"), _("Financial Support")),
+            (
+                _("Community shares in the investment project"),
+                _("Community shares in the investment project")
+            ),
+            (_("Other"), _("Other")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_promised_benefits_comment = forms.CharField(
@@ -183,14 +207,20 @@ class DealLocalCommunitiesForm(BaseForm):
     )
     materialized_benefits = forms.MultipleChoiceField(
         required=False, label=_("Materialized benefits for local communities"), choices=(
-            (10, _("Health")),
-            (20, _("Education")),
-            (30, _("Productive infrastructure (e.g. irrigation, tractors, machinery...)")),
-            (40, _("Roads")),
-            (50, _("Capacity Building")),
-            (60, _("Financial Support")),
-            (70, _("Community shares in the investment project")),
-            (80, _("Other")),
+            (_("Health"), _("Health")),
+            (_("Education"), _("Education")),
+            (
+                _("Productive infrastructure (e.g. irrigation, tractors, machinery...)"),
+                _("Productive infrastructure (e.g. irrigation, tractors, machinery...)")
+            ),
+            (_("Roads"), _("Roads")),
+            (_("Capacity Building"), _("Capacity Building")),
+            (_("Financial Support"), _("Financial Support")),
+            (
+                _("Community shares in the investment project"),
+                _("Community shares in the investment project")
+            ),
+            (_("Other"), _("Other")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_materialized_benefits_comment = forms.CharField(

@@ -6,6 +6,7 @@ from grid.widgets import CommentInput, TitleField, PrimaryInvestorField
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+
 class DealPrimaryInvestorForm(BaseForm):
     tg_primary_investor = TitleField(required=False, label="", initial=_("Primary investor"))
     project_name = forms.CharField(required=False, label=_("Name of the investment project"), max_length=255)
