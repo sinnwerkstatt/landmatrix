@@ -58,3 +58,6 @@ svg text {
 
 ul.media-list.legend > li > span {
   font-size: 12px; }
+
+#chartarea {
+  min-height: 50vh; }

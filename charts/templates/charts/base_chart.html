@@ -108,6 +108,9 @@ function get_filter() {
 
 //draw();
 
+var chartwidth,
+    chartheight;
+
 $(document).ready(function () {
 
     $(".filters .btn").click(function (e) {
@@ -128,6 +131,10 @@ $(document).ready(function () {
     });
 
     $(".actions .action2 .btn.active").click();
+
+    chartwidth = $('#chartarea').width();
+    chartheight = $('#chartarea').height();
+
 });
 </script>
 {% endblock %}

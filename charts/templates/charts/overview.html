@@ -32,8 +32,8 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 
 {% block data %}
 <div class="row">
-    <div class="col-md-12">
-        <canvas id="bar" width="1200" height="500"></canvas>
+    <div id="chartarea" class="col-md-12">
+        <canvas id="chartcanvas"></canvas>
 
     </div>
 </div>
@@ -83,6 +83,9 @@ var storage = {};
 
 function draw (callback, chart_data) {
 /* chart_data: optional */
+    $('#chartcanvas').attr('width', chartwidth)
+        .attr('height', chartheight);
+
     RGraph.ObjectRegistry.Clear();
     // Cached data?
     if (chart_data) {
@@ -105,8 +108,8 @@ function draw (callback, chart_data) {
         for (var i = 0; i < bar_data.length; i++) {
             bar_labels_ingraph.push("<p>" + (show_deals && (bar_data[i] + " deals") || (numberWithCommas(bar_data[i]) +  " ha")) + "</p>");
         }
-        var bar = new RGraph.Bar('bar', bar_data);
-        bar.Set('chart.hmargin', 40);
+        var bar = new RGraph.Bar('chartcanvas', bar_data);
+        bar.Set('chart.hmargin', 5);
         bar.Set('chart.gutter.bottom', 130);
         bar.Set('chart.colors', [show_deals && '#44b7b6' || '#ed881b']);
         bar.Set('chart.labels', bar_labels);

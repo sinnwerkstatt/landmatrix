@@ -191,9 +191,18 @@ function buildPieChart() {
         {label: 'None', value: 0.1}
     ];
 
-    var w = chartwidth / 2,                        //width
-        h = 500,                            //height
-        r = 180;                            //radius
+
+    if (chartwidth < 996) {
+        var h = chartheight * 0.5;
+    } else {
+        var h = chartheight;                              //height
+    }
+    var w = chartwidth * 0.25;                        //width
+
+    r = Math.min(w, h) * 0.5;                            //radius
+
+    var tr = r * 1.5;
+
     color = LMColor();     //builtin range of colors
 
     $("#PieChart").empty();
@@ -204,10 +213,10 @@ function buildPieChart() {
         var vis = d3.select("#PieChart")
             .append("svg:svg")              //create the SVG element inside the <body>
             .data([data])                   //associate our data with the document
-            .attr("width", w)           //set the width and height of our visualization (these will be attributes of the <svg> tag
+            .attr("width", chartwidth / 2)           //set the width and height of our visualization (these will be attributes of the <svg> tag
             .attr("height", h)
             .append("svg:g")                //make a group to hold our pie chart
-            .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");    //move the center of the pie chart from 0, 0 to radius, radius
+            .attr("transform", "translate(" + w + "," + h / 2+ ")");    //move the center of the pie chart from 0, 0 to radius, radius
 
         var arc = d3.svg.arc()              //this will create <path> elements for us using arc data
             .outerRadius(r);
@@ -232,8 +241,8 @@ function buildPieChart() {
         arcs.append("svg:text")                                     //add a label to each slice
             .attr("transform", function (d) {                    //set the label's origin to the center of the arc
                 //we have to make sure to set these before calling arc.centroid
-                d.innerRadius = r;
-                d.outerRadius = r + 20;
+                d.innerRadius = tr;
+                d.outerRadius = tr + 20;
                 return "translate(" + arc.centroid(d) + ")";        //this gives us a pair of coordinates like [50, 50]
             })
             .attr("text-anchor", "middle")                          //center the text on it's origin
@@ -244,8 +253,8 @@ function buildPieChart() {
         arcs.append("svg:text")                                     //add percentage to each label
             .attr("transform", function (d) {                    //set the label's origin to the center of the arc
                 //we have to make sure to set these before calling arc.centroid
-                d.innerRadius = r;
-                d.outerRadius = r + 20;
+                d.innerRadius = tr;
+                d.outerRadius = tr + 20;
                 var coords = arc.centroid(d);
                 coords[1] = coords[1] + 14;
                 return "translate(" + coords + ")";        //this gives us a pair of coordinates like [50, 50]
@@ -269,9 +278,16 @@ function buildDotChart() {
 
     $("#DotChart").empty();
 
-    var margin = {top: 20, right: 200, bottom: 0, left: 50},
-        width = chartwidth / 2,
-        height = 650;
+    var margin = {top: 20, right: 150, bottom: 0, left: 50},
+        width = chartwidth * 0.333,
+        height;
+
+    if (chartwidth < 996) {
+        height = chartheight * 0.5;
+    } else {
+        margin.top = 100;
+        height = chartheight;                              //height
+    }
 
     var x_start = 0,
         x_end = 2;
@@ -280,7 +296,7 @@ function buildDotChart() {
 
     var x = d3.scale.linear()
         .domain([0, 1, 2])
-        .range([0, width, width*2]);
+        .range([0, width, width * 2]);
 
     const tickLabels = {
         0: 'On the lease',
@@ -298,9 +314,9 @@ function buildDotChart() {
     var svg = d3.select("#DotChart").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-        .style("margin-left", margin.left + "px")
+        //.style("margin-left", margin.left + "px")
         .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
     var demodata = [{
         "intentions": [[0, 10], [1, 6], [2, 4]],
@@ -463,4 +479,5 @@ function buildAgriculturalPies() {
 
 $(document).ready(function() {
     chartwidth = $('#chartarea').width();
+    chartheight = $('#chartarea').height();
 });
