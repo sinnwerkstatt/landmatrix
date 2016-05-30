@@ -23,6 +23,8 @@ class AddDealActionCommentForm(BaseForm):
         (_("---------"), _("---------")),
         (_("Temporary removal from PI after criticism"), _("Temporary removal from PI after criticism")),
         (_("Research in progress"), _("Research in progress")),
+        (_('Land Observatory Import (new)'), _('Land Observatory Import (new)')),
+        (_('Land Observatory Import (duplicate)'), _('Land Observatory Import (duplicate)')),
     ))
     tg_not_public_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
