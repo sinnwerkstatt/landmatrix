@@ -75,12 +75,11 @@ function generateButtons(field, index) {
 
 function addSankeyData(data, response, jqxhdr) {
     console.log(data, response, jqxhdr);
-    json = JSON.parse(data);
 
-    var network = {nodes: json.nodes, links: json.links};
+    var network = {nodes: data.nodes, links: data.links};
     console.log(network);
-    sankeydata[json.index] = network;
-    setupSankey(json.index);
+    sankeydata[data.index] = network;
+    setupSankey(data.index);
 
 }
 

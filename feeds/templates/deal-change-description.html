@@ -1,23 +1,7 @@
-{% extends "global_base.html" %}
-{% load static i18n custom_tags %}
+{% load i18n %}
 
-{% block global_head %}
-{% endblock %}
-
-
-{% block page_title %}{% trans "Deal history comparison" %}{% endblock %}
-{% block title %}{% trans "Deal history comparison" %}{% endblock %}
-
-{% block breadcrumb_inner %}
-    <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
-    <li><a href="{% url 'deal_details' deal_id=deal.activity_id %}">{% trans "Deal Details" %}</a></li>
-  <li>{% trans "Compare deal history" %}</li>
-{% endblock %}
-
-
+{# copied straight up from deal-comparison.html #}
 {% block content %}
-
-
   {% for comparison_forms in forms %}
     <div class="row" id="comparison">
 
@@ -25,7 +9,7 @@
 
             <div class="panel-group" id="accordion">
 
-            {% if not comparison_forms.2 %}<strong>{% trans "Different" %}</strong>{% endif %}
+            {% if not comparison_forms.2 %}
             {% if comparison_forms.0 %}
 
                 <div class="panel panel-default">
@@ -71,7 +55,7 @@
                 </div>            {# class="panel panel-default" #}
 
             {% endif %}           {# comparison_forms.0 #}
-
+            {% endif %}           {# not comparison_forms.2 #}
           </div>
 
     </div>
@@ -80,7 +64,7 @@
 
         <div class="panel-group" id="accordion">
 
-        {% if not comparison_forms.2 %}<strong>{% trans "DIFFERENT" %}</strong>{% endif %}
+        {% if not comparison_forms.2 %}
 
         {% if comparison_forms.1 %}
 
@@ -127,7 +111,7 @@
             </div>            {# class="panel panel-default" #}
 
             {% endif %}           {# comparison_forms.1 #}
-
+            {% endif %}           {# not comparison_forms.2 #}
           </div>
         </div>
 

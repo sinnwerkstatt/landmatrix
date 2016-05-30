@@ -22,12 +22,12 @@ class DealSpatialForm(BaseForm):
     )
     level_of_accuracy = forms.ChoiceField(
         required=False, label=_("Spatial accuracy level"), choices=(
-            (_("---------"), _("---------")),
-            (_("Country"), _("Country")),
-            (_("Administrative region"), _("Administrative region")),
-            (_("Approximate location"), _("Approximate location")),
-            (_("Exact location"), _("Exact location")),
-            (_("Coordinates"), _("Coordinates")),
+            ("", _("---------")),
+            ("Country", _("Country")),
+            ("Administrative region", _("Administrative region")),
+            ("Approximate location", _("Approximate location")),
+            ("Exact location", _("Exact location")),
+            ("Coordinates", _("Coordinates")),
         )
     )
     location = forms.CharField(

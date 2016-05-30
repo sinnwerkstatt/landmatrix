@@ -41,12 +41,12 @@ class MapLOActivities(MapLOModel):
         deals = [
             deal
             for deal in all_deals
-            if get_deal_country(deal) not in ['China', 'Myanmar', 'Tanzania', 'Viet Nam']
+            if get_deal_country(deal) not in ['China', 'Myanmar', 'Tanzania, United Republic of', 'Viet Nam']
+            if not is_unchanged_imported_deal(deal)
         ]
         cls._count = len(deals)
 
         return Activity.objects.using(cls.DB).filter(pk__in=[deal.id for deal in deals]).values()
-
 
     @classmethod
     def all_ids(cls):
@@ -197,8 +197,8 @@ class MapLOActivities(MapLOModel):
                 )
             else:
                 aag.save(using=V2)
-        else:
-            print(aag)
+        # else:
+        #     print(aag)
 
         cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
         return aag
@@ -244,6 +244,7 @@ class MapLOActivities(MapLOModel):
                     )
         if save:
             new.activity_identifier = activity_identifier
+            new.fk_status_id = landmatrix.models.Status.objects.get(name="pending")
             new.save(using=V2)
 
     @classmethod
@@ -263,10 +264,20 @@ class MapLOActivities(MapLOModel):
         return Activity.objects.using(cls.DB).filter(pk__in=ids).values()
 
 
+def is_unchanged_imported_deal(deal):
+    if not is_imported_deal(deal):
+        return False
+    return deal.timestamp_review is None
+
+
+def is_imported_deal(deal):
+    return 'http://www.landmatrix.org' in get_deal_tags(deal, 'URL / Web')
+
+
 def clean_attributes(attrs):
     attrs = {
-        clean_key(key): clean_attribute(key, value) for key, value in attrs.items()
-    }
+        rename_key(key): clean_attribute(key, value) for key, value in attrs.items()
+        }
 
 
     return attrs
@@ -274,10 +285,11 @@ def clean_attributes(attrs):
 
 def clean_attribute(key, value):
     if isinstance(value, str):
+        # HSTORE attribute values can not take strings longer than that due to index constraints :-(
         return value[:3000]
 
 
-def clean_key(key):
+def rename_key(key):
     return LM_ATTRIBUTES.get(key, key)
 
 
@@ -343,3 +355,7 @@ def get_deal_country(deal):
         for tag in group.tags:
             if tag.key.key == 'Country':
                 return tag.value.value
+
+
+def get_deal_tags(deal, key):
+    return [tag.value.value for group in deal.tag_groups for tag in group.tags if tag.key.key == key]

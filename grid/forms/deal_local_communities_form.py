@@ -31,10 +31,10 @@ class DealLocalCommunitiesForm(BaseForm):
     )
     recognition_status = forms.MultipleChoiceField(
         required=False, label=_("Recognition status of community land tenure"), choices=(
-            (_("Indigenous Peoples traditional or customary rights recognized by government"), _("Indigenous Peoples traditional or customary rights recognized by government")),
-            (_("Indigenous Peoples traditional or customary rights not recognized by government"), _("Indigenous Peoples traditional or customary rights not recognized by government")),
-            (_("Community traditional or customary rights recognized by government"), _("Community traditional or customary rights recognized by government")),
-            (_("Community traditional or customary rights not recognized by government"), _("Community traditional or customary rights not recognized by government")),
+            ("Indigenous Peoples traditional or customary rights recognized by government", _("Indigenous Peoples traditional or customary rights recognized by government")),
+            ("Indigenous Peoples traditional or customary rights not recognized by government", _("Indigenous Peoples traditional or customary rights not recognized by government")),
+            ("Community traditional or customary rights recognized by government", _("Community traditional or customary rights recognized by government")),
+            ("Community traditional or customary rights not recognized by government", _("Community traditional or customary rights not recognized by government")),
         ), widget=forms.CheckboxSelectMultiple
     )
     tg_recognition_status_comment = forms.CharField(
@@ -47,11 +47,11 @@ class DealLocalCommunitiesForm(BaseForm):
     )
     community_consultation = forms.ChoiceField(
         required=False, label=_("Community consultation"), choices=(
-            (_("Not consulted"), _("Not consulted")),
-            (_("Limited consultation"), _("Limited consultation")),
-            (_("Free, Prior and Informed Consent (FPIC)"), _("Free, Prior and Informed Consent (FPIC)")),
-            (_("Certified Free, Prior and Informed Consent (FPIC)"), _("Certified Free, Prior and Informed Consent (FPIC)")),
-            (_("Other"), _("Other")),
+            ("Not consulted", _("Not consulted")),
+            ("Limited consultation", _("Limited consultation")),
+            ("Free, Prior and Informed Consent (FPIC)", _("Free, Prior and Informed Consent (FPIC)")),
+            ("Certified Free, Prior and Informed Consent (FPIC)", _("Certified Free, Prior and Informed Consent (FPIC)")),
+            ("Other", _("Other")),
         ), widget=forms.RadioSelect
     )
     tg_community_consultation_comment = forms.CharField(

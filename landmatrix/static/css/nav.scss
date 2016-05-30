@@ -138,6 +138,10 @@
     font-weight: 400;
 }
 
+.navbar-main .select2-container .select2-selection--single .select2-selection__rendered {
+    padding-left: 0;    
+}
+
 .navbar-main li > span {
     padding: 18px 15px 55px 15px;
     height: 47px;
@@ -216,6 +220,10 @@
 .lm-nav.lm-regions,
 .lm-nav.lm-flag {
     margin-top: 5px;
+}
+
+.lm-nav.lm-regions {
+    padding-right: 5px;
 }
 
 .nav .select2-search::before {

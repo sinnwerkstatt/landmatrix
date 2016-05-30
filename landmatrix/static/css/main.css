@@ -116,6 +116,9 @@
   background-color: inherit !important;
   font-weight: 400; }
 
+.navbar-main .select2-container .select2-selection--single .select2-selection__rendered {
+  padding-left: 0; }
+
 .navbar-main li > span {
   padding: 18px 15px 55px 15px;
   height: 47px;
@@ -183,6 +186,9 @@
 .lm-nav.lm-regions,
 .lm-nav.lm-flag {
   margin-top: 5px; }
+
+.lm-nav.lm-regions {
+  padding-right: 5px; }
 
 .nav .select2-search::before {
   font-family: 'Glyphicons Halflings';
@@ -462,7 +468,16 @@ a.remove-ybd:hover {
   .domestic_jobs_current_daily_workers .input-group,
   .foreign_jobs_current .input-group,
   .foreign_jobs_current_employees .input-group,
-  .foreign_jobs_current_daily_workers .input-group {
+  .foreign_jobs_current_daily_workers .input-group,
+  .on_the_lease_area .input-group,
+  .on_the_lease_farmers .input-group,
+  .on_the_lease_households .input-group,
+  .off_the_lease_area .input-group,
+  .off_the_lease_farmers .input-group,
+  .off_the_lease_households .input-group,
+  .actors_involved .input-group,
+  .actors_classification .input-group,
+  .crops .input-group {
     width: 80%; }
   .agreement_duration .input-group .year-based,
   .total_jobs_current .input-group .year-based,
@@ -473,7 +488,16 @@ a.remove-ybd:hover {
   .domestic_jobs_current_daily_workers .input-group .year-based,
   .foreign_jobs_current .input-group .year-based,
   .foreign_jobs_current_employees .input-group .year-based,
-  .foreign_jobs_current_daily_workers .input-group .year-based {
+  .foreign_jobs_current_daily_workers .input-group .year-based,
+  .on_the_lease_area .input-group .year-based,
+  .on_the_lease_farmers .input-group .year-based,
+  .on_the_lease_households .input-group .year-based,
+  .off_the_lease_area .input-group .year-based,
+  .off_the_lease_farmers .input-group .year-based,
+  .off_the_lease_households .input-group .year-based
+.actors_involved .input-group .year-based,
+  .actors_classification .input-group .year-based,
+  .crops .input-group .year-based {
     width: 62%; }
   .agreement_duration .input-group .year-based-year,
   .total_jobs_current .input-group .year-based-year,
@@ -484,7 +508,16 @@ a.remove-ybd:hover {
   .domestic_jobs_current_daily_workers .input-group .year-based-year,
   .foreign_jobs_current .input-group .year-based-year,
   .foreign_jobs_current_employees .input-group .year-based-year,
-  .foreign_jobs_current_daily_workers .input-group .year-based-year {
+  .foreign_jobs_current_daily_workers .input-group .year-based-year,
+  .on_the_lease_area .input-group .year-based-year,
+  .on_the_lease_farmers .input-group .year-based-year,
+  .on_the_lease_households .input-group .year-based-year,
+  .off_the_lease_area .input-group .year-based-year,
+  .off_the_lease_farmers .input-group .year-based-year,
+  .off_the_lease_households .input-group .year-based-year
+.actors_involved .input-group .year-based-year,
+  .actors_classification .input-group .year-based-year,
+  .crops .input-group .year-based-year {
     width: 38%; } }
 
 .dynamic-form .remove-form {
@@ -739,11 +772,11 @@ body {
 /*
 .get-the-idea h1,
 .get-the-idea a:hover {
-    color: #44b7b6;
+    color: #44c42d;
 }
 */
 .get-the-idea ::selection {
-  background-color: #44b7b6; }
+  background-color: #44c42d; }
 
 .get-the-detail h1,
 .get-the-detail a:hover,
@@ -1762,17 +1795,17 @@ h4 .icon {
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
   color: #fff;
-  background: #44c42d; }
+  background: #44c42d !important; }
 
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-info,
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-info {
   color: #fff;
-  background: #4bbb87; }
+  background: #fc941f !important; }
 
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-success,
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-success {
   color: #fff;
-  background: #179961; }
+  background: #fc941f !important; }
 
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-warning,
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-warning {

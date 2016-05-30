@@ -7,6 +7,8 @@ from api.views.chart_views import (
     InvestorCountrySummaryListView, NegotiationStatusListView,
     TargetCountrySummaryListView, Top10CountriesView,
     TransnationalDealListView, TransnationalDealsByCountryView,
+    TargetCountriesForInvestorCountryView, InvestorCountriesForTargetCountryView,
+
 )
 from api.views.list_views import (
     ActivityListView, LatestChangesListView, StatisticsListView, UserListView,
@@ -27,5 +29,6 @@ __all__ = (
     'NegotiationStatusListView', 'RegionListView', 'StatisticsListView',
     'TargetCountrySummaryListView', 'Top10CountriesView',
     'TransnationalDealListView', 'TransnationalDealsByCountryView',
-    'UserListView',
+    'TargetCountriesForInvestorCountryView', 'InvestorCountriesForTargetCountryView',
+    'UserListView'
 )

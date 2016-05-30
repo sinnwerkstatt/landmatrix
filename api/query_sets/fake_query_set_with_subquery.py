@@ -82,6 +82,8 @@ WHERE
 --  limit:
 %s
 """
+    APPLY_GLOBAL_FILTERS = True
 
     def sql_query(self):
-        return self.QUERY % (self.columns(), self.additional_joins(), self.additional_wheres(), self._filter_sql, self.group_by(), self.limit())
+        filter_sql = self._filter_sql if self.APPLY_GLOBAL_FILTERS else ''
+        return self.QUERY % (self.columns(), self.additional_joins(), self.additional_wheres(), filter_sql, self.group_by(), self.limit())

@@ -1,16 +1,7 @@
 from django.conf.urls import url
 from django.views.decorators.cache import cache_page
 
-from api.views import (
-    ActivityListView, AgriculturalProduceListView, CountryListView,
-    DashboardFilterView, DealDetailView, DealListView, FilterView,
-    FilterPresetView, HectaresView, ImplementationStatusListView,
-    InvestmentIntentionListView, InvestorCountrySummaryListView,
-    InvestorListView, InvestorNetworkView, LatestChangesListView,
-    NegotiationStatusListView, RegionListView, StatisticsListView,
-    TargetCountrySummaryListView, Top10CountriesView,
-    TransnationalDealListView, TransnationalDealsByCountryView, UserListView,
-)
+from api.views import *
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -66,6 +57,12 @@ urlpatterns = [
     url(r'^target_country_summaries\.json',
         cache_view_class(TargetCountrySummaryListView),
         {'format': 'json'}, name='target_country_summaries_api'),
+    url(r'^investor_countries_for_target_country\.json',
+        cache_view_class(InvestorCountriesForTargetCountryView),
+        {'format': 'json'}, name='investor_countries_for_target_country_api'),
+    url(r'^target_countries_for_investor_country\.json',
+        cache_view_class(TargetCountriesForInvestorCountryView),
+        {'format': 'json'}, name='target_countries_for_investor_country_api'),
     url(r'^hectares\.json', cache_view_class(HectaresView),
         {'format': 'json'}, name='hectares_api'),
     url(r'^deals\.json', cache_view_class(DealListView), {'format': 'json'},

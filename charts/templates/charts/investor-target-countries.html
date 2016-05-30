@@ -9,8 +9,8 @@
 {% endblock %}
 
 {% block description %}
-<div style="height: 100px">
-    {{ body|safe }}
+<div>
+    <p>{% trans "Choose between Investor or Target countries maps using the menu below. Click on the bubbles to visualize the selected country's involvement in the global land acquisition phenomenon." %}</p>
     <div class="current-country" style="display:none">
         <p><strong>{% trans "Country" %}</strong></p>
         <p>
@@ -33,7 +33,7 @@
 
 {% block legend %}
 <ul class="legend media-list">
-   <li><i class="icon icon-none" style="background-color: #44b7b6;"></i> {% trans "Investor Countries" %}</li>
+   <li><i class="icon icon-none" style="background-color: #44c42d;"></i> {% trans "Investor Countries" %}</li>
    <li><i class="icon icon-none" style="background-color: #ed881b;"></i> {% trans "Target Countries" %}</li>
 </ul>
 {% endblock %}
@@ -52,25 +52,6 @@
 <script src="{% static "legacy/world.min.js" %}" type="text/javascript" charset="utf-8"></script>
 <script src="{% static "legacy/map.js" %}" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
-function get_base_filter() {
-    var filters = "";
-    // negotiation status (concluded, intended, failed)
-    $('.filters .negotiation_status .btn.active').each(function() {
-        filters += "&negotiation_status=" + $(this).val();
-    });
-        // deal scope (transnational, domestic) - always take both
-    $('.filters .deal_scope .btn').each(function() {
-        filters += "&deal_scope=" + $(this).val();
-    });
-        // data source (boolean)
-    $('.filters .data_source_type .btn.active').each(function() {
-        filters += "&data_source_type=1";
-    });
-    return filters.substr(1);
-}
-function get_filter() {
-    return "";
-};
 function draw(callback) {
     drawMap(callback);
 }

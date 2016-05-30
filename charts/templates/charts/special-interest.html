@@ -19,7 +19,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 {% block description %}
     <div class="desc">
 
-        <p class="agricultural_drivers">{% trans 'This is the short info about agricultural drivers' %}<a
+        <p class="agricultural_drivers">{% trans 'This infographic shows how agricultural land acquisitions that include information on crops are subdivided according to destination of use.' %}<a
                 href="{% slugurl 'agricultural-drivers' %}"><i class="lm lm-question-circle"> </i></a></p>
         <p class="produce_info" style="display: none">{% trans 'Deals divided by intention of investment.' %}</p>
         <p class="resource_extraction"
@@ -33,37 +33,34 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
            style="display: none">{% trans 'Deals having „agriculture“ as main intention of investment disaggregated into sub-sections.' %}</p>
 
     <span id="deal_data_selector">
-        Show only
         <select id="deal_types" name="deal_types">
-            <option>Size in operation</option>
-            <option>Size under contract</option>
-            <option>Under Construction</option>
-            <option>Intended Size</option>
+            <option value="size_in_operation">{% trans "Size in operation" %}</option>
+            <option value="size_under_contract">{% trans "Size under contract" %}</option>
+            <option value="under_construction">{% trans "Under Construction" %}</option>
+            <option value="intended_size">{% trans "Intended Size" %}</option>
         </select>
     </span>
 
     </div>
 {% endblock %}
-
 {% block legend %}
-    <ul class="media-list legend offset agricultural_drivers">
-        <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span> {% trans "Food-Crops" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #225559;"></i><span> {% trans "Non-Food Crops" %}</span>
-        </li>
-        <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span> {% trans "Flex-Crops" %}</span></li>
+    <ul class="media-list legend offset agricultural_drivers hidden">
+        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span> {% trans "Food-Crops" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Non-Food Crops" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #179961;"></i><span> {% trans "Flex-Crops" %}</span></li>
         <li><i class="icon icon-none"
-               style="background-color: #acd4dc;"></i><span> {% trans "Multiple Use - Several crops in different categories" %}</span>
+               style="background-color: #7c9a61;"></i><span> {% trans "Multiple Use - Several crops in different categories" %}</span>
         </li>
     </ul>
-    <ul class="media-list legend offset produce_info">
+    <ul class="media-list legend offset produce_info hidden">
         <li><i class="icon icon-none" style="background-color: #fc941f;"></i><span> {% trans "Animals" %}</span></li>
         <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Minerals" %}</span></li>
         <li><i class="icon icon-none" style="background-color: #b9d635;"></i><span> {% trans "Crops" %}</span></li>
     </ul>
-    <ul class="media-list legend offset resource_extraction logging">
-        <li><i class="icon icon-none" style="background-color: #ed881b;"></i>{% trans "Concluded" %}</li>
-        <li><i class="icon icon-none" style="background-color: #b96c12;"></i>{% trans "Intended" %}</li>
-        <li><i class="icon icon-none" style="background-color: #884e0e;"></i>{% trans "Failed" %}</li>
+    <ul class="media-list legend offset resource_extraction logging hidden">
+        <li><i class="icon icon-none" style="background-color: #ed881b;"></i><span>{% trans "Concluded" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #b96c12;"></i><span>{% trans "Intended" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #884e0e;"></i><span>{% trans "Failed" %}</span></li>
     </ul>
 {% endblock %}
 
@@ -83,13 +80,13 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                         </div>
                         <div class="col-md-4">
                             <ul class="media-list legend">
-                                <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
+                                <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
                                         class="food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #225559;"></i><span
+                                <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
                                         class="non-food-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
+                                <li><i class="icon icon-none" style="background-color: #179961;"></i><span
                                         class="flex-crop"></span></li>
-                                <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
+                                <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
                                         class="multiple-crop"></span></li>
                             </ul>
                         </div>
@@ -110,13 +107,13 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                                 </div>
                                 <div class="col-md-7">
                                     <ul class="media-list legend">
-                                        <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
                                                 class="food-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #225559;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
                                                 class="non-food-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
                                                 class="flex-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
                                                 class="multiple-crop"></span></li>
                                     </ul>
                                 </div>
@@ -134,13 +131,13 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                                 </div>
                                 <div class="col-md-7">
                                     <ul class="media-list legend">
-                                        <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
                                                 class="food-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #225559;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
                                                 class="non-food-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
                                                 class="flex-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
                                                 class="multiple-crop"></span></li>
                                     </ul>
                                 </div>
@@ -160,13 +157,13 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                                 </div>
                                 <div class="col-md-7">
                                     <ul class="media-list legend">
-                                        <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
                                                 class="food-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #225559;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
                                                 class="non-food-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
                                                 class="flex-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
                                                 class="multiple-crop"></span></li>
                                     </ul>
                                 </div>
@@ -184,13 +181,13 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                                 </div>
                                 <div class="col-md-7">
                                     <ul class="media-list legend">
-                                        <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
                                                 class="food-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #225559;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
                                                 class="non-food-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
                                                 class="flex-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
                                                 class="multiple-crop"></span></li>
                                     </ul>
                                 </div>
@@ -210,13 +207,13 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                                 </div>
                                 <div class="col-md-7">
                                     <ul class="media-list legend">
-                                        <li><i class="icon icon-none" style="background-color: #060c0f;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
                                                 class="food-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #225559;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
                                                 class="non-food-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #46b2bf;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
                                                 class="flex-crop"></span></li>
-                                        <li><i class="icon icon-none" style="background-color: #acd4dc;"></i><span
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
                                                 class="multiple-crop"></span></li>
                                     </ul>
                                 </div>
@@ -238,39 +235,39 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 </div>
                 <div class="col-sm-6 size">
                     <h4>{% trans "Size" %}</h4>
-                    <p class="number number-concluded">39,453,030 ha</p>
+                    <p class="number number-concluded">0 ha</p>
                     <div class="progress progress-concluded">
-                        <div class="bar" style="width: 61%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-concluded">61%</p>
-                    <p class="number number-intended">19,032,857 ha</p>
+                    <p class="percentage percentage-concluded">0%</p>
+                    <p class="number number-intended">0 ha</p>
                     <div class="progress progress-intended">
-                        <div class="bar" style="width: 29%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-intended">29%</p>
-                    <p class="number number-failed">6,597,171 ha</p>
+                    <p class="percentage percentage-intended">0%</p>
+                    <p class="number number-failed">0 ha</p>
                     <div class="progress progress-failed">
-                        <div class="bar" style="width: 10%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-failed">10%</p>
+                    <p class="percentage percentage-failed">0%</p>
                 </div>
                 <div class="col-sm-6 deals">
                     <h4>{% trans "Number of deals" %}</h4>
-                    <p class="number number-concluded">1,158</p>
+                    <p class="number number-concluded">0</p>
                     <div class="progress progress-concluded">
-                        <div class="bar" style="width: 80%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-concluded">80%</p>
-                    <p class="number number-intended">203</p>
+                    <p class="percentage percentage-concluded">0%</p>
+                    <p class="number number-intended">0</p>
                     <div class="progress progress-intended">
-                        <div class="bar" style="width: 14%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-intended">14%</p>
-                    <p class="number number-failed">92</p>
+                    <p class="percentage percentage-intended">0%</p>
+                    <p class="number number-failed">0</p>
                     <div class="progress progress-failed">
-                        <div class="bar" style="width: 6%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-failed">6%</p>
+                    <p class="percentage percentage-failed">0%</p>
                 </div>
             </div>
 
@@ -282,39 +279,39 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 </div>
                 <div class="col-sm-6 size">
                     <h4>{% trans "Size" %}</h4>
-                    <p class="number number-concluded">39,453,030 ha</p>
+                    <p class="number number-concluded">0 ha</p>
                     <div class="progress progress-concluded">
-                        <div class="bar" style="width: 61%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-concluded">61%</p>
-                    <p class="number number-intended">19,032,857 ha</p>
+                    <p class="percentage percentage-concluded">0%</p>
+                    <p class="number number-intended">0 ha</p>
                     <div class="progress progress-intended">
-                        <div class="bar" style="width: 29%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-intended">29%</p>
-                    <p class="number number-failed">6,597,171 ha</p>
+                    <p class="percentage percentage-intended">0%</p>
+                    <p class="number number-failed">0 ha</p>
                     <div class="progress progress-failed">
-                        <div class="bar" style="width: 10%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-failed">10%</p>
+                    <p class="percentage percentage-failed">0%</p>
                 </div>
                 <div class="col-sm-6 deals">
                     <h4>{% trans "Number of deals" %}</h4>
-                    <p class="number number-concluded">1,158</p>
+                    <p class="number number-concluded">0</p>
                     <div class="progress progress-concluded">
-                        <div class="bar" style="width: 80%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-concluded">80%</p>
-                    <p class="number number-intended">203</p>
+                    <p class="percentage percentage-concluded">0%</p>
+                    <p class="number number-intended">0</p>
                     <div class="progress progress-intended">
-                        <div class="bar" style="width: 14%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-intended">14%</p>
-                    <p class="number number-failed">92</p>
+                    <p class="percentage percentage-intended">0%</p>
+                    <p class="number number-failed">0</p>
                     <div class="progress progress-failed">
-                        <div class="bar" style="width: 6%;"></div>
+                        <div class="bar" style="width: 0%;"></div>
                     </div>
-                    <p class="percentage percentage-failed">6%</p>
+                    <p class="percentage percentage-failed">0%</p>
                 </div>
             </div>
 
@@ -344,15 +341,12 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 
     <script type="text/javascript">
         $(document).ready(function () {
-            console.log("Query params:", get_query_params(get_base_filter(), ""));
-
             var dataSwitch = $("[name='use_deal_size']");
             dataSwitch.bootstrapSwitch({
                 onText: 'Size',
                 offText: 'Count',
                 offColor: 'info',
                 onSwitchChange: function (event, state) {
-                    console.log('Deal size/count change triggered:', state);
                     if (state) {
                         datatype = 'size';
                     } else {
@@ -361,8 +355,6 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 }
             });
 
-            $("[name='deal_types']").select2({});
-
             $("a.change-special_variable").click(function (e) {
                 e.preventDefault();
                 var c_self = this;
@@ -370,11 +362,14 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 $(".navbar-subnav a[href='" + $(this).attr("href") + "']").parents("li").addClass("active");
                 //($(".navbar-subnav .active a").attr("href").indexOf("intention") > -1 && $(".negotiation_status").show() || $(".negotiation_status").hide());
                 $(".desc p").hide().filter("." + $(this).attr("href").replace(/.*\?variable=/, "")).show();
+                newState = $(this).attr("href").replace(/.*\?variable=/, "");
 
-                draw($(this).attr("href").replace(/.*\?variable=/, ""));
+                // Todo: this obviously doesn't help with the download/share popups. There is a bug filed.
+                history.pushState([], 'LandMatrix: Special Interest', '/charts/special-interest.html?variable=' + newState);
+                draw(newState);
                 return false;
             });
-            $("a.change-special_variable:first").click();
+            //$("a.change-special_variable:first").click();
             $(".views .btn").click(function (e) {
                 e.preventDefault();
                 var c_self = this;
@@ -383,7 +378,6 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 draw();
                 return false;
             });
-            $(".views .btn.active").click();
         });
 
         var storage = {};
@@ -531,6 +525,16 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 $(".agricultural_drivers").removeClass('hidden');
                 buildAgriculturalPies();
             }
+        }
+
+        const url = window.location.search;
+        console.log(url);
+        if (url.indexOf('variable=') > -1) {
+            var target = url.split('variable=')[1];
+            target = target.split('&')[0];
+            draw(target);
+        } else {
+            $(".views .btn.active").click();
         }
 
     </script>

@@ -69,28 +69,17 @@ class AddDealGeneralForm(BaseForm):
         required=False, label=_("Contract number")
     )
     contract_date = forms.DateField(
-        required=False, label=_("Contract date"), help_text="[dd:mm:yyyy]",
+        required=False, label=_("Contract date"), help_text="[YYYY-MM-DD]",
         input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
     contract_expiration_date = forms.DateField(
-        required=False, label=_("Contract expiration date"), help_text="[dd:mm:yyyy]",
+        required=False, label=_("Contract expiration date"), help_text="[YYYY-MM-DD]",
         input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
     sold_as_deal = forms.IntegerField(
         required=False, label=_("Sold as deal no.")
     )
     tg_negotiation_status_comment = forms.CharField(
-        required=False, label=_("Additional comments"), widget=CommentInput
-    )
-
-    # Duration of the agreement
-    tg_agreement_duration = TitleField(
-        required=False, label="", initial=_("Duration of the agreement")
-    )
-    agreement_duration = YearBasedIntegerField(
-        required=False, label=_("Duration of the agreement"), help_text=_("years")
-    )
-    tg_agreement_duration_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
     )
 
@@ -117,7 +106,8 @@ class AddDealGeneralForm(BaseForm):
         queryset=Currency.objects.all().order_by("ranking", "name")
     )
     purchase_price_type = forms.TypedChoiceField(
-        required=False, label=_("Purchase price area type"), choices=price_type_choices, coerce=int
+        required=False, label=_("Purchase price area type"),
+        choices=price_type_choices
     )
     purchase_price_area = forms.IntegerField(
         required=False, label=_("Purchase price area"), help_text=_("ha"),
@@ -139,7 +129,7 @@ class AddDealGeneralForm(BaseForm):
         queryset=Currency.objects.all().order_by("ranking", "name")
     )
     annual_leasing_fee_type = forms.TypedChoiceField(
-        required=False, label=_("Annual leasing fee type"), choices=price_type_choices, coerce=int
+        required=False, label=_("Annual leasing fee type"), choices=price_type_choices
     )
     annual_leasing_fee_area = forms.IntegerField(
         required=False, label=_("Purchase price area"), help_text=_("ha"), widget=NumberInput
@@ -154,8 +144,8 @@ class AddDealGeneralForm(BaseForm):
     )
     contract_farming = forms.ChoiceField(
         required=False, label=_("Contract farming"), choices=(
-            (_("Yes"), _("Yes")),
-            (_("No"), _("No")),
+            ("Yes", _("Yes")),
+            ("No", _("No")),
         ), widget=forms.RadioSelect
     )
     on_the_lease = forms.BooleanField(
@@ -198,7 +188,7 @@ class AddDealGeneralForm(BaseForm):
             return date and date.strftime("%Y-%m-%d") or ""
         except:
             raise forms.ValidationError(
-                _("Invalid date. Please enter a date in the format [dd:mm:yyyy]")
+                _("Invalid date. Please enter a date in the format [YYYY-MM-DD]")
             )
 
     class Meta:

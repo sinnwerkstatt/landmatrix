@@ -164,9 +164,6 @@ class FakeQuerySet(QuerySet):
         deal_scope = get_data.getlist("deal_scope", [])
         data_source_type = get_data.get("data_source_type")
         filter_sql = ""
-        if len(deal_scope) == 0:
-            # when no negotiation stati or deal scope given no deals should be shown at the public interface
-            return " AND 1 <> 1 "
         if negotiation_status:
             stati = []
             for n in negotiation_status:

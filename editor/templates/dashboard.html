@@ -115,27 +115,26 @@
             }
             $(document).ready(function () {
                 // Regions
-                var region_select = $('#dashboard-filter-region').select2({
-                    placeholder: "{% trans 'Regions' %}"
-                });
-                var region_request = $.ajax({
-                  url: '/api/regions.json'
-                });
+                var region_select = $('#dashboard-filter-region'),
+                    region_request = $.ajax({
+                      url: '/api/regions.json'
+                    });
                 region_request.then(function (data) {
                   for (var d = 0; d < data.length; d++) {
                     var item = data[d];
                     var option = new Option(item[2], item[0], false, false);
                     region_select.append(option);
                   };
+                  region_select.select2({
+                    placeholder: "{% trans 'Regions' %}"
+                  });
                   //$element.trigger('change');
                 });
                 // Countries
-                var country_select = $('#dashboard-filter-country').select2({
-                    placeholder: "{% trans 'Countries' %}"
-                });
-                var country_request = $.ajax({
-                  url: '/api/countries.json'
-                }),
+                var country_select = $('#dashboard-filter-country'),
+                    country_request = $.ajax({
+                      url: '/api/countries.json'
+                    }),
                     group, opt_group,
                     item, option;
                 country_request.then(function (data) {
@@ -150,27 +149,30 @@
                     }
                     country_select.append(opt_group);
                   }
+                  country_select.select2({
+                    placeholder: "{% trans 'Countries' %}"
+                  });
                 });
                 // Users
-                var user_select = $('#dashboard-filter-user').select2({
-                    placeholder: "{% trans 'Users' %}"
-                });
-                var user_request = $.ajax({
-                  url: '/api/users.json'
-                });
+                var user_select = $('#dashboard-filter-user'),
+                    user_request = $.ajax({
+                      url: '/api/users.json'
+                    });
                 user_request.then(function (data) {
                   for (var d = 0; d < data.length; d++) {
                     var item = data[d];
                     var option = new Option(item[2], item[0], false, false);
                     user_select.append(option);
                   };
+                  user_select.select2({
+                    placeholder: "{% trans 'Users' %}"
+                  });
                   //$element.trigger('change');
                 });
                 // Select current filters
                 $.get({
                     url: $('#dashboard-filter').attr('action'),
                     success: function (data) {
-                        data = JSON.parse(data);
                         initDashboardFilters(data);
                     }
                 });
@@ -211,22 +213,7 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        {% comment %}
-      PAGINATION DISABLED AS PER ORALLY AGREED SPEC
-    <div class="pagination">
-      <ul>
-          {% if "previous" in latest_added.pagination %}
-              <li><a href="?{% add_or_update_param request.GET 'latest_added_page' latest_added.pagination.previous %}">Previous</a></li>
-          {% endif %}
-        <li class="active">
-              <a href="#">{% trans "Page" %} {{ latest_added.pagination.current }} {% trans "of" %} {{ latest_added.pagination.last }}</a>
-        </li>
-          {% if "next" in latest_added.pagination %}
-              <li><a href="?{% add_or_update_param request.GET 'latest_added_page' latest_added.pagination.next %}" >Next</a></li>
-          {% endif %}
-      </ul>
-    </div>
-      {% endcomment %}
+                        <a href="">{% trans "Show all" %}</a>
                     {% else %}
                         <p>{% trans "No deals have been added lately." %}</p>
                     {% endif %}
@@ -262,22 +249,7 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        {% comment %}
-      PAGINATION DISABLED AS PER ORALLY AGREED SPEC
-    <div class="pagination">
-      <ul>
-          {% if "previous" in latest_modified.pagination %}
-              <li><a href="?{% add_or_update_param request.GET 'latest_modified_page' latest_modified.pagination.previous %}">Previous</a></li>
-          {% endif %}
-          <li class="active">
-              <a href="#">{% trans "Page" %} {{ latest_modified.pagination.current }} {% trans "of" %} {{ latest_modified.pagination.last }}</a>
-          </li>
-          {% if "next" in latest_modified.pagination %}
-              <li><a href="?{% add_or_update_param request.GET 'latest_modified_page' latest_modified.pagination.next %}">Next</a></li>
-          {% endif %}
-      </ul>
-    </div>
-      {% endcomment %}
+                        <a href="">{% trans "Show all" %}</a>
                     {% else %}
                         <p>{% trans "No deals have been modified lately." %}</p>
                     {% endif %}
@@ -315,24 +287,7 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        {% comment %}
-      PAGINATION DISABLED AS PER ORALLY AGREED SPEC
-    <div class="pagination">
-      <ul>
-          {% if "previous" in latest_deleted.pagination %}
-              <li><a href="?{% add_or_update_param request.GET 'latest_deleted_page' latest_deleted.pagination.previous %}">Previous</a></li>
-          {% endif %}
-
-          <li class="active">
-              <a href="#">{% trans "Page" %} {{ latest_deleted.pagination.current }} {% trans "of" %} {{ latest_deleted.pagination.last }}</a>
-          </li>
-
-          {% if "next" in latest_deleted.pagination %}
-              <li><a href="?{% add_or_update_param request.GET 'latest_deleted_page' latest_deleted.pagination.next %}">Next</a></li>
-          {% endif %}
-      </ul>
-    </div>
-      {% endcomment %}
+                        <a href="">{% trans "Show all" %}</a>
                     {% else %}
                         <p>{% trans "No deals have been deleted lately." %}</p>
                     {% endif %}

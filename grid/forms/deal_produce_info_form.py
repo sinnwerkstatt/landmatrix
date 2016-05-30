@@ -8,6 +8,7 @@ from landmatrix.models.animal import Animal
 from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
 from landmatrix.models.mineral import Mineral
+from grid.widgets.year_based_choice_field import YearBasedModelMultipleChoiceIntegerField
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -21,52 +22,39 @@ class DealProduceInfoForm(BaseForm):
     tg_crop_animal_mineral = TitleField(
         required=False, label="", initial=_("Detailed crop, animal and mineral information")
     )
-    crops = forms.ModelMultipleChoiceField(
+    crops = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Crops"), queryset=Crop.objects.all()
-    )
-    crops_other = forms.CharField(
-        required=False, label=_("Other crops")
     )
     tg_crops_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
     )
-    animals = forms.ModelMultipleChoiceField(
+    animals = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Livestock"), queryset=Animal.objects.all()
-    )
-    animals_other = forms.CharField(
-        required=False, label=_("Other livestock")
     )
     tg_animals_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
     )
-    minerals = forms.ModelMultipleChoiceField(
+    minerals = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Resources"), queryset=Mineral.objects.all()
-    )
-    minerals_other = forms.CharField(
-        required=False, label=_("Other resources")
     )
     tg_minerals_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
     )
-    contract_farming_crops = forms.ModelMultipleChoiceField(
+    contract_farming_crops = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Contract farming crops"), queryset=Crop.objects.all()
     )
-    contract_farming_crops_other = forms.CharField(
-        required=False, label=_("Other contract farming crops")
-    )
-
     # Detailed contract farming crop, animal and mineral information
     tg_contract_farming_crop_animal_mineral = TitleField(
         required=False, initial=_("Detailed contract farming crop, animal and mineral information")
     )
+    contract_farming_crops = YearBasedModelMultipleChoiceIntegerField(
+        required=False, label=_("Contract farming crops"), queryset=Crop.objects.all()
+    )
     tg_contract_farming_crops_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
     )
-    contract_farming_animals = forms.ModelMultipleChoiceField(
+    contract_farming_animals = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Contract farming livestock"), queryset=Animal.objects.all()
-    )
-    contract_farming_animals_other = forms.CharField(
-        required=False, label=_("Other contract farming livestock")
     )
     tg_contract_farming_animals_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput

@@ -72,12 +72,14 @@ class FilterWidgetMixin:
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('country')
                 filter_values['name'] = str(_('Target country'))
+                filter_values['label'] = str(_('Target country'))
                 data.pop('country')
             elif data.get('region'):
                 filter_values['variable'] = 'target_region'
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('region')
                 filter_values['name'] = str(_('Target region'))
+                filter_values['label'] = str(_('Target region'))
                 data.pop('region')
             # Remove existing target country/region filters
             filters = filter(lambda f: f['variable'] in ('target_country', 'target_region'), stored_filters.values())
@@ -85,8 +87,9 @@ class FilterWidgetMixin:
                 stored_filters.pop(stored_filter['name'], None)
             # Set filter
             new_filter = Filter(
-                filter_values['variable'], filter_values['operator'],
-                filter_values['value'], filter_values.get('name', None)
+                variable=filter_values['variable'], operator=filter_values['operator'],
+                value=filter_values['value'], name=filter_values.get('name', None),
+                label=filter_values['label']
             )
             stored_filters[new_filter.name] = new_filter
             self.request.session['filters'] = stored_filters
