@@ -65,6 +65,7 @@ class YearBasedWidget(forms.MultiWidget):
         id_ = final_attrs.get('id', None)
         helptext = self.help_text and "<span class=\"helptext input-group-addon\">%s</span>" % str(self.help_text) or ""
         widgets_count = len(self.widgets)
+        widgets_row_count = len(self.get_widgets())
         output.append('<div class="input-group">')
         for i, widget in enumerate(self.widgets):
             try:
@@ -76,11 +77,11 @@ class YearBasedWidget(forms.MultiWidget):
             attrs = dict(final_attrs)
             attrs['class'] = ' '.join([final_attrs.get('class', ''), widget.attrs.get('class', '')])
             output.append(widget.render(name + '_%s' % i, widget_value, attrs))
-            # Append helptext and close reopen div every second element
-            if ((i+1) % len(self.get_widgets()) == 0):
+            # Append helptext and close reopen div every n element
+            if ((i+1) % widgets_row_count) == 0:
                 output.append(helptext)
                 # Add "Add more" button to first row
-                if i == 1:
+                if (i+1) == widgets_row_count:
                     output.append('<a href="javascript:;" class="btn add-ybd add-row"><i class="lm lm-plus"></i> Add more</a>')
                     output.append('<a href="javascript:;" class="btn remove-ybd delete-row" style="display:none;"><i class="lm lm-minus"></i> Remove</a>')
                 else:

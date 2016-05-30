@@ -1,8 +1,7 @@
 function cloneYBDfield(link) {
   var wrap = link.parents(".control-group").find(".input-group:last-child"),
-    inputs = wrap.find(":input"),
-    input_data = $(inputs[inputs.size()-2]).clone(),
-    input_year = $(inputs[inputs.size()-1]).clone(),
+    input_data = wrap.find('.year-based').clone(),
+    input_year = wrap.find('.year-based-year').clone(),
     helptext = wrap.find(".helptext:last").clone(),
     remove_link = wrap.find("a.remove-ybd").clone(),
     prefix = input_data.attr("id");
@@ -22,7 +21,9 @@ function cloneYBDfield(link) {
   new_wrap.append(input_year);
   new_wrap.append(helptext);
   new_wrap.append(remove_link);
-  link.parents(".controls").append(new_wrap);
+  new_wrap = link.parents(".controls").append(new_wrap);
+  new_wrap.find('.select2-hidden-accessible').select2();
+
   //link.next().show();
 }
 
@@ -32,7 +33,7 @@ function removeYBDfield() {
 
 function update_year_based_history (el, id) {
   var field = el.attr("id");
-  $.get("/ajax/history/" + id, {field: field}, function (data) {
+  $.get("/a ax/history/" + id, {field: field}, function (data) {
     el.html(data);
   });
 };
