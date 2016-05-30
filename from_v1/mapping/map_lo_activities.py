@@ -1,9 +1,7 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.aggregates import Max
 from functools import lru_cache
 
 from .land_observatory_objects.tags import A_Value
-from .land_observatory_objects.tags import A_Tag
 from .land_observatory_objects.activity import Activity
 from .land_observatory_objects.tag_groups import A_Tag_Group
 from .map_lo_model import MapLOModel
@@ -59,7 +57,6 @@ class MapLOActivities(MapLOModel):
             """)
         return [id[0] for id in cursor.fetchall()]
 
-
     @classmethod
     def save_record(cls, new, save):
         """Save all versions of an activity as HistoricalActivity records."""
@@ -70,13 +67,20 @@ class MapLOActivities(MapLOModel):
         for tag_group in tag_groups:
             attrs = {}
             taggroup_name = cls.tag_group_name(tag_group)
-            # print(
-            #     '\nmigrate_tags',
-            #     ["{}: {}".format(tag.key.key, tag.value.value) for tag in cls.relevant_tags(tag_group)],
-            #     "tag group {}: {}".format(cls.tag_group_key(tag_group), taggroup_name)
-            # )
+            if taggroup_name == 'location_1':
+                # print(
+                #     '\nmigrate_tags',
+                #     ["{}: {}".format(tag.key.key, tag.value.value) for tag in cls.relevant_tags(tag_group)],
+                #     "tag group {}: {}".format(cls.tag_group_key(tag_group),
+                #     taggroup_name,
+                #     new.point.get_coords(),new.point.get_x(),new.point.get_y(),dir(new.point.get_coords())
+                # )
+                attrs['point_lat'] = new.point.get_y()
+                attrs['point_lon'] = new.point.get_x()
+            # if tag_group.geometry is not None:
+            #     print(taggroup_name)
+            #     attrs['polygon'] = tag_group.geometry
             for tag in cls.relevant_tags(tag_group):
-
                 key = tag.key.key
                 value = tag.value.value
 
@@ -172,7 +176,7 @@ class MapLOActivities(MapLOModel):
         if (len(attrs) == 1) and attrs.get('name'):
             return
 
-        attrs = clean_attributes(attrs)
+        attrs = transform_attributes(attrs)
         aag = cls.write_activity_attribute_group(
             attrs, tag_group, year, name
         )
@@ -230,22 +234,28 @@ class MapLOActivities(MapLOModel):
     def save_activity_record(cls, new, save):
         activity_identifier = cls.get_deal_id(new)
         versions = cls.get_activity_versions(new)
-        for i, version in enumerate(versions):
-            if not version['id'] == new.id:
-                if save:
-                    landmatrix.models.Activity.history.using(V2).create(
-                        id=version['id'],
-                        activity_identifier=activity_identifier,
-                        availability=version['reliability'],
-                        fk_status_id=version['fk_status'],
-                        fully_updated=None,
-                        history_date=calculate_history_date(versions, i),
-                        history_user=get_history_user(version)
-                    )
+        if True or not is_imported_deal(new):
+            for i, version in enumerate(versions):
+                if not version['id'] == new.id:
+                    if save:
+                        landmatrix.models.Activity.history.using(V2).create(
+                            id=version['id'],
+                            activity_identifier=activity_identifier,
+                            availability=version['reliability'],
+                            fk_status_id=version['fk_status'],
+                            fully_updated=None,
+                            history_date=calculate_history_date(versions, i),
+                            history_user=get_history_user(version)
+                        )
         if save:
             new.activity_identifier = activity_identifier
-            new.fk_status_id = landmatrix.models.Status.objects.get(name="pending")
+            new.fk_status_id = landmatrix.models.Status.objects.get(name="pending").id
             new.save(using=V2)
+            changeset = landmatrix.models.ActivityChangeset(
+                comment='Imported from Land Observatory',
+                fk_activity_id=new.pk
+            )
+            changeset.save(using=V2)
 
     @classmethod
     def get_deal_id(cls, activity):
@@ -274,11 +284,30 @@ def is_imported_deal(deal):
     return 'http://www.landmatrix.org' in get_deal_tags(deal, 'URL / Web')
 
 
-def clean_attributes(attrs):
-    attrs = {
-        rename_key(key): clean_attribute(key, value) for key, value in attrs.items()
+def transform_attributes(attrs):
+    try:
+        attrs = {
+            rename_key(key): clean_attribute(key, value) for key, value in attrs.items()
         }
+        if 'NUMBER_OF_FARMERS' in attrs:
+            if attrs.get('contract_farming', '') == 'On the lease':
+                attrs['on_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
+            else:
+                attrs['off_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
+            del attrs['NUMBER_OF_FARMERS']
+        if 'NAME' in attrs:
+            del attrs['NAME']
+        if 'YEAR' in attrs:
+            attrs = {
+                key: value+'#'+attrs['YEAR']+'-01-01' if isinstance(value, str) else value
+                for key, value in attrs.items()
+                if key != 'YEAR'
+            }
+            # don't delete from attrs, that is done in write_activity_attribute_group() above
 
+    except TypeError:
+        print(attrs)
+        raise Exception
 
     return attrs
 
@@ -287,6 +316,7 @@ def clean_attribute(key, value):
     if isinstance(value, str):
         # HSTORE attribute values can not take strings longer than that due to index constraints :-(
         return value[:3000]
+    return value
 
 
 def rename_key(key):
@@ -295,58 +325,137 @@ def rename_key(key):
 
 LM_ATTRIBUTES = {
     'Animals':                          'animals',
+    "Animales":                          'animals',
     'Annual leasing fee area (ha)':     'annual_leasing_fee_area',
-    'Announced amount of investement':  'ANNOUNCED_AMOUNT_OF_INVESTMENT',
-    'Announced amount of investment':   'ANNOUNCED_AMOUNT_OF_INVESTMENT',
-    'Area (ha)':                        'AREA',
+    "Área de la cuota anual de arrendamiento (ha)":     'annual_leasing_fee_area',
+    'Announced amount of investement':  'purchase_price_comment',
+    'Announced amount of investment':   'purchase_price_comment',
+    'Area (ha)':                        'intended_size',
+    "Área pretendida (ha)":                        'intended_size',
     'Benefits for local communities':   'promised_benefits',
     'Consultation of local community':  'community_consultation',
+    "Contreparties pour les populations locales":  'community_consultation',
+    "Consulta a las comunidades locales":  'community_consultation',
+    "Consultations tenues au niveau local ":  'community_consultation',
     'Contract area (ha)':               'contract_size',
+    "Área del contrato (ha)":               'contract_size',
+    "Superficie sous contrat (ha)":               'contract_size',
     'Contract date':                    'contract_date',
+    "Date de signature du contrat":                    'contract_date',
     'Contract farming':                 'contract_farming',
+    "Agriculture contractuelle":                 'contract_farming',
+    "Contrato de trabajo agrícola":                 'contract_farming',
     'Contract Number':                  'contract_number',
+    "Número de contrato":                  'contract_number',
     'Country':                          'target_country',
+    "País":                          'target_country',
+    "Pays":                          'target_country',
     'Crop':                             'crops',
+    "Cultivo":                             'crops',
+    "Cultures":                             'crops',
     'Current area in operation (ha)':   'production_size',
+    "Área actual en operación (ha)":   'production_size',
+    "Superficie exploitée (ha) ":   'production_size',
     'Current Number of daily/seasonal workers': 'total_jobs_current_daily_workers',
+    "Emplois temporaires créés (nombre)": 'total_jobs_current_daily_workers',
+    "Número actual de trabajadores por día o por temporada": 'total_jobs_current_daily_workers',
     'Current number of employees':      'total_jobs_current_employees',
+    "Emplois permanents créés (nombre)":      'total_jobs_current_employees',
+    "Número actual de empleados":      'total_jobs_current_employees',
     'Current total number of jobs':     'total_jobs_current',
+    "Número total de empleos actual":     'total_jobs_current',
+    "Emplois total créés":     'total_jobs_current',
     'Data source':                      'data_source',
+    "Source des données":                      'data_source',
     'Date':                             'date',
     'Duration of Agreement (years)':    'agreement_duration',
+    "Duración del Contrato (años)":    'agreement_duration',
+    "Durée du contrat (années)":    'agreement_duration',
     'Files':                            'file',
+    "Fecha":                            'file',
+    "Fichiers":                            'file',
     'Former predominant land cover':    'land_cover',
+    "Couverture végétale dominante antérieure":    'land_cover',
+    "Recubierta original predominante de la tierra":    'land_cover',
     'Former predominant land owner':    'land_owner',
+    "Dueño original predominante de la tierra":    'land_owner',
+    "Statuts juridiques antérieurs des terres ":    'land_owner',
     'Former predominant land use':      'land_use',
+    "Usages antérieurs de la terre":      'land_use',
+    "Uso original predominante de la tierra":      'land_use',
     'How did community react':          'community_reaction',
+    '¿Cómo ha reaccionado la comunidad?':          'community_reaction',
+    "Réactions des communautés locales":          'community_reaction',
     'How much do investors pay for water': 'how_much_do_investors_pay_comment',
+    "Cuánto paga el inversor por el agua": 'how_much_do_investors_pay_comment',
+    "Redevances hydrauliques en AR/m3": 'how_much_do_investors_pay_comment',
     'How much water is extracted (m3/year)': 'water_extraction_amount',
+    "Cuánta agua es extraida (m3/año)": 'water_extraction_amount',
+    "Volume d'eau prélevé en m3/année": 'water_extraction_amount',
     'Implementation status':            'implementation_status',
-    'Intended area (ha)':               'INTENDED_AREA',
+    "Estado de aplicación":            'implementation_status',
+    "Etat d'avancement":            'implementation_status',
+    'Intended area (ha)':               'intended_size',
+    "Superficie visée (ha)":               'intended_size',
     'Intention of Investment':          'intention',
+    "Intención de la inversión":          'intention',
     'Leasing fee (per year)':           'annual_leasing_fee',
+    "Redevances foncières annuelles (total payé par année)":           'annual_leasing_fee',
     'Mineral':                          'minerals',
+    "Minerales":                          'minerals',
+    "Minéraux":                          'minerals',
     'Name':                             'NAME',
     'Nature of the deal':               'nature',
+    "Carácter del acuerdo":               'nature',
     'Negotiation Status':               'negotiation_status',
+    "Estado de la negociación":               'negotiation_status',
     'Number of farmers':                'NUMBER_OF_FARMERS',
+    "Nombre d'agriculteurs ":                'NUMBER_OF_FARMERS',
+    "Número de agricultores":                'NUMBER_OF_FARMERS',
     'Number of people actually displaced': 'number_of_displaced_people',
+    "Nombre de personnes effectivement déplacées": 'number_of_displaced_people',
+    "Número de personas desplazadas": 'number_of_displaced_people',
     'Original reference number':        'ORIGINAL_REFERENCE_NUMBER',
-    'Percentage':                       'PERCENTAGE',
+    "Número de referencia original":        'ORIGINAL_REFERENCE_NUMBER',
     'Planned Number of daily/seasonal workers': 'total_jobs_planned_daily_workers',
+    "Emplois temporaires annoncés (nombre)": 'total_jobs_planned_daily_workers',
+    "Número de trabajadores planeados diarios/o por temporada": 'total_jobs_planned_daily_workers',
     'Planned number of employees':      'total_jobs_planned_employees',
+    "Emplois permanents annoncés (nombre)":      'total_jobs_planned_employees',
     'Planned total number of jobs':     'total_jobs_planned',
+    "Emplois total annoncés":     'total_jobs_planned',
+    "Total de empleos planeados":     'total_jobs_planned',
     'Promised or received compensation': 'promised_compensation',
+    "Beneficios para las comunidades locales": 'promised_compensation',
+    "Compensación prometidio o recibida": 'promised_compensation',
     'Purchase price':                   'purchase_price',
+    "Prix d'achat total":                   'purchase_price',
+    "Precio de compra":                   'purchase_price',
     'Purchase price area (ha)':         'purchase_price_area',
+    "Prix d'achat par ha":         'purchase_price_area',
+    "Área del precio de compra (ha)":         'purchase_price_area',
     'Remark':                           'REMARK',
-    'Scope of agriculture':             'SCOPE_OF_AGRICULTURE',
-    'Scope of forestry':                'SCOPE_OF_FORESTRY',
+    "Remarque":                           'REMARK',
+    'Scope of agriculture':             'intention',
+    "Ámbito Agrícola":             'intention',
+    "Destination des produits agricoles":             'intention',
+    'Scope of forestry':                'intention',
+    "Ámbito Forestal":             'intention',
+    "Destination des produits forestiers":             'intention',
     'Spatial Accuracy':                 'level_of_accuracy',
+    "Precisión espacial":                 'level_of_accuracy',
+    "Résolution spatiale ":                 'level_of_accuracy',
     'URL / Web':                        'url',
+    "Página Web":                        'url',
+    "URL : Web":                        'url',
     'Use of produce':                   'use_of_produce_comment',
+    "Uso de los productos":                   'use_of_produce_comment',
     'Water extraction':                 'water_extraction_envisaged',
+    "Extracción de agua":                 'water_extraction_envisaged',
+    "Utilisation d'eau ":                 'water_extraction_envisaged',
     'Year':                             'YEAR',
+    "Année":                             'YEAR',
+    "Año":                             'YEAR',
 }
 
 
