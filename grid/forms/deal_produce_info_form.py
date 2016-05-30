@@ -103,8 +103,8 @@ class DealProduceInfoForm(BaseForm):
     )
     in_country_processing = forms.ChoiceField(
         required=False, label=_("In country processing of produce"), choices=(
-            (10, _("Yes")),
-            (20, _("No")),
+            (_("Yes"), _("Yes")),
+            (_("No"), _("No")),
         ), widget=forms.RadioSelect
     )
     tg_in_country_processing_comment = forms.CharField(

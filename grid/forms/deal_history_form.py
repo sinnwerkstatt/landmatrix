@@ -9,4 +9,4 @@ class DealHistoryForm(BaseForm):
     form_title = _('Deal history')
 
     class Meta:
-    	name = 'history'
+        name = 'history'

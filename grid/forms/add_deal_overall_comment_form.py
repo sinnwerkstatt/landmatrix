@@ -16,4 +16,4 @@ class AddDealOverallCommentForm(BaseForm):
     tg_overall_comment = forms.CharField(required=False, label="", widget=CommentInput)
 
     class Meta:
-    	name = 'overall_comment'
+        name = 'overall_comment'

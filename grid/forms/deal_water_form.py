@@ -17,8 +17,8 @@ class DealWaterForm(BaseForm):
     )
     water_extraction_envisaged = forms.ChoiceField(
         required=False, label=_("Water extraction envisaged"), choices=(
-            (10, _("Yes")),
-            (20, _("No")),
+            (_("Yes"), _("Yes")),
+            (_("No"), _("No")),
         ), widget=forms.RadioSelect
     )
     tg_water_extraction_envisaged_comment = forms.CharField(
@@ -31,10 +31,10 @@ class DealWaterForm(BaseForm):
     source_of_water_extraction = NestedMultipleChoiceField(
         required=False, label=_("Source of water extraction"),
         choices=(
-            (10, _("Groundwater"), None),
-            (20, _("Surface water"), (
-               (21, _("River")),
-               (22, _("Lake")),
+            (_("Groundwater"), _("Groundwater"), None),
+            (_("Surface water"), _("Surface water"), (
+               (_("River"), _("River")),
+               (_("Lake"), _("Lake")),
             )),
         )
     )
@@ -63,8 +63,8 @@ class DealWaterForm(BaseForm):
 
     use_of_irrigation_infrastructure = forms.ChoiceField(
         required=False, label=_("Use of irrigation infrastructure"), choices=(
-            (10, _("Yes")),
-            (20, _("No")),
+            (_("Yes"), _("Yes")),
+            (_("No"), _("No")),
         ), widget=forms.RadioSelect
     )
     tg_use_of_irrigation_infrastructure_comment = forms.CharField(

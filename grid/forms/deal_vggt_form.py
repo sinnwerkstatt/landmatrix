@@ -28,9 +28,9 @@ class DealVGGTForm(BaseForm):
             "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
         ),
         choices=(
-            (10, _("Yes")),
-            (20, _("Partially")),
-            (30, _("No")),
+            (_("Yes"), _("Yes")),
+            (_("Partially"), _("Partially")),
+            (_("No"), _("No")),
         ), widget=forms.RadioSelect
     )
     tg_vggt_applied_comment = forms.CharField(
@@ -41,9 +41,9 @@ class DealVGGTForm(BaseForm):
         required=False,
         label=_("Application of Principles for Responsible Agricultural Investments (PRAI)"),
         choices=(
-            (10, _("Yes")),
-            (20, _("Partially")),
-            (30, _("No")),
+            (_("Yes"), _("Yes")),
+            (_("Partially"), _("Partially")),
+            (_("No"), _("No")),
         ), widget=forms.RadioSelect
     )
     tg_prai_applied_comment = forms.CharField(

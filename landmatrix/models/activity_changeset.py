@@ -73,8 +73,10 @@ class ActivityChangeset(Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.historical_activity = None
-        if self.fk_activity:
-            self.historical_activity = self.fk_activity.history.filter(history_date__lte=self.timestamp).order_by('-history_date').first()
+        if self.fk_activity and self.timestamp:
+            self.historical_activity = self.fk_activity.history.filter(
+                history_date__lte=self.timestamp
+            ).order_by('-history_date').first()
 
         self.fk_user = None if not self.historical_activity or not self.historical_activity.history_user_id else User.objects.get(pk=self.historical_activity.history_user_id)
 

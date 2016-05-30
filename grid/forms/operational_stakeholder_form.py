@@ -43,9 +43,9 @@ class OperationalStakeholderForm(BaseForm):
         label=_('Relationship to parent'),
         required=False,
         choices=(
-            ('10', 'Subsidiary of parent company'),
-            ('20', 'Local branch of parent company'),
-            ('30', 'Joint venture of parent companies')
+            (_('Subsidiary of parent company'), _('Subsidiary of parent company')),
+            (_('Local branch of parent company'), _('Local branch of parent company')),
+            (_('Joint venture of parent companies'), _('Joint venture of parent companies'))
         )
     )
     project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)

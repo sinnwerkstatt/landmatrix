@@ -20,9 +20,11 @@ class AddDealActionCommentForm(BaseForm):
     tg_not_public = TitleField(required=False, label="", initial=_("Public deal"))
     not_public = forms.BooleanField(required=False, label=_("Not public"), help_text=_("Please specify in additional comment field"))
     not_public_reason = forms.ChoiceField(required=False, label=_("Reason"), choices=(
-        (0, _("---------")),
-        (10, _("Temporary removal from PI after criticism")),
-        (20, _("Research in progress")),
+        ("---------", _("---------")),
+        ("Temporary removal from PI after criticism", _("Temporary removal from PI after criticism")),
+        ("Research in progress", _("Research in progress")),
+        ('Land Observatory Import (new)', _('Land Observatory Import (new)')),
+        ('Land Observatory Import (duplicate)', _('Land Observatory Import (duplicate)')),
     ))
     tg_not_public_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
@@ -55,15 +57,6 @@ class AddDealActionCommentForm(BaseForm):
                     if tag.get("key") == "fully_updated":
                         return tag.get("value")
         return False
-
-    #def get_attributes(self, request=None):
-    #    taggroups = []
-    #    for tg in super(AddDealActionCommentForm, self).get_attributes():
-    #        if tg["main_tag"]["value"] in ("action", "feedback"):
-    #            continue
-    #        else:
-    #            taggroups.append(tg)
-    #    return taggroups
 
     @classmethod
     def get_data(cls, activity):
