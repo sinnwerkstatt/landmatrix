@@ -16,7 +16,7 @@
 
 {% block legend %}
     <ul class="media-list legend">
-        <li><i class="icon icon-none" style="background-color: #6cc9d3;"></i> {% trans "Investor Countries" %}</li>
+        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i> {% trans "Investor Countries" %}</li>
         <li><i class="icon icon-none" style="background-color: #ed881b;"></i> {% trans "Target Countries" %}</li>
     </ul>
 {% endblock %}
@@ -29,8 +29,8 @@
         </ul>
     <![endif]-->
         <div class="canvas-container">
-            <div class="col-md-12 canvas"></div>
-            <div class="chart-box col-md-4 well top-10-countries">
+            <div id="chartarea" class="col-md-12 canvas" align="center"></div>
+            <div class="chart-box col-md-4 well top-10-countries" align="center">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h3>{% trans "Top 10 Countries" %}</h3>
@@ -38,9 +38,9 @@
                 <div class="row">
                     <div class="chart-box-content">
                         <ul class="nav nav-tabs">
-                            <li class="active"><a style="color: #6cc9d3"
+                            <li class="active"><a style="color: #4bbb87"
                                                   href="#investor-countries">{% trans "Investor countries" %}</a></li>
-                            <li><a style="color: #ed881b" href="#target-countries">{% trans "Target countries" %}</a>
+                            <li><a style="color: #fc941f" href="#target-countries">{% trans "Target countries" %}</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -65,14 +65,14 @@
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active">
                             <a href="#inbound" aria-controls="inbound" role="tab" data-toggle="tab">
-                                <div style="color: #6cc9d3">{% trans "Regions investing in " %}
+                                <div style="color: #4bbb87">{% trans "Regions investing in " %}
                                     <span class="country">{% trans "Country" %}</span>
                                 </div>
                             </a>
                         </li>
                         <li role="presentation">
                             <a href="#outbound" aria-controls="outbound" role="tab" data-toggle="tab">
-                                <div style="color: #ed881b">{% trans "Regions" %}
+                                <div style="color: #fc941f">{% trans "Regions" %}
                                     <span class="country">{% trans "Country" %}</span>
                                     {% trans "invests in" %}
                                 </div>
@@ -109,69 +109,6 @@
 
 {% block after %}
     {{ block.super }}
-    <style>
-
-
-    </style>
-    <!--
-<style>
-path.arc {
-  cursor: move;
-  fill: transparent;
-}
-.node {
-  font-size: 13px;
-  font-family: "Open Sans", sans-serif;
-  cursor: pointer;
-  color: #3b3b3b;
-}
-.node.active,
-.node:hover {
-  fill: #3b3b3b;
-  font-weight: bold;
-}
-.link {
-  fill: none;
-  stroke: #3b3b3b;
-  stroke-opacity: .4;
-  pointer-events: none;
-}
-.link.source,
-.link.target {
-  stroke-opacity: 1;
-  stroke-width: 2px;
-}
-.node.target {
-  fill: #6cc9d3 !important;
-}
-.link.source {
-  stroke: #6cc9d3;
-}
-.node.source {
-  fill: #ed881b !important;
-}
-.link.target {
-  stroke: #ed881b;
-}
-.canvas-container {
-    position: relative;
-}
-.canvas-container .well {
-    position: absolute;
-    top: 330px;
-    left: 380px;
-}
-.canvas-container .well button {
-    font-size: 20px !important;
-    background: none;
-    border: none;
-}
-.country-info{
-    opacity: 0.8;
-}
-</style>
-
--->
 
     <script type="text/javascript" src="{% static "legacy/transnational-deals.js" %}"></script>
     <script type="text/javascript" src="{% static "js/main.js" %}"></script>
@@ -215,7 +152,7 @@ path.arc {
 
         var clicked = false;
         function draw(callback) {
-            init_canvas(960, 960);
+            init_canvas();
             get_top_10();
 
             var query_params = get_query_params(get_base_filter(), "");
