@@ -15,8 +15,6 @@ var clusterSource = new ol.source.Cluster({
 
 var layers = [];
 
-var autocomplete;
-
 var fieldnames = {
     'Geospatial Accuracy': 'accuracy',
     'Negotiation Status': 'negotiation_status',

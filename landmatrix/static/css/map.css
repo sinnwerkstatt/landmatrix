@@ -135,7 +135,6 @@ div.layer-group > a:hover {
   padding-top: 10px; }
 
 #legendstuff {
-  min-width: 20vw;
   max-height: 50vh;
   overflow-y: auto;
   margin-bottom: 8px; }
