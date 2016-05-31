@@ -113,7 +113,6 @@ class MapLOActivities(MapLOModel):
         )
         if not imported:
             uuid = Activity.objects.using(cls.DB).filter(id=new.id).values_list('activity_identifier', flat=True).first()
-            print(uuid)
             cls.write_activity_attribute_group(
                 {'type': 'Land Observatory Import', 'landobservatory_uuid': str(uuid)},
                 taggroup_proxy,
@@ -343,6 +342,39 @@ def transform_attributes(attrs):
                 if key != 'YEAR'
             }
             # don't delete from attrs, that is done in write_activity_attribute_group() above
+        if 'REMARK' in attrs:
+            if attrs.get('url') == 'http://www.landmatrix.org':
+                pass
+            elif 'implementation_status' in attrs:
+                attrs['implementation_status_comment'] = attrs['REMARK']
+            elif 'data_source' in attrs:
+                attrs['data_source_1_comment'] = attrs['REMARK']
+            elif 'intended_size' in attrs:
+                attrs['land_area_comment'] = attrs['REMARK']
+            elif 'point_lat' in attrs:
+                attrs['location_1_comment'] = attrs['REMARK']
+            elif 'community_consultation' in attrs:
+                attrs['community_consultation_comment'] = attrs['REMARK']
+            elif 'community_reaction' in attrs:
+                attrs['community_reaction_comment'] = attrs['REMARK']
+            elif 'contract_farming' in attrs:
+                attrs['contract_farming_comment'] = attrs['REMARK']
+            elif 'annual_leasing_fee' in attrs:
+                attrs['leasing_fees_comment'] = attrs['REMARK']
+            elif 'purchase_price' in attrs:
+                attrs['purchase_price_comment'] = attrs['REMARK']
+            elif 'water_extraction_envisaged' in attrs:
+                attrs['water_extraction_envisaged_comment'] = attrs['REMARK']
+            elif 'number_of_displaced_people' in attrs:
+                attrs['number_of_displaced_people_comment'] = attrs['REMARK']
+
+            elif 'use_of_produce' in attrs or 'use_of_produce_comment' in attrs:
+                attrs['use_of_produce_comment'] += attrs['REMARK']
+
+            elif 'benefits' in attrs['REMARK']:
+                attrs['materialized_benefits_comment'] = attrs['REMARK']
+
+            del attrs['REMARK']
 
     except TypeError:
         print(attrs)
