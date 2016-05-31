@@ -83,7 +83,8 @@ class MapLOActivities(MapLOModel):
             new.save(using=V2)
             changeset = landmatrix.models.ActivityChangeset(
                 comment='Imported from Land Observatory',
-                fk_activity_id=new.pk
+                fk_activity=new
+                # fk_activity_id=new.pk
             )
             changeset.save(using=V2)
 
@@ -111,10 +112,10 @@ class MapLOActivities(MapLOModel):
             'not_public'
         )
         if not imported:
-            uuid = Activity.objects.using(cls.DB).filter(id=new.id).values_list('activity_identifier', flat=True)
+            uuid = Activity.objects.using(cls.DB).filter(id=new.id).values_list('activity_identifier', flat=True).first()
             print(uuid)
             cls.write_activity_attribute_group(
-                {'type': 'Land Observatory Import', 'landobservatory_uuid': uuid},
+                {'type': 'Land Observatory Import', 'landobservatory_uuid': str(uuid)},
                 taggroup_proxy,
                 None,
                 'data_source_1'
