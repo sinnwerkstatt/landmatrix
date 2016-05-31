@@ -109,7 +109,7 @@ class MapLOActivities(MapLOModel):
             {'not_public_reason': 'Land Observatory Import (new)' if not imported else 'Land Observatory Import (duplicate)'},
             taggroup_proxy,
             None,
-            'not_public'
+            'not_public', None
         )
         if not imported:
             uuid = Activity.objects.using(cls.DB).filter(id=new.id).values_list('activity_identifier', flat=True).first()
@@ -117,13 +117,14 @@ class MapLOActivities(MapLOModel):
                 {'type': 'Land Observatory Import', 'landobservatory_uuid': str(uuid)},
                 taggroup_proxy,
                 None,
-                'data_source_1'
+                'data_source_1', None
             )
 
     @classmethod
     def write_standard_tag_groups(cls, new, tag_groups):
         for tag_group in tag_groups:
             attrs = {}
+            polygon = None
             taggroup_name = cls.tag_group_name(tag_group)
 
             # set location - stored in activity in LO, but tag group in LM
@@ -131,10 +132,9 @@ class MapLOActivities(MapLOModel):
                 attrs['point_lat'] = new.point.get_y()
                 attrs['point_lon'] = new.point.get_x()
 
-            # area boundaries. can't be stored as HSTORE attribute. skipping for now.
-            # if tag_group.geometry is not None:
-            #     print(taggroup_name)
-            #     attrs['polygon'] = tag_group.geometry
+            # area boundaries.
+            if tag_group.geometry is not None:
+                polygon = tag_group.geometry
 
             for tag in cls.relevant_tags(tag_group):
                 key = tag.key.key
@@ -142,14 +142,15 @@ class MapLOActivities(MapLOModel):
 
                 if key in attrs and value != attrs[key]:
                     cls.write_activity_attribute_group_with_comments(attrs, tag_group, None,
-                                                                     taggroup_name)
+                                                                     taggroup_name, polygon)
                     attrs = {}
+                    polygon = None
 
                 attrs[key] = value
 
             if attrs:
                 cls.write_activity_attribute_group_with_comments(attrs, tag_group, None,
-                                                                 taggroup_name)
+                                                                 taggroup_name, polygon)
 
     @classmethod
     def tag_group_name(cls, tag_group):
@@ -230,37 +231,37 @@ class MapLOActivities(MapLOModel):
         return tag_group.tags
 
     @classmethod
-    def write_activity_attribute_group_with_comments(cls, attrs, tag_group, year, name):
+    def write_activity_attribute_group_with_comments(cls, attrs, tag_group, year, name, polygon):
         if (len(attrs) == 1) and attrs.get('name'):
             return
 
         attrs = transform_attributes(attrs)
         aag = cls.write_activity_attribute_group(
-            attrs, tag_group, year, name
+            attrs, tag_group, year, name, polygon
         )
 
     @classmethod
-    def write_activity_attribute_group(cls, attrs, tag_group, year, name):
+    def write_activity_attribute_group(cls, attrs, tag_group, year, name, polygon):
         activity_id = cls.matching_activity_id(tag_group)
         if 'YEAR' in attrs:
             year = attrs['YEAR']
             del attrs['YEAR']
         aag = landmatrix.models.ActivityAttributeGroup(
             fk_activity_id=activity_id, fk_language=landmatrix.models.Language.objects.get(pk=1),
-            date=year, attributes=attrs, name=name
+            date=year, attributes=attrs, name=name, polygon=polygon
         )
         if cls._save:
             if not cls.is_current_version(tag_group):
                 aag = landmatrix.models.ActivityAttributeGroup.history.using(V2).create(
                     id=cls.get_last_id() + 1,
                     history_date=cls.get_history_date(tag_group),
-                    fk_activity_id=activity_id, fk_language=landmatrix.models.Language.objects.get(pk=1),
-                    date=year, attributes=attrs, name=name
+                    fk_activity_id=activity_id,
+                    fk_language=landmatrix.models.Language.objects.get(pk=1),
+                    date=year, attributes=attrs, name=name, polygon=polygon
                 )
             else:
                 aag.save(using=V2)
-        # else:
-        #     print(aag)
+
         if hasattr(aag, 'id'):
             cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
 

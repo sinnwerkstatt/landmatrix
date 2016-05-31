@@ -5,6 +5,7 @@ from simple_history.models import HistoricalRecords
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django_hstore import hstore
+from django.contrib.gis.db import models as geomodels
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -15,7 +16,7 @@ class ActivityAttributeGroup(DefaultStringRepresentation, models.Model):
     date = models.DateField(_("Date"), blank=True, null=True, db_index=True)
     attributes = hstore.DictionaryField(db_index=True)
     name = models.CharField(max_length=255, blank=True, null=True)
-    # TODO: Add geometry (location point)
+    polygon = geomodels.MultiPolygonField(dim=2, srid=4326, spatial_index=True, blank=True, null=True)
 
     objects = hstore.HStoreManager()
     history = HistoricalRecords()
