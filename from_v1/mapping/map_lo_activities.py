@@ -101,34 +101,7 @@ class MapLOActivities(MapLOModel):
 
         cls.save_activity_record(new, save, imported)
 
-        for tag_group in tag_groups:
-            attrs = {}
-            taggroup_name = cls.tag_group_name(tag_group)
-            if taggroup_name == 'location_1':
-                # print(
-                #     '\nmigrate_tags',
-                #     ["{}: {}".format(tag.key.key, tag.value.value) for tag in cls.relevant_tags(tag_group)],
-                #     "tag group {}: {}".format(cls.tag_group_key(tag_group),
-                #     taggroup_name,
-                #     new.point.get_coords(),new.point.get_x(),new.point.get_y(),dir(new.point.get_coords())
-                # )
-                attrs['point_lat'] = new.point.get_y()
-                attrs['point_lon'] = new.point.get_x()
-            # if tag_group.geometry is not None:
-            #     print(taggroup_name)
-            #     attrs['polygon'] = tag_group.geometry
-            for tag in cls.relevant_tags(tag_group):
-                key = tag.key.key
-                value = tag.value.value
-
-                if key in attrs and value != attrs[key]:
-                    cls.write_activity_attribute_group_with_comments(attrs, tag_group, None, taggroup_name)
-                    attrs = {}
-
-                attrs[key] = value
-
-            if attrs:
-                cls.write_activity_attribute_group_with_comments(attrs, tag_group, None, taggroup_name)
+        cls.write_standard_tag_groups(new, tag_groups)
 
         taggroup_proxy = type('MockTagGroup', (object,), {"fk_activity": new.id, 'id': None})
         cls.write_activity_attribute_group(
@@ -137,6 +110,46 @@ class MapLOActivities(MapLOModel):
             None,
             'not_public'
         )
+        if not imported:
+            uuid = Activity.objects.using(cls.DB).filter(id=new.id).values_list('activity_identifier', flat=True)
+            print(uuid)
+            cls.write_activity_attribute_group(
+                {'type': 'Land Observatory Import', 'landobservatory_uuid': uuid},
+                taggroup_proxy,
+                None,
+                'data_source_1'
+            )
+
+    @classmethod
+    def write_standard_tag_groups(cls, new, tag_groups):
+        for tag_group in tag_groups:
+            attrs = {}
+            taggroup_name = cls.tag_group_name(tag_group)
+
+            # set location - stored in activity in LO, but tag group in LM
+            if taggroup_name == 'location_1':
+                attrs['point_lat'] = new.point.get_y()
+                attrs['point_lon'] = new.point.get_x()
+
+            # area boundaries. can't be stored as HSTORE attribute. skipping for now.
+            # if tag_group.geometry is not None:
+            #     print(taggroup_name)
+            #     attrs['polygon'] = tag_group.geometry
+
+            for tag in cls.relevant_tags(tag_group):
+                key = tag.key.key
+                value = tag.value.value
+
+                if key in attrs and value != attrs[key]:
+                    cls.write_activity_attribute_group_with_comments(attrs, tag_group, None,
+                                                                     taggroup_name)
+                    attrs = {}
+
+                attrs[key] = value
+
+            if attrs:
+                cls.write_activity_attribute_group_with_comments(attrs, tag_group, None,
+                                                                 taggroup_name)
 
     @classmethod
     def tag_group_name(cls, tag_group):
