@@ -9,7 +9,6 @@
 
 {% block description %}
     {{ block.super }}
-    <p>{% trans "This interactive graph shows the global flow of transnational land acquisitions. Clicking on a single country shows its threads in the global pattern: green lines for inbound investments, orange for outbound. Country names marked with * have been shortened to improve legibility." %}</p>
     <a class="btn show-all" href="#" class="disabled">{% trans "Reset" %}</a>
 {% endblock %}
 
@@ -30,8 +29,8 @@
         </ul>
     <![endif]-->
         <div class="canvas-container">
-            <div class="col-md-12 canvas"></div>
-            <div class="chart-box col-md-4 well top-10-countries">
+            <div id="chartarea" class="col-md-12 canvas" align="center"></div>
+            <div class="chart-box col-md-4 well top-10-countries" align="center">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h3>{% trans "Top 10 Countries" %}</h3>
@@ -110,69 +109,6 @@
 
 {% block after %}
     {{ block.super }}
-    <style>
-
-
-    </style>
-    <!--
-<style>
-path.arc {
-  cursor: move;
-  fill: transparent;
-}
-.node {
-  font-size: 13px;
-  font-family: "Open Sans", sans-serif;
-  cursor: pointer;
-  color: #3b3b3b;
-}
-.node.active,
-.node:hover {
-  fill: #3b3b3b;
-  font-weight: bold;
-}
-.link {
-  fill: none;
-  stroke: #3b3b3b;
-  stroke-opacity: .4;
-  pointer-events: none;
-}
-.link.source,
-.link.target {
-  stroke-opacity: 1;
-  stroke-width: 2px;
-}
-.node.target {
-  fill: #44c42d !important;
-}
-.link.source {
-  stroke: #44c42d;
-}
-.node.source {
-  fill: #ed881b !important;
-}
-.link.target {
-  stroke: #ed881b;
-}
-.canvas-container {
-    position: relative;
-}
-.canvas-container .well {
-    position: absolute;
-    top: 330px;
-    left: 380px;
-}
-.canvas-container .well button {
-    font-size: 20px !important;
-    background: none;
-    border: none;
-}
-.country-info{
-    opacity: 0.8;
-}
-</style>
-
--->
 
     <script type="text/javascript" src="{% static "legacy/transnational-deals.js" %}"></script>
     <script type="text/javascript" src="{% static "js/main.js" %}"></script>
@@ -188,14 +124,15 @@ path.arc {
             var json_query = "/api/top-10-countries.json";
             jQuery.getJSON(json_query, function (data) {
                 var investor_countries = $(".top-10-countries #investor-countries .table");
-                // TODO: FIX THESE LINKS:
-                for (var i = 0; i < data.investor_country.length; i++) {
-                    investor_countries.append('<tr><td><a href="/global/data/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + '</td></tr>');
+                var i;
+
+                for (i = 0; i < data.investor_country.length; i++) {
+                    investor_countries.append('<tr><td><a href="/data/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + '</td></tr>');
                 }
 
                 var target_countries = $(".top-10-countries #target-countries .table");
-                for (var i = 0; i < data.target_country.length; i++) {
-                    target_countries.append('<tr><td><a href="/global/data/by-target-country/' + data.target_country[i]["slug"] + '/">' + data.target_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.target_country[i]["hectares"]) + ' ha</td></tr>');
+                for (i = 0; i < data.target_country.length; i++) {
+                    target_countries.append('<tr><td><a href="/data/by-target-country/' + data.target_country[i]["slug"] + '/">' + data.target_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.target_country[i]["hectares"]) + ' ha</td></tr>');
                 }
             });
         }
@@ -215,13 +152,9 @@ path.arc {
 
         var clicked = false;
         function draw(callback) {
-            init_canvas(960, 960);
+            init_canvas();
             get_top_10();
 
-            var json_query = "/api/transnational_deals.json";
-            /*d3.json(json_query, function(classes) {
-             draw_transnational_deals(callback, classes, 650);
-             }); */
             d3.select("div.canvas")
                     .on("mousemove", mousemove)
                     .on("mouseup", mouseup);

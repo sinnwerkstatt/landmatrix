@@ -44,30 +44,29 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
     </div>
 {% endblock %}
 {% block legend %}
-    <ul class="media-list legend offset agricultural_drivers">
+    <ul class="media-list legend offset agricultural_drivers hidden">
         <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span> {% trans "Food-Crops" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Non-Food Crops" %}</span>
-        </li>
+        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Non-Food Crops" %}</span></li>
         <li><i class="icon icon-none" style="background-color: #179961;"></i><span> {% trans "Flex-Crops" %}</span></li>
         <li><i class="icon icon-none"
                style="background-color: #7c9a61;"></i><span> {% trans "Multiple Use - Several crops in different categories" %}</span>
         </li>
     </ul>
-    <ul class="media-list legend offset produce_info">
+    <ul class="media-list legend offset produce_info hidden">
         <li><i class="icon icon-none" style="background-color: #fc941f;"></i><span> {% trans "Animals" %}</span></li>
         <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Minerals" %}</span></li>
         <li><i class="icon icon-none" style="background-color: #b9d635;"></i><span> {% trans "Crops" %}</span></li>
     </ul>
-    <ul class="media-list legend offset resource_extraction logging">
-        <li><i class="icon icon-none" style="background-color: #ed881b;"></i>{% trans "Concluded" %}</li>
-        <li><i class="icon icon-none" style="background-color: #b96c12;"></i>{% trans "Intended" %}</li>
-        <li><i class="icon icon-none" style="background-color: #884e0e;"></i>{% trans "Failed" %}</li>
+    <ul class="media-list legend offset resource_extraction logging hidden">
+        <li><i class="icon icon-none" style="background-color: #ed881b;"></i><span>{% trans "Concluded" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #b96c12;"></i><span>{% trans "Intended" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #884e0e;"></i><span>{% trans "Failed" %}</span></li>
     </ul>
 {% endblock %}
 
 {% block data %}
     <div class="row">
-        <div class="col-md-12">
+        <div id="chartarea" class="col-md-12">
             <div class="agricultural_drivers chart row data hidden">
                 <div class="col-md-6">
                     <div class="row">
@@ -363,10 +362,14 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 $(".navbar-subnav a[href='" + $(this).attr("href") + "']").parents("li").addClass("active");
                 //($(".navbar-subnav .active a").attr("href").indexOf("intention") > -1 && $(".negotiation_status").show() || $(".negotiation_status").hide());
                 $(".desc p").hide().filter("." + $(this).attr("href").replace(/.*\?variable=/, "")).show();
-                draw($(this).attr("href").replace(/.*\?variable=/, ""));
+                newState = $(this).attr("href").replace(/.*\?variable=/, "");
+
+                // Todo: this obviously doesn't help with the download/share popups. There is a bug filed.
+                history.pushState([], 'LandMatrix: Special Interest', '/charts/special-interest.html?variable=' + newState);
+                draw(newState);
                 return false;
             });
-            $("a.change-special_variable:first").click();
+            //$("a.change-special_variable:first").click();
             $(".views .btn").click(function (e) {
                 e.preventDefault();
                 var c_self = this;
@@ -375,7 +378,6 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 draw();
                 return false;
             });
-            $(".views .btn.active").click();
         });
 
         var storage = {};
@@ -523,6 +525,16 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 $(".agricultural_drivers").removeClass('hidden');
                 buildAgriculturalPies();
             }
+        }
+
+        const url = window.location.search;
+        console.log(url);
+        if (url.indexOf('variable=') > -1) {
+            var target = url.split('variable=')[1];
+            target = target.split('&')[0];
+            draw(target);
+        } else {
+            $(".views .btn.active").click();
         }
 
     </script>

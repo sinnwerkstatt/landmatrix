@@ -57,7 +57,8 @@ function create_d3(diameter) {
     node = svg.append("g").selectAll(".node");
 
     get_top_10();
-    var json_query = "/api/transnational_deals.json?deal_scope=transnational";
+    var query_params = "?deal_scope=transnational";
+    var json_query = "/api/transnational_deals.json" + query_params;
 
     console.log("Beginning d3 setup.");
     d3.json(json_query, function (error, classes) {
@@ -73,7 +74,9 @@ function create_d3(diameter) {
             .each(function (d) {
                 d.source = d[0], d.target = d[d.length - 1];
             })
-            .attr("class", function(d) { return "link source-" + d.source.id + " target-" + d.target.id; })
+            .attr("class", function (d) {
+                return "link source-" + d.source.id + " target-" + d.target.id;
+            })
             .attr("d", line);
 
         node = node
@@ -82,7 +85,9 @@ function create_d3(diameter) {
             }))
             .enter().append("text")
             .attr("class", "node")
-            .attr("id", function(d) { return "node-" + d.id; })
+            .attr("id", function (d) {
+                return "node-" + d.id;
+            })
             .attr("dy", ".31em")
             .attr("transform", function (d) {
                 return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? ""
@@ -189,23 +194,27 @@ function create_d3(diameter) {
     }
 }
 
-function init_canvas(width, height) {
-    width = typeof width !== 'undefined' ? width : 960;
-    height = typeof height !== 'undefined' ? height : 960;
-    rx = width / 2;
-    ry = height / 2;
+function init_canvas() {
+    const diameter = Math.min($('#chartarea').width(), 1000);
+    var width = height = diameter,
+        center = diameter / 2;
+    rx = center;
+    ry = center;
 
-    var diameter = Math.min(width, height);
+    //var diameter = Math.min(width, height);
 
-    var boxleft = diameter / 4.3,
-        boxtop =  -(diameter/(3/2)),
-        boxheight = height + boxtop;
+    var box = $(".chart-box");
+    var boxwidth = diameter * 0.5,
+        boxleft = chartwidth / 2 - boxwidth / 2,
+        boxheight = diameter * 1 / 3,
+        boxtop = diameter * 2 / 3;
     console.log(width, height, boxleft, boxtop, diameter);
     $("div.canvas").empty();
     $(".chart-box")
         .css("left", boxleft)
-        .css("top", boxtop)
-        .css("height", boxheight);
+        .css("top", -boxtop)
+        .css("height", boxheight)
+        .css("width", boxwidth);
 
     create_d3(diameter);
 
@@ -351,11 +360,13 @@ function mouseup(d) {
         $(".show-all").removeClass("disabled");
         console.log("Country clicked, working..");
         if (n.id !== "" && parent) {
-            console.log("Country selecting..",n, info);
+            console.log("Country selecting..", n, info);
             info.find(".country").text(n.key);
-            var query_params = '?country=' + n.id;
-            console.log("Getting ", "/api/transnational_deals_by_country.json" + query_params);
-            jQuery.getJSON("/api/transnational_deals_by_country.json" + query_params, function (data) {
+
+            var jsonquery = "/api/transnational_deals_by_country.json&country=" + n.id;
+
+            jQuery.getJSON(jsonquery, function (data) {
+                console.log('Got some JSON for the detail tables:', data);
                 var target_regions = "",
                     r;
                 if (data.investor_country.length > 1) {
@@ -430,27 +441,27 @@ function mouseup(d) {
     clicked = id;
 }
 
- function mouseover(d) {
- if (clicked) return;
- svg.selectAll("path.link.target-" + d.id)
- .classed("target", true)
- .each(updateNodes("source", true));
+function mouseover(d) {
+    if (clicked) return;
+    svg.selectAll("path.link.target-" + d.id)
+        .classed("target", true)
+        .each(updateNodes("source", true));
 
- svg.selectAll("path.link.source-" + d.id)
- .classed("source", true)
- .each(updateNodes("target", true));
- }
+    svg.selectAll("path.link.source-" + d.id)
+        .classed("source", true)
+        .each(updateNodes("target", true));
+}
 
- function mouseout(d) {
- if (clicked) return;
- svg.selectAll("path.link.source-" + d.id)
- .classed("source", false)
- .each(updateNodes("target", false));
+function mouseout(d) {
+    if (clicked) return;
+    svg.selectAll("path.link.source-" + d.id)
+        .classed("source", false)
+        .each(updateNodes("target", false));
 
- svg.selectAll("path.link.target-" + d.id)
- .classed("target", false)
- .each(updateNodes("source", false));
- }
+    svg.selectAll("path.link.target-" + d.id)
+        .classed("target", false)
+        .each(updateNodes("source", false));
+}
 
 function updateNodes(name, value) {
     return function (d) {

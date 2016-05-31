@@ -63,6 +63,21 @@ var mapDisableDeals = true,
 <script type="text/javascript">
 var bigdealVectorLayer = new ol.layer.Vector()
     bigdealArea = 0;
+
+const
+        bigdealSphere = new ol.Sphere(6378137),
+        bigdealStyle = new ol.style.Style({
+    stroke: new ol.style.Stroke({
+        color: '#fc941f',
+        width: 2
+    }),
+    fill: new ol.style.Fill({
+        color: 'rgba(252, 148, 31, 0.2)'
+    })
+});
+
+bigdealVectorLayer.setStyle([bigdealStyle]);
+
 function drawCircleInMeter(coords, area) {
     if (!coords) {
         coords = map.getView().getCenter();
@@ -73,21 +88,11 @@ function drawCircleInMeter(coords, area) {
 
     // TODO: Clear up this projection transformation mess
     var radius = Math.sqrt((area * 10000) / Math.PI),
-        sphere = new ol.Sphere(6378137),
         vectorSource = new ol.source.Vector({projection: 'EPSG:3857'}),
-        circle = ol.geom.Polygon.circular(sphere, coords, radius, 64).transform('EPSG:4326', 'EPSG:3857');
+        circle = ol.geom.Polygon.circular(bigdealSphere, coords, radius, 64).transform('EPSG:4326', 'EPSG:3857');
     vectorSource.addFeature(new ol.Feature(circle));
 
     bigdealVectorLayer.setSource(vectorSource);
-    bigdealVectorLayer.setStyle([new ol.style.Style({
-        stroke: new ol.style.Stroke({
-            color: '#fc941f',
-            width: 2
-        }),
-        fill: new ol.style.Fill({
-            color: 'rgba(252, 148, 31, 0.2)'
-        })
-    })]);
     bigdealArea = area;
 };
 

@@ -11,7 +11,7 @@ ol.control.LayerSwitcher = function(opt_options) {
     var options = opt_options || {};
 
     var tipLabel = options.tipLabel ?
-      options.tipLabel : 'Legend';
+        options.tipLabel : 'Legend';
 
     this.mapListeners = [];
 
@@ -44,7 +44,7 @@ ol.control.LayerSwitcher = function(opt_options) {
     formgroup.appendChild(searchfield);
     formgroup.appendChild(searchicon);
 
-    element.appendChild(formgroup);
+    collapse.appendChild(formgroup);
 
     this.layerpanel = document.createElement('div');
     // TODO: Complete the collapse panel combo
@@ -57,21 +57,16 @@ ol.control.LayerSwitcher = function(opt_options) {
 
     var this_ = this;
 
-
-    element.onmouseover = function(e) {
-        this_.showPanel();
+    button.onclick = function (e) {
+        $('#legendstuff').toggleClass('hidden');
     };
 
-    button.onclick = function(e) {
-        this_.showPanel();
-    };
-
-    element.onmouseout = function(e) {
-        e = e || window.event;
-        if (!element.contains(e.toElement)) {
-            this_.hidePanel();
-        }
-    };
+    /*element.onmouseout = function(e) {
+     e = e || window.event;
+     if (!element.contains(e.toElement)) {
+     this_.hidePanel();
+     }
+     };*/
 
     ol.control.Control.call(this, {
         element: element,
@@ -86,7 +81,7 @@ ol.inherits(ol.control.LayerSwitcher, ol.control.Control);
 /**
  * Show the legend panel.
  */
-ol.control.LayerSwitcher.prototype.showPanel = function() {
+ol.control.LayerSwitcher.prototype.showPanel = function () {
     if (this.element.className != this.shownClassName) {
         this.element.className = this.shownClassName;
         //this.renderPanel(); // CAREFUL. This destroys the whole custom legend operation for deals.
@@ -98,8 +93,10 @@ ol.control.LayerSwitcher.prototype.showPanel = function() {
 /**
  * Hide the legend panel.
  */
-ol.control.LayerSwitcher.prototype.hidePanel = function() {
-   if (this.element.className != this.hiddenClassName) {
+ol.control.LayerSwitcher.prototype.hidePanel = function () {
+
+    if (this.element.className != this.hiddenClassName) {
+        console.log(this.element);
         this.element.className = this.hiddenClassName;
     }
 };
@@ -107,7 +104,7 @@ ol.control.LayerSwitcher.prototype.hidePanel = function() {
 /**
  * Show a layer panel.
  */
-ol.control.LayerSwitcher.prototype.toggleLayerPanel = function() {
+ol.control.LayerSwitcher.prototype.toggleLayerPanel = function () {
     console.log(this);
     var chevron = $(this.lastElementChild);
 
@@ -127,20 +124,19 @@ ol.control.LayerSwitcher.prototype.toggleLayerPanel = function() {
 /**
  * Hide a layer panel.
  */
-ol.control.LayerSwitcher.prototype.hideLayerPanel = function(panelname) {
+ol.control.LayerSwitcher.prototype.hideLayerPanel = function (panelname) {
     $(panelname).addClass('hidden');
 };
-
 
 
 /**
  * Re-draw the layer panel to represent the current state of the layers.
  */
-ol.control.LayerSwitcher.prototype.renderPanel = function() {
+ol.control.LayerSwitcher.prototype.renderPanel = function () {
 
     this.ensureTopVisibleBaseLayerShown_();
 
-    while(this.layerpanel.firstChild) {
+    while (this.layerpanel.firstChild) {
         this.layerpanel.removeChild(this.layerpanel.firstChild);
     }
 
@@ -152,7 +148,7 @@ ol.control.LayerSwitcher.prototype.renderPanel = function() {
  * Set the map instance the control is associated with.
  * @param {ol.Map} map The map instance.
  */
-ol.control.LayerSwitcher.prototype.setMap = function(map) {
+ol.control.LayerSwitcher.prototype.setMap = function (map) {
     // Clean up listeners associated with the previous map
     for (var i = 0, key; i < this.mapListeners.length; i++) {
         this.getMap().unByKey(this.mapListeners[i]);
@@ -162,7 +158,7 @@ ol.control.LayerSwitcher.prototype.setMap = function(map) {
     ol.control.Control.prototype.setMap.call(this, map);
     if (map) {
         var this_ = this;
-        this.mapListeners.push(map.on('pointerdown', function() {
+        this.mapListeners.push(map.on('pointerdown', function () {
             this_.hidePanel();
         }));
         this.renderPanel();
@@ -173,9 +169,9 @@ ol.control.LayerSwitcher.prototype.setMap = function(map) {
  * Ensure only the top-most base layer is visible if more than one is visible.
  * @private
  */
-ol.control.LayerSwitcher.prototype.ensureTopVisibleBaseLayerShown_ = function() {
+ol.control.LayerSwitcher.prototype.ensureTopVisibleBaseLayerShown_ = function () {
     var lastVisibleBaseLyr;
-    ol.control.LayerSwitcher.forEachRecursive(this.getMap(), function(l, idx, a) {
+    ol.control.LayerSwitcher.forEachRecursive(this.getMap(), function (l, idx, a) {
         if (l.get('type') === 'base' && l.getVisible()) {
             lastVisibleBaseLyr = l;
         }
@@ -190,12 +186,12 @@ ol.control.LayerSwitcher.prototype.ensureTopVisibleBaseLayerShown_ = function() 
  * @private
  * @param {ol.layer.Base} The layer whos visibility will be toggled.
  */
-ol.control.LayerSwitcher.prototype.setVisible_ = function(lyr, visible) {
+ol.control.LayerSwitcher.prototype.setVisible_ = function (lyr, visible) {
     var map = this.getMap();
     lyr.setVisible(visible);
     if (visible && lyr.get('type') === 'base') {
         // Hide all other base layers regardless of grouping
-        ol.control.LayerSwitcher.forEachRecursive(map, function(l, idx, a) {
+        ol.control.LayerSwitcher.forEachRecursive(map, function (l, idx, a) {
             if (l != lyr && l.get('type') === 'base') {
                 l.setVisible(false);
             }
@@ -209,7 +205,7 @@ ol.control.LayerSwitcher.prototype.setVisible_ = function(lyr, visible) {
  * @param {ol.layer.Base} lyr Layer to be rendered (should have a title property).
  * @param {Number} idx Position in parent group list.
  */
-ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
+ol.control.LayerSwitcher.prototype.renderLayer_ = function (lyr, idx) {
 
     var this_ = this;
 
@@ -223,13 +219,13 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
         item.className = 'layer';
 
 
-        var collapsename = lyrId+'_collapse';
+        var collapsename = lyrId + '_collapse';
 
         var label = document.createElement('a');
 
         item.className = 'layer-group';
 
-        label.setAttribute('role' ,"button");
+        label.setAttribute('role', "button");
         label.setAttribute('aria-controls', collapsename);
         label.setAttribute('aria-expanded', false);
 
@@ -297,7 +293,7 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
  * @param {ol.layer.Group} lyr Group layer whos children will be rendered.
  * @param {Element} elm DOM element that children will be appended to.
  */
-ol.control.LayerSwitcher.prototype.renderLayers_ = function(lyr, elm) {
+ol.control.LayerSwitcher.prototype.renderLayers_ = function (lyr, elm) {
     var lyrs = lyr.getLayers().getArray().slice().reverse();
     for (var i = 0, l; i < lyrs.length; i++) {
         l = lyrs[i];
@@ -314,8 +310,8 @@ ol.control.LayerSwitcher.prototype.renderLayers_ = function(lyr, elm) {
  * @param {Function} fn Callback which will be called for each `ol.layer.Base`
  * found under `lyr`. The signature for `fn` is the same as `ol.Collection#forEach`
  */
-ol.control.LayerSwitcher.forEachRecursive = function(lyr, fn) {
-    lyr.getLayers().forEach(function(lyr, idx, a) {
+ol.control.LayerSwitcher.forEachRecursive = function (lyr, fn) {
+    lyr.getLayers().forEach(function (lyr, idx, a) {
         fn(lyr, idx, a);
         if (lyr.getLayers) {
             ol.control.LayerSwitcher.forEachRecursive(lyr, fn);
