@@ -57,12 +57,49 @@ class MapLOActivities(MapLOModel):
             """)
         return [id[0] for id in cursor.fetchall()]
 
+    tag_group_to_attribute_group_ids = {}
+
+    @classmethod
+    def save_activity_record(cls, new, save, imported=False):
+        activity_identifier = cls.get_deal_id(new)
+        if not imported:
+            versions = cls.get_activity_versions(new)
+            for i, version in enumerate(versions):
+                if not version['id'] == new.id:
+                    if save:
+                        landmatrix.models.Activity.history.using(V2).create(
+                            id=version['id'],
+                            activity_identifier=activity_identifier,
+                            availability=version['reliability'],
+                            fk_status_id=version['fk_status'],
+                            fully_updated=None,
+                            history_date=calculate_history_date(versions, i),
+                            history_user=get_history_user(version)
+                        )
+
+        if save:
+            new.activity_identifier = activity_identifier
+            new.fk_status_id = landmatrix.models.Status.objects.get(name="pending").id
+            new.save(using=V2)
+            changeset = landmatrix.models.ActivityChangeset(
+                comment='Imported from Land Observatory',
+                fk_activity_id=new.pk
+            )
+            changeset.save(using=V2)
+
     @classmethod
     def save_record(cls, new, save):
         """Save all versions of an activity as HistoricalActivity records."""
         cls._save = save
-        cls.save_activity_record(new, save)
         tag_groups = A_Tag_Group.objects.using(cls.DB).filter(fk_activity=new.id)
+
+        imported = is_imported_deal_groups(tag_groups)
+        if imported:
+            # set activity identifier to Tag "Original reference number"
+            original_refnos = get_group_tags(tag_groups, "Original reference number")
+            new.activity_identifier = original_refnos[0]
+
+        cls.save_activity_record(new, save, imported)
 
         for tag_group in tag_groups:
             attrs = {}
@@ -95,7 +132,7 @@ class MapLOActivities(MapLOModel):
 
         taggroup_proxy = type('MockTagGroup', (object,), {"fk_activity": new.id, 'id': None})
         cls.write_activity_attribute_group(
-            {'not_public_reason': 'Land Observatory Import (new)' if not is_imported_deal_groups(tag_groups) else 'Land Observatory Import (duplicate)'},
+            {'not_public_reason': 'Land Observatory Import (new)' if not imported else 'Land Observatory Import (duplicate)'},
             taggroup_proxy,
             None,
             'not_public'
@@ -236,35 +273,6 @@ class MapLOActivities(MapLOModel):
         ).values_list('id', flat=True).distinct().first()
 
         return current_activity
-
-    tag_group_to_attribute_group_ids = {}
-
-    @classmethod
-    def save_activity_record(cls, new, save):
-        activity_identifier = cls.get_deal_id(new)
-        versions = cls.get_activity_versions(new)
-        if True or not is_imported_deal(new):
-            for i, version in enumerate(versions):
-                if not version['id'] == new.id:
-                    if save:
-                        landmatrix.models.Activity.history.using(V2).create(
-                            id=version['id'],
-                            activity_identifier=activity_identifier,
-                            availability=version['reliability'],
-                            fk_status_id=version['fk_status'],
-                            fully_updated=None,
-                            history_date=calculate_history_date(versions, i),
-                            history_user=get_history_user(version)
-                        )
-        if save:
-            new.activity_identifier = activity_identifier
-            new.fk_status_id = landmatrix.models.Status.objects.get(name="pending").id
-            new.save(using=V2)
-            changeset = landmatrix.models.ActivityChangeset(
-                comment='Imported from Land Observatory',
-                fk_activity_id=new.pk
-            )
-            changeset.save(using=V2)
 
     @classmethod
     def get_deal_id(cls, activity):
@@ -485,3 +493,7 @@ def get_deal_country(deal):
 
 def get_deal_tags(deal, key):
     return [tag.value.value for group in deal.tag_groups for tag in group.tags if tag.key.key == key]
+
+
+def get_group_tags(groups, key):
+    return [tag.value.value for group in groups for tag in group.tags if tag.key.key == key]
