@@ -1,5 +1,6 @@
 from datetime import timedelta
 from pprint import pprint
+from traceback import print_stack
 
 from django.utils.encoding import force_text
 
@@ -27,6 +28,8 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class ChangesetProtocol(View):
+
+    DEFAULT_MAX_NUM_CHANGESETS = 100
 
     #@method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -59,13 +62,16 @@ class ChangesetProtocol(View):
     def dashboard(self, request):
         res = {
             "latest_added": self.get_paged_results(
-                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("active")), request.GET.get('latest_added_page')
+                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("active")[:self.DEFAULT_MAX_NUM_CHANGESETS]),
+                request.GET.get('latest_added_page')
             ),
             "latest_modified": self.get_paged_results(
-                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("overwritten")), request.GET.get('latest_modified_page')
+                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("overwritten")[:self.DEFAULT_MAX_NUM_CHANGESETS]),
+                request.GET.get('latest_modified_page')
             ),
             "latest_deleted": self.get_paged_results(
-                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("deleted")), request.GET.get('latest_deleted_page')
+                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("deleted")[:self.DEFAULT_MAX_NUM_CHANGESETS]),
+                request.GET.get('latest_deleted_page')
             ),
             "manage": self._changeset_to_json(limit=2),
             "feedbacks": _feedbacks_to_json(request.user, limit=5),
@@ -166,9 +172,7 @@ class ChangesetProtocol(View):
             }
         if "a_changesets" in self.data:
             self.handle_a_changesets(deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user)
-        if "sh_changesets" in self.data:
-            self.handle_sh_changesets(deletions_page, limit, res)
-        print('_changeset_to_json'); pprint(res)
+        # print('_changeset_to_json'); pprint(res)
         return res
 
     def handle_a_changesets(self, deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user):
@@ -200,7 +204,7 @@ class ChangesetProtocol(View):
             a_changesets["my_deals"] = my_deals
 
     def handle_updates(self, a_changesets, changesets, limit, updates_page):
-        changesets_update = changesets.filter(fk_activity__fk_status__name="pending")
+        changesets_update = changesets.filter(fk_activity__fk_status__name="pending")[:self.DEFAULT_MAX_NUM_CHANGESETS]
         changesets_update = self.apply_dashboard_filters(changesets_update)
         changesets_update = limit and changesets_update[:limit] or changesets_update
         paginator = Paginator(changesets_update, 10)
@@ -236,7 +240,7 @@ class ChangesetProtocol(View):
         return _uniquify_changesets_by_deal(changesets)
 
     def handle_inserts(self, a_changesets, changesets, inserts_page, limit):
-        changesets_insert = changesets.filter(fk_activity__fk_status__name="pending")  #  previous_version__isnull=True)
+        changesets_insert = changesets.filter(fk_activity__fk_status__name="pending")[:self.DEFAULT_MAX_NUM_CHANGESETS]  #  previous_version__isnull=True)
         changesets_insert = self.apply_dashboard_filters(changesets_insert)
         changesets_insert = limit and changesets_insert[:limit] or changesets_insert
         paginator = Paginator(changesets_insert, 10)
@@ -248,32 +252,6 @@ class ChangesetProtocol(View):
         if inserts["cs"]:
             inserts["pagination"] = _pagination_to_json(paginator, page)
             a_changesets["inserts"] = inserts
-
-    def handle_sh_changesets(self, deletions_page, limit, res):
-        print('SH changesets not yet implemented!')
-        return
-        sh_changesets = {}
-        if "deletes" in self.data["sh_changesets"]:
-            changesets_delete = SH_Changeset.objects.filter(fk_stakeholder__fk_status__name="to_delete").order_by(
-                "-timestamp")
-            changesets_delete = limit and changesets_delete[:limit] or changesets_delete
-            paginator = Paginator(changesets_delete, 10)
-            page = _get_page(deletions_page, paginator)
-            changesets_delete = page.object_list
-            deletes = {"cs": []}
-            for cs in changesets_delete:
-                comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
-                deletes["cs"].append({
-                    "id": cs.id,
-                    "investor_id": cs.fk_stakeholder.stakeholder_identifier,
-                    "user": cs.fk_user.username,
-                    "comment": comment
-                })
-            if deletes["cs"]:
-                deletes["pagination"] = _pagination_to_json(paginator, page)
-                sh_changesets["deletes"] = deletes
-        if sh_changesets:
-            res["sh_changesets"] = sh_changesets
 
 
 def _approve_investor_changes(investor, changeset):
@@ -319,7 +297,7 @@ def _uniquify_changesets_dict(changesets):
 def _uniquify_changesets_by_deal(changesets):
     unique, deals = [], []
     for changeset in changesets:
-        if not changeset.fk_activity.activity_identifier in deals:
+        if changeset.fk_activity.activity_identifier not in deals:
             unique.append(changeset)
             deals.append(changeset.fk_activity.activity_identifier)
     return unique
