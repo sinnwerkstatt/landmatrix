@@ -7,6 +7,7 @@ from .land_observatory_objects.changeset import Changeset
 from .land_observatory_objects.involvement import Involvement
 from .map_lo_model import MapLOModel
 from .map_lo_activities import MapLOActivities
+from .map_lo_stakeholder import MapLOStakeholder
 
 from migrate import V2
 
@@ -26,53 +27,10 @@ class MapLandObservatory:
     @classmethod
     @transaction.atomic(using=V2)
     def map_all(cls, save=False, verbose=False):
+        MapLOStakeholder.map_all(save, verbose)
         MapLOActivities.map_all(save, verbose)
-        # MapLOStakeholders.map_all(save, verbose)
-        # MapLOSTagGroups.map_all(save, verbose)
-        # MapLOChangesets.map_all(save, verbose)
         # MapLOInvolvements.map_all(save, verbose)
-
-
-class MapLOATagGroups(MapLOModel):
-
-    old_class = A_Tag_Group
-    new_class = ActivityAttributeGroup
-
-    @classmethod
-    def all_records(cls):
-        return A_Tag_Group.objects.using('lo').all().values()
-
-    @classmethod
-    def save_record(cls, new, save):
-        print(new)
-
-
-class MapLOStakeholders(MapLOModel):
-
-    old_class = Stakeholder
-    new_class = Investor
-
-    @classmethod
-    def all_records(cls):
-        return Stakeholder.objects.using('lo').all().values()
-
-    @classmethod
-    def save_record(cls, new, save):
-        print(new)
-
-
-class MapLOSTagGroups(MapLOModel):
-
-    old_class = SH_Tag_Group
-    new_class = Investor
-
-    @classmethod
-    def all_records(cls):
-        return SH_Tag_Group.objects.using('lo').all().values()
-
-    @classmethod
-    def save_record(cls, new, save):
-        print(new)
+        # MapLOChangesets.map_all(save, verbose)
 
 
 class MapLOChangesets(MapLOModel):
