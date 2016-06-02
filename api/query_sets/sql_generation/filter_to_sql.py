@@ -54,6 +54,8 @@ class FilterToSQL:
         if self.filters.get("activity", {}).get("tags"):
             tags = self.filters.get("activity").get("tags")
             for index, (tag, value) in enumerate(tags.items()):
+                if not isinstance(value, list):
+                    value = [value]
 
                 i = index+FilterToSQL.count_offset
 
@@ -71,7 +73,7 @@ class FilterToSQL:
                 elif operation in ("in", "not_in"):
                     # value = value[0].split(",")
                     in_values = ",".join(["'%s'" % v.strip().replace("'", "\\'") for v in value])
-                    if variable == "region":
+                    if variable == "target_region":
                         where.append(
                             "AND ar%(count)i.name %(op)s " % {
                                 "count": i,
@@ -98,12 +100,17 @@ class FilterToSQL:
                              = data_source_type.attributes->'type'""" % {
                                 "count": i,
                             })
+                elif operation == 'is' and variable == 'target_region':
+                    where.append(
+                        "AND ar%(count)i.id %(op)s " % {
+                            "count": i,
+                            "op": self.OPERATION_MAP[operation][0] % value[-1].replace("'", "\\'"),
+                        }
+                    )
                 else:
 
                     if self.DEBUG: print('_where_activity', index, tag, value)
 
-                    if not isinstance(value, list):
-                        value = [value]
                     for v in value:
                         year = None
                         if "##!##" in v:
@@ -134,7 +141,7 @@ class FilterToSQL:
                 # TODO: move this somewhere else, this function is too complicated
                 # TODO: optimize SQL? This query seems painful, it could be
                 # better as an array_agg possibly
-                if operation == 'is':
+                if operation == 'is' and variable != 'target_region':
                     # 'Is' operations requires that we exclude other values,
                     # otherwise it's just the same as contains
 
@@ -142,15 +149,16 @@ class FilterToSQL:
                     if variable == 'intention':
                         # intentions can be nested, for example all biofuels
                         # deals are also agriculture (parent of biofuels)
-                        parent_value = get_choice_parent(v, intention_choices)
+                        parent_value = get_choice_parent(value[-1],
+                                                         intention_choices)
                         if parent_value:
                             allowed_values = (
                                 parent_value,
-                                v.replace("'", "\\'"),
+                                value[-1].replace("'", "\\'"),
                             )
 
                     if not allowed_values:
-                        allowed_values = (v.replace("'", "\\'"),)
+                        allowed_values = (value[-1].replace("'", "\\'"),)
 
                     where.append("""
                         AND a.id NOT IN (
@@ -228,11 +236,28 @@ class FilterToSQL:
                 variable = variable_operation[0]
 
                 # join tag tables for each condition
-                if variable == "region":
+                if variable == "target_region":
                     tables_from.append(
-                        "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i, countries AS ac%(count)i, regions AS ar%(count)i \n" % {"count": i} +\
-                        " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? 'target_country' AND attr_%(count)i.value = ac%(count)i.name AND ar%(count)i.id = ac%(count)i.fk_region)"%{"count": i, "key": variable}
-                    )
+                        """
+                        LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i
+                        ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? 'target_country')
+                        """ % {
+                            'count': i,
+                        })
+                    tables_from.append(
+                        """
+                        LEFT JOIN landmatrix_country AS ac%(count)i
+                        ON CAST(attr_%(count)i.attributes->'target_country' AS NUMERIC) = ac%(count)i.id
+                        """ % {
+                            'count': i,
+                        })
+                    tables_from.append(
+                        """
+                        LEFT JOIN landmatrix_region AS ar%(count)i
+                        ON ar%(count)i.id = ac%(count)i.fk_region_id
+                        """ % {
+                            'count': i,
+                        })
                 elif variable.isdigit():
                     tables_from.append(
                         "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i\n" % {"count": i} +\
