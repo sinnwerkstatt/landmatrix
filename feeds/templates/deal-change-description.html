@@ -1,5 +1,22 @@
 {% load i18n %}
 
 {% block content %}
-  {{ changes }}
+    {% if changes %}
+        <ul>
+        {% for attribute, values in changes.items %}
+            <li>
+            {% if values.1 and not values.0 %}{# attribute added #}
+                {{ attribute }} {% trans "added" %} ({{ values.1 }}).
+            {% elif values.0 and not values.1 %}{# attribute removed #}
+                {{ attribute }} {% trans "removed" %}.
+            {% else %}{# attribute changed #}
+                {{ attribute }} {% trans "changed from" %}
+                {{ values.0 }} {% trans "to" %} {{ values.1 }}.
+            {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+    {% trans "No changes." %}
+    {% endif %}
 {% endblock %}

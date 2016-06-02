@@ -1,6 +1,6 @@
-from collections import deque
+import datetime
 
-from landmatrix.models import Deal
+from landmatrix.models import DealHistoryItem
 
 
 def _get_added_attributes(earlier_deal, later_deal):
@@ -12,7 +12,8 @@ def _get_added_attributes(earlier_deal, later_deal):
 
     for attr_name in added_attrs:
         later_value = later_deal.attributes[attr_name]
-        added[attr_name] = (None, later_value)
+        if later_value not in (None, ''):
+            added[attr_name] = (None, later_value)
 
     return added
 
@@ -25,7 +26,10 @@ def _get_changed_or_removed_attributes(earlier_deal, later_deal):
             later_value = later_deal.attributes[attr_name]
         except KeyError:
             later_value = None
-        if earlier_value != later_value:
+
+        unequal = earlier_value != later_value
+        both_empty = earlier_value in (None, '') and later_value in (None, '')
+        if unequal and not both_empty:
             changes[attr_name] = (earlier_value, later_value)
 
     return changes
@@ -38,13 +42,17 @@ class DealChangesList:
 
     def __init__(self, deal, max_items=100):
         self.deal = deal
-        self.history_queryset = self.deal.activity.history.all()[:max_items]
-        self.history_queue = deque(self.history_queryset)
+        deal_history = DealHistoryItem.get_history_for(self.deal)
+        self.deal_history = list(deal_history.items())
 
     def __iter__(self):
-        inital_activity = self.history_queue.popleft()
-        self.earlier_deal = Deal.from_activity(inital_activity)
+        self.index = 0
         self.later_deal = None
+        self.later_deal_timestamp = None
+
+        initial_timestamp, initial_deal = self.deal_history[self.index]
+        self.earlier_deal = initial_deal
+        self.earlier_deal_timestamp = initial_timestamp
 
         return self
 
@@ -69,13 +77,20 @@ class DealChangesList:
 
     def __next__(self):
         self.later_deal = self.earlier_deal
+        self.later_deal_timestamp = self.earlier_deal_timestamp
+
+        self.index += 1
+
         try:
-            activity = self.history_queue.popleft()
+            next_timestamp, next_deal = self.deal_history[self.index]
         except IndexError:
             raise StopIteration
         else:
-            self.earlier_deal = Deal.from_activity(activity)
+            self.earlier_deal = next_deal
+            self.earlier_deal_timestamp = next_timestamp
 
         changes = self.compare_deals()
+        deal_datetime = datetime.datetime.utcfromtimestamp(
+            self.later_deal_timestamp)
 
-        return self.later_deal, changes
+        return deal_datetime, self.later_deal, changes

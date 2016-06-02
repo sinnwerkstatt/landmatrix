@@ -19,8 +19,9 @@ class DealChangesFeed(Feed):
         context = super().get_context_data(**kwargs)
         item = kwargs.get('item', None)
         context.update({
-            'deal': item[0],
-            'changes': item[1],
+            'timestamp': item[0],
+            'deal': item[1],
+            'changes': item[2],
         })
 
         return context
@@ -48,20 +49,20 @@ class DealChangesFeed(Feed):
         return url
 
     def item_link(self, item):
-        deal, changes = item
-        deal_timestamp = int(deal.activity.history_date.timestamp())
+        timestamp, deal, changes = item
+        deal_timestamp = int(timestamp.timestamp())
         compound_id = '{0}_{1:d}'.format(deal.id, deal_timestamp)
         url = reverse('deal_detail', kwargs={'deal_id': compound_id})
 
         return url
 
     def item_pubdate(self, item):
-        deal, changes = item
+        timestamp, deal, changes = item
 
-        return deal.activity.history_date
+        return timestamp
 
     def item_author_name(self, item):
-        deal, changes = item
+        timestamp, deal, changes = item
         try:
             name = deal.activity.history_user.name
         except AttributeError:
@@ -70,7 +71,7 @@ class DealChangesFeed(Feed):
         return name
 
     def item_author_email(self, item):
-        deal, changes = item
+        timestamp, deal, changes = item
         try:
             email = deal.activity.history_user.email
         except AttributeError:
