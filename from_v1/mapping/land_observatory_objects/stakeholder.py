@@ -1,3 +1,4 @@
+from .tag_groups import SH_Tag_Group
 from django.db import models
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -23,6 +24,16 @@ class Stakeholder(models.Model):
     @property
     def identifier(self):
         return self.stakeholder_identifier
+
+    @property
+    def tag_groups(self):
+        return SH_Tag_Group.objects.using('lo').filter(fk_stakeholder=self.id)
+
+    def get_tag_value(self, key):
+        for group in self.tag_groups:
+            for tag in group.tags:
+                if tag.key.key == key:
+                    return tag.value.value
 
     def __repr__(self):
         return (

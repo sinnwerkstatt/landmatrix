@@ -2,21 +2,8 @@ from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
-from grid.views.deal_comparison_view import get_comparison
-from landmatrix.models import Activity, Deal
-
-
-def get_deals_with_changes(initial_deal, activity_history):
-    deals = []
-    # we're going backwards through history here
-    later_deal = initial_deal
-    for activity in activity_history:
-        current_deal = Deal.from_activity(activity)
-        form_comparison = get_comparison(later_deal, current_deal)
-        deals.append((activity, later_deal, form_comparison))
-        later_deal = current_deal
-
-    return deals
+from landmatrix.models import Deal
+from .deal_changes import DealChangesList
 
 
 class DealChangesFeed(Feed):
@@ -32,21 +19,17 @@ class DealChangesFeed(Feed):
         context = super().get_context_data(**kwargs)
         item = kwargs.get('item', None)
         context.update({
-            'activity': item[0],
+            'timestamp': item[0],
             'deal': item[1],
-            'forms': item[2],
+            'changes': item[2],
         })
 
         return context
 
     def items(self, obj):
-        '''
-        Returns a list of (deal, [(form1, form2, different), ...]) tuples.
-        '''
-        activity_history = obj.activity.history.all()[:self.max_items]
-        items = get_deals_with_changes(obj, activity_history)
+        deal_changes = DealChangesList(obj, max_items=self.max_items)
 
-        return items
+        return deal_changes
 
     def title(self, obj):
         title = _("Deal %(deal_id)s History") % {'deal_id': obj.id}
@@ -66,25 +49,32 @@ class DealChangesFeed(Feed):
         return url
 
     def item_link(self, item):
-        activity, deal, form_comparison = item
-        compound_id = '{0}_{1:d}'.format(
-            deal.id, int(activity.history_date.timestamp()))
+        timestamp, deal, changes = item
+        deal_timestamp = int(timestamp.timestamp())
+        compound_id = '{0}_{1:d}'.format(deal.id, deal_timestamp)
         url = reverse('deal_detail', kwargs={'deal_id': compound_id})
 
         return url
 
     def item_pubdate(self, item):
-        activity, deal, form_comparison = item
+        timestamp, deal, changes = item
 
-        return activity.history_date
+        return timestamp
 
     def item_author_name(self, item):
-        activity, deal, form_comparison = item
+        timestamp, deal, changes = item
+        try:
+            name = deal.activity.history_user.name
+        except AttributeError:
+            name = None
 
-        return activity.history_user.name if activity.history_user else None
+        return name
 
     def item_author_email(self, item):
-        activity, deal, form_comparison = item
-        author = deal.activity.history_user
+        timestamp, deal, changes = item
+        try:
+            email = deal.activity.history_user.email
+        except AttributeError:
+            email = None
 
-        return activity.history_user.email if activity.history_user else None
+        return email

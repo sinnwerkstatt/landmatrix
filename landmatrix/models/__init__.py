@@ -15,6 +15,7 @@ from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
 from landmatrix.models.currency import Currency
 from landmatrix.models.deal import Deal
+from landmatrix.models.deal_history import DealHistoryItem
 from landmatrix.models.filter_preset import FilterPresetGroup, FilterPreset
 from landmatrix.models.filter_condition import FilterCondition
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
