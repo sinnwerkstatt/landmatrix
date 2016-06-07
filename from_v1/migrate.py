@@ -1,3 +1,4 @@
+import os
 import traceback
 
 from django.core.exceptions import ImproperlyConfigured
@@ -22,7 +23,9 @@ def load_project(proj_path, app_name):
 
 V1, V2 = 'v1_my', 'v2'
 
-BASE_PATH = '/home/lene/workspace/landmatrix'
+# Up three levels
+BASE_PATH = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
 load_project(BASE_PATH+'/land-matrix', 'old_editor')

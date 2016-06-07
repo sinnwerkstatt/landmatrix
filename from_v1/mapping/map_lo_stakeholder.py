@@ -20,8 +20,15 @@ class MapLOStakeholder(MapLOModel):
     def all_records(cls):
         # TODO: Only the newest versions should be converted
         # TODO: filter out the Stakeholders that are already in the Land Matrix
-        return Stakeholder.objects.using(cls.DB).all().values()
+        existing_stakeholders = new_class.objects.using(V2).all().
+        # Eval straight off to avoid cross db query
+        existing_names = list(existing_stakeholders.values('name', flat=True))
 
+        lo_stakeholders = Stakeholder.objects.using(cls.DB).all()
+        lo_stakeholder_values = lo_stakeholders.exclude(
+            name__in=existing_names).values()
+
+        return lo_stakeholder_values
 
     @classmethod
     def save_record(cls, new, save):
@@ -37,7 +44,7 @@ class MapLOStakeholder(MapLOModel):
 
         if save:
             # TODO save older versions as historical records (see map_lo_activities.save_activity_record()
-            new.save(using=cls.DB)
+            new.save(using=V2)
 
 
 def lm_country_for_lo_country(country_name):
