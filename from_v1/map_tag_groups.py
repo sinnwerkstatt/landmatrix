@@ -7,8 +7,7 @@ from migrate import V1, V2, load_project, BASE_PATH
 from map_model import MapModel
 from map_model_implementations import year_to_date, MapActivity
 
-load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
-load_project(BASE_PATH+'/land-matrix', 'dashboard')
+load_project(BASE_PATH+'/landmatrix', 'landmatrix')
 
 from landmatrix.models import Language, Activity, ActivityAttributeGroup, StakeholderAttributeGroup, Country
 if V1 == 'v1_my':

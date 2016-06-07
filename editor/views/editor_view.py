@@ -10,6 +10,7 @@ import json
 from editor.views.changeset_protocol import ChangesetProtocol
 from grid.views.view_aux_functions import render_to_response
 from landmatrix.models.activity import Activity
+from api.query_sets.statistics_query_set import BASE_JOIN, BASE_CONDITION
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -60,38 +61,23 @@ def get_overall_deal_count():
 def get_public_deal_count():
     from django.db import connection
 
+    sql = """SELECT
+    COUNT(DISTINCT a.activity_identifier) AS deals
+FROM """ + Activity._meta.db_table + """ AS a,
+(
+    SELECT DISTINCT
+        a.id
+    FROM """ + Activity._meta.db_table + """ AS a
+    """ + BASE_JOIN + """
+    WHERE """ + BASE_CONDITION + """
+    GROUP BY a.activity_identifier, a.id, pi.deal_size
+) AS sub
+WHERE a.id = sub.id
+"""
     cursor = connection.cursor()
-    cursor.execute("""
-SELECT COUNT(DISTINCT a.activity_identifier)
-FROM landmatrix_activity AS a
-JOIN landmatrix_status AS st ON a.fk_status_id = st.id
-LEFT JOIN landmatrix_activityattributegroup AS a5 ON a.id = a5.fk_activity_id AND a5.attributes ? 'production_size'
-LEFT JOIN landmatrix_activityattributegroup AS a4 ON a.id = a4.fk_activity_id AND a4.attributes ? 'contract_size'
-LEFT JOIN landmatrix_activityattributegroup AS a6 ON a.id = a6.fk_activity_id AND a6.attributes ? 'intended_size'
-LEFT JOIN landmatrix_activityattributegroup AS a3 ON a.id = a3.fk_activity_id AND a3.attributes ? 'not_public'
-LEFT JOIN landmatrix_activityattributegroup AS a2 ON a.id = a2.fk_activity_id AND a2.attributes ? 'negotiation_status'
-LEFT JOIN landmatrix_activityattributegroup AS a1 ON a.id = a1.fk_activity_id AND a1.attributes ? 'implementation_status'
-WHERE a.fk_status_id = st.id
-AND st.name IN ('active', 'overwritten')
-AND (CAST(SPLIT_PART(a5.attributes->'production_size', '#', 1) AS NUMERIC) >= 200 OR (a5.attributes->'production_size') IS NULL)
-AND (CAST(SPLIT_PART(a4.attributes->'contract_size', '#', 1) AS NUMERIC) >= 200 OR (a4.attributes->'contract_size') IS NULL)
-AND ((a4.attributes->'contract_size') IS NULL
-    AND ((a5.attributes->'production_size') IS NULL)
-    AND CAST(SPLIT_PART(a6.attributes->'intended_size', '#', 1) AS NUMERIC) >= 200 OR (a6.attributes->'intended_size') IS NULL
-)
-AND (a3.attributes->'not_public' NOT IN ('True', 'on') OR (a3.attributes->'not_public') IS NULL)
-AND (
-    SPLIT_PART(a2.attributes->'negotiation_status', '#', 1) IN ('Oral Agreement', 'Contract signed')
-    AND a2.date >= '2000-01-01'
-    OR (a2.attributes->'negotiation_status') IS NULL
-)
-AND (
-    SPLIT_PART(a1.attributes->'implementation_status', '#', 1) <> 'Project abandoned'
-    OR (SPLIT_PART(a1.attributes->'implementation_status', '#', 1)) IS NULL
-);
-""")
-    row = cursor.fetchone()
-    return row[0] if row else 0
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result[0]
 
 
 

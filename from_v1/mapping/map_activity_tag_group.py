@@ -69,7 +69,7 @@ class MapActivityTagGroupBase:
 
         if year:
             attrs = {
-                key: value+cls.YEAR_BASED_DATA_SEPARATOR+year_to_date(year)
+                key: (value or '')+cls.YEAR_BASED_DATA_SEPARATOR+year_to_date(year)
                 for key, value in attrs.items()
             }
 

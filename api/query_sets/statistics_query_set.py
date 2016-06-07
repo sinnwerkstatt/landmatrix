@@ -1,6 +1,7 @@
 from pprint import pprint
 
 from landmatrix.models import *
+from api.query_sets.fake_query_set_with_subquery import FakeQuerySetFlat
 
 from django.db import connection
 
@@ -15,20 +16,19 @@ BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status ON status.i
     LEFT JOIN """ + Investor._meta.db_table + """ AS s ON ivi.fk_investor_id = s.id
     LEFT JOIN """ + Status._meta.db_table + """ AS os_st ON os.fk_status_id = os_st.id
     LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON a.id = activity_attrs.fk_activity_id
-    LEFT JOIN """ + Country._meta.db_table + """ AS investor_country ON s.fk_country_id = investor_country.id
-    LEFT JOIN """ + Region._meta.db_table + """ AS investor_region ON investor_country.fk_region_id = investor_region.id
     LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON CAST(activity_attrs.attributes->'target_country' AS NUMERIC) = deal_country.id
     LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id
-    LEFT JOIN """ + PublicInterfaceCache._meta.db_table + """ AS pi ON a.id = pi.fk_activity_id AND pi.is_deal"""
+    LEFT JOIN """ + PublicInterfaceCache._meta.db_table + """ AS pi ON a.id = pi.fk_activity_id"""
 HECTARES_SQL = "ROUND(COALESCE(SUM(sub.deal_size)), 0) AS deal_size"
-BASE_CONDITON = "status.name IN ('active', 'overwritten') AND os_st.name IN ('active', 'overwritten')"
+BASE_CONDITION = "status.name IN ('active', 'overwritten') AND os_st.name IN ('active', 'overwritten')"
 
 
-class StatisticsQuerySet:
+class StatisticsQuerySet(FakeQuerySetFlat):
 
     DEBUG = False
 
     def __init__(self, request):
+        super().__init__(request)
         self.country = request.GET.get('target_country')
         self.region = request.GET.get('target_region')
 
@@ -47,7 +47,7 @@ LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON
         pi.deal_size AS deal_size
     FROM """ + Activity._meta.db_table + """ AS a
     """ + BASE_JOIN + """
-    WHERE """ + BASE_CONDITON + ' ' + self.regional_condition() + """
+    WHERE """ + BASE_CONDITION + self.filter_public() + ' ' + self.regional_condition() + """
     AND pi.negotiation_status IS NOT NULL
     GROUP BY a.activity_identifier, a.id, pi.negotiation_status, pi.deal_size
 ) AS sub
@@ -70,4 +70,3 @@ GROUP BY sub.negotiation_status"""
     AND deal_country.fk_region_id = {}
             """.format(self.region)
         return ''
-

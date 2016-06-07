@@ -12,14 +12,14 @@ SELECT DISTINCT
 --  columns:
     %s
 FROM landmatrix_activity                    AS a
-LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_activity_id AND pi.is_deal,
+LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_activity_id %s,
 (
     SELECT DISTINCT
         a.id
 --  subquery columns:
         %s
     FROM landmatrix_activity                       AS a
-    LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_activity_id AND pi.is_deal
+    LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_activity_id %s
 --  additional joins:
     %s
     WHERE
@@ -45,7 +45,9 @@ WHERE sub.id = a.id
     def sql_query(self):
         return (self.QUERY + '\n%s') % (
             self.columns(),
+            self.filter_public(),
             self.subquery_columns(),
+            self.filter_public(),
             self.additional_joins(),
             self.additional_wheres(),
             self._filter_sql,
@@ -66,7 +68,7 @@ SELECT DISTINCT
 --  columns:
     %s
 FROM landmatrix_activity                       AS a
-LEFT JOIN landmatrix_publicinterfacecache      AS pi               ON a.id = pi.fk_activity_id AND pi.is_deal
+LEFT JOIN landmatrix_publicinterfacecache      AS pi               ON a.id = pi.fk_activity_id %s
 LEFT JOIN landmatrix_investoractivityinvolvement AS iai            ON iai.fk_activity_id = a.id
 LEFT JOIN landmatrix_investor                  AS operational_stakeholder ON iai.fk_investor_id = operational_stakeholder.id
 --  additional joins:
@@ -86,4 +88,12 @@ WHERE
 
     def sql_query(self):
         filter_sql = self._filter_sql if self.APPLY_GLOBAL_FILTERS else ''
-        return self.QUERY % (self.columns(), self.additional_joins(), self.additional_wheres(), filter_sql, self.group_by(), self.limit())
+        return self.QUERY % (
+            self.columns(),
+            self.filter_public(),
+            self.additional_joins(),
+            self.additional_wheres(),
+            filter_sql,
+            self.group_by(),
+            self.limit()
+        )

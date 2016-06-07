@@ -14,10 +14,6 @@ from grid.views.profiling_decorators import print_execution_time_and_num_queries
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-# minimum size for a deal to be shown in PI
-MIN_DEAL_SIZE = 200
-
-
 class ActivityProtocol:
 
     @print_execution_time_and_num_queries
@@ -85,31 +81,31 @@ def is_public_deal(activity_identifier):
     if not activity:
         return False
 
-    if _is_deal_older_y2k(activity_identifier):
-        return False
+    #if _is_deal_older_y2k(activity_identifier):
+    #    return False
 
     if not _is_flag_not_public_off(activity_identifier):
         return False
 
-    if _is_size_invalid(activity_identifier):
-        return False
+    #if _is_size_invalid(activity_identifier):
+    #    return False
 
     if not _is_minimum_information_requirement_satisfied(activity_identifier):
         return False
 
     involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity)
 
-    if not _has_subinvestors(involvements):
-        return False
+    #if not _has_subinvestors(involvements):
+    #    return False
 
     if not _has_valid_investors(involvements):
         return False
 
-    if _is_mining_deal(activity_identifier):
-        return False
+    #if _is_mining_deal(activity_identifier):
+    #    return False
 
-    if _is_high_income_target_country(activity_identifier):
-        return False
+    #if _is_high_income_target_country(activity_identifier):
+    #    return False
 
     return True
 

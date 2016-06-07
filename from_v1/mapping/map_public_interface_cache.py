@@ -37,7 +37,7 @@ class MapPublicInterfaceCache(MapModel):
                     fk_activity=get_activity_for_identifier(activity_identifier),
                     is_deal=tags.get('pi_deal', 'False') == 'True',
                     deal_scope=tags.get('deal_scope', None),
-                    deal_size=int(tags.get('pi_deal_size', 0)),
+                    deal_size=int(tags.get('pi_deal_size', 0) or 0),
                     implementation_status=tags.get('pi_implementation_status', None),
                     negotiation_status=tags.get('pi_negotiation_status', None),
 

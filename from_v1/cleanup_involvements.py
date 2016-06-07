@@ -15,9 +15,8 @@ def load_project(proj_path, app_name):
     from django.core.wsgi import get_wsgi_application
     application = get_wsgi_application()
 
-BASE_PATH = '/home/lene/workspace/landmatrix'
-
-load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
+BASE_PATH = '/Users/Simon/Sites'
+load_project(BASE_PATH+'/landmatrix', 'landmatrix')
 
 from landmatrix.models import InvestorVentureInvolvement, InvestorActivityInvolvement
 

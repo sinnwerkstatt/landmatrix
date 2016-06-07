@@ -22,10 +22,9 @@ def load_project(proj_path, app_name):
 
 V1, V2 = 'v1_my', 'v2'
 
-BASE_PATH = '/home/lene/workspace/landmatrix'
-
-load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
-load_project(BASE_PATH+'/land-matrix', 'old_editor')
+BASE_PATH = '/Users/Simon/Sites'
+load_project(BASE_PATH+'/landmatrix', 'landmatrix')
+load_project(BASE_PATH+'/landmatrix-old', 'old_editor')
 
 
 def map_classes(*args):
@@ -173,10 +172,10 @@ if __name__ == '__main__':
     #     print('You need to check out branch "postgres" of the old land-matrix project under')
     #     print(BASE_PATH+'/land-matrix!')
     #     print(e)
-    except (AttributeError, ImportError) as e:
-        print('To migrate the original MySQL data you need to check out branch "master" of the')
-        print('old land-matrix project under '+BASE_PATH+'/land-matrix!')
-        print(e)
-        raise
+    #except (AttributeError, ImportError) as e:
+    #    print('To migrate the original MySQL data you need to check out branch "master" of the')
+    #    print('old land-matrix project under '+BASE_PATH+'/land-matrix!')
+    #    print(e)
+    #    raise
     except ImproperlyConfigured:
         print('Do a "pip install mysqlclient" to install mysql drivers!')

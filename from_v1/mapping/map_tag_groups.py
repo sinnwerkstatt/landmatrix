@@ -5,8 +5,8 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from migrate import V1, V2, load_project, BASE_PATH
 from mapping.map_model import MapModel
 
-load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
-load_project(BASE_PATH+'/land-matrix', 'old_editor')
+load_project(BASE_PATH+'/landmatrix', 'landmatrix')
+load_project(BASE_PATH+'/landmatrix-old', 'old_editor')
 
 from old_editor.models import Language
 
