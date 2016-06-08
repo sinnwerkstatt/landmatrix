@@ -58,6 +58,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             },
             "name": self.group_value,
             "columns": self.columns,
+            "status": ["active", "overwritten"],
             "load_more": self._load_more_amount(),
             "group_slug": self.group,
             "group_value": self.group_value,
