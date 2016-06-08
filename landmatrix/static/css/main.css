@@ -581,10 +581,12 @@ select:not([multiple]) {
   #filterrow h6 {
     margin: 10px 0 5px; }
 
+#statusrow h6,
 #columnsrow h6 {
   color: #c6c6c6;
   margin: 15px 0 5px; }
 
+#statusrow .select2,
 #columnsrow .select2 {
   width: 100% !important; }
 

@@ -18,8 +18,7 @@ class SubqueryBuilder(ListSQLBuilder):
         group_by = ["a.id "] + [col for col in self.columns if not self.is_aggregate_column(col)]
         return 'GROUP BY ' + ', '.join(group_by)
 
-    @classmethod
-    def get_base_sql(cls):
+    def get_base_sql(self):
         return u"""SELECT DISTINCT
 a.activity_identifier,
 %(columns)s, a.id AS id
@@ -28,9 +27,11 @@ FROM landmatrix_activity AS a
 """ + join(PublicInterfaceCache, 'pi', 'a.id = pi.fk_activity_id AND pi.is_deal') + '\n'\
     + join_attributes('deal_scope') + """
 %(from_filter)s
-WHERE """ + "\nAND ".join([
-            cls.status_active_condition(), cls.is_deal_condition(), cls.not_mining_condition()
-        ]) + """
+WHERE """ + "\nAND ".join(filter(None, [
+            self.status_active_condition(),
+            self.is_deal_condition(),
+            self.not_mining_condition()
+        ])) + """
 %(where)s
 %(where_filter)s
 %(group_by)s

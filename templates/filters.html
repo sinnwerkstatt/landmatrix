@@ -65,7 +65,6 @@
                         </li>
                     {% endfor %}
                 </ul>
-
             </div>
             <form class="form" style="display:none">
                 <div class="col-md-2 filterbox filtercontrolbox">
@@ -96,22 +95,38 @@
                 </div>
             </form>
         </div>
-        {% if columns and group == 'all' %}
-        <div id="columnsrow" class="row">
-            <div class="col-sm-12">
-                <h6>{% trans "Select columns for the result table" %}</h6>
-                <select id="id_columns" name="columns" multiple="multiple">
-                    {% for group in variables %}
-                    <optgroup label="{{ group.label }}">
-                        {% for variable in group.items %}
-                        <option value="{{ variable.name }}"{% if variable.name in columns %} selected="selected"{% endif %}>{% trans variable.label %}</option>
+        <form method="GET" action="./">
+            {% if columns and group == 'all' %}
+            <div id="columnsrow" class="row">
+                <div class="col-sm-12">
+                    <h6>{% trans "Select columns for the result table" %}</h6>
+                    <select id="id_columns" name="columns" multiple="multiple">
+                        {% for group in variables %}
+                        <optgroup label="{{ group.label }}">
+                            {% for variable in group.items %}
+                            <option value="{{ variable.name }}"{% if variable.name in columns %} selected="selected"{% endif %}>{% trans variable.label %}</option>
+                            {% endfor %}
+                        </optgroup>
                         {% endfor %}
-                    </optgroup>
-                    {% endfor %}
-                </select>
+                    </select>
+                </div>
             </div>
-        </div>
-        {% endif %}
+            {% endif %}
+            {% if request.user.is_staff %}
+            <div id="statusrow" class="row">
+                <div class="col-sm-12">
+                    <h6>{% trans "Select status of deals" %}</h6>
+                    <select id="id_status" name="status" multiple="multiple">
+                        <option value="active"{% if "active" in deal_status %} selected="selected"{% endif %}>{% trans "Added (not changed)" %}</option>
+                        <option value="overwritten"{% if "overwritten" in deal_status %} selected="selected"{% endif %}>{% trans "Changed" %}</option>
+                        <option value="deleted"{% if "deleted" in deal_status %} selected="selected"{% endif %}>{% trans "Deleted" %}</option>
+                        <option value="pending"{% if "pending" in deal_status %} selected="selected"{% endif %}>{% trans "Pending" %}</option>
+                    </select>
+                </div>
+            </div>
+            {% endif %}
+            <p><input type="submit" class="btn btn-primary" value="{% trans "Update" %}" style="display:none"></p>
+        </form>
     </div>
 </div>
 

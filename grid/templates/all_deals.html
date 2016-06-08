@@ -364,8 +364,9 @@
             </table>
         </div>
         {% if load_more %}
-            <a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn">{% trans "More..." %}</a>
+            <a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn pull-left">{% trans "Show more" %}</a>
         {% endif %}
+        <p class="pull-right"><span class="label label-default">{{ data.count|intcomma }}</span> {% trans "deals" %}</p>
     {% else %}
         <p>{% trans "There are currently no deals matching your search criteria." %} <a
                 href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.</p>

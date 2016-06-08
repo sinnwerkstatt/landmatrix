@@ -12,12 +12,13 @@ class RecordReader:
 
     DEBUG = False
 
-    def __init__(self, filters, columns):
+    def __init__(self, filters, columns, is_staff=False):
         self.filters = filters
         self.columns = columns
         if self.DEBUG:
             print('*'*80, 'Filters: \n', filters)
             print('*'*80, 'columns: \n', columns)
+        self.is_staff = is_staff
 
     @print_execution_time_and_num_queries
     def get_all(self, assemble=None):
@@ -46,13 +47,13 @@ class RecordReader:
             columns = [column]+self.filters['order_by']
         else:
             columns = [column]
-        return SubqueryBuilder(self.filters, columns).get_sql()
+        return SubqueryBuilder(self.filters, columns, self.is_staff).get_sql()
 
     def get_all_at_once(self):
         return self._execute_sql(self.get_all_at_once_sql())
 
     def get_all_at_once_sql(self):
-        return SQLBuilder.create(self.filters, self.columns).get_sql()
+        return SQLBuilder.create(self.filters, self.columns, self.is_staff).get_sql()
 
     def _execute_sql(self, sql):
         import time

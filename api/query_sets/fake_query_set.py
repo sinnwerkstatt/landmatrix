@@ -20,7 +20,6 @@ class FakeQuerySet(QuerySet):
     DEBUG = False
 
     _filter_sql = ''
-    _filter_public = False
 
     FIELDS = []
     ADDITIONAL_JOINS = []
@@ -35,7 +34,6 @@ class FakeQuerySet(QuerySet):
         self._additional_joins = self.ADDITIONAL_JOINS
         self._additional_wheres = self.ADDITIONAL_WHERES
         self._set_filter_sql(self._get_filter(request))
-        self._filter_public = not request.user.is_staff
         self._fields = self.FIELDS
         self._group_by = self.GROUP_BY
         self._order_by = self.ORDER_BY
@@ -53,9 +51,6 @@ class FakeQuerySet(QuerySet):
     def columns(self):
         # print(self.FIELDS)
         return ",\n    ".join([definition+" AS "+alias for alias, definition in self._fields])
-
-    def filter_public(self):
-        return self._filter_public and ' AND pi.is_deal' or ''
 
     def additional_joins(self):
         no_dups = self._uniquify_join_expressions(self._additional_joins)

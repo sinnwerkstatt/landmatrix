@@ -16,24 +16,21 @@ class ActivityQuerySet:
         data = request.POST.get('data', '{"filters": {}, "columns": {}}')
         self.data = json.loads(data)
         apply_filters_from_session(request, self.data['filters'])
+        self.is_staff = request.user.is_staff
         if self.DEBUG: pprint(self.data['filters'], width=120, compact=True)
         if 'columns' not in self.data:
             self.data['columns'] = {}
 
     @print_execution_time_and_num_queries
     def all(self):
-        return {
-            "errors": [],
-            "activities":  self._get_activities_by_filter_and_grouping(self.data["filters"], self.data["columns"])
-        }
-
-    @print_execution_time_and_num_queries
-    def _get_activities_by_filter_and_grouping(self, filters, columns):
-
         # if filters.get('group_value') == '':
-        reader = RecordReader(filters, columns)
+        reader = RecordReader(self.data["filters"], self.data["columns"], is_staff=self.is_staff)
         if self.DEBUG:
             print(reader.get_all_sql())
-        return reader.get_all(assemble=reader._make_padded_record_from_column_data)
+        activities = reader.get_all(assemble=reader._make_padded_record_from_column_data)
+        return {
+            "errors": [],
+            "activities": activities,
+        }
 
 

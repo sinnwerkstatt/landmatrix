@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n custom_tags %}
+{% load i18n custom_tags humanize %}
 
 {% block body_class %}dashboard{% endblock %}
 
@@ -14,15 +14,15 @@
 {% if statistics %}
 <ul class="subnav nav nav-pills pull-right">
     <li>
-        <span class="label label-default number">{{ statistics.overall_deal_count }}</span> {% trans "Overall deals" %}
+        <span class="label label-default number">{{ statistics.overall_deal_count|intcomma }}</span> {% trans "Overall deals" %}
     </li>
     <li class="divider"></li>
     <li>
-        <span class="label label-default number">{{ statistics.public_deal_count }}</span> {% trans "Public deals" %}
+        <span class="label label-default number">{{ statistics.public_deal_count|intcomma }}</span> {% trans "Public deals" %}
     </li>
     <li class="divider"></li>
     <li>
-        <span class="label label-default number">{{ statistics.not_public_deal_count }}</span> {% trans "Non public deals" %}
+        <span class="label label-default number">{{ statistics.not_public_deal_count|intcomma }}</span> {% trans "Non public deals" %}
     </li>
 </ul>
 {% endif %}

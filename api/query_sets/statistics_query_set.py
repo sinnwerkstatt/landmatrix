@@ -18,7 +18,7 @@ BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status ON status.i
     LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON a.id = activity_attrs.fk_activity_id
     LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON CAST(activity_attrs.attributes->'target_country' AS NUMERIC) = deal_country.id
     LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id
-    LEFT JOIN """ + PublicInterfaceCache._meta.db_table + """ AS pi ON a.id = pi.fk_activity_id"""
+    LEFT JOIN """ + PublicInterfaceCache._meta.db_table + """ AS pi ON a.id = pi.fk_activity_id AND pi.is_deal"""
 HECTARES_SQL = "ROUND(COALESCE(SUM(sub.deal_size)), 0) AS deal_size"
 BASE_CONDITION = "status.name IN ('active', 'overwritten') AND os_st.name IN ('active', 'overwritten')"
 
@@ -47,7 +47,7 @@ LEFT JOIN """ + ActivityAttributeGroup._meta.db_table + """ AS activity_attrs ON
         pi.deal_size AS deal_size
     FROM """ + Activity._meta.db_table + """ AS a
     """ + BASE_JOIN + """
-    WHERE """ + BASE_CONDITION + self.filter_public() + ' ' + self.regional_condition() + """
+    WHERE """ + BASE_CONDITION + ' ' + self.regional_condition() + """
     AND pi.negotiation_status IS NOT NULL
     GROUP BY a.activity_identifier, a.id, pi.negotiation_status, pi.deal_size
 ) AS sub

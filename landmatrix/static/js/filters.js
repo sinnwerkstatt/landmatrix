@@ -205,7 +205,7 @@ $(document).ready(function () {
     })
 
 
-    $("form").submit(function (e) {
+    $("#filterrow form").submit(function (e) {
         e.preventDefault();
         var form = $(this);
         var data = form.serialize();
@@ -219,8 +219,6 @@ $(document).ready(function () {
         );
     });
 
-    $("#id_columns").select2()
-        .on('change', function () {
-            window.location.href = location.protocol + '//' + location.host + location.pathname + '?' + $('#id_columns').serialize();
-        });
+    $("#id_columns,#id_status").select2()
+        .on('change', function () { $(this).closest("form").find(':submit').show(); });
 });

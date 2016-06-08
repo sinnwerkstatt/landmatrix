@@ -51,8 +51,7 @@ class ListSQLBuilder(SQLBuilder):
                 sub_columns_sql += "sub.%(name)s AS %(name)s,\n" % {"name": c}
         return sub_columns_sql
 
-    @classmethod
-    def get_base_sql(cls):
+    def get_base_sql(self):
         return u"""SELECT
 sub.name AS name,
 %(sub_columns)s
@@ -75,10 +74,12 @@ JOIN (
     "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal\n" +\
      join_attributes('deal_scope') + """
     %(from_filter)s
-    WHERE """ + "\nAND ".join([
+    WHERE """ + "\nAND ".join(filter(None, [
 #            cls.max_version_condition(),
-            cls.status_active_condition(), cls.is_deal_condition(), cls.not_mining_condition()
-        ]) + """
+            self.status_active_condition(),
+            self.is_deal_condition(),
+            self.not_mining_condition()
+        ])) + """
     %(where)s
     %(where_filter)s
     GROUP BY a.id

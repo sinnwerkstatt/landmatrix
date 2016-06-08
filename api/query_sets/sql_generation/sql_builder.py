@@ -16,22 +16,23 @@ def list_view_wanted(filters):
 class SQLBuilder(SQLBuilderData):
 
     @classmethod
-    def create(cls, filters, columns):
+    def create(cls, filters, columns, is_staff=False):
         from .list_sql_builder import ListSQLBuilder
         from .group_sql_builder import GroupSQLBuilder
 
         if list_view_wanted(filters):
-            return ListSQLBuilder(filters, columns)
+            return ListSQLBuilder(filters, columns, is_staff)
         else:
-            return GroupSQLBuilder(filters, columns)
+            return GroupSQLBuilder(filters, columns, is_staff)
 
-    def __init__(self, filters, columns):
+    def __init__(self, filters, columns, is_staff=False):
         self.filters = filters
         self.columns = columns
         self._add_order_by_columns()
         self.group = filters.get("group_by", "")
         self.group_value = filters.get("group_value", "")
         self.filter_to_sql = FilterToSQL(filters, self.columns)
+        self.is_staff = is_staff
         super(SQLBuilder, self).__init__()
 
     def _add_order_by_columns(self):
@@ -120,8 +121,7 @@ class SQLBuilder(SQLBuilderData):
     def filter_where(self):
         return self.filter_to_sql.filter_where()
 
-    @classmethod
-    def get_base_sql(cls):
+    def get_base_sql(self):
         raise RuntimeError('SQLBuilder.get_base_sql() not implemented')
 
     def is_aggregate_column(self, c):
@@ -168,27 +168,25 @@ class SQLBuilder(SQLBuilderData):
             WHERE amax.%s = %s.%s AND amax.fk_status_id IN (%s)
         )""" % (alias, model._meta.db_table, id_field, alias, id_field, ', '.join(map(str, cls.registered_status_ids())))
 
-    @classmethod
-    def status_active_condition(cls):
-        return "a.fk_status_id IN (%s)" % ', '.join(map(str, cls.valid_status_ids()))
+    def status_active_condition(self):
+        return "a.fk_status_id IN (%s)" % ', '.join(map(str, self.valid_status_ids()))
 
-    @classmethod
-    def is_deal_condition(cls):
-        return "pi.is_deal"
+    def is_deal_condition(self):
+        if self.is_staff:
+            return ""
+        else:
+            return "pi.is_deal"
 
-    @classmethod
-    def not_mining_condition(cls):
-        return "a.activity_identifier NOT IN (%s)" % ', '.join(map(str, cls.mining_deals()))
+    def not_mining_condition(self):
+        return "a.activity_identifier NOT IN (%s)" % ', '.join(map(str, self.mining_deals()))
 
     miningdeals = []
-    @classmethod
-    def mining_deals(cls):
-        if not cls.miningdeals:
-            cls.miningdeals = cls.read_mining_deals()
-        return cls.miningdeals
+    def mining_deals(self):
+        if not self.miningdeals:
+            self.miningdeals = self.read_mining_deals()
+        return self.miningdeals
 
-    @classmethod
-    def read_mining_deals(cls):
+    def read_mining_deals(self):
         from django.db import connection
 
         sql = """SELECT DISTINCT a.activity_identifier AS deal_id
@@ -196,10 +194,11 @@ FROM landmatrix_activity                    AS a
 LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal
 LEFT JOIN landmatrix_activityattributegroup AS intention ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
           WHERE
-""" + "\nAND ".join([
-#            cls.max_version_condition(),
-            cls.status_active_condition(), cls.is_deal_condition()
-        ]) + """
+""" + "\nAND ".join(filter(None, [
+#            self.max_version_condition(),
+            self.status_active_condition(),
+            self.is_deal_condition()
+        ])) + """
         AND SPLIT_PART(intention.attributes->'intention', '#', 1) = 'Mining'"""
 
         cursor = connection.cursor()
