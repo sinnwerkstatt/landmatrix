@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from django.utils.translation import ugettext_lazy as _
 
 from grid.forms.choices import intention_choices, get_choice_parent
@@ -11,17 +12,21 @@ class FilterToSQL:
     DEBUG = False
 
     # operation => (numeric operand, character operand, description )
-    OPERATION_MAP = {
-        "is":       ("= %s", "= '%s'", _("is")),
-        "in":       ("IN (%s)", "IN (%s)", _("is one of")),
-        "not_in":   ("NOT IN (%s)", "NOT IN (%s)", _("isn't any of")),
-        "gte":      (">= %s", ">= %s", _("is >=")),
-        "gt":       ("> %s", "> '%s'", _("is >")),
-        "lte":      ("<= %s", "<= '%s'", _("is <=")),
-        "lt":       ("< %s", "< '%s'", _("is <")),
-        "contains": ("LIKE '%%%%%%%%%s%%%%%%%%'", "LIKE '%%%%%%%%%s%%%%%%%%'", _("contains")),
-        "is_empty": ("IS NULL", "IS NULL", _("is empty")),
-    }
+    # This is an ordered dict as the keys are used to generate model choices
+    OPERATION_MAP = OrderedDict([
+        ("is", ("= %s", "= '%s'", _("is"))),
+        ("in", ("IN (%s)", "IN (%s)", _("is one of"))),
+        ("not_in", ("NOT IN (%s)", "NOT IN (%s)", _("isn't any of"))),
+        ("gte", (">= %s", ">= %s", _("is >="))),
+        ("gt", ("> %s", "> '%s'", _("is >"))),
+        ("lte", ("<= %s", "<= '%s'", _("is <="))),
+        ("lt", ("< %s", "< '%s'", _("is <"))),
+        ("contains", (
+            "LIKE '%%%%%%%%%s%%%%%%%%'", "LIKE '%%%%%%%%%s%%%%%%%%'",
+            _("contains")
+        )),
+        ("is_empty", ("IS NULL", "IS NULL", _("is empty"))),
+    ])
 
     count_offset = 1
 

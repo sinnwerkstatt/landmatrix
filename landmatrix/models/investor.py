@@ -54,7 +54,7 @@ class Investor(DefaultStringRepresentation, models.Model):
     history = HistoricalRecords()
 
     subinvestors = models.ManyToManyField(
-        "self", through='InvestorVentureInvolvement',
+        "self", through='InvestorVentureInvolvement', symmetrical=False,
         through_fields=('fk_venture', 'fk_investor'))
 
     class Meta:
@@ -135,8 +135,7 @@ class InvestorVentureInvolvement(models.Model):
     loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
     loans_currency = models.ForeignKey(
         "Currency", verbose_name=_("Loan curency"), blank=True, null=True)
-    # TODO: rename column
-    lonas_date = models.DateField("Loan date", blank=True, null=True)
+    loans_date = models.DateField("Loan date", blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
