@@ -66,7 +66,7 @@ class ExportView(TemplateView):
         # write csv header
         writer.writerow(header)
         for row in data:
-            writer.writerow([str(s).encode("utf-8") for s in row])
+            writer.writerow([str(s) for s in row])
         return response
 
 
@@ -116,11 +116,17 @@ class AllDealsExportView(AllDealsView, ExportView):
         context = super(AllDealsExportView, self).get_context_data(*args, **kwargs)
         return self.export(context['data']['items'], context['columns'], format, filename=kwargs['group'])
 
+    def _limit_query(self):
+        return False
+
 class TableGroupExportView(TableGroupView, ExportView):
     def dispatch(self, request, *args, **kwargs):
         format = kwargs.pop('format')
         context = super(TableGroupExportView, self).get_context_data(*args, **kwargs)
         return self.export(context['data']['items'], context['columns'], format, filename=kwargs['group'])
+
+    def _limit_query(self):
+        return False
 
 class DealDetailExportView(DealDetailView, ExportView):
     def dispatch(self, request, *args, **kwargs):

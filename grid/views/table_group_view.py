@@ -85,7 +85,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             return query_result["activities"]
 
     def _limit_query(self):
-        """ Don't limit query when group view."""
+        """ Don't limit query when group view or export."""
         return not (
             (not self.group_value and self.group not in self.QUERY_LIMITED_GROUPS)
             or self.request.GET.get("starts_with", None)

@@ -10,7 +10,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class ActivityQuerySet:
 
-    DEBUG = False
+    DEBUG = True
 
     def __init__(self, request):
         data = request.POST.get('data', '{"filters": {}, "columns": {}}')
