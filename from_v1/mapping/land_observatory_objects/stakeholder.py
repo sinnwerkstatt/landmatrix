@@ -26,6 +26,13 @@ class Stakeholder(models.Model):
         return self.stakeholder_identifier
 
     @property
+    def all_versions(self):
+        versions = Stakeholder.objects.using('lo').filter(
+            stakeholder_identifier=self.stakeholder_identifier)
+
+        return versions.order_by('version')
+
+    @property
     def tag_groups(self):
         return SH_Tag_Group.objects.using('lo').filter(fk_stakeholder=self.id)
 
