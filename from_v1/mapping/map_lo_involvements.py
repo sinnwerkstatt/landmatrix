@@ -15,6 +15,10 @@ class MapLOInvolvements(MapLOModel):
     old_class = Involvement
 
     @classmethod
+    def all_records(cls):
+        return super().all_records()
+
+    @classmethod
     def map_record(cls, record, save=False, verbose=False):
         old_activity = Activity.objects.using(cls.DB).get(
             pk=record['fk_activity'])
@@ -22,8 +26,9 @@ class MapLOInvolvements(MapLOModel):
             pk=record['fk_stakeholder'])
 
         # Grab the first match in case of duplicate data here
+        uuid_match = 'UUID: {}'.format(old_stakeholder.stakeholder_identifier)
         new_investor_queryset = new_models.Investor.objects.using(V2).filter(
-            comment__contains=old_stakeholder.stakeholder_identifier)
+            comment__contains=uuid_match)
         new_investor = new_investor_queryset.first()
         if new_investor:
             # Investors are now operational companies
@@ -38,12 +43,12 @@ class MapLOInvolvements(MapLOModel):
 
                 cls.save_record(new_record, save=save)
         else:
-            cls._log_object_missing(
-                new_models.Investor.__name__,
-                old_stakeholder.stakeholder_identifier)
+            print(
+                "Couldn't find an imported investor with a UUID matching",
+                '{}'.format(old_stakeholder.stakeholder_identifier))
 
     @classmethod
-    def _map_primary_investor(cls, old_activity):
+    def _map_primary_investor(cls, old_activity, verbose=False):
         new_record = None
         aag_lookup = {
             'landobservatory_uuid': str(old_activity.activity_identifier),
@@ -55,14 +60,15 @@ class MapLOInvolvements(MapLOModel):
             new_record = new_models.InvestorActivityInvolvement(
                 fk_activity=new_activity)
         else:
-            cls._log_object_missing(
-                new_models.Activity.__name__,
-                old_activity.activity_identifier)
+            print(
+                "Counldn't find an imported activity with an attribute group",
+                "containing the UUID",
+                "{}".format(old_activity.activity_identifier))
 
         return new_record
 
     @classmethod
-    def _map_secondary_investor(cls, old_record):
+    def _map_secondary_investor(cls, old_record, verbose=False):
         new_record = None
 
         parent_involvement = cls.old_class.objects.using(cls.DB).filter(
@@ -74,7 +80,10 @@ class MapLOInvolvements(MapLOModel):
                 parent_stakeholder = Stakeholder.objects.using(cls.DB).get(
                     pk=parent_involvement.fk_stakeholder)
             except Stakeholder.DoesNotExist:
-                pass
+                print(
+                    'Bad foreign key in lo data - Stakeholder with id',
+                    '{}'.format(parent_involvement.fk_stakeholder),
+                    'not found')
             else:
                 parent_stakeholder_id = str(
                     parent_stakeholder.stakeholder_identifier)
@@ -87,15 +96,13 @@ class MapLOInvolvements(MapLOModel):
                     new_record = new_models.InvestorVentureInvolvement(
                         fk_venture=new_parent_investor)
                 else:
-                    cls._log_object_missing(
-                        new_models.Investor.__name__,
-                        parent_investor.stakeholder_identifier)
-        else:
-            cls._log_object_missing(
-                cls.old_class.__name__, old_record['fk_activity'])
-        return new_record
+                    print(
+                        "Couldn't find a previously imported Investor with"
+                        "UUID {}".format(parent_stakeholder_id))
 
-    @classmethod
-    def _log_object_missing(cls, type, id):
-        message = "{type} with identifier '{id}' has not been imported yet. Skipping."
-        print(message.format(type=type, id=id))
+        else:
+            print(
+                "Couldn't find a primary investor for activity",
+                "{}".format(old_record['fk_activity']))
+
+        return new_record

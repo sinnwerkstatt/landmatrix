@@ -138,6 +138,8 @@ class MapLOStakeholder(MapLOModel):
 
 
 def get_lm_country(lo_country_name):
+    country = None
+
     RENAMED_COUNTRIES = {
         'Hong Kong': 'China, Hong Kong Special Administrative Region',
         'Korea, Republic of': 'Republic of Korea',
@@ -151,14 +153,16 @@ def get_lm_country(lo_country_name):
     if lo_country_name in RENAMED_COUNTRIES:
         lo_country_name = RENAMED_COUNTRIES[lo_country_name]
 
-    try:
-        country = landmatrix.models.Country.objects.get(name=lo_country_name)
-    except landmatrix.models.Country.DoesNotExist:
-        message = 'Country "{}" does not exist in land matrix DB'.format(
-            lo_country_name)
-        print(message)
-    else:
-        return country
+    if lo_country_name:
+        try:
+            country = landmatrix.models.Country.objects.get(
+                name=lo_country_name)
+        except landmatrix.models.Country.DoesNotExist:
+            message = 'Country "{}" does not exist in land matrix DB'.format(
+                lo_country_name)
+            print(message)
+
+    return country
 
 
 def all_fields_that_do_not_match_new_model(stakeholder):
