@@ -15,8 +15,9 @@ class AddInvestorForm(BaseForm):
     investor_name = forms.CharField(required=False, label=_("Name"), max_length=255)
     country = forms.ChoiceField(required=False, label=_("Country"), choices=())
     classification = forms.ChoiceField(
-            required=False, label=_("Classification"), choices=Investor.classification_choices, widget=forms.RadioSelect
-    )
+        required=False, label=_("Classification"),
+        choices=Investor.CLASSIFICATION_CHOICES,
+        widget=forms.RadioSelect)
     tg_general_comment = forms.CharField(required=False, label=_("Additional comments"), widget=CommentInput)
 
     def __init__(self, *args, **kwargs):

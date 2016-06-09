@@ -151,7 +151,7 @@ def _has_valid_investors(involvements):
 
 
 def _has_subinvestors(involvements):
-        if len(involvements) == 1 and not involvements[0].get_subinvestors():
+        if len(involvements) == 1 and not involvements[0].subinvestors.exists():
             return False
 
         return len(involvements) > 0

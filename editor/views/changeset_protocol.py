@@ -504,7 +504,7 @@ def _approve_activity_deletion(activity, changeset, cs_comment, request):
 
 
 def _any_investor_has_changed(operational_stakeholder, involvements):
-    op_subinvestor_ids = set(s.investor_identifier for s in operational_stakeholder.get_subinvestors())
+    op_subinvestor_ids = set(s.investor_identifier for s in operational_stakeholder.subinvestors.all())
     involvement_investor_ids = (i.fk_investor.investor_identifier for i in involvements)
     return any(op_subinvestor_ids.symmetric_difference(involvement_investor_ids))
 
