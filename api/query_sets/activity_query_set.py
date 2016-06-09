@@ -13,7 +13,7 @@ class ActivityQuerySet:
     DEBUG = True
 
     def __init__(self, request):
-        data = request.POST.get('data', '{"filters": {}, "columns": {}}')
+        data = request.POST.get('data', '{"filters": {}, "columns": {}, "status": {}}')
         self.data = json.loads(data)
         apply_filters_from_session(request, self.data['filters'])
         self.is_staff = request.user.is_staff
@@ -24,7 +24,7 @@ class ActivityQuerySet:
     @print_execution_time_and_num_queries
     def all(self):
         # if filters.get('group_value') == '':
-        reader = RecordReader(self.data["filters"], self.data["columns"], is_staff=self.is_staff)
+        reader = RecordReader(self.data["filters"], self.data["columns"], self.data["status"], is_staff=self.is_staff)
         if self.DEBUG:
             print(reader.get_all_sql())
         activities = reader.get_all(assemble=reader._make_padded_record_from_column_data)

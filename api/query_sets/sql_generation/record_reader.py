@@ -12,9 +12,10 @@ class RecordReader:
 
     DEBUG = False
 
-    def __init__(self, filters, columns, is_staff=False):
+    def __init__(self, filters, columns, status, is_staff=False):
         self.filters = filters
         self.columns = columns
+        self.status = status
         if self.DEBUG:
             print('*'*80, 'Filters: \n', filters)
             print('*'*80, 'columns: \n', columns)
@@ -47,13 +48,13 @@ class RecordReader:
             columns = [column]+self.filters['order_by']
         else:
             columns = [column]
-        return SubqueryBuilder(self.filters, columns, self.is_staff).get_sql()
+        return SubqueryBuilder(self.filters, columns, self.status, self.is_staff).get_sql()
 
     def get_all_at_once(self):
         return self._execute_sql(self.get_all_at_once_sql())
 
     def get_all_at_once_sql(self):
-        return SQLBuilder.create(self.filters, self.columns, self.is_staff).get_sql()
+        return SQLBuilder.create(self.filters, self.columns, self.status, self.is_staff).get_sql()
 
     def _execute_sql(self, sql):
         import time

@@ -16,18 +16,19 @@ def list_view_wanted(filters):
 class SQLBuilder(SQLBuilderData):
 
     @classmethod
-    def create(cls, filters, columns, is_staff=False):
+    def create(cls, filters, columns, status, is_staff=False):
         from .list_sql_builder import ListSQLBuilder
         from .group_sql_builder import GroupSQLBuilder
 
         if list_view_wanted(filters):
-            return ListSQLBuilder(filters, columns, is_staff)
+            return ListSQLBuilder(filters, columns, status, is_staff)
         else:
-            return GroupSQLBuilder(filters, columns, is_staff)
+            return GroupSQLBuilder(filters, columns, status, is_staff)
 
-    def __init__(self, filters, columns, is_staff=False):
+    def __init__(self, filters, columns, status, is_staff=False):
         self.filters = filters
         self.columns = columns
+        self.status = status
         self._add_order_by_columns()
         self.group = filters.get("group_by", "")
         self.group_value = filters.get("group_value", "")
@@ -212,9 +213,6 @@ LEFT JOIN landmatrix_activityattributegroup AS intention ON a.id = intention.fk_
             cls.registeredstatusids = Status.objects.filter(name__in=['active', 'overwritten', 'deleted']).values_list('id', flat=True)
         return cls.registeredstatusids
 
-    validstatusids = []
-    @classmethod
-    def valid_status_ids(cls):
-        if not cls.validstatusids:
-            cls.validstatusids = Status.objects.filter(name__in=['active', 'overwritten']).values_list('id', flat=True)
-        return cls.validstatusids
+    def valid_status_ids(self):
+        status = self.status or ['active', 'overwritten']
+        return Status.objects.filter(name__in=status).values_list('id', flat=True)

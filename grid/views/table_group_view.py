@@ -58,7 +58,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             },
             "name": self.group_value,
             "columns": self.columns,
-            "status": ["active", "overwritten"],
+            "status": self.status,
             "load_more": self._load_more_amount(),
             "group_slug": self.group,
             "group_value": self.group_value,
@@ -71,9 +71,13 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     @print_execution_time_and_num_queries
     def get_records(self):
         ap = ActivityProtocol()
-        self.request.POST = MultiValueDict(
-            {"data": [json.dumps({"filters": self.filters, "columns": self.columns})]}
-        )
+        self.request.POST = MultiValueDict({
+            "data": [json.dumps({
+                "filters": self.filters,
+                "columns": self.columns,
+                "status": self.status
+            })]
+        })
         ap.DEBUG = self.debug_query
         res = ap.dispatch(self.request, action="list_group").content
         query_result = json.loads(res.decode())
@@ -108,6 +112,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     @print_execution_time_and_num_queries
     def _set_columns(self):
+        # FIXME: Convert to property
         if self.group_value:
             self.columns = self.GROUP_COLUMNS_LIST
         else:
@@ -116,6 +121,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     @print_execution_time_and_num_queries
     def _set_filters(self):
+        # FIXME: Convert to property
         data = self.request.GET.copy()
         self.current_formset_conditions = self.get_formset_conditions(
             self._filter_set(data), data, self.group
@@ -125,6 +131,13 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             self.current_formset_conditions, self._order_by(), self.group, self.group_value,
             data.get("starts_with")
         )
+
+    @property
+    def status(self):
+        if self.request.user.is_staff and "status" in self.request.GET:
+            return self.request.GET.getlist("status")
+        else:
+            return ["active", "overwritten"]
 
     @print_execution_time_and_num_queries
     def _get_items(self, query_result):
@@ -182,25 +195,28 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     def _columns(self):
         if self.request.GET.get('columns'):
-            return self.request.GET.getlist('columns')
-
-        columns = {
-            "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
-            "target_region": ["target_region", "intention", "deal_count", "availability"],
-            "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
-#           region column disabled due to slowness resulting from additional JOIN
-#            "stakeholder_country": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
-            "stakeholder_country": ["stakeholder_country", "intention", "deal_count", "availability"],
-            "stakeholder_region": ["stakeholder_region", "deal_count", "availability"],
-            "intention": ["intention", "deal_count", "availability"],
-            "crop": ["crop", "intention", "deal_count", "availability"],
-            "year": ["year", "intention", "deal_count", "availability"],
-            "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
-            "all": ["deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country",
-                    "intention", "negotiation_status", "implementation_status", "intended_size",
-                    "contract_size", ]
-        }
-        return columns[self.group]
+            columns = self.request.GET.getlist('columns')
+            if not 'deal_id' in columns:
+                columns = ['deal_id',] + columns
+        else:
+            columns = {
+                "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
+                "target_region": ["target_region", "intention", "deal_count", "availability"],
+                "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
+#               region column disabled due to slowness resulting from additional JOIN
+#                "stakeholder_country": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
+                "stakeholder_country": ["stakeholder_country", "intention", "deal_count", "availability"],
+                "stakeholder_region": ["stakeholder_region", "deal_count", "availability"],
+                "intention": ["intention", "deal_count", "availability"],
+                "crop": ["crop", "intention", "deal_count", "availability"],
+                "year": ["year", "intention", "deal_count", "availability"],
+                "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
+                "all": ["deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country",
+                        "intention", "negotiation_status", "implementation_status", "intended_size",
+                        "contract_size", ]
+            }
+            columns = columns[self.group]
+        return columns
 
     def _map_values_of_group(self, value_list, format_string):
         """ Map different values of one group together. Ensures that values of a group are together.
