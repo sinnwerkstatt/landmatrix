@@ -3,6 +3,7 @@ from django.db import models
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+
 class Stakeholder(models.Model):
 
     id = models.AutoField(primary_key=True)

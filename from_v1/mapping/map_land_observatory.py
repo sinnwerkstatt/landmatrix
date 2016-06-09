@@ -8,6 +8,7 @@ from .land_observatory_objects.involvement import Involvement
 from .map_lo_model import MapLOModel
 from .map_lo_activities import MapLOActivities
 from .map_lo_stakeholder import MapLOStakeholder
+from .map_lo_involvements import MapLOInvolvements
 
 from migrate import V2
 
@@ -25,12 +26,12 @@ class MapLandObservatory:
     """
 
     @classmethod
-    @transaction.atomic(using=V2)
     def map_all(cls, save=False, verbose=False):
-        MapLOStakeholder.map_all(save, verbose)
-        MapLOActivities.map_all(save, verbose)
-        # MapLOInvolvements.map_all(save, verbose)
-        # MapLOChangesets.map_all(save, verbose)
+        with transaction.atomic(using=V2):
+            MapLOStakeholder.map_all(save, verbose)
+            MapLOActivities.map_all(save, verbose)
+            MapLOInvolvements.map_all(save, verbose)
+            # MapLOChangesets.map_all(save, verbose)
 
 
 class MapLOChangesets(MapLOModel):
@@ -40,19 +41,6 @@ class MapLOChangesets(MapLOModel):
     @classmethod
     def all_records(cls):
         return Changeset.objects.using('lo').all().values()
-
-    @classmethod
-    def save_record(cls, new, save):
-        print(new)
-
-
-class MapLOInvolvements(MapLOModel):
-
-    old_class = Involvement
-
-    @classmethod
-    def all_records(cls):
-        return Involvement.objects.using('lo').all().values()
 
     @classmethod
     def save_record(cls, new, save):
