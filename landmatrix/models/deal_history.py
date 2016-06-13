@@ -3,8 +3,8 @@ import traceback
 from django.core.exceptions import ObjectDoesNotExist
 
 from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-from landmatrix.models.deal import Deal, aggregate_activity_attributes
+from landmatrix.models.activity_attribute_group import ActivityAttribute
+from landmatrix.models.deal import Deal
 
 from collections import OrderedDict
 from datetime import datetime, time, tzinfo
@@ -37,13 +37,11 @@ class DealHistoryItem(Deal):
         return my_deal.get_history()
 
     def get_activity_attributes(self):
-        attributes = ActivityAttributeGroup.objects.filter(fk_activity_id=self.activity.id)
-
         if self.date:
-            attributes = [a.history.as_of(self.date) for a in attributes if existed_at_date(a, self.date)]
-
-        attributes_list = [a.attributes for a in attributes]
-        return aggregate_activity_attributes(attributes_list, {})
+            return dict(ActivityAttribute.history.filter(history_date__lte=self.date, fk_activity_id=self.activity.id).values_list('name', 'value'))
+        else:
+            return dict(ActivityAttribute.objects.filter(fk_activity_id=self.activity.id).values_list('name', 'value'))
+        return attributes
 
     def get_user(self):
         return self.activity.changed_by
@@ -72,30 +70,11 @@ class DealHistoryItem(Deal):
         return sorted(date_and_activity, key=lambda entry: entry[0])
 
     def get_change_dates(self):
-        attributes_history_dates = [
-            item[0]
-            for item in ActivityAttributeGroup.history.filter(fk_activity_id=self.activity.id).values_list('history_date')
-        ]
+        attrs = ActivityAttribute.history.filter(fk_activity_id=self.activity.id).order_by('history_date').values_list('history_date')
 
         if not self.use_rounded_dates:
-            return attributes_history_dates
+            from django.utils import timezone
+            attrs = list(set([datetime(aa.year, aa.month, aa.day, aa.hour, aa.minute, aa.second,
+                tzinfo=timezone.now().tzinfo) for aa in attrs]))
 
-        return _unique_rounded_dates(attributes_history_dates)
-
-
-def _unique_rounded_dates(dates):
-    return sorted(list(set([_rounded_date(d) for d in dates])))
-
-
-def _rounded_date(d):
-    from django.utils import timezone
-    return datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, tzinfo=timezone.now().tzinfo)
-
-
-def existed_at_date(a, date):
-    try:
-        a.history.as_of(date)
-        return True
-    except ObjectDoesNotExist:
-        return False
-
+        return attrs

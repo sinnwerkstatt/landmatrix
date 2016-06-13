@@ -52,6 +52,10 @@ class YearBasedWidget(forms.MultiWidget):
             value = isinstance(value, (list, tuple)) and value or self.decompress(value)
             for i in range(int(len(value)/len(self.get_widgets()))):
                 self.widgets.extend(self.get_widgets())
+        else:
+            self.widgets = self.get_widgets()
+        if name == "crops":
+            raise IOError(value)
 
         if self.is_localized:
             for widget in self.widgets:

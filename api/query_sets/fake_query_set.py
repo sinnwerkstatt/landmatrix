@@ -2,7 +2,7 @@ from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from grid.views.view_aux_functions import create_condition_formset, apply_filters_from_session
 from landmatrix.models.browse_condition import BrowseCondition
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 
 from django.db.models.query import QuerySet
 from django.db import connection
@@ -173,10 +173,10 @@ class FakeQuerySet(QuerySet):
             filter_sql += " AND pi.deal_scope = '%s' " % deal_scope[0]
         if data_source_type:
             filter_sql += """ AND NOT (
-            SELECT ARRAY_AGG(data_source_type.attributes->'type')
-            FROM %s AS data_source_type
-            WHERE a.id = data_source_type.fk_activity_id AND data_source_type.attributes ? 'type'
-        ) = ARRAY['Media report']""" % ActivityAttributeGroup._meta.db_table
+            SELECT ARRAY_AGG(value)
+            FROM %s AS activity_attrs
+            WHERE a.id = activity_attrs.fk_activity_id AND activity_attrs.name = 'type'
+        ) = ARRAY['Media report']""" % ActivityAttribute._meta.db_table
 
         self._set_filters(get_data)
         # self._add_order_by_columns()

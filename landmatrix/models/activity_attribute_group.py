@@ -10,13 +10,31 @@ from django.contrib.gis.db import models as geomodels
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class ActivityAttributeGroup(DefaultStringRepresentation, models.Model):
-    fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"))
-    fk_language = models.ForeignKey("Language", verbose_name=_("Language"))
-    date = models.DateField(_("Date"), blank=True, null=True, db_index=True)
-    attributes = hstore.DictionaryField(db_index=True)
+class ActivityAttributeGroup(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
+    
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Activity attribute group')
+        verbose_name_plural = _('Activity attribute groups')
+
+class ActivityAttribute(DefaultStringRepresentation, models.Model):
+    fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"))
+    fk_group = models.ForeignKey(ActivityAttributeGroup, blank=True, null=True, verbose_name=_("Activity Attribute Group"))
+    fk_language = models.ForeignKey("Language", blank=True, null=True, verbose_name=_("Language"))
+    name = models.CharField(max_length=255, blank=True, null=True)
+    value = models.TextField(max_length=255, blank=True, null=True)
+    date = models.DateField(_("Date"), blank=True, null=True, db_index=True)
     polygon = geomodels.MultiPolygonField(dim=2, srid=4326, spatial_index=True, blank=True, null=True)
 
     objects = hstore.HStoreManager()
     history = HistoricalRecords()
+    
+    def __str__(self):
+        return '%s: %s' % (self.name, self.value)
+
+    class Meta:
+        verbose_name = _('Activity attribute')
+        verbose_name_plural = _('Activity attributes')

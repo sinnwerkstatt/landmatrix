@@ -5,7 +5,7 @@ from time import time, mktime
 from grid.tests.deals_test_data import DealsTestData
 from grid.tests.with_client_mixin import WithClientMixin
 from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.deal_history import DealHistoryItem
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -92,15 +92,21 @@ class TestDealDetailView(DealsTestData, WithClientMixin, TestCase):
         self.assertIn(str(self.PRODUCTION_SIZE['old']), grep_line(content, 'production_size', trailing=6)[0])
 
     def _change_activity_attributes(self):
+        attributes = []
         activity = Activity.objects.last()
-        attributes = ActivityAttributeGroup.objects.filter(fk_activity=activity). \
-            filter(attributes__contains=['intended_size']).first()
-        attributes.attributes.update({
+        attrs = {
             'intended_size': self.INTENDED_SIZE['new'],
             'contract_size': self.CONTRACT_SIZE['new'],
             'production_size': self.PRODUCTION_SIZE['new'],
-        })
-        attributes.save()
+        }
+        for key, value in attrs.items():
+            aa = ActivityAttribute.objects.create(
+                fk_activity=activity,
+                fk_language_id=1,
+                name=key,
+                value=value,
+            )
+            attributes.append(aa)
         return attributes
 
 

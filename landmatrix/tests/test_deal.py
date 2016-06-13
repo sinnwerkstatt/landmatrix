@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 from landmatrix.models.language import Language
 from landmatrix.tests.with_status import WithStatus
@@ -37,14 +37,14 @@ class TestDeal(WithStatus):
         for act_id in range(1, length+1):
             self._create_activity(act_id)
         deals = Deal.objects.all()
-        self._check_is_deal_list(deals, 1)
+        self._check_is_public_list(deals, 1)
 
     def test_all_with_several_activities(self):
         length = self.NUM_ACTIVITIES
         for act_id in range(1, length+1):
             self._create_activity(act_id)
         deals = Deal.objects.all()
-        self._check_is_deal_list(deals, self.NUM_ACTIVITIES)
+        self._check_is_public_list(deals, self.NUM_ACTIVITIES)
 
     def test_all_is_indexable(self):
         length = self.NUM_ACTIVITIES
@@ -120,7 +120,7 @@ class TestDeal(WithStatus):
         values = map(lambda g: g.attributes['the_same_attribute'], deal.attribute_groups())
         self.assertEqual(['some_other_value', 'some_value'], sorted(values))
 
-    def _check_is_deal_list(self, deals, length):
+    def _check_is_public_list(self, deals, length):
         self.assertEqual(length, len(list(deals)))
         self._check_all_are_deals(deals)
 
@@ -138,7 +138,14 @@ class TestDeal(WithStatus):
 
     def _create_attributes(self, act_id, attributes):
         act = Activity.objects.filter(activity_identifier=act_id).first()
-        ActivityAttributeGroup(fk_activity=act, attributes=attributes, fk_language=self.language, date=datetime.now()).save()
+        for key, value in attributes.items():
+            ActivityAttribute.objects.create(
+                fk_activity=act,
+                fk_language=self.language,
+                name=key,
+                value=value
+                 date=datetime.now()
+            )
 
     def _create_investor(self, activity, inv_id=None):
         if not inv_id:

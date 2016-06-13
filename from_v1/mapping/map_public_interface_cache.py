@@ -35,7 +35,7 @@ class MapPublicInterfaceCache(MapModel):
                 tags = { lu.key: lu.value for lu in lookup_objects}
                 pi_cache = landmatrix.models.PublicInterfaceCache(
                     fk_activity=get_activity_for_identifier(activity_identifier),
-                    is_deal=tags.get('pi_deal', 'False') == 'True',
+                    is_public=tags.get('pi_deal', 'False') == 'True',
                     deal_scope=tags.get('deal_scope', None),
                     deal_size=int(tags.get('pi_deal_size', 0) or 0),
                     implementation_status=tags.get('pi_implementation_status', None),

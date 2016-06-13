@@ -16,27 +16,27 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
                 SELECT COUNT(DISTINCT ap.name)
                 FROM landmatrix_crop                   AS c
                 JOIN landmatrix_agriculturalproduce    AS ap ON c.fk_agricultural_produce_id = ap.id
-                JOIN landmatrix_activityattributegroup AS kv
+                JOIN landmatrix_activityattribute      AS kv
                     ON a.id = kv.fk_activity_id
-                    AND kv.attributes ? 'crops'
-                    AND CAST(SPLIT_PART(kv.attributes->'crops', '#', 1) AS NUMERIC) = c.id
+                    AND kv.name = 'crops'
+                    AND kv.value LIKE '%' || c.id || '%'
             ) > 1 THEN 'Multiple use'
             ELSE (
                 SELECT ap.name
                 FROM landmatrix_crop                   AS c
                 JOIN landmatrix_agriculturalproduce    AS ap ON c.fk_agricultural_produce_id = ap.id
-                JOIN landmatrix_activityattributegroup AS kv
+                JOIN landmatrix_activityattribute      AS kv
                     ON a.id = kv.fk_activity_id
-                    AND kv.attributes ? 'crops'
-                    AND CAST(SPLIT_PART(kv.attributes->'crops', '#', 1) AS NUMERIC) = c.id
+                    AND kv.name = 'crops'
+                    AND kv.value LIKE '%' || c.id || '%'
                 LIMIT 1
             )
         END"""),
     ]
     ADDITIONAL_JOINS = [
-        # "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
-        "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
-        "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id",
+        #"LEFT JOIN landmatrix_activityattribute         AS intention        ON a.id = intention.fk_activity_id AND intention.name = 'intention'",
+        "LEFT JOIN landmatrix_activityattribute         AS target_country   ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'",
+        "LEFT JOIN landmatrix_country                   AS deal_country     ON target_country.name = 'target_country' AND target_country.value = deal_country.id",
         "LEFT JOIN landmatrix_region                    AS deal_region      ON deal_country.fk_region_id = deal_region.id",
     ]
     GROUP_BY = ['sub.agricultural_produce']

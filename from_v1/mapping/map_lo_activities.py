@@ -246,21 +246,35 @@ class MapLOActivities(MapLOModel):
         if 'YEAR' in attrs:
             year = attrs['YEAR']
             del attrs['YEAR']
-        aag = landmatrix.models.ActivityAttributeGroup(
-            fk_activity_id=activity_id, fk_language=landmatrix.models.Language.objects.get(pk=1),
-            date=year, attributes=attrs, name=name, polygon=polygon
-        )
-        if cls._save:
-            if not cls.is_current_version(tag_group):
-                aag = landmatrix.models.ActivityAttributeGroup.history.using(V2).create(
-                    id=cls.get_last_id() + 1,
-                    history_date=cls.get_history_date(tag_group),
-                    fk_activity_id=activity_id,
-                    fk_language=landmatrix.models.Language.objects.get(pk=1),
-                    date=year, attributes=attrs, name=name, polygon=polygon
-                )
-            else:
-                aag.save(using=V2)
+
+        save = cls._save and cls.is_current_version(tag_group)
+        aag = landmatrix.models.ActivityAttributeGroup(name=name)
+        if save:
+            aag.save(using=V2)
+        for key, value in attrs.items():
+            aa = landmatrix.models.ActivityAttribute(
+                fk_activity_id=activity_id,
+                fk_language=landmatrix.models.Language.objects.get(pk=1),
+                name=key,
+                value=value,
+                date=year,
+                polygon=polygon
+            )
+            if save:
+                aa.save(using=V2)
+        # No need to import LO history
+        #if cls._save:
+        #    if not cls.is_current_version(tag_group):
+        #        aag = landmatrix.models.ActivityAttribute.history.using(V2).create(
+        #            id=cls.get_last_id() + 1,
+        #            history_date=cls.get_history_date(tag_group),
+        #            fk_activity_id=activity_id,
+        #            fk_language=landmatrix.models.Language.objects.get(pk=1),
+        #            date=year,
+        #            attributes=attrs,
+        #            name=name,
+        #            polygon=polygon
+        #        )
 
         if hasattr(aag, 'id'):
             cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id

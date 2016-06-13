@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import ActivityAttributeGroup
+from landmatrix.models import ActivityAttribute
 
 
 def get_join_columns(columns, group, group_value):
@@ -26,20 +26,31 @@ def join_expression(table_or_model, alias, local_field, foreign_field='id'):
 
 
 def local_table_alias(model):
-    if model == ActivityAttributeGroup: return 'a'
+    if model == ActivityAttribute: return 'a'
     else: raise RuntimeError('Model not recognized: '+str(model))
 
 
-def join_attributes(alias, attribute='', attributes_model=ActivityAttributeGroup, attribute_field='fk_activity_id'):
+def join_attributes(alias, attribute='', attributes_model=ActivityAttribute, attribute_field='fk_activity_id'):
     if not attribute: attribute = alias
     return join(
         attributes_model, alias,
-        "%s.id = %s.%s AND %s.attributes ? '%s'" % (local_table_alias(attributes_model), alias, attribute_field, alias, attribute)
+        "%s.id = %s.%s AND %s.name = '%s'" % (
+            local_table_alias(attributes_model),
+            alias,
+            attribute_field,
+            alias,
+            attribute
+        )
     )
 
 
 def join_activity_attributes(alias, attribute):
     return join(
-        ActivityAttributeGroup, alias,
-        on="a.activity_identifier = %s.activity_identifier AND %s.attributes ? '%s'" % (alias, alias, attribute)
+        ActivityAttribute,
+        alias,
+        on="a.activity_identifier = %s.activity_identifier AND %s.name = '%s'" % (
+            alias,
+            alias,
+            attribute
+        )
     )

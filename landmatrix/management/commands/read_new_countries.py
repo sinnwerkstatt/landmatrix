@@ -3,7 +3,7 @@ from pprint import pprint
 from django.core.management.base import BaseCommand
 
 from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.country import Country
 
 import csv
@@ -73,13 +73,10 @@ def get_investor_country(deal):
 def get_orphaned_countries():
     dropped_countries = get_old_countries() - get_new_countries()
     dropped_countries_ids = list(Country.objects.filter(name__in=dropped_countries).values_list('id', flat=True))
-    deals_in_dropped_countries = ActivityAttributeGroup.objects.filter(
-        attributes__contains={'target_country': dropped_countries_ids}
-    )
+    deals_in_dropped_countries = ActivityAttribute.objects.filter(name='target_country')
     return [
-        Country.objects.get(pk=attributes.attributes['target_country'])
-        for attributes in deals_in_dropped_countries
-        ]
+        Country.objects.get(pk=aa.value) for aa in deals_in_dropped_countries
+    ]
 
 
 def get_new_countries():
@@ -98,4 +95,4 @@ def get_old_countries():
 
 
 def deals_in_country(country):
-    return set(Activity.objects.filter(activityattributegroup__attributes__contains={'target_country': country.id}))
+    return set(Activity.objects.filter(attributes__name='target_country', attributes__value=country.id))

@@ -34,9 +34,9 @@ LEFT JOIN landmatrix_publicinterfacecache      AS pi               ON a.id = pi.
     LEFT JOIN landmatrix_investor                  AS stakeholder      ON ivi.fk_investor_id = stakeholder.id
     LEFT JOIN landmatrix_country                   AS investor_country ON stakeholder.fk_country_id = investor_country.id
     LEFT JOIN landmatrix_region                    AS investor_region  ON investor_country.fk_region_id = investor_region.id
-    LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
-    LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'
-    LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id
+    LEFT JOIN landmatrix_activityattribute         AS intention        ON a.id = intention.fk_activity_id AND intention.name = 'intention'
+    LEFT JOIN landmatrix_activityattribute         AS target_country   ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'
+    LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.value AS NUMERIC) = deal_country.id
     LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id
     WHERE
 --        a.version = (
@@ -44,7 +44,7 @@ LEFT JOIN landmatrix_publicinterfacecache      AS pi               ON a.id = pi.
 --            WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
 --        ) AND
             a.fk_status_id IN (2, 3)
-        AND pi.is_deal
+        AND pi.is_public
 --        AND pi.deal_scope = 'transnational'
 --        AND pi.deal_scope = 'domestic'
 ) AS sub

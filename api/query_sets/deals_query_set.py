@@ -14,28 +14,30 @@ class DealsQuerySet(FakeQuerySetFlat):
 
     FIELDS = [
         ('deal_id',   'a.activity_identifier'),
-        ('point_lat', "location.attributes->'point_lat'"),
-        ('point_lon', "location.attributes->'point_lon'"),
+        ('point_lat', "point_lat.name = 'point_lat'"),
+        ('point_lon', "point_lon.name = 'point_lon'"),
         ('intention',
-         "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.attributes->'intention'), ', '), '')"),
-        ('intended_size', "intended_size.attributes->'intended_size'"),
-         # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intended_size.attributes->'intended_size'), ', '), '')"),
-        ('contract_size', "contract_size.attributes->'contract_size'"),
-         # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_size.attributes->'contract_size'), ', '), '')"),
-        ('production_size', "production_size.attributes->'production_size'"),
-         # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT production_size.attributes->'production_size'), ', '), '')"),
+         "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.name.name = 'intention'), ', '), '')"),
+        ('intended_size', "intended_size.name = 'intended_size'"),
+         # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intended_size.name = 'intended_size'), ', '), '')"),
+        ('contract_size', "contract_size.name = 'contract_size'"),
+         # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_size.name = 'contract_size'), ', '), '')"),
+        ('production_size', "production_size.name = 'production_size'"),
+         # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT production_size.name = 'production_size'), ', '), '')"),
         ('investor', 'operational_stakeholder.name'),
     ]
     ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_activityattributegroup    AS location         ON a.id = location.fk_activity_id AND location.attributes ? 'point_lat' AND location.attributes ? 'point_lon'",
-        "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'"
-        "LEFT JOIN landmatrix_activityattributegroup    AS intended_size    ON a.id = intended_size.fk_activity_id AND intended_size.attributes ? 'intended_size'"
-        "LEFT JOIN landmatrix_activityattributegroup    AS contract_size    ON a.id = contract_size.fk_activity_id AND contract_size.attributes ? 'contract_size'"
-        "LEFT JOIN landmatrix_activityattributegroup    AS production_size  ON a.id = production_size.fk_activity_id AND production_size.attributes ? 'production_size'"
+        "LEFT JOIN landmatrix_activityattribute    AS point_lat        ON a.id = point_lat.fk_activity_id AND point_lat.name = 'point_lat'",        
+        "LEFT JOIN landmatrix_activityattribute    AS point_lon        ON a.id = point_lon.fk_activity_id AND point_lon.name = 'point_lon'",
+        "LEFT JOIN landmatrix_activityattribute    AS intention        ON a.id = intention.fk_activity_id AND intention.name = 'intention'"
+        "LEFT JOIN landmatrix_activityattribute    AS intended_size    ON a.id = intended_size.fk_activity_id AND intended_size.name = 'intended_size'"
+        "LEFT JOIN landmatrix_activityattribute    AS contract_size    ON a.id = contract_size.fk_activity_id AND contract_size.name = 'contract_size'"
+        "LEFT JOIN landmatrix_activityattribute    AS production_size  ON a.id = production_size.fk_activity_id AND production_size.name = 'production_size'"
     ]
-    ADDITIONAL_WHERES = ["location.attributes ? 'point_lat' AND location.attributes ? 'point_lon'"]
+    ADDITIONAL_WHERES = ["point_lat.name = 'point_lat' AND point_lon.name = 'point_lon'"]
     GROUP_BY = [
-        'location.attributes', 'intended_size.attributes', 'contract_size.attributes', 'production_size.attributes',
+        'point_lat.name', 'point_lon.name',
+        'intended_size.name', 'contract_size.name', 'production_size.name',
         'operational_stakeholder.name', 'a.activity_identifier'
     ]
 
@@ -69,21 +71,24 @@ class DealsQuerySet(FakeQuerySetFlat):
 
         for attribute in attributes:
             self._fields = add_to_list_if_not_present(
-                self._fields, [(attribute, "{}.attributes->'{}'".format(attribute, attribute))]
+                self._fields, [(attribute, "%(name)s.name = '%(name)s'" % { 'name': attribute })]
             )
             self._additional_joins = add_to_list_if_not_present(
                 self._additional_joins, [
-                    "LEFT JOIN landmatrix_activityattributegroup    AS {}  ON a.id = {}.fk_activity_id AND {}.attributes ? '{}'".format(
-                        attribute, attribute, attribute, attribute
-                    )
+                    "LEFT JOIN landmatrix_activityattribute    AS %(name)s  ON a.id = %(name)s.fk_activity_id AND %(name)s.name = '%(name)s'" % {
+                    'name': attribute
+                    }
                 ])
             self._group_by = add_to_list_if_not_present(
-                self._group_by, ['{}.attributes'.format(attribute)]
+                self._group_by, ['%s.name' % attribute]
             )
 
     def _set_limit(self, limit):
         if limit and ',' in limit:
-            limit = '{} OFFSET {}'.format(limit.split(',')[0], limit.split(',')[1])
+            limit = '%s OFFSET %s' % (
+                limit.split(',')[0],
+                limit.split(',')[1]
+            )
         self._limit = limit
 
     def _set_investor_country(self, country_id):
@@ -113,18 +118,18 @@ class DealsQuerySet(FakeQuerySetFlat):
         if not country_id: return
         self._additional_joins = add_to_list_if_not_present(
             self._additional_joins, [
-                "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
+                "LEFT JOIN landmatrix_activityattribute         AS target_country   ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'",
         ])
         self._additional_wheres = add_to_list_if_not_present(
-            self._additional_wheres, ["target_country.attributes->'target_country' = '%s'" % country_id]
+            self._additional_wheres, ["target_country.value = '%s'" % country_id]
         )
 
     def _set_target_region(self, region_id):
         if not region_id: return
         self._additional_joins = add_to_list_if_not_present(
             self._additional_joins, [
-                "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
-                "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id"
+                "LEFT JOIN landmatrix_activityattribute         AS target_country   ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'",
+                "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.value AS NUMERIC) = deal_country.id"
         ])
         self._additional_wheres = add_to_list_if_not_present(
             self._additional_wheres, ["deal_country.fk_region_id = " + region_id]
@@ -135,10 +140,10 @@ class DealsQuerySet(FakeQuerySetFlat):
         if lon_min > lon_max: lon_max, lon_min = lon_min, lon_max
         self._additional_wheres = add_to_list_if_not_present(
             self._additional_wheres, [
-                "CAST(location.attributes->'point_lat' AS NUMERIC) >= " + lat_min,
-                "CAST(location.attributes->'point_lat' AS NUMERIC) <= " + lat_max,
-                "CAST(location.attributes->'point_lon' AS NUMERIC) >= " + lon_min,
-                "CAST(location.attributes->'point_lon' AS NUMERIC) <= " + lon_max,
+                "CAST(point_lat.value AS NUMERIC) >= " + lat_min,
+                "CAST(point_lat.value AS NUMERIC) <= " + lat_max,
+                "CAST(point_lon.value AS NUMERIC) >= " + lon_min,
+                "CAST(point_lon.value AS NUMERIC) <= " + lon_max,
         ])
 
     def _set_negotiation_status(self, negotiation_status):

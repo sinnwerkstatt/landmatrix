@@ -56,13 +56,14 @@ class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1))
         if isinstance(activity, Deal):
             activity = activity.activity
         if isinstance(activity, Activity):
-            taggroups = ActivityAttributeGroup.objects.\
-                filter(fk_activity=activity).filter(attributes__contains=["location"])
+            attrs = ActivityAttribute.objects.filter(fk_activity=activity, 
+                name="location")
         else:
-            taggroups = []
+            attrs = []
         data = []
-        for i, taggroup in enumerate(taggroups):
-            form_data = DealContractForm.get_data(activity, taggroup=taggroup)
+        # FIXME: After get_data is converted
+        for key, value in attrs.items():
+            form_data = DealContractForm.get_data(activity, taggroup=tags)
             data.append(form_data)
         return data
 

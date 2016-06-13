@@ -7,7 +7,7 @@ from django.utils.encoding import force_text
 from editor.models import UserRegionalInfo
 from grid.views.activity_protocol import ActivityProtocol
 from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.activity_changeset_review import ActivityChangesetReview, ReviewDecision
 from landmatrix.models.activity_feedback import ActivityFeedback
 from landmatrix.models.activity_changeset import ActivityChangeset
@@ -329,19 +329,18 @@ def _find_changed_fields(changeset):
 
     activity = changeset.fk_activity
     prev_activity = activity.history.as_of(changeset.timestamp)
-    prev_tags = ActivityAttributeGroup.history.filter(fk_activity=prev_activity). \
-        filter(history_date__lte=changeset.timestamp).values_list('attributes', flat=True)
-    tags = ActivityAttributeGroup.objects.filter(fk_activity=changeset.fk_activity).values_list('attributes',
-                                                                                                flat=True)
+    prev_tags = dict(a.ActivityAttribute.history.filter(fk_activity=prev_activity). \
+        filter(history_date__lte=changeset.timestamp).values_list('name', 'value'))
+    tags = dict(ActivityAttribute.objects.filter(fk_activity=changeset.fk_activity) \
+        .values_list('name', 'value'))
+
     prev_keys = []
-    for tag in tags:
-        for prev_tag in prev_tags:
-            if tag.fk_a_key.key == prev_tag.fk_a_key.key:
-                if tag.fk_a_value != prev_tag.fk_a_value:
-                    # field has been changed
-                    fields_changed.append(tag.fk_a_key.id)
-                break
-    for key in set([t.fk_a_key.id for t in tags]).difference([t.fk_a_key.id for t in prev_tags]):
+    for key, value in tags.items():
+        if key in prev_tags and value != prev_tags[key]:
+            # field has been changed
+            fields_changed.append(key)
+            break
+    for key in set(tags.keys()).difference(prev_tags.keys()):
         # field has been added or deleted
         fields_changed.append(key)
     return fields_changed

@@ -54,17 +54,19 @@ class DealsTestData:
         }
         if additional_attributes:
             attributes.update(additional_attributes)
-        ActivityAttributeGroup(
+        for key, value in attributes.items(): 
+            ActivityAttribute.objects.create(
+                fk_activity=Activity.objects.last(),
+                fk_language=Language.objects.last(),
+                name=key,
+                value=value,
+                date=date.today(),
+            )
+        PublicInterfaceCache.objects.create(
             fk_activity=Activity.objects.last(),
-            fk_language=Language.objects.last(),
-            date=date.today(),
-            attributes=attributes
-        ).save()
-        PublicInterfaceCache(
-            fk_activity=Activity.objects.last(),
-            is_deal=True,
+            is_public=True,
             deal_scope='transnational'
-        ).save()
+        )
 
     def create_country(self):
         if self.region: return
@@ -83,14 +85,26 @@ class DealsTestData:
     def create_activity_with_status(self, status_id, act_id = 0, version=1):
         self.make_language()
         if not act_id: act_id = self.ACT_ID
-        Activity(
-                fk_status=Status.objects.get(id=status_id), activity_identifier=act_id,
+        Activity.objects.create(
+                fk_status=Status.objects.get(id=status_id),
+                activity_identifier=act_id,
 #                version=version
-        ).save()
+        )
 
     def add_attributes_to_activity(self, activity, attributes):
-        ActivityAttributeGroup(fk_activity=activity, fk_language_id=1, date=date.today(),attributes=attributes).save()
+        for key, value in attributes.items(): 
+            ActivityAttribute.objects.create(
+                fk_activity=activity,
+                fk_language_id=1,
+                name=key,
+                value=value,
+                date=date.today(),
+            )
 
     def make_language(self):
         if len(Language.objects.all()) > 0: return
-        Language(english_name='English', local_name='English', locale='en').save()
+        Language.objects.create(
+            english_name='English',
+            local_name='English',
+            locale='en'
+        )

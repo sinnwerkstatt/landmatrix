@@ -1,7 +1,7 @@
 from django_comments.models import Comment
 
 from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.country import Country
 
 
@@ -56,14 +56,14 @@ class LatestChangesQuerySet:
         return all_activities.order_by('-history_date')[:self.num_changes]
 
     def activity_ids_by_country(self):
-        return ActivityAttributeGroup.objects.filter(
-            attributes__contains={'target_country': self.country}
+        return ActivityAttribute.objects.filter(
+            name='target_country', value=self.country
         ).values_list('fk_activity_id', flat=True).distinct()
 
     def activity_ids_by_region(self):
         countries_in_region = Country.objects.filter(fk_region_id=self.region).values_list('id', flat=True).distinct()
-        return ActivityAttributeGroup.objects.filter(
-            attributes__contains={'target_country': list(countries_in_region)}
+        return ActivityAttribute.objects.filter(
+            name='target_country', value__in=list(countries_in_region)
         ).values_list('fk_activity_id', flat=True).distinct()
 
 def remove_duplicates(deal_data):
@@ -88,9 +88,9 @@ def deal_to_data(activity, change_date, action):
 
 
 def target_country(activity):
-    attributes = ActivityAttributeGroup.objects.filter(fk_activity_id=activity.id).order_by('-id')
-    for group in attributes:
-        if 'target_country' in group.attributes:
-            return Country.objects.get(pk=group.attributes['target_country']).name
-    raise ValueError('No target_country in attributes for activity ()'.format(activity.id))
+    country_id = ActivityAttribute.objects.filter(fk_activity_id=activity.id, name='target_country').order_by('-id')
+    if country.count() > 0:
+        return Country.objects.get(pk=country_id).name
+    else:
+        raise ValueError('No target_country in attributes for activity ()'.format(activity.id))
 

@@ -44,7 +44,7 @@ class ListSQLBuilder(SQLBuilder):
         sub_columns_sql = ''
         for c in self.columns:
             if c in ("intended_size", "contract_size", "production_size"):
-                sub_columns_sql += "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT SPLIT_PART(%(name)s.attributes->'%(name)s', '#', 1)), ', '), '') AS %(name)s,\n" % {"name": c}
+                sub_columns_sql += "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.value), ', '), '') AS %(name)s,\n" % {"name": c}
             elif c == "data_source":
                 sub_columns_sql += "sub.data_source_type AS data_source_type, sub.data_source_url AS data_source_url, sub.data_source_date AS data_source_date, sub.data_source_organisation AS data_source_organisation,\n"
             else:
@@ -58,7 +58,7 @@ sub.name AS name,
 'dummy' AS dummy
 FROM
 landmatrix_activity AS a """ + "\n" \
-+  "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal\n" \
++  "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_public\n" \
 + join_attributes('intended_size') + "\n" \
 + join_attributes('contract_size') + "\n" \
 + join_attributes('production_size') + "\n" \
@@ -71,13 +71,13 @@ JOIN (
     %(columns)s    'dummy' AS dummy
     FROM landmatrix_activity AS a
     %(from)s""" + "\n" + \
-    "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal\n" +\
+    "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_public\n" +\
      join_attributes('deal_scope') + """
     %(from_filter)s
     WHERE """ + "\nAND ".join(filter(None, [
 #            cls.max_version_condition(),
             self.status_active_condition(),
-            self.is_deal_condition(),
+            self.is_public_condition(),
             self.not_mining_condition()
         ])) + """
     %(where)s

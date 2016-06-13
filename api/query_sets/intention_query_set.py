@@ -15,16 +15,16 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
     ]
     SUBQUERY_FIELDS = [
         ('intention', """CASE
-            WHEN COUNT(DISTINCT SPLIT_PART(intention.attributes->'intention', '#', 1)) > 1 THEN 'Multiple intention'
-            ELSE SPLIT_PART(intention.attributes->'intention', '#', 1)
+            WHEN COUNT(DISTINCT intention.value) > 1 THEN 'Multiple intention'
+            ELSE intention.value
         END""")
     ]
     ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
+        "LEFT JOIN landmatrix_activityattribute AS intention ON a.id = intention.fk_activity_id AND intention.name = 'intention'",
     ]
     GROUP_BY = ['sub.intention']
     ORDER_BY = ['sub.intention']
-    ADDITIONAL_SUBQUERY_OPTIONS = "GROUP BY a.id, intention.attributes->'intention'"
+    ADDITIONAL_SUBQUERY_OPTIONS = "GROUP BY a.id, intention.value"
 
     def __init__(self, request):
         super().__init__(request)
@@ -40,9 +40,9 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
 
         intention_filter_sql = """
         AND (
-            SPLIT_PART(intention.attributes->'intention', '#', 1) IN ('%s')
-            OR intention.attributes->'intention' = ''
+            intention.value IN '%s'
         )""" % "', '".join(filter_intentions)
+        # OR intention.value = ''
         self._filter_sql += intention_filter_sql
 
         found = FakeQuerySet.all(self)

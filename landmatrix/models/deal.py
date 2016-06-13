@@ -6,7 +6,7 @@ from landmatrix.models.investor import Investor, InvestorActivityInvolvement, In
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import Activity, ActivityAttributeGroup, Country
+from landmatrix.models import Activity, ActivityAttribute, Country
 
 from django.db.models import Max
 import itertools
@@ -86,9 +86,10 @@ class Deal:
         return deal
 
     def get_activity_attributes(self):
-        attributes = self.attribute_groups().values('attributes')
-        attributes_list = [a['attributes'] for a in attributes]
-        return aggregate_activity_attributes(attributes_list, {})
+        return dict(ActivityAttributeGroup.objects.filter(fk_activity_id=self.activity.id).values_list('name', 'value'))
+        #attributes = self.attribute_groups().values('attributes')
+        #attributes_list = [a['attributes'] for a in attributes]
+        #return aggregate_activity_attributes(attributes_list, {})
 
     def get_operational_stakeholder(self):
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity_id=self.activity.id)
@@ -101,9 +102,6 @@ class Deal:
     def get_stakeholders(self):
         stakeholder_involvements = InvestorVentureInvolvement.objects.filter(fk_venture=self.operational_stakeholder.pk)
         return [Investor.objects.get(pk=involvement.fk_investor_id) for involvement in stakeholder_involvements]
-
-    def attribute_groups(self):
-        return ActivityAttributeGroup.objects.filter(fk_activity_id=self.activity.id)
 
     def _set_activity(self, activity):
         if activity is None:
@@ -122,21 +120,21 @@ def get_latest_activity(deal_id):
     # return Activity.objects.filter(activity_identifier=deal_id, version=version_max).last()
 
 
-def aggregate_activity_attributes(attributes_list, already_set_attributes):
-    if not attributes_list:
-        return already_set_attributes
-
-    for key, value in attributes_list.pop(0).items():
-        update_attributes(already_set_attributes, key, value)
-
-    return aggregate_activity_attributes(attributes_list, already_set_attributes)
-
-
-def update_attributes(attributes, key, value):
-    if key in ['type', 'url', 'file']:
-        attributes[key] = attributes.get(key, []) + [value]
-    else:
-        attributes[key] = resolve_country(key, value)
+#def aggregate_activity_attributes(attributes_list, already_set_attributes):
+#    if not attributes_list:
+#        return already_set_attributes
+#
+#    for key, value in attributes_list.pop(0).items():
+#        update_attributes(already_set_attributes, key, value)
+#
+#    return aggregate_activity_attributes(attributes_list, already_set_attributes)
+#
+#
+#def update_attributes(attributes, key, value):
+#    if key in ['type', 'url', 'file']:
+#        attributes[key] = attributes.get(key, []) + [value]
+#    else:
+#        attributes[key] = resolve_country(key, value)
 
 
 def resolve_country(key, value):

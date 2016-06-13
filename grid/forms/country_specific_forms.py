@@ -20,14 +20,13 @@ def _get_deal_target_country_slugs(activity):
     # Activity may also be an ActivityHistory instance
     # (from django-simple-history) hence the weird query below.
     # TODO: move to models, once I understand things a bit better
-    attr_groups = ActivityAttributeGroup.objects.filter(
-        fk_activity_id=activity.id)
-    attr_groups = attr_groups.filter(attributes__contains='target_country')
+    country = ActivityAttribute.objects.filter(
+        fk_activity_id=activity.id, name='target_country')
 
-    for attr_group in attr_groups:
-        target_country_id = attr_group.attributes['target_country']
+    if attributes.count() > 0:
+        country_id = country.value
         try:
-            target_country = Country.objects.get(id=target_country_id)
+            target_country = Country.objects.get(id=country_id)
         except Country.DoesNotExist:
             pass
         else:

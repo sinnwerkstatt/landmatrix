@@ -31,7 +31,7 @@ class GenerateOldSQL:
                 value = ",".join(filter(None, [s.strip() for s in f.get("value").split(",")]))
                 where_act += "AND a.activity_identifier %s " % self.OPERATION_MAP[operation][0] % value
         if filters.get("deal_scope") and filters.get("deal_scope") != "all":
-            where_act += " AND deal_scope.attributes->'deal_scope' = '%s' " % filters.get("deal_scope")
+            where_act += " AND deal_scope.value = '%s' " % filters.get("deal_scope")
         if filters.get("activity", {}).get("tags"):
             tags = filters.get("activity").get("tags")
             for i, (tag, value) in enumerate(tags.items()):
@@ -55,7 +55,7 @@ class GenerateOldSQL:
                             "op": self.OPERATION_MAP[operation][0] % in_values,
                         }
                     else:
-                        where_act += " AND attr_%(count)i.attributes->'%(variable)s' %(op)s " % {
+                        where_act += " AND attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.value %(op)s " % {
                             "count": i,
                             "op": self.OPERATION_MAP[operation][0] % in_values,
                             'variable': variable
@@ -75,16 +75,16 @@ class GenerateOldSQL:
                             }
                 # join tag tables for each condition
                 if variable == "region":
-                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i, countries AS ac%(count)i, regions AS ar%(count)i \n" % {"count": i}
-                    tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? 'target_country' AND attr_%(count)i.value = ac%(count)i.name AND ar%(count)i.id = ac%(count)i.fk_region)"%{"count": i, "key": variable}
+                    tables_from_act += "LEFT JOIN landmatrix_activityattribute AS attr_%(count)i, countries AS ac%(count)i, regions AS ar%(count)i \n" % {"count": i}
+                    tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.name = 'target_country' AND attr_%(count)i.value = ac%(count)i.name AND ar%(count)i.id = ac%(count)i.fk_region)"%{"count": i, "key": variable}
                 if variable.isdigit():
-                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i\n" % {"count": i}
+                    tables_from_act += "LEFT JOIN landmatrix_activityattribute AS attr_%(count)i\n" % {"count": i}
                     tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
                 else:
                     from api.query_sets.sql_generation.join_functions import join_attributes
                     tables_from_act += join_attributes("attr_%(count)i" % {"count": i}, variable)
-#                    tables_from_act += "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i\n" % {"count": i}
-#                    tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? '%(key)s')"%{"count": i, "key": variable}
+#                    tables_from_act += "LEFT JOIN landmatrix_activityattribute AS attr_%(count)i\n" % {"count": i}
+#                    tables_from_act += " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.name = '%(key)s')"%{"count": i, "key": variable}
         sql["activity"]["from"] = tables_from_act
         sql["activity"]["where"] = where_act
         if filters.get("investor", {}).get("tags"):
@@ -129,7 +129,7 @@ class GenerateOldSQL:
                     tables_from_inv += " ON (skv%(count)i.stakeholder_identifier = s.stakeholder_identifier AND skv%(count)i.key = 'country' AND skv%(count)i.value = skvc%(count)i.name AND skvr%(count)i.id = skvc%(count)i.fk_region)"%{"count": i, "key": variable}
                 else:
                     tables_from_inv += "LEFT JOIN landmatrix_stakeholderattributegroup AS skv%(count)i\n" % {"count": i}
-                    tables_from_inv += " ON (skv%(count)i.fk_stakeholder_id = s.id AND skv%(count)i.attributes ? '%(key)s')\n" % {"count": i, "key": variable}
+                    tables_from_inv += " ON (skv%(count)i.fk_stakeholder_id = s.id AND skv%(count)i.name = '%(key)s')\n" % {"count": i, "key": variable}
             sql["stakeholder"]["from"] = tables_from_inv
             sql["stakeholder"]["where"] = where_inv
         return sql

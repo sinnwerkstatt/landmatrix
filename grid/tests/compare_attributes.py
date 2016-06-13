@@ -27,7 +27,7 @@ application = get_wsgi_application()
 #
 # actual script follows.
 #
-from landmatrix.models import ActivityAttributeGroup
+from landmatrix.models import ActivityAttribute
 import json
 import argparse
 
@@ -51,17 +51,17 @@ def parse_args():
     return parser.parse_args()
 
 
-def generate(groups):
-    attributes = {}
-    for group in groups:
-        for key, value in group['attributes'].items():
-            if key not in attributes:
-                attributes[key] = [value]
-            else:
-                attributes[key].append(value)
-    for attribute, values in attributes.items():
-        attributes[attribute] = list(set(values))
-    return attributes
+#def generate(groups):
+#    attributes = {}
+#    for group in groups:
+#        for key, value in group['attributes'].items():
+#            if key not in attributes:
+#                attributes[key] = [value]
+#            else:
+#                attributes[key].append(value)
+#    for attribute, values in attributes.items():
+#        attributes[attribute] = list(set(values))
+#    return attributes
 
 
 def compare(attributes, reference_attributes):
@@ -78,12 +78,12 @@ if __name__ == '__main__':
 
     args = parse_args()
 
-    activity_ids = sorted(set(ActivityAttributeGroup.objects.values_list('fk_activity_id', flat=True)))
+    activity_ids = sorted(set(ActivityAttribute.objects.values_list('fk_activity_id', flat=True)))
 
     attributes = {}
     for id in activity_ids:
-        groups = ActivityAttributeGroup.objects.filter(fk_activity_id=id).values('attributes')
-        attributes[id] = generate(groups)
+        attrs = ActivityAttribute.objects.filter(fk_activity_id=id).values('name', 'value')
+        attributes[id] = dict(attrs)
 
     if args.generate:
         if args.file:

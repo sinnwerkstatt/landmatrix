@@ -76,16 +76,24 @@ class YearBasedModelMultipleChoiceIntegerField(forms.MultiValueField):
         # update fields
         if value:
             self.fields = []
-            for i in range(len(value)//2):
-                self.fields.extend([forms.ModelMultipleChoiceField(queryset=self.queryset, required=False), forms.CharField(required=False)])
+            for i in range(len(value)//3):
+                self.fields.extend([
+                    forms.ModelMultipleChoiceField(queryset=self.queryset, required=False),
+                    forms.IntegerField(required=False),
+                    forms.CharField(required=False)
+                ])
         return super(YearBasedModelMultipleChoiceIntegerField, self).clean(value)
 
     def compress(self, data_list):
         if data_list:
             yb_data = []
-            for i in range(len(data_list)//2):
+            for i in range(len(data_list)//3):
                 if data_list[i] or data_list[i+1]:
                     yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1])))
             return "#".join(yb_data)
         else:
-            self.fields = [forms.ModelMultipleChoiceField(queryset=self.queryset, required=False), forms.CharField(required=False)]
+            self.fields = [
+                forms.ModelMultipleChoiceField(queryset=self.queryset, required=False),
+                forms.IntegerField(required=False),
+                forms.CharField(required=False)
+            ]

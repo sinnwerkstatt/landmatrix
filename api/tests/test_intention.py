@@ -1,4 +1,4 @@
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -68,7 +68,7 @@ class TestIntention(ApiTestFunctions, DealsTestData):
         IntentionQuerySet.DEBUG = False
         result = self.get_content('intention_of_investment')
         if self.__class__.__name__ == 'TestIntentionAgriculture...':
-            print(self.RELEVANT_ATTRIBUTES, ActivityAttributeGroup.objects.all(), result)
+            print(self.RELEVANT_ATTRIBUTES, ActivityAttribute.objects.all(), result)
 
         self.assertEqual(self.num_results(), len(result))
 

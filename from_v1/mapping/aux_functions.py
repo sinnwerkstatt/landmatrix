@@ -31,18 +31,15 @@ def extract_value(part):
     return values[1].strip('"')
 
 
-def replace_model_name_with_id(model, attributes, attribute):
-
-    if attribute not in attributes: return attributes
-
-    if isinstance(attributes, str):
-        return _replace_model_name_with_id_str(model, attributes, attribute)
-    else:
-        return _replace_model_name_with_id_dict(model, attributes, attribute)
+def replace_model_name_with_id(model, value):
+    if is_number(value):
+        return value
+    value = model.objects.using(V1).filter(name=value).values('id')[0]['id']
+    return value
 
 
-def replace_country_name_with_id(attributes, attribute):
-    return replace_model_name_with_id(old_editor.models.Country, attributes, attribute)
+def replace_country_name_with_id(value):
+    return replace_model_name_with_id(old_editor.models.Country, value)
 
 
 def is_number(s):
@@ -68,42 +65,25 @@ def get_country_id_for_stakeholder(stakeholder_id):
     return country.pk if country else None
 
 
-def _replace_model_name_with_id_str(model, attributes, attribute):
-
-    def replace_name_with_id(name):
-        id = model.objects.using(V1).filter(name=name).values('id')[0]['id']
-        if False: print(name, id)
-        return '"' + attribute +'"=>"' + str(id) + '"'
-
-    parts = attributes.split(', ')
-
-    for index, part in enumerate(parts):
-        if part.startswith('"' + attribute + '"'):
-            target_country = extract_value(part)
-            if target_country.isdigit():
-                return attributes
-
-            parts[index] = replace_name_with_id(target_country)
-            break
-
-    return ', '.join(parts)
-
-
-def _replace_model_name_with_id_dict(model, attributes, attribute, v1_model=None):
-
-    if v1_model is None:
-        v1_model = model
-
-    def replace_name_with_id(name):
-        return v1_model.objects.using(V1).filter(name=name).values('id')[0]['id']
-
-    value = attributes[attribute]
-    if is_number(value):
-        return attributes
-
-    attributes[attribute] = replace_name_with_id(value)
-
-    return attributes
+#def _replace_model_name_with_id_str(model, attributes, attribute):
+#
+#    def replace_name_with_id(name):
+#        id = model.objects.using(V1).filter(name=name).values('id')[0]['id']
+#        if False: print(name, id)
+#        return '"' + attribute +'"=>"' + str(id) + '"'
+#
+#    parts = attributes.split(', ')
+#
+#    for index, part in enumerate(parts):
+#        if part.startswith('"' + attribute + '"'):
+#            target_country = extract_value(part)
+#            if target_country.isdigit():
+#                return attributes
+#
+#            parts[index] = replace_name_with_id(target_country)
+#            break
+#
+#    return ', '.join(parts)
 
 
 def _get_stakeholder_tag_groups(stakeholder_id):

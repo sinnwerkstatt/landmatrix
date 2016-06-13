@@ -1,5 +1,5 @@
 from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.deal import Deal
 from landmatrix.models.deal_history import DealHistoryItem
 from landmatrix.models.investor import InvestorActivityInvolvement, Investor
@@ -56,13 +56,15 @@ class TestDealHistory(WithStatus):
         self.assertEqual('blunb', history_older[1].attributes['blah'])
 
     def _create_activity_with_changed_attributes(self):
-        activity = _create_activity(1)
-        activity_attributes = ActivityAttributeGroup(
-                fk_activity=activity, fk_language=self.language, attributes={'blah': 'blunb'}
+        act = _create_activity(1)
+        aa = ActivityAttribute.objects.create(
+                fk_activity=act,
+                fk_language=self.language,
+                name='blah',
+                value='blunb'
         )
-        activity_attributes.save()
-        activity_attributes.attributes['blah'] = 'blubb'  # oops, these darn typos!
-        activity_attributes.save()
+        aa.value = 'blubb'  # oops, these darn typos!
+        aa.save()
         return activity
 
 
@@ -80,14 +82,24 @@ def _create_activity_with_history(act_id=1):
 
 
 def _create_activity(act_id):
-    Activity(
-        activity_identifier=act_id, availability=0.5, fully_updated=timezone.now(),
+    act = Activity.objects.create(
+        activity_identifier=act_id,
+        availability=0.5,
+        fully_updated=timezone.now(),
         fk_status_id=2
-    ).save()
-    Investor(investor_identifier=1, name='test investor', classification=10, fk_status_id=2).save()
-    InvestorActivityInvolvement(
-        fk_activity=Activity.objects.last(), fk_investor=Investor.objects.last(), fk_status_id=2, percentage=100
-    ).save()
-    return Activity.objects.last()
+    )
+    inve = Investor.objects.create(
+        investor_identifier=1,
+        name='test investor',
+        classification=10,
+        fk_status_id=2
+    )
+    invo = InvestorActivityInvolvement.objects.create(
+        fk_activity=Activity.objects.last(),
+        fk_investor=Investor.objects.last(),
+        fk_status_id=2,
+        percentage=100
+    )
+    return act
 
 

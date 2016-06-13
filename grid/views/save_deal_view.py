@@ -13,7 +13,7 @@ from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.activity_changeset import ActivityChangeset
 from landmatrix.models.investor import InvestorActivityInvolvement
 from landmatrix.models.language import Language
@@ -97,9 +97,9 @@ class SaveDealView(TemplateView):
 
     def update_deal(self, forms, request):
         action_comment = ''
-        # Delete existing attribute groups
+        # Delete existing attributes
         # FIXME: Why?
-        ActivityAttributeGroup.objects.filter(fk_activity=self.activity).delete()
+        ActivityAttribute.objects.filter(fk_activity=self.activity).delete()
         # Create new attribute groups
         for form in forms:
             attributes = form.get_attributes(request)
@@ -109,22 +109,32 @@ class SaveDealView(TemplateView):
             if isinstance(attributes, list):
                 for count, form_attributes in enumerate(attributes):
                     if form_attributes:
-                        ActivityAttributeGroup.objects.create(
-                            fk_activity=self.activity,
-                            date=date.today(),
+                        aag, created = ActivityAttributeGroup.objects.get_or_create(
                             name='%s_%i' % (form.Meta.name, count),
-                            attributes=form_attributes,
-                            fk_language=Language.objects.get(english_name='English')
                         )
+                        for key, value in form_attributes.items():
+                            aa = ActivityAttribute.objects.create(
+                                fk_activity=self.activity,
+                                fk_group=aag,
+                                fk_language=Language.objects.get(english_name='English'),
+                                name=key,
+                                value=value,
+                                date=date.today(),
+                            )
             # Form
             elif attributes:
-                ActivityAttributeGroup.objects.create(
-                    fk_activity=self.activity,
-                    date=date.today(),
-                    name=form.Meta.name,
-                    attributes=attributes,
-                    fk_language=Language.objects.get(english_name='English')
+                aag, created = ActivityAttributeGroup.objects.get_or_create(
+                    name=form.Meta.name
                 )
+                for key, value in form_attributes.items():
+                    aa = ActivityAttribute.objects.create(
+                        fk_activity=self.activity,
+                        fk_group=aag,
+                        fk_language=Language.objects.get(english_name='English'),
+                        date=date.today(),
+                        name=key,
+                        value=value,
+                    )
             # Investor form?
             if form.Meta.name == 'investor_info' and form.cleaned_data['operational_stakeholder']:
                 self.update_investor(form, request)
@@ -140,7 +150,7 @@ class SaveDealView(TemplateView):
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity=self.activity)
         if len(involvements) > 1:
             raise MultipleObjectsReturned(
-                'More than one operational stakeholder for activity {}'.format(str(self.activity))
+                'More than one operational stakeholder for activity %s' % str(self.activity)
             )
         if len(involvements):
             involvement = involvements.last()

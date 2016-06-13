@@ -1,5 +1,3 @@
-
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.investor import Investor
 from .land_observatory_objects.tag_groups import A_Tag_Group, SH_Tag_Group
 from .land_observatory_objects.stakeholder import Stakeholder

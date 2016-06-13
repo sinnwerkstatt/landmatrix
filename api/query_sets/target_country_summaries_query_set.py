@@ -31,12 +31,12 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         ('point_lon_min', "deal_country.point_lon_min"),
         ('point_lat_max', "deal_country.point_lat_max"),
         ('point_lon_max', "deal_country.point_lon_max"),
-        ('intention', "STRING_AGG(DISTINCT intention.attributes->'intention', ',')"),
+        ('intention', "STRING_AGG(DISTINCT intention.value', ',')"),
     ]
     ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_activityattributegroup    AS intention        ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'",
-        "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
-        "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.attributes->'target_country' AS NUMERIC) = deal_country.id",
+        "LEFT JOIN landmatrix_activityattribute         AS intention        ON a.id = intention.fk_activity_id AND intention.name = 'intention'",
+        "LEFT JOIN landmatrix_activityattribute         AS target_country   ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'",
+        "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.value AS NUMERIC) = deal_country.id",
         "LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id",
     ]
     ADDITIONAL_SUBQUERY_OPTIONS = "GROUP BY a.id, deal_country.id, deal_region.name"

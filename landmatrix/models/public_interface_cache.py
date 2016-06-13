@@ -10,7 +10,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class PublicInterfaceCache(DefaultStringRepresentation, models.Model):
     fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"), db_index=True)
-    is_deal = models.BooleanField(verbose_name=_('Is this a public deal?'), default=False, db_index=True)
+    is_public = models.BooleanField(verbose_name=_('Is this a public deal?'), default=False, db_index=True)
     deal_scope = models.CharField(
         verbose_name=_('Deal scope'), max_length=16,
         choices=(('domestic', 'domestic'), ('transnational', 'transnational')),
@@ -29,8 +29,8 @@ class PublicInterfaceCache(DefaultStringRepresentation, models.Model):
 
     class Meta:
         index_together = [
-            ['is_deal', 'deal_scope'],
-            ['is_deal', 'deal_scope', 'negotiation_status'],
-            ['is_deal', 'deal_scope', 'implementation_status'],
-            ['is_deal', 'deal_scope', 'negotiation_status', 'implementation_status'],
+            ['is_public', 'deal_scope'],
+            ['is_public', 'deal_scope', 'negotiation_status'],
+            ['is_public', 'deal_scope', 'implementation_status'],
+            ['is_public', 'deal_scope', 'negotiation_status', 'implementation_status'],
         ]

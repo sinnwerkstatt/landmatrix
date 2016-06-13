@@ -49,7 +49,7 @@ class TestActivityProtocol(TestCase, DealsTestData):
                 a.id                                                    AS id,
                 'all deals'                                             AS name,
                 array_to_string(array_agg(DISTINCT operational_stakeholder.name), '##!##')    AS operational_stakeholder,
-                array_to_string(array_agg(DISTINCT intention.attributes->'intention' ORDER BY intention.attributes->'intention'), '##!##') AS intention,
+                array_to_string(array_agg(DISTINCT intention.value ORDER BY intention), '##!##') AS intention,
                 'dummy'                                                 AS dummy
             FROM landmatrix_activity                             AS a
                 LEFT JOIN landmatrix_publicinterfacecache        AS pi          ON a.id = pi.fk_activity_id
@@ -58,7 +58,7 @@ class TestActivityProtocol(TestCase, DealsTestData):
                 LEFT JOIN landmatrix_investor                    AS operational_stakeholder ON iai.fk_investor_id = operational_stakeholder.id
                 LEFT JOIN landmatrix_investorventureinvolvement  AS ivi         ON ivi.fk_venture_id = operational_stakeholder.id
                 LEFT JOIN landmatrix_investor                    AS stakeholder ON ivi.fk_investor_id = stakeholder.id
-                LEFT JOIN landmatrix_activityattributegroup      AS intention   ON (a.id = intention.fk_activity_id AND intention.attributes ? 'intention')
+                LEFT JOIN landmatrix_activityattribute           AS intention   ON (a.id = intention.fk_activity_id AND intention.name = 'intention')
             WHERE
 --            a.version = (
 --                    SELECT max(version)
@@ -66,9 +66,9 @@ class TestActivityProtocol(TestCase, DealsTestData):
 --                    WHERE amax.fk_status_id = st.id AND amax.activity_identifier = a.activity_identifier AND st.name IN ('active', 'overwritten', 'deleted')
 --                )
 --                AND
-                pi.is_deal
+                pi.is_public
                 AND status.name IN ('active', 'overwritten')
-                AND (NOT DEFINED(intention.attributes, 'intention') OR intention.attributes->'intention' != 'Mining')
+                AND (NOT DEFINED(intention.value) OR intention.value NOT LIKE '%Mining%')
             GROUP BY a.id"""
         result = self._execute_sql(sql)
         self._assert_contains_created_record(result)

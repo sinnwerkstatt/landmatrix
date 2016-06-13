@@ -1,3 +1,4 @@
+import re
 from pprint import pprint
 
 from django.db.models.aggregates import Max
@@ -7,7 +8,7 @@ from mapping.aux_functions import year_to_date
 from migrate import V1, V2
 from mapping.map_tag_groups import MapTagGroups
 
-from landmatrix.models import Language, Activity, ActivityAttributeGroup
+from landmatrix.models import Language, Activity, ActivityAttributeGroup, ActivityAttribute
 import landmatrix.models
 
 if V1 == 'v1_my':
@@ -22,27 +23,27 @@ class MapActivityTagGroupBase:
 
     YEAR_BASED_DATA_SEPARATOR = '#'
 
-    @classmethod
-    def write_activity_attribute_group_with_comments(cls, attrs, tag_group, year, name):
-        if (len(attrs) == 1) and attrs.get('name'):
-            return
-
-        from mapping.map_activity_attribute_group import clean_attributes
-
-        attrs = clean_attributes(attrs)
-
-        aag = cls.write_activity_attribute_group(
-            attrs, tag_group, year, name
-        )
-
-        comments = cls.get_comments(tag_group)
-        if comments:
-            aag.attributes.update({
-                tag_group.fk_a_tag.fk_a_value.value + '_comment': '\n'.join(comments)
-            })
-
-            if cls._save:
-                aag.save(using=V2)
+#    @classmethod
+#    def write_activity_attribute_group_with_comments(cls, attrs, tag_group, year, name):
+#        if (len(attrs) == 1) and attrs.get('name'):
+#            return
+#
+#        from mapping.map_activity_attribute_group import clean_attributes
+#
+#        attrs = clean_attributes(attrs)
+#
+#        aag = cls.write_activity_attribute_group(
+#            attrs, tag_group, year, name
+#        )
+#
+#        comments = cls.get_comments(tag_group)
+#        if comments:
+#            aag.attributes.update({
+#                tag_group.fk_a_tag.fk_a_value.value + '_comment': '\n'.join(comments)
+#            })
+#
+#            if cls._save:
+#                aag.save(using=V2)
 
     @classmethod
     @lru_cache(maxsize=128, typed=True)
@@ -62,34 +63,6 @@ class MapActivityTagGroupBase:
         return current_activity
 
     tag_group_to_attribute_group_ids = {}
-
-    @classmethod
-    def write_activity_attribute_group(cls, attrs, tag_group, year, name):
-        activity_id = cls.matching_activity_id(tag_group)
-
-        if year:
-            attrs = {
-                key: (value or '')+cls.YEAR_BASED_DATA_SEPARATOR+year_to_date(year)
-                for key, value in attrs.items()
-            }
-
-        aag = ActivityAttributeGroup(
-            fk_activity_id=activity_id, fk_language=Language.objects.get(pk=1),
-            date=year_to_date(year), attributes=attrs, name=name
-        )
-        if cls._save:
-            if not cls.is_current_version(tag_group):
-                aag = landmatrix.models.ActivityAttributeGroup.history.using(V2).create(
-                    id=cls.get_last_id() + 1,
-                    history_date=cls.get_history_date(tag_group),
-                    fk_activity_id=activity_id, fk_language=Language.objects.get(pk=1),
-                    date=year_to_date(year), attributes=attrs, name=name
-                )
-            else:
-                aag.save(using=V2)
-
-        cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
-        return aag
 
     @classmethod
     def get_last_id(cls):
@@ -116,10 +89,10 @@ class MapActivityTagGroupBase:
     def is_current_version(cls, tag_group):
         return tag_group.fk_activity.pk == cls.matching_activity_id(tag_group)
 
-    @classmethod
-    def get_comments(cls, tag_group):
-        queryset = Comment.objects.using(V1).filter(fk_a_tag_group=tag_group)
-        return [comment.comment for comment in queryset]
+    #@classmethod
+    #def get_comments(cls, tag_group):
+    #    queryset = Comment.objects.using(V1).filter(fk_a_tag_group=tag_group)
+    #    return [comment.comment for comment in queryset]
 
 
 class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
@@ -136,40 +109,72 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
         # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')[:10000]
         # to migrate all tag groups including old versions
         tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')
-        key_value_lookup = A_Key_Value_Lookup
+        #key_value_lookup = A_Key_Value_Lookup
+
+    #@classmethod
+    #def relevant_tag_sets(cls, tag_group):
+    #    return [
+    #        [tag_group.fk_a_tag],
+    #        A_Tag.objects.using(V1).
+    #            filter(fk_a_tag_group=tag_group).select_related('fk_a_key', 'fk_a_value'),
+    #    ]
 
     @classmethod
-    def relevant_tag_sets(cls, tag_group):
-        return [
-            [tag_group.fk_a_tag],
-            A_Tag.objects.using(V1).
-                filter(fk_a_tag_group=tag_group).select_related('fk_a_key', 'fk_a_value'),
-        ]
+    def migrate_tag_group(cls, tag_group):
+        tg_name = tag_group.fk_a_tag.fk_a_value.value
+        activity_id = cls.matching_activity_id(tag_group)
 
-    @classmethod
-    def migrate_tags(cls, relevant_tags, tag_group):
-        attrs = {}
-        year = None
-        taggroup_name = tag_group.fk_a_tag.fk_a_value.value
-        # print(
-        #     '\nmigrate_tags',
-        #     ["{}: {}".format(tag.fk_a_key.key, tag.fk_a_value.value) for tag in relevant_tags],
-        #     "tag group {}: {}".format(tag_group.fk_a_tag.fk_a_key.key, taggroup_name)
-        # )
-        for tag in relevant_tags:
-
+        aag, created = ActivityAttributeGroup.objects.get_or_create(
+            name=tg_name
+        )
+        if cls._save:
+            aag.save(using=V2)
+        
+        from mapping.map_activity_attribute_group import clean_attribute
+        for tag in tag_group.a_tag_set.all():
             key = tag.fk_a_key.key
             value = tag.fk_a_value.value
             year = tag.fk_a_value.year
+            if year:
+                year = year_to_date(year)
+            key, value = clean_attribute(key, value)
+            if not key or not value:
+                continue
+            aa = ActivityAttribute(
+                fk_activity_id=activity_id,
+                fk_language_id=1,
+                fk_group=aag,
+                name=key,
+                value=value,
+                date=year or None,
+            )
+            if cls._save:
+                if not cls.is_current_version(tag_group):
+                    aa = ActivityAttribute.history.using(V2).create(
+                        id=cls.get_last_id() + 1,
+                        history_date=cls.get_history_date(tag_group),
+                        fk_activity_id=activity_id,
+                        fk_language_id=1,
+                        fk_group=aag,
+                        name=key,
+                        value=value,
+                        date=year or None,
+                    )
+                else:
+                    aa.save(using=V2)
 
-            if key in attrs and value != attrs[key]:
-                cls.write_activity_attribute_group_with_comments(attrs, tag_group, year, taggroup_name)
-                attrs = {}
-
-            attrs[key] = value
-
-        if attrs:
-            cls.write_activity_attribute_group_with_comments(attrs, tag_group, year, taggroup_name)
+        for comment in tag_group.comment_set.all():
+            aa = ActivityAttribute(
+                fk_activity_id=activity_id,
+                fk_language_id=1,
+                fk_group=aag,
+                name='tg_%s_comment' % re.sub('_\d+', '', tg_name),
+                value=comment.comment,
+            )
+            if cls._save:
+                aa.save(using=V2)
+            #cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
+    
 
     @classmethod
     @transaction.atomic(using=V2)

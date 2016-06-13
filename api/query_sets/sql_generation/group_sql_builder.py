@@ -8,7 +8,7 @@ class GroupSQLBuilder(SQLBuilder):
         where = []
 
 #        if 'intention' in self.columns:
-#            where.append("AND (intention.attributes->'intention') IS NOT NULL")
+#            where.append("AND intention.value IS NOT NULL")
 
         if self.filters.get("starts_with", None):
             starts_with = self.filters.get("starts_with", "").lower()
@@ -51,12 +51,12 @@ class GroupSQLBuilder(SQLBuilder):
               %(columns)s,'dummy' as dummy
 FROM landmatrix_activity                    AS a
 %(from)s
-LEFT JOIN landmatrix_publicinterfacecache   AS pi         ON a.id = pi.fk_activity_id AND pi.is_deal
-LEFT JOIN landmatrix_activityattributegroup AS deal_scope ON a.id = deal_scope.fk_activity_id AND deal_scope.attributes ? 'deal_scope'
+LEFT JOIN landmatrix_publicinterfacecache   AS pi         ON a.id = pi.fk_activity_id AND pi.is_public
+LEFT JOIN landmatrix_activityattribute      AS deal_scope ON a.id = deal_scope.fk_activity_id AND deal_scope.name = 'deal_scope'
 %(from_filter)s
 WHERE """ + "\nAND ".join(filter(None, [
 #            self.max_version_condition(),
-            self.status_active_condition(), self.is_deal_condition(), self.not_mining_condition()
+            self.status_active_condition(), self.is_public_condition(), self.not_mining_condition()
         ])) + """
 %(where)s
 %(where_filter)s

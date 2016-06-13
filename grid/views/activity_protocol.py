@@ -40,7 +40,7 @@ class ActivityProtocol:
         PublicInterfaceCache.objects.filter(fk_activity__activity_identifier=activity_identifier).delete()
         PublicInterfaceCache.objects.create(
             fk_activity=Activity.get_latest_activity(activity_identifier),
-            is_deal=is_public_deal(activity_identifier),
+            is_public=is_public_deal(activity_identifier),
             negotiation_status=pi_values['negotiation_status'].attributes['negotiation_status'],
             implementation_status=pi_values['implementation_status'].attributes['implementation_status'],
             deal_size=pi_values['deal_size']
@@ -81,7 +81,7 @@ def is_public_deal(activity_identifier):
     if not activity:
         return False
 
-    #if _is_deal_older_y2k(activity_identifier):
+    #if _is_public_older_y2k(activity_identifier):
     #    return False
 
     if not _is_flag_not_public_off(activity_identifier):
@@ -180,7 +180,7 @@ def _is_flag_not_public_off(activity_identifier):
     return (not not_public) or (not_public in ("False", "off"))
 
 
-def _is_deal_older_y2k(activity_identifier):
+def _is_public_older_y2k(activity_identifier):
     """
     Filter B3
     Only drop a deal if we have information that initiation years are < 2000.
@@ -307,9 +307,8 @@ def nonnull_attributes_for_activity(activity_identifier, attribute):
 
 
 def attributes_for_activity(activity_identifier, attribute):
-    return ActivityAttributeGroup.objects. \
-        filter(fk_activity__activity_identifier=activity_identifier). \
-        filter(attributes__contains=[attribute])
+    return ActivityAttribute.objects. \
+        filter(fk_activity__activity_identifier=activity_identifier, name=attribute)
 
 
 def _affected_activity_identifiers(activity, operational_stakeholder):

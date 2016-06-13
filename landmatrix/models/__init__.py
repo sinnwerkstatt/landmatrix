@@ -2,7 +2,7 @@
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 
 from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute, ActivityAttributeGroup
 from landmatrix.models.activity_changeset import ActivityChangeset
 from landmatrix.models.activity_feedback import ActivityFeedback
 from landmatrix.models.activity_changeset_review import ReviewDecision, ActivityChangesetReview

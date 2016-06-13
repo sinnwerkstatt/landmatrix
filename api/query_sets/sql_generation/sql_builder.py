@@ -172,11 +172,11 @@ class SQLBuilder(SQLBuilderData):
     def status_active_condition(self):
         return "a.fk_status_id IN (%s)" % ', '.join(map(str, self.valid_status_ids()))
 
-    def is_deal_condition(self):
+    def is_public_condition(self):
         if self.is_staff:
             return ""
         else:
-            return "pi.is_deal"
+            return "pi.is_public"
 
     def not_mining_condition(self):
         return "a.activity_identifier NOT IN (%s)" % ', '.join(map(str, self.mining_deals()))
@@ -191,16 +191,16 @@ class SQLBuilder(SQLBuilderData):
         from django.db import connection
 
         sql = """SELECT DISTINCT a.activity_identifier AS deal_id
-FROM landmatrix_activity                    AS a
-LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_deal
-LEFT JOIN landmatrix_activityattributegroup AS intention ON a.id = intention.fk_activity_id AND intention.attributes ? 'intention'
+FROM landmatrix_activity AS a
+LEFT JOIN landmatrix_publicinterfacecache AS pi ON a.id = pi.fk_activity_id AND pi.is_public
+LEFT JOIN landmatrix_activityattribute AS intention ON a.id = intention.fk_activity_id AND intention.name = 'intention'
           WHERE
 """ + "\nAND ".join(filter(None, [
 #            self.max_version_condition(),
             self.status_active_condition(),
-            self.is_deal_condition()
+            self.is_public_condition()
         ])) + """
-        AND SPLIT_PART(intention.attributes->'intention', '#', 1) = 'Mining'"""
+        AND intention.value LIKE '%Mining%'"""
 
         cursor = connection.cursor()
         cursor.execute(sql)

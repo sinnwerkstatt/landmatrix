@@ -3,10 +3,10 @@ from api.query_sets.fake_query_set_with_subquery import FakeQuerySetFlat
 
 class TargetCountriesForInvestorCountryQuerySet(FakeQuerySetFlat):
     FIELDS = [
-        ('country_id', "target_country.attributes->'target_country'")
+        ('country_id', "target_country.value")
     ]
     ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
+        "LEFT JOIN landmatrix_activityattribute AS target_country ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'",
     ]
     APPLY_GLOBAL_FILTERS = False
 
@@ -27,7 +27,7 @@ class InvestorCountriesForTargetCountryQuerySet(FakeQuerySetFlat):
         ('country_id', 'operational_stakeholder.fk_country_id')
     ]
     ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_activityattributegroup    AS target_country   ON a.id = target_country.fk_activity_id AND target_country.attributes ? 'target_country'",
+        "LEFT JOIN landmatrix_activityattribute AS target_country ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'",
     ]
     APPLY_GLOBAL_FILTERS = False
 
@@ -38,6 +38,6 @@ class InvestorCountriesForTargetCountryQuerySet(FakeQuerySetFlat):
     def all(self):
         if self.country:
             self._additional_wheres.append(
-                "target_country.attributes->'target_country' = '{}'".format(self.country)
+                "target_country.value = '%s'" % self.country
             )
         return super().all()

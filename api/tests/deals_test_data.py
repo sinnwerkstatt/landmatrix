@@ -39,16 +39,25 @@ class DealsTestData:
             point_lat_min=18.85627, point_lon_min=106.495496,
             democracy_index=2.10, corruption_perception_index=2.1, high_income=False
         ).save()
-        aag = ActivityAttributeGroup(
-            fk_activity = Activity.objects.last(),
+        aag = ActivityAttribute(
+            fk_activity=Activity.objects.last(),
             fk_language=self.language,
             date=date.today(),
-            attributes={'intention': self.INTENTION, 'target_country': Country.objects.last().id}
+            name='intention',
+            value=self.INTENTION
+        )
+        aag.save()
+        aag = ActivityAttribute(
+            fk_activity=Activity.objects.last(),
+            fk_language=self.language,
+            date=date.today(),
+            name='target_country',
+            value=Country.objects.last().id
         )
         aag.save()
         pi = PublicInterfaceCache(
             fk_activity = Activity.objects.last(),
-            is_deal=True,
+            is_public=True,
             deal_scope='transnational',
             timestamp=datetime.now()
         )
@@ -91,17 +100,20 @@ class DealsTestData:
             'deal_scope': 'domestic'
         }
         attributes.update(deviating_attributes)
-        ac_attributes = ActivityAttributeGroup(
-            fk_activity=activity, fk_language_id=1, attributes=attributes
-        )
-        ac_attributes.save()
+        for key, value in attributes.items():
+            ac_attributes = ActivityAttribute.objects.create(
+                fk_activity=activity,
+                fk_language_id=1,
+                name=key,
+                value=value
+            )
 
         op = self._generate_operational_stakeholder(activity, self.investor_country)
         self._generate_stakeholder(op)
 
         PublicInterfaceCache(
             fk_activity=activity,
-            is_deal=attributes['pi_deal'],
+            is_public=attributes['pi_deal'],
             deal_scope=deal_scope,
             negotiation_status=attributes.get('pi_negotiation_status'),
             implementation_status=attributes.get('pi_implementation_status'),
@@ -187,15 +199,19 @@ class DealsTestData:
         attributes.update({
             'target_country': str(target_country.id), 'pi_deal': 'True'
         })
-        ActivityAttributeGroup(
-            fk_activity=activity, fk_language_id=1, attributes=attributes
-        ).save()
+        for key, value in attributes.items():
+            ActivityAttribute.objects.create(
+                fk_activity=activity,
+                fk_language_id=1,
+                name=key,
+                value=value
+            )
 
         op = self._generate_operational_stakeholder(activity, investor_country)
         self._generate_stakeholder(op)
         PublicInterfaceCache(
             fk_activity=activity,
-            is_deal=attributes['pi_deal'],
+            is_public=attributes['pi_deal'],
             deal_scope=attributes.get('deal_scope'),
             negotiation_status=attributes.get('pi_negotiation_status'),
             implementation_status=attributes.get('pi_implementation_status'),

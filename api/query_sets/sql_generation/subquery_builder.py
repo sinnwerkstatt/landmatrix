@@ -24,12 +24,12 @@ a.activity_identifier,
 %(columns)s, a.id AS id
 FROM landmatrix_activity AS a
 %(from)s
-""" + join(PublicInterfaceCache, 'pi', 'a.id = pi.fk_activity_id AND pi.is_deal') + '\n'\
+""" + join(PublicInterfaceCache, 'pi', 'a.id = pi.fk_activity_id AND pi.is_public') + '\n'\
     + join_attributes('deal_scope') + """
 %(from_filter)s
 WHERE """ + "\nAND ".join(filter(None, [
             self.status_active_condition(),
-            self.is_deal_condition(),
+            self.is_public_condition(),
             self.not_mining_condition()
         ])) + """
 %(where)s

@@ -68,7 +68,7 @@ class FilterToSQL:
                 # empty as operation or no value given
                 if operation == "is_empty" or not value or (value and not value[0]):
                     where.append(
-                        "AND attr_%(count)i.attributes->'%(variable)s' IS NULL " % {"count": i, 'variable': variable}
+                        "AND attr_%(count)i.name = '%(variable)s' IS NULL " % {"count": i, 'variable': variable}
                     )
                 elif operation in ("in", "not_in"):
                     # value = value[0].split(",")
@@ -82,7 +82,7 @@ class FilterToSQL:
                         )
                     else:
                         where.append(
-                            "AND SPLIT_PART(attr_%(count)i.attributes->'%(variable)s', '#', 1) %(op)s " % {
+                            "AND attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.value = %(op)s " % {
                                 "count": i,
                                 "op": self.OPERATION_MAP[operation][0] % in_values,
                                 'variable': variable
@@ -96,8 +96,8 @@ class FilterToSQL:
                         # without major surgery. Works by lining up the
                         # columns that we're joining twice :(
                         where.append(
-                            """AND attr_%(count)i.attributes->'type'
-                             = data_source_type.attributes->'type'""" % {
+                            """AND attr_%(count)i.name = 'type'
+                               AND attr_%(count)i.value = data_source_type.value""" % {
                                 "count": i,
                             })
                 elif operation == 'is' and variable == 'target_region':
@@ -125,12 +125,14 @@ class FilterToSQL:
                             )
                         else:
                             if operation in ['lt', 'lte', 'gt', 'gte'] or operation == 'is' and str(v).isnumeric():
-                                comparator = "CAST(SPLIT_PART(attr_%(count)i.attributes->'%(variable)s', '#', 1) AS NUMERIC)" % {
-                                    "count": i, 'variable': variable
+                                comparator = "attr_%(count)i.name = '%(variable)s' AND CAST(attr_%(count)i.value AS NUMERIC)" % {
+                                    "count": i,
+                                    'variable': variable
                                 }
                             else:
-                                comparator = "SPLIT_PART(attr_%(count)i.attributes->'%(variable)s', '#', 1)" % {
-                                    "count": i, 'variable': variable
+                                comparator = "attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.value" % {
+                                    "count": i,
+                                    'variable': variable
                                 }
                             where.append(
                                 v and "AND %(comparator)s %(op)s " % {
@@ -163,9 +165,9 @@ class FilterToSQL:
                     where.append("""
                         AND a.id NOT IN (
                             SELECT fk_activity_id
-                            FROM landmatrix_activityattributegroup 
-                            WHERE landmatrix_activityattributegroup.attributes ? '%(variable)s'
-                            AND SPLIT_PART(landmatrix_activityattributegroup.attributes->'%(variable)s', '#', 1) NOT IN ('%(value)s')
+                            FROM landmatrix_activityattribute 
+                            WHERE landmatrix_activityattribute.name = '%(variable)s'
+                            AND landmatrix_activityattribute.value NOT IN ('%(value)s')
                         )
                         """ % {
                         'variable': variable,
@@ -239,15 +241,15 @@ class FilterToSQL:
                 if variable == "target_region":
                     tables_from.append(
                         """
-                        LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i
-                        ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.attributes ? 'target_country')
+                        LEFT JOIN landmatrix_activityattribute AS attr_%(count)i
+                        ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.name = 'target_country')
                         """ % {
                             'count': i,
                         })
                     tables_from.append(
                         """
                         LEFT JOIN landmatrix_country AS ac%(count)i
-                        ON CAST(attr_%(count)i.attributes->'target_country' AS NUMERIC) = ac%(count)i.id
+                        ON CAST(attr_%(count)i.value AS NUMERIC) = ac%(count)i.id
                         """ % {
                             'count': i,
                         })
@@ -260,7 +262,7 @@ class FilterToSQL:
                         })
                 elif variable.isdigit():
                     tables_from.append(
-                        "LEFT JOIN landmatrix_activityattributegroup AS attr_%(count)i\n" % {"count": i} +\
+                        "LEFT JOIN landmatrix_activityattribute AS attr_%(count)i\n" % {"count": i} +\
                         " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
                     )
                 else:

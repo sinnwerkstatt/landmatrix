@@ -31,12 +31,12 @@ pg_dump -Uroot --column-inserts -a -t languages landmatrix_1 | \
     sed s/fk_language/fk_language_id/g  > languages.sql
 
 pg_dump -Uroot --column-inserts -a -t stakeholder_attribute_groups landmatrix_1 | \
-    sed s/stakeholder_attribute_groups/landmatrix_stakeholderattributegroup/g | \
+    sed s/stakeholder_attribute_groups/landmatrix_stakeholderattribute/g | \
     sed s/fk_stakeholder/fk_stakeholder_id/g | \
     sed s/fk_language/fk_language_id/g > stakeholder_attribute_groups.sql
 
 pg_dump -Uroot --column-inserts -a -t activity_attribute_groups landmatrix_1 | \
-    sed s/activity_attribute_groups/landmatrix_activityattributegroup/g | \
+    sed s/activity_attribute_groups/landmatrix_activityattribute/g | \
     sed s/fk_activity/fk_activity_id/g | \
     sed s/fk_language/fk_language_id/g | \
     sed 's/ year, / date, /g' > activity_attribute_groups.sql
