@@ -86,7 +86,7 @@ class Deal:
         return deal
 
     def get_activity_attributes(self):
-        return dict(ActivityAttributeGroup.objects.filter(fk_activity_id=self.activity.id).values_list('name', 'value'))
+        return dict(ActivityAttribute.objects.filter(fk_activity_id=self.activity.id).values_list('name', 'value'))
         #attributes = self.attribute_groups().values('attributes')
         #attributes_list = [a['attributes'] for a in attributes]
         #return aggregate_activity_attributes(attributes_list, {})
