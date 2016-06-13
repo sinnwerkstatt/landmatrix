@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('landmatrix', '0068_auto_20160531_1728'),
+        ('landmatrix', '0069_investor_cleanup'),
     ]
 
     operations = [
