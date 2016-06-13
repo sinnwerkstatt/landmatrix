@@ -167,7 +167,7 @@ class SQLBuilderData:
         ],
         "negotiation_status": [
             """ARRAY_AGG(DISTINCT CONCAT(
-                        negotiation_status.value',
+                        negotiation_status.value,
                         '#!#',
                         EXTRACT(YEAR FROM negotiation_status.date)
                 )) AS negotiation_status"""
@@ -176,14 +176,14 @@ class SQLBuilderData:
             """CASE WHEN (
                 ARRAY_AGG(
                     DISTINCT CONCAT(
-                        implementation_status.value',
+                        implementation_status.value,
                         '#!#',
                         EXTRACT(YEAR FROM implementation_status.date)
                     )
                 ) = '{#!#}') THEN NULL
                 ELSE ARRAY_AGG(
                     DISTINCT CONCAT(
-                        implementation_status.value',
+                        implementation_status.value,
                         '#!#',
                         EXTRACT(YEAR FROM implementation_status.date)
                     )

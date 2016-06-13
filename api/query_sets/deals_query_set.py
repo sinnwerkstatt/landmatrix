@@ -13,18 +13,40 @@ class DealsQuerySet(FakeQuerySetFlat):
     }
 
     FIELDS = [
-        ('deal_id',   'a.activity_identifier'),
-        ('point_lat', "point_lat.name = 'point_lat'"),
-        ('point_lon', "point_lon.name = 'point_lon'"),
-        ('intention',
-         "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.name.name = 'intention'), ', '), '')"),
-        ('intended_size', "intended_size.name = 'intended_size'"),
+        (   'deal_id',
+            'a.activity_identifier'
+        ),
+        (
+            'point_lat',
+            "point_lat.value"
+        ),
+        (
+            'point_lon',
+            "point_lon.value"
+        ),
+        (
+            'intention',
+            "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.name = 'intention'), ', '), '')"
+        ),
+        (
+            'intended_size',
+            "intended_size.value"
+        ),
          # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intended_size.name = 'intended_size'), ', '), '')"),
-        ('contract_size', "contract_size.name = 'contract_size'"),
+        (
+            'contract_size',
+            "contract_size.value"
+        ),
          # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_size.name = 'contract_size'), ', '), '')"),
-        ('production_size', "production_size.name = 'production_size'"),
+        (
+            'production_size',
+            "production_size.value"
+        ),
          # "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT production_size.name = 'production_size'), ', '), '')"),
-        ('investor', 'operational_stakeholder.name'),
+        (
+            'investor',
+            'operational_stakeholder.name'
+        ),
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattribute    AS point_lat        ON a.id = point_lat.fk_activity_id AND point_lat.name = 'point_lat'",        
@@ -36,8 +58,8 @@ class DealsQuerySet(FakeQuerySetFlat):
     ]
     ADDITIONAL_WHERES = ["point_lat.name = 'point_lat' AND point_lon.name = 'point_lon'"]
     GROUP_BY = [
-        'point_lat.name', 'point_lon.name',
-        'intended_size.name', 'contract_size.name', 'production_size.name',
+        'point_lat.value', 'point_lon.value',
+        'intended_size.value', 'contract_size.value', 'production_size.value',
         'operational_stakeholder.name', 'a.activity_identifier'
     ]
 
