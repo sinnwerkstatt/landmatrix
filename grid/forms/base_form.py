@@ -144,24 +144,23 @@ class BaseForm(forms.Form):
         Get form data for activity or stakeholder,
         using taggroup only - if given (for formsets)
         """
+        raise IOError(deal.attributes)
         data = MultiValueDict()
         for (field_name, field) in cls().fields.items():
             prefixed_name = prefix and "%s-%s"%(prefix, field_name) or field_name
-            if field_name.startswith('tg_'):
-                taggroup = cls.get_data_for_tg_field(data, field_name, deal, prefixed_name, taggroup)
+            if field_name.startswith('tg_') and not field_name.endswith('comment'):
+                continue
+            #tags, taggroup = cls.get_tags(field_name, deal, taggroup)
 
+            #if tags and len(tags) > 0:
+            if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
+                data.setlist(prefixed_name, cls.get_multiple_choice_data(field, field_name, taggroup))
             else:
-                tags, taggroup = cls.get_tags(field_name, deal, taggroup)
-
-                if tags and len(tags) > 0:
-                    if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
-                        data.setlist(prefixed_name, cls.get_multiple_choice_data(field, field_name, taggroup))
-                    else:
-                        # Year based data?
-                        if isinstance(field, forms.MultiValueField):
-                            cls.get_year_based_data(data, field, field_name, prefixed_name, tags, taggroup)
-                        else:
-                            cls.get_other_data(data, field, field_name, prefixed_name, taggroup, tags)
+                # Year based data?
+                if isinstance(field, forms.MultiValueField):
+                    cls.get_year_based_data(data, field, field_name, prefixed_name, tags, taggroup)
+                else:
+                    cls.get_other_data(data, field, field_name, prefixed_name, taggroup, tags)
         return data
 
     @classmethod
@@ -247,41 +246,41 @@ class BaseForm(forms.Form):
                 yb_data.append("%s:%s" % (value or "", year or ""))
         data[prefixed_name] = "|".join(yb_data)
 
-    @classmethod
-    def get_tags(cls, field_name, deal, taggroup):
-        if not deal and not taggroup:
-            return [], None
+#    @classmethod
+#    def get_tags(cls, field_name, deal, taggroup):
+#        if not deal and not taggroup:
+#            return [], None
+#
+#        if isinstance(deal, Deal):
+#            tags = deal.attributes
+#            if not taggroup:
+#                taggroup = list(deal.attribute_groups())
+#        # elif isinstance(taggroup, SH_Tag_Group):
+#        #     tags = taggroup.sh_tag_set.filter(fk_sh_key__key=str(field_name))
+#        elif taggroup is None:
+#            return None, None
+#        else:
+#            tags = {str(field_name): taggroup.attributes.get(str(field_name))}
+#        return tags, taggroup
 
-        if isinstance(deal, Deal):
-            tags = deal.attributes
-            if not taggroup:
-                taggroup = list(deal.attribute_groups())
-        # elif isinstance(taggroup, SH_Tag_Group):
-        #     tags = taggroup.sh_tag_set.filter(fk_sh_key__key=str(field_name))
-        elif taggroup is None:
-            return None, None
-        else:
-            tags = {str(field_name): taggroup.attributes.get(str(field_name))}
-        return tags, taggroup
-
-    @classmethod
-    def get_data_for_tg_field(cls, data, field_name, deal, pn, taggroup):
-
-        if field_name.endswith('_comment'):
-
-            groups = taggroup if isinstance(taggroup, list) else [taggroup]
-            comments = BaseForm.get_comments_from_taggroups(groups)
-            cls.fill_comment_field(comments, data, field_name, pn)
-
-        elif not taggroup:
-            try:
-                if isinstance(deal, Stakeholder):
-                    taggroup = deal.sh_tag_group_set.get(fk_sh_tag__fk_sh_value__value=field_name[3:])
-                else:
-                    taggroup = deal.a_tag_group_set.get(fk_a_tag__fk_a_value__value=field_name[3:])
-            except:
-                taggroup = None
-        return taggroup
+#    @classmethod
+#    def get_data_for_tg_field(cls, data, field_name, deal, pn, taggroup):
+#
+#        if field_name.endswith('_comment'):
+#
+#            groups = taggroup if isinstance(taggroup, list) else [taggroup]
+#            comments = BaseForm.get_comments_from_taggroups(groups)
+#            cls.fill_comment_field(comments, data, field_name, pn)
+#
+#        elif not taggroup:
+#            try:
+#                if isinstance(deal, Stakeholder):
+#                    taggroup = deal.sh_tag_group_set.get(fk_sh_tag__fk_sh_value__value=field_name[3:])
+#                else:
+#                    taggroup = deal.a_tag_group_set.get(fk_a_tag__fk_a_value__value=field_name[3:])
+#            except:
+#                taggroup = None
+#        return taggroup
 
     @classmethod
     def fill_comment_field(cls, comments, data, field_name, pn):
