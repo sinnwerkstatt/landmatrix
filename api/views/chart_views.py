@@ -22,6 +22,7 @@ from api.query_sets.transnational_deals_query_set import \
     TransnationalDealsQuerySet
 from api.query_sets.investor_target_countries_query_set import *
 
+from api.serializers import DealSerializer
 from api.views.base import FakeQuerySetListView, FakeQuerySetRetrieveView
 
 
@@ -35,6 +36,7 @@ class NegotiationStatusListView(FakeQuerySetListView):
 
 class DealListView(FakeQuerySetListView):
     fake_queryset_class = DealsQuerySet
+    serializer_class = DealSerializer
 
 
 class ImplementationStatusListView(FakeQuerySetListView):

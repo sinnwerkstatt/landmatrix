@@ -1,6 +1,8 @@
 from collections import OrderedDict
 
+from django.contrib.gis.geos import GEOSGeometry
 from rest_framework import serializers
+from rest_framework_gis.fields import GeometryField
 
 from landmatrix.models.filter_preset import FilterPreset
 from landmatrix.models.investor import InvestorVentureInvolvement
@@ -19,6 +21,32 @@ class FilterPresetSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterPreset
         exclude = ('is_default', 'overrides_default')
+
+
+class DealSerializer(serializers.Serializer):
+    '''
+    Used to serialize the deal list view.
+    '''
+    deal_id = serializers.IntegerField()
+    point_lat = serializers.DecimalField(max_digits=11, decimal_places=8)
+    point_lon = serializers.DecimalField(max_digits=11, decimal_places=8)
+    intention = serializers.CharField()
+    intended_size = serializers.IntegerField()
+    contract_size = serializers.IntegerField()
+    production_size = serializers.IntegerField()
+    investor = serializers.CharField()
+    geometry = GeometryField()
+
+    def to_representation(self, obj):
+        '''
+        Convert our binary polygon representation to a GEOSGeometry.
+        '''
+        if 'geometry' in obj and obj['geometry']:
+            if not isinstance(obj['geometry'], GEOSGeometry):
+                obj['geometry'] = GEOSGeometry(
+                    obj['geometry'], srid=4326)
+
+        return super().to_representation(obj)
 
 
 class DealDetailSerializer(serializers.BaseSerializer):

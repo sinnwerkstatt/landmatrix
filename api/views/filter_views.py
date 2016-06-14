@@ -67,11 +67,7 @@ class FilterView(APIView):
         return Response(stored_filters)
 
     def get(self, request, *args, **kwargs):
-        if 'clear' in request.query_params:
-            filters = {}
-            request.session['filters'] = filters
-        else:
-            filters = self.get_object()
+        filters = self.get_object()
 
         return Response(filters)
 

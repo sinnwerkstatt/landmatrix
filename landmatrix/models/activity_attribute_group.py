@@ -20,7 +20,7 @@ class ActivityAttributeGroup(models.Model):
         verbose_name = _('Activity attribute group')
         verbose_name_plural = _('Activity attribute groups')
 
-class ActivityAttribute(DefaultStringRepresentation, models.Model):
+class ActivityAttribute(DefaultStringRepresentation, geomodels.Model):
     fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"))
     fk_group = models.ForeignKey(ActivityAttributeGroup, blank=True, null=True, verbose_name=_("Activity Attribute Group"))
     fk_language = models.ForeignKey("Language", blank=True, null=True, verbose_name=_("Language"))
