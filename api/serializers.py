@@ -23,6 +23,14 @@ class FilterPresetSerializer(serializers.ModelSerializer):
         exclude = ('is_default', 'overrides_default')
 
 
+class UserSerializer(serializers.BaseSerializer):
+    '''
+    Returns a user as a list: [id, username, fullname].
+    '''
+    def to_representation(self, obj):
+        return [obj.id, obj.username, obj.get_full_name()]
+
+
 class DealSerializer(serializers.Serializer):
     '''
     Used to serialize the deal list view.
