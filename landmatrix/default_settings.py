@@ -93,7 +93,7 @@ INSTALLED_APPS += (
     'captcha',
     'rest_framework',
     'rest_framework.authtoken',
-#    'rest_framework_gis',
+    'rest_framework_gis',
     'rest_framework_docs',
     'django.contrib.syndication',
 

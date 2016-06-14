@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from django.contrib.gis.geos import GEOSGeometry
 from rest_framework import serializers
-#from rest_framework_gis.fields import GeometryField
+from rest_framework_gis.fields import GeometryField
 
 from landmatrix.models.filter_preset import FilterPreset
 from landmatrix.models.investor import InvestorVentureInvolvement
@@ -35,7 +35,7 @@ class DealSerializer(serializers.Serializer):
     contract_size = serializers.IntegerField()
     production_size = serializers.IntegerField()
     investor = serializers.CharField()
-    #geometry = GeometryField()
+    geometry = GeometryField()
 
     def to_representation(self, obj):
         '''
