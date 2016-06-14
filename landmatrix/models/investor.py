@@ -68,7 +68,7 @@ class Investor(DefaultStringRepresentation, models.Model):
         investor_identifier needs to be set to the PK, which we don't yet have
         for new records. So, set it to a default and then update.
 
-        This is not super efficient (updateing an index column twice)
+        This is not super efficient (updating an index column twice)
         and may result in duplicate investor_identifiers due to crash or
         query timing, but it should be good enough for our purposes.
 

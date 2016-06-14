@@ -99,8 +99,11 @@ class MapLOInvolvements(MapLOModel):
                         "UUID {}".format(parent_stakeholder_id))
 
         else:
-            print(
-                "Couldn't find a primary investor for activity",
-                "{}".format(old_record['fk_activity']))
+            # Without a parent involvement, we create a new operational
+            # stakeholder
+            new_parent_investor = new_models.Investor.objects.using(V2).create(
+                name='', fk_status_id=cls.IMPORT_STATUS_ID)
+            new_record = new_models.InvestorVentureInvolvement(
+                fk_venture=new_parent_investor)
 
         return new_record
