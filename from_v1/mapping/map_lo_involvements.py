@@ -50,11 +50,10 @@ class MapLOInvolvements(MapLOModel):
     @classmethod
     def _map_primary_investor(cls, old_activity, verbose=False):
         new_record = None
-        aag_lookup = {
-            'landobservatory_uuid': str(old_activity.activity_identifier),
-        }
+        uuid = str(old_activity.activity_identifier)
         new_activity_queryset = new_models.Activity.objects.using(V2).filter(
-            activityattributegroup__attributes__contains=aag_lookup)
+            activityattribute__name='landobservatory_uuid',
+            activityattribute__value__contains=uuid)
         new_activity = new_activity_queryset.first()
         if new_activity:
             new_record = new_models.InvestorActivityInvolvement(
@@ -62,8 +61,7 @@ class MapLOInvolvements(MapLOModel):
         else:
             print(
                 "Counldn't find an imported activity with an attribute group",
-                "containing the UUID",
-                "{}".format(old_activity.activity_identifier))
+                "containing the UUID {}".format(uuid))
 
         return new_record
 
@@ -101,8 +99,11 @@ class MapLOInvolvements(MapLOModel):
                         "UUID {}".format(parent_stakeholder_id))
 
         else:
-            print(
-                "Couldn't find a primary investor for activity",
-                "{}".format(old_record['fk_activity']))
+            # Without a parent involvement, we create a new operational
+            # stakeholder
+            new_parent_investor = new_models.Investor.objects.using(V2).create(
+                name='', fk_status_id=cls.IMPORT_STATUS_ID)
+            new_record = new_models.InvestorVentureInvolvement(
+                fk_venture=new_parent_investor)
 
         return new_record

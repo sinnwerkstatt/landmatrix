@@ -46,10 +46,12 @@ if FRONTENDDEV:
 
 INSTALLED_APPS += (
     'django.contrib.staticfiles',
-
     'django.contrib.humanize',
-
     'django.contrib.postgres',
+    'django.contrib.gis',
+    'django.contrib.admin',
+    'django.contrib.sites',
+
     'django_hstore',
 
     'tastypie',
@@ -78,13 +80,10 @@ INSTALLED_APPS += (
 
     'bootstrap3_datetime',
 
-    'django.contrib.admin',
-    'django.contrib.sites',
     'treebeard',
 
 #   to check test coverage
     'coverage',
-    'django.contrib.gis',
     'simple_history',
     'django_extensions',
     'crispy_forms',
@@ -92,7 +91,9 @@ INSTALLED_APPS += (
     'threadedcomments',
     'django_comments',
     'captcha',
+    'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_gis',
     'rest_framework_docs',
     'django.contrib.syndication',
 

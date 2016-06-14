@@ -47,18 +47,26 @@ class DealsQuerySet(FakeQuerySetFlat):
             'investor',
             'operational_stakeholder.name'
         ),
+        (
+            'geometry',
+            'geometry.polygon',
+        ),
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattribute    AS point_lat        ON a.id = point_lat.fk_activity_id AND point_lat.name = 'point_lat'",        
         "LEFT JOIN landmatrix_activityattribute    AS point_lon        ON a.id = point_lon.fk_activity_id AND point_lon.name = 'point_lon'",
-        "LEFT JOIN landmatrix_activityattribute    AS intention        ON a.id = intention.fk_activity_id AND intention.name = 'intention'"
-        "LEFT JOIN landmatrix_activityattribute    AS intended_size    ON a.id = intended_size.fk_activity_id AND intended_size.name = 'intended_size'"
-        "LEFT JOIN landmatrix_activityattribute    AS contract_size    ON a.id = contract_size.fk_activity_id AND contract_size.name = 'contract_size'"
-        "LEFT JOIN landmatrix_activityattribute    AS production_size  ON a.id = production_size.fk_activity_id AND production_size.name = 'production_size'"
+        "LEFT JOIN landmatrix_activityattribute    AS intention        ON a.id = intention.fk_activity_id AND intention.name = 'intention'",
+        "LEFT JOIN landmatrix_activityattribute    AS intended_size    ON a.id = intended_size.fk_activity_id AND intended_size.name = 'intended_size'",
+        "LEFT JOIN landmatrix_activityattribute    AS contract_size    ON a.id = contract_size.fk_activity_id AND contract_size.name = 'contract_size'",
+        "LEFT JOIN landmatrix_activityattribute    AS production_size  ON a.id = production_size.fk_activity_id AND production_size.name = 'production_size'",
+        "LEFT JOIN landmatrix_activityattribute    AS geometry         ON a.id = geometry.fk_activity_id AND ST_IsValid(geometry.polygon)"
+
     ]
-    ADDITIONAL_WHERES = ["point_lat.name = 'point_lat' AND point_lon.name = 'point_lon'"]
+    ADDITIONAL_WHERES = [
+        "point_lat.name = 'point_lat' AND point_lon.name = 'point_lon'",
+    ]
     GROUP_BY = [
-        'point_lat.value', 'point_lon.value',
+        'point_lat.value', 'point_lon.value', 'geometry.polygon',
         'intended_size.value', 'contract_size.value', 'production_size.value',
         'operational_stakeholder.name', 'a.activity_identifier'
     ]
