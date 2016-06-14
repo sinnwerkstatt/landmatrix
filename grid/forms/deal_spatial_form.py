@@ -74,7 +74,7 @@ class DealSpatialBaseFormSet(BaseFormSet):
     form_title = _('Location')
 
     @classmethod
-    def get_data(cls, activity):
+    def get_data(cls, activity, group=None, prefix=""):
         groups = activity.attributes.filter(fk_group__name__startswith='location').values_list('fk_group__name').distinct()
         data = []
         for i, group in enumerate(groups):

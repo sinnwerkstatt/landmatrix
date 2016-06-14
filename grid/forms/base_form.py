@@ -144,35 +144,35 @@ class BaseForm(forms.Form):
         using attribute group only - if given (for formsets)
         """
         data = MultiValueDict()
-        for (field_name, field) in cls().fields.items():
+
+        attributes = activity.attributes
+        if group:
+            attributes = attributes.filter(fk_group__name=group)
+        attributes = dict(attributes.values_list('name', 'value'))
+        for (field_name, field) in cls().base_fields.items():
+            # Group title?
             name = prefix and "%s-%s"%(prefix, field_name) or field_name
             if field_name.startswith('tg_') and not field_name.endswith('comment'):
                 continue
             #tags, group = cls.get_tags(field_name, activity, group)
-            attributes = activity.attributes
-            if group:
-                attributes = attributes.filter(fk_group__name=group)
-            attributes = dict(attributes.values_list('name', 'value'))
             value = attributes.get(field_name, None)
+
             if not value:
                 continue
-            # Multiple choice
+            # Multiple choice?
             if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
                 value = cls.get_multiple_choice_data(field, field_name, value)
-            # Year based data
+            # Year based data?
             elif isinstance(field, forms.MultiValueField):
                 # FIXME: get and submit date
                 value = cls.get_year_based_data(field, field_name, value, None) 
-            # Group field
-            #elif hasattr(group, field_name):
-            #    value = getattr(group, field_name)
-            # Choice field
+            # Choice field?
             elif isinstance(field, forms.ChoiceField):
                 for k, v in field.choices:
                     if v == value:
                         value = str(k)
                         break
-            # Date field
+            # Date field?
             elif isinstance(field, forms.DateField):
                 # reformat date values
                 try:
@@ -278,16 +278,22 @@ class BaseForm(forms.Form):
         output = []
         tg_title = ''
         tg_items = []
-        for i, (field_name, field) in enumerate(self.fields.items()):
+        #raise IOError(list(self.base_fields.items()))
+        for i, (field_name, field) in enumerate(self.base_fields.items()):
 
-            if field_name.startswith("tg_"):
-                if field_name.endswith("_comment"):
-                    data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name, [])
-                    if data:
-                        tg_items.append((field.label, data))
-                    continue
+            if field_name.startswith("tg_") and not field_name.endswith("_comment"):
+                #    value = self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name, [])
+                #    if field_name == 'tg_nature_comment':
+                #        raise IOError(value)
+                #    if value:
+                #        tg_items.append(field.label, value))
+                #    continue
                 if len(tg_items) > 0:
-                    output.append(('tg', tg_title))
+                    output.append({
+                        'name': 'tg',
+                        'label': '',
+                        'value': tg_title,
+                    })
                     output.extend(tg_items)
                 tg_title = field.initial
                 tg_items = []
@@ -298,12 +304,14 @@ class BaseForm(forms.Form):
             elif isinstance(field, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
                 value = self.get_display_value_multiple_choice_field(field, field_name)
             elif isinstance(field, forms.ModelChoiceField):
-                value = self.get_display_value_model_choice_field(field_name) # FIXME: Rename method
+                value = self.get_display_value_model_choice_field(field, field_name)
             elif isinstance(field, forms.ChoiceField):
                 value = self.get_display_value_choice_field(field, field_name)
             elif isinstance(field, forms.MultiValueField):
                 value = self.get_display_value_multi_value_field(field, field_name)
             elif isinstance(field, forms.FileField):
+                value = self.get_display_value_file_field(field_name)
+            elif isinstance(field, forms.BooleanField):
                 value = self.get_display_value_file_field(field_name)
             else:
                 value = self.is_valid() and self.cleaned_data.get(field_name) or self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name)
@@ -376,9 +384,12 @@ class BaseForm(forms.Form):
         value = '<br>'.join(values)
         return value
 
-    def get_display_value_model_choice_field(self, field_name):
+    def get_display_value_model_choice_field(self, field, field_name):
         value = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        return str(value)
+        if value:
+            return str(field.queryset.get(pk=value))
+        else:
+            return ''
 
 
     def get_availability(self):

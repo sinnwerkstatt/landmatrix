@@ -39,15 +39,15 @@ class OperationalStakeholderForm(BaseForm):
         required=False,
         label=_("Actors involved in the negotiation / admission process"),# blank=True, null=True
     )
-    relationship_to_parent = ChoiceField(
-        label=_('Relationship to parent'),
-        required=False,
-        choices=(
-            (_('Subsidiary of parent company'), _('Subsidiary of parent company')),
-            (_('Local branch of parent company'), _('Local branch of parent company')),
-            (_('Joint venture of parent companies'), _('Joint venture of parent companies'))
-        )
-    )
+    #relationship_to_parent = ChoiceField(
+    #    label=_('Relationship to parent'),
+    #    required=False,
+    #    choices=(
+    #        (_('Subsidiary of parent company'), _('Subsidiary of parent company')),
+    #        (_('Local branch of parent company'), _('Local branch of parent company')),
+    #        (_('Joint venture of parent companies'), _('Joint venture of parent companies'))
+    #    )
+    #)
     project_name = CharField(required=False, label=_("Name of investment project"), max_length=255)
 
     @classmethod
@@ -55,7 +55,7 @@ class OperationalStakeholderForm(BaseForm):
         data = super().get_data(activity, group, prefix)
         op = InvestorActivityInvolvement.objects.filter(fk_activity_id=activity.id).first()
         if op:
-            data['operational_stakeholder'] = op
+            data['operational_stakeholder'] = op.fk_investor.id
         #elif 'project_name' in field_name:
         #    project_name = activity.attributes.get(name='project_name')
         #    data[prefixed_name] = activity.attributes.get(name='project_name').value

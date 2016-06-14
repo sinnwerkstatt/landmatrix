@@ -267,12 +267,11 @@ $(document).ready(function () {
 
         generateButtons($(this), index);
 
-        $(this).on('change', function () {
-            generateButtons($(this), index);
-            loadSankey(index, $(this).val());
-        });
-
-        loadSankey(index, investorId);
+        //$(this).on('change', function () {
+        //    generateButtons($(this), index);
+        //    loadSankey(index, $(this).val());
+        //});
+        //loadSankey(index, investorId);
 
     });
 });

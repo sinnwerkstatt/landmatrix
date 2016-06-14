@@ -37,6 +37,12 @@ def clean_coordinates(key, value):
 #    else:
 #        return parts
 
+def clean_level_of_accuracy(key, value):
+    if value == 'Approximate level':
+        value = 'Administrative region'
+    elif value == 'Exact coordinates':
+        value = 'Coordinates'
+    return key, value
 
 def clean_target_country(key, value):
     value = replace_country_name_with_id(value)
@@ -100,6 +106,10 @@ def clean_attribute(key, value):
         return replace_obsolete_animals(key, value)
     elif key == 'negotiation_status':
         return rename_negotiation_status(key, value)
+    elif key == 'level_of_accuracy':
+        return clean_level_of_accuracy(key, value)
+    if value == '---------':
+        value = None
     return key, value
 
 
