@@ -312,7 +312,7 @@ class BaseForm(forms.Form):
             elif isinstance(field, forms.FileField):
                 value = self.get_display_value_file_field(field_name)
             elif isinstance(field, forms.BooleanField):
-                value = self.get_display_value_file_field(field_name)
+                value = self.get_display_value_boolean_field(field_name)
             else:
                 value = self.is_valid() and self.cleaned_data.get(field_name) or self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name)
 
@@ -332,6 +332,14 @@ class BaseForm(forms.Form):
             output.extend(tg_items)
 
         return output
+
+    def get_display_value_boolean_field(self, field_name):
+        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
+        if data == 'True':
+            return _('Yes')
+        elif data == 'False':
+            return _('No')
+        return ''
 
     def get_display_value_file_field(self, field_name):
         value = self.is_valid() and self.cleaned_data.get(field_name) and hasattr(self.cleaned_data.get(field_name),
