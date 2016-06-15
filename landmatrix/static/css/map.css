@@ -9,9 +9,9 @@
   float: right;
   top: 8px;
   text-align: center;
-  background-color: #fff;
+  background-color: #fcfcfc;
   width: 10em;
-  background-opacity: 0.5; }
+  opacity: 0.5; }
 
 .popover-title {
   background-color: #f7f7f7;
@@ -41,12 +41,12 @@ p {
 .ol-popup {
   font-size: 12px;
   position: absolute;
-  background-color: white;
+  background-color: #fcfcfc;
   -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
   padding: 15px;
   border-radius: 10px;
-  border: 1px solid #cccccc;
+  border: 1px solid #919191;
   bottom: 12px;
   left: -50px;
   min-width: 280px; }
@@ -64,13 +64,13 @@ p {
   pointer-events: none; }
 
 .ol-popup:after {
-  border-top-color: white;
+  border-top-color: #fcfcfc;
   border-width: 10px;
   left: 48px;
   margin-left: -10px; }
 
 .ol-popup:before {
-  border-top-color: #cccccc;
+  border-top-color: #919191;
   border-width: 11px;
   left: 48px;
   margin-left: -11px; }
@@ -135,6 +135,8 @@ div.layer-group > a:hover {
   padding-top: 10px; }
 
 #legendstuff {
+  min-width: 250px;
+  min-height: 100px;
   max-height: 50vh;
   overflow-y: auto;
   margin-bottom: 8px; }
