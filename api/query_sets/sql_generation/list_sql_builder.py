@@ -15,7 +15,7 @@ class ListSQLBuilder(SQLBuilder):
         "investor_region":  ' AND investor_region.slug = \'%s\' ',
         "investor_country": ' AND investor_country.slug = \'%s\' ',
         "stakeholder_country": ' AND stakeholder_country.slug = \'%s\' ',
-        "investor_name":    ' AND s.stakeholder_identifier = \'%s\' ',
+        "stakeholder_name": ' AND stakeholders.investor_identifier = \'%s\' ',
         "data_source_type": ' AND lower(replace(replace(data_source_type.value, \' \', \'-\'), \'/\', \'+\')) = lower(\'%s\') '
     }
 
