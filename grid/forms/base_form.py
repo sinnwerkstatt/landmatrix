@@ -12,7 +12,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.comment import Comment
-from landmatrix.models.deal import Deal
 from grid.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
 
 
@@ -139,71 +138,59 @@ class BaseForm(forms.Form):
         return attributes
 
     @classmethod
-    def get_data(cls, deal, taggroup=None, prefix=""):
+    def get_data(cls, activity, group=None, prefix=""):
         """
         Get form data for activity or stakeholder,
-        using taggroup only - if given (for formsets)
+        using attribute group only - if given (for formsets)
         """
-        raise IOError(deal.attributes)
         data = MultiValueDict()
-        for (field_name, field) in cls().fields.items():
-            prefixed_name = prefix and "%s-%s"%(prefix, field_name) or field_name
+
+        attributes = activity.attributes
+        if group:
+            attributes = attributes.filter(fk_group__name=group)
+        attributes = dict(attributes.values_list('name', 'value'))
+        for (field_name, field) in cls().base_fields.items():
+            # Group title?
+            name = prefix and "%s-%s"%(prefix, field_name) or field_name
             if field_name.startswith('tg_') and not field_name.endswith('comment'):
                 continue
-            #tags, taggroup = cls.get_tags(field_name, deal, taggroup)
+            #tags, group = cls.get_tags(field_name, activity, group)
+            value = attributes.get(field_name, None)
 
-            #if tags and len(tags) > 0:
+            if not value:
+                continue
+            # Multiple choice?
             if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
-                data.setlist(prefixed_name, cls.get_multiple_choice_data(field, field_name, taggroup))
-            else:
-                # Year based data?
-                if isinstance(field, forms.MultiValueField):
-                    cls.get_year_based_data(data, field, field_name, prefixed_name, tags, taggroup)
-                else:
-                    cls.get_other_data(data, field, field_name, prefixed_name, taggroup, tags)
+                value = cls.get_multiple_choice_data(field, field_name, value)
+            # Year based data?
+            elif isinstance(field, forms.MultiValueField):
+                # FIXME: get and submit date
+                value = cls.get_year_based_data(field, field_name, value, None) 
+            # Choice field?
+            elif isinstance(field, forms.ChoiceField):
+                for k, v in field.choices:
+                    if v == value:
+                        value = str(k)
+                        break
+            # Date field?
+            elif isinstance(field, forms.DateField):
+                # reformat date values
+                try:
+                    value = datetime.strptime(value, "%Y-%m-%d").strftime("%d:%m:%Y")
+                except:
+                    # catch invalid date formats from import
+                    pass
+            if value:
+                data[name] = value
         return data
 
     @classmethod
-    def get_other_data(cls, data, field, field_name, prefixed_name, taggroup, tags):
-        # if cls.DEBUG: print('get_other_data')
-        if isinstance(taggroup, ActivityAttributeGroup) and taggroup.attributes.get(field_name):
-            value = taggroup.attributes[field_name]
-        elif hasattr(taggroup, field_name):
-            value = getattr(taggroup, field_name)
-        elif field_name in tags:
-            value = tags[field_name]
-        else:
-            # if cls.DEBUG: print('didnt find %s' % field_name)
-            value = None
-        date = tags['date'] if 'date' in tags else None # tags.date or taggroup.date
-        # if cls.DEBUG: print('        value, date', value, date)
-
-        if isinstance(field, forms.ChoiceField):
-            for k, v in field.choices:
-                if v == value:
-                    value = str(k)
-                    break
-            data[prefixed_name] = value
-        elif isinstance(field, forms.DateField):
-            # reformat date values
-            try:
-                data[prefixed_name] = datetime.strptime(value, "%Y-%m-%d").strftime("%d:%m:%Y")
-            except:
-                # catch invalid date formats from import
-                data[prefixed_name] = value
-        else:
-            data[prefixed_name] = value
-
-    @classmethod
-    def get_multiple_choice_data(cls,  field, field_name, taggroup):
-        tag_values = set([group.attributes[field_name] for group in taggroup if field_name in group.attributes])
-        if cls.DEBUG: print('get_multiple_choice_data()', field_name, list(field.choices), tag_values)
+    def get_multiple_choice_data(cls,  field, field_name, value):
         values = []
-        for tag_value in tag_values:
+        for tag_value in value.split(','):
             value = cls.get_multiple_choice_value(field, tag_value)
             if value:
                 values.append(value)
-        if cls.DEBUG: print('data[...] =', values, type(values).__name__)
         return values
 
     @classmethod
@@ -229,58 +216,53 @@ class BaseForm(forms.Form):
         return None
 
     @classmethod
-    def get_year_based_data(cls, data, field, field_name, prefixed_name, tags, taggroup):
+    def get_year_based_data(cls, field, field_name, value, date):
         # if cls.DEBUG: print('get_year_based_data()', field_name, tags.get(field_name))
         yb_data = []
-        for tag in [field_name]:
-            value = tags.get(tag)
-            year = tags.get('date', '')
-            if field_name == 'crops':
-                raise IOError(tags)
-            if isinstance(field.fields[0], forms.ChoiceField):
-                for k, v in field.fields[0].choices:
-                    if v == value:
-                        value = str(k)
-                        break
-            if year or value:
-                yb_data.append("%s:%s" % (value or "", year or ""))
-        data[prefixed_name] = "|".join(yb_data)
+        if isinstance(field.fields[0], forms.ChoiceField):
+            for k, v in field.fields[0].choices:
+                if v == value:
+                    value = str(k)
+                    break
+        if date or value:
+            yb_data.append("%s:%s" % (value or "", date or ""))
+        return "|".join(yb_data)
 
 #    @classmethod
-#    def get_tags(cls, field_name, deal, taggroup):
-#        if not deal and not taggroup:
+#    def get_tags(cls, field_name, deal, group):
+#        if not deal and not group:
 #            return [], None
 #
 #        if isinstance(deal, Deal):
 #            tags = deal.attributes
-#            if not taggroup:
-#                taggroup = list(deal.attribute_groups())
-#        # elif isinstance(taggroup, SH_Tag_Group):
-#        #     tags = taggroup.sh_tag_set.filter(fk_sh_key__key=str(field_name))
-#        elif taggroup is None:
+#            if not group:
+#                group = list(deal.attribute_groups())
+#        # elif isinstance(group, SH_Tag_Group):
+#        #     tags = group.sh_tag_set.filter(fk_sh_key__key=str(field_name))
+#        elif group is None:
 #            return None, None
 #        else:
-#            tags = {str(field_name): taggroup.attributes.get(str(field_name))}
-#        return tags, taggroup
+#            tags = {str(field_name): group.attributes.get(str(field_name))}
+#        return tags, group
 
 #    @classmethod
-#    def get_data_for_tg_field(cls, data, field_name, deal, pn, taggroup):
+#    def get_data_for_tg_field(cls, data, field_name, deal, pn, group):
 #
 #        if field_name.endswith('_comment'):
 #
-#            groups = taggroup if isinstance(taggroup, list) else [taggroup]
-#            comments = BaseForm.get_comments_from_taggroups(groups)
+#            groups = group if isinstance(group, list) else [group]
+#            comments = BaseForm.get_comments_from_groups(groups)
 #            cls.fill_comment_field(comments, data, field_name, pn)
 #
-#        elif not taggroup:
+#        elif not group:
 #            try:
 #                if isinstance(deal, Stakeholder):
-#                    taggroup = deal.sh_tag_group_set.get(fk_sh_tag__fk_sh_value__value=field_name[3:])
+#                    group = deal.sh_tag_group_set.get(fk_sh_tag__fk_sh_value__value=field_name[3:])
 #                else:
-#                    taggroup = deal.a_tag_group_set.get(fk_a_tag__fk_a_value__value=field_name[3:])
+#                    group = deal.a_tag_group_set.get(fk_a_tag__fk_a_value__value=field_name[3:])
 #            except:
-#                taggroup = None
-#        return taggroup
+#                group = None
+#        return group
 
     @classmethod
     def fill_comment_field(cls, comments, data, field_name, pn):
@@ -288,7 +270,7 @@ class BaseForm(forms.Form):
             data[pn] = comments[field_name[3:]]
 
     @classmethod
-    def get_comments_from_taggroups(cls, groups):
+    def get_comments_from_groups(cls, groups):
         return dict([(k, v) for group in [g for g in groups if g] for (k, v) in group.attributes.items() if '_comment' in k])
 
     def get_fields_display(self):
@@ -296,16 +278,22 @@ class BaseForm(forms.Form):
         output = []
         tg_title = ''
         tg_items = []
-        for i, (field_name, field) in enumerate(self.fields.items()):
+        #raise IOError(list(self.base_fields.items()))
+        for i, (field_name, field) in enumerate(self.base_fields.items()):
 
-            if field_name.startswith("tg_"):
-                if field_name.endswith("_comment"):
-                    data = self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name, [])
-                    if data:
-                        tg_items.append((field.label, data))
-                    continue
+            if field_name.startswith("tg_") and not field_name.endswith("_comment"):
+                #    value = self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name, [])
+                #    if field_name == 'tg_nature_comment':
+                #        raise IOError(value)
+                #    if value:
+                #        tg_items.append(field.label, value))
+                #    continue
                 if len(tg_items) > 0:
-                    output.append(('tg', tg_title))
+                    output.append({
+                        'name': 'tg',
+                        'label': '',
+                        'value': tg_title,
+                    })
                     output.extend(tg_items)
                 tg_title = field.initial
                 tg_items = []
@@ -316,13 +304,15 @@ class BaseForm(forms.Form):
             elif isinstance(field, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
                 value = self.get_display_value_multiple_choice_field(field, field_name)
             elif isinstance(field, forms.ModelChoiceField):
-                value = self.get_display_value_model_choice_field(field_name) # FIXME: Rename method
+                value = self.get_display_value_model_choice_field(field, field_name)
             elif isinstance(field, forms.ChoiceField):
                 value = self.get_display_value_choice_field(field, field_name)
             elif isinstance(field, forms.MultiValueField):
                 value = self.get_display_value_multi_value_field(field, field_name)
             elif isinstance(field, forms.FileField):
                 value = self.get_display_value_file_field(field_name)
+            elif isinstance(field, forms.BooleanField):
+                value = self.get_display_value_boolean_field(field_name)
             else:
                 value = self.is_valid() and self.cleaned_data.get(field_name) or self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name)
 
@@ -342,6 +332,14 @@ class BaseForm(forms.Form):
             output.extend(tg_items)
 
         return output
+
+    def get_display_value_boolean_field(self, field_name):
+        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
+        if data == 'True':
+            return _('Yes')
+        elif data == 'False':
+            return _('No')
+        return ''
 
     def get_display_value_file_field(self, field_name):
         value = self.is_valid() and self.cleaned_data.get(field_name) and hasattr(self.cleaned_data.get(field_name),
@@ -394,9 +392,12 @@ class BaseForm(forms.Form):
         value = '<br>'.join(values)
         return value
 
-    def get_display_value_model_choice_field(self, field_name):
+    def get_display_value_model_choice_field(self, field, field_name):
         value = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        return str(value)
+        if value:
+            return str(field.queryset.get(pk=value))
+        else:
+            return ''
 
 
     def get_availability(self):

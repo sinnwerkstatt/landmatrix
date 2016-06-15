@@ -91,39 +91,31 @@ class DealDataSourceForm(BaseForm):
     def get_availability_total(self):
         return 4
 
-    @classmethod
-    def get_data(cls, deal, taggroup, next_taggroup):
-        from django.db.models import Q
-        belongs_to_data_source = Q(attributes__contains=['file']) | \
-                                 Q(attributes__contains=['url']) | \
-                                 Q(attributes__contains=['type']) | \
-                                 Q(name__icontains='data_source')
-
-        next_taggroup_id = next_taggroup.id if next_taggroup else ActivityAttributeGroup.objects.order_by('pk').last().id
-
-        if hasattr(deal.activity, 'history_date'):  # isinstance(deal, DealHistoryItem):
-            deal_date = deal.activity.history_date
-            deal_activity = Activity.objects.get(pk=deal.activity.id).history.as_of(deal_date)
-        else:
-            deal_activity = deal.activity
-
-        tags = ActivityAttributeGroup.objects.filter(fk_activity=deal_activity).\
-            filter(pk__gte=taggroup.id).filter(pk__lte=next_taggroup_id).\
-            filter(belongs_to_data_source).values_list('attributes', flat=True)
-
-        attributes = {}
-        for tag in tags:
-            for key in tag.keys():
-                if key in attributes and attributes[key] != tag[key]:
-                    # raise RuntimeError()
-                    # print(
-                    #     'ALERT: found different values under the same tag group. Deal ID {}, taggroup {}, tags {}'.format(
-                    #         deal.activity.activity_identifier, taggroup.id, str(tags)
-                    #     ))
-                    pass
-                attributes[key] = tag[key]
-
-        return attributes
+    #@classmethod
+    #def get_data(cls, activity, group=None, next_group=None):
+    #    #next_group_id = next_group.id if next_group else ActivityAttributeGroup.objects.order_by('pk').last().id
+    #    #if hasattr(deal.activity, 'history_date'):  # isinstance(deal, DealHistoryItem):
+    #    #    deal_date = deal.activity.history_date
+    #    #    deal_activity = Activity.objects.get(pk=deal.activity.id).history.as_of(deal_date)
+    #    #else:
+    #    #    deal_activity = deal.activity
+    #    #tags = ActivityAttributeGroup.objects.filter(fk_activity=deal_activity).\
+    #    #    filter(pk__gte=group.id).filter(pk__lte=next_group_id).\
+    #    #    filter(belongs_to_data_source).values_list('attributes', flat=True)
+#
+    #    attributes = {}
+    #    for tag in tags:
+    #        for key in tag.keys():
+    #            if key in attributes and attributes[key] != tag[key]:
+    #                # raise RuntimeError()
+    #                # print(
+    #                #     'ALERT: found different values under the same tag group. Deal ID {}, group {}, tags {}'.format(
+    #                #         deal.activity.activity_identifier, group.id, str(tags)
+    #                #     ))
+    #                pass
+    #            attributes[key] = tag[key]
+#
+    #    return attributes
 
 
 DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=0)
@@ -145,21 +137,21 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
             attributes.append(form_attributes)
         return attributes
             #ds_url, ds_file = None, None
-            #for t in taggroup["tags"]:
+            #for t in group["tags"]:
             #    if t["key"] == "url":
             #        ds_url = t["value"]
             #    elif t["key"] == "file":
             #        ds_file = t["value"]
             #if ds_file:
-            #    taggroup["tags"].append({
+            #    group["tags"].append({
             #            "key": "file",
             #            "value": ds_file,
             #        })
             #if ds_url:
             #    url_slug = "%s.pdf" % re.sub(r"http|https|ftp|www|", "", slugify(ds_url))
             #    if not ds_file or url_slug != ds_file:
-            #        # Remove file from taggroup
-            #        taggroup["tags"] = filter(lambda o: o["key"] != "file", taggroup["tags"])
+            #        # Remove file from group
+            #        group["tags"] = filter(lambda o: o["key"] != "file", group["tags"])
             #        # Create file for URL
             #        if not default_storage.exists("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug)):
             #            try:
@@ -175,31 +167,23 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
             #                # skip possible html to pdf conversion errors
             #                if request and not default_storage.exists("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug)):
             #                    messages.error(request, "Data source <a target='_blank' href='%s'>URL</a> could not be uploaded as a PDF file. Please upload manually." % ds_url)
-            #        taggroup["tags"].append({
+            #        group["tags"].append({
             #            "key": "file",
             #            "value": url_slug,
             #        })
             #        # always add url, cause there is a problem with storing the file when deal get changed again
-            #        #taggroup["tags"].append({
+            #        #group["tags"].append({
             #        #    "key": "url",
             #        #    "value": ds_url,
             #        #})
 
     @classmethod
-    def get_data(cls, deal):
-        from django.db.models import Q
-        belongs_to_data_source = Q(attributes__contains=['file']) | \
-                                 Q(attributes__contains=['url']) | \
-                                 Q(attributes__contains=['type']) | \
-                                 Q(name__icontains='data_source')
-        if not deal:
-            return {}
-
-        taggroups = deal.attribute_groups().filter(belongs_to_data_source).order_by('name')
+    def get_data(cls, activity, group=None, prefix=""):
+        groups = activity.attributes.filter(fk_group__name__startswith='data_source').values_list('fk_group__name').distinct()
 
         data = []
-        for i, taggroup in enumerate(taggroups):
-            form_data = DealDataSourceForm.get_data(deal, taggroup, taggroups[i+1] if i < len(taggroups)-1 else None)
+        for group in groups:
+            form_data = DealDataSourceForm.get_data(activity, group)
             data.append(form_data)
         return data
 
@@ -223,12 +207,11 @@ class PublicViewDealDataSourceForm(DealDataSourceForm):
         )
 
     @classmethod
-    def get_data(cls, deal):
-        taggroups = deal.attribute_groups().filter(name__contains='data_source').order_by('name')
-        print('PublicViewDealDataSourceForm: taggroups    ', taggroups)
+    def get_data(cls, activity, group=None, prefix=""):
+        groups = activity.attributes.filter(fk_group__name__startswith='data_source').values_list('fk_group__name').distinct()
         data = {}
-        for i, taggroup in enumerate(taggroups):
-            data[i] = DealDataSourceForm.get_data(deal, taggroup=taggroup)
+        for i, group in enumerate(groups):
+            data[i] = DealDataSourceForm.get_data(deal, group=group)
         return data
 
 
@@ -259,7 +242,7 @@ def handle_url(form_data, request):
         if url_slug == form_data['file']:
             return
         else:
-            # Remove file from taggroup
+            # Remove file from group
             del form_data['file']
 
     # Create file for URL

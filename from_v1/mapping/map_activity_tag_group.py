@@ -81,7 +81,7 @@ class MapActivityTagGroupBase:
                 ).filter(id=activity.id).first()
                 return historical_activity.history_date
         # no matching version found
-        print('taggroup id, activity id:', tag_group.id, activity.id)
+        print('group id, activity id:', tag_group.id, activity.id)
         print('versions:', end=' ')
         pprint(versions)
 

@@ -33,27 +33,27 @@ class AddDealActionCommentForm(BaseForm):
     tg_feedback_comment = forms.CharField(required=False, label=_("Feedback comment"), widget=CommentInput)
 
     def get_action_comment(self):
-        for j, taggroup in enumerate(super(AddDealActionCommentForm, self).get_attributes()):
-            if taggroup["main_tag"]["value"] == "action":
-                return taggroup["comment"]
+        for j, group in enumerate(super(AddDealActionCommentForm, self).get_attributes()):
+            if group["main_tag"]["value"] == "action":
+                return group["comment"]
         return ""
 
     def get_feedback(self):
-        for j, taggroup in enumerate(super(AddDealActionCommentForm, self).get_attributes()):
-            if taggroup["main_tag"]["value"] == "feedback":
-                tags = taggroup.get("tags", [])
+        for j, group in enumerate(super(AddDealActionCommentForm, self).get_attributes()):
+            if group["main_tag"]["value"] == "feedback":
+                tags = group.get("tags", [])
                 if len(tags) > 0:
                     feedback = {
                         "assigned_to": tags[0].get("value"),
-                        "comment": taggroup.get("comment")
+                        "comment": group.get("comment")
                     }
                     return feedback
         return ""
 
     def get_fully_updated(self):
-        for j, taggroup in enumerate(super(AddDealActionCommentForm, self).get_attributes()):
-            if taggroup["main_tag"]["value"] == "action":
-                for tag in taggroup.get("tags", []):
+        for j, group in enumerate(super(AddDealActionCommentForm, self).get_attributes()):
+            if group["main_tag"]["value"] == "action":
+                for tag in group.get("tags", []):
                     if tag.get("key") == "fully_updated":
                         return tag.get("value")
         return False

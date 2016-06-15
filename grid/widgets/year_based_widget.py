@@ -54,8 +54,6 @@ class YearBasedWidget(forms.MultiWidget):
                 self.widgets.extend(self.get_widgets())
         else:
             self.widgets = self.get_widgets()
-        if name == "crops":
-            raise IOError(value)
 
         if self.is_localized:
             for widget in self.widgets:

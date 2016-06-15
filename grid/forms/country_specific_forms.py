@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.models import Country, ActivityAttributeGroup
+from landmatrix.models import Country, ActivityAttribute
 from grid.forms.base_form import BaseForm
 from grid.widgets import TitleField, NumberInput
 
@@ -23,8 +23,8 @@ def _get_deal_target_country_slugs(activity):
     country = ActivityAttribute.objects.filter(
         fk_activity_id=activity.id, name='target_country')
 
-    if attributes.count() > 0:
-        country_id = country.value
+    if country.count() > 0:
+        country_id = country.first().value
         try:
             target_country = Country.objects.get(id=country_id)
         except Country.DoesNotExist:

@@ -70,7 +70,7 @@ $(document).ready(function () {
               // Create secondary investor
               $(".existing-investor").click();
               var inv_id = investors[i]["id"];
-              $("#investor_info-"+i+"-tg_general_comment").val(investors[i]["taggroups"][0]["comment"]);
+              $("#investor_info-"+i+"-tg_general_comment").val(investors[i]["groups"][0]["comment"]);
               // Select secondary investor
               $("li.investor div ul li a[href=#"+inv_id+"]:last").click();
               if ("investment_ratio" in investors[i]) {

@@ -104,10 +104,10 @@ class MapLOActivities(MapLOModel):
 
         cls.write_standard_tag_groups(new, tag_groups)
 
-        taggroup_proxy = type('MockTagGroup', (object,), {"fk_activity": new.id, 'id': None})
+        group_proxy = type('MockTagGroup', (object,), {"fk_activity": new.id, 'id': None})
         cls.write_activity_attribute_group(
             {'not_public_reason': 'Land Observatory Import (new)' if not imported else 'Land Observatory Import (duplicate)'},
-            taggroup_proxy,
+            group_proxy,
             None,
             'not_public', None
         )
@@ -115,7 +115,7 @@ class MapLOActivities(MapLOModel):
             uuid = Activity.objects.using(cls.DB).filter(id=new.id).values_list('activity_identifier', flat=True).first()
             cls.write_activity_attribute_group(
                 {'type': 'Land Observatory Import', 'landobservatory_uuid': str(uuid)},
-                taggroup_proxy,
+                group_proxy,
                 None,
                 'data_source_1', None
             )
@@ -125,10 +125,10 @@ class MapLOActivities(MapLOModel):
         for tag_group in tag_groups:
             attrs = {}
             polygon = None
-            taggroup_name = cls.tag_group_name(tag_group)
+            group_name = cls.tag_group_name(tag_group)
 
             # set location - stored in activity in LO, but tag group in LM
-            if taggroup_name == 'location_1':
+            if group_name == 'location_1':
                 attrs['point_lat'] = new.point.get_y()
                 attrs['point_lon'] = new.point.get_x()
 
@@ -142,7 +142,7 @@ class MapLOActivities(MapLOModel):
 
                 if key in attrs and value != attrs[key]:
                     cls.write_activity_attribute_group_with_comments(attrs, tag_group, None,
-                                                                     taggroup_name, polygon)
+                                                                     group_name, polygon)
                     attrs = {}
                     polygon = None
 
@@ -150,7 +150,7 @@ class MapLOActivities(MapLOModel):
 
             if attrs:
                 cls.write_activity_attribute_group_with_comments(attrs, tag_group, None,
-                                                                 taggroup_name, polygon)
+                                                                 group_name, polygon)
 
     @classmethod
     def tag_group_name(cls, tag_group):
@@ -329,8 +329,8 @@ def is_imported_deal(deal):
     return 'http://www.landmatrix.org' in get_deal_tags(deal, 'URL / Web')
 
 
-def is_imported_deal_groups(taggroups):
-    for group in taggroups:
+def is_imported_deal_groups(groups):
+    for group in groups:
         for tag in group.tags:
             if tag.key.key == 'URL / Web' and tag.value.value == 'http://www.landmatrix.org':
                 return True
