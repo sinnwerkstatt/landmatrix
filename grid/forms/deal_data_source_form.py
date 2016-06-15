@@ -124,6 +124,8 @@ DealDataSourceBaseFormSet = formset_factory(DealDataSourceForm, extra=0)
 class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
     form_title = _('Data sources')
     extra = 1
+    max_num = 1
+    prefix = 'data_source'
 
     def get_attributes(self, request=None):
         attributes = []
@@ -179,12 +181,12 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
-        groups = activity.attributes.filter(fk_group__name__startswith='data_source').values_list('fk_group__name').distinct()
-
+        groups = activity.attributes.filter(fk_group__name__startswith=cls.prefix).values_list('fk_group__name').distinct()
         data = []
-        for group in groups:
-            form_data = DealDataSourceForm.get_data(activity, group)
-            data.append(form_data)
+        for i, group in enumerate(groups):
+            form_data = DealDataSourceForm.get_data(activity, group=group[0])#, prefix='data_source-%i' % i)
+            if form_data:
+                data.append(form_data)
         return data
 
     class Meta:
@@ -205,14 +207,6 @@ class PublicViewDealDataSourceForm(DealDataSourceForm):
         readonly_fields = (
             "tg_data_source", "type", "url", "company", "date"
         )
-
-    @classmethod
-    def get_data(cls, activity, group=None, prefix=""):
-        groups = activity.attributes.filter(fk_group__name__startswith='data_source').values_list('fk_group__name').distinct()
-        data = {}
-        for i, group in enumerate(groups):
-            data[i] = DealDataSourceForm.get_data(deal, group=group)
-        return data
 
 
 class PublicViewDealDataSourceFormSet(

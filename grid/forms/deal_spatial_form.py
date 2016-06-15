@@ -72,14 +72,17 @@ class DealSpatialForm(BaseForm):
 class DealSpatialBaseFormSet(BaseFormSet):
 
     form_title = _('Location')
+    prefix = 'location'
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
-        groups = activity.attributes.filter(fk_group__name__startswith='location').values_list('fk_group__name').distinct()
+        #raise IOError
+        groups = activity.attributes.filter(fk_group__name__startswith=cls.prefix).values_list('fk_group__name').distinct()
         data = []
         for i, group in enumerate(groups):
-            form_data = DealSpatialForm.get_data(activity, group=group)
-            data.append(form_data)
+            form_data = DealSpatialForm.get_data(activity, group=group[0])#, prefix='%s-%i' % (cls.prefix, i))
+            if form_data:
+                data.append(form_data)
         return data
 
     def get_attributes(self, request=None):
@@ -94,17 +97,17 @@ DealSpatialFormSet = formset_factory(DealSpatialForm, min_num=1,
                                      formset=DealSpatialBaseFormSet)
 
 
-class PublicViewDealSpatialForm(DealSpatialForm):
+#class PublicViewDealSpatialForm(DealSpatialForm):
+#
+#    class Meta:
+#        name = 'spatial_data'
+#        fields = (
+#            "tg_location", "location", "point_lat", "point_lon",
+#            'tg_location_comment'
+#        )
+#        readonly_fields = fields
 
-    class Meta:
-        name = 'spatial_data'
-        fields = (
-            "tg_location", "location", "point_lat", "point_lon",
-            'tg_location_comment'
-        )
-        readonly_fields = fields
 
-
-PublicViewDealSpatialFormSet = formset_factory(PublicViewDealSpatialForm,
+PublicViewDealSpatialFormSet = formset_factory(DealSpatialForm,
                                                formset=DealSpatialBaseFormSet,
                                                extra=0)

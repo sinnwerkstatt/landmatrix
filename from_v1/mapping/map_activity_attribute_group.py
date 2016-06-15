@@ -48,6 +48,12 @@ def clean_target_country(key, value):
     value = replace_country_name_with_id(value)
     return key, value
 
+def clean_nature(key, value):
+    if value == 'Lease / Concession':
+        value = 'Lease'
+    elif value = 'Exploitation license':
+        value = 'Resource exploitation license / concession'
+    return key, value
 
 def clean_crops(key, value):
     from old_editor.models import Crop
@@ -108,10 +114,22 @@ def clean_attribute(key, value):
         return rename_negotiation_status(key, value)
     elif key == 'level_of_accuracy':
         return clean_level_of_accuracy(key, value)
+    elif key == 'nature':
+        return clean_nature(key, value)
+    elif key == 'tg_negotiation_status_comment':
+        return 'tg_contract_comment', value
+    elif key == 'tg_primary_investor_comment':
+        return 'tg_operational_stakeholder_comment', value
     if value == '---------':
         value = None
     return key, value
 
+def clean_group(group_name, key, value):
+    if group_name == 'agreement_duration':
+        return 'contract_1'
+    if group_name == 'negotiation_status' and key != 'negotiation_status':
+        return 'contract_1'
+    return group_name
 
 if V1 == 'v1_pg':
     class MapActivityAttributeGroup(MapModel):

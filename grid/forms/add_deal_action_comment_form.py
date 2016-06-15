@@ -59,7 +59,7 @@ class AddDealActionCommentForm(BaseForm):
         return False
 
     @classmethod
-    def get_data(cls, activity):
+    def get_data(cls, activity, group=None, prefix=None):
         from inspect import currentframe, getframeinfo
 
         data = super(AddDealActionCommentForm, cls).get_data(activity)

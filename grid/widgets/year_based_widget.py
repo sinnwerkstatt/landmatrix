@@ -22,11 +22,10 @@ class YearBasedWidget(forms.MultiWidget):
     def decompress(self, value):
         if value:
             values = value.split("#")
-
-            sorted_values = sorted(values, key=lambda v: v.split("#")[1] if '#' in v else '0')
+            #sorted_values = sorted(values, key=lambda v: v.split(":")[1] if ':' in v else '0')
             splitted = []
-            for s in sorted_values:
-                splitted.extend(s.split("#"))
+            for s in values:
+                splitted.extend(s.split(":"))
             return len(splitted) == 1 and splitted.append(None) or splitted
         return [None, None]
 

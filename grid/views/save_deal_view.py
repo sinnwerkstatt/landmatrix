@@ -63,20 +63,6 @@ class SaveDealView(TemplateView):
         raise NotImplementedError("get_forms must be implemented in "
                                   "subclasses.")
 
-    def get_form_prefix(self, form_class):
-        if form_class == DealSpatialFormSet:
-            prefix = 'location'
-        # TODO: rename AddDealDataSourceFormSet, it is used for both add and
-        # change
-        elif form_class == AddDealDataSourceFormSet:
-            prefix = 'data_source'
-        elif form_class == DealContractFormSet:
-            prefix = 'contract'
-        else:
-            prefix = None
-
-        return prefix
-
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)

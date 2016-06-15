@@ -145,27 +145,37 @@ class BaseForm(forms.Form):
         """
         data = MultiValueDict()
 
-        attributes = activity.attributes
+        queryset = activity.attributes
         if group:
-            attributes = attributes.filter(fk_group__name=group)
-        attributes = dict(attributes.values_list('name', 'value'))
+            queryset = queryset.filter(fk_group__name=group)
+        attributes = dict()
+        for aa in queryset.all():
+            if aa.name in attributes:
+                attributes[aa.name].append(aa)
+            else:
+                attributes[aa.name] = [aa]
+        #if not group:
+        #    raise IOError(attributes)
+        #if not group:
+        #    raise IOError(attributes)
         for (field_name, field) in cls().base_fields.items():
             # Group title?
             name = prefix and "%s-%s"%(prefix, field_name) or field_name
             if field_name.startswith('tg_') and not field_name.endswith('comment'):
                 continue
             #tags, group = cls.get_tags(field_name, activity, group)
-            value = attributes.get(field_name, None)
+            attribute = attributes.get(field_name, [])
 
-            if not value:
+            if not attribute:
                 continue
+            value = attribute[0].value
             # Multiple choice?
             if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
-                value = cls.get_multiple_choice_data(field, field_name, value)
+                value = cls.get_multiple_choice_data(field, field_name, attribute)
             # Year based data?
             elif isinstance(field, forms.MultiValueField):
                 # FIXME: get and submit date
-                value = cls.get_year_based_data(field, field_name, value, None) 
+                value = cls.get_year_based_data(field, field_name, attribute) 
             # Choice field?
             elif isinstance(field, forms.ChoiceField):
                 for k, v in field.choices:
@@ -180,15 +190,16 @@ class BaseForm(forms.Form):
                 except:
                     # catch invalid date formats from import
                     pass
+                
             if value:
                 data[name] = value
         return data
 
     @classmethod
-    def get_multiple_choice_data(cls,  field, field_name, value):
+    def get_multiple_choice_data(cls,  field, field_name, attributes):
         values = []
-        for tag_value in value.split(','):
-            value = cls.get_multiple_choice_value(field, tag_value)
+        for attribute in attributes:
+            value = cls.get_multiple_choice_value(field, attribute.value)
             if value:
                 values.append(value)
         return values
@@ -216,17 +227,33 @@ class BaseForm(forms.Form):
         return None
 
     @classmethod
-    def get_year_based_data(cls, field, field_name, value, date):
-        # if cls.DEBUG: print('get_year_based_data()', field_name, tags.get(field_name))
-        yb_data = []
-        if isinstance(field.fields[0], forms.ChoiceField):
-            for k, v in field.fields[0].choices:
-                if v == value:
-                    value = str(k)
-                    break
-        if date or value:
-            yb_data.append("%s:%s" % (value or "", date or ""))
-        return "|".join(yb_data)
+    def get_year_based_data(cls, field, field_name, attributes):
+        # Group all attributes by date
+        attributes_by_date = dict()
+        # Some year based fields take 2 values, e.g. crops and area
+        values_count = len(field.widget.get_widgets()) - 1
+        values = []
+        for attribute in attributes:
+            #if isinstance(field.fields[0], forms.ChoiceField):
+            #    for k, v in field.fields[0].choices:
+            #        if v == value:
+            #            value = str(k)
+            #            break
+            if attribute.date in attributes_by_date:
+                if attribute.value:
+                    attributes_by_date[attribute.date][0] += ',' + attribute.value
+                if values_count > 1 and attribute.value2:
+                    attributes_by_date[attribute.date][1] += ',' + attribute.value2
+            else:
+                if values_count == 1:
+                    attributes_by_date[attribute.date] = [attribute.value]
+                else:
+                    attributes_by_date[attribute.date] = [attribute.value, attribute.value2 or '']
+        if values_count == 1:
+            values = [':'.join([a[0], d or '']) for d, a in attributes_by_date.items()]
+        else:
+            values = [':'.join([a[0], a[1], d or '']) for d, a in attributes_by_date.items()]
+        return '#'.join(values)
 
 #    @classmethod
 #    def get_tags(cls, field_name, deal, group):
@@ -314,13 +341,14 @@ class BaseForm(forms.Form):
             elif isinstance(field, forms.BooleanField):
                 value = self.get_display_value_boolean_field(field_name)
             else:
-                value = self.is_valid() and self.cleaned_data.get(field_name) or self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name)
+                value = self.initial.get(field_name, '')#self.prefix and "%s-%s"%(self.prefix, field_name) or field_name)
 
             if value:
                 tg_items.append({
                     'name': field_name,
                     'label': field.label,
-                    'value': '%s %s' % (value, field.help_text),
+                    'value': value,
+                    #'value': '%s %s' % (value, field.help_text),
                 })
 
         if len(tg_items) > 0:
@@ -330,11 +358,10 @@ class BaseForm(forms.Form):
                 'value': tg_title,
             })
             output.extend(tg_items)
-
         return output
 
     def get_display_value_boolean_field(self, field_name):
-        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
+        data = self.initial.get(field_name, '')#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
         if data == 'True':
             return _('Yes')
         elif data == 'False':
@@ -349,36 +376,39 @@ class BaseForm(forms.Form):
 
     def get_display_value_multi_value_field(self, field, field_name):
         # todo - fails with historical deals?
-        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
-        data = ensure_is_year_based_data(data)
-        value, year = data.split(':')
-        if value:
-            if isinstance(field.fields[0], forms.ChoiceField):
-                value = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) == str(value)])
-            if year:
-                value += ' ({})'.format(year[:4])
-                
-        return value
+        data = self.initial.get(field_name, '')#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
+        values = []
+        if data:
+            for value in data.split('#'):
+                value, year = value.split(':')
+                if value:
+                    if isinstance(field.fields[0], forms.ChoiceField):
+                        value = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) == str(value)])
+                    if year:
+                        value = '[%s] %s' % (year, value)
+                if value:
+                    values.append(value)
+        return '<br>'.join(values)
 
     def get_display_value_choice_field(self, field, field_name):
-        data = self.get_list_from_initial(field_name)
-        value = '<br>'.join([str(l) for v, l in field.choices if str(v) in data])
+        data = self.initial.getlist(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        value = '<br>'.join([str(l) for v, l in field.choices if v and str(v) in data])
         return value
 
-    def get_list_from_initial(self, field_name):
-        if isinstance(self.initial, MultiValueDict):
-            return self.initial.getlist(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        if data: data = [data]
-        return data
+#    def get_list_from_initial(self, field_name):
+#        if isinstance(self.initial, MultiValueDict):
+#            return self.initial.getlist(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+#        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+#        if data: data = [data]
+#        return data
 
     def get_display_value_multiple_choice_field(self, field, field_name):
-        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
         value = '<br>'.join([str(l) for v, l in field.choices if str(v) in data])
         return value
 
     def get_display_value_nested_multiple_choice_field(self, field, field_name):
-        data = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
         values = []
         for v, l, c in field.choices:
             value = ''
@@ -393,7 +423,7 @@ class BaseForm(forms.Form):
         return value
 
     def get_display_value_model_choice_field(self, field, field_name):
-        value = self.initial.get(self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        value = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
         if value:
             return str(field.queryset.get(pk=value))
         else:
@@ -479,10 +509,3 @@ class BaseForm(forms.Form):
                     self.fields[n].widget.attrs["disabled"] = "disabled"
                 else:
                     self.fields[n].widget.attrs["readonly"] = True
-
-
-def ensure_is_year_based_data(data):
-    data = data.replace('::', ':')
-    if ':' not in data:
-        data += ':'
-    return data

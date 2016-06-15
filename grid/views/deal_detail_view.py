@@ -12,7 +12,7 @@ from landmatrix.pdfgen import PDFViewMixin
 
 from grid.forms.change_deal_employment_form import ChangeDealEmploymentForm
 from grid.forms.change_deal_general_form import ChangeDealGeneralForm
-from grid.forms.deal_contract_form import DealContractFormSet
+from grid.forms.deal_contract_form import PublicViewDealContractFormSet
 from grid.forms.deal_data_source_form import (
     PublicViewDealDataSourceFormSet, DealDataSourceForm,
 )
@@ -20,7 +20,7 @@ from grid.forms.deal_former_use_form import DealFormerUseForm
 from grid.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
 from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
 from grid.forms.deal_produce_info_form import PublicViewDealProduceInfoForm
-from grid.forms.deal_spatial_form import PublicViewDealSpatialForm
+from grid.forms.deal_spatial_form import PublicViewDealSpatialFormSet
 from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
@@ -31,9 +31,9 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 FORMS = [
-    ("spatial_data", PublicViewDealSpatialForm),
+    ("spatial_data", PublicViewDealSpatialFormSet),
     ("general_information", ChangeDealGeneralForm),
-    ("contracts", DealContractFormSet),
+    ("contracts", PublicViewDealContractFormSet),
     ("employment", ChangeDealEmploymentForm),
     ("investor_info", OperationalStakeholderForm),
     ("data_sources", PublicViewDealDataSourceFormSet),
@@ -159,8 +159,9 @@ def get_forms(activity):
 
 
 def get_form(activity, form_class):
-    data = form_class[1].get_data(activity)
-    return form_class[1](initial=data)
+    prefix = hasattr(form_class[1], 'prefix') and form_class[1].prefix or None
+    data = form_class[1].get_data(activity, prefix=prefix)
+    return form_class[1](initial=data, prefix=prefix)
 
 
 def deal_from_activity_id_and_timestamp(id_and_timestamp):

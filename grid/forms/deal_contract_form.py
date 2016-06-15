@@ -36,7 +36,7 @@ class DealContractForm(BaseForm):
     sold_as_deal = forms.IntegerField(
         required=False, label=_("Sold as deal no.")
     )
-    agreement_duration = YearBasedIntegerField(
+    agreement_duration = forms.IntegerField(
         required=False, label=_("Duration of the agreement"), help_text=_("years")
     )
     tg_contract_comment = forms.CharField(
@@ -50,15 +50,17 @@ class DealContractForm(BaseForm):
 class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1)):
 
     form_title = _('Contracts')
+    prefix = 'contract'
 
     @classmethod
-    def get_data(cls, activity):
-        groups = activity.attributes.filter(fk_group__name__startswith='data_source').values_list('fk_group__name').distinct()
+    def get_data(cls, activity, group=None, prefix=None):
+        groups = activity.attributes.filter(fk_group__name__startswith=cls.prefix).values_list('fk_group__name').distinct()
 
         data = []
-        for group in groups:
-            form_data = DealContractForm.get_data(activity, group=group)
-            data.append(form_data)
+        for i, group in enumerate(groups):
+            form_data = DealContractForm.get_data(activity, group=group[0])#, prefix='contract-%i' % i)
+            if form_data:
+                data.append(form_data)
         return data
 
     def get_attributes(self, request=None):
@@ -66,3 +68,7 @@ class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1))
 
     class Meta:
         name = 'contract_data'
+
+PublicViewDealContractFormSet = formset_factory(DealContractForm,
+                                               formset=DealContractFormSet,
+                                               extra=0)

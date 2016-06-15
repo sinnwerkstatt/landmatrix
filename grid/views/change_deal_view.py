@@ -1,11 +1,15 @@
 from pprint import pprint
 
 from django.forms.formsets import BaseFormSet
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 
 from grid.forms.change_deal_general_form import ChangeDealGeneralForm
 from grid.forms.deal_contract_form import DealContractFormSet
 from .save_deal_view import SaveDealView
 from landmatrix.models.activity import Activity
+from landmatrix.models.deal_history import DealHistoryItem
+from grid.views.deal_detail_view import deal_from_activity_id_and_timestamp, get_latest_valid_deal
 
 from grid.forms.add_deal_employment_form import AddDealEmploymentForm
 from grid.forms.add_deal_general_form import AddDealGeneralForm
@@ -52,32 +56,36 @@ class ChangeDealView(SaveDealView):
             self.activity = Activity.objects.get(activity_identifier=kwargs.get('deal_id'))
         return super(ChangeDealView, self).dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, deal_id):
+        try:
+            if '_' in deal_id:
+                deal = deal_from_activity_id_and_timestamp(deal_id)
+            else:
+                deal = get_latest_valid_deal(deal_id)
+        except ObjectDoesNotExist as e:
+            raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e)))
+
+
         context = super().get_context_data(**self.kwargs)
-        context['deal_id'] = kwargs.pop('deal_id')
+        context['deal_id'] = deal_id
+        try:
+            context['history'] = DealHistoryItem.get_history_for(deal)
+        except AttributeError:
+            pass
         return context
 
     def get_forms(self, data=None, files=None):
         forms = []
-
         for form_class in self.FORMS:
-            form = self.get_form(form_class, data=data, files=files)
-            forms.append(form)
-
+            forms.append(self.get_form(form_class, data, files))
         for form_class in get_country_specific_form_classes(self.activity):
-            country_specific_form = self.get_form(self.activity, form_class,
-                                                  data=data, files=files)
-            forms.append(country_specific_form)
-
+            forms.append(self.get_form(form_class, data, files))
         return forms
 
-    def get_form(self, form_class, **kwargs):
-        kwargs['initial'] = form_class.get_data(self.activity)
-        if 'prefix' not in kwargs:
-            kwargs['prefix'] = self.get_form_prefix(form_class)
-        form = form_class(**kwargs)
-
-        return form
+    def get_form(self, form_class, data=None, files=None):
+        #prefix = hasattr(form_class, 'prefix') and form_class.prefix or None
+        initial = form_class.get_data(self.activity)
+        return form_class(initial=initial, files=files)
 
 
 def to_formset_data(data):

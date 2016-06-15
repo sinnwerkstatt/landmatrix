@@ -26,7 +26,8 @@ class ActivityAttribute(DefaultStringRepresentation, geomodels.Model):
     fk_language = models.ForeignKey("Language", blank=True, null=True, verbose_name=_("Language"))
     name = models.CharField(max_length=255, blank=True, null=True)
     value = models.TextField(max_length=255, blank=True, null=True)
-    date = models.DateField(_("Date"), blank=True, null=True, db_index=True)
+    value2 = models.TextField(max_length=255, blank=True, null=True)
+    date = models.CharField(_("Year or Date"), max_length=10, blank=True, null=True, db_index=True)
     polygon = geomodels.MultiPolygonField(dim=2, srid=4326, spatial_index=True, blank=True, null=True)
 
     objects = hstore.HStoreManager()

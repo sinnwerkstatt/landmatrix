@@ -121,7 +121,9 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
 
     @classmethod
     def migrate_tag_group(cls, tag_group):
+        from mapping.map_activity_attribute_group import clean_attribute, clean_group
         tg_name = tag_group.fk_a_tag.fk_a_value.value
+
         activity_id = cls.matching_activity_id(tag_group)
 
         aag, created = ActivityAttributeGroup.objects.get_or_create(
@@ -130,20 +132,20 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
         if cls._save:
             aag.save(using=V2)
         
-        from mapping.map_activity_attribute_group import clean_attribute
+        
         for tag in tag_group.a_tag_set.all():
             key = tag.fk_a_key.key
             value = tag.fk_a_value.value
             year = tag.fk_a_value.year
-            if year:
-                year = year_to_date(year)
+            #if year:
+            #    year = year_to_date(year)
             key, value = clean_attribute(key, value)
             if not key or not value:
                 continue
             aa = ActivityAttribute(
                 fk_activity_id=activity_id,
                 fk_language_id=1,
-                fk_group=aag,
+                fk_group=clean_group(tg_name, key, value),
                 name=key,
                 value=value,
                 date=year or None,
@@ -155,7 +157,7 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
                         history_date=cls.get_history_date(tag_group),
                         fk_activity_id=activity_id,
                         fk_language_id=1,
-                        fk_group=aag,
+                        fk_group=clean_group(tg_name, key, value),
                         name=key,
                         value=value,
                         date=year or None,
