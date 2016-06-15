@@ -61,12 +61,7 @@ ol.control.LayerSwitcher = function(opt_options) {
         $('#legendstuff').toggleClass('hidden');
     };
 
-    /*element.onmouseout = function(e) {
-     e = e || window.event;
-     if (!element.contains(e.toElement)) {
-     this_.hidePanel();
-     }
-     };*/
+    $('#legendstuff').mouseout().toggleClass('hidden');
 
     ol.control.Control.call(this, {
         element: element,
@@ -156,11 +151,12 @@ ol.control.LayerSwitcher.prototype.setMap = function (map) {
     this.mapListeners.length = 0;
     // Wire up listeners etc. and store reference to new map
     ol.control.Control.prototype.setMap.call(this, map);
+
     if (map) {
         var this_ = this;
-        this.mapListeners.push(map.on('pointerdown', function () {
-            this_.hidePanel();
-        }));
+        /*this.mapListeners.push(map.on('pointerdown', function () {
+            $('#legendstuff').addClass('hidden');
+        })); */
         this.renderPanel();
     }
 };

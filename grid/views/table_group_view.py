@@ -1,17 +1,19 @@
-from api.query_sets.sql_generation.sql_builder import SQLBuilder
-from grid.views.filter_widget_mixin import FilterWidgetMixin
+import json
+import numbers
 
-from .view_aux_functions import render_to_response
-from grid.views.profiling_decorators import print_execution_time_and_num_queries
-from .intention_map import IntentionMap
-#from .download import Download
-from grid.views.activity_protocol import ActivityProtocol
-
+from django.http import Http404
+from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
 from django.template import RequestContext
 
-import json, numbers
+from api.query_sets.sql_generation.sql_builder import SQLBuilder
+from grid.views.filter_widget_mixin import FilterWidgetMixin
+from grid.views.profiling_decorators import \
+    print_execution_time_and_num_queries
+from grid.views.activity_protocol import ActivityProtocol
+from .view_aux_functions import render_to_response
+from .intention_map import IntentionMap
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -31,6 +33,22 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         "negotiation_status", "implementation_status", "intended_size", "contract_size",
     ]
     DEFAULT_GROUP = "by-target-region"
+    COLUMN_GROUPS = {
+        "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
+        "target_region": ["target_region", "intention", "deal_count", "availability"],
+        "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
+#               region column disabled due to slowness resulting from additional JOIN
+#                "stakeholder_country": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
+        "stakeholder_country": ["stakeholder_country", "intention", "deal_count", "availability"],
+        "stakeholder_region": ["stakeholder_region", "deal_count", "availability"],
+        "intention": ["intention", "deal_count", "availability"],
+        "crop": ["crop", "intention", "deal_count", "availability"],
+        "year": ["year", "intention", "deal_count", "availability"],
+        "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
+        "all": ["deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country",
+                "intention", "negotiation_status", "implementation_status", "intended_size",
+                "contract_size", ]
+    }
 
     template_name = "group-by.html"
     debug_query = False
@@ -196,26 +214,14 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     def _columns(self):
         if self.request.GET.get('columns'):
             columns = self.request.GET.getlist('columns')
-            if not 'deal_id' in columns:
-                columns = ['deal_id',] + columns
+            if 'deal_id' not in columns:
+                columns = ['deal_id'] + columns
         else:
-            columns = {
-                "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
-                "target_region": ["target_region", "intention", "deal_count", "availability"],
-                "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
-#               region column disabled due to slowness resulting from additional JOIN
-#                "stakeholder_country": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
-                "stakeholder_country": ["stakeholder_country", "intention", "deal_count", "availability"],
-                "stakeholder_region": ["stakeholder_region", "deal_count", "availability"],
-                "intention": ["intention", "deal_count", "availability"],
-                "crop": ["crop", "intention", "deal_count", "availability"],
-                "year": ["year", "intention", "deal_count", "availability"],
-                "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
-                "all": ["deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country",
-                        "intention", "negotiation_status", "implementation_status", "intended_size",
-                        "contract_size", ]
-            }
-            columns = columns[self.group]
+            try:
+                columns = self.COLUMN_GROUPS[self.group]
+            except KeyError:
+                raise Http404(
+                    _("Unknown group '%(group)s'.") % {'group': self.group})
         return columns
 
     def _map_values_of_group(self, value_list, format_string):

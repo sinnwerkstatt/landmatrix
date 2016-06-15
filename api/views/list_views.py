@@ -1,15 +1,20 @@
+from django.contrib.auth import get_user_model
+from rest_framework.generics import ListAPIView
 
 from grid.views.activity_protocol import ActivityQuerySet
 from api.query_sets.latest_changes_query_set import LatestChangesQuerySet
 from api.query_sets.statistics_query_set import StatisticsQuerySet
-from api.query_sets.users_query_set import UsersQuerySet
+from api.serializers import UserSerializer
 from api.views.base import FakeQuerySetListView
 
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+User = get_user_model()
 
 
-class UserListView(FakeQuerySetListView):
-    fake_queryset_class = UsersQuerySet
+class UserListView(ListAPIView):
+    queryset = User.objects.all().order_by('first_name')
+    serializer_class = UserSerializer
 
 
 class StatisticsListView(FakeQuerySetListView):
