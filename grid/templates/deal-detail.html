@@ -24,6 +24,9 @@
     </a></li>
     <li class="divider"></li>
     <li role="presentation">
+        <a href="{% url "deal_changes_feed" deal.activity_identifier %}" target="_blank"><i class="fa fa-rss"></i> {% trans "RSS Feed" %}</a>
+    </li>
+    <li role="presentation">
         {% include "export.html" %}
     </li>
 {% endblock %}

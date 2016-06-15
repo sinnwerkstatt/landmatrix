@@ -325,7 +325,6 @@ class BaseForm(forms.Form):
                 tg_title = field.initial
                 tg_items = []
                 continue
-
             if isinstance(field, NestedMultipleChoiceField):
                 value = self.get_display_value_nested_multiple_choice_field(field, field_name)
             elif isinstance(field, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):

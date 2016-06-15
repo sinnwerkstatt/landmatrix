@@ -21,12 +21,17 @@ class YearBasedWidget(forms.MultiWidget):
 
     def decompress(self, value):
         if value:
-            values = value.split("#")
             #sorted_values = sorted(values, key=lambda v: v.split(":")[1] if ':' in v else '0')
-            splitted = []
-            for s in values:
-                splitted.extend(s.split(":"))
-            return len(splitted) == 1 and splitted.append(None) or splitted
+            values = []
+            #for val in value.split("#"):
+            #    date_values = []
+            for val in value.split(':'):
+                values.append(',' in val and val.split(',') or val)
+            #values.append(date_values)
+            #a = len(values) == 1 and values.append(None) or values
+            #if 'YearBasedSelectMultipleNumber' in str(self):
+            #    raise IOError(values)
+            return values
         return [None, None]
 
     def render_for_template(self):

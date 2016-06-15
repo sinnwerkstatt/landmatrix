@@ -64,7 +64,7 @@ def clean_crops(key, value):
 
 def replace_obsolete_crops(key, value):
     if value == 42:
-        return 7
+        value = 7
     return key, value
 
 def replace_obsolete_animals(key, value):
