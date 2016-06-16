@@ -210,7 +210,31 @@ $(document).ready(function(){
       $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.on_the_lease_households, div.off_the_lease_area, div.off_the_lease_farmers, div.off_the_lease_households").slideUp("fast");
     });
 
-    /* Employment: toggle visibility of subfields on click*/
+    /* General information: Toggle On/Off the lease subfields */
+    if( !$("input#id_on_the_lease").is(":checked") ){
+      $("div.on_the_lease_area, div.on_the_lease_farmers, div.on_the_lease_households").css("display", "none");
+    }
+    $("input#id_on_the_lease").click(function (){
+      if ( $(this).is(":checked")){
+        $("div.on_the_lease_area, div.on_the_lease_farmers, div.on_the_lease_households").slideDown("fast");
+      }
+      else {
+        $("div.on_the_lease_area, div.on_the_lease_farmers, div.on_the_lease_households").slideUp("fast");
+      }
+    });
+    if( !$("input#id_off_the_lease").is(":checked") ){
+      $("div.off_the_lease_area, div.off_the_lease_farmers, div.off_the_lease_households").css("display", "none");
+    }
+    $("input#id_off_the_lease").click(function (){
+      if ( $(this).is(":checked")){
+        $("div.off_the_lease_area, div.off_the_lease_farmers, div.off_the_lease_households").slideDown("fast");
+      }
+      else {
+        $("div.off_the_lease_area, div.off_the_lease_farmers, div.off_the_lease_households").slideUp("fast");
+      }
+    });
+
+    /* Employment: Toggle visibility of subfields on click*/
     if($("body").hasClass("public")) {
       if(!$('#id_total_jobs_created').is(":checked")) {
         $('#id_total_jobs_created').parent().parent().nextAll().slice(0,2).css("display","none");

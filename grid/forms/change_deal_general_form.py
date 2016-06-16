@@ -23,11 +23,11 @@ class ChangeDealGeneralForm(BaseForm):
     intended_size = forms.IntegerField(
         required=False, label=_("Intended size"), help_text=_("ha"), widget=NumberInput
     )
-    contract_size = forms.IntegerField(
+    contract_size = YearBasedIntegerField(
         required=False, label=_("Size under contract (leased or purchased area)"),
         help_text=_("ha"), widget=NumberInput
     )
-    production_size = forms.IntegerField(
+    production_size = YearBasedIntegerField(
         required=False, label=_("Size in operation (production)"), help_text=_("ha"),
         widget=NumberInput
     )

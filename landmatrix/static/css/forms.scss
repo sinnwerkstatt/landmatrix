@@ -231,6 +231,8 @@ a.remove-ybd:hover {
     width: 30%;
   }
 
+  .contract_size .input-group,
+  .production_size .input-group,
   .agreement_duration .input-group,
   .total_jobs_current .input-group,
   .total_jobs_current_employees .input-group,
@@ -252,6 +254,8 @@ a.remove-ybd:hover {
     width: 80%;
   }
 
+  .contract_size .input-group .year-based,
+  .production_size .input-group .year-based,
   .agreement_duration .input-group .year-based,
   .total_jobs_current .input-group .year-based,
   .total_jobs_current_employees .input-group .year-based,
@@ -272,6 +276,9 @@ a.remove-ybd:hover {
   .actors_classification .input-group .year-based {
     width: 62%;
   }
+
+  .contract_size .input-group .year-based-year,
+  .production_size .input-group .year-based-year,
   .agreement_duration .input-group .year-based-year,
   .total_jobs_current .input-group .year-based-year,
   .total_jobs_current_employees .input-group .year-based-year,

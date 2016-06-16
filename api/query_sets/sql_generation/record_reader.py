@@ -94,6 +94,7 @@ class RecordReader:
             try:
                 column_data[column] = self.get_column(column)
             except ProgrammingError as e:
+                raise
                 print('SQL for column "%s" failed:\n%s' % (column, self.get_column_sql(column)))
 
         return column_data

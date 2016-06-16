@@ -201,7 +201,7 @@
                         {% for column in columns %}
                             {% if column == "deal_id" %}
                                 <td class="deal-id">
-                                    <a href="{% url 'deal_detail' item.deal_id %}" class="label label-default">{{ item.deal_id }}</a>
+                                    <a href="{% if request.user.is_staff %}{% url 'change_deal' item.deal_id %}{% else %}{% url 'deal_detail' item.deal_id %}{% endif %}" class="label label-default">{{ item.deal_id }}</a>
                                 </td>
                             {% elif column == "crop" %}
                                 <td style="width:341px">

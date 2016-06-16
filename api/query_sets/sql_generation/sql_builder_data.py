@@ -13,7 +13,7 @@ class SQLBuilderData:
         'all':                 "'all deals'",
         'target_region':       'deal_region.name',
         'target_country':      'deal_country.name',
-        'year':                'EXTRACT(YEAR FROM negotiation_status.date)',
+        'year':                'SUBSTR(negotiation_status.date, 1, 4)',
         'crop':                'crop.name',
         'intention':           "intention.value",
         'stakeholder_region':  'stakeholder_region.name',
@@ -150,8 +150,8 @@ class SQLBuilderData:
             "IFNULL(pi.deal_size, 0) + 0 AS deal_size"
         ],
         "year": [
-            "EXTRACT(YEAR FROM negotiation_status.date) AS year",
-            "EXTRACT(YEAR FROM negotiation_status.date) AS year"
+            "SUBSTR(negotiation_status.date, 1, 4) AS year",
+            "SUBSTR(negotiation_status.date, 1, 4) AS year"
         ],
         "deal_count": [
             "COUNT(DISTINCT a.activity_identifier) as deal_count",
@@ -169,7 +169,7 @@ class SQLBuilderData:
             """ARRAY_AGG(DISTINCT CONCAT(
                         negotiation_status.value,
                         '#!#',
-                        EXTRACT(YEAR FROM negotiation_status.date)
+                        SUBSTR(negotiation_status.date, 1, 4)
                 )) AS negotiation_status"""
         ],
         "implementation_status": [
@@ -178,14 +178,14 @@ class SQLBuilderData:
                     DISTINCT CONCAT(
                         implementation_status.value,
                         '#!#',
-                        EXTRACT(YEAR FROM implementation_status.date)
+                        SUBSTR(implementation_status.date, 1, 4)
                     )
                 ) = '{#!#}') THEN NULL
                 ELSE ARRAY_AGG(
                     DISTINCT CONCAT(
                         implementation_status.value,
                         '#!#',
-                        EXTRACT(YEAR FROM implementation_status.date)
+                        SUBSTR(implementation_status.date, 1, 4)
                     )
                 ) END AS implementation_status"""
         ],

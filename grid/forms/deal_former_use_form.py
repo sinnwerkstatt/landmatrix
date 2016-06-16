@@ -18,8 +18,9 @@ class DealFormerUseForm(BaseForm):
         required=False, label=_("Former land owner"), choices=(
             ("State", _("State")),
             ("Private (smallholders)", _("Private (smallholders)")),
-            ("Private (large-scale)", _("Private (large-scale)")),
+            ("Private (large-scale)", _("Private (large-scale farm)")),
             ("Community", _("Community")),
+            ("Indigenous people", _("Indigenous people")),
             ("Other", _("Other")),
         ), widget=forms.CheckboxSelectMultiple
     )

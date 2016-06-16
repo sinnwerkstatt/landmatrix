@@ -199,7 +199,7 @@
                             {% for changeset in latest_added.cs %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
+                                            href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
                                     </td>
                                     <td class="user">{{ changeset.user }}</td>
                                     <td class="comment" title="{{ changeset.comment }}"><span
@@ -235,7 +235,7 @@
                             {% for changeset in latest_modified.cs %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
+                                            href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
                                     </td>
                                     <td class="user">{{ changeset.user }}</td>
                                     <td class="comment" title="{{ changeset.comment }}"><span
@@ -273,7 +273,7 @@
                             {% for changeset in latest_deleted.cs %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
+                                            href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
                                     </td>
                                     <td class="user">{{ changeset.user }}</td>
                                     <td class="comment" title="{{ changeset.comment }}"><span
@@ -311,7 +311,7 @@
                                 {% for changeset in manage.a_changesets.updates.cs %}
                                     <tr class="update">
                                         <td class="deal"><a
-                                                href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
+                                                href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
                                         </td>
                                         <td class="user">{{ changeset.user }}</td>
                                         <td class="state">{% trans "Update" %}</td>
@@ -326,7 +326,7 @@
                                 {% for changeset in manage.a_changesets.deletes.cs %}
                                     <tr class="delete">
                                         <td class="deal"><a
-                                                href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
+                                                href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
                                         </td>
                                         <td class="user">{{ changeset.user }}</td>
                                         <td class="state">{% trans "Delete" %}</td>
@@ -341,7 +341,7 @@
                                 {% for changeset in manage.a_changesets.inserts.cs %}
                                     <tr class="insert">
                                         <td class="deal"><a
-                                                href="{% url 'deal_detail' deal_id=changeset.deal_id %}">#{{ changeset.deal_id }}</a>
+                                                href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
                                         </td>
                                         <td class="user">{{ changeset.user }}</td>
                                         <td class="state">{% trans "Add" %}</td>
@@ -394,7 +394,7 @@
                             {% for feedback in feedbacks.feeds %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="{% url 'deal_detail' deal_id=feedback.deal_id %}">#{{ feedback.deal_id }}</a></td>
+                                            href="{% if request.user.is_staff %}{% url 'change_deal' feedback.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ feedback.deal_id }}</a></td>
                                     <td class="user">{{ feedback.from_user }}</td>
                                     <td class="comment" title="{{ feedback.comment }}"><span
                                             class="truncate">{{ feedback.comment }}</span></td>

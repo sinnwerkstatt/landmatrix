@@ -12,14 +12,12 @@ from django.utils.safestring import mark_safe
 class DealVGGTForm(BaseForm):
 
     form_title = _(
-        'Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) / '
-        'Principles for Responsible Agricultural Investments (PRAI)'
+        'Guidelines & Principles'
     )
 
     tg_vggt = TitleField(
         required=False, initial=_(
-            "Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) / "
-            "Principles for Responsible Agricultural Investments (PRAI)"
+            "Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
         )
     )
     vggt_applied = forms.ChoiceField(
@@ -36,7 +34,11 @@ class DealVGGTForm(BaseForm):
     tg_vggt_applied_comment = forms.CharField(
         required=False, label=_("Additional comments"), widget=CommentInput
     )
-
+    tg_prai = TitleField(
+        required=False, initial=_(
+            "Principles for Responsible Agricultural Investments (PRAI)"
+        )
+    )
     prai_applied = forms.ChoiceField(
         required=False,
         label=_("Application of Principles for Responsible Agricultural Investments (PRAI)"),

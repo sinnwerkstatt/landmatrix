@@ -92,20 +92,20 @@ JOIN (
         ARRAY_TO_STRING(ARRAY_AGG(
             DISTINCT CONCAT(
                 negotiation_status.value,        '#!#',
-                EXTRACT(YEAR FROM negotiation_status.date)
+                SUBSTR(negotiation_status.date, 1, 4)
             )), '##!##'
         ) AS negotiation_status,
         CASE WHEN (
             ARRAY_TO_STRING(ARRAY_AGG(
                 DISTINCT CONCAT(
                     implementation_status.value,  '#!#',
-                    EXTRACT(YEAR FROM implementation_status.date)
+                    SUBSTR(implementation_status.date, 1, 4)
                 )), '##!##'
             ) = '#!#') THEN NULL
             ELSE ARRAY_TO_STRING(ARRAY_AGG(
                 DISTINCT CONCAT(
                     implementation_status.value,  '#!#',
-                    EXTRACT(YEAR FROM implementation_status.date)
+                    SUBSTR(implementation_status.date, 1, 4)
                 )), '##!##'
         ) END AS implementation_status
     FROM
@@ -159,20 +159,20 @@ SELECT DISTINCT
     ARRAY_TO_STRING(ARRAY_AGG(
         DISTINCT CONCAT(
             negotiation_status.value,        '#!#',
-            EXTRACT(YEAR FROM negotiation_status.date)
+            SUBSTR(negotiation_status.date, 1, 4)
         )), '##!##'
     ) AS negotiation_status,
     CASE WHEN (
         ARRAY_TO_STRING(ARRAY_AGG(
             DISTINCT CONCAT(
                 implementation_status.value,  '#!#',
-                EXTRACT(YEAR FROM implementation_status.date)
+                SUBSTR(implementation_status.date, 1, 4)
             )), '##!##'
         ) = '#!#') THEN NULL
         ELSE ARRAY_TO_STRING(ARRAY_AGG(
             DISTINCT CONCAT(
                 implementation_status.value,  '#!#',
-                EXTRACT(YEAR FROM implementation_status.date)
+                SUBSTR(implementation_status.date, 1, 4)
             )), '##!##'
     ) END AS implementation_status
 FROM
@@ -292,7 +292,7 @@ def test_split_inner_query():
     negotiation_query = select(
         """ARRAY_AGG(DISTINCT CONCAT(
             negotiation_status.value,        '#!#',
-            EXTRACT(YEAR FROM negotiation_status.date)
+            SUBSTR(negotiation_status.date, 1, 4)
         )) AS negotiation_status""",
         "landmatrix_activityattribute             AS negotiation_status    ON a.id = negotiation_status.fk_activity_id AND negotiation_status.name = 'negotiation_status'"
     )
@@ -301,13 +301,13 @@ def test_split_inner_query():
         ARRAY_TO_STRING(ARRAY_AGG(
             DISTINCT CONCAT(
                 implementation_status.value,  '#!#',
-                EXTRACT(YEAR FROM implementation_status.date)
+                SUBSTR(implementation_status.date, 1, 4)
             )), '##!##'
         ) = '#!#') THEN NULL
         ELSE ARRAY_TO_STRING(ARRAY_AGG(
             DISTINCT CONCAT(
                 implementation_status.value,  '#!#',
-                EXTRACT(YEAR FROM implementation_status.date)
+                SUBSTR(implementation_status.date, 1, 4)
             )), '##!##'
     ) END AS implementation_status""",
         "landmatrix_activityattribute            AS implementation_status ON a.id = implementation_status.fk_activity_id AND implementation_status.name = 'implementation_status'"

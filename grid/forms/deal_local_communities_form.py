@@ -130,8 +130,8 @@ class DealLocalCommunitiesForm(BaseForm):
         required=False, label=_("Number of people displaced staying on community land"),
         widget=NumberInput
     )
-    number_of_people_displaced_from_fields = forms.IntegerField(
-        required=False, label=_('Number of people displaced "only" from their agricultural fields'),
+    number_of_households_displaced_from_fields = forms.IntegerField(
+        required=False, label=_('Number of households displaced "only" from their agricultural fields'),
         widget=NumberInput
     )
     number_of_people_displaced_on_completion = forms.IntegerField(
