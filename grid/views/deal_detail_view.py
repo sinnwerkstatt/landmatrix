@@ -154,7 +154,6 @@ def get_forms(activity):
             form_tuple = (form_class.Meta.name, form_class)
             country_specific_form = get_form(activity, form_tuple)
             forms.append(country_specific_form)
-
     return forms
 
 

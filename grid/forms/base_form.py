@@ -174,7 +174,6 @@ class BaseForm(forms.Form):
                 value = cls.get_multiple_choice_data(field, field_name, attribute)
             # Year based data?
             elif isinstance(field, forms.MultiValueField):
-                # FIXME: get and submit date
                 value = cls.get_year_based_data(field, field_name, attribute) 
             # Choice field?
             elif isinstance(field, forms.ChoiceField):
@@ -305,7 +304,6 @@ class BaseForm(forms.Form):
         output = []
         tg_title = ''
         tg_items = []
-        #raise IOError(list(self.base_fields.items()))
         for i, (field_name, field) in enumerate(self.base_fields.items()):
 
             if field_name.startswith("tg_") and not field_name.endswith("_comment"):
@@ -379,18 +377,22 @@ class BaseForm(forms.Form):
         values = []
         if data:
             for value in data.split('#'):
-                value, year = value.split(':')
-                if value:
+                date_values = value.split(':')
+                date = date_values.pop()
+                if date_values:
                     if isinstance(field.fields[0], forms.ChoiceField):
-                        value = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) == str(value)])
-                    if year:
-                        value = '[%s] %s' % (year, value)
+                        selected = date_values[0].split(',')
+                        date_values[0] = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) in selected])
+                    value = ''
+                    if date:
+                        value += '[%s] ' % date
+                    value += ', '.join(filter(None, date_values))
                 if value:
                     values.append(value)
         return '<br>'.join(values)
 
     def get_display_value_choice_field(self, field, field_name):
-        data = self.initial.getlist(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
         value = '<br>'.join([str(l) for v, l in field.choices if v and str(v) in data])
         return value
 
