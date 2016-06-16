@@ -19,7 +19,7 @@ var fieldnames = {
     'Geospatial Accuracy': 'accuracy',
     'Negotiation Status': 'negotiation_status',
     'Deal Intention': 'intention'
-}
+};
 
 var detailviews = {
     'Geospatial Accuracy': {
@@ -648,16 +648,15 @@ $(document).ready(function () {
                 marker.lat = parseFloat(marker.point_lat);
                 marker.lon = parseFloat(marker.point_lon);
 
-                if ($.inArray(marker.lat, lats) > -1) {
-                    duplicates += 1;
-                    console.log('Dup to ', marker.lat, marker, ' older is ', lats[marker.lat]);
-                } else {
+                //console.log(marker);
+                addClusteredMarker(marker);
+                //addClusteredMarkerNew(marker);
+                lats[marker.lat] = marker;
 
-                    //console.log(marker);
-                    addClusteredMarker(marker);
-                    //addClusteredMarkerNew(marker);
-                    lats[marker.lat] = marker;
+                if (marker.hasOwnProperty('geometry')) {
+                    geojsonObject.features.push(marker.geometry);
                 }
+
             }
             console.log('Added deals: ', i, ', ', duplicates, ' duplicates.');
         }

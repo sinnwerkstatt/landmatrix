@@ -1,18 +1,21 @@
 from pprint import pprint
+import json
+
+from django.template import loader
+from django.http import HttpResponse
 
 from landmatrix.models.country import Country
 from landmatrix.models.filter_condition import FILTER_VAR_ACT, \
     FILTER_VAR_INV, FilterCondition
 from landmatrix.models.filter_preset import FilterPresetGroup
-from grid.views.browse_condition_form import BrowseConditionForm
 from api.filters import PresetFilter
+from grid.views.browse_condition_form import BrowseConditionForm
+from grid.views.save_deal_view import SaveDealView
+from grid.widgets import TitleField
 
-from django.template import loader
-from django.http import HttpResponse
-
-import json
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 def create_condition_formset():
     from django.forms.formsets import formset_factory
@@ -37,9 +40,7 @@ def render_to_string(template_name, context, context_instance):
 
 
 def create_variable_table():
-    from grid.views.save_deal_view import SaveDealView
-
-    input_groups = []
+    variable_table = []
     group_items = []
     group_title = ''
 
@@ -47,28 +48,29 @@ def create_variable_table():
         # FormSet (Spatial Data und Data source)
         if hasattr(form, 'form'):
             form = form.form
+
         for field_name, field in form.base_fields.items():
-            if field_name.startswith('tg_'):
-                if group_title and len(group_items) > 0:
-                    input_groups.append({
+            if isinstance(field, TitleField):
+                if group_title and group_items:
+                    variable_table.append({
                         'label': group_title,
-                        'items': group_items
+                        'items': group_items,
                     })
                     group_items = []
                 group_title = str(field.initial)
             else:
                 group_items.append({
                     'name': field_name,
-                    'label': str(field.label)
+                    'label': str(field.label),
                 })
 
-    if group_title and len(group_items):
-        input_groups.append({
+    if group_title and group_items:
+        variable_table.append({
             'label': group_title,
-            'items': group_items
+            'items': group_items,
         })
 
-    return input_groups
+    return variable_table
 
 
 def apply_filters_from_session(request, filter_dict):
