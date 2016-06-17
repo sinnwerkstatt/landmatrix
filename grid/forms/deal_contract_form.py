@@ -1,18 +1,12 @@
-from pprint import pprint
-
-from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttribute
-from landmatrix.models.country import Country
-from landmatrix.models.deal import Deal
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-from .base_form import BaseForm
-from grid.widgets import TitleField, YearBasedIntegerField, CommentInput
-
 from django import forms
 from django.forms.models import formset_factory
 from django.utils.translation import ugettext_lazy as _
+
+from grid.widgets import TitleField, CommentInput
+from .base_form import BaseForm
+
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealContractForm(BaseForm):
@@ -40,7 +34,7 @@ class DealContractForm(BaseForm):
         required=False, label=_("Duration of the agreement"), help_text=_("years")
     )
     tg_contract_comment = forms.CharField(
-        required=False, label=_("Additional comments"), widget=CommentInput
+        required=False, label=_("Contract comments"), widget=CommentInput
     )
 
     class Meta:
@@ -48,7 +42,9 @@ class DealContractForm(BaseForm):
 
 
 class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1)):
-
+    '''
+    TODO: inherit from BaseFormSet
+    '''
     form_title = _('Contracts')
     prefix = 'contract'
 

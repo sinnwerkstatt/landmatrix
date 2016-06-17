@@ -6,6 +6,9 @@ from django import forms
 
 
 class TitleField(forms.CharField):
+    '''
+    TODO: default to required=False and label="" (repeated everywhere)
+    '''
     widget = forms.HiddenInput
     is_title = True
 

@@ -1,7 +1,9 @@
+'''
+TODO: move to widgets/fields
+'''
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 
 from landmatrix.storage import data_source_storage

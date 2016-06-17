@@ -4,16 +4,15 @@ from django.forms.formsets import BaseFormSet
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 
-from grid.forms.change_deal_general_form import ChangeDealGeneralForm
+from grid.forms.deal_general_form import DealGeneralForm
 from grid.forms.deal_contract_form import DealContractFormSet
 from .save_deal_view import SaveDealView
 from landmatrix.models.activity import Activity
 from landmatrix.models.deal_history import DealHistoryItem
 
-from grid.forms.add_deal_employment_form import AddDealEmploymentForm
-from grid.forms.add_deal_general_form import AddDealGeneralForm
-from grid.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
-from grid.forms.change_deal_action_comment_form import ChangeDealActionCommentForm
+from grid.forms.deal_employment_form import DealEmploymentForm
+from grid.forms.deal_overall_comment_form import DealOverallCommentForm
+from grid.forms.deal_action_comment_form import DealActionCommentForm
 from grid.forms.deal_data_source_form import AddDealDataSourceFormSet
 from grid.forms.deal_former_use_form import DealFormerUseForm
 from grid.forms.deal_gender_related_info_form import DealGenderRelatedInfoForm
@@ -33,9 +32,9 @@ class ChangeDealView(SaveDealView):
 
     FORMS = [
         DealSpatialFormSet,
-        ChangeDealGeneralForm,
+        DealGeneralForm,
         DealContractFormSet,
-        AddDealEmploymentForm,
+        DealEmploymentForm,
         OperationalStakeholderForm,
         AddDealDataSourceFormSet,
         DealLocalCommunitiesForm,
@@ -44,8 +43,8 @@ class ChangeDealView(SaveDealView):
         DealWaterForm,
         DealGenderRelatedInfoForm,
         DealVGGTForm,
-        AddDealOverallCommentForm,
-        ChangeDealActionCommentForm,
+        DealOverallCommentForm,
+        DealActionCommentForm,
     ]
 
     template_name = 'change-deal.html'

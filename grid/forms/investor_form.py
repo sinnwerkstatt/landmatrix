@@ -10,6 +10,7 @@ from grid.widgets import CommentInput
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
+# TODO: move to fields.
 # Change this to a livesearch widget once you got a working one
 class InvestorField(forms.ChoiceField):
     def widget_attrs(self, widget):
@@ -18,13 +19,12 @@ class InvestorField(forms.ChoiceField):
 
 class InvestorForm(BaseModelForm):
     name = forms.CharField(required=False, label=_("Name"), max_length=255)
-    tg_general_comment = forms.CharField(required=False,
-                                         label=_("Additional comments"),
-                                         widget=CommentInput)
+    tg_general_comment = forms.CharField(
+        required=False, label=_("Investor comments"), widget=CommentInput)
 
     class Meta:
         model = Investor
-        fields = ['name', 'fk_country', 'classification', 'tg_general_comment']
+        fields = ('name', 'fk_country', 'classification', 'tg_general_comment')
 
     def save(self, commit=True):
         '''

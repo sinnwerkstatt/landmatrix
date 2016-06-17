@@ -1,11 +1,15 @@
-from grid.forms.investor_form import InvestorForm, InvestorField
-from landmatrix.models.comment import Comment
-
-from landmatrix.models.country import Country
+'''
+TODO: lots of nameerrors here (Involvement, StakeholderAttributeGroup)
+TODO: fix formeset_factory inheritance
+'''
+from copy import copy
 
 from django.forms.formsets import formset_factory
 
-from copy import copy
+from landmatrix.models.comment import Comment
+from landmatrix.models.country import Country
+from grid.forms.investor_form import InvestorForm
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
