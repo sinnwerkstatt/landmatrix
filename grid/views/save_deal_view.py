@@ -1,7 +1,7 @@
-from grid.forms.add_deal_employment_form import AddDealEmploymentForm
-from grid.forms.add_deal_general_form import AddDealGeneralForm
-from grid.forms.add_deal_overall_comment_form import AddDealOverallCommentForm
-from grid.forms.change_deal_action_comment_form import ChangeDealActionCommentForm
+from grid.forms.deal_employment_form import DealEmploymentForm
+from grid.forms.deal_general_form import DealGeneralForm
+from grid.forms.deal_overall_comment_form import DealOverallCommentForm
+from grid.forms.deal_action_comment_form import DealActionCommentForm
 from grid.forms.deal_contract_form import DealContractFormSet
 from grid.forms.deal_data_source_form import AddDealDataSourceFormSet
 from grid.forms.deal_former_use_form import DealFormerUseForm
@@ -34,9 +34,9 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class SaveDealView(TemplateView):
     FORMS = [
         DealSpatialFormSet,
-        AddDealGeneralForm,
+        DealGeneralForm,
         DealContractFormSet,
-        AddDealEmploymentForm,
+        DealEmploymentForm,
         OperationalStakeholderForm,
         AddDealDataSourceFormSet,
         DealLocalCommunitiesForm,
@@ -45,8 +45,8 @@ class SaveDealView(TemplateView):
         DealWaterForm,
         DealGenderRelatedInfoForm,
         DealVGGTForm,
-        AddDealOverallCommentForm,
-        ChangeDealActionCommentForm,
+        DealOverallCommentForm,
+        DealActionCommentForm,
     ]
     deal_id = None
     activity = None

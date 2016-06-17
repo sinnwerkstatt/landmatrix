@@ -1,4 +1,4 @@
-from grid.forms.add_deal_general_form import AddDealGeneralForm
+from grid.forms.deal_general_form import DealGeneralForm
 from landmatrix.models.activity import Activity
 from api.query_sets.activity_query_set import ActivityQuerySet
 
@@ -49,8 +49,8 @@ class ActivityProtocol:
     def remove_from_lookup_table(self, activity_identifier):
         PublicInterfaceCache.objects.filter(fk_activity__activity_identifier=activity_identifier).delete()
 
-    NEGOTIATION_STATUS_ORDER = dict([(str(c[1]), c[0]) for c in AddDealGeneralForm().fields["negotiation_status"].choices])
-    IMPLEMENTATION_STATUS_ORDER = dict([(str(c[1]), c[0]) for c in AddDealGeneralForm().fields["implementation_status"].choices])
+    NEGOTIATION_STATUS_ORDER = dict([(str(c[1]), c[0]) for c in DealGeneralForm().fields["negotiation_status"].choices])
+    IMPLEMENTATION_STATUS_ORDER = dict([(str(c[1]), c[0]) for c in DealGeneralForm().fields["implementation_status"].choices])
 
     def calculate_public_interface_values(self, activity_identifier):
         pi_values = {

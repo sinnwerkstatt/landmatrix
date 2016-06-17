@@ -3,7 +3,7 @@ from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from api.query_sets.fake_query_set import FakeQuerySet
-from grid.forms.add_deal_general_form import AddDealGeneralForm
+from grid.forms.deal_general_form import DealGeneralForm
 
 
 class IntentionQuerySet(FakeQuerySetWithSubquery):
@@ -30,8 +30,8 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
         super().__init__(request)
         self.intention = request.GET.get("intention", "")
 
-    INTENTIONS = list(filter(lambda k: "Mining" not in k, [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices]))
-    INTENTIONS_AGRICULTURE = [str(i[1]) for i in AddDealGeneralForm().fields["intention"].choices[0][2]]
+    INTENTIONS = list(filter(lambda k: "Mining" not in k, [str(i[1]) for i in DealGeneralForm().fields["intention"].choices]))
+    INTENTIONS_AGRICULTURE = [str(i[1]) for i in DealGeneralForm().fields["intention"].choices[0][2]]
 
     def all(self):
         parent_intention = self.intention

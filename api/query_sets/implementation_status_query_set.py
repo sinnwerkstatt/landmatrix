@@ -2,7 +2,7 @@ from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from grid.forms.add_deal_general_form import AddDealGeneralForm
+from grid.forms.deal_general_form import DealGeneralForm
 
 
 class ImplementationStatusQuerySet(FakeQuerySetWithSubquery):
@@ -18,7 +18,7 @@ class ImplementationStatusQuerySet(FakeQuerySetWithSubquery):
     GROUP_BY = ['sub.implementation_status']
     ORDER_BY = ['sub.implementation_status']
 
-    IMPLEMENTATION_STATUS = list(filter(None, [c[0] and str(c[1]) or None for c in AddDealGeneralForm().fields["implementation_status"].choices]))
+    IMPLEMENTATION_STATUS = list(filter(None, [c[0] and str(c[1]) or None for c in DealGeneralForm().fields["implementation_status"].choices]))
 
     def all(self):
         found = super().all()

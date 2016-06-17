@@ -10,8 +10,8 @@ from landmatrix.models.country import Country
 from landmatrix.models.deal_history import DealHistoryItem
 from landmatrix.pdfgen import PDFViewMixin
 
-from grid.forms.change_deal_employment_form import ChangeDealEmploymentForm
-from grid.forms.change_deal_general_form import ChangeDealGeneralForm
+from grid.forms.deal_employment_form import DealEmploymentForm
+from grid.forms.deal_general_form import DealGeneralForm
 from grid.forms.deal_contract_form import PublicViewDealContractFormSet
 from grid.forms.deal_data_source_form import (
     PublicViewDealDataSourceFormSet, DealDataSourceForm,
@@ -32,9 +32,9 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 FORMS = [
     ("spatial_data", PublicViewDealSpatialFormSet),
-    ("general_information", ChangeDealGeneralForm),
+    ("general_information", DealGeneralForm),
     ("contracts", PublicViewDealContractFormSet),
-    ("employment", ChangeDealEmploymentForm),
+    ("employment", DealEmploymentForm),
     ("investor_info", OperationalStakeholderForm),
     ("data_sources", PublicViewDealDataSourceFormSet),
     ("local_communities", DealLocalCommunitiesForm),

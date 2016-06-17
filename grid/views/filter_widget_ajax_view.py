@@ -2,7 +2,6 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from grid.views.browse_filter_conditions import get_field_by_key
 from grid.widgets import LocationWidget, YearBasedSelect, YearBasedMultipleSelect, YearBasedTextInput, NumberInput
-from grid.forms.deal_primary_investor_form import DealPrimaryInvestorForm
 from grid.forms.choices import intention_choices, int_choice_to_string
 
 from django.http import HttpResponse
@@ -85,13 +84,6 @@ class FilterWidgetAjaxView(View):
                 widget = Select(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(
                     request.GET.get("name", ""), len(value) == 1 and value[0] or value,
                     attrs={"id": "id_%s" % request.GET.get("name", "")})
-        # primary investor
-        elif key_id == "inv_-2":
-            form = DealPrimaryInvestorForm()
-            field = form.fields["primary_investor"]
-        elif key_id == "secondary_investor":
-            form = DealSecondaryInvestorForm()
-            field = form.fields["investor"]
         elif "inv_" in key_id:
             field = get_field_by_key(key_id[4:])
         else:

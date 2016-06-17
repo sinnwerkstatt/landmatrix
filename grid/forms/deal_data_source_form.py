@@ -1,3 +1,6 @@
+'''
+TODO: cleanup formset_factory handling.
+'''
 import urllib.request
 
 from django import forms
@@ -10,8 +13,6 @@ from django.core.files.base import ContentFile
 from django.contrib import messages
 from wkhtmltopdf import wkhtmltopdf
 
-from landmatrix.models.activity import Activity
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.storage import data_source_storage
 from grid.forms.base_form import BaseForm
 from grid.forms.file_field_with_initial import FileFieldWithInitial
@@ -68,7 +69,7 @@ class DealDataSourceForm(BaseForm):
         required=False, label=_("OpenLandContracts ID")
     )
     tg_data_source_comment = forms.CharField(
-        required=False, label=_("Additional comments"), widget=CommentInput
+        required=False, label=_("Data source comments"), widget=CommentInput
     )
 
     def clean_date(self):

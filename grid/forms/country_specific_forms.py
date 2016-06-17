@@ -9,7 +9,7 @@ from grid.widgets import TitleField, NumberInput
 def get_country_specific_form_classes(activity, data=None, files=None):
     for target_country_slug in _get_deal_target_country_slugs(activity):
         try:
-            form_class = COUNTRY_FORMS[target_country_slug]
+            form_class = COUNTRY_SPECIFIC_FORMS[target_country_slug]
         except KeyError:
             pass
         else:
@@ -34,19 +34,21 @@ def _get_deal_target_country_slugs(activity):
 
 
 class GermanyForm(BaseForm):
+    '''
+    This is just a simple example.
+    '''
     form_title = _('Germany')
     tg_land_area = TitleField(required=False, label="", initial=_("Land area"))
-    intended_size = forms.IntegerField(required=False,
-                                       label=_("Intended size"),
-                                       help_text=_("ha"), widget=NumberInput)
-    test_integer = forms.IntegerField(required=False,
-                                      label=_("Test integer"),
-                                      widget=NumberInput)
+    intended_size = forms.IntegerField(
+        required=False, label=_("Intended size"), help_text=_("ha"),
+        widget=NumberInput)
+    test_integer = forms.IntegerField(
+        required=False, label=_("Test integer"), widget=NumberInput)
 
     class Meta:
         name = 'germany specific info'
 
 
-COUNTRY_FORMS = {
+COUNTRY_SPECIFIC_FORMS = {
     'germany': GermanyForm,
 }

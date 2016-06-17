@@ -12,24 +12,21 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 # TODO: shoud we really be limiting stakeholder selection to existing
 # investors? How can anyone add a new one?
-investor_involvement_ids = InvestorVentureInvolvement.objects.values(
+# Also, move to manager
+INVESTOR_INVOLVEMENT_IDS = InvestorVentureInvolvement.objects.values(
     'fk_investor_id').distinct()
-existing_investors = Investor.objects.filter(pk__in=investor_involvement_ids)
-existing_investors = existing_investors.order_by('name')
-
+EXISTING_INVESTORS = Investor.objects.filter(
+    pk__in=INVESTOR_INVOLVEMENT_IDS).order_by('name')
 investor_widget = Select(attrs={'class': 'form-control investorfield'})
 
 
 class ParentStakeholderForm(forms.ModelForm):
-    # id = forms.IntegerField(required=False, widget=forms.HiddenInput())
-    fk_investor = forms.ModelChoiceField(required=True,
-                                         label=_("Existing stakeholder"),
-                                         queryset=existing_investors,
-                                         widget=investor_widget)
-    percentage = forms.DecimalField(required=False, max_digits=5,
-                                    decimal_places=2,
-                                    label=_("Percentage of investment"),
-                                    help_text=_("%"))
+    fk_investor = forms.ModelChoiceField(
+        required=True, label=_("Existing stakeholder"),
+        queryset=EXISTING_INVESTORS, widget=investor_widget)
+    percentage = forms.DecimalField(
+        required=False, max_digits=5, decimal_places=2,
+        label=_("Percentage of investment"), help_text=_("%"))
 
     class Meta:
         model = InvestorVentureInvolvement
@@ -37,10 +34,9 @@ class ParentStakeholderForm(forms.ModelForm):
 
 
 class ParentInvestorForm(ParentStakeholderForm):
-    fk_investor = forms.ModelChoiceField(required=True,
-                                         label=_("Existing investor"),
-                                         queryset=existing_investors,
-                                         widget=investor_widget)
+    fk_investor = forms.ModelChoiceField(
+        required=True, label=_("Existing investor"),
+        queryset=EXISTING_INVESTORS, widget=investor_widget)
 
     class Meta:
         model = InvestorVentureInvolvement
