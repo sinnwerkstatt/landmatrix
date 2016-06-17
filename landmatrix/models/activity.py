@@ -15,6 +15,7 @@ class Activity(DefaultStringRepresentation, models.Model):
     fully_updated = models.DateTimeField(_("Fully updated"), blank=True, null=True, auto_now_add=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
 
+    changed_by = models.ForeignKey('auth.User', blank=True,  null=True)
     history = HistoricalRecords()
 
     # http://django-simple-history.readthedocs.io/en/latest/advanced.html#recording-which-user-changed-a-model

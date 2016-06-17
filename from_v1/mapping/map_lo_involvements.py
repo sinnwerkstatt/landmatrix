@@ -52,8 +52,8 @@ class MapLOInvolvements(MapLOModel):
         new_record = None
         uuid = str(old_activity.activity_identifier)
         new_activity_queryset = new_models.Activity.objects.using(V2).filter(
-            activityattribute__name='landobservatory_uuid',
-            activityattribute__value__contains=uuid)
+            attributes__name='landobservatory_uuid',
+            attributes__value__contains=uuid)
         new_activity = new_activity_queryset.first()
         if new_activity:
             new_record = new_models.InvestorActivityInvolvement(

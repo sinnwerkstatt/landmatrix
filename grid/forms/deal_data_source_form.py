@@ -39,13 +39,13 @@ class DealDataSourceForm(BaseForm):
         )
     )
     url = forms.URLField(
-        required=False, label=_("New URL"),
+        required=False, label=_("URL"),
         help_text=_("PDF will be generated automatically, leave empty for file upload")
     )
     file = FileFieldWithInitial(
-        required=False, label=_("New file")
+        required=False, label=_("File")
     )
-    pdf_not_public = forms.BooleanField(
+    file_not_public = forms.BooleanField(
         required=False, label=_("Keep PDF not public")
     )
     publication_title = forms.CharField(
@@ -91,8 +91,11 @@ class DealDataSourceForm(BaseForm):
     def get_availability_total(self):
         return 4
 
-    #@classmethod
-    #def get_data(cls, activity, group=None, next_group=None):
+    def get_fields_display(self):
+        if self.initial.get('file_not_public', False):
+            self.initial.pop('file')
+        return super().get_fields_display()
+
     #    #next_group_id = next_group.id if next_group else ActivityAttributeGroup.objects.order_by('pk').last().id
     #    #if hasattr(deal.activity, 'history_date'):  # isinstance(deal, DealHistoryItem):
     #    #    deal_date = deal.activity.history_date

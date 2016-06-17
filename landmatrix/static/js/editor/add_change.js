@@ -102,6 +102,25 @@ function dismissChangePopup(win, newId, newRepr) {
     win.close();
 }
 
+function initializeDataSource(form) {
+    form.find('.type select').change(function () {
+        if ( ["Personal information", "Crowdsourcing"].indexOf($(this).val()) > -1){
+            form.find(".name, .company, .email, .phone").slideDown("fast");
+        } else {
+            form.find(".name, .company, .email, .phone").slideUp("fast");
+        }
+        if (["Media report", "Research Paper / Policy Report", "Government sources", "Company sources", "Contract", "Contract (contract farming agreement)"].indexOf($(this).val()) > -1) {
+            form.find(".publication_title").slideDown("fast");
+        } else {
+            form.find(".publication_title").slideUp("fast");
+        }
+        if ($(this).val() == "Contract") {
+            form.find(".open_land_contracts_id").slideDown("fast");
+        } else {
+            form.find(".open_land_contracts_id").slideUp("fast");
+        }
+    }).change();
+}
 $(document).ready(function(){
     /* Overall: Enable checkboxes again on checking the parent input */
     $("input#id_intention_0,input#id_intention_1,input#id_source_of_water_extraction_1").click(function(){
@@ -138,40 +157,34 @@ $(document).ready(function(){
       initializeMap(this, i);
       init_google_maps($(this).prev("input"), i);
     });
-    $("#add-spatial-data").click(function () {
-      var index = $(".spatial :input[name=spatial_data-TOTAL_FORMS]").val() - 1;
-      initializeMap($(".form:visible .field.location .map").last()[0], index);
-      init_google_maps($(".form:visible .field.location input").last(), index);
-    });
-
+    //$("#add-spatial-data").click(function () {
+    //  var index = $(".spatial :input[name=spatial_data-TOTAL_FORMS]").val() - 1;
+    //  initializeMap($(".form:visible .field.location .map").last()[0], index);
+    //  init_google_maps($(".form:visible .field.location input").last(), index);
+    //});
     /* Data sources: Hide fields if option not selected */
-    $("select[id*=data_sources]").each(function(){
-      if ( $(this).find("option:eq(5), option:eq(6)").is(":selected") ){
-      $(this).parents(".form").find("li.name, li.company, li.email, li.phone").show();
-      } else {
-        $(this).parents(".form").find("li.name, li.company, li.email, li.phone").hide();
-      }
-    });
+    //$("select[id*=data_sources]").each(function(){
+    //  if ( $(this).find("option:eq(5), option:eq(6)").is(":selected") ){
+    //  $(this).parents(".form").find("li.name, li.company, li.email, li.phone").show();
+    //  } else {
+    //    $(this).parents(".form").find("li.name, li.company, li.email, li.phone").hide();
+    //  }
+    //});
     /* Data sources: Show fields based on selection */
-    $("select[id*=data_sources]").change(function (){
-      if ( $(this).find("option:eq(6), option:eq(5)").is(":selected") ){
-        $(this).parents(".form").find("li.name, li.company, li.email, li.phone").slideDown("fast");
-      }
-      else {
-        $(this).parents(".form").find("li.name, li.company, li.email, li.phone").slideUp("fast");
-      }
+    $(".data_sources_form").each(function (form){
+      initializeDataSource(form)
     });
     /* Data sources: Enable hide-show for new boxes */
-    $("a#add-data-source").click(function (){
-      $("select[id*=data_sources]").change(function (){
-        if ( $(this).find("option:eq(6), option:eq(5)").is(":selected") ){
-          $(this).parents(".form").find("li.name, li.company, li.email, li.phone").slideDown("fast");
-        }
-        else {
-          $(this).parents(".form").find("li.name, li.company, li.email, li.phone").slideUp("fast");
-        }
-      });
-    });
+    //$("a#add-data-source").click(function (){
+    //  $("select[id*=data_sources]").change(function (){
+    //    if ( $(this).find("option:eq(6), option:eq(5)").is(":selected") ){
+    //      $(this).parents(".form").find("li.name, li.company, li.email, li.phone").slideDown("fast");
+    //    }
+    //    else {
+    //      $(this).parents(".form").find("li.name, li.company, li.email, li.phone").slideUp("fast");
+    //    }
+    //  });
+    //});
 
     /* General information: Leasing fees area only visible if "for specified area" is selected */
     $("div.annual_leasing_fee_area, div.purchase_price_area").css("display","none");

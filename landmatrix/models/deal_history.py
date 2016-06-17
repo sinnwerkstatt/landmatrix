@@ -14,6 +14,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealHistoryItem(Deal):
+    """Deprecated: Will be delete soon"""
 
     date = None
     use_rounded_dates = True

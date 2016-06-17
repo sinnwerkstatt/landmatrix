@@ -47,7 +47,7 @@ if CONVERT_DB:
         }
     DATABASES['lo'] = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'data',  # CORRECT DB FOR LAND OBSERVATORY GOES HERE
+        'NAME': 'lo_data',  # CORRECT DB FOR LAND OBSERVATORY GOES HERE
         'USER': 'landmatrix',
         'PASSWORD': 'landmatrix',
         'HOST': '',

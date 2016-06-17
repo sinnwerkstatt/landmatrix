@@ -68,28 +68,28 @@ urlpatterns = patterns('',
     # url(r'^country/(?P<country_slug>)/charts/', include(charts_urls)),
 
     url(
-        r'^deal/(?P<deal_id>[\d]+)/$',
+        r'^deal/(?P<deal_id>\d+)/$',
         DealDetailView.as_view(),
         name='deal_detail'
     ),
     url(
-        r'^deal/(?P<deal_id>[\d_\.]+)/$',
+        r'^deal/(?P<deal_id>\d+)/(?P<history_id>\d+)/$',
         DealDetailView.as_view(),
         name='deal_detail'
     ),
     url(
-        r'^deal/(?P<deal_id>[\d]+)\.pdf$',
+        r'^deal/(?P<deal_id>\d+)\.pdf$',
         cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()),
         {'format': 'PDF'},
         name='deal_detail_pdf'
     ),
     url(
-        r'^deal/(?P<deal_id>[\d]+)/changes\.rss$',
+        r'^deal/(?P<deal_id>\d+)/changes\.rss$',
         DealChangesFeed(),
         name='deal_changes_feed'
     ),
     url(
-        r'^deal/edit/(?P<deal_id>[\d]+)/$',
+        r'^deal/edit/(?P<deal_id>\d+)/$',
         ChangeDealView.as_view(),
         name='change_deal'
     ),
@@ -101,7 +101,7 @@ urlpatterns = patterns('',
     ),
 
     url(
-        r'^compare/(?P<activity_1_id>[\d]+)/(?P<activity_2_id>[\d]+)/$',
+        r'^compare/(?P<activity_1>\d+)/(?P<activity_2>\d+)/$',
         cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
         name='compare_deals'
     ),
@@ -123,7 +123,6 @@ urlpatterns = patterns('',
     url(r'^deal/comments/', include('public_comments.urls')),
 
     url(r'^stakeholder/add/$', AddStakeholderView.as_view(), name='add_stakeholder_form'),
-    url(r'^stakeholder/(?P<investor_id>[\d]+)/$', ChangeStakeholderView.as_view(), name='stakeholder_form'),
     url(
         r'^stakeholder/(?P<investor_id>[\d_\.]+)/$',
         ChangeStakeholderView.as_view(),

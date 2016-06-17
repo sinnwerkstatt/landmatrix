@@ -44,11 +44,12 @@ ORDER BY activity_identifier
         for i, version in enumerate(versions):
             if not version['id'] == new.id:
                 landmatrix.models.Activity.history.using(V2).create(
-                    id=version['id'],
+                    id=new.id,
                     activity_identifier=version['activity_identifier'],
                     availability=version['availability'],
                     fk_status_id=version['fk_status_id'],
                     fully_updated=version['fully_updated'],
+                    history_id=version['id'],
                     history_date=calculate_history_date(versions, i),
                     history_user=get_history_user(version)
                 )

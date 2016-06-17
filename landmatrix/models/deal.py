@@ -35,7 +35,8 @@ class Indexable:
 
 
 class Deal:
-
+    """Deprecated: Will be deleted soon"""
+    
     class Manager:
 
         def all(self):

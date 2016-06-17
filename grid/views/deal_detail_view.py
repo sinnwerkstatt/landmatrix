@@ -55,31 +55,26 @@ class DealDetailView(PDFViewMixin, TemplateView):
     def get_pdf_filename(self, request, *args, **kwargs):
         return 'deal_{deal_id}.pdf'.format(**kwargs)
 
-    def get_context_data(self, deal_id):
+    def get_context_data(self, deal_id, history_id=None):
         try:
-            if '_' in deal_id:
-                deal = deal_from_activity_id_and_timestamp(deal_id)
+            if history_id:
+                activity = Activity.history.get(history_id=history_id)
             else:
-                deal = get_latest_valid_deal(deal_id)
+                activity = Activity.objects.get(activity_identifier=deal_id)
         except ObjectDoesNotExist as e:
             raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e)))
 
         context = super(DealDetailView, self).get_context_data()
         context['deal'] = {
-            'id': deal.activity.id,
-            'activity': deal.activity,
-            'activity_identifier': deal.activity.activity_identifier,
-            'attributes': deal.attributes,
-            'operational_stakeholder': deal.operational_stakeholder,
-            'stakeholders': deal.stakeholders,
-            'object': deal,
+            'id': activity.id,
+            'activity': activity,
+            'activity_identifier': activity.activity_identifier,
+            'attributes': activity.attributes,
+            'operational_stakeholder': activity.operational_stakeholder,
+            'stakeholders': activity.stakeholders,
         }
         context['forms'] = get_forms(deal.activity)
         context['investor'] = deal.stakeholders
-        try:
-            context['history'] = DealHistoryItem.get_history_for(deal)
-        except AttributeError:
-            pass
 
         context['export_formats'] = ("XML", "CSV", "XLS", "PDF")
 
@@ -92,22 +87,22 @@ class DealDetailView(PDFViewMixin, TemplateView):
         return render_to_string(self.template_name, context, RequestContext(request))
 
 
-def get_latest_valid_deal(deal_id):
-    deal = Deal(deal_id)
-
-    if deal.activity.fk_status.name in ['active', 'overwritten']:
-        return deal
-    elif deal.activity.fk_status.name in ['deleted', 'to_delete']:
-        raise ObjectDoesNotExist('Deal {} is deleted or waiting for deletion'.format(deal_id))
-
-    for timestamp, item in DealHistoryItem.get_history_for(deal).items():
-        if item.activity.fk_status.name in ['active', 'overwritten']:
-            print('active:', timestamp)
-            return item
-        else:
-            print('inactive', timestamp)
-
-    raise ObjectDoesNotExist('No approved version found for deal {}'.format(deal_id))
+#def get_latest_valid_deal(deal_id):
+#    deal = Deal(deal_id)
+#
+#    if deal.activity.fk_status.name in ['active', 'overwritten']:
+#        return deal
+#    elif deal.activity.fk_status.name in ['deleted', 'to_delete']:
+#        raise ObjectDoesNotExist('Deal {} is deleted or waiting for deletion'.format(deal_id))
+#
+#    for timestamp, item in DealHistoryItem.get_history_for(deal).items():
+#        if item.activity.fk_status.name in ['active', 'overwritten']:
+#            print('active:', timestamp)
+#            return item
+#        else:
+#            print('inactive', timestamp)
+#
+#    raise ObjectDoesNotExist('No approved version found for deal {}'.format(deal_id))
 
 
 def display_valid_forms(forms):

@@ -22,30 +22,30 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = [
-        "deal_id", "target_country", "location", "stakeholder_name", "stakeholder_country", "intention", "negotiation_status",
+        "deal_id", "target_country", "location", "investor_name", "investor_country", "intention", "negotiation_status",
         "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal",
         "data_source_type", "data_source_url", "data_source_date", "data_source_organisation",
         "contract_farming", "crop"
     ]
-    QUERY_LIMITED_GROUPS = ["target_country", "stakeholder_name", "stakeholder_country", "all", "crop"]
+    QUERY_LIMITED_GROUPS = ["target_country", "investor_name", "investor_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
-        "deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country", "intention",
+        "deal_id", "target_country", "operational_stakeholder", "investor_name", "investor_country", "intention",
         "negotiation_status", "implementation_status", "intended_size", "contract_size",
     ]
     DEFAULT_GROUP = "by-target-region"
     COLUMN_GROUPS = {
         "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
         "target_region": ["target_region", "intention", "deal_count", "availability"],
-        "stakeholder_name": ["stakeholder_name", "stakeholder_country", "intention", "deal_count", "availability"],
+        "investor_name": ["investor_name", "investor_country", "intention", "deal_count", "availability"],
 #               region column disabled due to slowness resulting from additional JOIN
-#                "stakeholder_country": ["stakeholder_country", "stakeholder_region", "intention", "deal_count", "availability"],
-        "stakeholder_country": ["stakeholder_country", "intention", "deal_count", "availability"],
-        "stakeholder_region": ["stakeholder_region", "deal_count", "availability"],
+#                "investor_country": ["investor_country", "investor_region", "intention", "deal_count", "availability"],
+        "investor_country": ["investor_country", "intention", "deal_count", "availability"],
+        "investor_region": ["investor_region", "deal_count", "availability"],
         "intention": ["intention", "deal_count", "availability"],
         "crop": ["crop", "intention", "deal_count", "availability"],
         "year": ["year", "intention", "deal_count", "availability"],
         "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
-        "all": ["deal_id", "target_country", "operational_stakeholder", "stakeholder_name", "stakeholder_country",
+        "all": ["deal_id", "target_country", "operational_stakeholder", "investor_name", "investor_country",
                 "intention", "negotiation_status", "implementation_status", "intended_size",
                 "contract_size", ]
     }
@@ -184,9 +184,9 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         process_functions = {
             'intention': self._process_intention,
             'investor_name': self._process_investor_name,
-            'stakeholder_name': self._process_stakeholder_name,
-            'stakeholder_country': self._process_stitched_together_field,
-            'stakeholder_region': self._process_stitched_together_field,
+            'investor_name': self._process_investor_name,
+            'investor_country': self._process_stitched_together_field,
+            'investor_region': self._process_stitched_together_field,
             'crop': self._process_stitched_together_field,
             'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
             'negotiation_status': self._process_name_and_year,
@@ -259,7 +259,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         return result
 
 
-    def _process_stakeholder_name(self, value):
+    def _process_investor_name(self, value):
         if not isinstance(value, list):
             value = [value]
         result = [

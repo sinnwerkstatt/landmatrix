@@ -9,7 +9,6 @@ from grid.forms.deal_contract_form import DealContractFormSet
 from .save_deal_view import SaveDealView
 from landmatrix.models.activity import Activity
 from landmatrix.models.deal_history import DealHistoryItem
-from grid.views.deal_detail_view import deal_from_activity_id_and_timestamp, get_latest_valid_deal
 
 from grid.forms.add_deal_employment_form import AddDealEmploymentForm
 from grid.forms.add_deal_general_form import AddDealGeneralForm
@@ -56,22 +55,22 @@ class ChangeDealView(SaveDealView):
             self.activity = Activity.objects.get(activity_identifier=kwargs.get('deal_id'))
         return super(ChangeDealView, self).dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, deal_id):
+    def get_context_data(self, deal_id, history_id=None):
         try:
-            if '_' in deal_id:
-                deal = deal_from_activity_id_and_timestamp(deal_id)
+            if history_id:
+                activity = Activity.history.get(history_id=None)
             else:
-                deal = get_latest_valid_deal(deal_id)
+                activity = Activity.objects.get(activity_identifier=deal_id)
         except ObjectDoesNotExist as e:
             raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e)))
 
 
         context = super().get_context_data(**self.kwargs)
-        context['deal_id'] = deal_id
-        try:
-            context['history'] = DealHistoryItem.get_history_for(deal)
-        except AttributeError:
-            pass
+        context.update({
+            'deal_id': deal_id,
+            'history_id': history_id,
+            'activity': activity,
+        })
         return context
 
     def get_forms(self, data=None, files=None):

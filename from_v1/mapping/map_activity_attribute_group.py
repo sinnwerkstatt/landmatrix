@@ -51,7 +51,7 @@ def clean_target_country(key, value):
 def clean_nature(key, value):
     if value == 'Lease / Concession':
         value = 'Lease'
-    elif value = 'Exploitation license':
+    elif value == 'Exploitation license':
         value = 'Resource exploitation license / concession'
     return key, value
 
@@ -99,9 +99,17 @@ def rename_negotiation_status(key, value):
     value = RENAMED_STATUS.get(value, value)
     return key, value
 
+def clean_intention(key, value):
+    if value == 'Agriunspecified':
+        value = 'Agriculture unspecified'
+    elif value == 'Forestunspecified':
+        value = 'Forestry unspecified'
+    return key, value
 
 def clean_attribute(key, value):
     key, value = rename_changed_keys(key, value)
+    if value == '---------':
+        value = None
     if key == 'crops':
         return clean_crops(key, value)
     elif key in ('point_lat', 'point_lon'):
@@ -116,12 +124,12 @@ def clean_attribute(key, value):
         return clean_level_of_accuracy(key, value)
     elif key == 'nature':
         return clean_nature(key, value)
+    elif key == 'intention':
+        return clean_intention(key, value)
     elif key == 'tg_negotiation_status_comment':
         return 'tg_contract_comment', value
     elif key == 'tg_primary_investor_comment':
         return 'tg_operational_stakeholder_comment', value
-    if value == '---------':
-        value = None
     return key, value
 
 def clean_group(group_name, key, value):
