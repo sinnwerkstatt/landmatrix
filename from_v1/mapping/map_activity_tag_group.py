@@ -48,15 +48,15 @@ class MapActivityTagGroupBase:
     @classmethod
     @lru_cache(maxsize=128, typed=True)
     def matching_activity_id(cls, tag_group):
-        if HistoricalActivity.objects.filter(pk=tag_group.fk_activity.pk).count() > 0:
+        if Activity.objects.filter(pk=tag_group.fk_activity.pk).count() > 0:
             return tag_group.fk_activity.pk
 
-        activity_identifier = HistoricalActivity.objects.filter(
+        activity_identifier = Activity.objects.filter(
             id=tag_group.fk_activity.pk
         ).values_list(
             'activity_identifier', flat=True
         ).distinct().first()
-        current_activity = HistoricalActivity.objects.filter(
+        current_activity = Activity.objects.filter(
             activity_identifier=activity_identifier
         ).values_list('id', flat=True).distinct().first()
 
@@ -64,15 +64,15 @@ class MapActivityTagGroupBase:
 
     tag_group_to_attribute_group_ids = {}
 
-    @classmethod
-    def get_last_id(cls):
-        last_id = ActivityAttributeGroup.objects.using(V2).values().aggregate(Max('id'))['id__max']
-        return 0 if last_id is None else last_id
+    #@classmethod
+    #def get_last_id(cls):
+    #    last_id = ActivityAttributeGroup.objects.using(V2).values().aggregate(Max('id'))['id__max']
+    #    return 0 if last_id is None else last_id
 
     @classmethod
     def get_history_date(cls, tag_group):
         from from_v1.mapping.map_activity import get_activity_versions
-        activity = HistoricalActivity.objects.using(V2).get(pk=cls.matching_activity_id(tag_group))
+        activity = Activity.objects.using(V2).get(pk=cls.matching_activity_id(tag_group))
         versions = list(get_activity_versions(activity))
         for version in versions:
             if version['id'] == activity.id:
@@ -87,7 +87,8 @@ class MapActivityTagGroupBase:
 
     @classmethod
     def is_current_version(cls, tag_group):
-        return tag_group.fk_activity.pk == cls.matching_activity_id(tag_group)
+        return Activity.objects.filter(pk=tag_group.fk_activity.pk).count() > 0
+        #return tag_group.fk_activity.pk == cls.matching_activity_id(tag_group)
 
     #@classmethod
     #def get_comments(cls, tag_group):
@@ -124,8 +125,9 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
         from mapping.map_activity_attribute_group import clean_attribute, clean_group
         tg_name = tag_group.fk_a_tag.fk_a_value.value
 
-        activity_id = cls.matching_activity_id(tag_group)
-        
+        activity_id = tag_group.fk_activity.id#cls.matching_activity_id(tag_group)
+        #raise IOError(activity_id)
+
         for tag in tag_group.a_tag_set.all():
             key = tag.fk_a_key.key
             value = tag.fk_a_value.value
@@ -152,7 +154,7 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
                 if cls._save:
                     aa.save(using=V2)
             aa = HistoricalActivityAttribute(
-                id=cls.get_last_id() + 1,
+                #id=cls.get_last_id() + 1,
                 fk_activity_id=activity_id,
                 fk_language_id=1,
                 fk_group=aag,
