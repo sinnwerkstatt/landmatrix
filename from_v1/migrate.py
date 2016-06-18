@@ -116,10 +116,10 @@ if __name__ == '__main__':
             MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
 
         if options.deal or options.all:
-            #MapStatus.map_all(save=options.save, verbose=options.verbose)
-            #MapLanguage.map_all(save=options.save, verbose=options.verbose)
-            #MapActivity.map_all(save=options.save, verbose=options.verbose)
-            #MapActivityChangeset.map_all(save=options.save, verbose=options.verbose)
+            MapStatus.map_all(save=options.save, verbose=options.verbose)
+            MapLanguage.map_all(save=options.save, verbose=options.verbose)
+            MapActivity.map_all(save=options.save, verbose=options.verbose)
+            MapActivityChangeset.map_all(save=options.save, verbose=options.verbose)
             MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
             MapPublicInterfaceCache.map_all(save=options.save, verbose=options.verbose)
             MapComment.map_all(save=options.save, verbose=options.verbose)

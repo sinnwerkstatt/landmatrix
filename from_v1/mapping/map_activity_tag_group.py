@@ -127,7 +127,12 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
 
         activity_id = tag_group.fk_activity.id#cls.matching_activity_id(tag_group)
         #raise IOError(activity_id)
-
+        aag, created = ActivityAttributeGroup.objects.get_or_create(
+            name=clean_group(tg_name, None, None)
+        )
+        if cls._save:
+            aag.save(using=V2)
+        is_current = cls.is_current_version(tag_group)
         for tag in tag_group.a_tag_set.all():
             key = tag.fk_a_key.key
             value = tag.fk_a_value.value
@@ -137,16 +142,20 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
             key, value = clean_attribute(key, value)
             if not key or not value:
                 continue
-            aag, created = ActivityAttributeGroup.objects.get_or_create(
-                name=clean_group(tg_name, key, value)
-            )
-            if cls._save:
-                aag.save(using=V2)
-            if cls.is_current_version(tag_group):
+            tag_aag = clean_group(tg_name, key, value)
+            if tag_aag !== aag.name:
+                tag_aag, created = ActivityAttributeGroup.objects.get_or_create(
+                    name=clean_tg_name
+                )
+                if cls._save:
+                    tag_aag.save(using=V2)
+            else:
+                tag_aag = aag
+            if is_current:
                 aa = ActivityAttribute(
                     fk_activity_id=activity_id,
                     fk_language_id=1,
-                    fk_group=aag,
+                    fk_group=tag_aag,
                     name=key,
                     value=value,
                     date=year or None,
@@ -157,7 +166,7 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
                 #id=cls.get_last_id() + 1,
                 fk_activity_id=activity_id,
                 fk_language_id=1,
-                fk_group=aag,
+                fk_group=tag_aag,
                 name=key,
                 value=value,
                 date=year or None,
@@ -165,11 +174,6 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
             if cls._save:
                 aa.save(using=V2)
                     
-        aag, created = ActivityAttributeGroup.objects.get_or_create(
-            name=clean_group(tg_name, None, None)
-        )
-        if cls._save:
-            aag.save(using=V2)
         for comment in tag_group.comment_set.all():
             aa = HistoricalActivityAttribute(
                 fk_activity_id=activity_id,
