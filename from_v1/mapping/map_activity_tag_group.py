@@ -8,7 +8,7 @@ from mapping.aux_functions import year_to_date
 from migrate import V1, V2
 from mapping.map_tag_groups import MapTagGroups
 
-from landmatrix.models import Language, Activity, ActivityAttributeGroup, ActivityAttribute
+from landmatrix.models import Language, Activity, HistoricalActivity, ActivityAttributeGroup, ActivityAttribute, HistoricalActivityAttribute
 import landmatrix.models
 
 if V1 == 'v1_my':
@@ -48,15 +48,15 @@ class MapActivityTagGroupBase:
     @classmethod
     @lru_cache(maxsize=128, typed=True)
     def matching_activity_id(cls, tag_group):
-        if MapActivity.new_class.objects.using(V2).filter(pk=tag_group.fk_activity.pk):
+        if HistoricalActivity.objects.filter(pk=tag_group.fk_activity.pk).count() > 0:
             return tag_group.fk_activity.pk
 
-        activity_identifier = MapActivity.new_class.history.using(V2).filter(
+        activity_identifier = HistoricalActivity.objects.filter(
             id=tag_group.fk_activity.pk
         ).values_list(
             'activity_identifier', flat=True
         ).distinct().first()
-        current_activity = MapActivity.new_class.objects.using(V2).filter(
+        current_activity = HistoricalActivity.objects.filter(
             activity_identifier=activity_identifier
         ).values_list('id', flat=True).distinct().first()
 
@@ -72,11 +72,11 @@ class MapActivityTagGroupBase:
     @classmethod
     def get_history_date(cls, tag_group):
         from from_v1.mapping.map_activity import get_activity_versions
-        activity = Activity.objects.using(V2).get(pk=cls.matching_activity_id(tag_group))
+        activity = HistoricalActivity.objects.using(V2).get(pk=cls.matching_activity_id(tag_group))
         versions = list(get_activity_versions(activity))
         for version in versions:
             if version['id'] == activity.id:
-                historical_activity = Activity.history.filter(
+                historical_activity = HistoricalActivity.objects.filter(
                     activity_identifier=activity.activity_identifier
                 ).filter(id=activity.id).first()
                 return historical_activity.history_date
@@ -125,13 +125,6 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
         tg_name = tag_group.fk_a_tag.fk_a_value.value
 
         activity_id = cls.matching_activity_id(tag_group)
-
-        aag, created = ActivityAttributeGroup.objects.get_or_create(
-            name=tg_name
-        )
-        if cls._save:
-            aag.save(using=V2)
-        
         
         for tag in tag_group.a_tag_set.all():
             key = tag.fk_a_key.key
@@ -142,31 +135,41 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
             key, value = clean_attribute(key, value)
             if not key or not value:
                 continue
-            aa = ActivityAttribute(
+            aag, created = ActivityAttributeGroup.objects.get_or_create(
+                name=clean_group(tg_name, key, value)
+            )
+            if cls._save:
+                aag.save(using=V2)
+            if cls.is_current_version(tag_group):
+                aa = ActivityAttribute(
+                    fk_activity_id=activity_id,
+                    fk_language_id=1,
+                    fk_group=aag,
+                    name=key,
+                    value=value,
+                    date=year or None,
+                )
+                if cls._save:
+                    aa.save(using=V2)
+            aa = HistoricalActivityAttribute(
+                id=cls.get_last_id() + 1,
                 fk_activity_id=activity_id,
                 fk_language_id=1,
-                fk_group=clean_group(tg_name, key, value),
+                fk_group=aag,
                 name=key,
                 value=value,
                 date=year or None,
             )
             if cls._save:
-                if not cls.is_current_version(tag_group):
-                    aa = ActivityAttribute.history.using(V2).create(
-                        id=cls.get_last_id() + 1,
-                        history_date=cls.get_history_date(tag_group),
-                        fk_activity_id=activity_id,
-                        fk_language_id=1,
-                        fk_group=clean_group(tg_name, key, value),
-                        name=key,
-                        value=value,
-                        date=year or None,
-                    )
-                else:
-                    aa.save(using=V2)
-
+                aa.save(using=V2)
+                    
+        aag, created = ActivityAttributeGroup.objects.get_or_create(
+            name=clean_group(tg_name, None, None)
+        )
+        if cls._save:
+            aag.save(using=V2)
         for comment in tag_group.comment_set.all():
-            aa = ActivityAttribute(
+            aa = HistoricalActivityAttribute(
                 fk_activity_id=activity_id,
                 fk_language_id=1,
                 fk_group=aag,
@@ -197,7 +200,7 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
             for cached in akv_objects:
                 print('CACHED:', cached.activity_identifier, cached.key, cached.value,
                       cached.year, cached.group)
-                activity_id = Activity.objects.using(V2).\
+                activity_id = HistoricalActivity.objects.using(V2).\
                     filter(activity_identifier=cached.activity_identifier).order_by('-id')[:1][0].pk
                 attrs = {cached.key: cached.value}
                 cls.write_activity_attribute_group(attrs, activity_id, cached.year, cached.group)

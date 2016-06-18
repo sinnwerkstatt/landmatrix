@@ -73,8 +73,8 @@ class DealDetailView(PDFViewMixin, TemplateView):
             'operational_stakeholder': activity.operational_stakeholder,
             'stakeholders': activity.stakeholders,
         }
-        context['forms'] = get_forms(deal.activity)
-        context['investor'] = deal.stakeholders
+        context['forms'] = get_forms(activity)
+        context['investor'] = activity.stakeholders
 
         context['export_formats'] = ("XML", "CSV", "XLS", "PDF")
 

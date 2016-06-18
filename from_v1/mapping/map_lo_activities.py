@@ -67,7 +67,7 @@ class MapLOActivities(MapLOModel):
             for i, version in enumerate(versions):
                 if not version['id'] == new.id:
                     if save:
-                        landmatrix.models.Activity.history.using(V2).create(
+                        landmatrix.models.HistoricalActivity.objects.create(
                             id=version['id'],
                             activity_identifier=activity_identifier,
                             availability=version['reliability'],
@@ -291,7 +291,7 @@ class MapLOActivities(MapLOModel):
         if landmatrix.models.Activity.objects.using(V2).filter(pk=tag_group.fk_activity):
             return tag_group.fk_activity
 
-        activity_identifier = landmatrix.models.Activity.history.using(V2).filter(
+        activity_identifier = landmatrix.models.HistoricalActivity.objects.filter(
             id=tag_group.fk_activity
         ).values_list(
             'activity_identifier', flat=True

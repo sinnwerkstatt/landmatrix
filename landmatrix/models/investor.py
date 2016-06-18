@@ -4,13 +4,12 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from landmatrix.models.default_string_representation import \
     DefaultStringRepresentation
-from simple_history.models import HistoricalRecords
+#from simple_history.models import HistoricalRecords
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-
-class Investor(DefaultStringRepresentation, models.Model):
+class InvestorBase(DefaultStringRepresentation, models.Model):
     INVESTOR_IDENTIFIER_DEFAULT = 2147483647  # max safe int
     CLASSIFICATION_CHOICES = (
         # for operating company
@@ -51,14 +50,12 @@ class Investor(DefaultStringRepresentation, models.Model):
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
 
-    history = HistoricalRecords()
+    #history = HistoricalRecords()
 
-    subinvestors = models.ManyToManyField(
-        "self", through='InvestorVentureInvolvement', symmetrical=False,
-        through_fields=('fk_venture', 'fk_investor'))
 
     class Meta:
         ordering = ('-name',)
+        abstract = True
 
     def __str__(self):
         return self.name
@@ -87,6 +84,24 @@ class Investor(DefaultStringRepresentation, models.Model):
 
         if update_fields:
             super().save(update_fields=update_fields)
+
+class Investor(InvestorBase):
+    subinvestors = models.ManyToManyField(
+        "self", through='InvestorVentureInvolvement', symmetrical=False,
+        through_fields=('fk_venture', 'fk_investor'))
+
+    class Meta:
+        verbose_name = _("Investor")
+        verbose_name_plural = _("Investors")
+
+class HistoricalInvestor(InvestorBase):
+    history_date = models.DateTimeField(auto_now_add=True)
+    history_user = models.ForeignKey('auth.User', blank=True, null=True)
+
+    class Meta:
+        verbose_name = _("Historical investor")
+        verbose_name_plural = _("Historical investors")
+        get_latest_by = 'history_date'
 
 
 class InvestorVentureQuerySet(models.QuerySet):

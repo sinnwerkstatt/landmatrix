@@ -84,7 +84,7 @@ INSTALLED_APPS += (
 
 #   to check test coverage
     'coverage',
-    'simple_history',
+    #'simple_history',
     'django_extensions',
     'crispy_forms',
     'wkhtmltopdf',
