@@ -82,7 +82,7 @@ def _create_activity_with_history(act_id=1):
 
 
 def _create_activity(act_id):
-    act = Activity.objects.create(
+    act = HistoricalActivity.objects.create(
         activity_identifier=act_id,
         availability=0.5,
         fully_updated=timezone.now(),

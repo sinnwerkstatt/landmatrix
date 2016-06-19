@@ -85,7 +85,7 @@ class DealsTestData:
     def create_activity_with_status(self, status_id, act_id = 0, version=1):
         self.make_language()
         if not act_id: act_id = self.ACT_ID
-        Activity.objects.create(
+        HistoricalActivity.objects.create(
                 fk_status=Status.objects.get(id=status_id),
                 activity_identifier=act_id,
 #                version=version
@@ -93,7 +93,7 @@ class DealsTestData:
 
     def add_attributes_to_activity(self, activity, attributes):
         for key, value in attributes.items(): 
-            ActivityAttribute.objects.create(
+            HistoricalActivityAttribute.objects.create(
                 fk_activity=activity,
                 fk_language_id=1,
                 name=key,

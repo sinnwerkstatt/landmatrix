@@ -12,7 +12,7 @@ class AddDealView(SaveDealView):
     def post(self, request, *args, **kwargs):
     	# Create activity first
         activity_identifier = Activity.objects.values().aggregate(Max('activity_identifier'))['activity_identifier__max'] + 1
-        self.activity = Activity.objects.create(
+        activity = HistoricalActivity.objects.create(
         	activity_identifier=activity_identifier,
         	fk_status_id=1
         )

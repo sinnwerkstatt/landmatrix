@@ -12,15 +12,15 @@ class NestedMultipleChoiceField(forms.MultipleChoiceField):
 
     def valid_value(self, value):
         "Check to see if the provided value is a valid choice"
-        return int(value) in self._valid_keys()
+        return value in self._valid_keys()
 
     def _valid_keys(self):
         values = []
         for k, v, sub_choices in self.choices:
-            values.append(int(k))
+            values.append(k)
             if isinstance(sub_choices, (list, tuple)):
                 for k2, v2 in sub_choices:
-                    values.append(int(k2))
+                    values.append(k2)
         return values
 
     def get_value(self, key):

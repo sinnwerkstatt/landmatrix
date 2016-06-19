@@ -166,7 +166,8 @@ textarea {
   color: red;
 }
 
-.control-group.with-error .form-control {
+.control-group.with-error .form-control,
+.control-group.with-error .select-selection {
   border-color: red;
 }
 

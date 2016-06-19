@@ -49,7 +49,6 @@ class SaveDealView(TemplateView):
         DealActionCommentForm,
     ]
     deal_id = None
-    activity = None
     success_message = _('Your changes to the deal have been submitted successfully. The changes will be reviewed and published soon.')
 
     def get_context_data(self, **kwargs):
@@ -68,19 +67,20 @@ class SaveDealView(TemplateView):
         context = self.get_context_data(**kwargs)
         forms = self.get_forms(self.request.POST, files=self.request.FILES)
         if all(form.is_valid() for form in forms):
+            activity = self.get_object()
             action_comment = self.update_deal(forms, request)
             if not request.user.is_administrator():
-                self.activity.fk_status = Status.objects.get(name='pending')
-            self.activity.save()
-            self.write_changeset(action_comment)
+                activity.fk_status = Status.objects.get(name='pending')
+            activity.save()
+            ActivityChangeset.objects.create(
+                fk_activity=activity,
+                comment=action_comment
+            )
+            changeset.save()
         else:
             messages.error(request, _('Please correct the error below.'))
         context['forms'] = forms
         return self.render_to_response(context)
-
-    def write_changeset(self, action_comment):
-        changeset = ActivityChangeset(fk_activity=self.activity, comment=action_comment, timestamp=datetime.now())
-        changeset.save()
 
     def update_deal(self, forms, request):
         action_comment = ''

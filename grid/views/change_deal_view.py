@@ -50,40 +50,38 @@ class ChangeDealView(SaveDealView):
     template_name = 'change-deal.html'
 
     def dispatch(self, request, *args, **kwargs):
-        if 'deal_id' in kwargs:
-            self.activity = Activity.objects.get(activity_identifier=kwargs.get('deal_id'))
         return super(ChangeDealView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, deal_id, history_id=None):
-        try:
-            if history_id:
-                activity = HistoricalActivity.objects.get(id=history_id)
-            else:
-                activity = Activity.objects.get(activity_identifier=deal_id)
-        except ObjectDoesNotExist as e:
-            raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e)))
-
-
         context = super().get_context_data(**self.kwargs)
         context.update({
             'deal_id': deal_id,
             'history_id': history_id,
-            'activity': activity,
+            'activity': self.get_object(),
         })
         return context
+
+    def get_object(self):
+        try:
+            if 'history_id' in self.kwargs:
+                return HistoricalActivity.objects.get(id=self.kwargs.get('history_id'))
+            else:
+                return HistoricalActivity.objects.filter(activity_identifier=self.kwargs.get('deal_id')).latest()
+        except ObjectDoesNotExist as e:
+            raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e))) 
 
     def get_forms(self, data=None, files=None):
         forms = []
         for form_class in self.FORMS:
             forms.append(self.get_form(form_class, data, files))
-        for form_class in get_country_specific_form_classes(self.activity):
+        for form_class in get_country_specific_form_classes(self.get_object()):
             forms.append(self.get_form(form_class, data, files))
         return forms
 
     def get_form(self, form_class, data=None, files=None):
-        #prefix = hasattr(form_class, 'prefix') and form_class.prefix or None
-        initial = form_class.get_data(self.activity)
-        return form_class(initial=initial, files=files)
+        prefix = hasattr(form_class, 'prefix') and form_class.prefix or None
+        initial = form_class.get_data(self.get_object())
+        return form_class(initial=initial, files=files, data=data, prefix=prefix)
 
 
 def to_formset_data(data):
