@@ -72,6 +72,8 @@ class SaveDealView(TemplateView):
             activity = self.get_object()
             # Create new historical activity
             activity.pk = None
+            activity.history_user = request.user
+            activity.history_date = datetime.now()
             if not request.user.is_superuser:
                 activity.fk_status_id = 1
             activity.save()
