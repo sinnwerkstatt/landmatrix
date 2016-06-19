@@ -69,7 +69,8 @@ class SaveDealView(TemplateView):
         forms = self.get_forms(self.request.POST, files=self.request.FILES)
         if all(form.is_valid() for form in forms):
             action_comment = self.update_deal(forms, request)
-            self.activity.fk_status = Status.objects.get(name='pending')
+            if not request.user.is_administrator():
+                self.activity.fk_status = Status.objects.get(name='pending')
             self.activity.save()
             self.write_changeset(action_comment)
         else:
@@ -85,7 +86,7 @@ class SaveDealView(TemplateView):
         action_comment = ''
         # Delete existing attributes
         # FIXME: Why?
-        ActivityAttribute.objects.filter(fk_activity=self.activity).delete()
+        #HistoricalActivityAttribute.objects.filter(fk_activity=self.activity).delete()
         # Create new attribute groups
         for form in forms:
             attributes = form.get_attributes(request)
@@ -99,7 +100,7 @@ class SaveDealView(TemplateView):
                             name='%s_%i' % (form.Meta.name, count),
                         )
                         for key, value in form_attributes.items():
-                            aa = ActivityAttribute.objects.create(
+                            aa = HistoricalActivityAttribute.objects.create(
                                 fk_activity=self.activity,
                                 fk_group=aag,
                                 fk_language=Language.objects.get(english_name='English'),
@@ -113,7 +114,7 @@ class SaveDealView(TemplateView):
                     name=form.Meta.name
                 )
                 for key, value in form_attributes.items():
-                    aa = ActivityAttribute.objects.create(
+                    aa = HistoricalActivityAttribute.objects.create(
                         fk_activity=self.activity,
                         fk_group=aag,
                         fk_language=Language.objects.get(english_name='English'),

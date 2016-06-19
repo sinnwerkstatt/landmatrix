@@ -20,6 +20,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 
 from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
@@ -28,7 +29,7 @@ from wagtail.wagtailcore import urls as wagtail_urls
 from grid.views import (
     AddDealView, ChangeDealView, DealComparisonView, DealDetailView,
     FilterWidgetAjaxView, AddStakeholderView, ChangeStakeholderView,
-    InvestorComparisonView,
+    InvestorComparisonView, DealDetailExportView
 )
 from feeds.views import DealChangesFeed
 from api import urls as api_urls
@@ -88,6 +89,12 @@ urlpatterns = patterns('',
         DealChangesFeed(),
         name='deal_changes_feed'
     ),
+    url(
+        r'^deal/(?P<deal_id>[\d]+)\.(?P<format>(csv|xml|xls))/$',
+        vary_on_cookie(cache_page(CACHE_TIMEOUT)(DealDetailExportView.as_view())),
+        name='export'
+    ),
+
     url(
         r'^deal/edit/(?P<deal_id>\d+)/$',
         ChangeDealView.as_view(),

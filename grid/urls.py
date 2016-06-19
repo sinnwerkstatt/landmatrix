@@ -24,11 +24,6 @@ urlpatterns = patterns('grid.views',
         name='export'
     ),
     url(
-        r'^deal/(?P<deal_id>[\d]+)\.(?P<format>(csv|xml|xls))/$',
-        vary_on_cookie(cache_page(CACHE_TIMEOUT)(DealDetailExportView.as_view())),
-        name='export'
-    ),
-    url(
         r'^(?P<group>.+)/(?P<list>.+)\.(?P<format>(csv|xml|xls))/$',
         vary_on_cookie(cache_page(CACHE_TIMEOUT)(TableGroupExportView.as_view())),
         name='export'

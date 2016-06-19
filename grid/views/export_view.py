@@ -132,7 +132,28 @@ class DealDetailExportView(DealDetailView, ExportView):
     def dispatch(self, request, *args, **kwargs):
         format = kwargs.pop('format')
         context = super(DealDetailExportView, self).get_context_data(*args, **kwargs)
-        attrs = context['deal']['attributes']
-        items = [attrs,]
-        columns = list(attrs.keys())
-        return self.export(items, columns, format, filename=kwargs['deal_id'])
+        attributes = []
+        for form in context['forms']:
+            if hasattr(form, 'forms'):
+                for i, subform in enumerate(form.forms):
+                    for field in subform.get_fields_display():
+                        if field['name'].startswith('tg_') and not field['name'].endswith('_comment'):
+                            continue
+                        label = '%s %i %s' % (
+                            subform.form_title,
+                            i + 1,
+                            field['label']
+                        )
+                        attributes.append({
+                            'Field': label,
+                            'Value': field['value']
+                        })
+            else:
+                for field in form.get_fields_display():
+                    if field['name'].startswith('tg_') and not field['name'].endswith('_comment'):
+                        continue
+                    attributes.append({
+                        'Field': field['label'],
+                        'Value': field['value']
+                    })
+        return self.export(attributes, ['Field', 'Value'], format, filename=kwargs['deal_id'])

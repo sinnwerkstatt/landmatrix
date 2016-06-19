@@ -126,7 +126,7 @@
                 console.log("Setting up detail map: ", idx, count);
                 var lat = parseFloat($('.point_lat div:last-child').text()),
                         lon = parseFloat($('.point_lon div:last-child').text());
-                $(this).attr('id', 'map' + count);
+                $(this).attr('id', 'map' + count).attr('class', 'col-md-9 col-md-offset-3');
                 initializeMap(count, lat, lon);
                 count++;
             });

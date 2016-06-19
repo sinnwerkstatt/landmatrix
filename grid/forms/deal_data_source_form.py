@@ -22,6 +22,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealDataSourceForm(BaseForm):
+    form_title = 'Data source'
 
     tg_data_source = TitleField(
         required=False, label="", initial=_("Data source")
