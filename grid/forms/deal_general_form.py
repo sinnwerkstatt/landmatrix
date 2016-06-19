@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from landmatrix.models.currency import Currency
 from grid.widgets import (
     TitleField, CommentInput, NumberInput, NestedMultipleChoiceField,
-    YearBasedChoiceField, YearBasedIntegerField,
+    YearBasedChoiceField, YearBasedIntegerField, YearBasedNestedMultipleChoiceField
 )
 from .choices import (
     negotiation_status_choices, implementation_status_choices,

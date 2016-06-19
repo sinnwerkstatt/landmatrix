@@ -66,35 +66,49 @@ class SaveDealView(TemplateView):
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
         forms = self.get_forms(self.request.POST, files=self.request.FILES)
         if all(form.is_valid() for form in forms):
-            activity = self.get_object()
-            # Create new historical activity
-            activity.pk = None
-            activity.history_user = request.user
-            activity.history_date = datetime.now()
-            if not request.user.is_superuser:
-                activity.fk_status_id = 1
-            activity.save()
-            # Create new activity attributes
-            action_comment = self.update_deal(activity, forms, request)
-            # Create changeset
-            changeset = ActivityChangeset.objects.create(
-                fk_activity=activity,
-                comment=action_comment
-            )
-            messages.success(request, self.success_message.format(self.deal_id))
+            return self.form_valid(forms)
         else:
-            messages.error(request, _('Please correct the error below.'))
+            return self.form_invalid(forms)
+
+    def form_valid(self, forms):
+        activity = self.get_object()
+        investor_form = list(filter(lambda f: isinstance(f, OperationalStakeholderForm), forms))[0]
+        # Create new historical activity
+        activity.pk = None
+        activity.history_user = self.request.user
+        activity.history_date = datetime.now()
+        if not self.request.user.is_superuser:
+            activity.fk_status_id = 1
+        activity.save()
+        # Create new activity attributes
+        action_comment = self.create_attributes(activity, forms)
+        self.create_involvement(activity, form)
+        # Create changeset
+        changeset = ActivityChangeset.objects.create(
+            fk_activity=activity,
+            comment=action_comment
+        )
+        messages.success(request, self.success_message.format(self.deal_id))
+
+        context = self.get_context_data(**kwargs)
         context['forms'] = forms
         return self.render_to_response(context)
 
-    def update_deal(self, activity, forms, request):
+
+    def form_invalid(self, forms):
+        messages.error(self.request, _('Please correct the error below.'))
+
+        context = self.get_context_data(**self.kwargs)
+        context['forms'] = forms
+        return self.render_to_response(context)
+
+    def create_attributes(self, activity, forms):
         action_comment = ''
         # Create new attributes
         for form in forms:
-            attributes = form.get_attributes(request)
+            attributes = form.get_attributes(self.request)
             if not attributes:
                 continue
             # Formset?
@@ -125,22 +139,19 @@ class SaveDealView(TemplateView):
                         'fk_language_id': 1,
                     })
                     aa = HistoricalActivityAttribute.objects.create(**kwargs)
-            # Investor form?
-            if form.Meta.name == 'investor_info' and form.cleaned_data['operational_stakeholder']:
-                self.update_investor(form, request)
 
             if form.Meta.name == 'action_comment':
                 action_comment = form.cleaned_data['tg_action_comment']
 
         return action_comment
 
-    def update_investor(self, form, request):
+    def create_involvement(self, activity, form):
         # FIXME
         # Problem here: Involvements are not historical yet, but activity and investors are.
         # As an intermediate solution we'll just create another involvement which links
         # to the public activity, which will replace the current involvement when the
-        # historical activity gets approved. 
-        activity = Activity.objects.get(activity_identifier=self.kwargs.get('deal_id'))
+        # historical activity gets approved.
+        activity = Activity.objects.get(activity_identifier=activity.activity_identifier)
 
         operational_stakeholder = form.cleaned_data['operational_stakeholder']
         # Update operational stakeholder (involvement)

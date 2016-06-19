@@ -60,7 +60,7 @@ class Activity(ActivityBase):
 
 class HistoricalActivity(ActivityBase):
     """All versions (including the current) of activities"""
-    history_date = models.DateTimeField()
+    history_date = models.DateTimeField(auto_now_add=True)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
 
     #@property
