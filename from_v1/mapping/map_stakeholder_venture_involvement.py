@@ -81,12 +81,15 @@ class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
             fk_investor_id = get_stakeholder_id_for_stakeholder(involvement)
             fk_status_id = get_status(involvement)
             percentage = get_percentage(involvement)
-            stakeholder_venture_involvement = landmatrix.models.InvestorVentureInvolvement(
-                fk_investor_id=fk_investor_id, fk_venture_id=fk_venture_id, fk_status_id=fk_status_id,
-                percentage=percentage, role='ST', timestamp=datetime.now()
+            stakeholder_venture_involvement = landmatrix.models.InvestorVentureInvolvement.objects.get_or_create(
+                fk_investor_id=fk_investor_id,
+                fk_venture_id=fk_venture_id,
+                fk_status_id=fk_status_id,
+                percentage=percentage,
+                role='ST',
             )
 
-            if cls._save:
-                stakeholder_venture_involvement.save(using=V2)
+            #if cls._save:
+            #    stakeholder_venture_involvement.save(using=V2)
 
             cls._print_status(involvement, i)

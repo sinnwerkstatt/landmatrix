@@ -1,6 +1,6 @@
 from django_comments.models import Comment
 
-from landmatrix.models.activity import Activity
+from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.country import Country
 
@@ -48,7 +48,7 @@ class LatestChangesQuerySet:
         return base_query.exists()
 
     def get_latest_activities(self):
-        all_activities = Activity.history.filter(fk_status_id__in=(2, 3, 4))
+        all_activities = HistoricalActivity.objects.filter(fk_status_id__in=(2, 3, 4))
         if self.country:
             all_activities = all_activities.filter(id__in=self.activity_ids_by_country())
         if self.region:

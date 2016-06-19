@@ -39,6 +39,7 @@ class ActivityAttributeBase(DefaultStringRepresentation, geomodels.Model):
         abstract = True
 
 class ActivityAttribute(ActivityAttributeBase):
+    """Just the attributes for most recent approved version of activites"""
     fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"), related_name="attributes")
 
     class Meta:
@@ -46,7 +47,8 @@ class ActivityAttribute(ActivityAttributeBase):
         verbose_name_plural = _('Activity attributes')
 
 class HistoricalActivityAttribute(ActivityAttributeBase):
-    fk_activity = models.ForeignKey("HistoricalActivity", verbose_name=_("Activity"), related_name="history_attributes")
+    """All versions (including the current) of activity attributes"""
+    fk_activity = models.ForeignKey("HistoricalActivity", verbose_name=_("Activity"), related_name="attributes")
     #history_date = models.DateTimeField(auto_now_add=True)
     #history_user = models.ForeignKey('auth.User', blank=True, null=True)
 

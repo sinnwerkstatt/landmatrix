@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 #from simple_history.models import HistoricalRecords
 
@@ -31,7 +32,8 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     @property
     def operational_stakeholder(self):
-        involvements = InvestorActivityInvolvement.objects.filter(fk_activity_id=self.id)
+        #involvements = InvestorActivityInvolvement.objects.filter(fk_activity_id=self.id)
+        involvements = InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=self.activity_identifier)
         if len(involvements) > 1:
             raise MultipleObjectsReturned('More than one OP for activity %s: %s' % (str(self), str(involvements)))
         if len(involvements) < 1:
@@ -43,12 +45,18 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         stakeholder_involvements = InvestorVentureInvolvement.objects.filter(fk_venture=self.operational_stakeholder.pk)
         return [Investor.objects.get(pk=involvement.fk_investor_id) for involvement in stakeholder_involvements]
 
+    @property
+    def history(self):
+        return HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
+
 class Activity(ActivityBase):
+    """Just the most recent approved version of an activity (for simple queries in the public interface)"""
     class Meta:
         verbose_name = _('Activity')
         verbose_name_plural = _('Activities')
 
 class HistoricalActivity(ActivityBase):
+    """All versions (including the current) of activities"""
     history_date = models.DateTimeField()
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
 
@@ -60,3 +68,4 @@ class HistoricalActivity(ActivityBase):
         verbose_name = _('Historical activity')
         verbose_name_plural = _('Historical activities')
         get_latest_by = 'history_date'
+        ordering = ('-history_date',)

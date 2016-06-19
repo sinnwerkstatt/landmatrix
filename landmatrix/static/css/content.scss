@@ -375,12 +375,11 @@ p a {
 .controls .select2,
 .controls .select2-container,
 .controls .select2-main {
-  min-width: 90%;
-  max-width: 90%;
+  min-width: 80%;
+  max-width: 80%;
   min-height: 3em;
   margin-bottom: 1em;
   #comparison > & {
-
     min-width: 45% !important;
     max-width: 45% !important;
   }

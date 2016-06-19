@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 from django.template import RequestContext
 
 from landmatrix.models import Deal
-from landmatrix.models.activity import Activity
+from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.country import Country
 from landmatrix.models.deal_history import DealHistoryItem
 from landmatrix.pdfgen import PDFViewMixin
@@ -58,7 +58,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
     def get_context_data(self, deal_id, history_id=None):
         try:
             if history_id:
-                activity = Activity.history.get(history_id=history_id)
+                activity = HistoricalActivity.objects.get(pk=history_id)
             else:
                 activity = Activity.objects.get(activity_identifier=deal_id)
         except ObjectDoesNotExist as e:
@@ -73,6 +73,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
             'operational_stakeholder': activity.operational_stakeholder,
             'stakeholders': activity.stakeholders,
         }
+        context['activity'] = activity
         context['forms'] = get_forms(activity)
         context['investor'] = activity.stakeholders
 

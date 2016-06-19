@@ -106,12 +106,7 @@ urlpatterns = patterns('',
         name='compare_deals'
     ),
     url(
-        r'^compare/(?P<activity_1>[\d_\.]+)/$',
-        cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
-        name='compare_deals'
-    ),
-    url(
-        r'^compare/(?P<activity_1>.+)/$',
+        r'^compare/(?P<activity_1>\d+)/$',
         cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
         name='compare_deals'
     ),
@@ -124,22 +119,22 @@ urlpatterns = patterns('',
 
     url(r'^stakeholder/add/$', AddStakeholderView.as_view(), name='add_stakeholder_form'),
     url(
-        r'^stakeholder/(?P<investor_id>[\d_\.]+)/$',
+        r'^stakeholder/(?P<investor_id>\d+)/$',
         ChangeStakeholderView.as_view(),
         name='stakeholder_form'
     ),
     url(
-        r'^stakeholders/compare/(?P<investor_1_id>[\d]+)/(?P<investor_2_id>[\d]+)/$',
+        r'^stakeholder/(?P<investor_id>\d+)/(?P<history_id>\d+)/$',
+        ChangeStakeholderView.as_view(),
+        name='stakeholder_form'
+    ),
+    url(
+        r'^stakeholders/compare/(?P<investor_1_id>\d+)/(?P<investor_2_id>\d+)/$',
         cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
         name='compare_investors'
     ),
     url(
-        r'^stakeholders/compare/(?P<investor_1>[\d_\.]+)/$',
-        cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
-        name='compare_investors'
-    ),
-    url(
-        r'^stakeholders/compare/(?P<investor_1>.+)/$',
+        r'^stakeholders/compare/(?P<investor_1>\d+)/$',
         cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
         name='compare_investors'
     ),

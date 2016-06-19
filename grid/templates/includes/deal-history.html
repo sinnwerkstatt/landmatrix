@@ -26,8 +26,8 @@
                                             </td>
                                             <td>
                                                 <p>
-                                                {% if item.history_id != activity.history_id %}
-                                                <a type="button" href="{% url 'deal_detail' deal_id=item.activity_identifier history_id=item.history_id %}">
+                                                {% if item.id != activity.id %}
+                                                <a type="button" href="{% url 'deal_detail' deal_id=item.activity_identifier history_id=item.id %}">
                                                     <i class="glyphicon glyphicon-eye-open"></i> {% trans "Show this version" %}
                                                 </a>
                                                 {% else %}
@@ -38,7 +38,7 @@
                                             <td>
                                                 <p>
                                                 {% if not forloop.last %}
-                                                <a type="button" href="{% url 'compare_deals' activity_1=activity.id activity_2=item.history_id %}">
+                                                <a type="button" href="{% url 'compare_deals' activity_1=item.id %}">
                                                     <i class="glyphicon glyphicon-transfer"></i> {% trans "Compare with previous version" %}
                                                 </a>
                                                 {% else %}

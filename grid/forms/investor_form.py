@@ -5,26 +5,27 @@ from landmatrix.models.investor import Investor
 from landmatrix.models.status import Status
 from grid.forms.base_model_form import BaseModelForm
 from grid.widgets import CommentInput
-
+from grid.forms.choices import operational_company_choices, investor_choices
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 # TODO: move to fields.
-# Change this to a livesearch widget once you got a working one
+# TODO: Change this to a livesearch widget
 class InvestorField(forms.ChoiceField):
     def widget_attrs(self, widget):
         return {'class': 'investorfield'}
 
 
-class InvestorForm(BaseModelForm):
+class InvestorFormBase(BaseModelForm):
     name = forms.CharField(required=False, label=_("Name"), max_length=255)
-    tg_general_comment = forms.CharField(
-        required=False, label=_("Investor comments"), widget=CommentInput)
+    classification = forms.ChoiceField(required=False, label=_("Classification"),
+        choices=(('', _("---------")),) + investor_choices)
+    comment = forms.CharField(required=False, label=_("Comment"), widget=CommentInput)
 
     class Meta:
         model = Investor
-        fields = ('name', 'fk_country', 'classification', 'tg_general_comment')
+        exclude = ('fk_status', 'subinvestors', 'investor_identifier')
 
     def save(self, commit=True):
         '''
@@ -38,16 +39,19 @@ class InvestorForm(BaseModelForm):
         return instance
 
     def get_attributes(self, **kwargs):
-        '''
-        Attempt to copy the BaseForm API here.
-        '''
         return {
-            'comment': self.cleaned_data.get('tg_general_comment'),
+            'comment': self.cleaned_data.get('comment'),
         }
 
     @classmethod
     def get_data(cls, investor):
-        '''
-        Attempt to copy the BaseForm API here.
-        '''
         return {}
+
+class InvestorForm(InvestorFormBase):
+    class Meta:
+        model = Investor
+        exclude = ('fk_status', 'subinvestors', 'investor_identifier', 'parent_relation')
+
+class OperationalCompanyForm(InvestorFormBase):
+    classification = forms.ChoiceField(required=False, label=_("Classification"),
+        choices=(('', _("---------")),) + operational_company_choices)

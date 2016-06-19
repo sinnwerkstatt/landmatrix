@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from landmatrix.models.default_string_representation import \
     DefaultStringRepresentation
+from grid.forms.choices import operational_company_choices, investor_choices
 #from simple_history.models import HistoricalRecords
 
 
@@ -11,27 +12,11 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class InvestorBase(DefaultStringRepresentation, models.Model):
     INVESTOR_IDENTIFIER_DEFAULT = 2147483647  # max safe int
-    CLASSIFICATION_CHOICES = (
-        # for operating company
-        ('10', _("Private company")),
-        ('20', _("Stock-exchange listed company")),
-        ('30', _("Individual entrepreneur")),
-        ('40', _("Investment fund")),
-        ('50', _("Semi state-owned company")),
-        ('60', _("State-/government(owned) company")),
-        ('70', _("Other (please specify in comment field)")),
-        # for parent companies
-        ('110', _("Government")),
-        ('120', _("Government institution")),
-        ('130', _("Multilateral Development Bank(MDB)")),
-        ('140', _("Bilateral Development Bank / Development Finance Institution")),
-        ('150', _("Commercial Bank")),
-        ('160', _("Investment Bank")),
-        ('170', _("Investment Fund(all types incl.pension, hedge, mutual, private equity funds etc.)")),
-        ('180', _("Insurance firm")),
-        ('190', _("Private equity firm")),
-        ('200', _("Asset management firm")),
-        ('210', _("Non - Profit organization(e.g.Church, University etc.)")),
+    CLASSIFICATION_CHOICES = operational_company_choices + investor_choices
+    PARENT_RELATION_CHOICES = (
+        ('Subsidiary', _("Subsidiary of parent company")),
+        ('Local branch', _("Local branch of parent company")),
+        ('Joint venture', _("Joint venture of parent companies")),
     )
 
     investor_identifier = models.IntegerField(
@@ -42,14 +27,14 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         blank=True, null=True)
     classification = models.CharField(
         max_length=3, choices=CLASSIFICATION_CHOICES, blank=True, null=True)
+    parent_relation = models.CharField(
+        max_length=255, choices=PARENT_RELATION_CHOICES, blank=True, null=True)
     homepage = models.URLField(_("Investor homepage"), blank=True, null=True)
     opencorporates_link = models.URLField(
         _("Opencorporates link"), blank=True, null=True)
-
-    comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
-
+    comment = models.TextField(_("Comment"), blank=True, null=True)
     #history = HistoricalRecords()
 
 
@@ -85,6 +70,11 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         if update_fields:
             super().save(update_fields=update_fields)
 
+    @property
+    def history(self):
+        return HistoricalInvestor.objects.filter(investor_identifier=self.investor_identifier)
+
+
 class Investor(InvestorBase):
     subinvestors = models.ManyToManyField(
         "self", through='InvestorVentureInvolvement', symmetrical=False,
@@ -102,6 +92,7 @@ class HistoricalInvestor(InvestorBase):
         verbose_name = _("Historical investor")
         verbose_name_plural = _("Historical investors")
         get_latest_by = 'history_date'
+        ordering = ['-history_date']
 
 
 class InvestorVentureQuerySet(models.QuerySet):
@@ -149,7 +140,7 @@ class InvestorVentureInvolvement(models.Model):
         max_length=2, choices=INVESTMENT_TYPE_CHOICES, blank=True, null=True)
     loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
     loans_currency = models.ForeignKey(
-        "Currency", verbose_name=_("Loan curency"), blank=True, null=True)
+        "Currency", verbose_name=_("Loan currency"), blank=True, null=True)
     loans_date = models.DateField("Loan date", blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))

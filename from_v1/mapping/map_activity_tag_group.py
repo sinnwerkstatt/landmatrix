@@ -143,9 +143,9 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
             if not key or not value:
                 continue
             tag_aag = clean_group(tg_name, key, value)
-            if tag_aag !== aag.name:
+            if tag_aag != aag.name:
                 tag_aag, created = ActivityAttributeGroup.objects.get_or_create(
-                    name=clean_tg_name
+                    name=tag_aag
                 )
                 if cls._save:
                     tag_aag.save(using=V2)

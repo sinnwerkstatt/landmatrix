@@ -4,7 +4,7 @@ from django.db.models.manager import Manager
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
-from landmatrix.models.activity import Activity
+from landmatrix.models.activity import Activity, HistoricalActivity
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -16,7 +16,7 @@ class ActivityChangesetManager(Manager):
         return ActivityChangeset.objects.filter(fk_activity_id__in=act_ids).order_by('-timestamp')
 
     def by_status_query_set(self, status):
-        return Activity.history.filter(fk_status__name__contains=status.lower()).order_by('-history_date')
+        return HistoricalActivity.objects.filter(fk_status__name__contains=status.lower()).order_by('-history_date')
 
     def get_my_deals(self, user):
         changesets = ActivityChangeset.objects.filter(fk_user=user).\

@@ -7,7 +7,7 @@ from django.http import Http404
 from grid.forms.deal_general_form import DealGeneralForm
 from grid.forms.deal_contract_form import DealContractFormSet
 from .save_deal_view import SaveDealView
-from landmatrix.models.activity import Activity
+from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.deal_history import DealHistoryItem
 
 from grid.forms.deal_employment_form import DealEmploymentForm
@@ -57,7 +57,7 @@ class ChangeDealView(SaveDealView):
     def get_context_data(self, deal_id, history_id=None):
         try:
             if history_id:
-                activity = Activity.history.get(history_id=None)
+                activity = HistoricalActivity.objects.get(id=history_id)
             else:
                 activity = Activity.objects.get(activity_identifier=deal_id)
         except ObjectDoesNotExist as e:

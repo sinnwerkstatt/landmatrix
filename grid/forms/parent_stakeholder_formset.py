@@ -30,7 +30,7 @@ class ParentStakeholderForm(forms.ModelForm):
 
     class Meta:
         model = InvestorVentureInvolvement
-        fields = ['id', 'fk_investor', 'percentage']
+        fields = ['id', 'fk_investor', 'loans_amount', 'loans_currency', 'loans_date']
 
 
 class ParentInvestorForm(ParentStakeholderForm):
@@ -83,8 +83,8 @@ class BaseInvestorFormSet(BaseInvolvementFormSet):
 
 ParentStakeholderFormSet = forms.modelformset_factory(
     InvestorVentureInvolvement, form=ParentStakeholderForm,
-    formset=BaseStakeholderFormSet, extra=1, min_num=0, can_delete=True)
+    formset=BaseStakeholderFormSet, extra=1, min_num=0, max_num=1, can_delete=True)
 
 ParentInvestorFormSet = forms.modelformset_factory(
     InvestorVentureInvolvement, form=ParentInvestorForm,
-    formset=BaseInvestorFormSet, extra=1, min_num=0, can_delete=True)
+    formset=BaseInvestorFormSet, extra=1, min_num=0, max_num=1, can_delete=True)

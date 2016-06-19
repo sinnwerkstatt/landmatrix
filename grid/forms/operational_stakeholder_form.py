@@ -4,7 +4,8 @@ from django.forms.models import ModelChoiceField
 from django.utils.translation import ugettext_lazy as _
 
 from grid.forms.base_form import BaseForm
-from grid.widgets import TitleField, CommentInput, YearBasedActorField
+from grid.forms.choices import actor_choices
+from grid.widgets import TitleField, CommentInput, ActorsField
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 
 
@@ -20,18 +21,15 @@ class OperationalStakeholderForm(BaseForm):
     form_title = _('Investor info')
 
     tg_operational_stakeholder = TitleField(
-        required=False, label="", initial=_("Operational Stakeholder"))
+        required=False, label="", initial=_("Operational company"))
     operational_stakeholder = ModelChoiceField(
-        required=True, label=_("Existing Operational Stakeholder"),
+        required=True, label=_("Existing Operational company"),
         queryset=STAKEHOLDER_QUERYSET,
         widget=Select(attrs={'class': 'form-control investorfield'}))
-    actors_involved = YearBasedActorField(
+    actors = ActorsField(
         required=False,
-        label=_("Actors involved in the negotiation / admission process"))
-    actors_classification = YearBasedActorField(
-        required=False,
-        label=_("Actors involved in the negotiation / admission process"))
-
+        label=_("Actors involved in the negotiation / admission process"),
+        choices=actor_choices)
     project_name = forms.CharField(
         required=False, label=_("Name of investment project"), max_length=255)
     tg_operational_stakeholder_comment = forms.CharField(

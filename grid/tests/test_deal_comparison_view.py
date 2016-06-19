@@ -2,7 +2,7 @@ from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase, Client
 
-from landmatrix.models.activity import Activity
+from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -46,7 +46,7 @@ class TestDealComparisonView(TestCase):
 
     def test_view_with_activity_identifier_and_timestamp(self):
         self._create_activity_history()
-        activity = Activity.history.get(history_id=self.history_ids[0])
+        activity = HistoricalActivity.objects.get(id=self.history_ids[0])
         activity_identifier = activity.activity_identifier
         timestamp = date_string_to_timestamp(activity.history_date)
         response = self._get_url_following_redirects(
@@ -57,7 +57,7 @@ class TestDealComparisonView(TestCase):
 
     def test_view_with_activity_identifier_and_timestamp_oldest_version(self):
         self._create_activity_history()
-        activity = Activity.history.get(history_id=self.history_ids[-1])
+        activity = HistoricalActivity.objects.get(id=self.history_ids[-1])
         activity_identifier = activity.activity_identifier
 
         timestamp = date_string_to_timestamp(activity.history_date-timedelta(seconds=1))

@@ -23,7 +23,7 @@ function init_investor_form(form) {
         return investor.text;
     }
 
-    form.find('select').select2({
+    form.find('select.investorfield').select2({
         ajax: {
             url: '/api/investors.json',
             dataType: 'json',
@@ -47,6 +47,9 @@ function init_investor_form(form) {
         templateResult: formatInvestor,
         templateSelection: formatInvestorSelection
     });
+
+    form.find('.loans_amount input').attr('placeholder', 'Loans');
+    form.find('.loans_date input').attr('placeholder', 'YYYY-MM-DD');
 }
 
 function openInvestorPopup(investorId) {

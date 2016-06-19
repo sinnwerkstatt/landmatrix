@@ -8,17 +8,24 @@ from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse_lazy
 from django.utils.timezone import utc
 
-from grid.forms.investor_formset import InvestorForm
+from grid.forms.investor_form import InvestorForm, OperationalCompanyForm
 from grid.forms.parent_stakeholder_formset import (
     ParentStakeholderFormSet, ParentInvestorFormSet,
 )
-from landmatrix.models.investor import Investor, InvestorVentureInvolvement
+from landmatrix.models.investor import Investor, HistoricalInvestor, InvestorVentureInvolvement
 
 
 class StakeholderFormsMixin:
     '''
     Handle the shared form behaviour for create and update.
     '''
+    def get_form_class(self):
+        investor = self.get_object()
+        if hasattr(investor, 'investoractivityinvolvement_set') and investor.investoractivityinvolvement_set.count() > 0:
+            return OperationalCompanyForm
+        else:
+            return InvestorForm
+
 
     def get_formset_kwargs(self):
         kwargs = {}
@@ -132,7 +139,6 @@ class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
     pk_url_kwarg = 'investor_id'
     context_object_name = 'investor'
     model = Investor
-    form_class = InvestorForm
 
     def get_object(self, queryset=None):
         '''

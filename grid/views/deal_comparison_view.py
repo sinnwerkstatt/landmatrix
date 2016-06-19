@@ -4,7 +4,7 @@ from django.template.context import RequestContext
 
 from grid.views.deal_detail_view import DealDetailView, get_forms
 from grid.views.view_aux_functions import render_to_response
-from landmatrix.models.activity import Activity
+from landmatrix.models.activity import HistoricalActivity
 from landmatrix.models.deal import Deal
 from landmatrix.models.deal_history import DealHistoryItem
 
@@ -13,25 +13,14 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class DealComparisonView(DealDetailView):
 
-    def dispatch(self, request, *args, **kwargs):
-#        print('dispatch kwargs:', kwargs)
-        activity_1_id = kwargs.pop("activity_1_id", None)
-        if activity_1_id is not None:
-            deal_1 = deal_from_activity_id(activity_1_id)
-            activity_2_id = kwargs.pop("activity_2_id", None)
-            if activity_2_id is None:
-                raise RuntimeError('Either activity_1_id AND activity_2_id or activity_1 needed. Got ' + str(kwargs))
-            deal_2 = deal_from_activity_id(activity_2_id)
-            deal_id = activity_1_id
+    def dispatch(self, request, activity_1, activity_2=None):
+        deal_1 = HistoricalActivity.objects.get(pk=activity_1)
+        if activity_2:
+            deal_2 = HistoricalActivity.objects.get(pk=activity_2)
         else:
-            activity_1 = kwargs.pop('activity_1', None)
-            if activity_1 is None:
-                raise RuntimeError('Either activity_1_id AND activity_2_id or activity_1 needed. Got ' + str(kwargs))
-            deal_1 = deal_from_activity_id_and_timestamp(activity_1)
-            deal_2 = previous_history_state(deal_1)
-            deal_id = activity_1
-
-        context = super().get_context_data(deal_id, **kwargs)
+            deal_2 = HistoricalActivity.objects.filter(activity_identifier=activity.activity_identifier)\
+                .filter(history_date__lt=activity.history_date).order_by('history_date').last()
+        context = super().get_context_data(activity_1, activity_2)
         context['deals'] = [deal_1, deal_2]
         context['forms'] = get_comparison(deal_1, deal_2)
 
@@ -54,37 +43,27 @@ def get_comparison(deal_1, deal_2):
 
 
 def deal_from_activity_id(history_id):
-    if history_id.isdigit():
-        return Deal.from_activity(Activity.history.get(history_id=history_id))
-    raise RuntimeError('Bad activity history id: ' + history_id)
+    return Deal.from_activity(HistoricalActivity.objects.get(id=history_id))
 
 
-def deal_from_activity_id_and_timestamp(id_and_timestamp):
-    from datetime import datetime
-    from dateutil.tz import tzlocal
-    if '_' in id_and_timestamp:
-        activity_identifier, timestamp = id_and_timestamp.split('_')
-
-        activity = Activity.objects.filter(activity_identifier=activity_identifier).order_by('id').last()
-        if activity is None:
-            raise ObjectDoesNotExist('activity_identifier %s' % activity_identifier)
-
-        history = activity.history.filter(history_date__lte=datetime.fromtimestamp(float(timestamp), tz=tzlocal())).\
-            filter(fk_status_id__in=(2, 3)).last()
-        if history is None:
-            raise ObjectDoesNotExist('Public deal with activity_identifier %s as of timestamp %s' % (activity_identifier, timestamp))
-
-        return DealHistoryItem.from_activity_with_date(history, datetime.fromtimestamp(float(timestamp), tz=tzlocal()))
-
-    raise RuntimeError('should contain _ separating activity id and timestamp: ' + id_and_timestamp)
-
-
-def previous_history_state(deal):
-    from datetime import timedelta
-    return Activity.history.filter(id=deal.activity.id).\
-        filter(history_date__lte=deal.activity.history_date-timedelta(microseconds=1)).\
-        order_by('history_date').last()
-
+#def deal_from_activity_id_and_timestamp(id_and_timestamp):
+#    from datetime import datetime
+#    from dateutil.tz import tzlocal
+#    if '_' in id_and_timestamp:
+#        activity_identifier, timestamp = id_and_timestamp.split('_')
+#
+#        activity = Activity.objects.filter(activity_identifier=activity_identifier).order_by('id').last()
+#        if activity is None:
+#            raise ObjectDoesNotExist('activity_identifier %s' % activity_identifier)
+#
+#        history = activity.history.filter(history_date__lte=datetime.fromtimestamp(float(timestamp), tz=tzlocal())).\
+#            filter(fk_status_id__in=(2, 3)).last()
+#        if history is None:
+#            raise ObjectDoesNotExist('Public deal with activity_identifier %s as of timestamp %s' % (activity_identifier, timestamp))
+#
+#        return DealHistoryItem.from_activity_with_date(history, datetime.fromtimestamp(float(timestamp), tz=tzlocal()))
+#
+#    raise RuntimeError('should contain _ separating activity id and timestamp: ' + id_and_timestamp)
 
 def is_different(form_1, form_2):
 

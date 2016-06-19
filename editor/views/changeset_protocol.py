@@ -6,7 +6,7 @@ from django.utils.encoding import force_text
 
 from editor.models import UserRegionalInfo
 from grid.views.activity_protocol import ActivityProtocol
-from landmatrix.models.activity import Activity
+from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.activity_changeset_review import ActivityChangesetReview, ReviewDecision
 from landmatrix.models.activity_feedback import ActivityFeedback
@@ -62,15 +62,15 @@ class ChangesetProtocol(View):
     def dashboard(self, request):
         res = {
             "latest_added": self.get_paged_results(
-                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("active")[:self.DEFAULT_MAX_NUM_CHANGESETS]),
+                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("active"))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_added_page')
             ),
             "latest_modified": self.get_paged_results(
-                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("overwritten")[:self.DEFAULT_MAX_NUM_CHANGESETS]),
+                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("overwritten"))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_modified_page')
             ),
             "latest_deleted": self.get_paged_results(
-                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("deleted")[:self.DEFAULT_MAX_NUM_CHANGESETS]),
+                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("deleted"))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_deleted_page')
             ),
             "manage": self._changeset_to_json(limit=2),
@@ -204,7 +204,7 @@ class ChangesetProtocol(View):
             a_changesets["my_deals"] = my_deals
 
     def handle_updates(self, a_changesets, changesets, limit, updates_page):
-        changesets_update = changesets.filter(fk_activity__fk_status__name="pending")[:self.DEFAULT_MAX_NUM_CHANGESETS]
+        changesets_update = changesets.filter(fk_activity__fk_status__name="pending")
         changesets_update = self.apply_dashboard_filters(changesets_update)
         changesets_update = limit and changesets_update[:limit] or changesets_update
         paginator = Paginator(changesets_update, 10)
@@ -240,7 +240,7 @@ class ChangesetProtocol(View):
         return _uniquify_changesets_by_deal(changesets)
 
     def handle_inserts(self, a_changesets, changesets, inserts_page, limit):
-        changesets_insert = changesets.filter(fk_activity__fk_status__name="pending")[:self.DEFAULT_MAX_NUM_CHANGESETS]  #  previous_version__isnull=True)
+        changesets_insert = changesets.filter(fk_activity__fk_status__name="pending")
         changesets_insert = self.apply_dashboard_filters(changesets_insert)
         changesets_insert = limit and changesets_insert[:limit] or changesets_insert
         paginator = Paginator(changesets_insert, 10)
@@ -305,7 +305,8 @@ def _uniquify_changesets_by_deal(changesets):
 
 def _filter_changesets_by_countries(changesets, countries):
     return changesets.filter(
-        fk_activity__activityattributegroup__attributes__contains={'target_country': countries}
+        fk_activity__attributes__name='target_country',
+        fk_activity__attributes__value__in=countries
     )
 
 
@@ -387,7 +388,7 @@ def _feedbacks_to_json(user, feedbacks_page=1, limit=None):
 
 
 def _rejected_to_json(user, limit=None):
-    rejected = Activity.history.filter(fk_status__name='rejected').filter(history_user_id=user.id)
+    rejected = HistoricalActivity.objects.filter(fk_status__name='rejected', history_user_id=user.id)
     feed = limit and rejected[:limit] or rejected
     paginator = Paginator(feed, 10)
     page = _get_page(1, paginator)
