@@ -74,11 +74,13 @@
             {% endif %}
 
             {% include "includes/deal-history.html" %}
+
+            {% get_comment_count for deal.activity as comment_count %}
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <a id="comments" data-toggle="collapse" data-parent="#accordion" href="#collapse_comments">
                         <h5 class="panel-title">
-                            {% trans "Comments" %}
+                            {% trans "Comments" %} ({{ comment_count }})
                                 <span id="collapsebtn_history"
                                       class="lm-chevron-circle-down pull-right mgrey1"></span>
                         </h5>
@@ -87,7 +89,6 @@
                 <div id="collapse_comments" class="panel-collapse collapse">
                     <div class="panel-body">
                         <div class="col-sm-12">
-                            {% get_comment_count for deal.activity as comment_count %}
                             {% if comment_count > 0 %}
                                 {% render_comment_list for deal.activity %}
                             {% else %}

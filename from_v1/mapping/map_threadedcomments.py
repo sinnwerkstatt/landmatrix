@@ -1,6 +1,7 @@
 from mapping.map_model import MapModel
 from migrate import V1, V2
 
+from landmatrix.models import Activity, HistoricalActivity
 from django_comments.models import Comment
 from threadedcomments.models import ThreadedComment
 
@@ -14,8 +15,17 @@ class MapDjangoComments(MapModel):
 
     @classmethod
     def all_records(cls):
-        return Comment.objects.using(V1).filter(is_public=True).filter(is_removed=False).values()
+        return Comment.objects.using(V1).values()
 
+    @classmethod
+    def save_record(cls, new, save):
+        #new.content_type_id = 24
+        activity_identifier = HistoricalActivity.objects.using(V2).get(pk=new.object_pk).activity_identifier
+        activity = Activity.objects.using(V2).get(activity_identifier=activity_identifier)
+        #new.object_pk = activity.id
+        new.content_object = activity
+        if save:
+            new.save(using=V2)
 
 class MapThreadedComments(MapModel):
     old_class = ThreadedComment
