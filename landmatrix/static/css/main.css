@@ -409,7 +409,8 @@ textarea {
 .errorlist li {
   color: red; }
 
-.control-group.with-error .form-control {
+.control-group.with-error .form-control,
+.control-group.with-error .select2-selection {
   border-color: red; }
 
 .with-error .panel-collapse {

@@ -33,12 +33,15 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     @property
     def operational_stakeholder(self):
         #involvements = InvestorActivityInvolvement.objects.filter(fk_activity_id=self.id)
-        involvements = InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=self.activity_identifier)
-        if len(involvements) > 1:
-            raise MultipleObjectsReturned('More than one OP for activity %s: %s' % (str(self), str(involvements)))
-        if len(involvements) < 1:
+        involvement = InvestorActivityInvolvement.objects.filter(
+            fk_activity__activity_identifier=self.activity_identifier,
+            fk_status_id__in=(2,3,4), # FIXME: Based upon user permission also show pending
+        ).latest()
+        #if len(involvements) > 1:
+        #    raise MultipleObjectsReturned('More than one OP for activity %s: %s' % (str(self), str(involvements)))
+        if not involvement:
             raise ObjectDoesNotExist('No OP for activity %s: %s' % (str(self), str(involvements)))
-        return Investor.objects.get(pk=involvements[0].fk_investor_id)
+        return Investor.objects.get(pk=involvement.fk_investor_id)
 
     @property
     def stakeholders(self):

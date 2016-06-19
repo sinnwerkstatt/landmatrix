@@ -13,7 +13,9 @@ from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 
-from landmatrix.models.activity_attribute_group import ActivityAttribute
+from landmatrix.models.activity_attribute_group import ActivityAttribute, \
+    HistoricalActivityAttribute, ActivityAttributeGroup
+from landmatrix.models.activity import Activity
 from landmatrix.models.activity_changeset import ActivityChangeset
 from landmatrix.models.investor import InvestorActivityInvolvement
 from landmatrix.models.language import Language
@@ -68,26 +70,27 @@ class SaveDealView(TemplateView):
         forms = self.get_forms(self.request.POST, files=self.request.FILES)
         if all(form.is_valid() for form in forms):
             activity = self.get_object()
-            action_comment = self.update_deal(forms, request)
-            if not request.user.is_administrator():
-                activity.fk_status = Status.objects.get(name='pending')
+            # Create new historical activity
+            activity.pk = None
+            if not request.user.is_superuser:
+                activity.fk_status_id = 1
             activity.save()
-            ActivityChangeset.objects.create(
+            # Create new activity attributes
+            action_comment = self.update_deal(activity, forms, request)
+            # Create changeset
+            changeset = ActivityChangeset.objects.create(
                 fk_activity=activity,
                 comment=action_comment
             )
-            changeset.save()
+            messages.success(request, self.success_message.format(self.deal_id))
         else:
             messages.error(request, _('Please correct the error below.'))
         context['forms'] = forms
         return self.render_to_response(context)
 
-    def update_deal(self, forms, request):
+    def update_deal(self, activity, forms, request):
         action_comment = ''
-        # Delete existing attributes
-        # FIXME: Why?
-        #HistoricalActivityAttribute.objects.filter(fk_activity=self.activity).delete()
-        # Create new attribute groups
+        # Create new attributes
         for form in forms:
             attributes = form.get_attributes(request)
             if not attributes:
@@ -99,29 +102,27 @@ class SaveDealView(TemplateView):
                         aag, created = ActivityAttributeGroup.objects.get_or_create(
                             name='%s_%i' % (form.Meta.name, count),
                         )
-                        for key, value in form_attributes.items():
-                            aa = HistoricalActivityAttribute.objects.create(
-                                fk_activity=self.activity,
-                                fk_group=aag,
-                                fk_language=Language.objects.get(english_name='English'),
-                                name=key,
-                                value=value,
-                                date=date.today(),
-                            )
+                        for name, kwargs in form_attributes.items():
+                            kwargs.update({
+                                'name': name,
+                                'fk_activity': activity,
+                                'fk_group': aag,
+                                'fk_language_id': 1,
+                            })
+                            aa = HistoricalActivityAttribute.objects.create(**kwargs)
             # Form
             elif attributes:
                 aag, created = ActivityAttributeGroup.objects.get_or_create(
                     name=form.Meta.name
                 )
-                for key, value in form_attributes.items():
-                    aa = HistoricalActivityAttribute.objects.create(
-                        fk_activity=self.activity,
-                        fk_group=aag,
-                        fk_language=Language.objects.get(english_name='English'),
-                        date=date.today(),
-                        name=key,
-                        value=value,
-                    )
+                for name, kwargs in attributes.items():
+                    kwargs.update({
+                        'name': name,
+                        'fk_activity': activity,
+                        'fk_group': aag,
+                        'fk_language_id': 1,
+                    })
+                    aa = HistoricalActivityAttribute.objects.create(**kwargs)
             # Investor form?
             if form.Meta.name == 'investor_info' and form.cleaned_data['operational_stakeholder']:
                 self.update_investor(form, request)
@@ -132,20 +133,28 @@ class SaveDealView(TemplateView):
         return action_comment
 
     def update_investor(self, form, request):
+        # FIXME
+        # Problem here: Involvements are not historical yet, but activity and investors are.
+        # As an intermediate solution we'll just create another involvement which links
+        # to the public activity, which will replace the current involvement when the
+        # historical activity gets approved. 
+        activity = Activity.objects.get(activity_identifier=self.kwargs.get('deal_id'))
+
         operational_stakeholder = form.cleaned_data['operational_stakeholder']
         # Update operational stakeholder (involvement)
-        involvements = InvestorActivityInvolvement.objects.filter(fk_activity=self.activity)
-        if len(involvements) > 1:
-            raise MultipleObjectsReturned(
-                'More than one operational stakeholder for activity %s' % str(self.activity)
-            )
-        if len(involvements):
-            involvement = involvements.last()
-            involvement.fk_investor = operational_stakeholder
-        else:
-            involvement = InvestorActivityInvolvement(
-                fk_activity=self.activity, fk_investor=operational_stakeholder, fk_status_id=1
-            )
+        #involvements = InvestorActivityInvolvement.objects.filter(fk_activity=activity)
+        #if len(involvements) > 1:
+        #    raise MultipleObjectsReturned(
+        #        'More than one operational stakeholder for activity %s' % str(self.get_object())
+        #    )
+        #elif len(involvements):
+        #    involvement = involvements.last()
+        #    involvement.fk_investor = operational_stakeholder
+        #else:
+        involvement = InvestorActivityInvolvement.objects.create(
+            fk_activity=activity,
+            fk_investor=operational_stakeholder,
+            fk_status_id=1
+        )
         involvement.save()
-        messages.success(request, self.success_message.format(self.deal_id))
 

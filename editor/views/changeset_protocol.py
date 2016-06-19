@@ -452,7 +452,10 @@ def _approve_activity_change(activity, changeset, comment, request):
     ap = ActivityProtocol()
     if len(involvements) > 0:
         _conditionally_update_stakeholders(activity, ap, involvements, request)
-
+    # FIXME
+    # Problem here: Involvements are not historical yet, but activity and investors are.
+    # As an intermediate solution another involvement is created for each historical activity
+    # which links to the public activity. Let's confirm the new and remove the old involvement.
     ap.prepare_deal_for_public_interface(activity.activity_identifier)
 
 
@@ -462,6 +465,10 @@ def _reject_activity_change(activity, changeset, comment, request):
         changeset, request.user,
         ReviewDecision.objects.get(name="rejected"), comment
     )
+    # FIXME
+    # Problem here: Involvements are not historical yet, but activity and investors are.
+    # As an intermediate solution another involvement is created for each historical activity
+    # which links to the public activity. Let's remove the new involvement.
 
 
 def _change_status_with_review(activity, status, changeset, user, review_decision, comment):

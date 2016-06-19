@@ -23,19 +23,26 @@ class BaseForm(forms.Form):
     error_css_class = "error"
 
     def get_attributes(self, request=None):
-        """Create json for attributes from request"""
-        # form data given?
-        if self.data.get(self.prefix and "%s-TOTAL_FORMS"%self.prefix or "TOTAL_FORMS", 1) < 1:
-            return {}
+        """
+        Create data for attributes from request
+        Returns:
+        {
+            'Name of attribute 1': {
+                value: 'Value for attribute',
+                value2: 'Optional second value for attribute, e.g. ha for crops',
+                date: 'Date of value for year based fields',
+            },
+            'Name of attribute 2': {
+                ...
+            }
+        }
+        """
         attributes = {}
         for i, (n, f) in enumerate(self.fields.items()):
-            key = key = str(n)
+            name = str(n)
             # New tag group?
-            if n.startswith('tg_'):
-                if n.endswith('_comment'):
-                    key = 'comment'
-                else:
-                    continue
+            if n.startswith('tg_') and not n.endswith('_comment'):
+                continue
                 #if n.endswith('_comment'):
                     #raise NotImplementedError('Comment')
                     #comment = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n, None)
@@ -47,14 +54,14 @@ class BaseForm(forms.Form):
                     #activity["main_tag"]["value"] = n[3:]
                     #attributes = []
                     #activity["comment"] = ""
-            #if n == "investment_ratio":
-            #    activity["investment_ratio"] = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-            # don't add choices for select fields, they're always the same
-            #elif isinstance(f, UserModelChoiceField):
-            #    value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
-            #    if value:
-            #        tag["value"] = value
-            #        attributes.append(tag)
+                #if n == "investment_ratio":
+                #    activity["investment_ratio"] = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+                # don't add choices for select fields, they're always the same
+                #elif isinstance(f, UserModelChoiceField):
+                #    value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
+                #    if value:
+                #        tag["value"] = value
+                #        attributes.append(tag)
             if isinstance(f, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
                 # Create tags for each value
                 #tag["op"] = "select"
@@ -77,7 +84,7 @@ class BaseForm(forms.Form):
                         if not value:
                             value = v
                         if value:
-                            attributes[key] = value
+                            attributes[name] = {'value': value}
             elif isinstance(f, forms.ChoiceField):
                 #tag["op"] = "select"
                 value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
@@ -87,15 +94,15 @@ class BaseForm(forms.Form):
 #                    raise IOError, n
                 # quickfix for receiving 'Non' as a value FIXME
                 if value and value != "0" and value != "Non":
-                    if key in ("investor", "primary_investor"):
-                        attributes[key] = value
+                    if name in ("investor", "primary_investor"):
+                        attributes[name] = value
                     else:
                         try:
                             if hasattr(f, 'queryset'):
                                 value = int(value)
                             value = str(dict(f.choices).get(value))
-                            if value:
-                                attributes[key] = value
+                            if value:  
+                                attributes[name] = {'value': value}
                         except:
                             raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
             # Year based data?
@@ -116,22 +123,22 @@ class BaseForm(forms.Form):
                                         raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
                                 else:
                                     value = value
-                            if year:
-                                pass # FIXME: Append year to value?
-                            attributes[key] = value 
+                            attributes[name] = {
+                                'value': value,
+                                'date': year,
+                            }
             elif isinstance(f, forms.FileField):
                 value = self.get_display_value_file_field(n)
                 if value:
-                    attributes[key] = value
+                    attributes[name] = {'value': value}
             elif isinstance(f, forms.DecimalField):
                 value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
                 if value:
-                    value = str(value)
-                    attributes[key] = value
+                    attributes[name] = {'value': str(value)}
             else:
                 value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
                 if value:
-                    attributes[key] = value
+                    attributes[name] = {'value': value}
             #if i == len(self.fields.items())-1:
             #    if activity["main_tag"]["value"] and (attributes or activity["comment"]):
             #        attributes.append(deepcopy(activity))

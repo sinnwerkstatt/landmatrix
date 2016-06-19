@@ -50,13 +50,14 @@ class DealSpatialForm(BaseForm):
         name = 'spatial_data'
 
     def get_attributes(self, request=None):
-        attributes = super().attributes
-        if 'target_country' in attributes \
-                and not isinstance(attributes['target_country'], int) \
-                and not attributes['target_country'].isnumeric():
-            target_country = Country.objects.get(
-                name=attributes['target_country'])
-            attributes['target_country'] = target_country.pk
+        attributes = super().get_attributes()
+        # Validate target country
+        #if 'target_country' in attributes \
+        #        and not isinstance(attributes['target_country'], int) \
+        #        and not attributes['target_country'].isnumeric():
+        #    target_country = Country.objects.get(
+        #        name=attributes['target_country'])
+        #    attributes['target_country'] = target_country.pk
         return attributes
 
 

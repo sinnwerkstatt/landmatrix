@@ -64,9 +64,15 @@ class ChangeDealView(SaveDealView):
     def get_object(self):
         try:
             if 'history_id' in self.kwargs:
-                return HistoricalActivity.objects.get(id=self.kwargs.get('history_id'))
+                activity = HistoricalActivity.objects.get(id=self.kwargs.get('history_id'))
+                if not self.request.user.is_superuser and activity.fk_status_id in (2,3,4):
+                    raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e))) 
+                return activity
             else:
-                return HistoricalActivity.objects.filter(activity_identifier=self.kwargs.get('deal_id')).latest()
+                activities = HistoricalActivity.objects.filter(activity_identifier=self.kwargs.get('deal_id'))
+                if not self.request.user.is_superuser:
+                    activities = activities.filter(fk_status_id__in=(2,3,4))
+                return activities.latest()
         except ObjectDoesNotExist as e:
             raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e))) 
 

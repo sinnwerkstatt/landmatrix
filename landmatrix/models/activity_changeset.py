@@ -44,8 +44,8 @@ class ActivityChangesetManager(Manager):
 class ActivityChangeset(Model):
 
     comment = TextField(_("Comment"))
-    fk_activity = ForeignKey("Activity", verbose_name=_("Activity"), blank=True, null=True)
-    timestamp = DateTimeField(_("Timestamp"))#, auto_now_add=True)
+    fk_activity = ForeignKey("HistoricalActivity", verbose_name=_("Activity"), blank=True, null=True)
+    timestamp = DateTimeField(_("Timestamp"), auto_now_add=True)
 
     objects = ActivityChangesetManager()
 

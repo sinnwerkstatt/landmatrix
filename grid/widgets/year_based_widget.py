@@ -41,12 +41,20 @@ class YearBasedWidget(forms.MultiWidget):
         return u''.join(rendered_widgets)
 
     def value_from_datadict(self, data, files, name):
+        # Find out which widgets allow multiple values
+        widgets = self.get_widgets()
+        multiple = [hasattr(w, 'allow_multiple_selected') and w.allow_multiple_selected for w in widgets]
         #return [widget.value_from_datadict(data, files, name + '_%s' % i) for i, widget in enumerate(self.widgets)]
-        value = [data[k] for k in sorted(filter(lambda o: re.match(r"%s_\d+"%name,o), data))]
+        value = []
+        for i, key in enumerate(sorted(filter(lambda o: re.match(r"%s_\d+"%name,o), data))):
+            if multiple[i % len(widgets)]:
+                value.append(data.getlist(key))
+            else:
+                value.append(data.get(key))
         # update widgets
         self.widgets = []
-        for i in range(int(len(value)/len(self.get_widgets()))):
-            self.widgets.extend(self.get_widgets())
+        for i in range(int(len(value)/len(widgets))):
+            self.widgets.extend(widgets)
         return value
 
     def render(self, name, value, attrs={}):

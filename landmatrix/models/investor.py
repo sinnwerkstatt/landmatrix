@@ -220,3 +220,9 @@ class InvestorActivityInvolvement(models.Model):
         return "Activity: %i Investor: %i Percentage: %s comment: '%s'" % (
             self.fk_activity_id, self.fk_investor_id, str(self.percentage), str(self.comment)[:40]
         )
+
+    class Meta:
+        ordering = ('-timestamp',)
+        get_latest_by = 'timestamp'
+        verbose_name = _('Investor Activity Involvement')
+        verbose_name = _('Investor Activity Involvements')

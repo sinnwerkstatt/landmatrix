@@ -136,11 +136,17 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
         attributes = []
         for count, form in enumerate(self.forms):
             form_attributes = form.get_attributes()
+
+            # FIXME: Move this to DealDataSourceForm.get_attributes
             uploaded = get_file_from_upload(request.FILES, count)
             if uploaded:
-                form_attributes['file'] = uploaded
-            if 'url' in form_attributes and form_attributes['url']:
+                if 'file' in form_attributes:
+                    form_attributes['file']['value'] = uploaded
+                else:
+                    form_attributes['file'] = {'value': uploaded}
+            if 'url' in form_attributes and form_attributes['url'] and 'file' not in form_attributes:
                 form_attributes = handle_url(form_attributes, request)
+
             attributes.append(form_attributes)
         return attributes
             #ds_url, ds_file = None, None
@@ -275,6 +281,8 @@ def get_url_slug(request, url):
         urllib.request.urlopen(url)
     except (urllib.error.HTTPError, urllib.error.URLError):
         error_could_not_upload(request, url)
+        return None
+    except:
         return None
 
     return "%s.pdf" % re.sub(r"https|http|ftp|www|", "", slugify(url))
