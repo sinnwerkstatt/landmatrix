@@ -84,15 +84,15 @@ class SaveDealView(TemplateView):
         activity.save()
         # Create new activity attributes
         action_comment = self.create_attributes(activity, forms)
-        self.create_involvement(activity, form)
+        self.create_involvement(activity, investor_form)
         # Create changeset
         changeset = ActivityChangeset.objects.create(
             fk_activity=activity,
             comment=action_comment
         )
-        messages.success(request, self.success_message.format(self.deal_id))
+        messages.success(self.request, self.success_message.format(self.deal_id))
 
-        context = self.get_context_data(**kwargs)
+        context = self.get_context_data(**self.kwargs)
         context['forms'] = forms
         return self.render_to_response(context)
 
