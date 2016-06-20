@@ -153,7 +153,7 @@ class ChangesetProtocol(View):
     def changeset_template_data(self, changeset, extra_data=None):
         if changeset:
             try:
-                user = changeset.fk_activity.history_user
+                user = changeset.fk_activity.history_user.username
             except:
                 # User doesn't exist anymore
                 user = force_text(_("Deleted User"))
