@@ -1,13 +1,22 @@
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+from xml.dom.minidom import parseString
+import csv
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.http.response import HttpResponse
-
 from django.views.generic import TemplateView
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
+import xlwt
 
 from grid.views import AllDealsView, TableGroupView, DealDetailView
 
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 class ExportView(TemplateView):
     template_name = 'export.html'
@@ -18,31 +27,23 @@ class ExportView(TemplateView):
             raise RuntimeError('Download format not recognized: ' + format)
 
         return getattr(self, 'export_%s' % format)(
-            columns, self.format_items_for_download(items, columns), "%s.%s" % (filename, format)
-        )
+            columns, self.format_items_for_download(items, columns),
+            "%s.%s" % (filename, format))
 
     def export_xls(self, header, data, filename):
-        import xlwt
         response = HttpResponse(content_type="application/ms-excel")
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
         wb = xlwt.Workbook()
         ws = wb.add_sheet('Landmatrix')
-        for i,h in enumerate(header):
-            ws.write(0, i,h)
+        for i, h in enumerate(header):
+            ws.write(0, i, h)
         for i, row in enumerate(data):
             for j, d in enumerate(row):
                 ws.write(i+1, j, d)
         wb.save(response)
         return response
 
-
     def export_xml(self, header, data, filename):
-        try:
-            import xml.etree.cElementTree as ET
-        except ImportError:
-            import xml.etree.ElementTree as ET
-        from xml.dom.minidom import parseString
-
         root = ET.Element('data')
         for r in data:
             row = ET.SubElement(root, "item")
@@ -52,16 +53,14 @@ class ExportView(TemplateView):
                 field.set("name", h)
         xml = parseString(ET.tostring(root)).toprettyxml()
         response = HttpResponse(xml, content_type='text/xml')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(
+            filename)
         return response
 
-
     def export_csv(self, header, data, filename):
-        import csv
-
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(
+            filename)
         writer = csv.writer(response, delimiter=";")
         # write csv header
         writer.writerow(header)
@@ -113,20 +112,26 @@ class AllDealsExportView(AllDealsView, ExportView):
     def dispatch(self, request, *args, **kwargs):
         format = kwargs.pop('format')
         kwargs['group'] = 'all'
-        context = super(AllDealsExportView, self).get_context_data(*args, **kwargs)
-        return self.export(context['data']['items'], context['columns'], format, filename=kwargs['group'])
+        context = super().get_context_data(*args, **kwargs)
+        return self.export(
+            context['data']['items'], context['columns'], format,
+            filename=kwargs['group'])
 
     def _limit_query(self):
         return False
+
 
 class TableGroupExportView(TableGroupView, ExportView):
     def dispatch(self, request, *args, **kwargs):
         format = kwargs.pop('format')
-        context = super(TableGroupExportView, self).get_context_data(*args, **kwargs)
-        return self.export(context['data']['items'], context['columns'], format, filename=kwargs['group'])
+        context = super().get_context_data(*args, **kwargs)
+        return self.export(
+            context['data']['items'], context['columns'], format,
+            filename=kwargs['group'])
 
     def _limit_query(self):
         return False
+
 
 class DealDetailExportView(DealDetailView, ExportView):
     def dispatch(self, request, *args, **kwargs):
