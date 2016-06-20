@@ -413,7 +413,7 @@ textarea {
 .control-group.with-error .select2-selection {
   border-color: red; }
 
-.with-error .panel-collapse {
+.with-error .panel-collapse.in {
   display: block; }
 
 /* YEAR BASED DATA AND FORMSETS */
