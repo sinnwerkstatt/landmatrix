@@ -1,5 +1,7 @@
-from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
+from django.utils.translation import ugettext_lazy as _
+
 from landmatrix.models.filter_preset import FilterPreset
+from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -43,6 +45,9 @@ class PresetFilter(dict):
 
         if name is None:
             name = generate_filter_name()
+
+        if label is None:
+            label = self.filter.name
 
         super().__init__(name=name, preset_id=self.preset_id, label=label)
 

@@ -51,11 +51,11 @@
             <div class="col-md-3 filterbox no-pad">
                 <h6>{% trans "Create a custom filter" %}</h6>
                 <ul class="variables">
-                    {% for group in variables %}
+                    {% for group, items in variables.items %}
                         <li>
-                            <h4>{{ group.label }}</h4>
+                            <h4>{{ group }}</h4>
                             <ul>
-                                {% for variable in group.items %}
+                                {% for variable in items %}
                                     <li id="filter_{{ variable.name }}" class="filter_item"><a
                                             href="javascript:createFilter('{{ variable.name }}', '{{ variable.label }}')"
                                             id="filter_{{ variable.name }}_link">{% trans variable.label %}</a>

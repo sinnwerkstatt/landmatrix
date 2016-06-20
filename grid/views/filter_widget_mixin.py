@@ -1,19 +1,19 @@
 from pprint import pprint
 from time import time
+from collections import OrderedDict
 
 from django.db import connection
 from django.utils.datastructures import MultiValueDict
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 
-from grid.views.browse_filter_conditions import BrowseFilterConditions
-from grid.views.view_aux_functions import (
-    create_condition_formset
-)
-
 from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models import BrowseCondition, FilterPresetGroup
 from api.filters import Filter
+from grid.widgets import TitleField
+from grid.views.save_deal_view import SaveDealView
+from grid.views.browse_filter_conditions import BrowseFilterConditions
+from grid.views.view_aux_functions import create_condition_formset
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -28,11 +28,49 @@ class FilterWidgetMixin:
     current_formset_conditions = None
     filters = None
 
-    def create_variable_table(self):
-        # moved the function to view_aux_functions because it is static
-        # redirected from here in order to keep the interface
-        from grid.views.view_aux_functions import create_variable_table
-        return create_variable_table()
+    def get_variable_table(self):
+        '''
+        Create an OrderedDict of group name keys with lists of dicts for each
+        variable in the group (each dict contains 'name' and 'label' keys).
+
+        Cache the resulting data strucutre, as it is used on each
+        page load and doesn't change.
+        '''
+        if not hasattr(self, '_variable_table'):
+            # for formsets, we want form.form
+            deal_forms = [
+                form.form if hasattr(form, 'form') else form
+                for form in SaveDealView.FORMS
+            ]
+            variable_table = OrderedDict()
+            group_items = []
+            group_title = ''
+
+            # Add an ID filter
+            variable_table[_('Deal ID')] = [{
+                'name': 'activity_identifier',
+                'label': _("Deal ID"),
+            }]
+
+            for form in deal_forms:
+                for field_name, field in form.base_fields.items():
+                    if isinstance(field, TitleField):
+                        if group_title and group_items:
+                            variable_table[group_title] = group_items
+                            group_items = []
+                        group_title = str(field.initial)
+                    else:
+                        group_items.append({
+                            'name': field_name,
+                            'label': str(field.label),
+                        })
+
+            if group_title and group_items:
+                variable_table[group_title] = group_items
+
+            self._variable_table = variable_table
+
+        return self._variable_table
 
     def example_set_filters(self):
         self.current_formset_conditions = self.get_formset_conditions(
@@ -50,8 +88,7 @@ class FilterWidgetMixin:
         context["empty_form_conditions"] = self.current_formset_conditions
         context["rules"] = self.rules
 
-        variables = self.create_variable_table()
-        context['variables'] = variables
+        context['variables'] = self.get_variable_table()
         context['presets'] = FilterPresetGroup.objects.all()
 
     @print_execution_time_and_num_queries

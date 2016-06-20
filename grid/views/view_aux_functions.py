@@ -10,8 +10,6 @@ from landmatrix.models.filter_condition import FILTER_VAR_ACT, \
 from landmatrix.models.filter_preset import FilterPresetGroup
 from api.filters import PresetFilter
 from grid.views.browse_condition_form import BrowseConditionForm
-from grid.views.save_deal_view import SaveDealView
-from grid.widgets import TitleField
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -37,40 +35,6 @@ def render_to_response(template_name, context, context_instance):
 
 def render_to_string(template_name, context, context_instance):
     return loader.render_to_string(template_name, context, context_instance)
-
-
-def create_variable_table():
-    variable_table = []
-    group_items = []
-    group_title = ''
-
-    for form in SaveDealView.FORMS:
-        # FormSet (Spatial Data und Data source)
-        if hasattr(form, 'form'):
-            form = form.form
-
-        for field_name, field in form.base_fields.items():
-            if isinstance(field, TitleField):
-                if group_title and group_items:
-                    variable_table.append({
-                        'label': group_title,
-                        'items': group_items,
-                    })
-                    group_items = []
-                group_title = str(field.initial)
-            else:
-                group_items.append({
-                    'name': field_name,
-                    'label': str(field.label),
-                })
-
-    if group_title and group_items:
-        variable_table.append({
-            'label': group_title,
-            'items': group_items,
-        })
-
-    return variable_table
 
 
 def apply_filters_from_session(request, filter_dict):
