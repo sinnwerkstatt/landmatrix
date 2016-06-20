@@ -52,6 +52,7 @@ class SaveDealView(TemplateView):
     ]
     deal_id = None
     success_message = _('Your changes to the deal have been submitted successfully. The changes will be reviewed and published soon.')
+    success_message_admin = _('Your changes to the deal have been saved successfully.')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**self.kwargs)
@@ -90,7 +91,10 @@ class SaveDealView(TemplateView):
             fk_activity=activity,
             comment=action_comment
         )
-        messages.success(self.request, self.success_message.format(self.deal_id))
+        if self.request.user.is_superuser:
+            messages.success(self.request, self.success_message_admin.format(self.deal_id))
+        else:
+            messages.success(self.request, self.success_message.format(self.deal_id))
 
         context = self.get_context_data(**self.kwargs)
         context['forms'] = forms

@@ -151,13 +151,22 @@ class ChangesetProtocol(View):
         return results
 
     def changeset_template_data(self, changeset, extra_data=None):
-        template_data = {
-            'id': 0 if not changeset or not changeset.pk else changeset.pk,
-            "deal_id": 0 if not changeset or not changeset.fk_activity else changeset.fk_activity.activity_identifier,
-            "user": force_text(_("Public User")) if not changeset or not changeset.fk_user else force_text(changeset.fk_user.username),
-            "timestamp": 0 if not changeset else changeset.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-            "comment": changeset_comment(changeset)
-        }
+        if changeset:
+            template_data = {
+                'id': changeset.pk,
+                "deal_id": changeset.fk_activity.activity_identifier,
+                "user": changeset.fk_activity.history_user,
+                "timestamp": changeset.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                "comment": changeset_comment(changeset),
+            }
+        else:
+            template_data = {
+                'id': 0,
+                "deal_id": 0,
+                "user": force_text(_("Public User")),
+                "timestamp": 0,
+                "comment": changeset_comment(changeset)
+            }
         if extra_data:
             template_data.update(extra_data)
 

@@ -34,6 +34,15 @@
     </li>
 {% endblock %}
 
+{% block messages %}
+{{ block.super }}
+{% if activity.fk_status_id == 1 %}
+<p class="alert alert-warning">{% trans "This deal version is pending, please accept or reject it in the manage section." %}</p>
+{% else %}{% if activity.fk_status_id == 4 %}
+<p class="alert alert-warning">{% trans "This deal has been deleted." %}</p>
+{% endif %}{% endif %}
+{% endblock %}
+
 {% block content %}
 
     {% if deal %}

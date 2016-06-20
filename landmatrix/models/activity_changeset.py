@@ -19,26 +19,26 @@ class ActivityChangesetManager(Manager):
         return HistoricalActivity.objects.filter(fk_status__name__contains=status.lower()).order_by('-history_date')
 
     def get_my_deals(self, user):
-        changesets = ActivityChangeset.objects.filter(fk_user=user).\
+        changesets = ActivityChangeset.objects.filter(fk_activity__history_user=user).\
             filter(fk_activity__fk_status__name__in=("pending", "rejected"))
 
         return changesets.order_by('-timestamp').values_list('fk_activity_id', flat=True).distinct()
 
-        changesets = self.raw("""
-            SELECT
-                c.*
-              FROM
-                a_changesets c,
-                activities a,
-                status s
-              WHERE
-                c.fk_activity = a.id
-                AND a.version = (SELECT max(version) FROM activities amax, status st WHERE amax.fk_status = st.id AND amax.activity_identifier = a.activity_identifier)
-                AND a.fk_status = s.id
-                AND c.fk_user = %(user)s
-                AND s.name in ("pending", "rejected")
-              ORDER BY timestamp DESC;
-            """ % {"user": user})
+        #changesets = self.raw("""
+        #    SELECT
+        #        c.*
+        #      FROM
+        #        a_changesets c,
+        #        activities a,
+        #        status s
+        #      WHERE
+        #        c.fk_activity = a.id
+        #        AND a.version = (SELECT max(version) FROM activities amax, status st WHERE amax.fk_status = st.id AND amax.activity_identifier = a.activity_identifier)
+        #        AND a.fk_status = s.id
+        #        AND c.fk_user = %(user)s
+        #        AND s.name in ("pending", "rejected")
+        #      ORDER BY timestamp DESC;
+        #    """ % {"user": user})
 
 
 class ActivityChangeset(Model):
@@ -72,14 +72,12 @@ class ActivityChangeset(Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.historical_activity = None
-        if self.fk_activity and self.timestamp:
-            self.historical_activity = self.fk_activity.history.filter(
-                history_date__lte=self.timestamp
-            ).order_by('-history_date').first()
-
-        self.fk_user = None if not self.historical_activity or not self.historical_activity.history_user_id else User.objects.get(pk=self.historical_activity.history_user_id)
-
+        #self.historical_activity = None
+        #if self.fk_activity and self.timestamp:
+        #    self.historical_activity = self.fk_activity.history.filter(
+        #        history_date__lte=self.timestamp
+        #    ).order_by('-history_date').first()
+        #self.fk_user = None if not self.historical_activity or not self.historical_activity.history_user_id else User.objects.get(pk=self.historical_activity.history_user_id)
         self.previous_version = self._get_previous_version()
 
     def _get_previous_version(self):
