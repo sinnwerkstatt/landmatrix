@@ -79,6 +79,7 @@ class SaveDealView(TemplateView):
         activity.pk = None
         activity.history_user = self.request.user
         activity.history_date = datetime.now()
+        # TODO: surely this can't be intended behaviour?
         if not self.request.user.is_superuser:
             activity.fk_status_id = 1
         activity.save()

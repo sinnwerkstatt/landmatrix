@@ -99,6 +99,141 @@ class SQLBuilderData:
                 join_activity_attributes('longitude', 'point_lon'),
                 join_activity_attributes('level_of_accuracy', 'level_of_accuracy'),
             ],
+            'tg_location_comment': [
+                join_attributes('tg_location_comment'),
+            ],
+            "tg_not_public_comment": [
+                join_attributes('tg_not_public_comment'),
+            ],
+            "tg_feedback_comment": [
+                join_attributes('tg_feedback_comment'),
+            ],
+            "tg_contract_comment": [
+                join_attributes('tg_contract_comment'),
+            ],
+            "tg_data_source_comment": [
+                join_attributes('tg_data_source_comment'),
+            ],
+            "tg_total_number_of_jobs_created_comment": [
+                join_attributes('tg_total_number_of_jobs_created_comment'),
+            ],
+            "tg_foreign_jobs_created_comment": [
+                join_attributes('tg_foreign_jobs_created_comment'),
+            ],
+            "tg_domestic_jobs_created_comment": [
+                join_attributes('tg_domestic_jobs_created_comment'),
+            ],
+            "tg_land_use_comment": [
+                join_attributes('tg_land_use_comment'),
+            ],
+            "tg_gender_specific_info_comment": [
+                join_attributes('tg_gender_specific_info_comment'),
+            ],
+            "tg_land_area_comment": [
+                join_attributes('tg_land_area_comment'),
+            ],
+            "tg_land_cover_comment": [
+                join_attributes('tg_land_cover_comment'),
+            ],
+            "tg_intention_comment": [
+                join_attributes('tg_intention_comment'),
+            ],
+            "tg_nature_comment": [
+                join_attributes('tg_nature_comment'),
+            ],
+            "tg_negotiation_status_comment": [
+                join_attributes('tg_negotiation_status_comment'),
+            ],
+            "tg_implementation_status_comment": [
+                join_attributes('tg_implementation_status_comment'),
+            ],
+            "tg_purchase_price_comment": [
+                join_attributes('tg_purchase_price_comment'),
+            ],
+            "tg_leasing_fees_comment": [
+                join_attributes('tg_leasing_fees_comment'),
+            ],
+            "tg_contract_farming_comment": [
+                join_attributes('tg_contract_farming_comment'),
+            ],
+            "tg_affected_comment": [
+                join_attributes('tg_affected_comment'),
+            ],
+            "tg_recognition_status_comment": [
+                join_attributes('tg_recognition_status_comment'),
+            ],
+            "tg_community_consultation_comment": [
+                join_attributes('tg_community_consultation_comment'),
+            ],
+            "tg_community_reaction_comment": [
+                join_attributes('tg_community_reaction_comment'),
+            ],
+            "tg_land_conflicts_comment": [
+                join_attributes('tg_land_conflicts_comment'),
+            ],
+            "tg_number_of_displaced_people_comment": [
+                join_attributes('tg_number_of_displaced_people_comment'),
+            ],
+            "tg_negative_impacts_comment": [
+                join_attributes('tg_negative_impacts_comment'),
+            ],
+            "tg_promised_benefits_comment": [
+                join_attributes('tg_promised_benefits_comment'),
+            ],
+            "tg_materialized_benefits_comment": [
+                join_attributes('tg_materialized_benefits_comment'),
+            ],
+            "tg_overall_comment": [
+                join_attributes('tg_overall_comment'),
+            ],
+            "tg_crops_comment": [
+                join_attributes('tg_crops_comment'),
+            ],
+            "tg_animals_comment": [
+                join_attributes('tg_animals_comment'),
+            ],
+            "tg_minerals_comment": [
+                join_attributes('tg_minerals_comment'),
+            ],
+            "tg_contract_farming_crops_comment": [
+                join_attributes('tg_contract_farming_crops_comment'),
+            ],
+            "tg_contract_farming_animals_comment": [
+                join_attributes('tg_contract_farming_animals_comment'),
+            ],
+            "tg_use_of_produce_comment": [
+                join_attributes('tg_use_of_produce_comment'),
+            ],
+            "tg_in_country_processing_comment": [
+                join_attributes('tg_in_country_processing_comment'),
+            ],
+            "tg_vggt_applied_comment": [
+                join_attributes('tg_vggt_applied_comment'),
+            ],
+            "tg_prai_applied_comment": [
+                join_attributes('tg_prai_applied_comment'),
+            ],
+            "tg_water_extraction_envisaged_comment": [
+                join_attributes('tg_water_extraction_envisaged_comment'),
+            ],
+            "tg_how_much_do_investors_pay_comment": [
+                join_attributes('tg_how_much_do_investors_pay_comment'),
+            ],
+            "tg_water_extraction_amount_comment": [
+                join_attributes('tg_water_extraction_amount_comment'),
+            ],
+            "tg_use_of_irrigation_infrastructure_comment": [
+                join_attributes('tg_use_of_irrigation_infrastructure_comment'),
+            ],
+            "tg_action_comment": [
+                join_attributes('tg_action_comment'),
+            ],
+            "tg_operational_stakeholder_comment": [
+                join_attributes('tg_operational_stakeholder_comment'),
+            ],
+            "tg_public_user_comment": [
+                join_attributes('tg_public_user_comment'),
+            ],
         }
         self.COLUMNS['target_region'] = self.COLUMNS['target_country']
 
@@ -216,5 +351,140 @@ class SQLBuilderData:
         ],
         "latlon": [
             "ARRAY_AGG(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value)) AS latlon"
+        ],
+        "tg_location_comment": [
+            "ARRAY_AGG(DISTINCT tg_location_comment.value) AS tg_location_comment"
+        ],
+        "tg_not_public_comment": [
+            "ARRAY_AGG(DISTINCT tg_not_public_comment.value) AS tg_not_public_comment"
+        ],
+        "tg_feedback_comment": [
+            "ARRAY_AGG(DISTINCT tg_feedback_comment.value) AS tg_feedback_comment"
+        ],
+        "tg_contract_comment": [
+            "ARRAY_AGG(DISTINCT tg_contract_comment.value) AS tg_contract_comment"
+        ],
+        "tg_data_source_comment": [
+            "ARRAY_AGG(DISTINCT tg_data_source_comment.value) AS tg_data_source_comment"
+        ],
+        "tg_total_number_of_jobs_created_comment": [
+            "ARRAY_AGG(DISTINCT tg_total_number_of_jobs_created_comment.value) AS tg_total_number_of_jobs_created_comment"
+        ],
+        "tg_foreign_jobs_created_comment": [
+            "ARRAY_AGG(DISTINCT tg_foreign_jobs_created_comment.value) AS tg_foreign_jobs_created_comment"
+        ],
+        "tg_domestic_jobs_created_comment": [
+            "ARRAY_AGG(DISTINCT tg_domestic_jobs_created_comment.value) AS tg_domestic_jobs_created_comment"
+        ],
+        "tg_land_use_comment": [
+            "ARRAY_AGG(DISTINCT tg_land_use_comment.value) AS tg_land_use_comment"
+        ],
+        "tg_gender_specific_info_comment": [
+            "ARRAY_AGG(DISTINCT tg_gender_specific_info_comment.value) AS tg_gender_specific_info_comment"
+        ],
+        "tg_land_area_comment": [
+            "ARRAY_AGG(DISTINCT tg_land_area_comment.value) AS tg_land_area_comment"
+        ],
+        "tg_land_cover_comment": [
+            "ARRAY_AGG(DISTINCT tg_land_cover_comment.value) AS tg_land_cover_comment"
+        ],
+        "tg_intention_comment": [
+            "ARRAY_AGG(DISTINCT tg_intention_comment.value) AS tg_intention_comment"
+        ],
+        "tg_nature_comment": [
+            "ARRAY_AGG(DISTINCT tg_nature_comment.value) AS tg_nature_comment"
+        ],
+        "tg_negotiation_status_comment": [
+            "ARRAY_AGG(DISTINCT tg_negotiation_status_comment.value) AS tg_negotiation_status_comment"
+        ],
+        "tg_implementation_status_comment": [
+            "ARRAY_AGG(DISTINCT tg_implementation_status_comment.value) AS tg_implementation_status_comment"
+        ],
+        "tg_purchase_price_comment": [
+            "ARRAY_AGG(DISTINCT tg_purchase_price_comment.value) AS tg_purchase_price_comment"
+        ],
+        "tg_leasing_fees_comment": [
+            "ARRAY_AGG(DISTINCT tg_leasing_fees_comment.value) AS tg_leasing_fees_comment"
+        ],
+        "tg_contract_farming_comment": [
+            "ARRAY_AGG(DISTINCT tg_contract_farming_comment.value) AS tg_contract_farming_comment"
+        ],
+        "tg_affected_comment": [
+            "ARRAY_AGG(DISTINCT tg_affected_comment.value) AS tg_affected_comment"
+        ],
+        "tg_recognition_status_comment": [
+            "ARRAY_AGG(DISTINCT tg_recognition_status_comment.value) AS tg_recognition_status_comment"
+        ],
+        "tg_community_consultation_comment": [
+            "ARRAY_AGG(DISTINCT tg_community_consultation_comment.value) AS tg_community_consultation_comment"
+        ],
+        "tg_community_reaction_comment": [
+            "ARRAY_AGG(DISTINCT tg_community_reaction_comment.value) AS tg_community_reaction_comment"
+        ],
+        "tg_land_conflicts_comment": [
+            "ARRAY_AGG(DISTINCT tg_land_conflicts_comment.value) AS tg_land_conflicts_comment"
+        ],
+        "tg_number_of_displaced_people_comment": [
+            "ARRAY_AGG(DISTINCT tg_number_of_displaced_people_comment.value) AS tg_number_of_displaced_people_comment"
+        ],
+        "tg_negative_impacts_comment": [
+            "ARRAY_AGG(DISTINCT tg_negative_impacts_comment.value) AS tg_negative_impacts_comment"
+        ],
+        "tg_promised_benefits_comment": [
+            "ARRAY_AGG(DISTINCT tg_promised_benefits_comment.value) AS tg_promised_benefits_comment"
+        ],
+        "tg_materialized_benefits_comment": [
+            "ARRAY_AGG(DISTINCT tg_materialized_benefits_comment.value) AS tg_materialized_benefits_comment"
+        ],
+        "tg_overall_comment": [
+            "ARRAY_AGG(DISTINCT tg_overall_comment.value) AS tg_overall_comment"
+        ],
+        "tg_crops_comment": [
+            "ARRAY_AGG(DISTINCT tg_crops_comment.value) AS tg_crops_comment"
+        ],
+        "tg_animals_comment": [
+            "ARRAY_AGG(DISTINCT tg_animals_comment.value) AS tg_animals_comment"
+        ],
+        "tg_minerals_comment": [
+            "ARRAY_AGG(DISTINCT tg_minerals_comment.value) AS tg_minerals_comment"
+        ],
+        "tg_contract_farming_crops_comment": [
+            "ARRAY_AGG(DISTINCT tg_contract_farming_crops_comment.value) AS tg_contract_farming_crops_comment"
+        ],
+        "tg_contract_farming_animals_comment": [
+            "ARRAY_AGG(DISTINCT tg_contract_farming_animals_comment.value) AS tg_contract_farming_animals_comment"
+        ],
+        "tg_use_of_produce_comment": [
+            "ARRAY_AGG(DISTINCT tg_use_of_produce_comment.value) AS tg_use_of_produce_comment"
+        ],
+        "tg_in_country_processing_comment": [
+            "ARRAY_AGG(DISTINCT tg_in_country_processing_comment.value) AS tg_in_country_processing_comment"
+        ],
+        "tg_vggt_applied_comment": [
+            "ARRAY_AGG(DISTINCT tg_vggt_applied_comment.value) AS tg_vggt_applied_comment"
+        ],
+        "tg_prai_applied_comment": [
+            "ARRAY_AGG(DISTINCT tg_prai_applied_comment.value) AS tg_prai_applied_comment"
+        ],
+        "tg_water_extraction_envisaged_comment": [
+            "ARRAY_AGG(DISTINCT tg_water_extraction_envisaged_comment.value) AS tg_water_extraction_envisaged_comment"
+        ],
+        "tg_how_much_do_investors_pay_comment": [
+            "ARRAY_AGG(DISTINCT tg_how_much_do_investors_pay_comment.value) AS tg_how_much_do_investors_pay_comment"
+        ],
+        "tg_water_extraction_amount_comment": [
+            "ARRAY_AGG(DISTINCT tg_water_extraction_amount_comment.value) AS tg_water_extraction_amount_comment"
+        ],
+        "tg_use_of_irrigation_infrastructure_comment": [
+            "ARRAY_AGG(DISTINCT tg_use_of_irrigation_infrastructure_comment.value) AS tg_use_of_irrigation_infrastructure_comment"
+        ],
+        "tg_action_comment": [
+            "ARRAY_AGG(DISTINCT tg_action_comment.value) AS tg_action_comment"
+        ],
+        "tg_operational_stakeholder_comment": [
+            "ARRAY_AGG(DISTINCT tg_operational_stakeholder_comment.value) AS tg_operational_stakeholder_comment"
+        ],
+        "tg_public_user_comment": [
+            "ARRAY_AGG(DISTINCT tg_public_user_comment.value) AS tg_public_user_comment"
         ],
     }
