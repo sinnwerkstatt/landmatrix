@@ -191,16 +191,16 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
             'negotiation_status': self._process_name_and_year,
             'implementation_status': self._process_name_and_year,
-            "intended_size": lambda v: v and v[0],
-            "production_size": lambda v: v and v[0],
-            "contract_size": lambda v: v and v[0],
+            #"intended_size": lambda v: v,
+            #"production_size": lambda v: v and v[0],
+            #"contract_size": lambda v: v and v[0],
         }
         if c in process_functions:
             return process_functions[c](value)
         elif isinstance(value, numbers.Number):
             return int(value)
-        elif not isinstance(value, list):
-            return [value, ]
+        #elif not isinstance(value, list):
+        #    return [value, ]
         return value
 
     def _order_by(self):

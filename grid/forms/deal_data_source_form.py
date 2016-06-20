@@ -29,6 +29,7 @@ class DealDataSourceForm(BaseForm):
     )
     type = forms.TypedChoiceField(
         required=False, label=_("Data source type"), choices=(
+            ("", _("---------")),
             ("Media report", _("Media report")),
             ("Research Paper / Policy Report", _("Research Paper / Policy Report")),
             ("Government sources", _("Government sources")),

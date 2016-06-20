@@ -175,6 +175,16 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
                 aa.save(using=V2)
                     
         for comment in tag_group.comment_set.all():
+            if is_current:
+                aa = ActivityAttribute(
+                    fk_activity_id=activity_id,
+                    fk_language_id=1,
+                    fk_group=aag,
+                    name='tg_%s_comment' % re.sub('_\d+', '', tg_name),,
+                    value=comment.comment,
+                )
+                if cls._save:
+                    aa.save(using=V2)
             aa = HistoricalActivityAttribute(
                 fk_activity_id=activity_id,
                 fk_language_id=1,
