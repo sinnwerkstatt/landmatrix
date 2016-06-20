@@ -152,10 +152,15 @@ class ChangesetProtocol(View):
 
     def changeset_template_data(self, changeset, extra_data=None):
         if changeset:
+            try:
+                user = changeset.fk_activity.history_user
+            except:
+                # User doesn't exist anymore
+                user = force_text(_("Deleted User"))
             template_data = {
                 'id': changeset.pk,
                 "deal_id": changeset.fk_activity.activity_identifier,
-                "user": changeset.fk_activity.history_user,
+                "user": user,
                 "timestamp": changeset.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                 "comment": changeset_comment(changeset),
             }
