@@ -39,147 +39,186 @@ class FilterToSQL:
             print('FilterToSQL: columns', self.columns)
 
     def filter_from(self):
-        if self.DEBUG: print('FilterToSQL:  tables', self._tables_activity() + "\n" + self._tables_investor())
-        return self._tables_activity() + "\n" + self._tables_investor()
+        from_activity = self._tables_activity()
+        from_investor = self._tables_investor()
+        if self.DEBUG:
+            print('FilterToSQL:  tables', from_activity, "\n", from_investor)
+
+        return "\n".join([from_activity, from_investor])
 
     def filter_where(self):
-        if self.DEBUG: print('FilterToSQL:   where', self._where_activity() + "\n" + self.where_investor())
-        return self._where_activity() + "\n" + self.where_investor()
+        where_activity = self._where_activity()
+        where_investor = self.where_investor()
+        if self.DEBUG:
+            print('FilterToSQL:   where', where_activity, "\n", where_investor)
+        return "\n".join([where_activity, where_investor])
 
     def _where_activity(self):
+        # TODO: Split this beast up a bit better
+        # TODO: lots of sql injection vulnerabilities here
         where = []
+        where.extend(self._where_activity_identifier())
+        where.extend(self._where_activity_deal_scope())
+
+        tags = self.filters.get("activity", {}).get("tags", {})
+        for index, (tag, value) in enumerate(tags.items()):
+            if not isinstance(value, list):
+                value = [value]
+            sanitized_values = [v.strip().replace("'", "\\'") for v in value]
+            i = index + FilterToSQL.count_offset
+
+            try:
+                variable, operation = tag.split("__")
+            except ValueError:
+                variable = tag
+                operation = None
+                operation_sql = None
+            else:
+                operation_sql = self.OPERATION_MAP[operation][0]
+
+            if variable == "activity_identifier":
+                where.append(
+                    "AND a.activity_identifier {}".format(
+                        operation_sql % value[0]))
+            # empty as operation or no value given
+            elif operation == "is_empty" or not value[0]:
+                where.append(
+                    "AND attr_%(count)i.name = '%(variable)s' IS NULL " % {
+                        "count": i, 'variable': variable,
+                    }
+                )
+            elif operation in ("in", "not_in"):
+                in_values = ",".join(
+                    ["'%s'" % value for value in sanitized_values])
+                if variable == "target_region":
+                    where.append(
+                        "AND ar%(count)i.name %(op)s " % {
+                            "count": i,
+                            "op": operation_sql % in_values,
+                        }
+                    )
+                else:
+                    where.append(
+                        "AND attr_%(count)i.name = '%(variable)s' AND "
+                        "attr_%(count)i.value = %(op)s " % {
+                            "count": i,
+                            "op": operation_sql % in_values,
+                            'variable': variable
+                        }
+                    )
+
+                # Special hack for weird results in data source filtering
+                if variable == 'type' and 'data_source_type' in self.columns:
+                    # This is results in a pretty broken query, but it's a
+                    # way to get the exclude media reports filter working
+                    # without major surgery. Works by lining up the
+                    # columns that we're joining twice :(
+                    where.append(
+                        """AND attr_%(count)i.name = 'type'
+                           AND attr_%(count)i.value = data_source_type.value""" % {
+                            "count": i,
+                        })
+            elif operation == 'is' and variable == 'target_region':
+                where.append(
+                    "AND ar%(count)i.id %(op)s " % {
+                        "count": i,
+                        "op": operation_sql % value[-1].replace("'", "\\'"),
+                    }
+                )
+            else:
+                if self.DEBUG:
+                    print('_where_activity', index, tag, value)
+
+                for v in value:
+                    year = None
+                    if "##!##" in v:
+                        v, year = v.split("##!##")[0], v.split("##!##")[1]
+                    operation_type = not v.isdigit() and 1 or 0
+                    operation_sql = self.OPERATION_MAP[operation][operation_type]
+                    if variable == "region":
+                        where.append(
+                            "AND ar%(count)i.name %(op)s " % {
+                                "count": i,
+                                "op": operation_sql % v.replace("'", "\\'")
+                            }
+                        )
+                    else:
+                        if operation in ('lt', 'lte', 'gt', 'gte', 'is') and str(v).isnumeric():
+                            comparator = "attr_%(count)i.name = '%(variable)s' AND CAST(attr_%(count)i.value AS NUMERIC)" % {
+                                "count": i,
+                                'variable': variable,
+                            }
+                        else:
+                            comparator = "attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.value" % {
+                                "count": i,
+                                'variable': variable,
+                            }
+                        where.append(
+                            v and "AND %(comparator)s %(op)s " % {
+                                    'comparator': comparator,
+                                    "op": operation_sql % v.replace("'", "\\'"),
+                                } or ""
+                        )
+            is_operation_limits = self._where_activity_filter_is_operator(
+                variable, operation, value)
+            where.extend(is_operation_limits)
+
+        return '\n'.join(where)
+
+    def _where_activity_identifier(self):
+        # TODO: I don't think this is used anymore?
+        where = []
+
         if self.filters.get("activity", {}).get("identifier"):
             for f in self.filters.get("activity").get("identifier"):
                 operation = f.get("op")
                 value = ",".join(filter(None, [s.strip() for s in f.get("value").split(",")]))
                 where.append("AND a.activity_identifier %s " % self.OPERATION_MAP[operation][0] % value)
+
+        return where
+
+    def _where_activity_deal_scope(self):
+        where = []
         if self.filters.get("deal_scope") and self.filters.get("deal_scope") != "all":
             where.append("AND pi.deal_scope = '%s' " % self.filters.get("deal_scope"))
 
-        if self.filters.get("activity", {}).get("tags"):
-            tags = self.filters.get("activity").get("tags")
-            for index, (tag, value) in enumerate(tags.items()):
-                if not isinstance(value, list):
-                    value = [value]
+        return where
 
-                i = index+FilterToSQL.count_offset
+    def _where_activity_filter_is_operator(self, variable, operation, value):
+        where = []
+        # TODO: optimize SQL? This query seems painful, it could be
+        # better as an array_agg possibly
+        if operation == 'is' and variable != 'target_region':
+            # 'Is' operations requires that we exclude other values,
+            # otherwise it's just the same as contains
 
-                variable_operation = tag.split("__")
-                variable = variable_operation[0]
-                # choose operation depending on variable type default 0(int)
-                operation = ""
-                if len(variable_operation) > 1:
-                    operation = variable_operation[1]
-                # empty as operation or no value given
-                if operation == "is_empty" or not value or (value and not value[0]):
-                    where.append(
-                        "AND attr_%(count)i.name = '%(variable)s' IS NULL " % {"count": i, 'variable': variable}
+            allowed_values = None
+            if variable == 'intention':
+                # intentions can be nested, for example all biofuels
+                # deals are also agriculture (parent of biofuels)
+                parent_value = get_choice_parent(value[-1], intention_choices)
+                if parent_value:
+                    allowed_values = (
+                        parent_value,
+                        value[-1].replace("'", "\\'"),
                     )
-                elif operation in ("in", "not_in"):
-                    # value = value[0].split(",")
-                    in_values = ",".join(["'%s'" % v.strip().replace("'", "\\'") for v in value])
-                    if variable == "target_region":
-                        where.append(
-                            "AND ar%(count)i.name %(op)s " % {
-                                "count": i,
-                                "op": self.OPERATION_MAP[operation][0] % in_values,
-                            }
-                        )
-                    else:
-                        where.append(
-                            "AND attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.value = %(op)s " % {
-                                "count": i,
-                                "op": self.OPERATION_MAP[operation][0] % in_values,
-                                'variable': variable
-                            }
-                        )
 
-                    # Special hack for weird results in data source filtering
-                    if variable == 'type' and 'data_source_type' in self.columns:
-                        # This is results in a pretty broken query, but it's a
-                        # way to get the exclude media reports filter working
-                        # without major surgery. Works by lining up the
-                        # columns that we're joining twice :(
-                        where.append(
-                            """AND attr_%(count)i.name = 'type'
-                               AND attr_%(count)i.value = data_source_type.value""" % {
-                                "count": i,
-                            })
-                elif operation == 'is' and variable == 'target_region':
-                    where.append(
-                        "AND ar%(count)i.id %(op)s " % {
-                            "count": i,
-                            "op": self.OPERATION_MAP[operation][0] % value[-1].replace("'", "\\'"),
-                        }
-                    )
-                else:
+            if not allowed_values:
+                allowed_values = (value[-1].replace("'", "\\'"),)
 
-                    if self.DEBUG: print('_where_activity', index, tag, value)
+            where.append("""
+                AND a.id NOT IN (
+                    SELECT fk_activity_id
+                    FROM landmatrix_activityattribute
+                    WHERE landmatrix_activityattribute.name = '%(variable)s'
+                    AND landmatrix_activityattribute.value NOT IN ('%(value)s')
+                )
+                """ % {
+                'variable': variable,
+                'value': "', '".join([str(v) for v in allowed_values]),
+            })
 
-                    for v in value:
-                        year = None
-                        if "##!##" in v:
-                            v,year =  v.split("##!##")[0], v.split("##!##")[1]
-                        operation_type = not v.isdigit() and 1 or 0
-                        if variable == "region":
-                            where.append(
-                                "AND ar%(count)i.name %(op)s " % {
-                                    "count": i,
-                                    "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")
-                                }
-                            )
-                        else:
-                            if operation in ['lt', 'lte', 'gt', 'gte'] or operation == 'is' and str(v).isnumeric():
-                                comparator = "attr_%(count)i.name = '%(variable)s' AND CAST(attr_%(count)i.value AS NUMERIC)" % {
-                                    "count": i,
-                                    'variable': variable
-                                }
-                            else:
-                                comparator = "attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.value" % {
-                                    "count": i,
-                                    'variable': variable
-                                }
-                            where.append(
-                                v and "AND %(comparator)s %(op)s " % {
-                                        'comparator': comparator,
-                                        "op": self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"),
-                                    } or ""
-                            )
-                # TODO: move this somewhere else, this function is too complicated
-                # TODO: optimize SQL? This query seems painful, it could be
-                # better as an array_agg possibly
-                if operation == 'is' and variable != 'target_region':
-                    # 'Is' operations requires that we exclude other values,
-                    # otherwise it's just the same as contains
-
-                    allowed_values = None
-                    if variable == 'intention':
-                        # intentions can be nested, for example all biofuels
-                        # deals are also agriculture (parent of biofuels)
-                        parent_value = get_choice_parent(value[-1],
-                                                         intention_choices)
-                        if parent_value:
-                            allowed_values = (
-                                parent_value,
-                                value[-1].replace("'", "\\'"),
-                            )
-
-                    if not allowed_values:
-                        allowed_values = (value[-1].replace("'", "\\'"),)
-
-                    where.append("""
-                        AND a.id NOT IN (
-                            SELECT fk_activity_id
-                            FROM landmatrix_activityattribute 
-                            WHERE landmatrix_activityattribute.name = '%(variable)s'
-                            AND landmatrix_activityattribute.value NOT IN ('%(value)s')
-                        )
-                        """ % {
-                        'variable': variable,
-                        'value': "', '".join([str(v) for v in allowed_values]),
-                    })
-
-        return '\n'.join(where)
+        return where
 
     def where_investor(self):
         where_inv = ''

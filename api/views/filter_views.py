@@ -6,9 +6,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import serializers
 
 from landmatrix.models.filter_preset import FilterPreset as FilterPresetModel
+from grid.views.save_deal_view import SaveDealView
 from api.filters import Filter, PresetFilter
 from api.serializers import FilterPresetSerializer
-from grid.views.save_deal_view import SaveDealView
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -33,27 +33,21 @@ class FilterView(APIView):
 
         if action.lower() == 'set':
             if 'preset' in request_data:
-                label = FilterPresetModel.objects.get(id=request_data['preset']).name
-                new_filter = PresetFilter(request_data['preset'],
-                    label=label, name=name)
+                new_filter = PresetFilter(
+                    request_data['preset'], label=label, name=name)
             else:
+
                 try:
-                    label = ''
-                    for form in SaveDealView.FORMS:
-                        # FormSet (Spatial Data und Data source)
-                        if hasattr(form, 'form'):
-                            form = form.form
-                        if request_data['variable'] in form.base_fields:
-                            label = str(form.base_fields[request_data['variable']].label)
-                            break
-                    new_filter = Filter(variable=request_data['variable'],
-                                        operator=request_data['operator'],
-                                        value=request_data['value'],
-                                        label=label,
-                                        name=name)
+                    variable = request_data['variable']
+                    operator = request_data['operator']
+                    value = request_data['value']
                 except KeyError as err:
                     raise serializers.ValidationError(
                         {err.args[0]: _("This field is required.")})
+                label = self._get_filter_label(variable)
+                new_filter = Filter(
+                    variable=variable, operator=operator, value=value,
+                    label=label, name=name)
 
             stored_filters[new_filter.name] = new_filter
         elif action.lower() == 'remove':
@@ -65,6 +59,25 @@ class FilterView(APIView):
         request.session['filters'] = stored_filters
 
         return Response(stored_filters)
+
+    @staticmethod
+    def _get_filter_label(variable):
+        # TODO: move label generation elsewhere, it shares code
+        # with FilterViewMixin
+        label = ''
+        # for formsets, we want form.form
+        deal_forms = [
+            form.form if hasattr(form, 'form') else form
+            for form in SaveDealView.FORMS
+        ]
+        for form in deal_forms:
+            if variable in form.base_fields:
+                label = str(form.base_fields[variable].label)
+                break
+        if not label and variable == 'activity_identifier':
+            label = _('Deal ID')
+
+        return label
 
     def get(self, request, *args, **kwargs):
         filters = self.get_object()
