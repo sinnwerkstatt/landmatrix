@@ -13,6 +13,22 @@ from landmatrix.models.investor import Investor, InvestorActivityInvolvement, In
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class ActivityBase(DefaultStringRepresentation, models.Model):
+    # FIXME: Replace fk_status with Choice Field
+    STATUS_PENDING = 1
+    STATUS_ACTIVE = 2
+    STATUS_OVERWRITTEN = 3
+    STATUS_DELETED = 4
+    STATUS_REJECTED = 5
+    STATUS_TO_DELETE = 6
+    STATUS_CHOICES = (
+        STATUS_PENDING, _('Pending'),
+        STATUS_ACTIVE, _('Active'),
+        STATUS_OVERWRITTEN, _('Overwritten'),
+        STATUS_DELETED, _('Deleted'),
+        STATUS_REJECTED, _('Rejected'),
+        STATUS_TO_DELETE, _('To delete'),
+    )
+
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
     availability = models.FloatField(_("availability"), blank=True, null=True)
     fully_updated = models.DateTimeField(_("Fully updated"), blank=True, null=True)#, auto_now_add=True)

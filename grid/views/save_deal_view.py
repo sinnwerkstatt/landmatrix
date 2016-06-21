@@ -81,8 +81,10 @@ class SaveDealView(TemplateView):
         activity.history_user = self.request.user
         activity.history_date = datetime.now()
         # TODO: surely this can't be intended behaviour?
-        if not self.request.user.is_superuser:
-            activity.fk_status_id = 1
+        if self.request.user.is_superuser:
+            activity.fk_status_id = activity.STATUS_OVERWRITTEN
+        else:
+            activity.fk_status_id = activity.STATUS_PENDING
         activity.save()
         # Create new activity attributes
         action_comment = self.create_attributes(activity, forms)
@@ -172,7 +174,7 @@ class SaveDealView(TemplateView):
         involvement = InvestorActivityInvolvement.objects.create(
             fk_activity=activity,
             fk_investor=operational_stakeholder,
-            fk_status_id=1
+            fk_status_id=activity.STATUS_PENDING,
         )
         involvement.save()
 
