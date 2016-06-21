@@ -28,13 +28,12 @@ class FilterView(APIView):
         request_data = request.query_params.copy()
         request_data.update(request.data)
 
-        action = request_data.get('action', 'nothing')
+        action = request_data.get('action', 'nothing').lower()
         name = request_data.get('name', None)
 
-        if action.lower() == 'set':
+        if action == 'set':
             if 'preset' in request_data:
-                new_filter = PresetFilter(
-                    request_data['preset'], label=label, name=name)
+                new_filter = PresetFilter(request_data['preset'], name=name)
             else:
 
                 try:
@@ -50,7 +49,7 @@ class FilterView(APIView):
                     label=label, name=name)
 
             stored_filters[new_filter.name] = new_filter
-        elif action.lower() == 'remove':
+        elif action == 'remove':
             try:
                 del stored_filters[name]
             except KeyError:
