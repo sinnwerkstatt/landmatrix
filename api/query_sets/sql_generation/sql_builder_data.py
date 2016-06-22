@@ -328,7 +328,7 @@ class SQLBuilderData:
             "ARRAY_AGG(DISTINCT nature_of_the_deal.value) AS nature_of_the_deal"
         ],
         "contract_farming": [
-            "ARRAY_AGG(DISTINCT off_the_lease.value) AS contract_farming"
+            "ARRAY_AGG(DISTINCT contract_farming.value) AS contract_farming"
         ],
         "intended_size": [
             "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intended_size.value), ', '), '') AS intended_size",
