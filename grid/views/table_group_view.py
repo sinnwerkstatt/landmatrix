@@ -89,6 +89,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     @print_execution_time_and_num_queries
     def get_records(self):
         ap = ActivityProtocol()
+        # TODO: pass values rather than updating the request
         self.request.POST = MultiValueDict({
             "data": [json.dumps({
                 "filters": self.filters,

@@ -101,14 +101,15 @@
                 <div class="col-sm-12">
                     <h6>{% trans "Select columns for the result table" %}</h6>
                     <select id="id_columns" name="columns" multiple="multiple">
-                        {% for group in variables %}
-                        <optgroup label="{{ group.label }}">
-                            {% for variable in group.items %}
+                        {% for group, items in variables.items %}
+                        <optgroup label="{{ group }}">
+                            {% for variable in items %}
                             <option value="{{ variable.name }}"{% if variable.name in columns %} selected="selected"{% endif %}>{% trans variable.label %}</option>
                             {% endfor %}
                         </optgroup>
                         {% endfor %}
                     </select>
+                    <a id="select-all-columns" href="#">{% trans "Select All" %}</a>               
                 </div>
             </div>
             {% endif %}

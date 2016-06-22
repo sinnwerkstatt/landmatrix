@@ -221,4 +221,10 @@ $(document).ready(function () {
 
     $("#id_columns,#id_status").select2()
         .on('change', function () { $(this).closest("form").find(':submit').show(); });
+
+    $("#select-all-columns").click(function (e) {
+        e.preventDefault();
+        $("#id_columns option").prop("selected", true);
+        $("#id_columns").trigger("change");
+    });
 });
