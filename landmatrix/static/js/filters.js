@@ -240,7 +240,7 @@ $(document).ready(function () {
             selectLink.text("Select All").off("click").on("click", selectAllColumns);
         }
         else {
-            selectLink.text("Deelect All").off("click").on("click", deselectAllColumns);
+            selectLink.text("Deselect All").off("click").on("click", deselectAllColumns);
         }
     });
     $("#select-all-columns").click(selectAllColumns);
