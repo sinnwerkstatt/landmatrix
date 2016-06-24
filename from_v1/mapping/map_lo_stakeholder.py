@@ -20,7 +20,7 @@ class MapLOStakeholder(MapLOModel):
 
     @classmethod
     def all_records(cls):
-        # TODO: Only the newest versions should be converted
+        # Only get the latest version of stakeholders
         lo_stakeholders = cls.old_class.objects.using(cls.DB).order_by(
             'stakeholder_identifier', '-version').distinct(
             'stakeholder_identifier')
@@ -58,8 +58,6 @@ class MapLOStakeholder(MapLOModel):
         new.comment = cls.get_comment(old)
         new.fk_status_id = old.fk_status
         new.timestamp = old.timestamp_entry.replace(tzinfo=timezone.utc)
-
-        cls.save_record_history(old, save=save)
 
         if save:
             new.save(using=V2)
@@ -102,40 +100,6 @@ class MapLOStakeholder(MapLOModel):
 
         return '\n'.join(comment_lines)
 
-    @classmethod
-    def save_record_history(cls, old, save=False):
-        previous_timestamp = None
-
-        for version in old.all_versions:
-            if version.pk != old.pk:
-                version_name = version.get_tag_value('Name') or ''
-                version_country = get_lm_country(
-                    old.get_tag_value('Country of origin'))
-                version_timestamp = version.timestamp_entry.replace(
-                    tzinfo=timezone.utc)
-                classification = cls.get_classification(
-                    version.get_tag_value('Type of Institution') or '')
-                homepage = version.get_tag_value('Website') or ''
-                comment = cls.get_comment(version)
-                history_date = previous_timestamp or timezone.now()
-                history_type = '~' if version.version > 1 else '+'
-                version_create_kwargs = dict(
-                    id=version.pk,
-                    investor_identifier=version.pk,
-                    name=version_name, fk_country=version_country,
-                    fk_status_id=version.fk_status,
-                    classification=classification, homepage=homepage,
-                    comment=comment, timestamp=version_timestamp,
-                    history_date=history_date, history_user=None,
-                    history_type=history_type)
-
-                if save:
-                    cls.new_class.history.using(V2).create(
-                        **version_create_kwargs)
-
-            previous_timestamp = version.timestamp_entry.replace(
-                tzinfo=timezone.utc)
-
 
 def get_lm_country(lo_country_name):
     country = None
@@ -144,10 +108,12 @@ def get_lm_country(lo_country_name):
         'Hong Kong': 'China, Hong Kong Special Administrative Region',
         'Korea, Republic of': 'Republic of Korea',
         'Taiwan, Province of China': '',
-        "Korea, Democratic People's Republic of": "Democratic People's Republic of Korea",
+        "Korea, Democratic People's Republic of": "Korea, Dem. People's Rep.",
         'United States': 'United States of America',
-        'Tanzania, United Republic of': 'United Republic of Tanzania',
+        'Tanzania, United Republic of': 'Tanzania',
         'United Kingdom': 'United Kingdom of Great Britain and Northern Ireland',
+        'Viet Nam': 'Vietnam',
+        "Lao People's Democratic Republic": 'Lao PDR',
     }
 
     if lo_country_name in RENAMED_COUNTRIES:

@@ -83,8 +83,7 @@ class MapLOActivities(MapLOModel):
             new.save(using=V2)
             changeset = landmatrix.models.ActivityChangeset(
                 comment='Imported from Land Observatory',
-                fk_activity=new
-                # fk_activity_id=new.pk
+                fk_activity_id=new.pk
             )
             changeset.save(using=V2)
 
