@@ -8,7 +8,7 @@ from mapping.map_activity import MapActivity
 from mapping.map_investor import MapInvestor
 from mapping.aux_functions import get_now
 
-from django.db import connections
+from django.db import connections, models
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -31,14 +31,12 @@ class MapInvestorActivityInvolvement(MapModel):
     def all_records(cls):
         records_with_duplicates = cls.old_class.objects.using(V1). \
             filter(fk_activity__in=MapActivity.all_ids()). \
-            filter(fk_stakeholder__in=cls.all_stakeholder_ids()). \
+            filter(fk_stakeholder__isnull=True). \
             filter(fk_primary_investor__in=MapInvestor.all_ids()).values()
+            #filter(models.Q(fk_stakeholder__in=cls.all_stakeholder_ids()) | models.Q(fk_stakeholder__isnull=True)). \
         records = {}
         for record in records_with_duplicates:
             latest = cls.latest_involvement_for(record, records_with_duplicates)
-            if record['fk_activity_id'] == 129899:
-                print('record', record)
-                print('latest', latest)
             records[latest['id']] = latest
 
         print('max len relevant involvements:', cls._max_len)

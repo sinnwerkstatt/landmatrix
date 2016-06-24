@@ -134,16 +134,18 @@ if __name__ == '__main__':
             #if not MapStatus._done: MapStatus.map_all(save=options.save, verbose=options.verbose)
             #MapInvestor.map_all(save=options.save, verbose=options.verbose)
             #if not MapActivity._done: MapActivity.map_all(save=options.save, verbose=options.verbose)
-            #MapInvestorActivityInvolvement.map_all(save=options.save, verbose=options.verbose)
+            MapActivity._done = True
+            MapInvestor._done = True
+            MapInvestorActivityInvolvement.map_all(save=options.save, verbose=options.verbose)
             #MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
-            #MapActivity._done = True
-            #MapInvestor._done = True
+
             #MapStakeholderVentureInvolvement.map_all(save=options.save, verbose=options.verbose)
             #MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.comment or options.all:
-            MapDjangoComments.map_all(save=options.save, verbose=options.verbose)
-            MapThreadedComments.map_all(save=options.save, verbose=options.verbose)
+            pass
+            #MapDjangoComments.map_all(save=options.save, verbose=options.verbose)
+            #MapThreadedComments.map_all(save=options.save, verbose=options.verbose)
 
         if options.produce or options.all:
             pass
