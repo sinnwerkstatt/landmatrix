@@ -113,9 +113,6 @@ th {
 .table-striped {
   > tbody > tr:nth-of-type(odd) {
     background-color: $table-bg-accent;
-    &.even {
-      background-color: transparent;
-    }
   }
 }
 

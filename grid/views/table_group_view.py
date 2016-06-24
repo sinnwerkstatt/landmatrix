@@ -19,11 +19,18 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 INTENTION_MAP = {}
 for choice, value, choices in intention_choices:
-    INTENTION_MAP[choice] = value
+    INTENTION_MAP[choice] = {
+        'value': value,
+        'order_by': value,
+    }
     if not choices:
         continue
     for schoice, svalue in choices:
-        INTENTION_MAP[schoice] = '%s (%s)' % (value, svalue)
+        INTENTION_MAP[schoice] = {
+            'value': svalue,
+            'parent': value,
+            'order_by': '%s (%s)' % (value, svalue),
+        }
 
 class TableGroupView(TemplateView, FilterWidgetMixin):
 
@@ -167,7 +174,11 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     @print_execution_time_and_num_queries
     def _get_items(self, query_result):
-        return [self._get_row(record, query_result) for record in query_result]
+        items = [self._get_row(record, query_result) for record in query_result]
+        # Reorder required for intention (because subcategories have been renamed in _process_intention)
+        if self.group == 'intention':
+            items = sorted(items, key=lambda i: i['intention'] and str(i['intention'][0]['order_by']) or '')
+        return items
 
     def _get_row(self, record, query_result):
         # iterate over database result

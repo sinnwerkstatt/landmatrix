@@ -679,8 +679,12 @@ table tbody {
   width: 100%;
 }
 
-.table-striped > tbody > tr:nth-of-type(2n+1) {
+.table-striped > tbody > tr:nth-of-type(2n+1),
+.table-striped > tbody > tr.odd {
   background-color: $lm_light;
+  &.even {
+    background-color: transparent !important;
+  }
 }
 
 .table-condensed th,

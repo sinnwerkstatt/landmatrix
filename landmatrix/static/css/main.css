@@ -1244,8 +1244,12 @@ table {
 table tbody {
   width: 100%; }
 
-.table-striped > tbody > tr:nth-of-type(2n+1) {
+.table-striped > tbody > tr:nth-of-type(2n+1),
+.table-striped > tbody > tr.odd {
   background-color: #ebebeb; }
+  .table-striped > tbody > tr:nth-of-type(2n+1).even,
+  .table-striped > tbody > tr.odd.even {
+    background-color: transparent !important; }
 
 .table-condensed th,
 .table-condensed td {
