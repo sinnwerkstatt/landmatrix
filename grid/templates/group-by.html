@@ -194,7 +194,11 @@
             </td>
           {% else %}
             <td class="{{ column }}">
-                {{ value|join:', '|default_if_none:'Unknown' }}
+              {% if value %}
+                {{ value|join:', '|intcomma }}
+              {% else %}
+                {% trans "Unknown" %}
+              {% endif %}
             </td>
           {% endif %}
         {% endfor %}
