@@ -13,10 +13,17 @@ from grid.views.profiling_decorators import \
     print_execution_time_and_num_queries
 from grid.views.activity_protocol import ActivityProtocol
 from .view_aux_functions import render_to_response
-from .intention_map import IntentionMap
+from grid.forms.choices import intention_choices
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+INTENTION_MAP = {}
+for choice, value, choices in intention_choices:
+    INTENTION_MAP[choice] = value
+    if not choices:
+        continue
+    for schoice, svalue in choices:
+        INTENTION_MAP[schoice] = '%s (%s)' % (value, svalue)
 
 class TableGroupView(TemplateView, FilterWidgetMixin):
 
@@ -174,11 +181,9 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     def _process_intention(self, value):
         if not isinstance(value, list):
-            return [value]
-
-        intentions = [IntentionMap.get_parent(intention) for intention in set(value)]
-
-        return sorted(list(set(filter(None, intentions))))
+            value = [value]
+        intentions = [INTENTION_MAP.get(intention) for intention in value]
+        return intentions
 
     def _process_value(self, c, value):
         if not value: return None
