@@ -222,9 +222,27 @@ $(document).ready(function () {
     $("#id_columns,#id_status").select2()
         .on('change', function () { $(this).closest("form").find(':submit').show(); });
 
-    $("#select-all-columns").click(function (e) {
-        e.preventDefault();
+    var selectAllColumns = function (event) {
+        event.preventDefault();
         $("#id_columns option").prop("selected", true);
         $("#id_columns").trigger("change");
+    };
+    var deselectAllColumns = function (event) {
+        event.preventDefault();
+        $("#id_columns option").prop("selected", false);
+        $("#id_columns").trigger("change");
+    };
+
+    $("#id_columns").on("change", function(event) {
+        var unselectedColumns = $("#id_columns option:not(:selected)");
+        var selectLink = $("#select-all-columns");
+        if (unselectedColumns.length) {
+            selectLink.text("Select All").off("click").on("click", selectAllColumns);
+        }
+        else {
+            selectLink.text("Deselect All").off("click").on("click", deselectAllColumns);
+        }
     });
+    $("#select-all-columns").click(selectAllColumns);
+
 });
