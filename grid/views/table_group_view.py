@@ -60,7 +60,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         "crop": ["crop", "intention", "deal_count", "availability"],
         "year": ["year", "intention", "deal_count", "availability"],
         "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
-        "all": ["deal_id", "target_country", "operational_stakeholder", "investor_name", "investor_country",
+        "all": ["deal_id", "target_country", "operational_stakeholder", "investor_country",
                 "intention", "negotiation_status", "implementation_status", "intended_size",
                 "contract_size", ]
     }
@@ -161,11 +161,20 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     @property
     def column_dicts(self):
         """Get column information for template"""
+        COLUMN_LABELS_MAP = {
+            'deal_id': _('#'),
+            'deal_count': _('Deals'),
+            'availability': _('Availability'),
+            'investor_country': _('Operational company country'),
+            'investor_region': _('Operational company region'),
+            'operational_stakeholder': _('Operational company'),
+            #'investor_name': _('Operational company name'),
+        }
         columns = []
         for name in self.columns:
             label = None
-            if name == 'deal_id':
-                label = _('#')
+            if name in COLUMN_LABELS_MAP.keys():
+                label = COLUMN_LABELS_MAP[name]
             else:
                 label = get_field_label(name)
             columns.append({
@@ -240,8 +249,8 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             return process_functions[column](value)
         elif isinstance(value, numbers.Number):
             return int(value)
-        #elif not isinstance(value, list):
-        #    return [value, ]
+        elif not isinstance(value, list):
+            return [value, ]
         return value
 
     @property

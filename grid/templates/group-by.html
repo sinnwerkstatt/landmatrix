@@ -56,7 +56,7 @@
   <tbody>
     {% for item in data.items  %}
         <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
-        {% for column in columns %}
+        {% for column, value in item.items %}
           {% if column == "deal_id" %}
             <td class="{{ column }}" class="deal-id">
                 <a href="{% if request.user.is_staff %}{% url 'change_deal' item.deal_id %}{% else %}{% url 'deal_detail' item.deal_id %}{% endif %}" class="label label-default">{{ item.deal_id }}</a>
@@ -75,7 +75,7 @@
                 {% if item.intention %}
                 <ul class="list-unstyled">
                   {% for i in item.intention %}
-                    <li><a href="/data/by-intention/{{ i.value|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if group == "intention" %}{% if i.parent %}style="padding-left: 20px;"{% endif %}{% else %}class="intention-icon {{ i|slugify }}" data-content="{{ i }}"{% endif %}><span>{{ i.value }}</span></a></li>
+                    <li><a href="/data/by-intention/{{ i.value|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if group == "intention" %}{% if i.parent %}style="padding-left: 20px;"{% endif %}{% else %}class="toggle-tooltip intention-icon {{ i.value|slugify }}" title="{{ i.value }}"{% endif %}><span>{{ i.value }}</span></a></li>
                   {% endfor %}
                 </ul>
                 {% else %}
@@ -162,12 +162,6 @@
                 {% trans "Unknown" %}
               {% endif %}
             </td>
-          {% elif column == "deal_size" %}
-            <td class="{{ column }} number">{{ item.deal_size|intcomma }}</td>
-          {% elif column == "intended_size" %}
-            <td class="{{ column }} number">{% if item.intended_size %}{{ item.intended_size|intcomma }}{% else %}{% trans "Unknown" %}{% endif %}</td>
-          {% elif column == "contract_size" %}
-            <td class="{{ column }} number">{% if item.contract_size %}{{ item.contract_size|intcomma }}{% else %}{% trans "Unknown" %}{% endif %}</td>
           {% elif column == "deal_count" %}
             <td class="{{ column }} deals number">{{ item.deal_count }}</td>
           {% elif column == "availability" %}
@@ -197,6 +191,10 @@
               {% else %}
                 {% trans "Unknown" %}
               {% endif %}
+            </td>
+          {% else %}
+            <td class="{{ column }}">
+                {{ value|join:', '|default_if_none:'Unknown' }}
             </td>
           {% endif %}
         {% endfor %}

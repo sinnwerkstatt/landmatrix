@@ -67,77 +67,68 @@
                                 </td>
                             {% elif column == "crop" %}
                                 <td class="{{ column }}" style="width:341px">
-                                    {% if  item.crop %}
-                                        {% for c in item.crop %}
-                                            <a href="{% url 'data' variable='crop' operator='is' value=c|slugify %}">{{ c }}</a>
-                                            </br>
-                                        {% endfor %}
-                                        {% else %}{% trans "Unknown" %}
-                                    {% endif %}
+                                    {% for c in item.crop %}
+                                    <a href="{% url 'data' variable='crop' operator='is' value=c|slugify %}">{{ c }}</a>
+                                    </br>
+                                    {% empty %}
+                                        {% trans "Unknown" %}
+                                    {% endfor %}
                                 </td>
                             {% elif column == "intention" %}
                                 <td class="{{ column }}">
                                     <ul class="list-unstyled">
-                                        {% if item.intention %}
-                                            {% for i in item.intention %}
-                                                <li>
-                                                    <a href="{% url 'data' %}?variable=intention&operator=is&value={{ i }}"
-                                                       {% if group != "intention" %}class="intention-icon {{ i|slugify }}"
-                                                       data-content="{{ i }}"{% endif %}><span>{{ i }}</span></a>
-                                                </li>
-                                            {% endfor %}
-                                            {% else %}{% trans "Unknown" %}
-                                        {% endif %}
+                                        {% for i in item.intention %}
+                                        <li>
+                                            <a href="{% url 'data' %}?variable=intention&operator=is&value={{ i.value }}" {% if group == "intention" %}{% if i.parent %}style="padding-left: 20px;"{% endif %}{% else %}class="toggle-tooltip intention-icon {{ i.value|slugify }}" title="{{ i.value }}"{% endif %}><span>{{ i.value }}</span></a>
+                                        </li>
+                                        {% empty %}
+                                            {% trans "Unknown" %}
+                                        {% endfor %}
                                     </ul>
                                 </td>
                             {% elif column == "operational_stakeholder" %}
                                 <td class="{{ column }}" style="width:183px">
-                                    {% if item.operational_stakeholder %}
-                                        {% for i in item.operational_stakeholder %}
-                                            {{ i }}<br/>
-                                        {% endfor %}
-                                        {% else %}{% trans "Unknown" %}
-                                    {% endif %}
+                                    {% for i in item.operational_stakeholder %}
+                                        {{ i }}<br/>
+                                    {% empty %}
+                                        {% trans "Unknown" %}
+                                    {% endfor %}
                                 </td>
                             {% elif "investor_country" == column %}
                                 <td class="{{ column }} investor-country">
-                                    {% if item.investor_country %}
-                                        {% for investor_country  in item.investor_country %}
-                                            <a href="{% url 'data' %}?variable=investor_country&operator=is&value={{ investor_country|slugify }}">{{ investor_country }}</a>
-                                            <br/>
-                                        {% endfor %}
-                                    {% else %}{% trans "Unknown country" %}{% endif %}
+                                    {% for investor_country  in item.investor_country %}
+                                        <a href="{% url 'data' %}?variable=investor_country&operator=is&value={{ investor_country|slugify }}">{{ investor_country }}</a>
+                                        <br/>
+                                    {% empty %}
+                                        {% trans "Unknown country" %}
+                                    {% endfor %}
                                 </td>
                             {% elif "investor_region" == column %}
                                 <td class="{{ column }} investor-region">
-                                    {% if item.investor_region %}
-                                        {% for investor_region  in item.investor_region %}
-                                            <a href="{% url 'data' %}?variable=investor_region&operator=is&value={{ investor_region|slugify }}">{{ investor_region }}</a>
-                                            <br/>
-                                        {% endfor %}
-                                    {% else %}{% trans "Unknown region" %}{% endif %}
+                                    {% for investor_region  in item.investor_region %}
+                                        <a href="{% url 'data' %}?variable=investor_region&operator=is&value={{ investor_region|slugify }}">{{ investor_region }}</a>
+                                        <br/>
+                                    {% empty %}
+                                        {% trans "Unknown region" %}
+                                    {% endfor %}
                                 </td>
                             {% elif column == "target_country" %}
                                 <td class="{{ column }}">
-                                    {% if item.target_country %}
-                                        {% for target_country  in item.target_country %}
-                                            <a href="{% url 'data' %}?variable=target_country&operator=is&value={{ target_country|slugify }}">{{ target_country }}</a>
-                                            <br/>
-                                        {% endfor %}
-                                    {% else %}
+                                    {% for target_country  in item.target_country %}
+                                        <a href="{% url 'data' %}?variable=target_country&operator=is&value={{ target_country|slugify }}">{{ target_country }}</a>
+                                        <br/>
+                                    {% empty %}
                                         {% trans "Unknown" %}
-                                    {% endif %}
+                                    {% endfor %}
                                 </td>
                             {% elif column == "target_region" %}
                                 <td class="{{ column }}">
-                                    {% if item.target_region %}
-                                        {% for target_region  in item.target_region %}
-                                            <a href="{% url 'data' %}?variable=target_region&operator=is&value={{ target_region|slugify }}">{{ target_region }}</a>
-                                            <br/>
-                                        {% endfor %}
-                                    {% else %}
+                                    {% for target_region  in item.target_region %}
+                                        <a href="{% url 'data' %}?variable=target_region&operator=is&value={{ target_region|slugify }}">{{ target_region }}</a>
+                                        <br/>
+                                    {% empty %}
                                         {% trans "Unknown" %}
-                                    {% endif %}
+                                    {% endfor %}
                                 </td>
                             {% elif column == "year" %}
                                 <td class="{{ column }}">
@@ -150,25 +141,13 @@
                                 </td>
                             {% elif column == "data_source_type" %}
                                 <td class="{{ column }}">
-                                    {% if item.data_source_type %}
-                                        {% for data_source_type in item.data_source_type %}
-                                            <a href="{% url 'data' %}?variable=data_source_type&operator=is&value={{ data_source_type }}">{{ data_source_type }}</a>
-                                            <br/>
-                                        {% endfor %}
-                                    {% else %}
+                                    {% for data_source_type in item.data_source_type %}
+                                        <a href="{% url 'data' %}?variable=data_source_type&operator=is&value={{ data_source_type }}">{{ data_source_type }}</a>
+                                        <br/>
+                                    {% empty %}
                                         {% trans "Unknown" %}
-                                    {% endif %}
+                                    {% endfor %}
                                 </td>
-                            {% elif column == "deal_size" %}
-                                <td class="{{ column }} number">{{ item.deal_size|intcomma }}</td>
-                            {% elif column == "intended_size" %}
-                                <td class="{{ column }} number">
-                                    {% if item.intended_size %}{{ item.intended_size|intcomma }}{% else %}
-                                        {% trans "Unknown" %}{% endif %}</td>
-                            {% elif column == "contract_size" %}
-                                <td class="{{ column }} number">
-                                    {% if item.contract_size %}{{ item.contract_size|intcomma }}{% else %}
-                                        {% trans "Unknown" %}{% endif %}</td>
                             {% elif column == "deal_count" %}
                                 <td class="{{ column }} deals number">{{ item.deal_count }}</td>
                             {% elif column == "availability" %}
@@ -201,7 +180,11 @@
                                 </td>
                             {% else %}
                             <td class="{{ column }}">
-                                {{ value|join:', ' }}
+                                {% if value %}
+                                    {{ value|join:', '|intcomma }}
+                                {% else %}
+                                    {% trans "Unknown" %}
+                                {% endif %}
                             </td>
                             {% endif %}
                         {% endfor %}
