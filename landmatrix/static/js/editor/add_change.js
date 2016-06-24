@@ -154,7 +154,7 @@ $(document).ready(function(){
 
     /* Spatial data: Initialize map */
     $(".form:visible .field.location .map").each(function (i) {
-      initializeMap(this, i);
+      initializeMap(this.id);
       init_google_maps($(this).prev("input"), i);
     });
     //$("#add-spatial-data").click(function () {

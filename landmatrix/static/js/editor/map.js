@@ -30,8 +30,8 @@ function unlockMaps() {
 
 function getLocationFields(mapId) {
     var result = {
-        lat: $('#id_form-'+(mapId)+'-point_lat'),
-        lon: $('#id_form-'+(mapId)+'-point_lon')
+        lat: $('#id_location-'+(mapId)+'-point_lat'),
+        lon: $('#id_location-'+(mapId)+'-point_lon')
     };
     return result;
 }
@@ -135,7 +135,7 @@ var markerStyle = new ol.style.Style({
      })
 });
 
-
+/* Initialize map for deal location (detail/add/edit views) */
 function initializeMap (mapId, lat, lon) {
     const target = "map" + mapId;
 
