@@ -8,16 +8,15 @@ from fabvenv import virtualenv
 
 def staging():
     env.name = 'staging'
-    env.hosts = ['lmlo@lmlo.sinnwerkstatt.com']
-    env.path = '/srv/lmlo.sinnwerkstatt.com/lmlo/'
-    env.virtualenv_path = '/srv/lmlo.sinnwerkstatt.com/lmloenv'
-    #env.backup_path = '/srv/lmlo.sinnwerkstatt.com/backups'
+    env.hosts = ['landmatrix@beta.landmatrix.org']
+    env.path = '/home/landmatrix/landmatrix'
+    env.virtualenv_path = '/home/landmatrix/.virtualenvs/landmatrix'
     env.push_branch = 'master'
     env.push_remote = 'origin'
-    env.reload_cmd = 'supervisorctl restart lmlo'
-    env.db_name = 'lmlo'
-    env.db_username = 'lmlo'
-    env.after_deploy_url = 'http://lmlo.sinnwerkstatt.com'
+    env.reload_cmd = 'sudo supervisorctl restart landmatrix'
+    env.db_name = 'landmatrix'
+    env.db_username = 'landmatrix'
+    env.after_deploy_url = 'http://beta.landmatrix.org'
     
 def production():
     env.name = 'production'

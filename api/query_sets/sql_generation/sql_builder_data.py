@@ -10,16 +10,16 @@ class SQLBuilderData:
         self._setup_column_sql()
 
     GROUP_TO_NAME = {
-        'all':                 "'all deals'",
-        'target_region':       'deal_region.name',
-        'target_country':      'deal_country.name',
-        'year':                'SUBSTR(negotiation_status.date, 1, 4)',
-        'crop':                'crop.name',
-        'intention':           "intention.value",
-        'investor_region':  'investor_region.name',
-        'investor_country': 'investor_country.name',
-        'investor_name':    'stakeholders.name',
-        'data_source_type':    "data_source_type.value"
+        'all':                  "'all deals'",
+        'target_region':        'deal_region.name',
+        'target_country':       'deal_country.name',
+        'year':                 'SUBSTR(negotiation_status.date, 1, 4)',
+        'crop':                 'crop.name',
+        'intention':            'intention.value',
+        'investor_region':      'investor_region.name',
+        'investor_country':     'investor_country.name',
+        'investor_name':        'stakeholders.name',
+        'data_source_type':     'data_source_type.value'
     }
 
     COLUMNS = { }
@@ -335,11 +335,15 @@ class SQLBuilderData:
             "0 AS intended_size"
         ],
         "contract_size": [
-            "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_size.value), ', '), '') AS contract_size",
+            #"NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT contract_size.value), ', '), '') AS contract_size",
+            # TODO: This creates the array twice, should be optimized by someone who's more into postgres
+            "(ARRAY_AGG(DISTINCT contract_size.value))[ARRAY_LENGTH(ARRAY_AGG(DISTINCT contract_size.value), 1)] AS contract_size",
             "0 AS contract_size"
         ],
         "production_size": [
-            "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT production_size.value), ', '), '') AS production_size",
+            #"NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT production_size.value), ', '), '') AS production_size",
+            "(ARRAY_AGG(DISTINCT production_size.value))[ARRAY_LENGTH(ARRAY_AGG(DISTINCT production_size.value), 1)] AS production_size",
+            
             "0 AS production_size"
         ],
         "location": [
@@ -352,6 +356,7 @@ class SQLBuilderData:
         "latlon": [
             "ARRAY_AGG(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value)) AS latlon"
         ],
+        # TODO: It shouldn't be required to list all comment fields here
         "tg_location_comment": [
             "ARRAY_AGG(DISTINCT tg_location_comment.value) AS tg_location_comment"
         ],
