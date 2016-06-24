@@ -38,7 +38,7 @@ class DealContractForm(BaseForm):
     )
 
     class Meta:
-        name = 'spatial_data'
+        name = 'contract'
 
 
 class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1)):

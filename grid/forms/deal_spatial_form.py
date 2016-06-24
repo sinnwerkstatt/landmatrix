@@ -1,8 +1,9 @@
-from django import forms
+from django.contrib.gis import forms
 from django.forms.models import formset_factory, BaseFormSet
 from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models import Country, Region
+from ol3_widgets.widgets import OSMWidget
 from grid.widgets import TitleField, LocationWidget, CountryField, CommentInput
 from .base_form import BaseForm
 
@@ -43,6 +44,8 @@ class DealSpatialForm(BaseForm):
     location_description = forms.CharField(
         required=False, label=_("Location description"),
         widget=forms.TextInput, initial="")
+    polygon = forms.MultiPolygonField(
+        widget=OSMWidget(attrs={'map_width': 800, 'map_height': 500}))
     tg_location_comment = forms.CharField(
         required=False, label=_("Location comments"), widget=CommentInput)
 
@@ -58,24 +61,38 @@ class DealSpatialForm(BaseForm):
         #    target_country = Country.objects.get(
         #        name=attributes['target_country'])
         #    attributes['target_country'] = target_country.pk
+
+        # For polygon fields, pass the value directly
+        if 'polygon' in attributes:
+            polygon_value = attributes['polygon']['value']
+            attributes['polygon'] = {'polygon': polygon_value}
         return attributes
+
+    @classmethod
+    def get_data(cls, activity, group=None, prefix=""):
+        data = super().get_data(activity, group=group, prefix=prefix)
+
+        queryset = activity.attributes.filter(
+            fk_group__name=group, name='polygon')
+        data['polygon'] = queryset[0].polygon
+
+        return data
 
 
 class DealSpatialBaseFormSet(BaseFormSet):
 
     form_title = _('Location')
-    prefix = 'location'
+    prefix = 'spatial_data'
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
         groups = activity.attributes.filter(
             fk_group__name__startswith=cls.prefix).values_list(
-            'fk_group__name').distinct()
-        data = []
-        for i, group in enumerate(groups):
-            form_data = DealSpatialForm.get_data(activity, group=group[0])
-            if form_data:
-                data.append(form_data)
+            'fk_group__name', flat=True).distinct()
+        data = list(filter(None, [
+            DealSpatialForm.get_data(activity, group=group) for group in groups
+        ]))
+
         return data
 
     def get_attributes(self, request=None):

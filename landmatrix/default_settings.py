@@ -48,10 +48,12 @@ INSTALLED_APPS += (
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.postgres',
-    'django.contrib.gis',
     'django.contrib.admin',
     'django.contrib.sites',
 
+    # OL3 widgets must come before GIS
+    'ol3_widgets',
+    'django.contrib.gis',
     'django_hstore',
 
     'tastypie',

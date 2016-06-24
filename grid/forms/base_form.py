@@ -24,7 +24,7 @@ class BaseForm(forms.Form):
 
     def get_attributes(self, request=None):
         """
-        Create data for attributes from request
+        Load previously saved attributes from the database.
         Returns:
         {
             'Name of attribute 1': {
@@ -147,8 +147,9 @@ class BaseForm(forms.Form):
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
         """
-        Get form data for activity or stakeholder,
-        using attribute group only - if given (for formsets)
+        Get posted form data, for saving to the database.
+        For activity or stakeholder, using attribute group only - if given
+        (for formsets)
         """
         data = MultiValueDict()
 
@@ -161,10 +162,7 @@ class BaseForm(forms.Form):
                 attributes[aa.name].append(aa)
             else:
                 attributes[aa.name] = [aa]
-        #if not group:
-        #    raise IOError(attributes)
-        #if not group:
-        #    raise IOError(attributes)
+
         for (field_name, field) in cls().base_fields.items():
             # Group title?
             name = prefix and "%s-%s"%(prefix, field_name) or field_name
@@ -175,6 +173,7 @@ class BaseForm(forms.Form):
 
             if not attribute:
                 continue
+
             value = attribute[0].value
             # Multiple choice?
             if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
