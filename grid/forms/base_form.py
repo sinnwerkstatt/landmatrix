@@ -221,7 +221,7 @@ class BaseForm(forms.Form):
     def get_nested_choice_value(cls, field, tag_value):
         for choice in field.choices:
             for k, v in [i[:2] for i in choice[2] or []]:
-                if v == tag_value or (tag_value.isdigit() and k == int(tag_value)):
+                if k == tag_value or (tag_value.isdigit() and k == int(tag_value)):
                     return str(k)
         return None
 

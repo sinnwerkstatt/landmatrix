@@ -38,7 +38,6 @@ class NestedCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
                         label_for = u' for="%s"' % final_attrs['id']
                     else:
                         label_for = ''
-
                     cb = forms.CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
                     option_value = force_text(option_value)
                     rendered_cb = cb.render(name, option_value)

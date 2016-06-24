@@ -31,9 +31,8 @@ class MapInvestorActivityInvolvement(MapModel):
     def all_records(cls):
         records_with_duplicates = cls.old_class.objects.using(V1). \
             filter(fk_activity__in=MapActivity.all_ids()). \
-            filter(fk_stakeholder__isnull=True). \
+            filter(models.Q(fk_stakeholder__in=cls.all_stakeholder_ids()) | models.Q(fk_stakeholder__isnull=True)). \
             filter(fk_primary_investor__in=MapInvestor.all_ids()).values()
-            #filter(models.Q(fk_stakeholder__in=cls.all_stakeholder_ids()) | models.Q(fk_stakeholder__isnull=True)). \
         records = {}
         for record in records_with_duplicates:
             latest = cls.latest_involvement_for(record, records_with_duplicates)
