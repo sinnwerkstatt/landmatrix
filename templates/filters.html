@@ -104,7 +104,7 @@
                         {% for group, items in variables.items %}
                         <optgroup label="{{ group }}">
                             {% for variable in items %}
-                            <option value="{{ variable.name }}"{% if variable.name in columns %} selected="selected"{% endif %}>{% trans variable.label %}</option>
+                            <option value="{{ variable.name }}"{% if variable.name in columns.keys %} selected="selected"{% endif %}>{% trans variable.label %}</option>
                             {% endfor %}
                         </optgroup>
                         {% endfor %}

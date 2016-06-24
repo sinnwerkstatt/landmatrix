@@ -27,9 +27,15 @@ class SQLBuilderData:
         if self.COLUMNS: return
         self.COLUMNS = {
 
-            'intended_size': [join_attributes('intended_size')],
-            'contract_size': [join_attributes('contract_size')],
-            'production_size': [join_attributes('production_size')],
+            'intended_size': [
+                join_attributes('intended_size')
+            ],
+            'contract_size': [
+                join_attributes('contract_size')
+            ],
+            'production_size': [
+                join_attributes('production_size')
+            ],
 
             'deal_count': [],
             'availability': [],
@@ -39,6 +45,11 @@ class SQLBuilderData:
             'crop':               [
                 join_attributes('akvl1', 'crops'),
                 join_expression(Crop, 'crop', "CAST(akvl1.value AS NUMERIC)")
+            ],
+
+            'crops':               [
+                join_attributes('akvl1', 'crops'),
+                join_expression(Crop, 'crops', "CAST(akvl1.value AS NUMERIC)")
             ],
 
             'target_country':     (
@@ -99,6 +110,8 @@ class SQLBuilderData:
                 join_activity_attributes('longitude', 'point_lon'),
                 join_activity_attributes('level_of_accuracy', 'level_of_accuracy'),
             ],
+            # FIXME: The following lines can probably be removed, since this is the default case
+            # see also: SQLBuilder._add_join_for_column
             'tg_location_comment': [
                 join_attributes('tg_location_comment'),
             ],
@@ -258,6 +271,9 @@ class SQLBuilderData:
             "ARRAY_AGG(DISTINCT CONCAT(crop.name, '#!#', crop.code )) AS crop",
             "CONCAT(crop.name, '#!#', crop.code ) AS crop"
         ],
+        "crops": [
+            "ARRAY_AGG(DISTINCT crops.name) AS crops",
+        ],
         "deal_availability": ["a.availability AS availability", "a.availability AS availability"],
         "data_source_type": [
             "ARRAY_AGG(DISTINCT data_source_type.value) AS data_source_type",
@@ -356,7 +372,8 @@ class SQLBuilderData:
         "latlon": [
             "ARRAY_AGG(DISTINCT CONCAT(latitude.value, '#!#', longitude.value, '#!#', level_of_accuracy.value)) AS latlon"
         ],
-        # TODO: It shouldn't be required to list all comment fields here
+        # FIXME: The following lines can probably be removed, since this is the default case
+        # see also: SubqueryBuilder.column_sql
         "tg_location_comment": [
             "ARRAY_AGG(DISTINCT tg_location_comment.value) AS tg_location_comment"
         ],

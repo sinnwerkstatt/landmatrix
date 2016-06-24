@@ -87,7 +87,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
                 "count": self.num_results
             },
             "name": self.group_value,
-            "columns": self.column_dicts,
+            "columns": self.columns_dict,
             "status": self.status,
             "load_more": self._load_more_amount(),
             "group_slug": self.group,
@@ -159,8 +159,9 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         return columns
 
     @property
-    def column_dicts(self):
+    def columns_dict(self):
         """Get column information for template"""
+        # Labels for all custom fields (fields that are not part of any form)
         COLUMN_LABELS_MAP = {
             'deal_id': _('#'),
             'deal_count': _('Deals'),
@@ -168,20 +169,21 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             'investor_country': _('Operational company country'),
             'investor_region': _('Operational company region'),
             'operational_stakeholder': _('Operational company'),
-            #'investor_name': _('Operational company name'),
+            'investor_name': _('Operational company name'),
+            'crop': _('Crop'),
+            'data_source_type': _('Data source type'),
         }
-        columns = []
+        columns = SortedDict()
         for name in self.columns:
             label = None
             if name in COLUMN_LABELS_MAP.keys():
                 label = COLUMN_LABELS_MAP[name]
             else:
                 label = get_field_label(name)
-            columns.append({
-                'name': name,
+            columns[name] = {
                 'label': label,
                 'order_by': name == self.order_by and '-'+name or name,
-            })
+            }
         #columns = [col for col in columns if col in SQLBuilder.SQL_COLUMN_MAP.keys()]
         return columns
 

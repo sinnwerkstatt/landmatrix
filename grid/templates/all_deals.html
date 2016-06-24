@@ -48,9 +48,9 @@
             <table id="summary" class="table table-striped">
                 <thead>
                   <tr>
-                    {% for column in columns %}
-                        <th class="number">
-                            <a class="{{ column.name }}{% if data.order_by == column.name %} asc{% elif data.order_by == '-'|add:column.name %} desc{% endif %}" href="?{% add_or_update_param request.GET 'order_by' column.order_by %}">
+                    {% for name, column in columns.items %}
+                        <th class="{{ name }} number">
+                            <a class="{{ name }}{% if data.order_by == name %} asc{% elif data.order_by == '-'|add:name %} desc{% endif %}" href="?{% add_or_update_param request.GET 'order_by' column.order_by %}">
                               {{ column.label }}
                             </a>
                         </th>

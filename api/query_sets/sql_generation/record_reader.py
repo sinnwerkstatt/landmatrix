@@ -40,7 +40,8 @@ class RecordReader:
     @print_execution_time_and_num_queries
     @print_last_query
     def get_column(self, column):
-        if not column in self.columns: raise KeyError('Column %s not in columns' % column)
+        if not column in self.columns:
+            raise KeyError('Column %s not in columns' % column)
         return self._execute_sql(self.get_column_sql(column))
 
     def get_column_sql(self, column):

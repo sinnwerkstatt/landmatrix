@@ -126,7 +126,7 @@ class SQLBuilder(SQLBuilderData):
         try:
             return any(x in self.SQL_COLUMN_MAP[c][0] for x in ['ARRAY_AGG', 'COUNT'])
         except KeyError:
-            return False
+            return True
 
     def _need_involvements_and_stakeholders(self):
         return self._investor_filter_is_set() or any(

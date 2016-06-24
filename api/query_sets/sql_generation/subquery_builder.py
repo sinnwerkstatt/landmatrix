@@ -8,13 +8,16 @@ from api.query_sets.sql_generation.list_sql_builder import ListSQLBuilder
 
 class SubqueryBuilder(ListSQLBuilder):
 
-    def column_sql(self, c):
-        try:
-            if c[0] == '-':
-                c = c[1:]
-            return self.SQL_COLUMN_MAP.get(c)[0]
-        except TypeError:
-            raise KeyError(c)
+    def column_sql(self, column):
+        column = column.strip('-')
+        if column in self.SQL_COLUMN_MAP:
+            return self.SQL_COLUMN_MAP.get(column)[0]
+        else:
+            # Move this as a fallback to SQLBuilderData
+            return "ARRAY_AGG(DISTINCT %(column)s.value) AS %(column)s" % {
+            #return "ARRAY_AGG(DISTINCT %(column)s.value) AS %(column)s" % {
+                'column': column
+            }
 
     def get_group_sql(self):
         group_by = ["a.id "] + [col for col in self.columns if not self.is_aggregate_column(col)]
