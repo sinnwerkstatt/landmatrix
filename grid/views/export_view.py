@@ -34,8 +34,8 @@ class ExportView(TemplateView):
         response = HttpResponse(content_type="application/ms-excel")
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
         wb = xlwt.Workbook()
-        ws = wb.add_sheet('Landmatrix')
-        for i, h in enumerate(header):
+        ws = wb.add_sheet('Land Matrix')
+        for i, h in enumerate([column['label'] for name, column in header.items()]):
             ws.write(0, i, h)
         for i, row in enumerate(data):
             for j, d in enumerate(row):
@@ -47,7 +47,7 @@ class ExportView(TemplateView):
         root = ET.Element('data')
         for r in data:
             row = ET.SubElement(root, "item")
-            for i,h in enumerate(header):
+            for i,h in enumerate([column['label'] for name, column in header.items()]):
                 field = ET.SubElement(row, "field")
                 field.text = str(r[i])
                 field.set("name", h)
@@ -63,7 +63,7 @@ class ExportView(TemplateView):
             filename)
         writer = csv.writer(response, delimiter=";")
         # write csv header
-        writer.writerow(header)
+        writer.writerow([column['label'] for name, column in header.items()])
         for row in data:
             writer.writerow([str(s) for s in row])
         return response
