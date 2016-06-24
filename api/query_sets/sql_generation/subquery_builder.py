@@ -10,6 +10,8 @@ class SubqueryBuilder(ListSQLBuilder):
 
     def column_sql(self, c):
         try:
+            if c[0] == '-':
+                c = c[1:]
             return self.SQL_COLUMN_MAP.get(c)[0]
         except TypeError:
             raise KeyError(c)

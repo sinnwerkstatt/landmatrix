@@ -10,6 +10,7 @@ from landmatrix.models.filter_condition import FILTER_VAR_ACT, \
 from landmatrix.models.filter_preset import FilterPresetGroup
 from api.filters import PresetFilter
 from grid.views.browse_condition_form import BrowseConditionForm
+from grid.views.save_deal_view import SaveDealView
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -117,3 +118,14 @@ def _parse_value(filter_value):
     if '[' in value:
         value = [str(v) for v in json.loads(value)]
     return value
+
+def get_field_label(name):
+    label = None
+    for form in SaveDealView.FORMS:
+        # Formset?
+        if hasattr(form, 'form'):
+            form = form.form
+        if name in form.base_fields:
+            label = str(form.base_fields.get(name).label)
+            break
+    return label

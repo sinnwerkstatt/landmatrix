@@ -12,8 +12,9 @@ from grid.views.filter_widget_mixin import FilterWidgetMixin
 from grid.views.profiling_decorators import \
     print_execution_time_and_num_queries
 from grid.views.activity_protocol import ActivityProtocol
-from .view_aux_functions import render_to_response
+from .view_aux_functions import render_to_response, get_field_label
 from grid.forms.choices import intention_choices
+from django.utils.datastructures import SortedDict
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -76,20 +77,17 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         self.group_value = group_value or ''
 
         self._set_filters()
-        self._set_columns()
-
         query_result = self.get_records()
         items = self._get_items(query_result)
-
         context = {
-            "view": "get-the-detail",
+            "view": "data",
             "data": {
                 "items": items,
-                "order_by": self._order_by(),
+                "order_by": self.order_by,
                 "count": self.num_results
             },
             "name": self.group_value,
-            "columns": self.columns,
+            "columns": self.column_dicts,
             "status": self.status,
             "load_more": self._load_more_amount(),
             "group_slug": self.group,
@@ -143,14 +141,40 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             return int(self._load_more()) + self.LOAD_MORE_AMOUNT
         return None
 
-    @print_execution_time_and_num_queries
-    def _set_columns(self):
-        # FIXME: Convert to property
-        if self.group_value:
-            self.columns = self.GROUP_COLUMNS_LIST
+    @property
+    def columns(self):
+        columns = []
+        if self.request.GET.get('columns'):
+            columns = self.request.GET.getlist('columns')
+            if 'deal_id' not in columns:
+                columns = ['deal_id'] + columns
+        elif self.group_value:
+            columns = self.GROUP_COLUMNS_LIST
         else:
-            self.columns = self._columns()
-        self.columns = [col for col in self.columns if col in SQLBuilder.SQL_COLUMN_MAP.keys()]
+            try:
+                columns = self.COLUMN_GROUPS[self.group]
+            except KeyError:
+                raise Http404(
+                    _("Unknown group '%(group)s'.") % {'group': self.group})
+        return columns
+
+    @property
+    def column_dicts(self):
+        """Get column information for template"""
+        columns = []
+        for name in self.columns:
+            label = None
+            if name == 'deal_id':
+                label = _('#')
+            else:
+                label = get_field_label(name)
+            columns.append({
+                'name': name,
+                'label': label,
+                'order_by': name == self.order_by and '-'+name or name,
+            })
+        #columns = [col for col in columns if col in SQLBuilder.SQL_COLUMN_MAP.keys()]
+        return columns
 
     @print_execution_time_and_num_queries
     def _set_filters(self):
@@ -161,7 +185,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         )
 
         self.filters = self.get_filter_context(
-            self.current_formset_conditions, self._order_by(), self.group, self.group_value,
+            self.current_formset_conditions, self.order_by, self.group, self.group_value,
             data.get("starts_with")
         )
 
@@ -182,7 +206,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
     def _get_row(self, record, query_result):
         # iterate over database result
-        row = {}
+        row = SortedDict()
         for j, c in enumerate(self.columns):
             # iterate over columns relevant for view or download
             value = record[j+1]
@@ -196,7 +220,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         intentions = [INTENTION_MAP.get(intention) for intention in value]
         return intentions
 
-    def _process_value(self, c, value):
+    def _process_value(self, column, value):
         if not value: return None
         process_functions = {
             'intention': self._process_intention,
@@ -212,34 +236,25 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             #"production_size": lambda v: v and v[0],
             #"contract_size": lambda v: v and v[0],
         }
-        if c in process_functions:
-            return process_functions[c](value)
+        if column in process_functions:
+            return process_functions[column](value)
         elif isinstance(value, numbers.Number):
             return int(value)
         #elif not isinstance(value, list):
         #    return [value, ]
         return value
 
-    def _order_by(self):
-        order_by = self.request.GET.get("order_by", self.group_value and "deal_id" or self.group) \
-                   or self.group_value and "deal_id" \
-                   or self.group
-        if order_by == "all" or order_by == "database":
-            order_by = "deal_id"
-        return order_by
-
-    def _columns(self):
-        if self.request.GET.get('columns'):
-            columns = self.request.GET.getlist('columns')
-            if 'deal_id' not in columns:
-                columns = ['deal_id'] + columns
+    @property
+    def order_by(self):
+        order_by = None
+        if 'order_by' in self.request.GET:
+            order_by = self.request.GET.get("order_by")
+        elif self.group and self.group != 'all':
+            order_by = self.group
+        #elif self.group_value or order_by == "all" or order_by == "database"
         else:
-            try:
-                columns = self.COLUMN_GROUPS[self.group]
-            except KeyError:
-                raise Http404(
-                    _("Unknown group '%(group)s'.") % {'group': self.group})
-        return columns
+            order_by = 'deal_id'
+        return order_by
 
     def _map_values_of_group(self, value_list, format_string):
         """ Map different values of one group together. Ensures that values of a group are together.

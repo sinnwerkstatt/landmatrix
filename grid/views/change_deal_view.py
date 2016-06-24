@@ -88,12 +88,12 @@ class ChangeDealView(SaveDealView):
         return form_class(initial=initial, files=files, data=data, prefix=prefix)
 
 
-def to_formset_data(data):
-    returned = {}
-    for index in data.keys():
-        if not isinstance(index, int):
-            returned[index] = data[index]
-        else:
-            for key, value in data[index].items():
-                returned['form-{}-{}'.format(index, key)] = value
-    return returned
+#def to_formset_data(data):
+#    returned = {}
+#    for index in data.keys():
+#        if not isinstance(index, int):
+#            returned[index] = data[index]
+#        else:
+#            for key, value in data[index].items():
+#                returned['form-{}-{}'.format(index, key)] = value
+#    return returned

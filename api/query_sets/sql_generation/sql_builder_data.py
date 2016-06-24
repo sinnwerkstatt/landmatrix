@@ -341,7 +341,7 @@ class SQLBuilderData:
             "0 AS contract_size"
         ],
         "production_size": [
-            #"NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT production_size.value), ', '), '') AS production_size",
+            #"NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT production_size.value), get_group_sql, '), '') AS production_size",
             "(ARRAY_AGG(DISTINCT production_size.value))[ARRAY_LENGTH(ARRAY_AGG(DISTINCT production_size.value), 1)] AS production_size",
             
             "0 AS production_size"

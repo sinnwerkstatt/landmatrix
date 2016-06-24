@@ -38,8 +38,8 @@ class SQLBuilder(SQLBuilderData):
 
     def _add_order_by_columns(self):
         for c in self.filters.get('order_by', []):
-            if self._strip_order_sql(c) not in self.columns:
-                self.columns.append(self._strip_order_sql(c))
+            if c.strip('-') not in self.columns:
+                self.columns.append(c.strip('-'))
 
     def get_sql(self):
         return self.get_base_sql() % {
@@ -105,9 +105,6 @@ class SQLBuilder(SQLBuilderData):
                 fields.append("%s %s ASC" % self._natural_sort(field))
 
         return 'ORDER BY ' + ', '.join(fields)
-
-    def _strip_order_sql(self, order_by):
-        return order_by.strip('-+0')
 
     def _natural_sort(self, field):
         return (field.split("+0")[0], '+0') if "+0" in field else (field, '')

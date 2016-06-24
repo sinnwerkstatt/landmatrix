@@ -29,8 +29,8 @@ class ListSQLBuilder(SQLBuilder):
         additional_group_by = []
         for c in [ col for col in self.columns if not col in ["intended_size", "contract_size", "production_size", "data_source"]]:
             additional_group_by.append("sub.%(name)s" % {"name": c})
-        if additional_group_by: group_by_sql += ', ' + ', '.join(additional_group_by)
-
+        if additional_group_by:
+            group_by_sql += ', ' + ', '.join(additional_group_by)
         return group_by_sql
 
     def column_sql(self, c):

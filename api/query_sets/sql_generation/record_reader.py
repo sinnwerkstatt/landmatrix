@@ -44,10 +44,10 @@ class RecordReader:
         return self._execute_sql(self.get_column_sql(column))
 
     def get_column_sql(self, column):
-        if self.filters.get('order_by'):
-            columns = [column]+self.filters['order_by']
-        else:
-            columns = [column]
+        columns = [column]
+        for c in self.filters.get('order_by', []):
+            if c.strip('-') not in columns:
+                columns.append(c.strip('-'))
         return SubqueryBuilder(self.filters, columns, self.status, self.is_staff).get_sql()
 
     def get_all_at_once(self):

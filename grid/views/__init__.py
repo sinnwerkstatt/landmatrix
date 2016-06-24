@@ -13,7 +13,6 @@ from .deal_detail_view import *
 from .export_view import *
 from .filter_widget_ajax_view import *
 from .filter_widget_mixin import *
-from .intention_map import *
 from .investor_comparison_view import *
 from .profiling_decorators import *
 from .save_deal_view import *
