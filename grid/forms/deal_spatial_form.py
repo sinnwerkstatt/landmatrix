@@ -58,7 +58,7 @@ class DealSpatialForm(BaseForm):
         required=False, label=_("Location comments"), widget=CommentInput)
 
     class Meta:
-        name = 'spatial_data'
+        name = 'location'
 
     def __init__(self, *args, **kwargs):
         '''
@@ -109,7 +109,7 @@ class DealSpatialForm(BaseForm):
 class DealSpatialBaseFormSet(BaseFormSet):
 
     form_title = _('Location')
-    prefix = 'spatial_data'
+    prefix = 'location'
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
@@ -126,7 +126,7 @@ class DealSpatialBaseFormSet(BaseFormSet):
         return [form.get_attributes(request) for form in self.forms]
 
     class Meta:
-        name = 'spatial_data'
+        name = 'location'
 
 
 DealSpatialFormSet = formset_factory(

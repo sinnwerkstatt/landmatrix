@@ -31,7 +31,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 FORMS = [
-    ("spatial_data", PublicViewDealSpatialFormSet),
+    ("location", PublicViewDealSpatialFormSet),
     ("general_information", DealGeneralForm),
     ("contracts", PublicViewDealContractFormSet),
     ("employment", DealEmploymentForm),
@@ -121,7 +121,7 @@ def display_valid_forms(forms):
                     sub_form_data['type'] = str(choices[sub_form_data['type']])
                 group = create_attribute_group(activity, sub_form_data)
                 print(form.Meta.name, group)
-        elif form.Meta.name == 'spatial_data':
+        elif form.Meta.name == 'location':
             for sub_form_data in form.cleaned_data:
                 if sub_form_data['target_country'] and isinstance(sub_form_data['target_country'], Country):
                     sub_form_data['target_country'] = sub_form_data['target_country'].pk
