@@ -52,7 +52,7 @@ function updateFilters(data) {
         if ("preset_id" in data[item]) {
             var tag = data[item].name,
                 label = data[item].label,
-                finalHtml = '<a class="delete-row" href="javascript:removeFilter(\'' + tag + '\')" title="'
+                finalHtml = '<a class="delete-row toggle-tooltip" href="javascript:removeFilter(\'' + tag + '\')" title="'
 
             finalHtml = finalHtml + '">' + label + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
@@ -64,13 +64,14 @@ function updateFilters(data) {
                 tag = data[item].variable + " " + data[item].operator;
             }
             filternames.push(tag);
-            var finalHtml = '<a class="delete-row" href="javascript:removeFilter(\'' + data[item].name + '\')" title="'
+            var finalHtml = '<a class="delete-row toggle-tooltip" href="javascript:removeFilter(\'' + data[item].name + '\')" title="'
             var filterPopup = data[item].variable + " " + data[item].operator + " " + data[item].value;
             finalHtml = finalHtml + filterPopup + '">' + label + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
         }
         $(finalHtml).appendTo(tags);
     }
+    $('#filters .toggle-tooltip:not(.left,.bottom)').tooltip({placement: "top", html: true});
 
     $("#filterrow form").hide()
 }

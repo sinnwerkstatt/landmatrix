@@ -17,7 +17,7 @@ class FilterToSQL:
         ("is", ("= %s", "= '%s'", _("is"))),
         ("in", ("IN (%s)", "IN (%s)", _("is one of"))),
         ("not_in", ("NOT IN (%s)", "NOT IN (%s)", _("isn't any of"))),
-        ("gte", (">= %s", ">= %s", _("is >="))),
+        ("gte", (">= %s", ">= '%s'", _("is >="))),
         ("gt", ("> %s", "> '%s'", _("is >"))),
         ("lte", ("<= %s", "<= '%s'", _("is <="))),
         ("lt", ("< %s", "< '%s'", _("is <"))),
@@ -33,6 +33,7 @@ class FilterToSQL:
     def __init__(self, filters, columns):
         FilterToSQL.count_offset += 10
         self.filters = filters
+        
         self.columns = columns
         if self.DEBUG:
             print('FilterToSQL: filters', self.filters)
@@ -53,55 +54,88 @@ class FilterToSQL:
             print('FilterToSQL:   where', where_activity, "\n", where_investor)
         return "\n".join([where_activity, where_investor])
 
-    def _where_activity(self):
+    def _where_activity(self, taggroup=None, last_index=0):
         # TODO: Split this beast up a bit better
         # TODO: lots of sql injection vulnerabilities here
         where = []
-        where.extend(self._where_activity_identifier())
-        where.extend(self._where_activity_deal_scope())
+        if taggroup:
+            where.append('AND (')
+        else:
+            where.extend(self._where_activity_identifier())
+            where.extend(self._where_activity_deal_scope())
 
-        tags = self.filters.get("activity", {}).get("tags", {})
+        tags = taggroup or self.filters.get("activity", {}).get("tags", {})
         for index, (tag, value) in enumerate(tags.items()):
+            i = last_index + index
+            # Multiple rules?
+            if isinstance(value, dict):
+                where.append(self._where_activity(taggroup=value, last_index=i))
+                last_index += len(value) - 1
+                continue
+            # Relation
+            relation = ''
+            if taggroup:
+                relation = index > 0 and 'OR' or ''
+            else:
+                relation = 'AND'
             if not isinstance(value, list):
                 value = [value]
             sanitized_values = [v.strip().replace("'", "\\'") for v in value]
-            i = index + FilterToSQL.count_offset
-
+ 
             try:
-                variable, operation = tag.split("__")
+                variable, key, operation = tag.split("__")
             except ValueError:
                 variable = tag
+                key = 'value'
                 operation = None
                 operation_sql = None
             else:
                 operation_sql = self.OPERATION_MAP[operation][0]
 
-            if variable == "activity_identifier":
+            if variable == 'activity_identifier':
                 where.append(
-                    "AND a.activity_identifier {}".format(
-                        operation_sql % value[0]))
+                    "%(relation)s a.activity_identifier %(operation)s" % {
+                        'relation': relation,
+                        'operation': operation_sql % value[0],
+                    }
+                )
             # empty as operation or no value given
             elif operation == "is_empty" or not value[0]:
                 where.append(
-                    "AND attr_%(count)i.name = '%(variable)s' IS NULL " % {
-                        "count": i, 'variable': variable,
+                    "%(relation)s attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.%(key)s IS NULL " % {
+                        'relation': relation,
+                        'count': i,
+                        'variable': variable,
+                        'key': key,
                     }
                 )
             elif operation in ("in", "not_in"):
                 in_values = ",".join(
                     ["'%s'" % value for value in sanitized_values])
-                if variable == "target_region":
+                if variable == 'target_region':
                     where.append(
-                        "AND ar%(count)i.name %(op)s " % {
+                        "%(relation)s ar%(count)i.name %(op)s " % {
+                            'relation': relation,
                             "count": i,
                             "op": operation_sql % in_values,
                         }
                     )
+                elif variable in 'deal_country':
+                    where.append(
+                        "%(relation)s ac%(count)i.%(key)s %(op)s " % {
+                            'relation': relation,
+                            "count": i,
+                            "op": operation_sql % in_values,
+                            'key': key,
+                        }
+                    )
                 else:
                     where.append(
-                        "AND attr_%(count)i.name = '%(variable)s' AND "
-                        "attr_%(count)i.value = %(op)s " % {
+                        "%(relation)s attr_%(count)i.name = '%(variable)s' AND "
+                        "attr_%(count)i.%(key)s %(op)s " % {
+                            'relation': relation,
                             "count": i,
+                            "key": key,
                             "op": operation_sql % in_values,
                             'variable': variable
                         }
@@ -114,13 +148,15 @@ class FilterToSQL:
                     # without major surgery. Works by lining up the
                     # columns that we're joining twice :(
                     where.append(
-                        """AND attr_%(count)i.name = 'type'
+                        """%(relation)s attr_%(count)i.name = 'type'
                            AND attr_%(count)i.value = data_source_type.value""" % {
+                            'relation': relation,
                             "count": i,
                         })
-            elif operation == 'is' and variable == 'target_region':
+            elif operation == 'is' and variable in ('target_region', 'deal_country'):
                 where.append(
-                    "AND ar%(count)i.id %(op)s " % {
+                    "%(relation)s ar%(count)i.id %(op)s " % {
+                        'relation': relation,
                         "count": i,
                         "op": operation_sql % value[-1].replace("'", "\\'"),
                     }
@@ -137,32 +173,37 @@ class FilterToSQL:
                     operation_sql = self.OPERATION_MAP[operation][operation_type]
                     if variable == "region":
                         where.append(
-                            "AND ar%(count)i.name %(op)s " % {
+                            "%(relation)s ar%(count)i.name %(op)s " % {
+                                'relation': relation,
                                 "count": i,
                                 "op": operation_sql % v.replace("'", "\\'")
                             }
                         )
                     else:
                         if operation in ('lt', 'lte', 'gt', 'gte', 'is') and str(v).isnumeric():
-                            comparator = "attr_%(count)i.name = '%(variable)s' AND CAST(attr_%(count)i.value AS NUMERIC)" % {
+                            comparator = "attr_%(count)i.name = '%(variable)s' AND CAST(attr_%(count)i.%(key)s AS NUMERIC)" % {
                                 "count": i,
                                 'variable': variable,
+                                'key': key,
                             }
                         else:
-                            comparator = "attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.value" % {
+                            comparator = "attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.%(key)s" % {
                                 "count": i,
                                 'variable': variable,
+                                'key': key,
                             }
                         where.append(
-                            v and "AND %(comparator)s %(op)s " % {
-                                    'comparator': comparator,
-                                    "op": operation_sql % v.replace("'", "\\'"),
-                                } or ""
+                            v and "%(relation)s %(comparator)s %(op)s " % {
+                                'relation': relation,
+                                'comparator': comparator,
+                                "op": operation_sql % v.replace("'", "\\'"),
+                            } or ""
                         )
             is_operation_limits = self._where_activity_filter_is_operator(
                 variable, operation, value)
             where.extend(is_operation_limits)
-
+        if taggroup:
+            where.append(')')
         return '\n'.join(where)
 
     def _where_activity_identifier(self):
@@ -188,7 +229,7 @@ class FilterToSQL:
         where = []
         # TODO: optimize SQL? This query seems painful, it could be
         # better as an array_agg possibly
-        if operation == 'is' and variable != 'target_region':
+        if operation == 'is' and variable not in ('target_region', 'deal_country'):
             # 'Is' operations requires that we exclude other values,
             # otherwise it's just the same as contains
 
@@ -272,31 +313,39 @@ class FilterToSQL:
                             where_inv += " AND skv%i.value %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
         return where_inv
 
-    def _tables_activity(self):
+    def _tables_activity(self, taggroup=None, last_index=0):
         tables_from = []
-        if self.filters.get("activity", {}).get("tags"):
-            tags = self.filters.get("activity").get("tags")
-            for index, (tag, value) in enumerate(tags.items()):
-                i = index+FilterToSQL.count_offset
-                variable_operation = tag.split("__")
-                variable = variable_operation[0]
+        #if self.filters.get("activity", {}).get("tags"):
+        tags = taggroup or self.filters.get("activity").get("tags")
+        for index, (tag, value) in enumerate(tags.items()):
+            i = last_index + index
+            # Multiple rules?
+            if isinstance(value, dict):
+                tables_from.append(self._tables_activity(taggroup=value, last_index=i))
+                last_index += len(value) - 1
+                continue
+            variable_operation = tag.split("__")
+            variable = variable_operation[0]
 
-                # join tag tables for each condition
-                if variable == "target_region":
-                    tables_from.append(
-                        """
-                        LEFT JOIN landmatrix_activityattribute AS attr_%(count)i
-                        ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.name = 'target_country')
-                        """ % {
-                            'count': i,
-                        })
-                    tables_from.append(
-                        """
-                        LEFT JOIN landmatrix_country AS ac%(count)i
-                        ON CAST(attr_%(count)i.value AS NUMERIC) = ac%(count)i.id
-                        """ % {
-                            'count': i,
-                        })
+            # join tag tables for each condition
+            if variable == 'activity_identifier':
+                continue
+            elif variable in ('target_region', 'deal_country'):
+                tables_from.append(
+                    """
+                    LEFT JOIN landmatrix_activityattribute AS attr_%(count)i
+                    ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.name = 'target_country')
+                    """ % {
+                        'count': i,
+                    })
+                tables_from.append(
+                    """
+                    LEFT JOIN landmatrix_country AS ac%(count)i
+                    ON CAST(attr_%(count)i.value AS NUMERIC) = ac%(count)i.id
+                    """ % {
+                        'count': i,
+                    })
+                if variable == 'target_region':
                     tables_from.append(
                         """
                         LEFT JOIN landmatrix_region AS ar%(count)i
@@ -304,13 +353,16 @@ class FilterToSQL:
                         """ % {
                             'count': i,
                         })
-                elif variable.isdigit():
-                    tables_from.append(
-                        "LEFT JOIN landmatrix_activityattribute AS attr_%(count)i\n" % {"count": i} +\
-                        " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.key_id = '%(key)s')"%{"count": i, "key": variable}
-                    )
-                else:
-                    tables_from.append(join_attributes("attr_%(count)i" % {"count": i}, variable))
+            elif variable.isdigit():
+                tables_from.append(
+                    "LEFT JOIN landmatrix_activityattribute AS attr_%(count)i\n" \
+                    " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.key_id = '%(key)s')" % {
+                        "count": i,
+                        "key": variable
+                    }
+                )
+            else:
+                tables_from.append(join_attributes("attr_%(count)i" % {"count": i}, variable))
         return '\n'.join(tables_from)
 
     def _tables_investor(self):

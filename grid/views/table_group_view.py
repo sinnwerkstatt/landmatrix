@@ -76,7 +76,6 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         self.group = self.group.replace("by-", "").replace("-", "_")
         self.group_value = group_value or ''
 
-        self._set_filters()
         query_result = self.get_records()
         items = self._get_items(query_result)
         context = {
@@ -187,17 +186,19 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         #columns = [col for col in columns if col in SQLBuilder.SQL_COLUMN_MAP.keys()]
         return columns
 
-    @print_execution_time_and_num_queries
-    def _set_filters(self):
-        # FIXME: Convert to property
+    @property
+    def filters(self):
         data = self.request.GET.copy()
-        self.current_formset_conditions = self.get_formset_conditions(
-            self._filter_set(data), data, self.group
-        )
-
-        self.filters = self.get_filter_context(
+        return self.get_filter_context(
             self.current_formset_conditions, self.order_by, self.group, self.group_value,
             data.get("starts_with")
+        )
+
+    @property
+    def current_formset_conditions(self):
+        data = self.request.GET.copy()
+        return self.get_formset_conditions(
+            self._filter_set(data), data, self.group
         )
 
     @property

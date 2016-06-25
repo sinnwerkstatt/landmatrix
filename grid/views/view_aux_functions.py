@@ -38,6 +38,7 @@ def render_to_string(template_name, context, context_instance):
     return loader.render_to_string(template_name, context, context_instance)
 
 
+# FIXME: Move the following filter related functions into Filter class
 def apply_filters_from_session(request, filter_dict):
     """Reads filter values stored in the current FE user's session and stores
        them in filter_dict. Used in ActivityQuerySet for the grid views and in
@@ -48,7 +49,10 @@ def apply_filters_from_session(request, filter_dict):
         elif 'preset_id' in filter[1]:
             preset = PresetFilter(filter[1].get('preset_id'), filter[1].get('name'))
             for i, condition in enumerate(preset.filter.conditions.all()):
-                _update_filters(filter_dict, (filter[1].get('name') + '_{}'.format(i), condition))
+                if preset.filter.relation == preset.filter.RELATION_AND:
+                    _update_filters(filter_dict, (filter[1].get('name') + '_{}'.format(i), condition))
+                else:
+                    _update_filters(filter_dict, (filter[1].get('name') + '_{}'.format(i), condition), group=preset['name'])
     for filter in filters_via_url(request):
         _update_filters(filter_dict, filter)
 
@@ -71,16 +75,22 @@ def filter_condition(variable, operator, value):
     return condition
 
 
-def _update_filters(filter_dict, filter):
+def _update_filters(filter_dict, filter, group=None):
     name = _get_filter_type(filter)
     definition = _get_filter_definition(filter)
     definition_key = list(definition.keys())[0]
+    if group:
+        if group not in filter_dict[name]['tags']:
+            filter_dict[name]['tags'][group] = {}
+        tags = filter_dict[name]['tags'][group]
+    else:
+        tags = filter_dict[name]['tags']
     if filter[1]['variable'] == 'deal_scope':
         filter_dict['deal_scope'] = filter[1].value
     elif filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
-        filter_dict[name]['tags'][definition_key].extend(definition[definition_key])
+        tags[definition_key].extend(definition[definition_key])
     else:
-        filter_dict[name]['tags'].update(definition)
+        tags.update(definition)
 
 
 def _get_filter_type(filter_data):
@@ -97,14 +107,16 @@ def _get_filter_definition(filter_data):
         {'variable__operator': value}
         """
     variable = filter_data[1]['variable']
+    key = filter_data[1]['key'] or 'value'
     operator = filter_data[1]['operator']
     value = _parse_value(filter_data[1]['value'])
 
-    if 'country' in variable and not value.isnumeric():
+    if 'country' in variable and key == 'value' and not value.isnumeric():
         value = str(Country.objects.get(name__iexact=value).pk)
     if 'in' in operator and not isinstance(value, list):
         value = [value]
-    return {'{}__{}'.format(variable, operator): value}
+    definition_key = '__'.join((variable, key, operator))
+    return {definition_key: value}
 
 
 def _parse_value(filter_value):

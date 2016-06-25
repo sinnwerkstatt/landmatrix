@@ -20,7 +20,7 @@ def generate_filter_name():
 
 class Filter(dict):
 
-    def __init__(self, variable, operator, value, name=None, label=None):
+    def __init__(self, variable, operator, value, name=None, label=None, key=None):
         if operator not in FilterToSQL.OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
 
@@ -28,7 +28,7 @@ class Filter(dict):
             name = generate_filter_name()
 
         super().__init__(name=name, variable=variable, operator=operator,
-                         value=value, label=label)
+                         value=value, label=label, key=key)
 
     @property
     def name(self):
