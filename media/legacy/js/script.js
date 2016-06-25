@@ -41,7 +41,7 @@ else {
 }
 
 /* Spatial Data: Set zoom level */
-$('#id_spatial_data-location').keyup(function (){
+$('#id_location-location').keyup(function (){
   map.setZoom(8);
 });
 
@@ -450,10 +450,10 @@ $(document).ready(function () {
     initializeMap(this, i);
     init_google_maps($(this).prev("input"), i);
   });
-  $("#add-spatial-data").click(function () {
-    var index = $(".spatial :input[name=spatial_data-TOTAL_FORMS]").val() - 1;
-    initializeMap($(".form:visible .field.location .map").last()[0], index);
-    init_google_maps($(".form:visible .field.location input").last(), index);
-  });
+  //$("#add-spatial-data").click(function () {
+  //  var index = $(".spatial :input[name=spatial_data-TOTAL_FORMS]").val() - 1;
+  //  initializeMap($(".form:visible .field.location .map").last()[0], index);
+  //  init_google_maps($(".form:visible .field.location input").last(), index);
+  //});
 
 });

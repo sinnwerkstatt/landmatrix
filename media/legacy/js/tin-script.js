@@ -225,7 +225,7 @@ clone = $('body#browse div#container thead').clone();
     });
 */
 
-$('#id_spatial_data-location').keyup(function (){
+$('#id_location-location').keyup(function (){
 	map.setZoom(8);
 });
 

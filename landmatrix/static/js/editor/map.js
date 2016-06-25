@@ -1,11 +1,12 @@
-var geocoders = new Array();
-var maps = {};
-var views = {};
-var markers = new Array();
-var autocompletes = new Array();
-var latChanged = new Array();
-var lonChanged = new Array();
-var lock = true;;
+var geocoders = new Array()
+    maps = {},
+    views = {},
+    markers = new Array(),
+    autocompletes = new Array(),
+    latChanged = new Array(),
+    lonChanged = new Array(),
+    lock = true,
+    prefix = 'location';
 /*
 $(document).ready(function () {
     $(".maptemplate").each(function (index) {
@@ -30,8 +31,8 @@ function unlockMaps() {
 
 function getLocationFields(mapId) {
     var result = {
-        lat: $('#id_location-'+(mapId)+'-point_lat'),
-        lon: $('#id_location-'+(mapId)+'-point_lon')
+        lat: $('#id_' + prefix + '-'+(mapId)+'-point_lat'),
+        lon: $('#id_' + prefix + '-'+(mapId)+'-point_lon')
     };
     return result;
 }
@@ -94,31 +95,28 @@ function updateGeocoding(mapId) {
 
     // changed lan or lon value, request target Country
 
-    var acc = $("#id_form-"+mapId+"-level_of_accuracy :selected");
+    var acc = $('#id_' + prefix + '-'+mapId+"-level_of_accuracy :selected");
     var accuracy = acc.val();
 
     //console.log(accuracy);
-
-    if (accuracy == "40" && fields.lat != null && fields.lat != "" && fields.lon != null && fields.lon != "") {
+    if (fields.lat != null && fields.lat != "" && fields.lon != null && fields.lon != "") {
         geocoders[mapId].geocode({"latLng" : latLng, "language": "en"}, function(results, status) {
             for(var i = 0; i < results[0].address_components.length; i++) {
                 if (results[0].address_components[i].types.indexOf("country") != -1) {
                     var country = results[0].address_components[i].short_name;
-                    $("#id_form-"+mapId+"-target_country option[title='" + country + "']").attr('selected', 'selected');
-                    $("#id_form-"+mapId+"-target_country option:not([title='" + country + "'])").removeAttr("selected");
+                    $('#id_' + prefix + '-'+mapId+"-target_country option[title='" + country + "']").attr('selected', 'selected');
+                    $('#id_' + prefix + '-'+mapId+"-target_country option:not([title='" + country + "'])").removeAttr("selected");
                 }
             }
             map.prev().val(results[0].formatted_address);
         });
-    } /*else {
-        console.log("NOT updating anything")
-    }*/
+    }
 
 
     //switched level of accuracy fire event on lan and lon input fields
-    $("#id_form-"+mapId+"-level_of_accuracy").change(function() {
-        if ($("#id_form-"+mapId+"-level_of_accuracy").find(":selected").val() == "40") {
-            $('#id_form-'+(mapId)+'-point_lat, #id_form-'+(mapId)+'-point_lon').change();
+    $('#id_' + prefix + '-'+mapId+"-level_of_accuracy").change(function() {
+        if ($('#id_' + prefix + '-'+mapId+"-level_of_accuracy").find(":selected").val() == "40") {
+            $('#id_' + prefix + '-'+(mapId)+'-point_lat, #id_' + prefix + '-'+(mapId)+'-point_lon').change();
         }
     });
 
@@ -216,8 +214,7 @@ function initializeMap (mapId, lat, lon) {
 
 function initGeocoder(mapId) {
     try {
-
-        var inputfield = $("#id_form-" + mapId + "-location");
+        var inputfield = $('#id_' + prefix + '-' + mapId + "-location");
 
         if (inputfield.length > 0) {
             geocoders[mapId] = new google.maps.Geocoder();
