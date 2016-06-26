@@ -187,7 +187,7 @@
                 <div class="alert alert-success">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Latest added" %}</h3>
-                    {% if latest_added.cs %}
+                    {% if latest_added %}
                         <table class="table table-condensed">
                             <thead>
                             <th class="deal">{% trans "Deal #" %}</th>
@@ -196,16 +196,16 @@
                             <th class="date">{% trans "Added" %}</th>
                             </thead>
                             <tbody>
-                            {% for changeset in latest_added.cs %}
+                            {% for activity in latest_added %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
+                                            href="{% if request.user.is_staff %}{% url 'change_deal' activity.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
                                     </td>
-                                    <td class="user">{{ changeset.user }}</td>
-                                    <td class="comment" title="{{ changeset.comment }}"><span
-                                            class="truncate">{{ changeset.comment }}</span></td>
-                                    {% if changeset.timestamp %}
-                                        <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
+                                    <td class="user">{{ activity.user }}</td>
+                                    <td class="comment" title="{{ activity.comment }}"><span
+                                            class="truncate">{{ activity.comment }}</span></td>
+                                    {% if activity.timestamp %}
+                                        <td class="date">{{ activity.timestamp|naturaltime_from_string }}</td>
                                     {% else %}
                                         <td class="date">-</td>
                                     {% endif %}
@@ -223,7 +223,7 @@
                 <div class="alert alert-warning">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Latest modified" %}</h3>
-                    {% if latest_modified.cs %}
+                    {% if latest_modified %}
                         <table class="table table-condensed">
                             <thead>
                             <th class="deal">{% trans "Deal #" %}</th>
@@ -232,16 +232,16 @@
                             <th class="date">{% trans "Modified" %}</th>
                             </thead>
                             <tbody>
-                            {% for changeset in latest_modified.cs %}
+                            {% for activity in latest_modified %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
+                                            href="{% if request.user.is_staff %}{% url 'change_deal' activity.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
                                     </td>
-                                    <td class="user">{{ changeset.user }}</td>
-                                    <td class="comment" title="{{ changeset.comment }}"><span
-                                            class="truncate">{{ changeset.comment }}</span></td>
-                                    {% if changeset.timestamp %}
-                                        <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
+                                    <td class="user">{{ activity.user }}</td>
+                                    <td class="comment" title="{{ activity.comment }}"><span
+                                            class="truncate">{{ activity.comment }}</span></td>
+                                    {% if activity.timestamp %}
+                                        <td class="date">{{ activity.timestamp|naturaltime_from_string }}</td>
                                     {% else %}
                                         <td class="date">-</td>
                                     {% endif %}
@@ -261,7 +261,7 @@
                 <div class="alert alert-danger">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Latest deleted" %}</h3>
-                    {% if latest_deleted.cs %}
+                    {% if latest_deleted %}
                         <table class="table table-condensed">
                             <thead>
                             <th class="deal">{% trans "Deal #" %}</th>
@@ -270,16 +270,16 @@
                             <th class="date">{% trans "Deleted" %}</th>
                             </thead>
                             <tbody>
-                            {% for changeset in latest_deleted.cs %}
+                            {% for activity in latest_deleted %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
+                                            href="{% if request.user.is_staff %}{% url 'change_deal' activity.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
                                     </td>
-                                    <td class="user">{{ changeset.user }}</td>
-                                    <td class="comment" title="{{ changeset.comment }}"><span
-                                            class="truncate">{{ changeset.comment }}</span></td>
-                                    {% if changeset.timestamp %}
-                                        <td class="date">{{ changeset.timestamp|naturaltime_from_string }}</td>
+                                    <td class="user">{{ activity.user }}</td>
+                                    <td class="comment" title="{{ activity.comment }}"><span
+                                            class="truncate">{{ activity.comment }}</span></td>
+                                    {% if activity.timestamp %}
+                                        <td class="date">{{ activity.timestamp|naturaltime_from_string }}</td>
                                     {% else %}
                                         <td class="date">-</td>
                                     {% endif %}
@@ -299,7 +299,7 @@
                     <div class="alert alert-info">
                         <a class="close hidden" data-dismiss="alert">&times;</a>
                         <h3>{% trans "Needs your attention" %}</h3>
-                        {% if manage.a_changesets or manage.sh_changesets %}
+                        {% if manage.activities or manage.investors %}
                             <table class="table table-condensed">
                                 <thead>
                                 <th class="deal">{% trans "Deal #" %}</th>
@@ -308,63 +308,55 @@
                                 <th class="action">{% trans "Actions" %}</th>
                                 </thead>
                                 <tbody>
-                                {% for changeset in manage.a_changesets.updates.cs %}
+                                {% for activity in manage.activities.updates %}
                                     <tr class="update">
                                         <td class="deal"><a
-                                                href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
+                                                href="{% if request.user.is_staff %}{% url 'change_deal' activity.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
                                         </td>
-                                        <td class="user">{{ changeset.user }}</td>
+                                        <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Update" %}</td>
                                         <td class="action">
-                                            <a href="{% url 'manage_deal' type='deal' action='approve' id=changeset.id %}"
-                                               class="approve">{% trans "Approve" %}</a>
-                                            <a href="{% url 'manage_deal' type='deal' action='reject' id=changeset.id %}"
-                                               class="reject">{% trans "Reject" %}</a>
+                                            <a href="{% url 'manage_deal' type='deal' action='approve' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                            <a href="{% url 'manage_deal' type='deal' action='reject' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                         </td>
                                     </tr>
                                 {% endfor %}
-                                {% for changeset in manage.a_changesets.deletes.cs %}
+                                {% for activity in manage.activities.deletes %}
                                     <tr class="delete">
                                         <td class="deal"><a
-                                                href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
+                                                href="{% if request.user.is_staff %}{% url 'change_deal' activity.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
                                         </td>
-                                        <td class="user">{{ changeset.user }}</td>
+                                        <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Delete" %}</td>
                                         <td class="action">
-                                            <a href="{% url 'manage_deal' type='deal' action='approve' id=changeset.id %}"
-                                               class="approve">{% trans "Approve" %}</a>
-                                            <a href="{% url 'manage_deal' type='deal' action='reject' id=changeset.id %}"
-                                               class="reject">{% trans "Reject" %}</a>
+                                            <a href="{% url 'manage_deal' type='deal' action='approve' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                            <a href="{% url 'manage_deal' type='deal' action='reject' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                         </td>
                                     </tr>
                                 {% endfor %}
-                                {% for changeset in manage.a_changesets.inserts.cs %}
+                                {% for activity in manage.activities.inserts %}
                                     <tr class="insert">
                                         <td class="deal"><a
-                                                href="{% if request.user.is_staff %}{% url 'change_deal' changeset.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ changeset.deal_id }}</a>
+                                                href="{% if request.user.is_staff %}{% url 'change_deal' activity.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
                                         </td>
-                                        <td class="user">{{ changeset.user }}</td>
+                                        <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Add" %}</td>
                                         <td class="action">
-                                            <a href="{% url 'manage_deal' type='deal' action='approve' id=changeset.id %}"
-                                               class="approve">{% trans "Approve" %}</a>
-                                            <a href="{% url 'manage_deal' type='deal' action='reject' id=changeset.id %}"
-                                               class="reject">{% trans "Reject" %}</a>
+                                            <a href="{% url 'manage_deal' type='deal' action='approve' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                            <a href="{% url 'manage_deal' type='deal' action='reject' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                         </td>
                                     </tr>
                                 {% endfor %}
-                                {% for changeset in manage.sh_changesets.deletes.cs %}
+                                {% for activity in manage.investors.deletes %}
                                     <tr class="deletes">
                                         <td class="investor"><a
-                                                href="{% url 'stakeholder_form' investor_id=changeset.investor_id %}">#{{ changeset.investor_id }}</a>
+                                                href="{% url 'stakeholder_form' investor_id=activity.investor_id %}">#{{ activity.investor_id }}</a>
                                         </td>
-                                        <td class="user">{{ changeset.user }}</td>
+                                        <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Delete" %}</td>
                                         <td class="action">
-                                            <a href="{% url 'manage_deal' type='deal' action='approve' id=changeset.id %}"
-                                               class="approve">{% trans "Approve" %}</a>
-                                            <a href="{% url 'manage_deal' type='deal' action='reject' id=changeset.id %}"
-                                               class="reject">{% trans "Reject" %}</a>
+                                            <a href="{% url 'manage_deal' type='deal' action='approve' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                            <a href="{% url 'manage_deal' type='deal' action='reject' id=activity.id %}" class="reject label label-default label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -372,7 +364,7 @@
                             </table>
                             <!--a href="{% url 'manage' %}">{% trans "Show all" %}</a-->
                         {% else %}
-                            <p>{% trans "No pending changesets require your attention." %}</p>
+                            <p>{% trans "No pending activities require your attention." %}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -394,7 +386,7 @@
                             {% for feedback in feedbacks.feeds %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="{% if request.user.is_staff %}{% url 'change_deal' feedback.deal_id %}{% else %}{% url 'deal_detail' changeset.deal_id %}{% endif %}">#{{ feedback.deal_id }}</a></td>
+                                            href="{% if request.user.is_staff %}{% url 'change_deal' feedback.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ feedback.deal_id }}</a></td>
                                     <td class="user">{{ feedback.from_user }}</td>
                                     <td class="comment" title="{{ feedback.comment }}"><span
                                             class="truncate">{{ feedback.comment }}</span></td>

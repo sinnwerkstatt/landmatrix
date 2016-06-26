@@ -28,8 +28,8 @@ class EditorView(TemplateView):
     def render_authenticated_user(self, request):
         csp = ChangesetProtocol()
         data = {
-            "a_changesets": ["updates", "deletes", "inserts"],
-            "sh_changesets": ["deletes"],
+            "activities": ["updates", "deletes", "inserts"],
+            "investors": ["deletes"],
         }
         request.POST = MultiValueDict({"data": [json.dumps(data)]})
         response = csp.dispatch(request, action="dashboard")

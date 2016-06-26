@@ -23,15 +23,13 @@
 {% block content %}
 <form method="POST" action="./">{% csrf_token %}
   <input type="hidden" name="action" value="{{ view }}"></input>
-<h1>{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} {% if type == "deal" %}{% trans "Deal" %}{% else %}{% trans "Investor" %}{% endif %} #{{ id }}</h1>
-
 <div class="forms">
 {% if form %}
   <ul class="form clearfix">
   {{ form.as_ul }}
   </ul>
 {% endif %}
-  <button type="submit" name="{{action}}" value="1">{{action}}</button>
+  <input class="btn btn-default" type="submit" name="{{ action }}" value="{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %}">
 </div>
 </form>
 {% endblock %}

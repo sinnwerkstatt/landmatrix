@@ -19,7 +19,8 @@ from django.contrib import messages
 import json
 
 from grid.widgets.title_field import TitleField
-from landmatrix.models.activity_changeset import ActivityChangeset
+from landmatrix.models.activity import HistoricalActivity
+from landmatrix.models.investor import HistoricalInvestor
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -38,8 +39,8 @@ class ManageView(TemplateView):
         csp = ChangesetProtocol()
         request.POST = MultiValueDict(
             {"data": [json.dumps(
-                {"a_changesets": ["updates", "deletes", "inserts", "rejected"],
-                 "sh_changesets": ["deletes"]}
+                {"activities": ["updates", "deletes", "inserts", "rejected"],
+                 "investors": ["deletes"]}
             )]}
         )
         response = csp.dispatch(request, action="list")
@@ -48,16 +49,16 @@ class ManageView(TemplateView):
             "view": "manage"
         }
 
-        data.update(response.get("a_changesets", {}))
+        data.update(response.get("activities", {}))
 
-        if "updates" in data and data["updates"] and data["updates"]["cs"]:
+        if "updates" in data and data["updates"] and data["updates"]:
             changed = []
-            for cs in data["updates"]["cs"]:
-                for k in cs.get("fields_changed", []):
+            for activity in data["updates"]:
+                for k in activity.get("fields_changed", []):
                     changed.append(str(get_field_by_a_key_id(k).label))
-                cs["fields_changed"] = ", ".join(changed)
+                activity["fields_changed"] = ", ".join(changed)
 
-        data.update({"sh_deletes": response.get("sh_changesets", {}).get("deletes", {})})
+        data.update({"investors": response.get("investors", {}).get("deletes", {})})
         data.update({"feedbacks": response.get("feedbacks", [])})
         data.update({"rejected": response.get("rejected", [])})
 
@@ -98,13 +99,13 @@ class ManageContentView(UpdateView):
     def get_object(self, queryset=None):
         self.type = self.kwargs['type']
         self.action = self.kwargs['action']
-        self.cs_id = self.kwargs['id']
+        self.id = self.kwargs['id']
         if self.type == "deal":
-            self.instance = ActivityChangeset.objects.get(id=self.cs_id)
-            self.item_id = self.instance.fk_activity.activity_identifier
+            self.instance = HistoricalActivity.objects.get(id=self.id)
+            self.item_id = self.instance.activity_identifier
         else:
-            self.instance = SH_Changeset.objects.get(id=self.cs_id)
-            self.item_id = self.instance.fk_stakeholder.stakeholder_identifier
+            self.instance = HistoricalInvestor.objects.get(id=self.id)
+            self.item_id = self.instance.investor_identifier
         return self.instance
 
     def form_valid(self, form):
@@ -112,11 +113,11 @@ class ManageContentView(UpdateView):
         cp = ChangesetProtocol()
         if self.type == "deal":
             data = {
-                "a_changesets": [{"id": self.instance.id, "comment": comment}]
+                "activities": [{"id": self.instance.id, "comment": comment}]
             }
         else:
             data = {
-                "sh_changesets": [{"id": self.instance.id, "comment": comment}]
+                "investors": [{"id": self.instance.id, "comment": comment}]
             }
         self.request.POST = MultiValueDict({"data": [json.dumps(data)]})
         response = cp.dispatch(self.request, action=self.action)

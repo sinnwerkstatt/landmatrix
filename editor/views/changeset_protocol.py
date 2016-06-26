@@ -75,7 +75,6 @@ class ChangesetProtocol(View):
             "manage": self._activity_to_json(limit=2),
             "feedbacks": _feedbacks_to_json(request.user, limit=5),
             "rejected": _rejected_to_json(request.user)
-
         }
         return HttpResponse(json.dumps(res), content_type="application/json")
 
@@ -83,13 +82,13 @@ class ChangesetProtocol(View):
         """
         POST params:
             "activities": ["updates", "deletes", "inserts"]
-            "sh_changesets": ["updates", "deletes", "inserts"]
+            "investors": ["updates", "deletes", "inserts"]
         """
         user = request.user
         if user.has_perm("editor.change_activity"):
             self.data = {
                 "activities": ["updates", "deletes", "inserts"],
-                "sh_changesets": ["deletes"],
+                "investors": ["deletes"],
             }
         else:
             self.data = {
@@ -113,13 +112,13 @@ class ChangesetProtocol(View):
         return HttpResponse(json.dumps(res), content_type="application/json")
 
     def _approve_activities(self, request):
-        for cs in self.data.get("activities", {}):
-            changeset = ActivityChangeset.objects.get(id=cs.get("id"))
+        for activity in self.data.get("activities", {}):
+            changeset = ActivityChangeset.objects.get(id=activity.get("id"))
             activity = changeset.fk_activity
             if activity.fk_status_id == activity.STATUS_PENDING:
-                _approve_activity_change(activity, changeset, cs.get("comment"), request)
+                _approve_activity_change(activity, changeset, activity.get("comment"), request)
             elif activity.fk_status_id == activity.STATUS_TO_DELETE:
-                _approve_activity_deletion(activity, changeset, cs.get("comment"), request)
+                _approve_activity_deletion(activity, changeset, activity.get("comment"), request)
 
             _approve_investor_changes(get_activity_investor(activity), changeset)
 
@@ -132,20 +131,29 @@ class ChangesetProtocol(View):
         return HttpResponse(json.dumps(res), content_type="application/json")
 
     def _reject_activities(self, request):
-        for cs in self.data.get("activities", {}):
-            changeset = ActivityChangeset.objects.get(id=cs.get("id"))
-            activity = changeset.fk_activity
+        for activity in self.data.get("activities", {}):
+            activity = HistoricalActivity.objects.get(id=activity.get("id"))
             if activity.fk_status_id in (activity.STATUS_PENDING, activity.STATUS_TO_DELETE):
-                _reject_activity_change(activity, changeset, cs.get('comment'), request)
+                _change_status_with_review(
+                    activity,
+                    activity.STATUS_REJECTED,
+                    request.user,
+                    ReviewDecision.objects.get(name="rejected"),
+                    activity.get('comment'),
+                )
+                # FIXME
+                # Problem here: Involvements are not historical yet, but activity and investors are.
+                # As an intermediate solution another involvement is created for each historical activity
+                # which links to the public activity. Let's remove the new involvement.
             _reject_investor_changes(get_activity_investor(activity))
 
     def get_paged_results(self, records, page_number, per_page=10):
         paginator = Paginator(records, per_page)
         page = _get_page(page_number, paginator)
 
-        results = {"cs": []}
+        results = []
         for changeset in page.object_list:
-            results["cs"].append(self.changeset_template_data(changeset))
+            results.append(self.changeset_template_data(changeset))
         # results["pagination"] = self._pagination_to_json(paginator, page)
         return results
 
@@ -181,7 +189,7 @@ class ChangesetProtocol(View):
         if not self.data:
             self.data = {
                 "activities": ["updates", "deletes", "inserts"],
-                #"sh_changesets": ["deletes"],
+                #"investors": ["deletes"],
             }
         if "activities" in self.data:
             self.handle_activities(deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user)
@@ -220,7 +228,7 @@ class ChangesetProtocol(View):
         if "deletes" in self.data["activities"]:
             self.handle_deletes(activities, limit, deletions_page)
         if activities:
-            _uniquify_changesets_dict(activities)
+            _uniquify_activities_dict(activities)
             res["activities"] = activities
 
     def handle_my_deals(self, activities, limit, my_deals_page, user):
@@ -230,11 +238,11 @@ class ChangesetProtocol(View):
         paginator = Paginator(activities_my_deals, 10)
         page = _get_page(my_deals_page, paginator)
         activities_my_deals = page.object_list
-        my_deals = {"cs": []}
-        for changeset in activities_my_deals:
-            my_deals["cs"].append(self.changeset_template_data(changeset, {"status": changeset.fk_activity.fk_status.name}))
-        if my_deals["cs"]:
-            my_deals["pagination"] = _pagination_to_json(paginator, page)
+        my_deals = []
+        for activity in activities_my_deals:
+            my_deals.append(self.changeset_template_data(activity, {"status": activity.fk_activity.fk_status.name}))
+        if my_deals:
+            #my_deals["pagination"] = _pagination_to_json(paginator, page)
             activities["my_deals"] = my_deals
 
     def handle_updates(self, activities, limit, updates_page):
@@ -244,12 +252,12 @@ class ChangesetProtocol(View):
         paginator = Paginator(activities_update, 10)
         page = _get_page(updates_page, paginator)
         activities_update = page.object_list
-        updates = {"cs": []}
-        for changeset in activities_update:
-            fields_changed = _find_changed_fields(changeset)
-            updates["cs"].append(self.changeset_template_data(changeset, {"fields_changed": fields_changed}))
-        if updates["cs"]:
-            updates["pagination"] = _pagination_to_json(paginator, page)
+        updates = []
+        for activity in activities_update:
+            fields_changed = _find_changed_fields(activity)
+            updates.append(self.changeset_template_data(activity, {"fields_changed": fields_changed}))
+        if updates:
+            #updates["pagination"] = _pagination_to_json(paginator, page)
             activities["updates"] = updates
 
     def handle_inserts(self, activities, limit, inserts_page):
@@ -259,11 +267,11 @@ class ChangesetProtocol(View):
         paginator = Paginator(activities_insert, 10)
         page = _get_page(inserts_page, paginator)
         activities_insert = page.object_list
-        inserts = {"cs": []}
-        for cs in activities_insert:
-            inserts["cs"].append(self.changeset_template_data(cs))
-        if inserts["cs"]:
-            inserts["pagination"] = _pagination_to_json(paginator, page)
+        inserts = []
+        for activity in activities_insert:
+            inserts.append(self.changeset_template_data(activity))
+        if inserts:
+            #inserts["pagination"] = _pagination_to_json(paginator, page)
             activities["inserts"] = inserts
 
     def handle_deletes(self, activities, limit, deletions_page):
@@ -272,16 +280,16 @@ class ChangesetProtocol(View):
         paginator = Paginator(activities_deletes, 10)
         page = _get_page(deletions_page, paginator)
         activities_deletes = page.object_list
-        deletes = {"cs": []}
-        for cs in activities_deletes:
-            comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
-            deletes["cs"].append({
-                "id": cs.id,
-                "deal_id": cs.fk_activity.activity_identifier,
-                "user": cs.fk_user.username,
+        deletes = []
+        for activity in activities_deletes:
+            comment = activity.comment and len(activity.comment) > 0 and activity.comment or "-"
+            deletes.append({
+                "id": activity.id,
+                "deal_id": activity.fk_activity.activity_identifier,
+                "user": activity.fk_user.username,
                 "comment": comment
             })
-        if deletes["cs"]:
+        if deletes:
             deletes["pagination"] = _pagination_to_json(paginator, page)
             activities["deletes"] = deletes
 
@@ -310,19 +318,19 @@ def get_activity_investor(activity):
     return None
 
 
-def _uniquify_changesets_dict(changesets):
+def _uniquify_activities_dict(activities):
     unique, deals = [], []
-    for cs in changesets.get('inserts', {}).get('cs', []):
+    for cs in activities.get('inserts', []):
         if cs['deal_id'] not in deals:
             unique.append(cs)
             deals.append(cs['deal_id'])
-    changesets.get('inserts', {})['cs'] = unique
+    activities['inserts'] = unique
     unique = []
-    for cs in changesets.get('updates', {}).get('cs', []):
+    for cs in activities.get('updates', []):
         if cs['deal_id'] not in deals:
             unique.append(cs)
             deals.append(cs['deal_id'])
-    changesets.get('updates', {})['cs'] = unique
+    activities['updates'] = unique
 
 
 def _uniquify_activities_by_deal(activities):
@@ -334,7 +342,7 @@ def _uniquify_activities_by_deal(activities):
     return unique
 
 
-def _filter_changesets_by_countries(activities, countries):
+def _filter_activities_by_countries(activities, countries):
     return activities.filter(
         attributes__name='target_country',
         attributes__value__in=countries
@@ -412,11 +420,8 @@ def _rejected_to_json(user, limit=None):
             "timestamp": activity.history_date.strftime("%Y-%m-%d %H:%M:%S")
          } for activity in feed
     ]
-    return {
-        "cs": rejected,
-        "pagination": _pagination_to_json(paginator, page),
-    }
-
+    return rejected
+#        "pagination": _pagination_to_json(paginator, page),
 
 def _get_comment(historical_activity):
     changeset = ActivityChangeset.objects.filter(
@@ -455,9 +460,12 @@ def _pagination_to_json(paginator, page):
 
 def _approve_activity_change(activity, changeset, comment, request):
     _change_status_with_review(
-        activity, Status.objects.get(name="overwritten" if changeset.previous_version else "active"),
-        changeset, request.user,
-        ReviewDecision.objects.get(name="approved"), comment
+        activity,
+        # FIXME: previous_version is never set, find a better solution
+        activity.STATUS_OVERWRITTEN if changeset.previous_version else activity.STATUS_ACTIVE,
+        request.user,
+        ReviewDecision.objects.get(name="approved"),
+        comment
     )
     involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity)
     ap = ActivityProtocol()
@@ -469,21 +477,8 @@ def _approve_activity_change(activity, changeset, comment, request):
     # which links to the public activity. Let's confirm the new and remove the old involvement.
     ap.prepare_deal_for_public_interface(activity.activity_identifier)
 
-
-def _reject_activity_change(activity, changeset, comment, request):
-    _change_status_with_review(
-        activity, Status.objects.get(name="rejected"),
-        changeset, request.user,
-        ReviewDecision.objects.get(name="rejected"), comment
-    )
-    # FIXME
-    # Problem here: Involvements are not historical yet, but activity and investors are.
-    # As an intermediate solution another involvement is created for each historical activity
-    # which links to the public activity. Let's remove the new involvement.
-
-
-def _change_status_with_review(activity, status, changeset, user, review_decision, comment):
-    activity.fk_status = status
+def _change_status_with_review(activity, status, user, review_decision, comment):
+    activity.fk_status_id = status
     activity.save()
     ActivityChangeset.objects.create(
         fk_activity=activity,

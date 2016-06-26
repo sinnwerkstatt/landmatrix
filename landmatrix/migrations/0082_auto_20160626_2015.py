@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='activitychangeset',
-            name='country',
+            name='fk_country',
             field=models.ForeignKey(to='landmatrix.Country', blank=True, null=True, verbose_name='County'),
         ),
         migrations.AddField(
@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='activitychangeset',
-            name='region',
+            name='fk_region',
             field=models.ForeignKey(to='landmatrix.Region', blank=True, null=True, verbose_name='Region'),
         ),
         migrations.AddField(
