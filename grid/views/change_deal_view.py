@@ -62,17 +62,21 @@ class ChangeDealView(SaveDealView):
         return context
 
     def get_object(self):
+        # TODO: Cache result for user
+        deal_id = self.kwargs.get('deal_id')
+        history_id = self.kwargs.get('history_id', None)
         try:
-            if 'history_id' in self.kwargs:
-                activity = HistoricalActivity.objects.get(id=self.kwargs.get('history_id'))
-                if not self.request.user.is_superuser and activity.fk_status_id in (2,3,4):
-                    raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e))) 
-                return activity
+            if history_id:
+                activity = HistoricalActivity.objects.get(id=history_id)
             else:
-                return HistoricalActivity.objects.filter(activity_identifier=self.kwargs.get('deal_id'),
-                    fk_status_id__in=(2,3)).latest()
+                activity = HistoricalActivity.objects.public_or_deleted().filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
-            raise Http404('Deal {} does not exist ({})'.format(deal_id, str(e))) 
+            raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e))) 
+        if not self.request.user.has_perm('landmatrix.change_activity'):
+            if activity.fk_status_id == activity.STATUS_DELETED:
+                raise Http404('Activity %s has been deleted' % deal_id)
+        return activity 
+
 
     def get_forms(self, data=None, files=None):
         forms = []
@@ -83,7 +87,7 @@ class ChangeDealView(SaveDealView):
         return forms
 
     def get_form(self, form_class, data=None, files=None):
-        prefix = hasattr(form_class, 'prefix') and form_class.prefix or None
+        prefix = hasattr(form_class.Meta, 'name') and form_class.Meta.name or None
         initial = form_class.get_data(self.get_object())
         return form_class(initial=initial, files=files, data=data, prefix=prefix)
 

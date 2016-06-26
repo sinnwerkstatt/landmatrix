@@ -113,7 +113,7 @@ def display_valid_forms(forms):
     for form in forms:
         if form.Meta.name == 'investor_info':
             print('investor_info', form.cleaned_data)
-        elif form.Meta.name == 'data_sources':
+        elif form.Meta.name == 'data_source':
             for sub_form_data in form.cleaned_data:
                 if sub_form_data['type'] and isinstance(sub_form_data['type'], int):
                     field = DealDataSourceForm().fields['type']

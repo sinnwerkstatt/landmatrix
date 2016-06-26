@@ -131,12 +131,11 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
     form_title = _('Data sources')
     extra = 1
     max_num = 1
-    prefix = 'data_source'
 
     def get_attributes(self, request=None):
         attributes = []
         for count, form in enumerate(self.forms):
-            form_attributes = form.get_attributes()
+            form_attributes = form.get_attributes(request)
 
             # FIXME: Move this to DealDataSourceForm.get_attributes
             uploaded = get_file_from_upload(request.FILES, count)
@@ -193,16 +192,19 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
-        groups = activity.attributes.filter(fk_group__name__startswith=cls.prefix).values_list('fk_group__name').distinct()
+        groups = activity.attributes.filter(
+            fk_group__name__startswith=cls.Meta.name).values_list(
+            'fk_group__name', flat=True).distinct()
+
         data = []
         for i, group in enumerate(groups):
-            form_data = DealDataSourceForm.get_data(activity, group=group[0])#, prefix='data_source-%i' % i)
+            form_data = DealDataSourceForm.get_data(activity, group=group)#, prefix='%s-%i' % (cls.Meta.name, i))
             if form_data:
                 data.append(form_data)
         return data
 
     class Meta:
-        name = 'data_sources'
+        name = 'data_source'
 
 
 class ChangeDealDataSourceFormSet(AddDealDataSourceFormSet):
@@ -212,7 +214,7 @@ class ChangeDealDataSourceFormSet(AddDealDataSourceFormSet):
 class PublicViewDealDataSourceForm(DealDataSourceForm):
 
     class Meta:
-        name = 'data_sources'
+        name = 'data_source'
         fields = (
             "tg_data_source", "type", "url", "company", "date"
         )
@@ -242,11 +244,11 @@ def handle_url(form_data, request):
 
     # TODO: this is a quick and dirty KeyError fix, needs some cleanup
     if not url_slug:
-        return
+        return form_data
 
     if 'file' in form_data:
         if url_slug == form_data['file']:
-            return
+            return form_data
         else:
             # Remove file from group
             del form_data['file']

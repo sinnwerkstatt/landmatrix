@@ -15,7 +15,7 @@
         </div>
 
         <div id="{{ form.form_title|slugify }}_body"
-             class="panel-collapse collapse{% if forloop.first %} in{% endif %}">
+             class="panel-collapse collapse{% if forloop.first and not request.POST %} in{% else %}{% if form.forms %}{% for subform in form.forms %}{% if subform.errors %} in{% endif %}{% endfor %}{% else %}{% if form.errors %} in{% endif %}{% endif %}{% endif %}">
             <div class="panel-body">
                 {% if form.forms %}
                     {{ form.management_form }}

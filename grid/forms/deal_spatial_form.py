@@ -80,13 +80,15 @@ class DealSpatialForm(BaseForm):
 
     def get_attributes(self, request=None):
         attributes = super().get_attributes()
-        # Validate target country
-        #if 'target_country' in attributes \
-        #        and not isinstance(attributes['target_country'], int) \
-        #        and not attributes['target_country'].isnumeric():
-        #    target_country = Country.objects.get(
-        #        name=attributes['target_country'])
-        #    attributes['target_country'] = target_country.pk
+        # Replace country name with pk
+        # FIXME: Why is the coutnry ID getting replaced by the name before
+        # Guess that happens by mistake in BaseForm.get_attributes
+        if 'target_country' in attributes \
+                and not isinstance(attributes['target_country']['value'], int) \
+                and not attributes['target_country']['value'].isnumeric():
+            target_country = Country.objects.get(
+                name=attributes['target_country']['value'])
+            attributes['target_country']['value'] = target_country.pk
 
         # For polygon fields, pass the value directly
         if 'area' in attributes:
@@ -109,16 +111,18 @@ class DealSpatialForm(BaseForm):
 class DealSpatialBaseFormSet(BaseFormSet):
 
     form_title = _('Location')
-    prefix = 'location'
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
         groups = activity.attributes.filter(
-            fk_group__name__startswith=cls.prefix).values_list(
+            fk_group__name__startswith=cls.Meta.name).values_list(
             'fk_group__name', flat=True).distinct()
-        data = list(filter(None, [
-            DealSpatialForm.get_data(activity, group=group) for group in groups
-        ]))
+
+        data = []
+        for i, group in enumerate(groups):
+            form_data = DealSpatialForm.get_data(activity, group=group)#, prefix='%s-%i' % (cls.Meta.name, i))
+            if form_data:
+                data.append(form_data)
 
         return data
 

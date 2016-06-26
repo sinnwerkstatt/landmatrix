@@ -10,7 +10,32 @@ from grid.forms.choices import operational_company_choices, investor_choices
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+class InvestorManager(models.Manager):
+    def public(self):
+        return self.filter(fk_status_id__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN))
+
+    def public_or_deleted(self):
+        return self.filter(fk_status_id__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN, InvestorBase.STATUS_DELETED))
+
+    def pending(self):
+        return self.filter(fk_status_id__in=(InvestorBase.STATUS_PENDING, InvestorBase.STATUS_TO_DELETE))
+
 class InvestorBase(DefaultStringRepresentation, models.Model):
+    # FIXME: Replace fk_status with Choice Field
+    STATUS_PENDING = 1
+    STATUS_ACTIVE = 2
+    STATUS_OVERWRITTEN = 3
+    STATUS_DELETED = 4
+    STATUS_REJECTED = 5
+    STATUS_TO_DELETE = 6
+    STATUS_CHOICES = (
+        STATUS_PENDING, _('Pending'),
+        STATUS_ACTIVE, _('Active'),
+        STATUS_OVERWRITTEN, _('Overwritten'),
+        STATUS_DELETED, _('Deleted'),
+        STATUS_REJECTED, _('Rejected'),
+        STATUS_TO_DELETE, _('To delete'),
+    )
     INVESTOR_IDENTIFIER_DEFAULT = 2147483647  # max safe int
     CLASSIFICATION_CHOICES = operational_company_choices + investor_choices
     PARENT_RELATION_CHOICES = (
@@ -37,6 +62,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     comment = models.TextField(_("Comment"), blank=True, null=True)
     #history = HistoricalRecords()
 
+    objects = InvestorManager()
 
     class Meta:
         ordering = ('-name',)
@@ -153,41 +179,10 @@ class InvestorVentureInvolvement(models.Model):
                (self.fk_venture_id, self.fk_investor_id, self.percentage, self.role, self.timestamp)
 
 
-class IAIManager(models.Manager):
-
+class InvestorActivityInvolvementManager(models.Manager):
     def get_involvements_for_activity(self, activity):
-        # TODO: rewrite as django ORM query
-        def original_sql():
-            return """
-SELECT i.*
-FROM primary_investors pi
-JOIN status pi_st ON pi.fk_status = pi_st.id
-JOIN involvements i ON i.fk_primary_investor = pi.id
-LEFT OUTER JOIN stakeholders s ON i.fk_stakeholder = s.id
-WHERE
-  i.fk_activity = %i
-  AND (
-    s.version IS NULL
-    OR s.version = (
-      SELECT MAX(version)
-      FROM stakeholders smax
-      JOIN status st ON smax.fk_status = st.id
-      WHERE smax.stakeholder_identifier = s.stakeholder_identifier AND st.name IN ("active", "overwritten")
-      GROUP BY smax.stakeholder_identifier
-    )
-  )
-  AND pi.version = (
-    SELECT max(version)
-    FROM primary_investors pimax
-    JOIN status st ON pimax.fk_status = st.id
-    WHERE pimax.primary_investor_identifier = pi.primary_investor_identifier AND st.name IN ("active", "overwritten", "deleted")
-  )
-  AND pi_st.name IN ("active", "overwritten")
-""" % activity.id
-
-        print('InvestorActivityInvolvement.Manager.get_involvements_for_activity() TODO: fix (learn from history)!')
         return InvestorActivityInvolvement.objects.filter(fk_activity=activity).\
-            filter(fk_investor__fk_status__name__in=("active", "overwritten"))
+            filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE, Investor.STATUS_OVERWRITTEN))
 
 
 class InvestorActivityInvolvement(models.Model):
@@ -200,25 +195,41 @@ class InvestorActivityInvolvement(models.Model):
     are then linked to the Operational Company through
     InvestorVentureInvolvement.
     '''
+    # FIXME: Replace fk_status with Choice Field
+    STATUS_PENDING = 1
+    STATUS_ACTIVE = 2
+    STATUS_OVERWRITTEN = 3
+    STATUS_DELETED = 4
+    STATUS_REJECTED = 5
+    STATUS_TO_DELETE = 6
+    STATUS_CHOICES = (
+        STATUS_PENDING, _('Pending'),
+        STATUS_ACTIVE, _('Active'),
+        STATUS_OVERWRITTEN, _('Overwritten'),
+        STATUS_DELETED, _('Deleted'),
+        STATUS_REJECTED, _('Rejected'),
+        STATUS_TO_DELETE, _('To delete'),
+    )
 
     fk_activity = models.ForeignKey(
         "Activity", verbose_name=_("Activity"), db_index=True)
     fk_investor = models.ForeignKey(
         "Investor", verbose_name=_("Investor"), db_index=True)
-    percentage = models.FloatField(
-        _('Percentage'), blank=True, null=True,
-        validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
+    #percentage = models.FloatField(
+    #    _('Percentage'), blank=True, null=True,
+    #    validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
 
     # investor can only be an Operational Stakeholder in an activity
-    comment = models.TextField(_("Comment"), blank=True, null=True)
+    #comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
 
-    objects = IAIManager()
+    objects = InvestorActivityInvolvementManager()
 
     def __str__(self):
-        return "Activity: %i Investor: %i Percentage: %s comment: '%s'" % (
-            self.fk_activity_id, self.fk_investor_id, str(self.percentage), str(self.comment)[:40]
+        return "Activity: %i Investor: %i" % (
+            self.fk_activity_id,
+            self.fk_investor_id,
         )
 
     class Meta:
@@ -226,3 +237,24 @@ class InvestorActivityInvolvement(models.Model):
         get_latest_by = 'timestamp'
         verbose_name = _('Investor Activity Involvement')
         verbose_name = _('Investor Activity Involvements')
+
+
+def update_public_investor():
+    # Newer public version of investor available?
+    hinvestor = HistoricalInvestor.objects.public_or_deleted().latest()
+    investor = Investor.objects.get(investor_identifier=hinvestor.investor_identifier)
+    if hinvestor.id != investor.id:
+        # Update investor (maintaining subinvestors)
+        investor.id = hinvestor.id
+        investor.investor_identifier = hinvestor.investor_identifier
+        investor.name = hinvestor.name
+        investor.fk_country_id = hinvestor.fk_country_id
+        investor.classification = hinvestor.classification
+        investor.parent_relation = hinvestor.parent_relation
+        investor.homepage = hinvestor.homepage
+        investor.opencorporates_link = hinvestor.opencorporates_link
+        investor.fk_status_id = hinvestor.fk_status_id
+        investor.timestamp = hinvestor.timestamp
+        investor.comment = hinvestor.comment
+        investor.save()
+

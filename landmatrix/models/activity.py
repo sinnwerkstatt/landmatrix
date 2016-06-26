@@ -6,11 +6,21 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.status import Status
-from landmatrix.models.activity_attribute_group import ActivityAttribute
+from landmatrix.models.activity_attribute_group import ActivityAttribute, HistoricalActivityAttribute
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
-
+from landmatrix.models.activity_changeset import ActivityChangeset
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
+class ActivityManager(models.Manager):
+    def public(self):
+        return self.filter(fk_status_id__in=(ActivityBase.STATUS_ACTIVE, ActivityBase.STATUS_OVERWRITTEN))
+
+    def public_or_deleted(self):
+        return self.filter(fk_status_id__in=(ActivityBase.STATUS_ACTIVE, ActivityBase.STATUS_OVERWRITTEN, ActivityBase.STATUS_DELETED))
+
+    def pending(self):
+        return self.filter(fk_status_id__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_TO_DELETE))
 
 class ActivityBase(DefaultStringRepresentation, models.Model):
     # FIXME: Replace fk_status with Choice Field
@@ -33,6 +43,8 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     availability = models.FloatField(_("availability"), blank=True, null=True)
     fully_updated = models.DateTimeField(_("Fully updated"), blank=True, null=True)#, auto_now_add=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
+
+    objects = ActivityManager()
 
     class Meta:
         abstract = True
@@ -84,6 +96,60 @@ class HistoricalActivity(ActivityBase):
     #@property
     #def attributes(self):
     #    return ActivityAttribute.history.filter(fk_activity_id=self.id).latest()
+
+    def update_public_activity(self, user=None):
+        """Update public activity based upon newest confirmed historical activity"""
+        user = user or self.history_user
+        if not user.has_perm('landmatrix.change_activity'):
+            return False
+        # Update status of historical activity
+        if self.fk_status_id == self.STATUS_PENDING:
+            self.fk_status_id = self.STATUS_OVERWRITTEN
+        elif self.fk_status_id == self.STATUS_TO_DELETE:
+            self.fk_status_id = self.STATUS_DELETED
+        self.save()
+
+        # Historical activity already is the newest version of activity?
+        old_activity = Activity.objects.get(activity_identifier=self.activity_identifier)
+        if self.id == old_activity.id:
+            return False
+        # Activity has been deleted?
+        if self.fk_status_id == self.STATUS_DELETED:
+            old_activity.delete()
+            return True
+
+        # Exchange new activity (create new and delete old)
+        new_activity = Activity.objects.create(
+            id = self.id,
+            activity_identifier = self.activity_identifier,
+            availability = self.availability,
+            fully_updated = self.fully_updated,
+            fk_status_id = self.fk_status_id,
+        )
+        # Delete old and create new activity attributes
+        old_activity.attributes.all().delete()
+        for hattribute in self.attributes.all():
+            attribute = ActivityAttribute.objects.create(
+                fk_activity_id = self.id,
+                fk_group_id = hattribute.fk_group_id,
+                fk_language_id = hattribute.fk_language_id,
+                name = hattribute.name,
+                value = hattribute.value,
+                value2 = hattribute.value2,
+                date = hattribute.date,
+                polygon = hattribute.polygon,
+            )
+        # Confirm pending Investor activity involvement
+        involvements = InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=new_activity.activity_identifier)
+        latest = involvements.latest()
+        if latest.fk_status_id not in (latest.STATUS_ACTIVE, latest.STATUS_OVERWRITTEN):
+            latest.fk_activity_id = new_activity.id
+            latest.fk_status_id = latest.STATUS_OVERWRITTEN
+            latest.save()
+            # Delete other involvments for activity, since we don't need a history of involvements
+            involvements.exclude(id=latest.id).delete()
+        old_activity.delete()
+        return True
 
     class Meta:
         verbose_name = _('Historical activity')

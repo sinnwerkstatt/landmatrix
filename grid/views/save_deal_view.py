@@ -16,7 +16,6 @@ from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from landmatrix.models.activity_attribute_group import ActivityAttribute, \
     HistoricalActivityAttribute, ActivityAttributeGroup
 from landmatrix.models.activity import Activity
-from landmatrix.models.activity_changeset import ActivityChangeset
 from landmatrix.models.investor import InvestorActivityInvolvement
 from landmatrix.models.language import Language
 from landmatrix.models.status import Status
@@ -74,28 +73,25 @@ class SaveDealView(TemplateView):
             return self.form_invalid(forms)
 
     def form_valid(self, forms):
-        activity = self.get_object()
+        hactivity = self.get_object()
         investor_form = list(filter(lambda f: isinstance(f, OperationalStakeholderForm), forms))[0]
         # Create new historical activity
-        activity.pk = None
-        activity.history_user = self.request.user
-        activity.history_date = datetime.now()
-        if self.request.user.is_superuser:
-            activity.fk_status_id = activity.STATUS_OVERWRITTEN
-        else:
-            activity.fk_status_id = activity.STATUS_PENDING
-        activity.save()
+        hactivity.pk = None
+        hactivity.history_user = self.request.user
+        hactivity.history_date = datetime.now()
+        hactivity.save()
         # Create new activity attributes
-        action_comment = self.create_attributes(activity, forms)
-        self.create_involvement(activity, investor_form)
-        # Create changeset
-        changeset = ActivityChangeset.objects.create(
-            fk_activity=activity,
-            comment=action_comment
-        )
-        if self.request.user.is_superuser:
+        action_comment = self.create_attributes(hactivity, forms)
+        hactivity.update_public_activity()
+        self.create_involvement(hactivity, investor_form)
+        if self.request.user.has_perm('landmatrix.change_activity'):
             messages.success(self.request, self.success_message_admin.format(self.deal_id))
         else:
+            # Create changeset (for review)
+            changeset = ActivityChangeset.objects.create(
+                fk_activity=hactivity,
+                comment=action_comment
+            )
             messages.success(self.request, self.success_message.format(self.deal_id))
 
         context = self.get_context_data(**self.kwargs)

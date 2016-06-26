@@ -46,15 +46,14 @@ class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1))
     TODO: inherit from BaseFormSet
     '''
     form_title = _('Contracts')
-    prefix = 'contract'
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=None):
-        groups = activity.attributes.filter(fk_group__name__startswith=cls.prefix).values_list('fk_group__name').distinct()
+        groups = activity.attributes.filter(fk_group__name__startswith=cls.Meta.name).values_list('fk_group__name', flat=True).distinct()
 
         data = []
         for i, group in enumerate(groups):
-            form_data = DealContractForm.get_data(activity, group=group[0])#, prefix='contract-%i' % i)
+            form_data = DealContractForm.get_data(activity, group=group)#, prefix='%s-%i' % (cls.Meta.name, i))
             if form_data:
                 data.append(form_data)
         return data
@@ -63,7 +62,7 @@ class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1))
         return [form.get_attributes(request) for form in self.forms]
 
     class Meta:
-        name = 'contract_data'
+        name = 'contract'
 
 PublicViewDealContractFormSet = formset_factory(DealContractForm,
                                                formset=DealContractFormSet,
