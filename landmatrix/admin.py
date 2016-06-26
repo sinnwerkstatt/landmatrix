@@ -13,4 +13,6 @@ admin.site.register(HistoricalActivity)
 admin.site.register(ActivityAttributeGroup)
 admin.site.register(ActivityAttribute)
 admin.site.register(HistoricalActivityAttribute)
+admin.site.register(ActivityChangeset)
+admin.site.register(ReviewDecision)
 

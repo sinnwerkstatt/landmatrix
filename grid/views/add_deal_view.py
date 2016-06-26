@@ -16,6 +16,8 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class AddDealView(SaveDealView):
     template_name = 'add-deal.html'
     success_message = _('Added successfully.')
+    success_message = _('The deal has been submitted successfully (#{}). It will be reviewed and published soon.')
+    success_message_admin = _('The deal has been added successfully (#{}).')
 
     def get_forms(self, data=None, files=None):
         forms = []
@@ -40,22 +42,21 @@ class AddDealView(SaveDealView):
             hactivity.fk_status_id = 1
         hactivity.save()
         # Create new activity attributes
-        action_comment = self.create_attributes(hactivity, forms)
+        hactivity.comment = self.create_attributes(hactivity, forms)
+        hactivity.save()
         # Create new activity (required for involvement)
-        activity = Activity(
-            activity_identifier=activity_identifier,
-        )
-        if not self.request.user.is_superuser:
-            activity.fk_status_id = 1
-        activity.save()
+        hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
-        # Create changeset
-        changeset = ActivityChangeset.objects.create(
-            fk_activity=hactivity,
-            comment=action_comment
-        )
-        messages.success(self.request, self.success_message.format(self.deal_id))
+        if self.request.user.has_perm('landmatrix.change_activity'):
+            messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
+        else:
+            ## Create changeset (for review)
+            #changeset = ActivityChangeset.objects.create(
+            #    fk_activity=hactivity,
+            #    comment=action_comment
+            #)
+            messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 
-        context = self.get_context_data(**kwargs)
+        context = self.get_context_data(**self.kwargs)
         context['forms'] = forms
         return self.render_to_response(context)

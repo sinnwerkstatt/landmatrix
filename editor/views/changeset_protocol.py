@@ -72,8 +72,8 @@ class ChangesetProtocol(View):
                 self.apply_dashboard_filters(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_DELETED))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_deleted_page')
             ),
-            "manage": self._activity_to_json(limit=2),
-            "feedbacks": _feedbacks_to_json(request.user, limit=5),
+            "manage": self._activity_to_json(limit=10),
+            "feedbacks": _feedbacks_to_json(request.user, limit=10),
             "rejected": _rejected_to_json(request.user)
         }
         return HttpResponse(json.dumps(res), content_type="application/json")
@@ -108,44 +108,46 @@ class ChangesetProtocol(View):
     def approve(self, request, *args, **kwargs):
         res = {"errors": []}
         self._approve_activities(request)
-        _approve_investor_changes(request)
+        #_approve_investor_changes(request)
         return HttpResponse(json.dumps(res), content_type="application/json")
 
     def _approve_activities(self, request):
-        for activity in self.data.get("activities", {}):
-            changeset = ActivityChangeset.objects.get(id=activity.get("id"))
-            activity = changeset.fk_activity
+        for activity_dict in self.data.get("activities", {}):
+            activity = HistoricalActivity.objects.get(id=activity_dict.get("id"))
             if activity.fk_status_id == activity.STATUS_PENDING:
-                _approve_activity_change(activity, changeset, activity.get("comment"), request)
+                _approve_activity_change(activity, activity_dict.get("comment"), request)
             elif activity.fk_status_id == activity.STATUS_TO_DELETE:
-                _approve_activity_deletion(activity, changeset, activity.get("comment"), request)
+                _approve_activity_deletion(activity, activity_dict.get("comment"), request)
 
-            _approve_investor_changes(get_activity_investor(activity), changeset)
+            investor = get_activity_investor(activity)
+            # FIXME: previous_version is never set, find a better solution
+            investor.fk_status_id = investor.STATUS_OVERWRITTEN# if changeset.previous_version else investor.STATUS_ACTIVE),
+            investor.save()
 
     @transaction.atomic
     def reject(self, request, *args, **kwargs):
         res = {"errors": []}
-        print('reject:', self.data)
         self._reject_activities(request)
-        _reject_investor_changes(request)
         return HttpResponse(json.dumps(res), content_type="application/json")
 
     def _reject_activities(self, request):
-        for activity in self.data.get("activities", {}):
-            activity = HistoricalActivity.objects.get(id=activity.get("id"))
+        for activity_dict in self.data.get("activities", {}):
+            activity = HistoricalActivity.objects.get(id=activity_dict.get("id"))
             if activity.fk_status_id in (activity.STATUS_PENDING, activity.STATUS_TO_DELETE):
                 _change_status_with_review(
                     activity,
                     activity.STATUS_REJECTED,
                     request.user,
-                    ReviewDecision.objects.get(name="rejected"),
-                    activity.get('comment'),
+                    None,#ReviewDecision.objects.get(name="rejected"),
+                    activity_dict.get('comment'),
                 )
                 # FIXME
                 # Problem here: Involvements are not historical yet, but activity and investors are.
                 # As an intermediate solution another involvement is created for each historical activity
                 # which links to the public activity. Let's remove the new involvement.
-            _reject_investor_changes(get_activity_investor(activity))
+                investor = get_activity_investor(activity)
+                investor.fk_status_id = investor.STATUS_REJECTED
+                investor.save()
 
     def get_paged_results(self, records, page_number, per_page=10):
         paginator = Paginator(records, per_page)
@@ -293,30 +295,9 @@ class ChangesetProtocol(View):
             deletes["pagination"] = _pagination_to_json(paginator, page)
             activities["deletes"] = deletes
 
-def _approve_investor_changes(investor, changeset):
-    _update_investor_status(
-        investor,
-        Status.objects.get(name="overwritten" if changeset.previous_version else "active")
-    )
-
-
-def _reject_investor_changes(investor):
-    _update_investor_status(investor, Status.objects.get(name="rejected"))
-
-
-def _update_investor_status(investor, status):
-    if not investor:
-        return
-    investor.fk_status = status
-    investor.save()
-
-
 def get_activity_investor(activity):
-    iai = InvestorActivityInvolvement.objects.filter(fk_activity=activity).first()
-    if iai:
-        return Investor.objects.filter(id=iai.fk_investor).first()
-    return None
-
+    iai = InvestorActivityInvolvement.objects.get(fk_activity_id=activity.id)
+    return iai.fk_investor
 
 def _uniquify_activities_dict(activities):
     unique, deals = [], []
@@ -407,7 +388,7 @@ def _feedbacks_to_json(user, feedbacks_page=1, limit=None):
 
 
 def _rejected_to_json(user, limit=None):
-    rejected = HistoricalActivity.objects.filter(fk_status__name='rejected', history_user_id=user.id)
+    rejected = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_REJECTED, history_user_id=user.id)
     feed = limit and rejected[:limit] or rejected
     paginator = Paginator(feed, 10)
     page = _get_page(1, paginator)
@@ -429,7 +410,7 @@ def _get_comment(historical_activity):
     ).filter(
         timestamp__lt=historical_activity.history_date + timedelta(seconds=1)
     ).filter(
-        fk_activity_changeset__fk_activity_id=historical_activity.id
+        fk_activity_id=historical_activity.id
     ).first()
     return changeset.comment if changeset else None
 
@@ -458,16 +439,16 @@ def _pagination_to_json(paginator, page):
     return pagination
 
 
-def _approve_activity_change(activity, changeset, comment, request):
+def _approve_activity_change(activity, comment, request):
     _change_status_with_review(
         activity,
         # FIXME: previous_version is never set, find a better solution
-        activity.STATUS_OVERWRITTEN if changeset.previous_version else activity.STATUS_ACTIVE,
+        activity.STATUS_OVERWRITTEN,# if changeset.previous_version else activity.STATUS_ACTIVE,
         request.user,
-        ReviewDecision.objects.get(name="approved"),
+        None,#ReviewDecision.objects.get(name="approved"),
         comment
     )
-    involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity)
+    involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity.id)
     ap = ActivityProtocol()
     if len(involvements) > 0:
         _conditionally_update_stakeholders(activity, ap, involvements, request)
@@ -480,13 +461,11 @@ def _approve_activity_change(activity, changeset, comment, request):
 def _change_status_with_review(activity, status, user, review_decision, comment):
     activity.fk_status_id = status
     activity.save()
-    ActivityChangeset.objects.create(
-        fk_activity=activity,
-        fk_user=user,
-        fk_review_decision=review_decision,
-        comment=comment
-    )
-
+    changeset, created = ActivityChangeset.objects.get_or_create(fk_activity=activity)
+    changeset.fk_user = user
+    changeset.fk_review_decision = review_decision
+    changeset.comment = comment
+    changeset.save()
 
 def _conditionally_update_stakeholders(activity, ap, involvements, request):
     operational_stakeholder = involvements[0].fk_investor

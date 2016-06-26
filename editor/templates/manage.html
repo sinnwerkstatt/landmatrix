@@ -72,7 +72,7 @@
                     {% endfor %}
                     </tbody>
                 </table>
-                <ul class="pagination">
+                <!-- ul class="pagination">
                     {% if "previous" in feedbacks.pagination %}
                         <li><a class="btn btn-default" type="button"
                                href="{% add_get_parameter feedbacks_page=feedbacks.pagination.previous,selected='feedbacks' %}">&laquo;</a>
@@ -86,7 +86,7 @@
                                href="{% add_get_parameter feedbacks_page=feedbacks.pagination.next,selected='feedbacks' %}">&raquo;</a>
                         </li>
                     {% endif %}
-                </ul>
+                </ul !-->
             {% else %}
                 <p class="alert bg-info">{% trans "Currently there are no feedback requests." %}</p>
             {% endif %}
@@ -125,7 +125,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <ul class="pagination">
+                    <!-- ul class="pagination">
                         {% if "previous" in my_deals.pagination %}
                             <li><a class="btn btn-default" type="button"
                                    href="{% add_get_parameter my_deals_page=my_deals.pagination.previous,selected='my_deals' %}">&laquo;</a>
@@ -139,7 +139,7 @@
                                    href="{% add_get_parameter my_deals_page=my_deals.pagination.next,selected='my_deals' %}">&raquo;</a>
                             </li>
                         {% endif %}
-                    </ul>
+                    </ul -->
                 {% else %}
                     <p class="alert bg-info">{% trans "Currently there are no pending updates." %}</p>
                 {% endif %}
@@ -182,7 +182,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <ul class="pagination">
+                    <!-- ul class="pagination">
                         {% if "previous" in updates.pagination %}
                             <li><a class="btn btn-default" type="button"
                                    href="{% add_get_parameter updates_page=updates.pagination.previous,selected='updates' %}">&laquo;</a>
@@ -196,7 +196,7 @@
                                    href="{% add_get_parameter updates_page=updates.pagination.next,selected='updates' %}">&raquo;</a>
                             </li>
                         {% endif %}
-                    </ul>
+                    </ul -->
                 {% else %}
                     <p class="alert bg-info">{% trans "Currently there are no pending updates." %}</p>
                 {% endif %}
@@ -234,7 +234,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <ul class="pagination">
+                    <!-- ul class="pagination">
                         {% if "previous" in deletes.pagination %}
                             <li><a class="btn btn-default" type="button"
                                    href="{% add_get_parameter deletes_page=deletes.pagination.previous,selected='deletions' %}">&laquo;</a>
@@ -248,7 +248,7 @@
                                    href="{% add_get_parameter deletes_page=deletes.pagination.next,selected='deletions' %}">&raquo;</a>
                             </li>
                         {% endif %}
-                    </ul>
+                    </ul -->
                 {% else %}
                     <p class="alert bg-info">{% trans "Currently there are no pending deletions." %}</p>
                 {% endif %}
@@ -286,7 +286,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <ul class="pagination">
+                    <!--ul class="pagination">
                         {% if "previous" in inserts.pagination %}
                             <li><a class="btn btn-default" type="button"
                                    href="{% add_get_parameter inserts_page=inserts.pagination.previous,selected='inserts' %}">&laquo;</a>
@@ -300,7 +300,7 @@
                                    href="{% add_get_parameter inserts_page=inserts.pagination.next,selected='inserts' %}">&raquo;</a>
                             </li>
                         {% endif %}
-                    </ul>
+                    </ul-->
                 {% else %}
                     <p class="alert bg-info">{% trans "Currently there are no new deals for approval." %}</p>
                 {% endif %}
@@ -339,7 +339,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <ul class="pagination">
+                    <!-- ul class="pagination">
                         {% if "previous" in sh_deletes.pagination %}
                             <li><a type="button" class="btn btn-default"
                                    href="{% add_get_parameter deletes_page=sh_deletes.pagination.previous,selected='deletions' %}">&laquo;</a>
@@ -354,7 +354,7 @@
                                    href="{% add_get_parameter deletes_page=sh_deletes.pagination.next,selected='deletions' %}">&raquo;</a>
                             </li>
                         {% endif %}
-                    </ul>
+                    </ul -->
 
                 {% else %}
                     <p class="alert bg-info">{% trans "Currently there are no pending investor deletions." %}</p>
@@ -388,7 +388,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <ul class="pagination">
+                    <!-- ul class="pagination">
                         {% if "previous" in rejected.pagination %}
                             <li><a type="button" class="btn btn-default"
                                    href="{% add_get_parameter deletes_page=sh_deletes.pagination.previous,selected='deletions' %}">&laquo;</a>
@@ -403,7 +403,7 @@
                                    href="{% add_get_parameter deletes_page=rejected.pagination.next,selected='deletions' %}">&raquo;</a>
                             </li>
                         {% endif %}
-                    </ul>
+                    </ul -->
 
                 {% else %}
                     <p class="alert bg-info">{% trans "Currently there are no rejected changes." %}</p>

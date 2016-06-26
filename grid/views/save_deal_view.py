@@ -104,17 +104,18 @@ class SaveDealView(TemplateView):
         hactivity.history_date = datetime.now()
         hactivity.save()
         # Create new activity attributes
-        action_comment = self.create_attributes(hactivity, forms)
+        hactivity.comment = self.create_attributes(hactivity, forms)
+        hactivity.save()
         hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
         if self.request.user.has_perm('landmatrix.change_activity'):
             messages.success(self.request, self.success_message_admin.format(self.deal_id))
         else:
-            # Create changeset (for review)
-            changeset = ActivityChangeset.objects.create(
-                fk_activity=hactivity,
-                comment=action_comment
-            )
+            ## Create changeset (for review)
+            #changeset = ActivityChangeset.objects.create(
+            #    fk_activity=hactivity,
+            #    comment=action_comment
+            #)
             messages.success(self.request, self.success_message.format(self.deal_id))
 
         context = self.get_context_data(**self.kwargs)
@@ -133,6 +134,9 @@ class SaveDealView(TemplateView):
         action_comment = ''
         # Create new attributes
         for form in forms:
+            if form.Meta.name in ('action_comment', 'user_information'):
+                action_comment = form.cleaned_data['tg_action_comment']
+
             attributes = form.get_attributes(self.request)
             if not attributes:
                 continue
@@ -165,9 +169,6 @@ class SaveDealView(TemplateView):
                     })
                     aa = HistoricalActivityAttribute.objects.create(**kwargs)
 
-            if form.Meta.name == 'action_comment':
-                action_comment = form.cleaned_data['tg_action_comment']
-
         return action_comment
 
     def create_involvement(self, activity, form):
@@ -176,7 +177,10 @@ class SaveDealView(TemplateView):
         # As an intermediate solution we'll just create another involvement which links
         # to the public activity, which will replace the current involvement when the
         # historical activity gets approved.
-        activity = Activity.objects.get(activity_identifier=activity.activity_identifier)
+        activity, created = Activity.objects.get_or_create(
+            id=activity.id,
+            activity_identifier=activity.activity_identifier
+        )
 
         operational_stakeholder = form.cleaned_data['operational_stakeholder']
         # Update operational stakeholder (involvement)

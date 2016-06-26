@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 import json
 
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.investor import InvestorActivityInvolvement, InvestorVentureInvolvement
 from landmatrix.models.public_interface_cache import PublicInterfaceCache
 
@@ -41,9 +41,9 @@ class ActivityProtocol:
         PublicInterfaceCache.objects.create(
             fk_activity=Activity.get_latest_activity(activity_identifier),
             is_public=is_public_deal(activity_identifier),
-            negotiation_status=pi_values['negotiation_status'].attributes['negotiation_status'],
-            implementation_status=pi_values['implementation_status'].attributes['implementation_status'],
-            deal_size=pi_values['deal_size']
+            negotiation_status=pi_values.get('negotiation_status', None),
+            implementation_status=pi_values.get('implementation_status', None),
+            deal_size=pi_values.get('deal_size', None)
         )
 
     def remove_from_lookup_table(self, activity_identifier):
@@ -64,7 +64,7 @@ class ActivityProtocol:
 
         if pi_values['negotiation_status']:
             pi_values['deal_size'] = _calculate_deal_size(
-                activity_identifier, pi_values['negotiation_status'].attributes['negotiation_status']
+                activity_identifier, pi_values['negotiation_status']
             )
 
         # check if deal is domestic or transnational
@@ -93,7 +93,7 @@ def is_public_deal(activity_identifier):
     if not _is_minimum_information_requirement_satisfied(activity_identifier):
         return False
 
-    involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity)
+    involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity.id)
 
     #if not _has_subinvestors(involvements):
     #    return False
@@ -116,20 +116,20 @@ def _most_current_state(activity_identifier, attribute, order):
     return get_most_current_state(states_without_year, states_sorted_by_year, order, attribute)
 
 
-def _is_high_income_target_country(activity_identifier):
-        for tc in attributes_for_activity(activity_identifier, "target_country"):
-            country = Country.objects.get(id=tc.value)
-            if country.high_income:
-                return True
-        return False
+#def _is_high_income_target_country(activity_identifier):
+#        for tc in attributes_for_activity(activity_identifier, "target_country"):
+#            country = Country.objects.get(id=tc.value)
+#            if country.high_income:
+#                return True
+#        return False
 
 
-def _is_mining_deal(activity_identifier):
-    mining = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention",
-                                               value="Mining")
-    intentions = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention")
-    is_mining_deal = len(mining) > 0 and len(intentions) == 1
-    return is_mining_deal
+#def _is_mining_deal(activity_identifier):
+#    mining = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention",
+#                                               value="Mining")
+#    intentions = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention")
+#    is_mining_deal = len(mining) > 0 and len(intentions) == 1
+#    return is_mining_deal
 
 
 def _has_valid_investors(involvements):
@@ -150,11 +150,11 @@ def _has_valid_investors(involvements):
     return has_investor or (primary_investor_name and not invalid_primary_investor_name)
 
 
-def _has_subinvestors(involvements):
-        if len(involvements) == 1 and not involvements[0].subinvestors.exists():
-            return False
-
-        return len(involvements) > 0
+#def _has_subinvestors(involvements):
+#        if len(involvements) == 1 and not involvements[0].subinvestors.exists():
+#            return False
+#
+#        return len(involvements) > 0
 
 
 def _is_minimum_information_requirement_satisfied(activity_identifier):
@@ -163,14 +163,14 @@ def _is_minimum_information_requirement_satisfied(activity_identifier):
     return len(target_country) > 0 and len(ds_type) > 0
 
 
-def _is_size_invalid(activity_identifier):
-    intended_size = latest_attribute_value_for_activity(activity_identifier, "intended_size") or 0
-    contract_size = latest_attribute_value_for_activity(activity_identifier, "contract_size") or 0
-    production_size = latest_attribute_value_for_activity(activity_identifier, "production_size") or 0
-    # Filter B2 (area size >= 200ha AND at least one area size is given)
-    no_size_set = (not intended_size and not contract_size and not production_size)
-    size_too_small = int(intended_size) < MIN_DEAL_SIZE and int(contract_size) < MIN_DEAL_SIZE and int(production_size) < MIN_DEAL_SIZE
-    return no_size_set or size_too_small
+#def _is_size_invalid(activity_identifier):
+#    intended_size = latest_attribute_value_for_activity(activity_identifier, "intended_size") or 0
+#    contract_size = latest_attribute_value_for_activity(activity_identifier, "contract_size") or 0
+#    production_size = latest_attribute_value_for_activity(activity_identifier, "production_size") or 0
+#    # Filter B2 (area size >= 200ha AND at least one area size is given)
+#    no_size_set = (not intended_size and not contract_size and not production_size)
+#    size_too_small = int(intended_size) < MIN_DEAL_SIZE and int(contract_size) < MIN_DEAL_SIZE and int(production_size) < MIN_DEAL_SIZE
+#    return no_size_set or size_too_small
 
 
 def _is_flag_not_public_off(activity_identifier):
@@ -180,28 +180,28 @@ def _is_flag_not_public_off(activity_identifier):
     return (not not_public) or (not_public in ("False", "off"))
 
 
-def _is_public_older_y2k(activity_identifier):
-    """
-    Filter B3
-    Only drop a deal if we have information that initiation years are < 2000.
-    Deals with missing year values have to cross the filter to the PI
-    """
-    negotiation_stati = attributes_for_activity(activity_identifier, "negotiation_status"). \
-        filter(attributes__contains={
-                'negotiation_status': [
-                    "Expression of interest", "Under negotiation", "Oral Agreement",
-                    "Memorandum of understanding", "Contract signed"
-                ]
-            }
-        ). \
-        filter(date__lt='2000-01-01')
-
-    implementation_stati = attributes_for_activity(activity_identifier, "implementation_status"). \
-        filter(attributes__contains={
-            'implementation_status': ["Startup phase (no production)", "In operation (production)"]}
-        ). \
-        filter(date__lt='2000-01-01')
-    return len(negotiation_stati) > 0 or len(implementation_stati) > 0
+#def _is_public_older_y2k(activity_identifier):
+#    """
+#    Filter B3
+#    Only drop a deal if we have information that initiation years are < 2000.
+#    Deals with missing year values have to cross the filter to the PI
+#    """
+#    negotiation_stati = attributes_for_activity(activity_identifier, "negotiation_status"). \
+#        filter(attributes__contains={
+#                'negotiation_status': [
+#                    "Expression of interest", "Under negotiation", "Oral Agreement",
+#                    "Memorandum of understanding", "Contract signed"
+#                ]
+#            }
+#        ). \
+#        filter(date__lt='2000-01-01')
+#
+#    implementation_stati = attributes_for_activity(activity_identifier, "implementation_status"). \
+#        filter(attributes__contains={
+#            'implementation_status': ["Startup phase (no production)", "In operation (production)"]}
+#        ). \
+#        filter(date__lt='2000-01-01')
+#    return len(negotiation_stati) > 0 or len(implementation_stati) > 0
 
 
 def _calculate_deal_scope(activity_identifier):
@@ -210,7 +210,7 @@ def _calculate_deal_scope(activity_identifier):
     if not activity:
         return None
 
-    involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity)
+    involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity.id)
     target_countries = _get_target_countries(activity_identifier)
     investor_countries = {i.fk_investor.fk_country for i in involvements}
 
@@ -317,21 +317,21 @@ def _affected_activity_identifiers(activity, operational_stakeholder):
 
 
 def _add_info_message(activity, activity_identifiers, operational_stakeholder, request):
-
-    if activity_identifiers:
-        links = [
-            "<a target=\"_blank\" href=\"/browse/deal/%(id)s/\">#%(id)s</a>" % {"id": i}
-            for i in activity_identifiers
-        ]
-        messages.info(request, "Updated secondary investors for deals: (%s)." % ",".join(links))
-
-    skipped = _skipped_activity_identifiers(activity, operational_stakeholder)
-    if skipped:
-        links = [
-            "<a target=\"_blank\" href=\"/browse/deal/%(id)s/\">#%(id)s</a>" % {"id": i}
-            for i in skipped
-        ]
-        messages.info(request, "Skipped update of secondary investors for pending deals: (%s)." % ",".join(links))
+    pass
+    #if activity_identifiers:
+    #    links = [
+    #        "<a target=\"_blank\" href=\"/browse/deal/%(id)s/\">#%(id)s</a>" % {"id": i}
+    #        for i in activity_identifiers
+    #    ]
+    #    messages.info(request, "Updated secondary investors for deals: (%s)." % ",".join(links))
+#
+    #skipped = _skipped_activity_identifiers(activity, operational_stakeholder)
+    #if skipped:
+    #    links = [
+    #        "<a target=\"_blank\" href=\"/browse/deal/%(id)s/\">#%(id)s</a>" % {"id": i}
+    #        for i in skipped
+    #    ]
+    #    messages.info(request, "Skipped update of secondary investors for pending deals: (%s)." % ",".join(links))
 
 
 def _skipped_activity_identifiers(activity, operational_stakeholder):
@@ -350,7 +350,7 @@ def _update_stakeholders_for_activity(activity_identifier, involvement_stakehold
         return
 
     existing_investors = {
-        i.fk_investor.id for i in InvestorActivityInvolvement.objects.get_involvements_for_activity(latest)
+        i.fk_investor.id for i in InvestorActivityInvolvement.objects.get_involvements_for_activity(latest.id)
     }
 
     for involved_stakeholder in involvement_stakeholders:

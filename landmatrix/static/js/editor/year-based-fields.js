@@ -6,9 +6,12 @@ function cloneYBDfield(link) {
     remove_link = wrap.find("a.remove-ybd").clone(),
     prefix = input_data.attr("id");
   prefix = prefix.slice(0, prefix.lastIndexOf("_")+1);
-  input_data.attr("id", prefix + (parseInt(input_data.attr("id").replace(prefix, ""))+2));
-  input_data.attr("name", prefix.slice(3) + (parseInt(input_data.attr("name").replace(prefix.slice(3), ""))+2));
-  input_data.val("");
+  input_data.each(function () {
+    $(this)
+      .attr("id", prefix + (parseInt($(this).attr("id").replace(prefix, "")) + input_data.size()))
+      .attr("name", prefix.slice(3) + (parseInt($(this).attr("name").replace(prefix.slice(3), "")) + input_data.size()))
+      .val("");
+  });
   //input_data.removeClass('form-control');
   //if (input_year.length > 0) {
   //  input_year.attr("id", prefix + (parseInt(input_year.attr("id").replace(prefix, ""))+2));

@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from grid.forms.base_form import BaseForm
 from grid.widgets import TitleField, CommentInput
+from captcha.fields import ReCaptchaField
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -14,13 +15,14 @@ class PublicUserInformationForm(BaseForm):
 
     tg_public_user = TitleField(
         required=False, label="", initial=_("User information"))
-    tg_public_user_comment = forms.CharField(
+    tg_action_comment = forms.CharField(
         required=True, label="",
         help_text=_("Write something about yourself and your company. This won't be published."),
         widget=CommentInput)
     public_user_name = forms.CharField(required=False, label=_("Name"))
     public_user_email = forms.EmailField(required=False, label=_("Email"))
     public_user_phone = forms.CharField(required=False, label=_("Phone"))
+    captcha = ReCaptchaField()
 
     #def get_action_comment(self):
     #    action_comment = ""
@@ -35,4 +37,7 @@ class PublicUserInformationForm(BaseForm):
     #    return action_comment
 
     def get_attributes(self, request=None):
-        return []
+        return {}
+
+    class Meta:
+        name = 'user_information'
