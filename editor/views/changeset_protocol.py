@@ -61,18 +61,18 @@ class ChangesetProtocol(View):
     def dashboard(self, request):
         res = {
             "latest_added": self.get_paged_results(
-                self.apply_dashboard_filters(HistoricalActivity.objects.get_by_state(Activity.STATUS_ACTIVE))[:self.DEFAULT_MAX_NUM_CHANGESETS],
+                self.apply_dashboard_filters(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_ACTIVE))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_added_page')
             ),
             "latest_modified": self.get_paged_results(
-                self.apply_dashboard_filters(HistoricalActivity.objects.get_by_state(Activity.STATUS_OVERWRITTEN))[:self.DEFAULT_MAX_NUM_CHANGESETS],
+                self.apply_dashboard_filters(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_OVERWRITTEN))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_modified_page')
             ),
             "latest_deleted": self.get_paged_results(
-                self.apply_dashboard_filters(HistoricalActivity.objects.get_by_state(Activity.STATUS_DELETED))[:self.DEFAULT_MAX_NUM_CHANGESETS],
+                self.apply_dashboard_filters(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_DELETED))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_deleted_page')
             ),
-            "manage": self._changeset_to_json(limit=2),
+            "manage": self._activity_to_json(limit=2),
             "feedbacks": _feedbacks_to_json(request.user, limit=5),
             "rejected": _rejected_to_json(request.user)
 
@@ -82,20 +82,20 @@ class ChangesetProtocol(View):
     def list(self, request, *args, **kwargs):
         """
         POST params:
-            "a_changesets": ["updates", "deletes", "inserts"]
+            "activities": ["updates", "deletes", "inserts"]
             "sh_changesets": ["updates", "deletes", "inserts"]
         """
         user = request.user
         if user.has_perm("editor.change_activity"):
             self.data = {
-                "a_changesets": ["updates", "deletes", "inserts"],
+                "activities": ["updates", "deletes", "inserts"],
                 "sh_changesets": ["deletes"],
             }
         else:
             self.data = {
-                "a_changesets": ["my_deals"],
+                "activities": ["my_deals"],
             }
-        res = self._changeset_to_json(
+        res = self._activity_to_json(
             user,
             request.GET.get('my_deals_page'), request.GET.get('updates_page'),
             request.GET.get('inserts_page'), request.GET.get('deletions_page')
@@ -108,17 +108,17 @@ class ChangesetProtocol(View):
     @transaction.atomic
     def approve(self, request, *args, **kwargs):
         res = {"errors": []}
-        self._approve_a_changesets(request)
+        self._approve_activities(request)
         _approve_investor_changes(request)
         return HttpResponse(json.dumps(res), content_type="application/json")
 
-    def _approve_a_changesets(self, request):
-        for cs in self.data.get("a_changesets", {}):
+    def _approve_activities(self, request):
+        for cs in self.data.get("activities", {}):
             changeset = ActivityChangeset.objects.get(id=cs.get("id"))
             activity = changeset.fk_activity
-            if activity.fk_status.name == "pending":
+            if activity.fk_status_id == activity.STATUS_PENDING:
                 _approve_activity_change(activity, changeset, cs.get("comment"), request)
-            elif activity.fk_status.name == "to_delete":
+            elif activity.fk_status_id == activity.STATUS_TO_DELETE:
                 _approve_activity_deletion(activity, changeset, cs.get("comment"), request)
 
             _approve_investor_changes(get_activity_investor(activity), changeset)
@@ -127,15 +127,15 @@ class ChangesetProtocol(View):
     def reject(self, request, *args, **kwargs):
         res = {"errors": []}
         print('reject:', self.data)
-        self._reject_a_changesets(request)
+        self._reject_activities(request)
         _reject_investor_changes(request)
         return HttpResponse(json.dumps(res), content_type="application/json")
 
-    def _reject_a_changesets(self, request):
-        for cs in self.data.get("a_changesets", {}):
+    def _reject_activities(self, request):
+        for cs in self.data.get("activities", {}):
             changeset = ActivityChangeset.objects.get(id=cs.get("id"))
             activity = changeset.fk_activity
-            if activity.fk_status.name in ("pending", "to_delete"):
+            if activity.fk_status_id in (activity.STATUS_PENDING, activity.STATUS_TO_DELETE):
                 _reject_activity_change(activity, changeset, cs.get('comment'), request)
             _reject_investor_changes(get_activity_investor(activity))
 
@@ -149,19 +149,19 @@ class ChangesetProtocol(View):
         # results["pagination"] = self._pagination_to_json(paginator, page)
         return results
 
-    def changeset_template_data(self, changeset, extra_data=None):
-        if changeset:
+    def changeset_template_data(self, activity, extra_data=None):
+        if activity:
             try:
-                user = changeset.fk_activity.history_user.username
+                user = activity.history_user.username
             except:
                 # User doesn't exist anymore
                 user = force_text(_("Deleted User"))
             template_data = {
-                'id': changeset.pk,
-                "deal_id": changeset.fk_activity.activity_identifier,
+                'id': activity.pk,
+                "deal_id": activity.activity_identifier,
                 "user": user,
-                "timestamp": changeset.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-                "comment": changeset_comment(changeset),
+                "timestamp": activity.history_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "comment": activity.comment,
             }
         else:
             template_data = {
@@ -169,78 +169,35 @@ class ChangesetProtocol(View):
                 "deal_id": 0,
                 "user": force_text(_("Public User")),
                 "timestamp": 0,
-                "comment": changeset_comment(changeset)
+                "comment": activity.comment
             }
         if extra_data:
             template_data.update(extra_data)
 
         return template_data
 
-    def _changeset_to_json(self, user=None, my_deals_page=1, updates_page=1, inserts_page=1, deletions_page=1, limit=None):
+    def _activity_to_json(self, user=None, my_deals_page=1, updates_page=1, inserts_page=1, deletions_page=1, limit=None):
         res = {}
         if not self.data:
             self.data = {
-                "a_changesets": ["updates", "deletes", "inserts"],
+                "activities": ["updates", "deletes", "inserts"],
                 #"sh_changesets": ["deletes"],
             }
-        if "a_changesets" in self.data:
-            self.handle_a_changesets(deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user)
-        # print('_changeset_to_json'); pprint(res)
+        if "activities" in self.data:
+            self.handle_activities(deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user)
+        # print('_activity_to_json'); pprint(res)
         return res
 
-    def handle_a_changesets(self, deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user):
-        changesets = {}
-        if "my_deals" in self.data["a_changesets"]:
-            self.handle_my_deals(changesets, ActivityChangeset.objects, limit, my_deals_page, user)
-        if "updates" in self.data["a_changesets"]:
-            self.handle_updates(changesets, ActivityChangeset.objects, limit, updates_page)
-        if "inserts" in self.data["a_changesets"]:
-            self.handle_inserts(changesets, ActivityChangeset.objects, inserts_page, limit)
-        if "deletes" in self.data["a_changesets"]:
-            handle_deletes(changesets, ActivityChangeset.objects, deletions_page, limit)
-        if changesets:
-            _uniquify_changesets_dict(changesets)
-            res["a_changesets"] = changesets
-
-    def handle_my_deals(self, a_changesets, changesets, limit, my_deals_page, user):
-        changesets_my_deals = changesets.get_my_deals(user.id)
-        changesets_my_deals = self.apply_dashboard_filters(changesets_my_deals)
-        changesets_my_deals = limit and changesets_my_deals[:limit] or changesets_my_deals
-        paginator = Paginator(changesets_my_deals, 10)
-        page = _get_page(my_deals_page, paginator)
-        changesets_my_deals = page.object_list
-        my_deals = {"cs": []}
-        for changeset in changesets_my_deals:
-            my_deals["cs"].append(self.changeset_template_data(changeset, {"status": changeset.fk_activity.fk_status.name}))
-        if my_deals["cs"]:
-            my_deals["pagination"] = _pagination_to_json(paginator, page)
-            a_changesets["my_deals"] = my_deals
-
-    def handle_updates(self, a_changesets, changesets, limit, updates_page):
-        changesets_update = changesets.filter(fk_activity__fk_status__name="pending")
-        changesets_update = self.apply_dashboard_filters(changesets_update)
-        changesets_update = limit and changesets_update[:limit] or changesets_update
-        paginator = Paginator(changesets_update, 10)
-        page = _get_page(updates_page, paginator)
-        changesets_update = page.object_list
-        updates = {"cs": []}
-        for changeset in changesets_update:
-            fields_changed = _find_changed_fields(changeset)
-            updates["cs"].append(self.changeset_template_data(changeset, {"fields_changed": fields_changed}))
-        if updates["cs"]:
-            updates["pagination"] = _pagination_to_json(paginator, page)
-            a_changesets["updates"] = updates
-
-    def apply_dashboard_filters(self, changesets):
+    def apply_dashboard_filters(self, activities):
         if self.request.session.get('dashboard_filters', {}).get('country'):
-            changesets = _filter_changesets_by_countries(
-                changesets, self.request.session['dashboard_filters']['country']
+            activities = _filter_activities_by_countries(
+                activities, self.request.session['dashboard_filters']['country']
             )
         elif self.request.session.get('dashboard_filters', {}).get('region'):
             country_ids = Country.objects.filter(
                 fk_region_id__in=self.request.session.get('dashboard_filters', {}).get('region')
             ).values_list('id', flat=True).distinct()
-            changesets = _filter_changesets_by_countries(changesets, [str(c) for c in country_ids])
+            activities = _filter_activities_by_countries(activities, [str(c) for c in country_ids])
         elif self.request.session.get('dashboard_filters', {}).get('user'):
             user = self.request.session.get('dashboard_filters', {}).get('user')
             if isinstance(user, list) and len(user):
@@ -248,24 +205,85 @@ class ChangesetProtocol(View):
             if UserRegionalInfo.objects.filter(user_id=user).exists():
                 country = UserRegionalInfo.objects.get(user_id=user).country.all()
                 if len(country):
-                    changesets = _filter_changesets_by_countries(changesets, [c.id for c in country])
+                    activities = _filter_activities_by_countries(activities, [c.id for c in country])
 
-        return _uniquify_changesets_by_deal(changesets)
+        return _uniquify_activities_by_deal(activities)
 
-    def handle_inserts(self, a_changesets, changesets, inserts_page, limit):
-        changesets_insert = changesets.filter(fk_activity__fk_status__name="pending")
-        changesets_insert = self.apply_dashboard_filters(changesets_insert)
-        changesets_insert = limit and changesets_insert[:limit] or changesets_insert
-        paginator = Paginator(changesets_insert, 10)
+    def handle_activities(self, deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user):
+        activities = {}
+        if "my_deals" in self.data["activities"]:
+            self.handle_my_deals(activities, limit, my_deals_page, user)
+        if "updates" in self.data["activities"]:
+            self.handle_updates(activities, limit, updates_page)
+        if "inserts" in self.data["activities"]:
+            self.handle_inserts(activities, limit, inserts_page)
+        if "deletes" in self.data["activities"]:
+            self.handle_deletes(activities, limit, deletions_page)
+        if activities:
+            _uniquify_changesets_dict(activities)
+            res["activities"] = activities
+
+    def handle_my_deals(self, activities, limit, my_deals_page, user):
+        activities_my_deals = activities.get_my_deals(user.id)
+        activities_my_deals = self.apply_dashboard_filters(activities_my_deals)
+        activities_my_deals = limit and activities_my_deals[:limit] or activities_my_deals
+        paginator = Paginator(activities_my_deals, 10)
+        page = _get_page(my_deals_page, paginator)
+        activities_my_deals = page.object_list
+        my_deals = {"cs": []}
+        for changeset in activities_my_deals:
+            my_deals["cs"].append(self.changeset_template_data(changeset, {"status": changeset.fk_activity.fk_status.name}))
+        if my_deals["cs"]:
+            my_deals["pagination"] = _pagination_to_json(paginator, page)
+            activities["my_deals"] = my_deals
+
+    def handle_updates(self, activities, limit, updates_page):
+        activities_update = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_PENDING)
+        activities_update = self.apply_dashboard_filters(activities_update)
+        activities_update = limit and activities_update[:limit] or activities_update
+        paginator = Paginator(activities_update, 10)
+        page = _get_page(updates_page, paginator)
+        activities_update = page.object_list
+        updates = {"cs": []}
+        for changeset in activities_update:
+            fields_changed = _find_changed_fields(changeset)
+            updates["cs"].append(self.changeset_template_data(changeset, {"fields_changed": fields_changed}))
+        if updates["cs"]:
+            updates["pagination"] = _pagination_to_json(paginator, page)
+            activities["updates"] = updates
+
+    def handle_inserts(self, activities, limit, inserts_page):
+        activities_insert = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_PENDING)
+        activities_insert = self.apply_dashboard_filters(activities_insert)
+        activities_insert = limit and activities_insert[:limit] or activities_insert
+        paginator = Paginator(activities_insert, 10)
         page = _get_page(inserts_page, paginator)
-        changesets_insert = page.object_list
+        activities_insert = page.object_list
         inserts = {"cs": []}
-        for cs in changesets_insert:
+        for cs in activities_insert:
             inserts["cs"].append(self.changeset_template_data(cs))
         if inserts["cs"]:
             inserts["pagination"] = _pagination_to_json(paginator, page)
-            a_changesets["inserts"] = inserts
+            activities["inserts"] = inserts
 
+    def handle_deletes(self, activities, limit, deletions_page):
+        activities_deletes = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_TO_DELETE)
+        activities_deletes = limit and activities_deletes[:limit] or activities_deletes
+        paginator = Paginator(activities_deletes, 10)
+        page = _get_page(deletions_page, paginator)
+        activities_deletes = page.object_list
+        deletes = {"cs": []}
+        for cs in activities_deletes:
+            comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
+            deletes["cs"].append({
+                "id": cs.id,
+                "deal_id": cs.fk_activity.activity_identifier,
+                "user": cs.fk_user.username,
+                "comment": comment
+            })
+        if deletes["cs"]:
+            deletes["pagination"] = _pagination_to_json(paginator, page)
+            activities["deletes"] = deletes
 
 def _approve_investor_changes(investor, changeset):
     _update_investor_status(
@@ -307,31 +325,31 @@ def _uniquify_changesets_dict(changesets):
     changesets.get('updates', {})['cs'] = unique
 
 
-def _uniquify_changesets_by_deal(changesets):
+def _uniquify_activities_by_deal(activities):
     unique, deals = [], []
-    for changeset in changesets:
-        if changeset.fk_activity.activity_identifier not in deals:
-            unique.append(changeset)
-            deals.append(changeset.fk_activity.activity_identifier)
+    for activity in activities:
+        if activity.activity_identifier not in deals:
+            unique.append(activity)
+            deals.append(activity.activity_identifier)
     return unique
 
 
-def _filter_changesets_by_countries(changesets, countries):
-    return changesets.filter(
-        fk_activity__attributes__name='target_country',
-        fk_activity__attributes__value__in=countries
+def _filter_changesets_by_countries(activities, countries):
+    return activities.filter(
+        attributes__name='target_country',
+        attributes__value__in=countries
     )
 
 
-def changeset_comment(changeset):
-    if changeset is None:
-        return 'changeset is None'
-
-    changeset = ActivityChangeset.objects.filter(id=changeset.id)
-    if len(changeset) > 0:
-        return changeset[0].comment
-    else:
-        return changeset.comment and len(changeset.comment) > 0 and changeset.comment or "-"
+#def changeset_comment(changeset):
+#    if changeset is None:
+#        return 'changeset is None'
+#
+#    changeset = ActivityChangeset.objects.filter(id=changeset.id)
+#    if len(changeset) > 0:
+#        return changeset[0].comment
+#    else:
+#        return changeset.comment and len(changeset.comment) > 0 and changeset.comment or "-"
 
 
 def _find_changed_fields(changeset):
@@ -358,26 +376,6 @@ def _find_changed_fields(changeset):
         # field has been added or deleted
         fields_changed.append(key)
     return fields_changed
-
-
-def handle_deletes(a_changesets, changesets, deletions_page, limit):
-    changesets_delete = changesets.filter(fk_activity__fk_status__name="to_delete")
-    changesets_delete = limit and changesets_delete[:limit] or changesets_delete
-    paginator = Paginator(changesets_delete, 10)
-    page = _get_page(deletions_page, paginator)
-    changesets_delete = page.object_list
-    deletes = {"cs": []}
-    for cs in changesets_delete:
-        comment = cs.comment and len(cs.comment) > 0 and cs.comment or "-"
-        deletes["cs"].append({
-            "id": cs.id,
-            "deal_id": cs.fk_activity.activity_identifier,
-            "user": cs.fk_user.username,
-            "comment": comment
-        })
-    if deletes["cs"]:
-        deletes["pagination"] = _pagination_to_json(paginator, page)
-        a_changesets["deletes"] = deletes
 
 
 def _feedbacks_to_json(user, feedbacks_page=1, limit=None):
