@@ -8,34 +8,49 @@
     {% endblock %}
 </style>
 
-<div id="{{ id }}_div_map">
+<div id="{{ id }}_div_map" style="display: none;">
     <div id="{{ id }}_map"></div>
     {% if not disabled %}<span class="clear_features"><a href="javascript:{{ module }}.clearFeatures()">{% trans "Delete all Features" %}</a></span>{% endif %}
     {% if display_raw %}<p>{% trans "Debugging window (serialized value)" %}</p>{% endif %}
     <textarea id="{{ id }}" class="vSerializedField required" cols="150" rows="10" name="{{ name }}">{{ serialized }}</textarea>
-    <script type="text/javascript">
-        {% block map_options %}var map_options = {};{% endblock %}
-        {% block base_layer %}
-            var base_layer = new ol.layer.Tile({
-                source: new ol.source.XYZ({
-                    attributions: "NASA Worldview",
-                    maxZoom: 8,
-                    url: "https://map1{a-c}.vis.earthdata.nasa.gov/wmts-webmerc/" +
-                         "BlueMarble_ShadedRelief_Bathymetry/default/%7BTime%7D/" +
-                         "GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg"
-                })
-            });
-        {% endblock %}
-        {% block options %}var options = {
-            base_layer: base_layer,
-            geom_name: '{{ geom_type }}',
-            id: '{{ id }}',
-            map_id: '{{ id }}_map',
-            map_options: map_options,
-            map_srid: {{ map_srid|unlocalize }},
-            name: '{{ name }}'
-        };
-        {% endblock %}
-        var {{ module }} = new MapWidget(options);
-    </script>
 </div>
+<a href="#" id="show_{{ id }}_div_map" class="pull-right">{% trans "Show area" %}</a>
+
+<script type="text/javascript">
+    {% block map_options %}var map_options = {};{% endblock %}
+    {% block base_layer %}
+        var base_layer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                attributions: "NASA Worldview",
+                maxZoom: 8,
+                url: "https://map1{a-c}.vis.earthdata.nasa.gov/wmts-webmerc/" +
+                     "BlueMarble_ShadedRelief_Bathymetry/default/%7BTime%7D/" +
+                     "GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg"
+            })
+        });
+    {% endblock %}
+    {% block options %}var options = {
+        base_layer: base_layer,
+        geom_name: '{{ geom_type }}',
+        id: '{{ id }}',
+        map_id: '{{ id }}_map',
+        map_options: map_options,
+        map_srid: {{ map_srid|unlocalize }},
+        name: '{{ name }}'
+    };
+    {% endblock %}
+    var {{ module }} = new MapWidget(options);
+
+    $('#show_{{ id }}_div_map').on('click', function (event) {
+        event.preventDefault();
+        $('#{{ id }}_div_map').toggle();
+
+        if ($('#{{ id }}_div_map').is(':visible')) {
+            {{ module }}.map.updateSize();
+            $(this).text('{% trans "Hide area" %}');
+        }
+        else {
+            $(this).text('{% trans "Show area" %}');
+        }
+    });
+</script>
