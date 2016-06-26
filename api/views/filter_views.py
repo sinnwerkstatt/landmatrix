@@ -9,6 +9,7 @@ from landmatrix.models.filter_preset import FilterPreset as FilterPresetModel
 from grid.views.save_deal_view import SaveDealView
 from api.filters import Filter, PresetFilter
 from api.serializers import FilterPresetSerializer
+from grid.views.view_aux_functions import get_field_label
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -43,7 +44,7 @@ class FilterView(APIView):
                 except KeyError as err:
                     raise serializers.ValidationError(
                         {err.args[0]: _("This field is required.")})
-                label = self._get_filter_label(variable)
+                label = get_field_label(variable)
                 new_filter = Filter(
                     variable=variable, operator=operator, value=value,
                     label=label, name=name)
@@ -59,24 +60,23 @@ class FilterView(APIView):
 
         return Response(stored_filters)
 
-    @staticmethod
-    def _get_filter_label(variable):
-        # TODO: move label generation elsewhere, it shares code
-        # with FilterViewMixin
-        label = ''
-        # for formsets, we want form.form
-        deal_forms = [
-            form.form if hasattr(form, 'form') else form
-            for form in SaveDealView.FORMS
-        ]
-        for form in deal_forms:
-            if variable in form.base_fields:
-                label = str(form.base_fields[variable].label)
-                break
-        if not label and variable == 'activity_identifier':
-            label = _('Deal ID')
-
-        return label
+    #@staticmethod
+    #def _get_filter_label(variable):
+    #    # TODO: move label generation elsewhere, it shares code
+    #    # with FilterViewMixin
+    #    label = ''
+    #    # for formsets, we want form.form
+    #    deal_forms = [
+    #        form.form if hasattr(form, 'form') else form
+    #        for form in SaveDealView.FORMS
+    #    ]
+    #    for form in deal_forms:
+    #        if variable in form.base_fields:
+    #            label = str(form.base_fields[variable].label)
+    #            break
+    #    if not label and variable == 'activity_identifier':
+    #        label = _('Deal ID')
+    #    return label
 
     def get(self, request, *args, **kwargs):
         filters = self.get_object()

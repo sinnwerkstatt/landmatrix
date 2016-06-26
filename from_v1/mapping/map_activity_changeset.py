@@ -20,7 +20,7 @@ def find_attached_activity(activity_id):
 
 class MapActivityChangeset(MapModel):
     old_class = old_editor.models.A_Changeset
-    new_class = landmatrix.models.ActivityChangeset
+    new_class = landmatrix.models.HistoricalActivity
     depends = []
 
     attributes = {

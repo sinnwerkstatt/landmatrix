@@ -23,6 +23,7 @@ from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.forms.country_specific_forms import get_country_specific_form_classes
+from grid.forms.public_user_information_form import PublicUserInformationForm
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -81,7 +82,12 @@ class ChangeDealView(SaveDealView):
     def get_forms(self, data=None, files=None):
         forms = []
         for form_class in self.FORMS:
-            forms.append(self.get_form(form_class, data, files))
+            # Add register form instead of action comment form for non authenticated user
+            if form_class == DealActionCommentForm and not self.request.user.is_authenticated():
+                forms.append(PublicUserInformationForm(data=data))
+            else:
+                forms.append(self.get_form(form_class, data, files))
+        # Add country specific forms
         for form_class in get_country_specific_form_classes(self.get_object()):
             forms.append(self.get_form(form_class, data, files))
         return forms

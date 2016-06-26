@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db.models import Model, TextField, ForeignKey, DateTimeField
+from django.db import models
 from django.db.models.manager import Manager
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
@@ -9,11 +9,11 @@ from django.conf import settings
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class ActivityChangesetManager(Manager):
+class ActivityChangesetManager(models.Manager):
 
-    #def get_by_state(self, status):
-    #    act_ids = self.by_status_query_set(status).values_list('id', flat=True).distinct()
-    #    return ActivityChangeset.objects.filter(fk_activity_id__in=act_ids).order_by('-timestamp')
+    def get_by_state(self, status):
+        #act_ids = self.by_status_query_set(status).values_list('id', flat=True).distinct()
+        return self.filter(fk_activity__fk_status_id=status).order_by('-timestamp')
 
     #def by_status_query_set(self, status):
     #    return HistoricalActivity.objects.filter(fk_status__name__contains=status.lower()).order_by('-history_date')
@@ -40,12 +40,19 @@ class ActivityChangesetManager(Manager):
         #      ORDER BY timestamp DESC;
         #    """ % {"user": user})
 
+class ReviewDecision(models.Model):
+    name = models.CharField(_("Name"), max_length=255)
+    description = models.TextField(_("Description"))
 
-class ActivityChangeset(Model):
+class ActivityChangeset(models.Model):
+    fk_activity = models.ForeignKey('landmatrix.HistoricalActivity', verbose_name=_("Activity"), blank=True, null=True)
+    fk_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("User"), blank=True, null=True)
+    country = models.ForeignKey('landmatrix.Country', verbose_name=_("County"), blank=True, null=True)
+    region = models.ForeignKey('landmatrix.Region', verbose_name=_("Region"), blank=True, null=True)
 
-    fk_activity = ForeignKey("HistoricalActivity", verbose_name=_("Activity"), blank=True, null=True)
-    timestamp = DateTimeField(_("Timestamp"), auto_now_add=True)
-    comment = TextField(_("Comment"))
+    timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
+    fk_review_decision = models.ForeignKey("ReviewDecision", verbose_name=_("Review decision"), blank=True, null=True)
+    comment = models.TextField(_("Comment"), blank=True, null=True)
 
     objects = ActivityChangesetManager()
 

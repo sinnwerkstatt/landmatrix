@@ -8,7 +8,6 @@ from landmatrix.models.default_string_representation import DefaultStringReprese
 from landmatrix.models.status import Status
 from landmatrix.models.activity_attribute_group import ActivityAttribute, HistoricalActivityAttribute
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
-from landmatrix.models.activity_changeset import ActivityChangeset
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -92,6 +91,7 @@ class HistoricalActivity(ActivityBase):
     """All versions (including the current) of activities"""
     history_date = models.DateTimeField(auto_now_add=True)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
+    comment = models.TextField(_('Comment'), blank=True, null=True)
 
     #@property
     #def attributes(self):

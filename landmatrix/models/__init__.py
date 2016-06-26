@@ -3,9 +3,8 @@ from landmatrix.models.default_string_representation import DefaultStringReprese
 
 from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.activity_attribute_group import ActivityAttribute, HistoricalActivityAttribute, ActivityAttributeGroup
-from landmatrix.models.activity_changeset import ActivityChangeset
+from landmatrix.models.activity_changeset import ActivityChangeset, ReviewDecision
 from landmatrix.models.activity_feedback import ActivityFeedback
-from landmatrix.models.activity_changeset_review import ReviewDecision, ActivityChangesetReview
 from landmatrix.models.agricultural_produce import AgriculturalProduce
 from landmatrix.models.animal import Animal
 from landmatrix.models.browse_rule import BrowseRule

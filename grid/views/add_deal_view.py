@@ -7,6 +7,8 @@ from grid.views.save_deal_view import SaveDealView
 from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.activity_changeset import ActivityChangeset
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
+from grid.forms.public_user_information_form import PublicUserInformationForm
+from grid.forms.deal_action_comment_form import DealActionCommentForm
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -18,9 +20,12 @@ class AddDealView(SaveDealView):
     def get_forms(self, data=None, files=None):
         forms = []
         for form_class in self.FORMS:
-            prefix = hasattr(form_class, 'prefix') and form_class.prefix or None
-            form = form_class(data=data, files=files, prefix=prefix)
-            forms.append(form)
+            # Add register form instead of action comment form for non authenticated user
+            if form_class == DealActionCommentForm and not self.request.user.is_authenticated():
+                forms.append(PublicUserInformationForm(data=data))
+            else:
+                prefix = hasattr(form_class.Meta, 'name') and form_class.Meta.name or None
+                forms.append(form_class(data=data, files=files, prefix=prefix))
         return forms
 
     def form_valid(self, forms):

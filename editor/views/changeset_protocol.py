@@ -8,9 +8,8 @@ from editor.models import UserRegionalInfo
 from grid.views.activity_protocol import ActivityProtocol
 from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.activity_attribute_group import ActivityAttribute
-from landmatrix.models.activity_changeset_review import ActivityChangesetReview, ReviewDecision
 from landmatrix.models.activity_feedback import ActivityFeedback
-from landmatrix.models.activity_changeset import ActivityChangeset
+from landmatrix.models.activity_changeset import ActivityChangeset, ReviewDecision
 
 from django.views.generic import View
 from django.http.response import HttpResponse
@@ -62,15 +61,15 @@ class ChangesetProtocol(View):
     def dashboard(self, request):
         res = {
             "latest_added": self.get_paged_results(
-                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("active"))[:self.DEFAULT_MAX_NUM_CHANGESETS],
+                self.apply_dashboard_filters(HistoricalActivity.objects.get_by_state(Activity.STATUS_ACTIVE))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_added_page')
             ),
             "latest_modified": self.get_paged_results(
-                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("overwritten"))[:self.DEFAULT_MAX_NUM_CHANGESETS],
+                self.apply_dashboard_filters(HistoricalActivity.objects.get_by_state(Activity.STATUS_OVERWRITTEN))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_modified_page')
             ),
             "latest_deleted": self.get_paged_results(
-                self.apply_dashboard_filters(ActivityChangeset.objects.get_by_state("deleted"))[:self.DEFAULT_MAX_NUM_CHANGESETS],
+                self.apply_dashboard_filters(HistoricalActivity.objects.get_by_state(Activity.STATUS_DELETED))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_deleted_page')
             ),
             "manage": self._changeset_to_json(limit=2),
@@ -328,9 +327,9 @@ def changeset_comment(changeset):
     if changeset is None:
         return 'changeset is None'
 
-    review = ActivityChangesetReview.objects.filter(fk_activity_changeset_id=changeset.id)
-    if len(review) > 0:
-        return review[0].comment
+    changeset = ActivityChangeset.objects.filter(id=changeset.id)
+    if len(changeset) > 0:
+        return changeset[0].comment
     else:
         return changeset.comment and len(changeset.comment) > 0 and changeset.comment or "-"
 
@@ -422,7 +421,7 @@ def _rejected_to_json(user, limit=None):
 
 
 def _get_comment(historical_activity):
-    changeset = ActivityChangesetReview.objects.filter(
+    changeset = ActivityChangeset.objects.filter(
         timestamp__gt=historical_activity.history_date - timedelta(seconds=1)
     ).filter(
         timestamp__lt=historical_activity.history_date + timedelta(seconds=1)
@@ -488,8 +487,8 @@ def _reject_activity_change(activity, changeset, comment, request):
 def _change_status_with_review(activity, status, changeset, user, review_decision, comment):
     activity.fk_status = status
     activity.save()
-    ActivityChangesetReview.objects.create(
-        fk_activity_changeset=changeset,
+    ActivityChangeset.objects.create(
+        fk_activity=activity,
         fk_user=user,
         fk_review_decision=review_decision,
         comment=comment
@@ -515,8 +514,8 @@ def _approve_activity_deletion(activity, changeset, cs_comment, request):
     activity.fk_status = Status.objects.get(name="deleted")
     activity.save()
     review_decision = ReviewDecision.objects.get(name="deleted")
-    ActivityChangesetReview.objects.create(
-        fk_a_changeset=changeset,
+    ActivityChangeset.objects.create(
+        fk_activity=activity,
         fk_user=request.user,
         fk_review_decision=review_decision,
         comment=cs_comment

@@ -19,6 +19,9 @@ from landmatrix.models.activity import Activity
 from landmatrix.models.investor import InvestorActivityInvolvement
 from landmatrix.models.language import Language
 from landmatrix.models.status import Status
+from landmatrix.models.activity_changeset import ActivityChangeset
+from grid.forms.public_user_information_form import PublicUserInformationForm
+from editor.models import UserRegionalInfo
 
 from django.views.generic import TemplateView
 
@@ -26,6 +29,8 @@ from django.db import transaction
 from django.contrib import messages
 from django.core.exceptions import MultipleObjectsReturned
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 from datetime import date, datetime
 
@@ -68,6 +73,24 @@ class SaveDealView(TemplateView):
     def post(self, request, *args, **kwargs):
         forms = self.get_forms(self.request.POST, files=self.request.FILES)
         if all(form.is_valid() for form in forms):
+            # Register user if not authenticated
+            if not self.request.user.is_authenticated():
+                user_information = forms[-1]
+                if not isinstance(user_information, PublicUserInformationForm):
+                    raise IOError(_('User is not authenticated and not user information given.'))
+                data = user_information.cleaned_data
+                names = data.get('public_user_name', '').split(' ')
+                self.request.user, created = User.objects.get_or_create(
+                    username=data.get('public_user_email'),
+                    email=data.get('public_user_email'),
+                    first_name=' '.join(names[:-1]),
+                    last_name=names[-1],
+                )
+                if created:
+                    UserRegionalInfo.objects.create(
+                        user=self.request.user,
+                        phone=data.get('public_user_phone'),
+                    )
             return self.form_valid(forms)
         else:
             return self.form_invalid(forms)

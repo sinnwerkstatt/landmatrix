@@ -23,6 +23,7 @@
                         <div class="{{ form.form_title|slugify }}-form{% if subform.errors %} with-error{% endif %}">
                         {% include "form.html" with form=subform form_count=forloop.counter %}
                         </div>
+                        {% if form.form_description %}<div class="col-sm-12"><p class="alert alert-info">{{ form.form_description }}</p></div>{% endif %}
                     {% endfor %}
                     <script type="text/javascript">
                     function init_form(form) {
@@ -87,6 +88,7 @@
                     });
                     </script>
                 {% else %}
+                    {% if form.form_description %}<div class="col-sm-12"><p class="alert alert-info">{{ form.form_description }}</p></div>{% endif %}
                     {% include "form.html" with form=form %}
                 {% endif %}
             </div>
