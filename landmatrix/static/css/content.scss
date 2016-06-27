@@ -106,11 +106,16 @@ h6 {
   font-size: 18px;
 }
 
-.newsitem h4 {
-  font-size: 18px;
-  line-height: 1.5em;
-  margin: -6px 0 0;
-  text-transform: none;
+.newsitem {
+  h4 {
+    font-size: 18px;
+    line-height: 1.5em;
+    margin: -6px 0 0;
+    text-transform: none;
+  }
+  small {
+    color: $lm_medium2;
+  }
 }
 
 .messages {
