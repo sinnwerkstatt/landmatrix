@@ -27,21 +27,21 @@ function windowname_to_id(text) {
     return text;
 }
 
-function showAddAnotherPopup(triggeringLink) {
+function showAddInvestorPopup(triggeringLink) {
     var name = triggeringLink.id.replace(/^add_/, '');
     name = id_to_windowname(name);
     href = triggeringLink.href;
     if (href.indexOf('?') == -1) {
         href += '?popup=1';
     } else {
-        href  += '&popup=1';
+        href += '&popup=1';
     }
-    var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
+    var win = window.open(href, name);
     win.focus();
     return false;
 }
 
-function dismissAddAnotherPopup(win, newId, newRepr) {
+function dismissAddInvestorPopup(win, newId, newRepr) {
     // newId and newRepr are expected to have previously been escaped by
     newId = html_unescape(newId);
     newRepr = html_unescape(newRepr);
@@ -65,7 +65,7 @@ function dismissAddAnotherPopup(win, newId, newRepr) {
     win.close();
 }
 
-function showChangePopup(triggeringLink) {
+function showChangeInvestorPopup(triggeringLink) {
     var name = triggeringLink.id.replace(/^change_/, '');
     name = id_to_windowname(name);
     href = triggeringLink.href;
@@ -74,12 +74,12 @@ function showChangePopup(triggeringLink) {
     } else {
         href  += '&popup=1';
     }
-    var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
+    var win = window.open(href, name);
     win.focus();
     return false;
 }
 
-function dismissChangePopup(win, newId, newRepr) {
+function dismissChangeInvestorPopup(win, newId, newRepr) {
     // newId and newRepr are expected to have previously been escaped by
     newId = html_unescape(newId);
     newRepr = html_unescape(newRepr);

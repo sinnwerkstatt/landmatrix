@@ -3,10 +3,11 @@ import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import CreateView, UpdateView
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse_lazy
 from django.utils.timezone import utc
+from django.utils.html import escape
 
 from grid.forms.investor_form import InvestorForm, OperationalCompanyForm
 from grid.forms.parent_stakeholder_formset import (
@@ -108,7 +109,6 @@ class StakeholderFormsMixin:
         context = self.get_context_data(
             form=investor_form, parent_stakeholders=stakeholders_formset,
             parent_investors=investors_formset)
-
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
@@ -172,11 +172,23 @@ class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
         self.object = investor_form.save()
         stakeholders_formset.save(self.object)
         investors_formset.save(self.object)
-        context = self.get_context_data(
-            form=investor_form, parent_stakeholders=stakeholders_formset,
-            parent_investors=investors_formset)
 
-        return self.render_to_response(context)
+        # Is dialog?
+        if self.request.GET.get('popup', False):
+            result = """
+            <script type="text/javascript">
+            opener.dismissChangeInvestorPopup(window, '%s', '%s')
+            </script>
+            """ % (
+                escape(self.object.id),
+                escape(self.object.name)
+            )
+            return HttpResponse(result)
+        else:
+            context = self.get_context_data(
+                form=investor_form, parent_stakeholders=stakeholders_formset,
+                parent_investors=investors_formset)
+            return self.render_to_response(context)
 
 
 class AddStakeholderView(StakeholderFormsMixin, CreateView):
@@ -197,8 +209,18 @@ class AddStakeholderView(StakeholderFormsMixin, CreateView):
         self.object = investor_form.save()
         stakeholders_formset.save(self.object)
         investors_formset.save(self.object)
-
-        return HttpResponseRedirect(self.get_success_url())
+        if self.request.GET.get('popup', False):
+            result = """
+            <script type="text/javascript">
+            opener.dismissAddInvestorPopup(window, '%s', '%s')
+            </script>
+            """ % (
+                escape(self.object.id),
+                escape(self.object.name)
+            )
+            return HttpResponse(result)
+        else:
+            return HttpResponseRedirect(self.get_success_url())
 
 
 # TODO: remove in future. These methods are imported and used elsewhere

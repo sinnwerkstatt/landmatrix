@@ -18,7 +18,7 @@
 
 {% block content %}
 <div class="popup">
-    <form action="{% if investor %}{% url 'stakeholder_form' investor.id %}{% else %}{% url 'add_stakeholder_form' %}{% endif %}" method="post" enctype="multipart/form-data">
+    <form action="{% if investor %}{% url 'stakeholder_form' investor.id %}{% else %}{% url 'add_stakeholder_form' %}{% endif %}{% if request.GET.popup %}?popup=1{% endif %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row">
             {% include "form.html" %}

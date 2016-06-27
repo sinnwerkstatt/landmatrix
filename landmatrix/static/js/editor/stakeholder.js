@@ -52,27 +52,31 @@ function init_investor_form(form) {
     form.find('.loans_date input').attr('placeholder', 'YYYY-MM-DD');
 }
 
-function openInvestorPopup(investorId) {
-    if (typeof investorId === 'undefined') {
-        investorId = 'add';
-    }
-    window.open("/stakeholder/" + investorId);
-}
-
 function generateButtons(field, index) {
     var investorId = field.val();
     console.log("Setting up buttons!");
 
-
-    var buttons = '<a onClick="openInvestorPopup()" href="javascript:void(0);" class="noul"><i class="lm lm-plus"></i></a>';
+    var buttons = '<a id="add_' + $(field).attr("id") + '" class="add-investor" href="/stakeholder/add/" class="noul"><i class="lm lm-plus"></i></a>';
     if (field.val() !== '') {
-        buttons += '<a onClick="openInvestorPopup(' + investorId + ')" href="javascript:void(0);" class="noul"><i class="lm lm-pencil"></i></a>';
+        buttons += '<a id="change_' + $(field).attr("id") + '" class="change-investor" href="/stakeholder/' + investorId + '/" class="noul"><i class="lm lm-pencil"></i></a>';
     }
     var wrap = '<span class="investorops">' + buttons + '</span>';
 
     field.parent().find('.investorops').remove();
     field.parent().append(wrap);
     field.parent().parent().parent().append('<div id="chart' + index + '"></div>');
+
+    // Bind handlers
+    $('a.add-investor').click(function (e) {
+      e.preventDefault()
+      showAddInvestorPopup(this);
+      return False;
+    });
+    $('a.change-investor').click(function (e) {
+      e.preventDefault()
+      showChangeInvestorPopup(this);
+      return False;
+    });
 
 }
 
