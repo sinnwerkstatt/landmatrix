@@ -782,6 +782,9 @@ h6 {
 .newsitem small {
   color: #919191; }
 
+.meta.date {
+  color: #919191; }
+
 .messages {
   font-size: 24px; }
 
