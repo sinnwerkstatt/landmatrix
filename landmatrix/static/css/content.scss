@@ -305,6 +305,7 @@ p {
 }
 
 h1,
+h1
 h2,
 h3,
 h4,
@@ -312,11 +313,22 @@ h5,
 h6 {
   font-family: 'Unit', sans-serif;
   font-weight: bold;
+  a {
+    font-family: 'Unit', sans-serif;
+    font-weight: bold;
+    &:hover {
+      text-decoration: none;
+      border-bottom: 3px solid $lm_orange;
+    }
+  }
 }
 
 h1 {
   text-transform: uppercase;
   color: $lm_orange;
+  a:hover {
+    border-color: $lm_orange;
+  }
 }
 
 h2 {

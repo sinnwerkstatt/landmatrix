@@ -14,7 +14,7 @@
                 {% else %}
                 <div class="col-sm-12">
                 {% endif %}
-                    <h4>{{ blog.title }}</h4>
+                    <h4><a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a></h4>
                     <small>{% trans "Published on" %}: {{ blog.date|date:"d/m/Y" }}</small>
                     {{ blog.body|richtext|truncatewords_html:70 }}
                     <p>
