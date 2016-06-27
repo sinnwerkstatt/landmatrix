@@ -413,9 +413,6 @@ textarea {
 .control-group.with-error .select2-selection {
   border-color: red; }
 
-.with-error .panel-collapse.in {
-  display: block; }
-
 /* YEAR BASED DATA AND FORMSETS */
 a.add-form,
 a.remove-form,
@@ -894,6 +891,20 @@ div.fullwidth.fullwidth-lightgrey {
   src: url(/static/fonts/OpenSans-Light.ttf);
   font-weight: 200; }
 
+@font-face {
+  font-family: 'Unit';
+  src: url("/static/fonts/unit-bold-webfont.eot");
+  src: url("/static/fonts/unit-bold-webfont.eot?#iefix") format("embedded-opentype"), url("/static/fonts/unit-bold-webfont.woff") format("woff"), url("/static/fonts/unit-bold-webfont.ttf") format("truetype"), url("/static/fonts/unit-bold-webfont.svg#unit-boldregular") format("svg");
+  font-weight: bold;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'Unit';
+  src: url("/static/fonts/unit-regular-webfont.eot");
+  src: url("/static/fonts/unit-regular-webfont.eot?#iefix") format("embedded-opentype"), url("/static/fonts/unit-regular-webfont.woff") format("woff"), url("/static/fonts/unit-regular-webfont.ttf") format("truetype"), url("/static/fonts/unit-regular-webfont.svg#unit-regularregular") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
 body,
 p,
 a,
@@ -916,17 +927,22 @@ p {
   font-weight: 400;
   line-height: 2em; }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Unit', sans-serif;
+  font-weight: bold; }
+
 h1 {
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 600;
   text-transform: uppercase;
   color: #fc941f; }
 
 h2,
 h3,
 .wrap h4 {
-  font-family: 'Open Sans', sans-serif;
-  font-weight: bold;
   color: #4a4a4a; }
 
 .wrap > h2,
@@ -1272,9 +1288,6 @@ table tbody {
 table th a {
   display: block;
   float: left; }
-
-form .panel-body {
-  padding: 5px 0px 0px; }
 
 .popup table th,
 .panel-body table th {
