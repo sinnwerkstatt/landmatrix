@@ -766,7 +766,7 @@ h1 {
 h2,
 h3,
 .wrap h4 {
-  font-size: 20px;
+  font-size: 22px;
   margin-bottom: 20px; }
 
 h5,
@@ -774,7 +774,7 @@ h6 {
   font-size: 18px; }
 
 .newsitem h4 {
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.5em;
   margin: -6px 0 0;
   text-transform: none; }
