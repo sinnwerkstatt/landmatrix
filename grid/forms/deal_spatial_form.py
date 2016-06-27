@@ -52,8 +52,13 @@ class DealSpatialForm(BaseForm):
     location_description = forms.CharField(
         required=False, label=_("Location description"),
         widget=forms.TextInput, initial="")
-    area = forms.MultiPolygonField(
-        required=False, widget=OSMWidget(attrs=AREA_WIDGET_ATTRS))
+    intended_area = forms.MultiPolygonField(
+        required=False, label=_("Intended area"),
+        widget=OSMWidget(attrs=AREA_WIDGET_ATTRS))
+    production_area = forms.MultiPolygonField(
+        required=False, label=_("Area in operation"),
+        widget=OSMWidget(attrs=AREA_WIDGET_ATTRS))
+
     tg_location_comment = forms.CharField(
         required=False, label=_("Location comments"), widget=CommentInput)
 
@@ -76,7 +81,10 @@ class DealSpatialForm(BaseForm):
             if initial_lon and initial_lon.isnumeric():
                 area_widget_attrs['default_lon'] = initial_lon
 
-            self.fields['area'].widget = OSMWidget(attrs=area_widget_attrs)
+            self.fields['intended_area'].widget = OSMWidget(
+                attrs=area_widget_attrs)
+            self.fields['production_area'].widget = OSMWidget(
+                attrs=area_widget_attrs)
 
     def get_attributes(self, request=None):
         attributes = super().get_attributes()
@@ -91,19 +99,22 @@ class DealSpatialForm(BaseForm):
             attributes['target_country']['value'] = target_country.pk
 
         # For polygon fields, pass the value directly
-        if 'area' in attributes:
-            polygon_value = attributes['area']['value']
-            attributes['polygon'] = {'polygon': polygon_value}
+        for area_field_name in ('intended_area', 'production_area'):
+            if area_field_name in attributes:
+                polygon_value = attributes[area_field_name]['value']
+                attributes[area_field_name] = {'polygon': polygon_value}
+
         return attributes
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
         data = super().get_data(activity, group=group, prefix=prefix)
 
-        polygon_attribute = activity.attributes.filter(
-            fk_group__name=group, name='polygon').first()
-        if polygon_attribute:
-            data['area'] = polygon_attribute.polygon
+        for area_field_name in ('intended_area', 'production_area'):
+            area_attribute = activity.attributes.filter(
+                fk_group__name=group, name=area_field_name).first()
+            if area_attribute:
+                data[area_field_name] = area_attribute.polygon
 
         return data
 
