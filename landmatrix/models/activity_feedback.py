@@ -13,7 +13,7 @@ class ActivityFeedbackManager(models.Manager):
 
 class ActivityFeedback(models.Model):
 
-    fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"))
+    fk_activity = models.ForeignKey("HistoricalActivity", verbose_name=_("Activity"))
     fk_user_assigned = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name=_("User assigned"), related_name="user_assigned"
     )
@@ -25,3 +25,9 @@ class ActivityFeedback(models.Model):
 
     objects = ActivityFeedbackManager()
 
+    def __str__(self):
+        return str(self.fk_activity)
+
+    class Meta:
+        verbose_name = _('Activity feedback')
+        verbose_name_plural = _('Activity feedbacks')

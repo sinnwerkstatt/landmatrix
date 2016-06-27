@@ -10,6 +10,17 @@
 {% block title %}{% trans "Manage deals" %}{% endblock %}
 
 {% block subnav %}
+    <ul class="subnav nav nav-pills pull-right">
+        <li role="presentation"><a href="{% url 'map' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+            <i class="lm lm-map-marker"></i>{% trans "Map" %}
+        </a></li>
+        <li role="presentation"><a href="{% url 'data' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+            <i class="lm lm-table"></i>{% trans "Data" %}
+        </a></li>
+        <li role="presentation"><a href="{% url 'chart_transnational_deals' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+            <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+        </a></li>
+    </ul>
 {% endblock %}
 
 {% block content %}
@@ -23,27 +34,31 @@
             {% endif %}
         });
     </script>
-    <ul class="manage nav nav-tabs" id="manage-sections">
-        <li><a href="#feedbacks"><i class="icon-chevron-down icon-white"></i>
-            {% trans "Feedback" %}{% if feedbacks.feeds %} <small><span class="label label-default">{{ feedbacks.feeds|length }}){% endif %}</a></li>
-        {% if not perms.landmatrix.change_activity %}
-            <li><a href="#my-pending-deals"><i class="icon-chevron-down"></i>
-                {% trans "My deals" %}{% if my_deals %} <small><span class="label label-default">{{ my_deals|length }}</span></small>{% endif %}</a></li>
-        {% else %}
-            <li><a href="#updates"><i class="icon-chevron-down"></i>
-                {% trans "Pending updates" %}{% if updates %} <small><span class="label label-default">{{ updates|length }}</span></small>{% endif %}</a></li>
-            <li><a href="#deletions"><i class="icon-chevron-down"></i>
-                {% trans "Pending deletions" %}{% if deletes %} <small><span class="label label-default">{{ deletes|length }}</span></small>{% endif %}</a></li>
-            <li><a href="#inserts"><i class="icon-chevron-down"></i>
-                {% trans "New deals for approval" %}{% if inserts %} <small><span class="label label-default">{{ inserts|length }}</span></small>{% endif %}</a></li>
-            <li><a href="#sh-deletions"><i class="icon-chevron-down"></i>
-                {% trans "Pending investor deletions" %}{% if sh_deletes %} <small><span class="label label-default">{{ sh_deletes|length }}</span></small>{% endif %}
-            </a></li>
-            <li><a href="#rejected"><i class="icon-chevron-down"></i>
-                {% trans "Rejected changes" %}{% if rejected %} <small><span class="label label-default">{{ rejected|length }}</span></small>{% endif %}
-            </a></li>
-        {% endif %}
-    </ul>
+    <div class="navbar navbar-default navbar-subnav" role="navigation">
+        <div class="container-fluid">
+            <ul class="manage nav navbar-nav" id="manage-sections">
+                <li><a href="#feedbacks"><i class="icon-chevron-down icon-white"></i>
+                    {% trans "Feedback" %}{% if feedbacks.feeds %} <small><span class="label label-default">{{ feedbacks.feeds|length }}){% endif %}</a></li>
+                {% if not perms.landmatrix.change_activity %}
+                    <li><a href="#my-pending-deals"><i class="icon-chevron-down"></i>
+                        {% trans "My deals" %}{% if my_deals %} <small><span class="label label-default">{{ my_deals|length }}</span></small>{% endif %}</a></li>
+                {% else %}
+                    <li><a href="#updates"><i class="icon-chevron-down"></i>
+                        {% trans "Pending updates" %}{% if updates %} <small><span class="label label-default">{{ updates|length }}</span></small>{% endif %}</a></li>
+                    <li><a href="#deletions"><i class="icon-chevron-down"></i>
+                        {% trans "Pending deletions" %}{% if deletes %} <small><span class="label label-default">{{ deletes|length }}</span></small>{% endif %}</a></li>
+                    <li><a href="#inserts"><i class="icon-chevron-down"></i>
+                        {% trans "New deals for approval" %}{% if inserts %} <small><span class="label label-default">{{ inserts|length }}</span></small>{% endif %}</a></li>
+                    <li><a href="#sh-deletions"><i class="icon-chevron-down"></i>
+                        {% trans "Pending investor deletions" %}{% if sh_deletes %} <small><span class="label label-default">{{ sh_deletes|length }}</span></small>{% endif %}
+                    </a></li>
+                    <li><a href="#rejected"><i class="icon-chevron-down"></i>
+                        {% trans "Rejected changes" %}{% if rejected %} <small><span class="label label-default">{{ rejected|length }}</span></small>{% endif %}
+                    </a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
     <p>&nbsp;</p>
     <div class="tab-content">
         <div id="feedbacks" class="tab-pane active">

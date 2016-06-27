@@ -29,7 +29,7 @@ from wagtail.wagtailcore import urls as wagtail_urls
 from grid.views import (
     AddDealView, ChangeDealView, DealComparisonView, DealDetailView,
     FilterWidgetAjaxView, AddStakeholderView, ChangeStakeholderView,
-    InvestorComparisonView, DealDetailExportView
+    InvestorComparisonView, DealDetailExportView, DeleteDealView
 )
 from feeds.views import DealChangesFeed
 from api import urls as api_urls
@@ -90,7 +90,7 @@ urlpatterns = patterns('',
         name='deal_changes_feed'
     ),
     url(
-        r'^deal/(?P<deal_id>[\d]+)\.(?P<format>(csv|xml|xls))/$',
+        r'^deal/(?P<deal_id>\d+)\.(?P<format>(csv|xml|xls))/$',
         vary_on_cookie(cache_page(CACHE_TIMEOUT)(DealDetailExportView.as_view())),
         name='export'
     ),
@@ -105,6 +105,12 @@ urlpatterns = patterns('',
         r'^deal/add/$',
         AddDealView.as_view(),
         name='add_deal'
+    ),
+
+    url(
+        r'^deal/delete/(?P<deal_id>\d+)/$',
+        DeleteDealView.as_view(),
+        name='delete_deal'
     ),
 
     url(

@@ -218,8 +218,6 @@
                         <p>{% trans "No deals have been added lately." %}</p>
                     {% endif %}
                 </div>
-            </div>
-            <div class="col-md-6">
                 <div class="alert alert-warning">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Latest modified" %}</h3>
@@ -254,10 +252,6 @@
                         <p>{% trans "No deals have been modified lately." %}</p>
                     {% endif %}
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
                 <div class="alert alert-danger">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Latest deleted" %}</h3>
@@ -293,9 +287,8 @@
                     {% endif %}
                 </div>
             </div>
-
+            <div class="col-md-6">
         {% if perms.editor.change_activity %}
-                <div class="col-md-6">
                     <div class="alert alert-info">
                         <a class="close hidden" data-dismiss="alert">&times;</a>
                         <h3>{% trans "Needs your attention" %}</h3>
@@ -367,10 +360,7 @@
                             <p>{% trans "No pending activities require your attention." %}</p>
                         {% endif %}
                     </div>
-                </div>
             {% endif %}
-
-            <div class="col-md-6">
                 <div class="alert alert-info">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Feedback requests" %}</h3>

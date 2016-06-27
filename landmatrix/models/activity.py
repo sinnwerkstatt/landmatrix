@@ -40,7 +40,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
     availability = models.FloatField(_("availability"), blank=True, null=True)
-    fully_updated = models.DateTimeField(_("Fully updated"), blank=True, null=True)#, auto_now_add=True)
+    fully_updated = models.BooleanField(_("Fully updated"), default=False)#, auto_now_add=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
 
     objects = ActivityManager()

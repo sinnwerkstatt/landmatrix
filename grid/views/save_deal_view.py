@@ -20,6 +20,7 @@ from landmatrix.models.investor import InvestorActivityInvolvement
 from landmatrix.models.language import Language
 from landmatrix.models.status import Status
 from landmatrix.models.activity_changeset import ActivityChangeset
+from landmatrix.models.activity_feedback import ActivityFeedback
 from grid.forms.public_user_information_form import PublicUserInformationForm
 from editor.models import UserRegionalInfo
 
@@ -105,18 +106,24 @@ class SaveDealView(TemplateView):
         hactivity.save()
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)
+        hactivity.fully_updated = self.get_fully_updated(forms[-1])
         hactivity.save()
         hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
+
+        # Create activity feedback
+        self.create_activity_feedback(hactivity, forms[-1])
+
+        # Create success message
         if self.request.user.has_perm('landmatrix.change_activity'):
-            messages.success(self.request, self.success_message_admin.format(self.deal_id))
+            messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
         else:
             ## Create changeset (for review)
             #changeset = ActivityChangeset.objects.create(
             #    fk_activity=hactivity,
             #    comment=action_comment
             #)
-            messages.success(self.request, self.success_message.format(self.deal_id))
+            messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 
         context = self.get_context_data(**self.kwargs)
         context['forms'] = forms
@@ -200,3 +207,22 @@ class SaveDealView(TemplateView):
         )
         involvement.save()
 
+    def create_activity_feedback(self, activity, form):
+        if self.request.user.is_authenticated():
+            if not isinstance(form, DealActionCommentForm):
+                raise IOError(_('User is authenticated but no action comment given.'))
+            data = form.cleaned_data
+            if data.get('assign_to_user', None):
+                feedback = ActivityFeedback.objects.create(
+                    fk_activity_id=self.get_object().id,
+                    fk_user_assigned=data.get('assign_to_user'),
+                    fk_user_created=self.request.user,
+                    comment=data.get('tg_feedback_comment'),
+                )
+
+    def get_fully_updated(self, form):
+        if self.request.user.is_authenticated():
+            if not isinstance(form, DealActionCommentForm):
+                raise IOError(_('User is authenticated but no action comment given.'))
+            return form.cleaned_data.get('fully_updated', False)
+        return False

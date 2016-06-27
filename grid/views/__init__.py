@@ -10,6 +10,7 @@ from .browse_text_input import *
 from .change_deal_view import *
 from .deal_comparison_view import *
 from .deal_detail_view import *
+from .delete_deal_view import *
 from .export_view import *
 from .filter_widget_ajax_view import *
 from .filter_widget_mixin import *

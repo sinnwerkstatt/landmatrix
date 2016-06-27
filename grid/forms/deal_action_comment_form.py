@@ -39,9 +39,9 @@ class DealActionCommentForm(BaseForm):
         required=True, label="", widget=CommentInput)
     fully_updated = forms.BooleanField(
         required=False, label=_("Fully updated"))
-    fully_updated_history = forms.CharField(
-        required=False, label=_("Fully updated history"),
-        widget=forms.Textarea(attrs={"readonly":True, "cols": 80, "rows": 5}))
+    #fully_updated_history = forms.CharField(
+    #    required=False, label=_("Fully updated history"),
+    #    widget=forms.Textarea(attrs={"readonly":True, "cols": 80, "rows": 5}))
 
 
     tg_not_public = TitleField(
@@ -60,76 +60,6 @@ class DealActionCommentForm(BaseForm):
         empty_label=_("Unassigned"))
     tg_feedback_comment = forms.CharField(
         required=False, label=_("Feedback comment"), widget=CommentInput)
-
-    def get_action_comment(self):
-        for j, group in enumerate(super().get_attributes()):
-            if group["main_tag"]["value"] == "action":
-                return group["comment"]
-        return ""
-
-    def get_feedback(self):
-        for j, group in enumerate(super().get_attributes()):
-            if group["main_tag"]["value"] == "feedback":
-                tags = group.get("tags", [])
-                if len(tags) > 0:
-                    feedback = {
-                        "assigned_to": tags[0].get("value"),
-                        "comment": group.get("comment")
-                    }
-                    return feedback
-        return ""
-
-    def get_fully_updated(self):
-        for j, group in enumerate(super().get_attributes()):
-            if group["main_tag"]["value"] == "action":
-                for tag in group.get("tags", []):
-                    if tag.get("key") == "fully_updated":
-                        return tag.get("value")
-        return False
-
-    @classmethod
-    def get_data(cls, activity, group=None, prefix=None):
-        '''
-        TODO: this getframeinfo stuff is bad.
-        '''
-        data = super().get_data(activity)
-        if False:
-            # TODO: NameError here (A_Feedback)
-            a_feedback = A_Feedback.objects.filter(fk_activity=activity)
-        else:
-            frameinfo = getframeinfo(currentframe())
-            print(
-                '*** feedback not yet implemented!', frameinfo.filename,
-                frameinfo.lineno)
-            a_feedback = []
-
-        if len(a_feedback) > 0:
-            feedback = a_feedback[0]
-            data.update({
-                "assign_to_user": feedback.fk_user_assigned.id,
-                "tg_feedback_comment": feedback.comment,
-            })
-        if False:
-            fully_updated_history = Activity.objects.get_fully_updated_history(
-                activity.activity_identifier)
-        else:
-            frameinfo = getframeinfo(currentframe())
-            print(
-                '*** fully updated history not yet implemented!',
-                frameinfo.filename, frameinfo.lineno)
-            fully_updated_history = []
-
-        fully_updated = []
-        for h in fully_updated_history:
-            fully_updated.append(
-                "%s - %s: %s" % (
-                    DateFormat(h.fully_updated).format("Y-m-d H:i:s"),
-                    h.username, h.comment
-                ))
-        data.update({
-            "fully_updated_history": "\n".join(fully_updated)
-        })
-        return data
 
     class Meta:
         name = 'action_comment'

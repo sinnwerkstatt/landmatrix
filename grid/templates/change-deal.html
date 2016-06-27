@@ -39,7 +39,8 @@
         </div>
 
         <input type="submit" class="btn btn-primary" value="{% trans 'Submit' %}"/>
-
+        {% if perms.landmatrix.delete_activity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-deal" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this deal" %}</a>{% endif %}
+        {% include "modals/delete-deal.html" %}
     </form>
 
 {% endblock %}

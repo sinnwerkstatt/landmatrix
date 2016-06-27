@@ -15,4 +15,4 @@ admin.site.register(ActivityAttribute)
 admin.site.register(HistoricalActivityAttribute)
 admin.site.register(ActivityChangeset)
 admin.site.register(ReviewDecision)
-
+admin.site.register(ActivityFeedback)
