@@ -48,8 +48,12 @@ class DealsQuerySet(FakeQuerySetFlat):
             'operational_stakeholder.name'
         ),
         (
-            'geometry',
-            'geometry.polygon',
+            'intended_area',
+            'intended_area.polygon',
+        ),
+        (
+            'production_area',
+            'production_area.polygon',
         ),
     ]
     ADDITIONAL_JOINS = [
@@ -59,15 +63,16 @@ class DealsQuerySet(FakeQuerySetFlat):
         "LEFT JOIN landmatrix_activityattribute    AS intended_size    ON a.id = intended_size.fk_activity_id AND intended_size.name = 'intended_size'",
         "LEFT JOIN landmatrix_activityattribute    AS contract_size    ON a.id = contract_size.fk_activity_id AND contract_size.name = 'contract_size'",
         "LEFT JOIN landmatrix_activityattribute    AS production_size  ON a.id = production_size.fk_activity_id AND production_size.name = 'production_size'",
-        "LEFT JOIN landmatrix_activityattribute    AS geometry         ON a.id = geometry.fk_activity_id AND ST_IsValid(geometry.polygon)"
-
+        "LEFT JOIN landmatrix_activityattribute    AS intended_area    ON a.id = intended_area.fk_activity_id AND intended_area.name = 'intended_area' AND ST_IsValid(intended_area.polygon)"
+        "LEFT JOIN landmatrix_activityattribute    AS production_area    ON a.id = production_area.fk_activity_id AND production_area.name = 'production_area' AND ST_IsValid(production_area.polygon)"
     ]
     ADDITIONAL_WHERES = [
         "point_lat.name = 'point_lat' AND point_lon.name = 'point_lon'",
     ]
     GROUP_BY = [
-        'point_lat.value', 'point_lon.value', 'geometry.polygon',
-        'intended_size.value', 'contract_size.value', 'production_size.value',
+        'point_lat.value', 'point_lon.value', 'intended_area.polygon',
+        'production_area.polygon', 'intended_size.value',
+        'contract_size.value', 'production_size.value',
         'operational_stakeholder.name', 'a.activity_identifier'
     ]
 

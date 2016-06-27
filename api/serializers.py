@@ -43,16 +43,17 @@ class DealSerializer(serializers.Serializer):
     contract_size = serializers.IntegerField()
     production_size = serializers.IntegerField()
     investor = serializers.CharField()
-    geometry = GeometryField()
+    intended_area = GeometryField()
+    production_area = GeometryField()
 
     def to_representation(self, obj):
         '''
         Convert our binary polygon representation to a GEOSGeometry.
         '''
-        if 'geometry' in obj and obj['geometry']:
-            if not isinstance(obj['geometry'], GEOSGeometry):
-                obj['geometry'] = GEOSGeometry(
-                    obj['geometry'], srid=4326)
+        for geo_field in ('intended_area', 'production_area'):
+            if geo_field in obj and obj[geo_field]:
+                if not isinstance(obj[geo_field], GEOSGeometry):
+                    obj[geo_field] = GEOSGeometry(obj[geo_field], srid=4326)
 
         return super().to_representation(obj)
 
