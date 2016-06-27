@@ -1,8 +1,15 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pprint import pprint
 from traceback import print_stack
+import json
 
 from django.utils.encoding import force_text
+from django.views.generic import View
+from django.http.response import HttpResponse
+from django.utils.translation import ugettext_lazy as _
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import transaction, models
+from django.core.exceptions import ObjectDoesNotExist
 
 from editor.models import UserRegionalInfo
 from grid.views.activity_protocol import ActivityProtocol
@@ -10,14 +17,6 @@ from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.activity_feedback import ActivityFeedback
 from landmatrix.models.activity_changeset import ActivityChangeset, ReviewDecision
-
-from django.views.generic import View
-from django.http.response import HttpResponse
-from django.utils.translation import ugettext_lazy as _
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db import transaction
-import json
-
 from landmatrix.models.country import Country
 from landmatrix.models.investor import InvestorActivityInvolvement, InvestorVentureInvolvement, \
     Investor
@@ -61,15 +60,15 @@ class ChangesetProtocol(View):
     def dashboard(self, request):
         res = {
             "latest_added": self.get_paged_results(
-                self.apply_dashboard_filters(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_ACTIVE))[:self.DEFAULT_MAX_NUM_CHANGESETS],
+                self.filter_activities(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_ACTIVE))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_added_page')
             ),
             "latest_modified": self.get_paged_results(
-                self.apply_dashboard_filters(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_OVERWRITTEN))[:self.DEFAULT_MAX_NUM_CHANGESETS],
+                self.filter_activities(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_OVERWRITTEN))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_modified_page')
             ),
             "latest_deleted": self.get_paged_results(
-                self.apply_dashboard_filters(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_DELETED))[:self.DEFAULT_MAX_NUM_CHANGESETS],
+                self.filter_activities(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_DELETED))[:self.DEFAULT_MAX_NUM_CHANGESETS],
                 request.GET.get('latest_deleted_page')
             ),
             "manage": self._activity_to_json(limit=10),
@@ -198,26 +197,31 @@ class ChangesetProtocol(View):
         # print('_activity_to_json'); pprint(res)
         return res
 
-    def apply_dashboard_filters(self, activities):
-        if self.request.session.get('dashboard_filters', {}).get('country'):
-            activities = _filter_activities_by_countries(
-                activities, self.request.session['dashboard_filters']['country']
-            )
-        elif self.request.session.get('dashboard_filters', {}).get('region'):
-            country_ids = Country.objects.filter(
-                fk_region_id__in=self.request.session.get('dashboard_filters', {}).get('region')
-            ).values_list('id', flat=True).distinct()
-            activities = _filter_activities_by_countries(activities, [str(c) for c in country_ids])
-        elif self.request.session.get('dashboard_filters', {}).get('user'):
-            user = self.request.session.get('dashboard_filters', {}).get('user')
-            if isinstance(user, list) and len(user):
-                user = user[0]
-            if UserRegionalInfo.objects.filter(user_id=user).exists():
-                country = UserRegionalInfo.objects.get(user_id=user).country.all()
-                if len(country):
-                    activities = _filter_activities_by_countries(activities, [c.id for c in country])
-
-        return _uniquify_activities_by_deal(activities)
+    def filter_activities(self, activities, manage=False):
+        dashboard_filters = self.request.session.get('dashboard_filters', {})
+        try:
+            userregionalinfo = self.request.user.userregionalinfo
+        except ObjectDoesNotExist:
+            userregionalinfo = None
+        countries = dashboard_filters.get('country', userregionalinfo and [userregionalinfo.country] or None)
+        regions = dashboard_filters.get('region', userregionalinfo and [userregionalinfo.country.fk_region] or None)
+        users = dashboard_filters.get('user', userregionalinfo and [userregionalinfo.super_user] or None)
+        if countries:
+            activities = activities.filter(models.Q(changesets__fk_country__in=countries) | models.Q(changeset__fk_country__isnull=True))
+        elif regions:
+            activities = activities.filter(models.Q(changesets__fk_country__fk_region__in=regions) | models.Q(changeset__fk_country__isnull=True))
+        elif users:
+            activities = activities.filter(models.Q(changesets__fk_user__in=users) | models.Q(changesets__fk_user__isnull=True))
+        
+        # Filter activities for role, required by manage deals sections
+        if manage:
+            # Admin: Show only activites, that already have been added/changed/reviewed by moderators
+            if self.request.user.has_perm('landmatrix.change_activity'):
+                activities = activities.filter(changesets__timestamp__isnull=False)
+            # Moderator: Show only activites, that have been added/changed by public users
+            elif self.request.user.has_perm('landmatrix.review_activity'):
+                activities = activities.filter(changesets__timestamp__isnull=True)
+        return activities
 
     def handle_activities(self, deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user):
         activities = {}
@@ -235,7 +239,7 @@ class ChangesetProtocol(View):
 
     def handle_my_deals(self, activities, limit, my_deals_page, user):
         activities_my_deals = activities.get_my_deals(user.id)
-        activities_my_deals = self.apply_dashboard_filters(activities_my_deals)
+        activities_my_deals = self.filter_activities(activities_my_deals, manage=True)
         activities_my_deals = limit and activities_my_deals[:limit] or activities_my_deals
         paginator = Paginator(activities_my_deals, 10)
         page = _get_page(my_deals_page, paginator)
@@ -249,7 +253,7 @@ class ChangesetProtocol(View):
 
     def handle_updates(self, activities, limit, updates_page):
         activities_update = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_PENDING)
-        activities_update = self.apply_dashboard_filters(activities_update)
+        activities_update = self.filter_activities(activities_update, manage=True)
         activities_update = limit and activities_update[:limit] or activities_update
         paginator = Paginator(activities_update, 10)
         page = _get_page(updates_page, paginator)
@@ -264,7 +268,7 @@ class ChangesetProtocol(View):
 
     def handle_inserts(self, activities, limit, inserts_page):
         activities_insert = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_PENDING)
-        activities_insert = self.apply_dashboard_filters(activities_insert)
+        activities_insert = self.filter_activities(activities_insert, manage=True)
         activities_insert = limit and activities_insert[:limit] or activities_insert
         paginator = Paginator(activities_insert, 10)
         page = _get_page(inserts_page, paginator)
@@ -278,6 +282,7 @@ class ChangesetProtocol(View):
 
     def handle_deletes(self, activities, limit, deletions_page):
         activities_deletes = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_TO_DELETE)
+        activities_deletes = self.filter_activities(activities_deletes, manage=True)
         activities_deletes = limit and activities_deletes[:limit] or activities_deletes
         paginator = Paginator(activities_deletes, 10)
         page = _get_page(deletions_page, paginator)
@@ -314,21 +319,13 @@ def _uniquify_activities_dict(activities):
     activities['updates'] = unique
 
 
-def _uniquify_activities_by_deal(activities):
-    unique, deals = [], []
-    for activity in activities:
-        if activity.activity_identifier not in deals:
-            unique.append(activity)
-            deals.append(activity.activity_identifier)
-    return unique
-
-
-def _filter_activities_by_countries(activities, countries):
-    return activities.filter(
-        attributes__name='target_country',
-        attributes__value__in=countries
-    )
-
+#def _uniquify_activities_by_deal(activities):
+#    unique, deals = [], []
+#    for activity in activities:
+#        if activity.activity_identifier not in deals:
+#            unique.append(activity)
+#            deals.append(activity.activity_identifier)
+#    return unique
 
 #def changeset_comment(changeset):
 #    if changeset is None:
@@ -465,6 +462,7 @@ def _change_status_with_review(activity, status, user, review_decision, comment)
     changeset.fk_user = user
     changeset.fk_review_decision = review_decision
     changeset.comment = comment
+    changeset.timestamp = datetime.now()
     changeset.save()
 
 def _conditionally_update_stakeholders(activity, ap, involvements, request):
@@ -485,13 +483,12 @@ def _conditionally_update_stakeholders(activity, ap, involvements, request):
 def _approve_activity_deletion(activity, changeset, cs_comment, request):
     activity.fk_status = Status.objects.get(name="deleted")
     activity.save()
-    review_decision = ReviewDecision.objects.get(name="deleted")
-    ActivityChangeset.objects.create(
-        fk_activity=activity,
-        fk_user=request.user,
-        fk_review_decision=review_decision,
-        comment=cs_comment
-    )
+    #review_decision = ReviewDecision.objects.get(name="deleted")
+    changeset = ActivityChangeset.objects.get_or_create(fk_activity=activity)
+    changeset.fk_user = request.user
+    changeset.fk_review_decision = None#review_decision
+    changeset.comment = cs_comment
+    changeset.timestamp = datetime.now()
     ActivityProtocol().remove_from_lookup_table(activity.activity_identifier)
 
 

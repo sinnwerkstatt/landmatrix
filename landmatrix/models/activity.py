@@ -8,6 +8,7 @@ from landmatrix.models.default_string_representation import DefaultStringReprese
 from landmatrix.models.status import Status
 from landmatrix.models.activity_attribute_group import ActivityAttribute, HistoricalActivityAttribute
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
+from landmatrix.models.country import Country
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -81,11 +82,26 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     def history(self):
         return HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
 
+    @property
+    def target_country(self):
+        country = self.attributes.filter(name='target_country')
+        if country.count() > 0:
+            country = country.first()
+            try:
+                return Country.objects.get(id=country)
+            except:
+                return None
+        else:
+            return None
+
 class Activity(ActivityBase):
     """Just the most recent approved version of an activity (for simple queries in the public interface)"""
     class Meta:
         verbose_name = _('Activity')
         verbose_name_plural = _('Activities')
+        permissions = (
+            ("review_activity", "Can review activity changes"),
+        )
 
 class HistoricalActivity(ActivityBase):
     """All versions (including the current) of activities"""

@@ -355,9 +355,4 @@ $(document).ready(function(){
         return false;
       }
     });
-
-    // Delete deal link
-    $('.delete-deal').click(function () {
-      $.post($(this).attr('href'));
-    })
 });

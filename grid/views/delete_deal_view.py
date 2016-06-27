@@ -48,6 +48,7 @@ class DeleteDealView(SaveDealView):
         if self.request.user.has_perm('landmatrix.delete_activity'):
             messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
         else:
+            self.create_activity_changeset(hactivity)
             messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 
         return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier})) 

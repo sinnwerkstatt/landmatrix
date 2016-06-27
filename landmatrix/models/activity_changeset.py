@@ -45,12 +45,12 @@ class ReviewDecision(models.Model):
     description = models.TextField(_("Description"))
 
 class ActivityChangeset(models.Model):
-    fk_activity = models.ForeignKey('landmatrix.HistoricalActivity', verbose_name=_("Activity"), blank=True, null=True)
+    fk_activity = models.ForeignKey('landmatrix.HistoricalActivity', verbose_name=_("Activity"), blank=True, null=True, related_name='changesets')
     fk_country = models.ForeignKey('landmatrix.Country', verbose_name=_("County"), blank=True, null=True)
-    fk_region = models.ForeignKey('landmatrix.Region', verbose_name=_("Region"), blank=True, null=True)
+    #fk_region = models.ForeignKey('landmatrix.Region', verbose_name=_("Region"), blank=True, null=True)
 
     fk_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("User"), blank=True, null=True)
-    timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
+    timestamp = models.DateTimeField(_("Timestamp"), blank=True, null=True)
     fk_review_decision = models.ForeignKey("ReviewDecision", verbose_name=_("Review decision"), blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
 

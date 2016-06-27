@@ -118,11 +118,7 @@ class SaveDealView(TemplateView):
         if self.request.user.has_perm('landmatrix.change_activity'):
             messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
         else:
-            ## Create changeset (for review)
-            #changeset = ActivityChangeset.objects.create(
-            #    fk_activity=hactivity,
-            #    comment=action_comment
-            #)
+            self.create_activity_changeset(hactivity)
             messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 
         context = self.get_context_data(**self.kwargs)
@@ -226,3 +222,18 @@ class SaveDealView(TemplateView):
                 raise IOError(_('User is authenticated but no action comment given.'))
             return form.cleaned_data.get('fully_updated', False)
         return False
+
+    def create_activity_changeset(self, activity):
+        # Create changeset (for review)
+        country = activity.target_country
+        try:
+            user = self.request.user.userregionalinfo.super_user
+        except:
+            user = None
+        changeset = ActivityChangeset.objects.create(
+            fk_activity=activity,
+            fk_country=country,
+            #fk_region=country and country.region
+            fk_user=user,
+        )
+        return changeset

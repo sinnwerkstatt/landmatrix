@@ -50,11 +50,7 @@ class AddDealView(SaveDealView):
         if self.request.user.has_perm('landmatrix.change_activity'):
             messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
         else:
-            ## Create changeset (for review)
-            #changeset = ActivityChangeset.objects.create(
-            #    fk_activity=hactivity,
-            #    comment=action_comment
-            #)
+            self.create_activity_changeset(hactivity)
             messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 
         context = self.get_context_data(**self.kwargs)
