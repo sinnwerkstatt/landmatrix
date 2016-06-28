@@ -40,7 +40,7 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
 
         intention_filter_sql = """
         AND (
-            intention.value IN '%s'
+            intention.value IN ('%s')
         )""" % "', '".join(filter_intentions)
         # OR intention.value = ''
         self._filter_sql += intention_filter_sql

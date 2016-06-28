@@ -4,6 +4,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
+    # TODO: I think this query is broken
 
     FIELDS = [
         ('agricultural_produce', 'sub.agricultural_produce'),
@@ -36,7 +37,7 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
     ADDITIONAL_JOINS = [
         #"LEFT JOIN landmatrix_activityattribute         AS intention        ON a.id = intention.fk_activity_id AND intention.name = 'intention'",
         "LEFT JOIN landmatrix_activityattribute         AS target_country   ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'",
-        "LEFT JOIN landmatrix_country                   AS deal_country     ON target_country.name = 'target_country' AND target_country.value = deal_country.id",
+        "LEFT JOIN landmatrix_country                   AS deal_country     ON target_country.name = 'target_country' AND CAST(target_country.value AS NUMERIC) = deal_country.id",
         "LEFT JOIN landmatrix_region                    AS deal_region      ON deal_country.fk_region_id = deal_region.id",
     ]
     GROUP_BY = ['sub.agricultural_produce']
@@ -53,7 +54,7 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
 
 
 class AllAgriculturalProduceQuerySet:
-
+    # TODO: don't hardcode regions here, since we have a model for that
     REGIONS = {
         'america': ['21', '419'],
         'africa':  ["2"],
@@ -82,7 +83,6 @@ class AllAgriculturalProduceQuerySet:
                 "multiple_use": 0,
             }
             ap_list = self.get_agricultural_produces(self.get_data, value)
-
             available_sum, not_available_sum = self.calculate_sums(ap_list)
 
             for ap in ap_list:
@@ -111,4 +111,12 @@ class AllAgriculturalProduceQuerySet:
 
     def get_agricultural_produces(self, get, region_ids):
         queryset = AgriculturalProduceQuerySet(get, region_ids)
-        return queryset.all()
+        sanitized_values = [
+            {
+                'agricultural_produce': item['agricultural_produce'] or 0.0,
+                'deals': item['deals'] or 0,
+                'hectares': item['hectares'] or 0.0,
+            }
+            for item in queryset.all()
+        ]
+        return sanitized_values
