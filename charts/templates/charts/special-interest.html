@@ -364,7 +364,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                 newState = $(this).attr("href").replace(/.*\?variable=/, "");
 
                 // Todo: this obviously doesn't help with the download/share popups. There is a bug filed.
-                history.pushState([], 'LandMatrix: Special Interest', '/charts/special-interest.html?variable=' + newState);
+                history.pushState([], 'LandMatrix: Special Interest', '/charts/specialinterest?variable=' + newState);
                 draw(newState);
                 return false;
             });
@@ -459,7 +459,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
                             deals = stats.find('.deals'),
                             by_deals = [0, 0, 0, 0],
                             by_size = [0, 0, 0, 0],
-                            item;
+                            item, percentage;
                     for (var i = 0; i < data.length; i++) {
                         item = data[i];
                         // Update numbers
@@ -527,7 +527,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
         }
 
         const url = window.location.search;
-        console.log(url);
+
         if (url.indexOf('variable=') > -1) {
             var target = url.split('variable=')[1];
             target = target.split('&')[0];
