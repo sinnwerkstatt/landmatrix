@@ -79,7 +79,7 @@
                       <li><a href="/data/by-intention/{{ i.value|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if i.parent %}style="padding-left: 20px;"{% endif %}><span>{{ i.value }}</span></a></li>
                     {% elif not i.parent %}
                     <li><a href="/data/by-intention/{{ i.value|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}" class="toggle-tooltip intention-icon {{ i.value|slugify }}" title="{{ i.value }}"><span>{{ i.value }}</span></a></li>
-                    {% endfor %}
+                    {% endif %}
                   {% endfor %}
                 </ul>
                 {% else %}
