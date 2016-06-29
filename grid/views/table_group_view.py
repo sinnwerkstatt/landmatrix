@@ -57,7 +57,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         "investor_country": ["investor_country", "intention", "deal_count", "availability"],
         "investor_region": ["investor_region", "deal_count", "availability"],
         "intention": ["intention", "deal_count", "availability"],
-        "crop": ["crop", "intention", "deal_count", "availability"],
+        "crop": ["crop", "deal_count", "availability"],
         "year": ["year", "intention", "deal_count", "availability"],
         "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
         "all": ["deal_id", "target_country", "operational_stakeholder", "investor_country",
