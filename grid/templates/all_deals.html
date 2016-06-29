@@ -204,3 +204,16 @@
                 href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.</p>
     {% endif %}
 {% endblock %}
+
+{% block js %}
+{{ block.super }}
+{% if request.GET.more %}
+<script type="text/javascript">
+$(document).ready(function () {
+    $('html, body').animate({
+        scrollTop: $("table tr:nth-child(" + ({{ request.GET.more }}-20)  + ")").offset().top
+    });
+});
+</script>
+{% endif %}
+{% endblock %}
