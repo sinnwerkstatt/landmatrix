@@ -112,7 +112,7 @@ def _get_filter_definition(filter_data):
     value = _parse_value(filter_data[1]['value'])
 
     if 'country' in variable and key == 'value' and not value.isnumeric():
-        value = str(Country.objects.get(name__iexact=value).pk)
+        value = str(Country.objects.get(name__iexact=value.replace('-', ' ')).pk)
     if 'in' in operator and not isinstance(value, list):
         value = [value]
     definition_key = '__'.join((variable, key, operator))
