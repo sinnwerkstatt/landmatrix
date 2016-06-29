@@ -52,6 +52,28 @@ ORDER BY primary_investor_identifier
         """)
         return [id[0] for id in cursor.fetchall()]
 
+    @classmethod
+    def save_record(cls, new, save):
+        """Save all versions of an activity as HistoricalActivity records."""
+        if not save:
+            return
+
+        landmatrix.models.HistoricalInvestor.objects.create(
+            id=new.id,
+            investor_identifier=new.investor_identifier,
+            name=new.name,
+            fk_country=new.fk_country,
+            classification=new.classification,
+            parent_relation=new.parent_relation,
+            homepage=new.homepage,
+            opencorporates_link=new.opencorporates_link,
+            fk_status=new.fk_status,
+            timestamp=new.timestamp,
+            comment=new.comment,
+            history_date=new.timestamp,
+            #history_user=get_history_user(new)
+        )
+        new.save(using=V2)
 
 class MapInvestor(MapPrimaryInvestor):
     old_class = old_editor.models.PrimaryInvestor

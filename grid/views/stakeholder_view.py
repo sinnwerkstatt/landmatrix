@@ -43,7 +43,7 @@ class StakeholderFormsMixin:
         kwargs['prefix'] = 'parent-stakeholder-form'
 
         if self.object:
-            queryset = self.object.venture_involvements.all()
+            queryset = self.get_investor().venture_involvements.all()
             queryset = queryset.active().stakeholders()
         else:
             queryset = InvestorVentureInvolvement.objects.none()
@@ -58,7 +58,7 @@ class StakeholderFormsMixin:
         kwargs['prefix'] = 'parent-investor-form'
 
         if self.object:
-            queryset = self.object.venture_involvements.all()
+            queryset = self.get_investor().venture_involvements.all()
             queryset = queryset.active().investors()
         else:
             queryset = InvestorVentureInvolvement.objects.none()
@@ -68,24 +68,24 @@ class StakeholderFormsMixin:
 
         return formset
 
-    def get_investor_history(self):
-        def _investor_history(investor):
-            date_and_investor = []
-            history_items = investor.history.all().order_by('history_date')
-            for investor in list(history_items):
-                date_and_investor.append(
-                    (investor.history_date.timestamp(), investor))
-
-            return sorted(date_and_investor, key=lambda entry: entry[0])
-
-        try:
-            history = _investor_history(self.object)
-            history = OrderedDict(
-                reversed(sorted(history, key=lambda item: item[0])))
-        except AttributeError:
-            history = None
-
-        return history
+    #def get_investor_history(self):
+    #    def _investor_history(investor):
+    #        date_and_investor = []
+    #        history_items = investor.history.all().order_by('history_date')
+    #        for investor in list(history_items):
+    #            date_and_investor.append(
+    #                (investor.history_date.timestamp(), investor))
+#
+    #        return sorted(date_and_investor, key=lambda entry: entry[0])
+#
+    #    try:
+    #        history = _investor_history(self.object)
+    #        history = OrderedDict(
+    #            reversed(sorted(history, key=lambda item: item[0])))
+    #    except AttributeError:
+    #        history = None
+#
+    #    return history
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -99,8 +99,8 @@ class StakeholderFormsMixin:
         if 'parent_investors' not in context:
             context['parent_investors'] = self.get_investors_formset()
 
-        if 'history' not in context:
-            context['history'] = self.get_investor_history()
+        #if 'history' not in context:
+        #    context['history'] = self.get_investor_history()
 
         return context
 
@@ -136,36 +136,29 @@ class StakeholderFormsMixin:
 
 class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
     template_name = 'stakeholder.html'
-    pk_url_kwarg = 'investor_id'
     context_object_name = 'investor'
     model = Investor
 
-    def get_object(self, queryset=None):
-        '''
-        Handle retrieval of old versions via id_timestamp url key.
-        TODO: test this works.
-        '''
-        pk = self.kwargs.get(self.pk_url_kwarg)
+    def get_object(self):
+        # TODO: Cache result for user
+        investor_id = self.kwargs.get('investor_id')
+        history_id = self.kwargs.get('history_id', None)
+        try:
+            if history_id:
+                investor = HistoricalInvestor.objects.get(id=history_id)
+            else:
+                investor = HistoricalInvestor.objects.public_or_deleted().filter(investor_identifier=investor_id).latest()
+        except ObjectDoesNotExist as e:
+            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e))) 
+        if not self.request.user.has_perm('landmatrix.change_investor'):
+            if investor.fk_status_id == investor.STATUS_DELETED:
+                raise Http404('Investor %s has been deleted' % investor_id)
+        return investor
 
-        if pk and '_' in pk:
-            investor_id, timestamp = pk.split('_')
-            investor_date = datetime.datetime.utcfromtimestamp(
-                float(timestamp), tzinfo=utc)
-
-            if queryset is None:
-                queryset = self.get_queryset()
-
-            try:
-                investor = queryset.get(pk=investor_id)
-                old_versions = investor.history.filter(
-                    history_date__lte=investor_date)
-                obj = old_versions.get()
-            except queryset.model.DoesNotExist:
-                raise Http404(_("No matching stakeholder found."))
-        elif pk:
-            obj = super().get_object(queryset=queryset)
-
-        return obj
+    def get_investor(self):
+        hinvestor = self.get_object()
+        investor = Investor.objects.get(investor_identifier=hinvestor.investor_identifier)
+        return investor
 
     def form_valid(self, investor_form, stakeholders_formset,
                    investors_formset):
@@ -201,7 +194,7 @@ class AddStakeholderView(StakeholderFormsMixin, CreateView):
         return reverse_lazy('stakeholder_form',
                             kwargs={'investor_id': self.object.pk})
 
-    def get_object(self, queryset=None):
+    def get_object(self):
         return None
 
     def form_valid(self, investor_form, stakeholders_formset,

@@ -28,7 +28,7 @@
                                             <td>
                                                 <p>
                                                 {% if item.id != activity.id %}
-                                                <a type="button" href="{% url 'stakeholder_form' item.investor_identifier history_id=item.id %}">
+                                                <a type="button" href="{% url 'stakeholder_form' investor_id=item.investor_identifier history_id=item.id %}">
                                                     <i class="glyphicon glyphicon-eye-open"></i> {% trans "Show this version" %}
                                                 </a>
                                                 {% else %}
