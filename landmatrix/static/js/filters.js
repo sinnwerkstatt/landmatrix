@@ -151,8 +151,7 @@ function get_filter_options(operatorfield, variablefield, key_id) {
                 $(this).show();
             }
         });
-
-        operatorfield.find(':selected').removeAttr('selected');
+        //operatorfield.find(':selected').removeAttr('selected');
         
     });
 }
