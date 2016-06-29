@@ -105,7 +105,9 @@ def clean_intention(key, value):
     elif value == 'Forestunspecified':
         value = 'Forestry unspecified'
     elif value == 'Mining':
-        value = 'Resource extraction (Oil, Gas, Minerals)'
+        value = 'Resource extraction'
+    elif value == 'Other (please specify)':
+        value = 'Other'
     return key, value
 
 def clean_attribute(key, value):

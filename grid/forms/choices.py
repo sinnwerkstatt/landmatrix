@@ -50,7 +50,7 @@ intention_choices = (
     ("Conservation", _("Conservation"), None),
     ("Land speculation", _("Land speculation"), None),
     ("Renewable Energy", _("Renewable Energy"), None),
-    ("Other (please specify)", _("Other (please specify)"), None),
+    ("Other", _("Other (please specify)"), None),
 )
 
 nature_choices = (
@@ -74,7 +74,7 @@ actor_choices = (
     ('Traditional local authority', _("Traditional local authority (e.g. Chiefdom council / Chiefs)")),
     ('Broker', _("Broker")),
     ('Intermediary', _("Intermediary")),
-    ('Other (please specify)', _("Other (please specify)")),
+    ('Other', _("Other (please specify)")),
 )
 
 operational_company_choices = (
