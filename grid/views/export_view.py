@@ -103,6 +103,9 @@ class ExportView(TemplateView):
                         else:
                             row_item.append(lv)
                     row.append(", ".join(filter(None, row_item)))
+                # Required for e.g. intention
+                elif isinstance(v, dict):
+                    row.append(v['value'])
                 else:
                     row.append(v)
             rows.append(row)
