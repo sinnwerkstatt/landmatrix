@@ -229,7 +229,7 @@ class FilterToSQL:
         where = []
         # TODO: optimize SQL? This query seems painful, it could be
         # better as an array_agg possibly
-        if operation == 'is' and variable not in ('target_region', 'deal_country'):
+        if operation == 'is' and variable not in ('deal_country', 'target_country', 'target_region', 'investor_country', 'investor_region'):
             # 'Is' operations requires that we exclude other values,
             # otherwise it's just the same as contains
 

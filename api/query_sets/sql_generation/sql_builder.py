@@ -57,7 +57,6 @@ class SQLBuilder(SQLBuilderData):
         }
 
     def get_from_sql(self):
-
         self.join_expressions = []
 
         if self._need_involvements_and_stakeholders():
@@ -67,7 +66,8 @@ class SQLBuilder(SQLBuilderData):
                 join_expression(InvestorVentureInvolvement, 'ivi', 'operational_stakeholder.id', 'fk_venture_id'),
                 join_expression(Investor, 'stakeholder', 'ivi.fk_investor_id', 'id')
             ])
-
+        g = self.group
+        v = self.group_value
         for c in get_join_columns(self.columns, self.group, self.group_value):
             if not c == 'deal_id':
                 self._add_join_for_column(c)
@@ -198,7 +198,7 @@ LEFT JOIN landmatrix_activityattribute AS intention ON a.id = intention.fk_activ
             self.status_active_condition(),
             self.is_public_condition()
         ])) + """
-        AND intention.value LIKE '%Mining%'"""
+        AND intention.value LIKE '%Resource extraction%'"""
 
         cursor = connection.cursor()
         cursor.execute(sql)
