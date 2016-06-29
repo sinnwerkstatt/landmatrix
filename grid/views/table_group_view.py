@@ -165,7 +165,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         """Get column information for template"""
         # Labels for all custom fields (fields that are not part of any form)
         COLUMN_LABELS_MAP = {
-            'deal_id': _('Deal #'),
+            'deal_id': _('ID'),
             'deal_count': _('Deals'),
             'availability': _('Availability'),
             'investor_country': _('Operational company country'),

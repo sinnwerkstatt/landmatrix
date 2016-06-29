@@ -51,14 +51,14 @@ class DealProduceInfoForm(BaseForm):
         queryset=Crop.objects.all())
     tg_contract_farming_crops_comment = forms.CharField(
         required=False,
-        label=_("Detailed contract farming crop, animal and mineral comments"),
+        label=_("Contract farming crops comments"),
         widget=CommentInput)
 
     contract_farming_animals = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Contract farming livestock"),
         queryset=Animal.objects.all())
     tg_contract_farming_animals_comment = forms.CharField(
-        required=False, label=_("Additional comments"), widget=CommentInput)
+        required=False, label=_("Contract farming livestock comments"), widget=CommentInput)
 
     # Use of produce
     tg_use_of_produce = TitleField(
@@ -104,7 +104,7 @@ class DealProduceInfoForm(BaseForm):
         required=False, label=_("In country processing of produce"),
         choices=BOOLEAN_CHOICES, widget=forms.RadioSelect)
     tg_in_country_processing_comment = forms.CharField(
-        required=False, label=_("Additional comments"), widget=CommentInput)
+        required=False, label=_("In country processing of produce comments"), widget=CommentInput)
     processing_facilities = forms.CharField(
         required=False,
         label=_("Processing facilities / production infrastructure of the project (e.g. oil mill, "
