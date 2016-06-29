@@ -29,14 +29,14 @@ class DealGeneralForm(BaseForm):
     tg_land_area = TitleField(
         required=False, label="", initial=_("Land area"))
     intended_size = forms.IntegerField(
-        required=False, label=_("Intended size"), help_text=_("ha"),
+        required=False, label=_("Intended size (in ha)"), help_text=_("ha"),
         widget=NumberInput)
     contract_size = YearBasedIntegerField(
         required=False,
-        label=_("Size under contract (leased or purchased area)"),
+        label=_("Size under contract (leased or purchased area, in ha)"),
         help_text=_("ha"), widget=NumberInput)
     production_size = YearBasedIntegerField(
-        required=False, label=_("Size in operation (production)"),
+        required=False, label=_("Size in operation (production, in ha)"),
         help_text=_("ha"), widget=NumberInput)
     tg_land_area_comment = forms.CharField(
         required=False, label=_("Land area comments"), widget=CommentInput)
@@ -128,7 +128,7 @@ class DealGeneralForm(BaseForm):
     on_the_lease = forms.BooleanField(
         required=False, label=_("On leased / purchased area"))
     on_the_lease_area = YearBasedIntegerField(
-        required=False, label=_("On leased / purchased area"),
+        required=False, label=_("On leased / purchased area (in ha)"),
         help_text=_("ha"), widget=NumberInput)
     on_the_lease_farmers = YearBasedIntegerField(
         required=False, label=_("On leased / purchased farmers"),
@@ -139,7 +139,7 @@ class DealGeneralForm(BaseForm):
     off_the_lease = forms.BooleanField(
         required=False, label=_("Not on leased / purchased area (out-grower)"))
     off_the_lease_area = YearBasedIntegerField(
-        required=False, label=_("Not on leased / purchased area (out-grower)"),
+        required=False, label=_("Not on leased / purchased area (out-grower, in ha)"),
         help_text=_("ha"), widget=NumberInput)
     off_the_lease_farmers = YearBasedIntegerField(
         required=False,

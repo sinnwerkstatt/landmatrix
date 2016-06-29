@@ -31,7 +31,7 @@ class DealContractForm(BaseForm):
         required=False, label=_("Sold as deal no.")
     )
     agreement_duration = forms.IntegerField(
-        required=False, label=_("Duration of the agreement"), help_text=_("years")
+        required=False, label=_("Duration of the agreement (in years)"), help_text=_("years")
     )
     tg_contract_comment = forms.CharField(
         required=False, label=_("Contract comments"), widget=CommentInput
