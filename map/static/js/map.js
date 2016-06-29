@@ -326,45 +326,26 @@ $(document).ready(function () {
      };
      */
 
-    var geojsonObject = {
-        'type': 'FeatureCollection',
-        'crs': {
-            'type': 'name',
-            'properties': {
-                'name': 'EPSG:3857'
-            }
-        },
-        'features': []/*{
-         'type': 'Feature',
-         'geometry': {
-         'type': 'Polygon',
-         'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
-         }
-         }]*/
-    };
-
-    var vectorSource = new ol.source.Vector({
-        features: (new ol.format.GeoJSON()).readFeatures(geojsonObject)
+    var intendedAreaFeatures = new ol.Collection();
+    var productionAreaFeatures = new ol.Collection();
+    var intendedAreaSource = new ol.source.Vector({
+        features: intendedAreaFeatures
+    });
+    var productionAreaSource = new ol.source.Vector({
+        features: productionAreaFeatures
     });
 
-    var intendedareaLayer = new ol.layer.Vector({
+    var intendedAreaLayer = new ol.layer.Vector({
         title: 'Intended area (ha)',
         visible: true,
-        source: vectorSource,
+        source: intendedAreaSource,
         style: styleFunction
     });
 
-    var contractareaLayer = new ol.layer.Vector({
-        title: 'Contract area (ha)',
-        visible: true,
-        source: vectorSource,
-        style: styleFunction
-    });
-
-    var currentareaLayer = new ol.layer.Vector({
+    var productionAreaLayer = new ol.layer.Vector({
         title: 'Current area in operation (ha)',
         visible: true,
-        source: vectorSource,
+        source: productionAreaSource,
         style: styleFunction
     });
 
@@ -381,9 +362,8 @@ $(document).ready(function () {
         new ol.layer.Group({
             title: 'Deals',
             layers: [
-                intendedareaLayer,
-                contractareaLayer,
-                currentareaLayer,
+                intendedAreaLayer,
+                productionAreaLayer,
                 cluster
             ]
         })
@@ -633,6 +613,8 @@ $(document).ready(function () {
         }
     });
 
+    var geoJSONReader = new ol.format.GeoJSON();
+
     var addData = function (data) {
         var lats = {};
         var duplicates = 0;
@@ -653,8 +635,19 @@ $(document).ready(function () {
                 //addClusteredMarkerNew(marker);
                 lats[marker.lat] = marker;
 
-                if (marker.hasOwnProperty('geometry')) {
-                    geojsonObject.features.push(marker.geometry);
+                if (marker.hasOwnProperty('intended_area') && marker.intended_area != null) {
+                    var geometry = geoJSONReader.readGeometry(marker.intended_area, {
+                        dataProjection: 'EPSG:4326',
+                        featureProjection: 'EPSG:3857'
+                    });
+                    intendedAreaFeatures.push(new ol.Feature({'geometry': geometry}));
+                }
+                if (marker.hasOwnProperty('production_area') && marker.production_area != null) {
+                    var geometry = geoJSONReader.readGeometry(marker.production_area, {
+                        dataProjection: 'EPSG:4326',
+                        featureProjection: 'EPSG:3857'
+                    });
+                    intendedAreaFeatures.push(new ol.Feature({'geometry': geometry}));
                 }
 
             }

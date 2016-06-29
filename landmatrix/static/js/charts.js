@@ -455,13 +455,7 @@ function buildAgriculturalPies() {
                 pie_data = []
                 pie_data.push(data[i]["available"]);
                 pie_data.push(data[i]["not_available"]);
-                var pie2 = new RGraph.Pie('pie-availability', pie_data);
-                pie2.Set('chart.colors', ['#1e1e1e', '#828282;']);
-                pie2.Set('chart.radius', 15);
-                pie2.Set('chart.strokestyle', '#bbb');
-                pie2.Set('chart.text.font', 'Open Sans');
-                pie2.Set('chart.text.size', '9');
-                RGraph.Effects.Fade.In(pie2, {'duration': 250});
+
                 var sum = data[i]["available"] + data[i]["not_available"],
                     available_per = parseInt(data[i]["available"] / sum * 100, 10),
                     not_available_per = parseInt(data[i]["not_available"] / sum * 100, 10);

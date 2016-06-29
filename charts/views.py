@@ -10,17 +10,8 @@ from grid.views.filter_widget_mixin import FilterWidgetMixin
 from grid.views.view_aux_functions import render_to_response
 
 
-class ChartView(PDFViewMixin, TemplateView, FilterWidgetMixin):
+class ChartView(TemplateView, FilterWidgetMixin):
     chart = ""
-
-    def get_pdf_filename(self, request, *args, **kwargs):
-        return '{}.pdf'.format(self.chart)
-
-    def get_pdf_export_url(self, request, *args, **kwargs):
-        return '{}_pdf'.format(self.chart)
-
-    def get_pdf_render_url(self, request, *args, **kwargs):
-        return reverse(self.chart)
 
     def get_context_data(self, **kwargs):
         self._set_filters()
@@ -28,7 +19,7 @@ class ChartView(PDFViewMixin, TemplateView, FilterWidgetMixin):
         context = super(ChartView, self).get_context_data(**kwargs)
         context.update({
             "view": "chart view",
-            "export_formats": ("XML", "CSV", "XLS", "PDF"),
+            "export_formats": ("XML", "CSV", "XLS"),
             "chart": self.chart,
         })
 
@@ -42,6 +33,26 @@ class ChartView(PDFViewMixin, TemplateView, FilterWidgetMixin):
             self._filter_set(data), data)
         self.filters = self.get_filter_context(self.current_formset_conditions)
 
+
+class ChartPDFView(PDFViewMixin, ChartView):
+    chart = ""
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['export_formats'] = context['export_formats'] + ('PDF',)
+
+        return context
+
+    def get_pdf_filename(self, request, *args, **kwargs):
+        return '{}.pdf'.format(self.chart)
+
+    def get_pdf_export_url(self, request, *args, **kwargs):
+        return reverse('{}_pdf'.format(self.chart))
+
+    def get_pdf_render_url(self, request, *args, **kwargs):
+        return reverse(self.chart)
+
+
 class ChartRedirectView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         params = self.request.GET
@@ -54,22 +65,25 @@ class ChartRedirectView(RedirectView):
             return reverse('chart_transnational_deals')
 
 
-class OverviewChartView(ChartView):
+class OverviewChartView(ChartPDFView):
     template_name = "charts/overview.html"
     chart = "chart_overview"
+    # This page needs a massive delay for some reason
+    pdf_javascript_delay = 4000
 
 
-class TransnationalDealsChartView(ChartView):
+class TransnationalDealsChartView(ChartPDFView):
     template_name = "charts/transnational-deals.html"
     chart = "chart_transnational_deals"
 
 
-class MapOfInvestmentsChartView(ChartView):
+class MapOfInvestmentsChartView(ChartPDFView):
     template_name = "charts/investor-target-countries.html"
     chart = "chart_map_of_investments"
+    pdf_javascript_delay = 2000
 
 
-class AgriculturalDriversChartView(ChartView):
+class AgriculturalDriversChartView(ChartPDFView):
     template_name = "charts/agricultural-produce.html"
     chart = "chart_agricultural_drivers"
 
@@ -79,6 +93,27 @@ class PerspectiveChartView(ChartView):
     chart = "chart_perspective"
 
 
-class SpecialInterestView(ChartView):
+class SpecialInterestView(ChartPDFView):
     template_name = "charts/special-interest.html"
     chart = "special_interest"
+    pdf_javascript_delay = 10000
+
+    def get_pdf_export_url(self, request, *args, **kwargs):
+        '''
+        Special handling for the 'variable' switch
+        '''
+        url = super().get_pdf_export_url(request, *args, **kwargs)
+        if 'variable' in request.GET:
+            url += '?variable={}'.format(request.GET['variable'])
+
+        return url
+
+    def get_pdf_render_url(self, request, *args, **kwargs):
+        '''
+        Special handling for the 'variable' switch
+        '''
+        url = super().get_pdf_render_url(request, *args, **kwargs)
+        if 'variable' in request.GET:
+            url += '?variable={}'.format(request.GET['variable'])
+
+        return url

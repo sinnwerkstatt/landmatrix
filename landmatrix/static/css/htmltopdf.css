@@ -20,3 +20,26 @@ footer,
 .row {
     clear: both;
 }
+.canvas-container.transnational-deals {
+    width: 1000px;
+    height: 1000px;
+}
+#chartarea.overview-chartarea,
+#chartarea.overview-chartarea #chartcanvas {
+    width: 1000px;
+    height: 400px;
+}
+.produce_info.chart {
+    width: 1000px;
+    height: 1000px;
+}
+.agricultural_drivers .row .col-md-6,
+.agricultural_drivers .row .col-md-8 {
+    width: 420px;
+    height: 420px;
+}
+
+.agricultural_drivers .row .col-md-5 {
+    width: 100px;
+    height: 100px;
+}
