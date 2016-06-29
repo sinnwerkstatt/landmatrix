@@ -519,7 +519,7 @@ $(document).ready(function () {
         NProgress.start();
         // TODO: (Later) initiate spinner before fetchin' stuff
         markerSource.clear();
-        var query_params = 'limit=5000&attributes=' + fieldnames[currentVariable];
+        var query_params = 'limit=500&attributes=' + fieldnames[currentVariable];
         if (typeof mapParams !== 'undefined') {
             query_params += mapParams;
         }
