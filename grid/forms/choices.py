@@ -44,7 +44,7 @@ intention_choices = (
         ("Forestry unspecified", _("Unspecified")),
     )),
     ("Logging", _("Logging"), None),
-    ("Resource extraction (Oil, Gas, Minerals)", _("Resource extraction (Oil, Gas, Minerals)"), None),
+    ("Resource extraction", _("Resource extraction (Oil, Gas, Minerals)"), None),
     ("Tourism", _("Tourism"), None),
     ("Industry", _("Industry"), None),
     ("Conservation", _("Conservation"), None),
