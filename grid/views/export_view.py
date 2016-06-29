@@ -33,12 +33,14 @@ class ExportView(TemplateView):
     def export_xls(self, header, data, filename):
         response = HttpResponse(content_type="application/ms-excel")
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
-        wb = xlwt.Workbook()
-        ws = wb.add_sheet('LandMatrix')
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Land Matrix')
         for i, h in enumerate([column['label'] for name, column in header.items()]):
             ws.write(0, i, h)
         for i, row in enumerate(data):
             for j, d in enumerate(row):
+                # Force encoding (required for user input fields)
+                d = str(d).encode('utf-8').decode('utf-8')
                 ws.write(i+1, j, d)
         wb.save(response)
         return response

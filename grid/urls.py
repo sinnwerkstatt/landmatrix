@@ -24,7 +24,7 @@ urlpatterns = patterns('grid.views',
         name='export'
     ),
     url(
-        r'^(?P<group>.+)/(?P<list>.+)\.(?P<format>(csv|xml|xls))/$',
+        r'^(?P<group>.+)/(?P<group_value>.+)\.(?P<format>(csv|xml|xls))/$',
         TableGroupExportView.as_view(),
         name='export'
     ),
