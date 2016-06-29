@@ -20,17 +20,17 @@ urlpatterns = patterns('grid.views',
     ),
     url(
         r'^all\.(?P<format>(csv|xml|xls))/$',
-        vary_on_cookie(cache_page(CACHE_TIMEOUT)(AllDealsExportView.as_view())),
+        AllDealsExportView.as_view(),
         name='export'
     ),
     url(
         r'^(?P<group>.+)/(?P<list>.+)\.(?P<format>(csv|xml|xls))/$',
-        vary_on_cookie(cache_page(CACHE_TIMEOUT)(TableGroupExportView.as_view())),
+        TableGroupExportView.as_view(),
         name='export'
     ),
     url(
         r'^(?P<group>.+)\.(?P<format>(csv|xml|xls))/$',
-        vary_on_cookie(cache_page(CACHE_TIMEOUT)(TableGroupExportView.as_view())),
+        TableGroupExportView.as_view(),
         name='export'
     ),
 
