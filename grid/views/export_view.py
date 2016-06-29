@@ -34,7 +34,7 @@ class ExportView(TemplateView):
         response = HttpResponse(content_type="application/ms-excel")
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
         wb = xlwt.Workbook()
-        ws = wb.add_sheet('Land Matrix')
+        ws = wb.add_sheet('LandMatrix')
         for i, h in enumerate([column['label'] for name, column in header.items()]):
             ws.write(0, i, h)
         for i, row in enumerate(data):

@@ -78,9 +78,11 @@
                                 <td class="{{ column }}">
                                     <ul class="list-unstyled">
                                         {% for i in item.intention %}
+                                        {% if not i.parent %}
                                         <li>
-                                            <a href="{% url 'data' %}?variable=intention&operator=is&value={{ i.value }}" {% if group == "intention" %}{% if i.parent %}style="padding-left: 20px;"{% endif %}{% else %}class="toggle-tooltip intention-icon {{ i.value|slugify }}" title="{{ i.value }}"{% endif %}><span>{{ i.value }}</span></a>
+                                            <a href="{% url 'data' %}?variable=intention&operator=is&value={{ i.value }}" class="toggle-tooltip intention-icon {{ i.value|slugify }}" title="{{ i.value }}"><span>{{ i.value }}</span></a>
                                         </li>
+                                        {% endif %}
                                         {% empty %}
                                             {% trans "Unknown" %}
                                         {% endfor %}
