@@ -85,10 +85,14 @@ class ExportView(TemplateView):
                         if isinstance(lv, dict):
                             year = lv.get("year", None)
                             name = lv.get("name", None)
+                            value = lv.get("value", None)
                             if year and year != "0" and name:
                                 row_item.append("[%s] %s" % (year, name))
                             elif name:
                                 row_item.append(name)
+                            # Required for intention
+                            elif value:
+                                row_item.append(str(value))
                         elif isinstance(lv, (list, tuple)):
             # Some vars take additional data for the template (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
                             if len(lv) > 0 and isinstance(lv[0], dict):
@@ -103,9 +107,6 @@ class ExportView(TemplateView):
                         else:
                             row_item.append(lv)
                     row.append(", ".join(filter(None, row_item)))
-                # Required for e.g. intention
-                elif isinstance(v, dict):
-                    row.append(v['value'])
                 else:
                     row.append(v)
             rows.append(row)
