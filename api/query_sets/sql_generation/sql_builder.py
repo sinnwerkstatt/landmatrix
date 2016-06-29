@@ -94,7 +94,8 @@ class SQLBuilder(SQLBuilderData):
 
     def get_order_sql(self):
         order_by = self.filters.get('order_by')
-        if not order_by: return ''
+        if not order_by:
+            order_by = ['deal_id']
 
         fields = []
         for field in order_by:

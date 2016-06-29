@@ -46,7 +46,10 @@ class RecordReader:
 
     def get_column_sql(self, column):
         columns = [column]
-        for c in self.filters.get('order_by', []):
+        order_by = self.filters.get('order_by', [])
+        if not order_by:
+            order_by = ['deal_id']
+        for c in order_by:
             if c.strip('-') not in columns:
                 columns.append(c.strip('-'))
         return SubqueryBuilder(self.filters, columns, self.status, self.is_staff).get_sql()
@@ -95,8 +98,8 @@ class RecordReader:
             try:
                 column_data[column] = self.get_column(column)
             except ProgrammingError as e:
-                raise
                 print('SQL for column "%s" failed:\n%s' % (column, self.get_column_sql(column)))
+                raise
 
         return column_data
 
