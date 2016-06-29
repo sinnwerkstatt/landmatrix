@@ -93,7 +93,7 @@ class ChangeDealView(SaveDealView):
         return forms
 
     def get_form(self, form_class, data=None, files=None):
-        prefix = hasattr(form_class.Meta, 'name') and form_class.Meta.name or None
+        prefix = issubclass(form_class, BaseFormSet) and form_class.Meta.name or None
         initial = form_class.get_data(self.get_object())
         return form_class(initial=initial, files=files, data=data, prefix=prefix)
 

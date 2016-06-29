@@ -2,6 +2,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Max
 from django.db import transaction
 from django.contrib import messages
+from django.forms.formsets import BaseFormSet
 
 from grid.views.save_deal_view import SaveDealView
 from landmatrix.models.activity import Activity, HistoricalActivity
@@ -26,7 +27,7 @@ class AddDealView(SaveDealView):
             if form_class == DealActionCommentForm and not self.request.user.is_authenticated():
                 forms.append(PublicUserInformationForm(data=data))
             else:
-                prefix = hasattr(form_class.Meta, 'name') and form_class.Meta.name or None
+                prefix = issubclass(form_class, BaseFormSet) and form_class.Meta.name or None
                 forms.append(form_class(data=data, files=files, prefix=prefix))
         return forms
 
