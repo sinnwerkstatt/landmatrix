@@ -10,7 +10,7 @@ from django.http.response import HttpResponse
 from django.views.generic import TemplateView
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import smart_text
+from django.utils.datastructures import SortedDict
 import xlwt
 
 from grid.views import AllDealsView, TableGroupView, DealDetailView
@@ -151,15 +151,18 @@ class DealDetailExportView(DealDetailView, ExportView):
                             field['label']
                         )
                         attributes.append({
-                            'Field': label,
-                            'Value': field['value']
+                            'field': label,
+                            'value': field['value']
                         })
             else:
                 for field in form.get_fields_display():
                     if field['name'].startswith('tg_') and not field['name'].endswith('_comment'):
                         continue
                     attributes.append({
-                        'Field': field['label'],
-                        'Value': field['value']
+                        'field': field['label'],
+                        'value': field['value']
                     })
-        return self.export(attributes, ['Field', 'Value'], format, filename=kwargs['deal_id'])
+        headers = SortedDict()
+        headers['field'] = {'label': _('Field')}
+        headers['value'] = {'label': _('Value')}
+        return self.export(attributes, headers, format, filename=kwargs['deal_id'])

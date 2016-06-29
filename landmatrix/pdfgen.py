@@ -97,7 +97,7 @@ class PDFViewMixin:
         return self.pdf_filename
 
     def get_pdf_export_url(self, request, *args, **kwargs):
-        return reverse(self.pdf_export_url)
+        return reverse(self.pdf_export_url, args=args, kwargs=kwargs)
 
     def get_pdf_render_url(self, request, *args, **kwargs):
         '''Strip out the format arg, and reverse the URL'''
