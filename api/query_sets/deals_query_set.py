@@ -26,7 +26,7 @@ class DealsQuerySet(FakeQuerySetFlat):
         ),
         (
             'intention',
-            "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.name = 'intention'), ', '), '')"
+            "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intention.value), ', '), '')"
         ),
         (
             'intended_size',
