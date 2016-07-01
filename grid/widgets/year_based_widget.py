@@ -20,13 +20,18 @@ class YearBasedWidget(forms.MultiWidget):
         ]
 
     def decompress(self, value):
+        widgets = self.get_widgets()
+        multiple = self.get_multiple()
         if value:
             #sorted_values = sorted(values, key=lambda v: v.split(":")[1] if ':' in v else '0')
             values = []
             #for val in value.split("#"):
             #    date_values = []
-            for val in value.split(':'):
-                values.append(',' in val and val.split(',') or val)
+            for i, val in enumerate(re.split('[#:]', value)):
+                if multiple[i % len(widgets)]:
+                    values.append(val.split(','))
+                else:
+                    values.append(val)
             #values.append(date_values)
             #a = len(values) == 1 and values.append(None) or values
             #if 'YearBasedSelectMultipleNumber' in str(self):
@@ -40,10 +45,14 @@ class YearBasedWidget(forms.MultiWidget):
     def format_output(self, rendered_widgets):
         return u''.join(rendered_widgets)
 
+    def get_multiple(self):
+        # Check which widgets allow multiple values
+        return [hasattr(w, 'allow_multiple_selected') and w.allow_multiple_selected for w in self.get_widgets()]
+
     def value_from_datadict(self, data, files, name):
         # Find out which widgets allow multiple values
         widgets = self.get_widgets()
-        multiple = [hasattr(w, 'allow_multiple_selected') and w.allow_multiple_selected for w in widgets]
+        multiple = self.get_multiple()
         #return [widget.value_from_datadict(data, files, name + '_%s' % i) for i, widget in enumerate(self.widgets)]
         value = []
         for i, key in enumerate(sorted(filter(lambda o: re.match(r"%s_\d+"%name,o), data))):

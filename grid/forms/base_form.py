@@ -181,7 +181,7 @@ class BaseForm(forms.Form):
                 value = cls.get_multiple_choice_data(field, field_name, attribute)
             # Year based data?
             elif isinstance(field, forms.MultiValueField):
-                value = cls.get_year_based_data(field, field_name, attribute) 
+                value = cls.get_year_based_data(field, field_name, attribute)
             # Choice field?
             elif isinstance(field, forms.ChoiceField):
                 for k, v in field.choices:
