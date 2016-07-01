@@ -154,7 +154,6 @@ class BaseForm(forms.Form):
         data = MultiValueDict()
 
         # Create attributes dict
-        raise IOError(activity.id)
         queryset = activity.attributes
         if group:
             queryset = queryset.filter(fk_group__name=group)
