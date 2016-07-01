@@ -13,7 +13,7 @@ negotiation_status_choices = (
     ("Expression of interest", _("Intended (Expression of interest)")),
     ("Under negotiation", _("Intended (Under negotiation)")),
     ("Memorandum of understanding", _("Intended (Memorandum of understanding)")),
-    ("Oral Agreement", _("Concluded (Oral Agreement)")),
+    ("Oral agreement", _("Concluded (Oral Agreement)")),
     ("Contract signed", _("Concluded (Contract signed)")),
     ("Negotiations failed", _("Failed (Negotiations failed)")),
     ("Contract canceled", _("Failed (Contract canceled)")),
