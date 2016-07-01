@@ -2,7 +2,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from api.query_sets.simple_fake_query_set import SimpleFakeQuerySet
 from landmatrix.models.country import Country
-from wagtailcms.models import Country as WagtailCountry
+from wagtailcms.models import CountryPage
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -14,7 +14,7 @@ class CountriesQuerySet(SimpleFakeQuerySet):
         #else:
         # Return country pages then all other countries in two option groups
         response = []
-        countries = WagtailCountry.objects.all().order_by('title')
+        countries = CountryPage.objects.all().order_by('title')
         response.append({
         	'text': str(_('Observatories')),
         	'children': [[country.id, country.slug, country.title] for country in countries]
