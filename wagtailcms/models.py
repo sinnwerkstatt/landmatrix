@@ -386,8 +386,10 @@ class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [
-        FieldPanel('region'),
         StreamFieldPanel('body')
+    ]
+    promote_panels = Page.promote_panels + [
+        FieldPanel('region'),
     ]
     parent_page_types = ['wagtailcms.RegionIndex']
 
@@ -426,8 +428,10 @@ class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
         ]
     )
     content_panels = Page.content_panels + [
-        FieldPanel('country'),
         StreamFieldPanel('body')
+    ]
+    promote_panels = Page.promote_panels + [
+        FieldPanel('country')
     ]
     parent_page_types = ['wagtailcms.CountryIndex']
 
