@@ -165,8 +165,9 @@ class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
     def form_valid(self, investor_form, stakeholders_formset,
                    investors_formset):
         self.object = investor_form.save()
-        stakeholders_formset.save(self.object)
-        investors_formset.save(self.object)
+        investor = self.get_investor()
+        stakeholders_formset.save(investor)
+        investors_formset.save(investor)
 
         # Is dialog?
         if self.request.GET.get('popup', False):
