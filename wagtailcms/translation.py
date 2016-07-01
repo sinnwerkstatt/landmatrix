@@ -25,8 +25,8 @@ class RegionIndexTR(TranslationOptions):
 		'body',
 	)
 
-@register(Region)
-class RegionTR(TranslationOptions):
+@register(RegionPage)
+class RegionPageTR(TranslationOptions):
 	fields = (
 		'body',
 	)
@@ -37,8 +37,8 @@ class CountryIndexTR(TranslationOptions):
 		'body',
 	)
 
-@register(Country)
-class CountryTR(TranslationOptions):
+@register(CountryPage)
+class CountryPageTR(TranslationOptions):
 	fields = (
 		'body',
 	)

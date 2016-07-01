@@ -364,7 +364,7 @@ class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
     content_panels = Page.content_panels + [
         StreamFieldPanel('body')
     ]
-    subpage_types = ['wagtailcms.Region']
+    subpage_types = ['wagtailcms.RegionPage']
 
     def get_context(self, request):
         context = super(RegionIndex, self).get_context(request)
@@ -381,7 +381,7 @@ class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
         return super(RegionIndex, self).serve(request)
 
-class Region(TranslationMixin, SplitMultiLangTabsMixin, Page):
+class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     region = models.ForeignKey(DataRegion, null=True, blank=True, on_delete=models.SET_NULL)
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
@@ -398,7 +398,7 @@ class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
     content_panels = Page.content_panels + [
         StreamFieldPanel('body')
     ]
-    subpage_types = ['wagtailcms.Country']
+    subpage_types = ['wagtailcms.CountryPage']
 
     country = None
 
@@ -417,7 +417,7 @@ class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(country=self.country)
         return super(CountryIndex, self).serve(request)
 
-class Country(TranslationMixin, SplitMultiLangTabsMixin, Page):
+class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     country = models.ForeignKey(DataCountry, null=True, blank=True, on_delete=models.SET_NULL)
     body = NoWrapsStreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
