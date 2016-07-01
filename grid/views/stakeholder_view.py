@@ -142,12 +142,14 @@ class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
     def get_object(self):
         # TODO: Cache result for user
         investor_id = self.kwargs.get('investor_id')
-        history_id = self.kwargs.get('history_id', None)
+        #history_id = self.kwargs.get('history_id', None)
         try:
-            if history_id:
-                investor = HistoricalInvestor.objects.get(id=history_id)
-            else:
-                investor = HistoricalInvestor.objects.public_or_deleted().filter(investor_identifier=investor_id).latest()
+            #if history_id:
+            #    investor = HistoricalInvestor.objects.get(id=history_id)
+            #else:
+            #    investor = HistoricalInvestor.objects.public_or_deleted().filter(investor_identifier=investor_id).latest()
+            investor = HistoricalInvestor.objects.get(id=investor_id)
+                
         except ObjectDoesNotExist as e:
             raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e))) 
         if not self.request.user.has_perm('landmatrix.change_investor'):

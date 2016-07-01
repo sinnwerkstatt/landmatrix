@@ -22,13 +22,13 @@ class PrimaryInvestorSelect(forms.Select):
             // Handler for change link
             $("a.change-investor").click(function (e) {
               e.preventDefault();
-              showChangePopup(this);
+              showChangeInvestorPopup(this);
               return false;
             });
             // Handler for add link
             $("a.add-investor").click(function (e) {
               e.preventDefault();
-              showAddAnotherPopup(this);
+              showAddInvestorPopup(this);
               return false;
             });
             </script>
