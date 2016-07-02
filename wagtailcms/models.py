@@ -176,9 +176,17 @@ class GalleryBlock(StructBlock):
         label = 'Gallery'
         template = 'widgets/gallery.html'
 
+
+class TitleBlock(blocks.CharBlock):
+
+    class Meta:
+        icon = 'title'
+        label = 'Title'
+        template = 'widgets/title.html'
+
 #FIXME: Move blocks to blocks.py
 CONTENT_BLOCKS = [
-    #('heading', blocks.CharBlock(classname="full title", icon="title")),
+    ('heading', TitleBlock()),
     ('paragraph', blocks.RichTextBlock()),
     ('image', ImageChooserBlock(icon="image")),
     ('media', EmbedBlock(icon="media")),

@@ -975,6 +975,9 @@ h3,
 .wrap h4 {
   color: #4a4a4a; }
 
+h3 {
+  text-align: center; }
+
 .wrap > h2,
 .wrap > h3,
 .wrap > h4 {
