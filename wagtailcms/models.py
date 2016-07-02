@@ -277,12 +277,12 @@ class ColumnsBlock(CountryRegionStructBlock):
         
         for column in columns:
             context[column] = value.get(column)
-        if self.country or self.region:
-            country_or_region = {}
-            if self.country:
-                country_or_region['country'] = self.country
-            elif self.region:
-                country_or_region['region'] = self.region
+        country_or_region = {}
+        if hasattr(self, 'country') and self.country:
+            country_or_region['country'] = self.country
+        if hasattr(self, 'region') and self.region:
+            country_or_region['region'] = self.region
+        if country_or_region:
             for column in columns:
                 for data in DATA_BLOCKS:
                     context[column].stream_block.child_blocks[data[0]] = type(data[1])(**country_or_region)
