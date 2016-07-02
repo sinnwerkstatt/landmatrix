@@ -88,9 +88,9 @@ def deal_to_data(activity, change_date, action):
 
 
 def target_country(activity):
-    country = ActivityAttribute.objects.filter(fk_activity_id=activity.id, name='target_country')
+    country = ActivityAttribute.objects.filter(fk_activity_id=activity.id, name='target_country').order_by('-id')
     if country.count() > 0:
-        return Country.objects.get(pk=country[0].id).name
+        return Country.objects.get(pk=country[0].value).name
     else:
         raise ValueError('No target_country in attributes for activity ()'.format(activity.id))
 
