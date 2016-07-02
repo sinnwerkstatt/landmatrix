@@ -63,7 +63,7 @@ GROUP BY sub.negotiation_status"""
     def regional_condition(self):
         if self.country:
             return """
-    AND activity_attrs.name = 'target_country' AND activity_attrs.value = '%s'
+    AND target_country.value = '%s'
             """ % self.country
         elif self.region:
             return """
