@@ -358,7 +358,7 @@ class WagtailPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     content_panels = Page.content_panels + [StreamFieldPanel('body')]
 
 class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
-    template = 'wagtailcms/region.html'
+    template = 'wagtailcms/region_page.html'
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [
@@ -388,13 +388,19 @@ class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     content_panels = Page.content_panels + [
         StreamFieldPanel('body')
     ]
-    promote_panels = Page.promote_panels + [
+    promote_panels = [
         FieldPanel('region'),
-    ]
+    ] + Page.promote_panels
     parent_page_types = ['wagtailcms.RegionIndex']
 
+    def serve(self, request):
+        if self.region:
+            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
+                self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
+        return super(RegionPage, self).serve(request)
+
 class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
-    template = 'wagtailcms/country.html'
+    template = 'wagtailcms/country_page.html'
 
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [
@@ -430,10 +436,17 @@ class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     content_panels = Page.content_panels + [
         StreamFieldPanel('body')
     ]
-    promote_panels = Page.promote_panels + [
+    promote_panels = [
         FieldPanel('country')
-    ]
+    ] + Page.promote_panels
     parent_page_types = ['wagtailcms.CountryIndex']
+
+    def serve(self, request):
+        if self.country:
+            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
+                self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.country)
+        return super(CountryPage, self).serve(request)
+
 
 #FIXME: Move hooks to wagtail_hooks.py
 @hooks.register('insert_editor_js')

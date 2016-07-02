@@ -1,2 +1,28 @@
 {% extends "wagtailcms/wagtail_page.html" %}
+{% load i18n %}
 
+{% block page_title %}{% if country %}{{ country }}{% else %}{% if region %}{{ region }}{% else %}{{ page.title }}{% endif %}{% endif %}{% endblock %}
+{% block title %}{% if country %}{{ country }}{% else %}{% if region %}{{ region }}{% else %}{{ page.title }}{% endif %}{% endif %}{% endblock %}
+
+{% block subnav %}
+    <ul class="subnav nav nav-pills pull-right">
+        {% block subnav_inner %}
+        <li role="presentation"><a href="{% url 'map' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+            <i class="lm lm-map-marker"></i>{% trans "Map" %}
+        </a></li>
+        <li role="presentation"><a href="{% url 'data' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+            <i class="lm lm-table"></i>{% trans "Data" %}
+        </a></li>
+        <li role="presentation"><a href="{% url 'chart_transnational_deals' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+            <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+        </a></li>
+        <li class="divider"></li>
+        <li role="presentation">
+            {% include "export.html" %}
+        </li>
+        {% endblock %}
+        <li role="presentation">
+            {% include "share.html" %}
+        </li>
+    </ul>
+{% endblock %}

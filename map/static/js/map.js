@@ -109,7 +109,7 @@ $(document).ready(function () {
             var style = {};
 
             if (size > 1) {
-                color = '#4C76AB';
+                color = '#fc941f';
 
                 var radius = size + 10;
 
@@ -390,10 +390,10 @@ $(document).ready(function () {
                 }
             }),
             new ol.control.FullScreen(),
-            new ol.control.Attribution
-            // new ol.control.ZoomToExtent({
-            //              extent:undefined
-            // }),
+            new ol.control.Attribution,
+            //new ol.control.ZoomToExtent({
+            //             extent:undefined
+            //}),
         ];
     }
 
@@ -507,7 +507,6 @@ $(document).ready(function () {
 
     }
 
-
     NProgress.configure(
         {
             trickleRate: 0.02,
@@ -620,7 +619,6 @@ $(document).ready(function () {
         var duplicates = 0;
 
         NProgress.set(0.8);
-        console.log('MAP DATA: ', data.length);
         if (data.length < 1) {
             $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
         } else {
