@@ -65,6 +65,14 @@ class Command(BaseCommand):
                 )
             )
 
+    def set_target_country_flags(self):
+        country_ids = ActivityAttribute.objects.filter(name='target_country')
+        countries = Country.objects.filter(pk__in=[aa.value for aa in country_ids])
+        for country in countries:
+            country.is_target_country = True
+            country.save()
+
+
 def get_investor_country(deal):
     investors = Investor.objects.filter(investoractivityinvolvement__fk_activity=deal)
     countries = [Country.objects.get(pk=country).name for country in set(investors.values_list('fk_country', flat=True))]

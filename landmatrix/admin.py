@@ -5,7 +5,11 @@ from landmatrix.models import *
 admin.site.register(FilterPreset)
 admin.site.register(FilterPresetGroup)
 admin.site.register(FilterCondition)
-admin.site.register(Country)
+
+class CountryAdmin(admin.ModelAdmin):
+	list_display = ['name', 'is_target_country']
+admin.site.register(Country, CountryAdmin)
+
 admin.site.register(Region)
 admin.site.register(Status)
 admin.site.register(Activity)
