@@ -126,6 +126,7 @@ class SliderBlock(StructBlock):
 
     def get_context(self, value):
         context = super().get_context(value)
+        context['title'] = value.get('title')
         images_data = value.get('images')
         images = []
         if images_data:
@@ -156,6 +157,7 @@ class GalleryBlock(StructBlock):
 
     def get_context(self, value):
         context = super().get_context(value)
+        context['title'] = value.get('title')
         columns_data = value.get('columns')
         if columns_data and columns_data.isdigit():
             context['columns'] = int(columns_data)

@@ -349,6 +349,13 @@ h3,
   text-align: center;  
 }
 
+.block-heading {
+  padding-bottom: 0;
+  h3 {
+    padding: 0;
+  }
+}
+
 .wrap > h2,
 .wrap > h3,
 .wrap > h4 {
