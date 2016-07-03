@@ -981,7 +981,9 @@ h3,
 .block-heading {
   padding-bottom: 0; }
   .block-heading h3 {
-    padding: 0; }
+    margin: 0; }
+  .block-heading + .block {
+    padding-top: 0; }
 
 .wrap > h2,
 .wrap > h3,
