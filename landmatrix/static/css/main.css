@@ -981,7 +981,7 @@ h3,
 .block-heading {
   padding-bottom: 0; }
   .block-heading h3 {
-    margin: 0; }
+    margin-bottom: 0; }
   .block-heading + .block {
     padding-top: 0; }
 
