@@ -29,10 +29,18 @@ class MapInvestorActivityInvolvement(MapModel):
 
     @classmethod
     def all_records(cls):
-        records_with_duplicates = cls.old_class.objects.using(V1). \
-            filter(fk_activity__in=MapActivity.all_ids()). \
-            filter(models.Q(fk_stakeholder__in=cls.all_stakeholder_ids()) | models.Q(fk_stakeholder__isnull=True)). \
-            filter(fk_primary_investor__in=MapInvestor.all_ids()).values()
+        activity_ids = MapActivity.all_ids()
+        investor_ids = MapInvestor.all_ids()
+        stakeholder_ids = cls.all_stakeholder_ids()
+        stakeholders_condition = models.Q(
+            fk_stakeholder__in=stakeholder_ids) | models.Q(
+            fk_stakeholder__isnull=True)
+        records_with_duplicates = cls.old_class.objects.using(V1).filter(
+            fk_activity__in=activity_ids)
+        records_with_duplicates = records_with_duplicates.filter(
+            stakeholders_condition)
+        records_with_duplicates = records_with_duplicates.filter(
+            fk_primary_investor__in=investor_ids).values()
         records = {}
         for record in records_with_duplicates:
             latest = cls.latest_involvement_for(record, records_with_duplicates)
