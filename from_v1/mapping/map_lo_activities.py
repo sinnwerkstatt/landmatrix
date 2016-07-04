@@ -251,7 +251,7 @@ class MapLOActivities(MapLOModel):
         if save:
             aag.save(using=V2)
         for key, value in attrs.items():
-            aa = landmatrix.models.ActivityAttribute(
+            aa = landmatrix.models.HistoricalActivityAttribute(
                 fk_activity_id=activity_id,
                 fk_language=landmatrix.models.Language.objects.get(pk=1),
                 name=key,

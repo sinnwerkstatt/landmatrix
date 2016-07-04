@@ -51,13 +51,14 @@ class MapLOInvolvements(MapLOModel):
     def _map_primary_investor(cls, old_activity, verbose=False):
         new_record = None
         uuid = str(old_activity.activity_identifier)
-        new_activity_queryset = new_models.Activity.objects.using(V2).filter(
-            attributes__name='landobservatory_uuid',
-            attributes__value__contains=uuid)
-        new_activity = new_activity_queryset.first()
-        if new_activity:
+
+        attr_model = new_models.HistoricalActivityAttribute
+        new_activity_attr_queryset = attr_model.objects.using(V2).filter(
+            name='landobservatory_uuid', value__contains=uuid)
+        new_activity_attr = new_activity_attr_queryset.first()
+        if new_activity_attr and new_activity_attr.fk_activity:
             new_record = new_models.InvestorActivityInvolvement(
-                fk_activity=new_activity)
+                fk_activity=new_activity_attr.fk_activity)
         else:
             print(
                 "Counldn't find an imported activity with an attribute group",
