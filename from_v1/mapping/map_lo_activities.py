@@ -72,7 +72,7 @@ class MapLOActivities(MapLOModel):
                             activity_identifier=activity_identifier,
                             availability=version['reliability'],
                             fk_status_id=version['fk_status'],
-                            fully_updated=None,
+                            fully_updated=False,
                             history_date=calculate_history_date(versions, i),
                             history_user=get_history_user(version)
                         )
