@@ -3,8 +3,9 @@ from migrate import V2
 from .land_observatory_objects.activity import Activity
 from .land_observatory_objects.involvement import Involvement
 from .land_observatory_objects.stakeholder import Stakeholder
-
 from .map_lo_model import MapLOModel
+from .map_lo_activities import MapLOActivities
+from .map_lo_stakeholder import MapLOStakeholder
 
 
 class MapLOInvolvements(MapLOModel):
@@ -16,7 +17,20 @@ class MapLOInvolvements(MapLOModel):
 
     @classmethod
     def all_records(cls):
-        return super().all_records()
+        all_stakeholders = MapLOStakeholder.all_records()
+        all_activities = MapLOActivities.all_records()
+        all_activity_ids = [activity['id'] for activity in all_activities]
+        all_stakeholder_ids = [
+            stakeholder['id'] for stakeholder in all_stakeholders
+        ]
+        records = cls.old_class.objects.using(cls.DB).filter(
+            fk_activity__in=all_activity_ids,
+            fk_stakeholder__in=all_stakeholder_ids)
+
+        # This keeps the printed counters correct
+        cls._count = records.count()
+
+        return records.values()
 
     @classmethod
     def map_record(cls, record, save=False, verbose=False):
@@ -64,9 +78,10 @@ class MapLOInvolvements(MapLOModel):
             else:
                 new_record = new_models.InvestorActivityInvolvement(
                     fk_activity=new_activity)
-        else:
+
+        if not new_record:
             print(
-                "Counldn't find an imported activity with an attribute group",
+                "Couldn't find an imported activity with an attribute group",
                 "containing the UUID {}".format(uuid))
 
         return new_record
