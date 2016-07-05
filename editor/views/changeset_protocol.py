@@ -246,7 +246,7 @@ class ChangesetProtocol(View):
         activities_my_deals = page.object_list
         my_deals = []
         for activity in activities_my_deals:
-            my_deals.append(self.changeset_template_data(activity, {"status": activity.fk_activity.fk_status.name}))
+            my_deals.append(self.changeset_template_data(activity, {"status": activity.fk_status.name}))
         if my_deals:
             #my_deals["pagination"] = _pagination_to_json(paginator, page)
             activities["my_deals"] = my_deals
@@ -292,7 +292,7 @@ class ChangesetProtocol(View):
             comment = activity.comment and len(activity.comment) > 0 and activity.comment or "-"
             deletes.append({
                 "id": activity.id,
-                "deal_id": activity.fk_activity.activity_identifier,
+                "deal_id": activity.activity_identifier,
                 "user": activity.fk_user.username,
                 "comment": comment
             })

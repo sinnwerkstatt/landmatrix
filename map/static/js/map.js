@@ -522,8 +522,10 @@ $(document).ready(function () {
         if (typeof mapParams !== 'undefined') {
             query_params += mapParams;
         }
+        // Window
         $.get(
-            "/api/deals.json?" + query_params, //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+            "/api/deals.json?" + query_params,
+            //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
             addData
         );
 
