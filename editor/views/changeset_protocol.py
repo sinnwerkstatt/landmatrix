@@ -207,9 +207,9 @@ class ChangesetProtocol(View):
         regions = dashboard_filters.get('region', userregionalinfo and [userregionalinfo.country.fk_region] or None)
         users = dashboard_filters.get('user', userregionalinfo and [userregionalinfo.super_user] or None)
         if countries:
-            activities = activities.filter(models.Q(changesets__fk_country__in=countries) | models.Q(changeset__fk_country__isnull=True))
+            activities = activities.filter(models.Q(changesets__fk_country__in=countries) | models.Q(changesets__fk_country__isnull=True))
         elif regions:
-            activities = activities.filter(models.Q(changesets__fk_country__fk_region__in=regions) | models.Q(changeset__fk_country__isnull=True))
+            activities = activities.filter(models.Q(changesets__fk_country__fk_region__in=regions) | models.Q(changesets__fk_country__isnull=True))
         elif users:
             activities = activities.filter(models.Q(changesets__fk_user__in=users) | models.Q(changesets__fk_user__isnull=True))
         
