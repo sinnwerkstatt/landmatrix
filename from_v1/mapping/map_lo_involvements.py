@@ -56,9 +56,14 @@ class MapLOInvolvements(MapLOModel):
         new_activity_attr_queryset = attr_model.objects.using(V2).filter(
             name='landobservatory_uuid', value__contains=uuid)
         new_activity_attr = new_activity_attr_queryset.first()
-        if new_activity_attr and new_activity_attr.fk_activity:
-            new_record = new_models.InvestorActivityInvolvement(
-                fk_activity=new_activity_attr.fk_activity)
+        if new_activity_attr:
+            try:
+                new_activity = new_activity_attr.fk_activity
+            except new_models.HistoricalActivity.DoesNotExist:
+                pass
+            else:
+                new_record = new_models.InvestorActivityInvolvement(
+                    fk_activity=new_activity)
         else:
             print(
                 "Counldn't find an imported activity with an attribute group",

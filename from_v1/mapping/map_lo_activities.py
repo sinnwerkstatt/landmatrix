@@ -61,30 +61,31 @@ class MapLOActivities(MapLOModel):
 
     @classmethod
     def save_activity_record(cls, new, save, imported=False):
+        latest_historical_activity = None
         activity_identifier = cls.get_deal_id(new)
         if not imported:
             versions = cls.get_activity_versions(new)
             for i, version in enumerate(versions):
-                if not version['id'] == new.id:
-                    if save:
-                        landmatrix.models.HistoricalActivity.objects.create(
-                            id=version['id'],
-                            activity_identifier=activity_identifier,
-                            availability=version['reliability'],
-                            fk_status_id=version['fk_status'],
-                            fully_updated=False,
-                            history_date=calculate_history_date(versions, i),
-                            history_user=get_history_user(version)
-                        )
+                if save:
+                    historical_activity = landmatrix.models.HistoricalActivity.objects.create(
+                        activity_identifier=activity_identifier,
+                        availability=version['reliability'],
+                        fk_status_id=version['fk_status'],
+                        fully_updated=False,
+                        history_date=calculate_history_date(versions, i),
+                        history_user=get_history_user(version))
+                    if version['id'] == new.id:
+                        latest_historical_activity = historical_activity
 
         if save:
+            new.id = None
             new.activity_identifier = activity_identifier
             new.fk_status_id = landmatrix.models.Status.objects.get(name="pending").id
             new.save(using=V2)
+
             changeset = landmatrix.models.ActivityChangeset(
                 comment='Imported from Land Observatory',
-                fk_activity_id=new.pk
-            )
+                fk_activity=latest_historical_activity)
             changeset.save(using=V2)
 
     @classmethod
