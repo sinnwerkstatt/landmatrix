@@ -15,7 +15,7 @@ urlpatterns = patterns('grid.views',
 
     url(
         r'^$',
-        vary_on_cookie(cache_page(CACHE_TIMEOUT)(AllDealsView.as_view())),
+        AllDealsView.as_view(),
         name='data'
     ),
     url(
@@ -37,12 +37,12 @@ urlpatterns = patterns('grid.views',
     # needs to come last, regexp catches all expressions
     url(
         r'^(?P<group>.+)/(?P<group_value>.+)/$',
-        vary_on_cookie(cache_page(CACHE_TIMEOUT)(TableGroupView.as_view())),
+        TableGroupView.as_view(),
         name='table_list'
     ),
     url(
         r'^(?P<group>.+)/$',
-        vary_on_cookie(cache_page(CACHE_TIMEOUT)(TableGroupView.as_view())),
+        TableGroupView.as_view(),
         name='table_list'
     ),
 )
