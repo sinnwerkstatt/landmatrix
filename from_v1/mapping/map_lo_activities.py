@@ -61,37 +61,41 @@ class MapLOActivities(MapLOModel):
 
     @classmethod
     def save_activity_record(cls, new, save, imported=False):
+        latest_historical_activity = None
         activity_identifier = cls.get_deal_id(new)
         if not imported:
             versions = cls.get_activity_versions(new)
             for i, version in enumerate(versions):
-                if not version['id'] == new.id:
-                    if save:
-                        landmatrix.models.HistoricalActivity.objects.create(
-                            id=version['id'],
-                            activity_identifier=activity_identifier,
-                            availability=version['reliability'],
-                            fk_status_id=version['fk_status'],
-                            fully_updated=None,
-                            history_date=calculate_history_date(versions, i),
-                            history_user=get_history_user(version)
-                        )
+                historical_activity = landmatrix.models.HistoricalActivity(
+                    activity_identifier=activity_identifier,
+                    availability=version['reliability'],
+                    fk_status_id=version['fk_status'],
+                    fully_updated=False,
+                    history_date=calculate_history_date(versions, i),
+                    history_user=get_history_user(version))
+                changeset = landmatrix.models.ActivityChangeset(
+                    comment='Imported from Land Observatory',
+                    fk_activity=historical_activity)
+
+                if save:
+                    historical_activity.save(using=V2)
+                    changeset.save(using=V2)
 
         if save:
+            new.id = None  # Don't assume that ids line up
             new.activity_identifier = activity_identifier
-            new.fk_status_id = landmatrix.models.Status.objects.get(name="pending").id
+            new.fk_status = landmatrix.models.Status.objects.get(
+                name="pending")
             new.save(using=V2)
-            changeset = landmatrix.models.ActivityChangeset(
-                comment='Imported from Land Observatory',
-                fk_activity_id=new.pk
-            )
-            changeset.save(using=V2)
+
+        return new
 
     @classmethod
     def save_record(cls, new, save):
         """Save all versions of an activity as HistoricalActivity records."""
+        lo_record_id = new.id
         cls._save = save
-        tag_groups = A_Tag_Group.objects.using(cls.DB).filter(fk_activity=new.id)
+        tag_groups = A_Tag_Group.objects.using(cls.DB).filter(fk_activity=lo_record_id)
 
         imported = is_imported_deal_groups(tag_groups)
         if imported:
@@ -99,7 +103,7 @@ class MapLOActivities(MapLOModel):
             original_refnos = get_group_tags(tag_groups, "Original reference number")
             new.activity_identifier = original_refnos[0]
 
-        cls.save_activity_record(new, save, imported)
+        new = cls.save_activity_record(new, save, imported)
 
         cls.write_standard_tag_groups(new, tag_groups)
 
@@ -110,14 +114,14 @@ class MapLOActivities(MapLOModel):
             None,
             'not_public', None
         )
-        if not imported:
-            uuid = Activity.objects.using(cls.DB).filter(id=new.id).values_list('activity_identifier', flat=True).first()
-            cls.write_activity_attribute_group(
-                {'type': 'Land Observatory Import', 'landobservatory_uuid': str(uuid)},
-                group_proxy,
-                None,
-                'data_source_1', None
-            )
+
+        uuid = Activity.objects.using(cls.DB).filter(id=lo_record_id).values_list('activity_identifier', flat=True).first()
+        cls.write_activity_attribute_group(
+            {'type': 'Land Observatory Import', 'landobservatory_uuid': str(uuid)},
+            group_proxy,
+            None,
+            'data_source_1', None
+        )
 
     @classmethod
     def write_standard_tag_groups(cls, new, tag_groups):
@@ -248,19 +252,22 @@ class MapLOActivities(MapLOModel):
 
         save = cls._save and cls.is_current_version(tag_group)
         aag = landmatrix.models.ActivityAttributeGroup(name=name)
+        english = landmatrix.models.Language.objects.get(pk=1)
         if save:
             aag.save(using=V2)
-        for key, value in attrs.items():
-            aa = landmatrix.models.ActivityAttribute(
-                fk_activity_id=activity_id,
-                fk_language=landmatrix.models.Language.objects.get(pk=1),
-                name=key,
-                value=value,
-                date=year,
-                polygon=polygon
-            )
-            if save:
-                aa.save(using=V2)
+
+        if activity_id:
+            for key, value in attrs.items():
+                aa = landmatrix.models.HistoricalActivityAttribute(
+                    fk_activity_id=activity_id,
+                    fk_language=english,
+                    name=key,
+                    value=value,
+                    date=year,
+                    polygon=polygon
+                )
+                if save:
+                    aa.save(using=V2)
         # No need to import LO history
         #if cls._save:
         #    if not cls.is_current_version(tag_group):
@@ -287,9 +294,6 @@ class MapLOActivities(MapLOModel):
     @classmethod
     @lru_cache(maxsize=128, typed=True)
     def matching_activity_id(cls, tag_group):
-        if landmatrix.models.Activity.objects.using(V2).filter(pk=tag_group.fk_activity):
-            return tag_group.fk_activity
-
         activity_identifier = landmatrix.models.HistoricalActivity.objects.filter(
             id=tag_group.fk_activity
         ).values_list(
@@ -315,7 +319,8 @@ class MapLOActivities(MapLOModel):
             ORDER BY version """.format(activity.activity_identifier)
         )
         ids = [id[0] for id in cursor.fetchall()]
-        return Activity.objects.using(cls.DB).filter(pk__in=ids).values()
+        return Activity.objects.using(cls.DB).filter(
+            pk__in=ids).order_by('pk').values()
 
 
 def is_unchanged_imported_deal(deal):

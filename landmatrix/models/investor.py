@@ -154,10 +154,11 @@ class InvestorVentureInvolvement(models.Model):
         (DEBT_FINANCING_INVESTMENT_TYPE, _('Debt financing')),
     )
 
-    fk_venture = models.ForeignKey(Investor, db_index=True,
-                                   related_name='venture_involvements')
-    fk_investor = models.ForeignKey(Investor, db_index=True, related_name='+',
-                                    limit_choices_to={'fk_status_id__in': (2, 3)})
+    fk_venture = models.ForeignKey(
+        Investor, db_index=True, related_name='venture_involvements')
+    fk_investor = models.ForeignKey(
+        Investor, db_index=True, related_name='+',
+        limit_choices_to={'fk_status_id__in': (2, 3)})
     percentage = models.FloatField(
         _('Ownership share'), blank=True, null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
@@ -212,7 +213,8 @@ class InvestorActivityInvolvement(models.Model):
     )
 
     fk_activity = models.ForeignKey(
-        "Activity", verbose_name=_("Activity"), db_index=True)
+        'landmatrix.HistoricalActivity', verbose_name=_("Activity"),
+        db_index=True)
     fk_investor = models.ForeignKey(
         "Investor", verbose_name=_("Investor"), db_index=True)
     #percentage = models.FloatField(
