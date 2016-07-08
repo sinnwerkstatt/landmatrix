@@ -66,14 +66,14 @@ class MapLOInvolvements(MapLOModel):
         new_record = None
         uuid = str(old_activity.activity_identifier)
 
-        attr_model = new_models.HistoricalActivityAttribute
+        attr_model = new_models.ActivityAttribute
         new_activity_attr_queryset = attr_model.objects.using(V2).filter(
             name='landobservatory_uuid', value__contains=uuid)
         new_activity_attr = new_activity_attr_queryset.first()
         if new_activity_attr:
             try:
                 new_activity = new_activity_attr.fk_activity
-            except new_models.HistoricalActivity.DoesNotExist:
+            except new_models.Activity.DoesNotExist:
                 pass
             else:
                 new_record = new_models.InvestorActivityInvolvement(

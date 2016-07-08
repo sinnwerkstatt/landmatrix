@@ -258,7 +258,7 @@ class MapLOActivities(MapLOModel):
 
         if activity_id:
             for key, value in attrs.items():
-                aa = landmatrix.models.HistoricalActivityAttribute(
+                aa = landmatrix.models.ActivityAttribute(
                     fk_activity_id=activity_id,
                     fk_language=english,
                     name=key,
@@ -268,6 +268,7 @@ class MapLOActivities(MapLOModel):
                 )
                 if save:
                     aa.save(using=V2)
+
         # No need to import LO history
         #if cls._save:
         #    if not cls.is_current_version(tag_group):
