@@ -41,9 +41,9 @@ class GroupSQLBuilder(SQLBuilder):
     def column_sql(self, c):
         if c == self.group:
             # use single values for column which gets grouped by
-            return self.SQL_COLUMN_MAP.get(c)[1]
+            return self.SQL_COLUMN_MAP[c][1]
         try:
-            return self.SQL_COLUMN_MAP.get(c)[0]
+            return self.SQL_COLUMN_MAP[c][0]
         except TypeError:
             raise KeyError(c)
 

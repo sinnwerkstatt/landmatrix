@@ -36,9 +36,8 @@ class ListSQLBuilder(SQLBuilder):
     def column_sql(self, c):
         if c in ("intended_size", "contract_size", "production_size"):
             return ''
-        elif c == "data_source":
-            return self.SQL_COLUMN_MAP.get(c)[0]
-        return self.SQL_COLUMN_MAP.get(c)[0]
+        else:
+            return self.SQL_COLUMN_MAP[c][0]
 
     def get_sub_columns_sql(self):
         sub_columns_sql = ''

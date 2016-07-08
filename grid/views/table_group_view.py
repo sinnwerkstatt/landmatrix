@@ -187,7 +187,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
                 'label': label,
                 'order_by': name == self.order_by and '-'+name or name,
             }
-        #columns = [col for col in columns if col in SQLBuilder.SQL_COLUMN_MAP.keys()]
+
         return columns
 
     @property

@@ -124,10 +124,7 @@ class SQLBuilder(SQLBuilderData):
         raise RuntimeError('SQLBuilder.get_base_sql() not implemented')
 
     def is_aggregate_column(self, c):
-        try:
-            return any(x in self.SQL_COLUMN_MAP[c][0] for x in ['ARRAY_AGG', 'COUNT'])
-        except KeyError:
-            return True
+        return any(x in self.SQL_COLUMN_MAP[c][0] for x in ['ARRAY_AGG', 'COUNT'])
 
     def _need_involvements_and_stakeholders(self):
         return self._investor_filter_is_set() or any(
@@ -138,8 +135,8 @@ class SQLBuilder(SQLBuilderData):
     def _investor_filter_is_set(self):
         return 'investor' in self.filters and 'tags' in self.filters['investor'] and self.filters['investor']['tags']
 
-    def _add_join_for_column(self, c):
-        spec = self.COLUMNS.get(c, [join_attributes(c)])
+    def _add_join_for_column(self, column):
+        spec = self.COLUMNS[column]
         if isinstance(spec, tuple):
             if not any(spec[0] in string for string in self.join_expressions):
                 self._add_join_if_not_present(spec[1])
