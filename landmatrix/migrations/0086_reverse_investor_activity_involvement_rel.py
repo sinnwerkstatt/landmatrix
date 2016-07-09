@@ -8,7 +8,7 @@ def update_investor_activity_involvements(apps, schema_editor):
     Activity = apps.get_model("landmatrix", "Activity")
     HistoricalActivity = apps.get_model("landmatrix", "HistoricalActivity")
     for inv in InvestorActivityInvolvement.objects.all():
-        activity = Activity.objects.filter(activity_identifier=inv.fk_activity.activity_identifier).latest()
+        activity = Activity.objects.filter(activity_identifier=inv.fk_activity.activity_identifier).order_by('-id').first()
         hactivity, created = HistoricalActivity.objects.get_or_create(id=activity.id, activity_identifier=activity.activity_identifier)
         if inv.fk_activity_id != activity.id:
             inv.fk_activity_id = activity.id
