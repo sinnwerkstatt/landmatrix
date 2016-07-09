@@ -91,7 +91,7 @@ class ExportView(TemplateView):
                             elif name:
                                 row_item.append(name)
                             # Required for intention
-                            elif value:
+                            elif value and lv.get("parent", None):
                                 row_item.append(str(value))
                         elif isinstance(lv, (list, tuple)):
             # Some vars take additional data for the template (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
