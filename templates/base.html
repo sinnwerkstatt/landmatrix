@@ -71,7 +71,7 @@
                     </li>
                     {% include "language_chooser.html" %}
                     {% block user_tools %}
-                        {% if request.user.is_authenticated and perms.editor.editor %}
+                        {% if request.user.is_authenticated %}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                                    aria-expanded="false" title="{% trans "Logged in as" %}: {{ user }}"><i class="fa fa-user messages"></i></a>
