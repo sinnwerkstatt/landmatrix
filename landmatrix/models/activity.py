@@ -128,11 +128,12 @@ class HistoricalActivity(ActivityBase):
         # Historical activity already is the newest version of activity?
         #old_activity = Activity.objects.get(activity_identifier=self.activity_identifier)
         old_activity = Activity.objects.filter(activity_identifier=self.activity_identifier).order_by('-id').first()
-        if self.id == old_activity.id:
+        if old_activity and self.id == old_activity.id:
             return False
         # Activity has been deleted?
         if self.fk_status_id == self.STATUS_DELETED:
-            old_activity.delete()
+            if old_activity:
+                old_activity.delete()
             return True
 
         # Exchange new activity (create new and delete old)
@@ -144,7 +145,8 @@ class HistoricalActivity(ActivityBase):
             fk_status_id = self.fk_status_id,
         )
         # Delete old and create new activity attributes
-        old_activity.attributes.all().delete()
+        if old_activity:
+            old_activity.attributes.all().delete()
         for hattribute in self.attributes.all():
             attribute = ActivityAttribute.objects.create(
                 fk_activity_id = self.id,
@@ -158,14 +160,16 @@ class HistoricalActivity(ActivityBase):
             )
         # Confirm pending Investor activity involvement
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=new_activity.activity_identifier)
-        latest = involvements.latest()
-        if latest.fk_status_id not in (latest.STATUS_ACTIVE, latest.STATUS_OVERWRITTEN):
-            latest.fk_activity_id = new_activity.id
-            latest.fk_status_id = latest.STATUS_OVERWRITTEN
-            latest.save()
-            # Delete other involvments for activity, since we don't need a history of involvements
-            involvements.exclude(id=latest.id).delete()
-        old_activity.delete()
+        if involvements.count() > 0:
+            latest = involvements.latest()
+            if latest.fk_status_id not in (latest.STATUS_ACTIVE, latest.STATUS_OVERWRITTEN):
+                latest.fk_activity_id = new_activity.id
+                latest.fk_status_id = latest.STATUS_OVERWRITTEN
+                latest.save()
+                # Delete other involvments for activity, since we don't need a history of involvements
+                involvements.exclude(id=latest.id).delete()
+        if old_activity:
+            old_activity.delete()
         return True
 
     class Meta:
