@@ -293,7 +293,7 @@ class ChangesetProtocol(View):
             deletes.append({
                 "id": activity.id,
                 "deal_id": activity.activity_identifier,
-                "user": activity.fk_user.username,
+                "user": activity.history_user.username,
                 "comment": comment
             })
         if deletes:
