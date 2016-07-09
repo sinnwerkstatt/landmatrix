@@ -1,4 +1,4 @@
-x// Handles related-objects functionality: lookup link for raw_id_fields
+// Handles related-objects functionality: lookup link for raw_id_fields
 // and Add Another links.
 
 function html_unescape(text) {
