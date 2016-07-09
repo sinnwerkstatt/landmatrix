@@ -25,6 +25,7 @@ for choice, value, choices in intention_choices:
         'value': value,
         'slug': slugify(choice),
         'order_by': value,
+        'is_parent': choices and len(choices) > 0
     }
     if not choices:
         continue
