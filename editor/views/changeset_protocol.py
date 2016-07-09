@@ -289,15 +289,16 @@ class ChangesetProtocol(View):
         activities_deletes = page.object_list
         deletes = []
         for activity in activities_deletes:
-            comment = activity.comment and len(activity.comment) > 0 and activity.comment or "-"
-            deletes.append({
-                "id": activity.id,
-                "deal_id": activity.activity_identifier,
-                "user": activity.history_user.username,
-                "comment": comment
-            })
+            deletes.append(self.changeset_template_data(activity))
+            #comment = activity.comment and len(activity.comment) > 0 and activity.comment or "-"
+            #deletes.append({
+            #    "id": activity.id,
+            #    "deal_id": activity.activity_identifier,
+            #    "user": activity.history_user,
+            #    "comment": comment
+            #})
         if deletes:
-            deletes["pagination"] = _pagination_to_json(paginator, page)
+            #deletes["pagination"] = _pagination_to_json(paginator, page)
             activities["deletes"] = deletes
 
 def get_activity_investor(activity):
