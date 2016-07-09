@@ -46,7 +46,8 @@ class DealDataSourceForm(BaseForm):
         help_text=_("PDF will be generated automatically, leave empty for file upload")
     )
     file = FileFieldWithInitial(
-        required=False, label=_("File")
+        required=False, label=_("File"),
+        help_text=_("Maximum file size: 2MB")
     )
     file_not_public = forms.BooleanField(
         required=False, label=_("Keep PDF not public")

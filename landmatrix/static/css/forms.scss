@@ -60,6 +60,11 @@ textarea.form-control {
   border-bottom-right-radius: 4px;
 }
 
+.control-group.file a.input-group-addon {
+  float: left;
+}
+
+
 .controls .select2-container--default .select2-selection--single {
   border: solid 1px $lm_medium2;
   min-height: 3em;

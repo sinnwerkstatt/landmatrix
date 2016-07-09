@@ -14,14 +14,8 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class FileInputWithInitial(forms.ClearableFileInput):
     displayed_chars = 40
-    existing_file_template = """
-    <dl>
-        <dt>{label}:</dt>
-        <dd>
-            <a href="{url}" target="_blank">{name}</a>
-        </dd>
-    </dl>
-    """
+    existing_file_template = '<a class="input-group-addon" href="{url}" target="_blank" title="' + str(_('Current file')) \
+        + ' class="toggle-tooltip"><i class="fa fa-file-pdf-o"></i></a>'
     new_upload_template = "{}-new"
 
     def render(self, name, value, attrs=None):
@@ -47,6 +41,7 @@ class FileInputWithInitial(forms.ClearableFileInput):
             output += self.existing_file_template.format(label=_("Saved file"),
                                                          url=value_url,
                                                          name=display_name)
+
 
         file_input = super().render(self.new_upload_template.format(name),
                                     None, attrs)
