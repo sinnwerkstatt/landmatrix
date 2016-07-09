@@ -2,6 +2,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 import re
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from grid.widgets.year_based_widget import YearBasedWidget
 
@@ -30,6 +31,6 @@ class YearBasedSelectMultipleNumber(YearBasedWidget):
     def get_widgets(self):
         return [
         	forms.SelectMultiple(choices=self.choices, attrs={"class": "year-based"}),
-        	forms.NumberInput(attrs={"class": "year-based"}),
+        	forms.NumberInput(attrs={"class": "year-based", "placeholder": _("Size")}),
             forms.TextInput(attrs={"class": "year-based-year"})
         ]
