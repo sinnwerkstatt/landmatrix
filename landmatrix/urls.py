@@ -85,6 +85,12 @@ urlpatterns = patterns('',
         name='deal_detail_pdf'
     ),
     url(
+        r'^deal/(?P<deal_id>\d+)/(?P<history_id>\d+)\.pdf$',
+        DealDetailView.as_view(),
+        {'format': 'PDF'},
+        name='deal_detail_pdf'
+    ),
+    url(
         r'^deal/(?P<deal_id>\d+)/changes\.rss$',
         DealChangesFeed(),
         name='deal_changes_feed'

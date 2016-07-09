@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.formsets import BaseFormSet
 from django.template.context import RequestContext
+from django.views.generic import TemplateView
 
 from grid.views.deal_detail_view import DealDetailView, get_forms
 from grid.views.view_aux_functions import render_to_response
@@ -11,19 +12,18 @@ from landmatrix.models.deal_history import DealHistoryItem
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class DealComparisonView(DealDetailView):
+class DealComparisonView(TemplateView):
 
     def dispatch(self, request, activity_1, activity_2=None):
         deal_1 = HistoricalActivity.objects.get(pk=activity_1)
         if activity_2:
             deal_2 = HistoricalActivity.objects.get(pk=activity_2)
         else:
-            deal_2 = HistoricalActivity.objects.filter(activity_identifier=activity.activity_identifier)\
-                .filter(history_date__lt=activity.history_date).order_by('history_date').last()
-        context = super().get_context_data(activity_1, activity_2)
+            deal_2 = HistoricalActivity.objects.filter(activity_identifier=deal_1.activity_identifier)\
+                .filter(history_date__lt=deal_1.history_date).order_by('history_date').last()
+        context = super().get_context_data()
         context['deals'] = [deal_1, deal_2]
         context['forms'] = get_comparison(deal_1, deal_2)
-
         return render_to_response('deal-comparison.html', context, RequestContext(request))
 
 
