@@ -12,6 +12,7 @@ ThreadedCommentForm = get_threaded_comment_form()
 class PublicCommentForm(ThreadedCommentForm):
 
     spam_protection = ReCaptchaField()
+    url = forms.CharField(required=False, widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,7 +29,6 @@ class PublicCommentForm(ThreadedCommentForm):
                 errors[field_name] = self.errors[field_name]
 
         return errors
-
 
 class EditCommentForm(forms.ModelForm):
 
