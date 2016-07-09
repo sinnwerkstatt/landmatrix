@@ -44,7 +44,7 @@
 
                       <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                         <div class="panel-body">
-                          {% include "form.html" with form=form %}
+                          {% include "includes/dealpanels-display.html" with form=form %}
                         </div>
                       </div>
 
@@ -62,7 +62,8 @@
 
                     <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                       <div class="panel-body">
-                        {% include "form.html" with form=comparison_forms.0 %}
+
+                        {% include "includes/dealpanels-display.html" with form=comparison_forms.0 %}
                       </div>
                     </div>
 
@@ -100,7 +101,7 @@
 
                   <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                     <div class="panel-body">
-                        {% include "form.html" with form=form %}
+                        {% include "includes/dealpanels-display.html" with form=form %}
                     </div>
                   </div>
 
@@ -118,7 +119,7 @@
 
                 <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
                   <div class="panel-body">
-                    {% include "form.html" with form=comparison_forms.1 %}
+                    {% include "includes/dealpanels-display.html" with form=comparison_forms.1 %}
                   </div>
                 </div>
 
