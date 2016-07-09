@@ -61,6 +61,15 @@ def clean_crops(key, value):
     key, value = replace_obsolete_crops(key, value)
     return key, value
 
+def clean_animals(key, value):
+    from old_editor.models import Animal
+    value = replace_model_name_with_id(Animal, value)
+    return key, value
+
+def clean_minerals(key, value):
+    from old_editor.models import Mineral
+    value = replace_model_name_with_id(Mineral, value)
+    return key, value
 
 def replace_obsolete_crops(key, value):
     if value == 42:
@@ -116,6 +125,10 @@ def clean_attribute(key, value):
         value = None
     if key == 'crops':
         return clean_crops(key, value)
+    elif key == 'animals':
+        return clean_animals(key, value)
+    elif key == 'minerals':
+        return clean_minerals(key, value)
     elif key in ('point_lat', 'point_lon'):
         return clean_coordinates(key, value)
     elif key == 'target_country':
