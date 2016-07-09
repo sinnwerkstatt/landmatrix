@@ -156,7 +156,7 @@ def clean_attribute(key, value):
     elif key == 'tg_primary_investor_comment':
         return 'tg_operational_stakeholder_comment', value
     elif key == 'tg_community_benefits_comment':
-        return key = 'tg_promised_benefits_comment'
+        return 'tg_promised_benefits_comment', value
     return key, value
 
 def clean_group(group_name, key, value):

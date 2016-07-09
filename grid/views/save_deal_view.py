@@ -81,19 +81,22 @@ class SaveDealView(TemplateView):
                     raise IOError(_('User is not authenticated and not user information given.'))
                 data = user_information.cleaned_data
                 names = data.get('public_user_name', '').split(' ')
-                self.request.user, created = User.objects.get_or_create(
-                    username=data.get('public_user_email'),
-                    email=data.get('public_user_email'),
-                    first_name=' '.join(names[:-1]),
-                    last_name=names[-1],
-                )
-                if created:
+                try:
+                    user = User.objects.get(email=data.get('public_user_email'))
+                except:
+                    user = User.objects.create(
+                        username=data.get('public_user_email'),
+                        email=data.get('public_user_email'),
+                        first_name=' '.join(names[:-1]),
+                        last_name=names[-1],
+                    )
                     UserRegionalInfo.objects.create(
-                        user=self.request.user,
+                        user=user,
                         phone=data.get('public_user_phone'),
                     )
                     group, created = Group.objects.get_or_create(name='Reporters')
-                    self.request.user.groups.add(group)
+                    user.groups.add(group)
+                self.request.user = user
             return self.form_valid(forms)
         else:
             return self.form_invalid(forms)
@@ -208,7 +211,8 @@ class SaveDealView(TemplateView):
     def create_activity_feedback(self, activity, form):
         if self.request.user.is_authenticated():
             if not isinstance(form, DealActionCommentForm):
-                raise IOError(_('User is authenticated but no action comment given.'))
+                # Public user
+                return
             data = form.cleaned_data
             if data.get('assign_to_user', None):
                 feedback = ActivityFeedback.objects.create(
@@ -221,7 +225,8 @@ class SaveDealView(TemplateView):
     def get_fully_updated(self, form):
         if self.request.user.is_authenticated():
             if not isinstance(form, DealActionCommentForm):
-                raise IOError(_('User is authenticated but no action comment given.'))
+                # Public user
+                return False
             return form.cleaned_data.get('fully_updated', False)
         return False
 
