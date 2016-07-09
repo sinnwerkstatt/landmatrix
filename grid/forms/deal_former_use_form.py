@@ -18,10 +18,7 @@ class DealFormerUseForm(BaseForm):
         ("Other", _("Other")),
     )
     FORMER_LAND_USE_CHOICES = (
-        (
-            "Commercial (large-scale) agriculture",
-            _("Commercial (large-scale) agriculture"),
-        ),
+        ("Commercial (large-scale) agriculture", _("Commercial (large-scale) agriculture")),
         ("Smallholder agriculture", _("Smallholder agriculture")),
         ("Shifting cultivation", _("Shifting cultivation")),
         ("Pastoralism", _("Pastoralism")),
@@ -34,16 +31,10 @@ class DealFormerUseForm(BaseForm):
         ("Cropland", _("Cropland")),
         ("Forest land", _("Forest land")),
         ("Pasture", _("Pasture")),
-        (
-            "Shrub land/Grassland (Rangeland)",
-            _("Shrub land/Grassland (Rangeland)"),
-        ),
+        ("Shrub land/Grassland", _("Shrub land/Grassland (Rangeland)")),
         ("Marginal land", _("Marginal land")),
         ("Wetland", _("Wetland")),
-        (
-            "Other land[e.g. developed land – specify in comment field]",
-            _("Other land[e.g. developed land – specify in comment field]"),
-        ),
+        ("Other land", _("Other land (e.g. developed land – specify in comment field)")),
     )
 
     form_title = _('Former use')
