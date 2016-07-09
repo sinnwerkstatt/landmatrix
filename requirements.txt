@@ -32,3 +32,4 @@ django-recaptcha>=1.0.5
 djangorestframework>=3.3.3
 djangorestframework-gis>=0.10.1
 drfdocs>=0.0.9
+unicodecsv==0.14.1

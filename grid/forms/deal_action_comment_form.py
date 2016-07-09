@@ -36,7 +36,7 @@ class DealActionCommentForm(BaseForm):
     tg_action = TitleField(
         required=False, label="", initial=_("Action comment"))
     tg_action_comment = forms.CharField(
-        required=True, label="", widget=CommentInput)
+        required=True, label=_('Action comment'), widget=CommentInput)
     fully_updated = forms.BooleanField(
         required=False, label=_("Fully updated"))
     #fully_updated_history = forms.CharField(
