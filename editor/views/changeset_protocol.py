@@ -203,8 +203,8 @@ class ChangesetProtocol(View):
             userregionalinfo = self.request.user.userregionalinfo
         except ObjectDoesNotExist:
             userregionalinfo = None
-        countries = dashboard_filters.get('country', userregionalinfo and [userregionalinfo.country] or None)
-        regions = dashboard_filters.get('region', userregionalinfo and [userregionalinfo.country.fk_region] or None)
+        countries = dashboard_filters.get('country', userregionalinfo and userregionalinfo.country.all() or None)
+        regions = dashboard_filters.get('region', userregionalinfo and userregionalinfo.region.all() or None)
         users = dashboard_filters.get('user', userregionalinfo and [userregionalinfo.super_user] or None)
         if countries:
             activities = activities.filter(models.Q(changesets__fk_country__in=countries) | models.Q(changesets__fk_country__isnull=True))

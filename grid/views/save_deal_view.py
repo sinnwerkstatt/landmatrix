@@ -32,6 +32,7 @@ from django.core.exceptions import MultipleObjectsReturned
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, Group
 from django.utils.text import slugify
+from django.conf import settings
 
 from datetime import date, datetime
 
@@ -96,7 +97,7 @@ class SaveDealView(TemplateView):
                     )
                     group, created = Group.objects.get_or_create(name='Reporters')
                     user.groups.add(group)
-                self.request.user = user
+                self.login_user(user)
             return self.form_valid(forms)
         else:
             return self.form_invalid(forms)
@@ -209,26 +210,23 @@ class SaveDealView(TemplateView):
         involvement.save()
 
     def create_activity_feedback(self, activity, form):
-        if self.request.user.is_authenticated():
-            if not isinstance(form, DealActionCommentForm):
-                # Public user
-                return
-            data = form.cleaned_data
-            if data.get('assign_to_user', None):
-                feedback = ActivityFeedback.objects.create(
-                    fk_activity_id=self.get_object().id,
-                    fk_user_assigned=data.get('assign_to_user'),
-                    fk_user_created=self.request.user,
-                    comment=data.get('tg_feedback_comment'),
-                )
+        if not isinstance(form, DealActionCommentForm):
+            # Public user
+            return
+        data = form.cleaned_data
+        if data.get('assign_to_user', None):
+            feedback = ActivityFeedback.objects.create(
+                fk_activity_id=self.get_object().id,
+                fk_user_assigned=data.get('assign_to_user'),
+                fk_user_created=self.request.user,
+                comment=data.get('tg_feedback_comment'),
+            )
 
     def get_fully_updated(self, form):
-        if self.request.user.is_authenticated():
-            if not isinstance(form, DealActionCommentForm):
-                # Public user
-                return False
-            return form.cleaned_data.get('fully_updated', False)
-        return False
+        if not isinstance(form, DealActionCommentForm):
+            # Public user
+            return False
+        return form.cleaned_data.get('fully_updated', False)
 
     def create_activity_changeset(self, activity):
         # Create changeset (for review)
@@ -244,3 +242,19 @@ class SaveDealView(TemplateView):
             fk_user=user,
         )
         return changeset
+
+
+    def login_user(self, user):
+        """
+        Log in a user without requiring credentials (using ``login`` from
+        ``django.contrib.auth``, first finding a matching backend).
+
+        """
+        from django.contrib.auth import load_backend, login
+        if not hasattr(user, 'backend'):
+            for backend in settings.AUTHENTICATION_BACKENDS:
+                if user == load_backend(backend).get_user(user.pk):
+                    user.backend = backend
+                    break
+        if hasattr(user, 'backend'):
+            return login(self.request, user)
