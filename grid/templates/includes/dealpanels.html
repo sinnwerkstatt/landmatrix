@@ -73,8 +73,8 @@
                                 $('.{{ form.form_title|slugify }}-form h3 small').each(function () {
                                     $(this).text('#' + form_count++);
                                 });
-                                // Remove <dl> used in file fields
-                                row.find('dl').remove();
+                                // Remove link to existing file in file fields
+                                row.find('.file a.input-group-addon').remove();
                                 init_form(row);
                                 // Scroll to the new row
                                 $('html, body').animate({
