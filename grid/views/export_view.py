@@ -3,7 +3,7 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 from xml.dom.minidom import parseString
-import csv
+import unicodecsv as csv
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http.response import HttpResponse
@@ -11,6 +11,7 @@ from django.views.generic import TemplateView
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
+from django.utils.encoding import force_text
 import xlwt
 
 from grid.views import AllDealsView, TableGroupView, DealDetailView
@@ -37,10 +38,10 @@ class ExportView(TemplateView):
         wb = xlwt.Workbook()#encoding='utf-8')
         ws = wb.add_sheet('Land Matrix')
         for i, h in enumerate([column['label'] for name, column in header.items()]):
-            ws.write(0, i, h)
+            ws.write(0, i, str(h))
         for i, row in enumerate(data):
             for j, d in enumerate(row):
-                ws.write(i+1, j, d)
+                ws.write(i+1, j, str(d))
         wb.save(response)
         return response
 
@@ -54,15 +55,13 @@ class ExportView(TemplateView):
                 field.set("name", h)
         xml = parseString(ET.tostring(root)).toprettyxml()
         response = HttpResponse(xml, content_type='text/xml')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(
-            filename)
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
 
     def export_csv(self, header, data, filename):
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(
-            filename)
-        writer = csv.writer(response, delimiter=";")
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        writer = csv.writer(response, delimiter=";", encoding='cp1252')
         # write csv header
         writer.writerow([column['label'] for name, column in header.items()])
         for row in data:
