@@ -82,6 +82,10 @@
                                     <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
                                 </ul>
                             </li>
+                        {% else %}
+                        <li>
+                            <a href="{% url "login" %}?next=/" role="button" title="{% trans "Login" %}"><i class="fa fa-sign-in"></i></a> 
+                        </li>
                         {% endif %}
                     {% endblock %}
                 </ul>

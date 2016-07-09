@@ -30,7 +30,7 @@ from django.db import transaction
 from django.contrib import messages
 from django.core.exceptions import MultipleObjectsReturned
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils.text import slugify
 
 from datetime import date, datetime
@@ -92,6 +92,8 @@ class SaveDealView(TemplateView):
                         user=self.request.user,
                         phone=data.get('public_user_phone'),
                     )
+                    group, created = Group.objects.get_or_create(name='Reporters')
+                    self.request.user.groups.add(group)
             return self.form_valid(forms)
         else:
             return self.form_invalid(forms)

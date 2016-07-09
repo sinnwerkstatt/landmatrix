@@ -228,7 +228,7 @@ class BaseForm(forms.Form):
     @classmethod
     def get_choice_value(cls, field, tag_value):
         for k, v in [i[:2] for i in field.choices]:
-            if v == tag_value or (tag_value.isdigit() and k == int(tag_value)):
+            if k == tag_value or (tag_value.isdigit() and k == int(tag_value)):
                 return str(k)
         return None
 

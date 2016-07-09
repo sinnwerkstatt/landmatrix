@@ -17,7 +17,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealGeneralForm(BaseForm):
-    # TODO: why not boolean here?
+    # TODO: why not boolean here? Maybe because there are three options: Yes, No or Unknown.
     CONTRACT_FARMING_CHOICES = (
         ("Yes", _("Yes")),
         ("No", _("No")),
