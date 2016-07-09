@@ -9,8 +9,8 @@ class UserRegionalInfo(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     phone = models.CharField(max_length=255, blank=True, null=True)
     super_user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='super_user', blank=True, null=True)
-    country = models.ManyToManyField(Country)
-    region = models.ManyToManyField(Region)
+    country = models.ManyToManyField(Country, blank=True)
+    region = models.ManyToManyField(Region, blank=True)
 
     class Meta:
 	    permissions = (

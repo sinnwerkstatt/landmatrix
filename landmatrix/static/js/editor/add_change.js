@@ -1,4 +1,4 @@
-// Handles related-objects functionality: lookup link for raw_id_fields
+x// Handles related-objects functionality: lookup link for raw_id_fields
 // and Add Another links.
 
 function html_unescape(text) {
@@ -336,7 +336,7 @@ $(document).ready(function(){
         $(".field.control-group.tg_feedback_comment ").slideUp("fast");
     }
 
-    $('.crops select,.animals select,.minerals select,.contract_farming_crops select,.contract_farming_animals select').select2();
+    $('.crops select,.animals select,.minerals select,.contract_farming_crops select,.contract_farming_animals select,.assign_to_user select').select2();
 
     $('.negotiation_status select').change(function () {
       var val = $(this).find('option:selected').val();

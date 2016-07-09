@@ -29,7 +29,7 @@ class DealActionCommentForm(BaseForm):
         ),
     )
     ASSIGN_TO_USER_QUERYSET = User.objects.filter(
-        groups__name__in=("Research admins", "Research assistants")).order_by(
+        groups__name__in=("Editors", "Administrators")).order_by(
         "username")
 
     form_title = _('Action Comment')
