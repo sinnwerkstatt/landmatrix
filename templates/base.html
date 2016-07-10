@@ -73,8 +73,9 @@
                     {% block user_tools %}
                         {% if request.user.is_authenticated %}
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle toggle-tooltip" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="{% trans "Logged in as" %}: {{ user }}"><i class="fa fa-user messages"></i></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user messages"></i></a>
                                 <ul class="dropdown-menu">
+                                    <li class="dropdown-header">{{ user }}</li>
                                     <li><a href="{% url 'editor' %}">{% trans "Dashboard" %}</a></li>
                                     <li><a href="{% url 'manage' %}">{% trans "Manage" %}</a></li>
                                     <li><a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a></li>
