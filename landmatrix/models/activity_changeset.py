@@ -18,11 +18,10 @@ class ActivityChangesetManager(models.Manager):
     #def by_status_query_set(self, status):
     #    return HistoricalActivity.objects.filter(fk_status__name__contains=status.lower()).order_by('-history_date')
 
-    def get_my_deals(self, user):
-        changesets = ActivityChangeset.objects.filter(fk_activity__history_user=user).\
-            filter(fk_activity__fk_status__name__in=("pending", "rejected"))
-
-        return changesets.order_by('-timestamp').values_list('fk_activity_id', flat=True).distinct()
+    #def get_my_deals(self, user):
+    #    changesets = ActivityChangeset.objects.filter(fk_activity__history_user=user).\
+    #        filter(fk_activity__fk_status__name__in=("pending", "rejected"))
+    #    return changesets.order_by('-timestamp').values_list('fk_activity_id', flat=True).distinct()
 
         #changesets = self.raw("""
         #    SELECT

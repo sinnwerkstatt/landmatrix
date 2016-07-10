@@ -238,7 +238,7 @@ class ChangesetProtocol(View):
             res["activities"] = activities
 
     def handle_my_deals(self, activities, limit, my_deals_page, user):
-        activities_my_deals = activities.get_my_deals(user.id)
+        activities_my_deals = HistoricalActivity.objects.get_my_deals(user.id)
         activities_my_deals = self.filter_activities(activities_my_deals, manage=True)
         activities_my_deals = limit and activities_my_deals[:limit] or activities_my_deals
         paginator = Paginator(activities_my_deals, 10)

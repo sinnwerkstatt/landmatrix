@@ -103,11 +103,20 @@ class Activity(ActivityBase):
             ("review_activity", "Can review activity changes"),
         )
 
+
+class HistoricalActivityManager(ActivityManager):
+
+    def get_my_deals(self, user):
+        return self.filter(history_user=user).\
+            filter(fk_status__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_REJECTED))
+        #return queryset.values_list('fk_activity_id', flat=True).distinct()
 class HistoricalActivity(ActivityBase):
     """All versions (including the current) of activities"""
     history_date = models.DateTimeField(auto_now_add=True)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
     comment = models.TextField(_('Comment'), blank=True, null=True)
+
+    objects = HistoricalActivityManager()
 
     #@property
     #def attributes(self):

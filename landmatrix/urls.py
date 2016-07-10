@@ -45,6 +45,7 @@ CACHE_TIMEOUT = 24*3600
 urlpatterns = patterns('',
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^impersonate/', include('impersonate.urls')),
 
     url(r'^language/(?P<language>[^/]+)/$', SwitchLanguageView.as_view(), name='switch_language'),
 
