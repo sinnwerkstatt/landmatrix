@@ -20,6 +20,9 @@ class ActivityManager(models.Manager):
     def public_or_deleted(self):
         return self.filter(fk_status_id__in=(ActivityBase.STATUS_ACTIVE, ActivityBase.STATUS_OVERWRITTEN, ActivityBase.STATUS_DELETED))
 
+    def public_or_pending(self):
+        return self.filter(fk_status_id__in=(ActivityBase.STATUS_ACTIVE, ActivityBase.STATUS_OVERWRITTEN, ActivityBase.STATUS_PENDING, ActivityBase.STATUS_TO_DELETE))
+
     def pending(self):
         return self.filter(fk_status_id__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_TO_DELETE))
 

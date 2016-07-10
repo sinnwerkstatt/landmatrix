@@ -16,7 +16,7 @@ User = get_user_model()
 
 class DealActionCommentForm(BaseForm):
     NOT_PUBLIC_REASON_CHOICES = (
-        ("---------", _("---------")),
+        ("", _("---------")),
         (
             "Temporary removal from PI after criticism",
             _("Temporary removal from PI after criticism"),
@@ -63,3 +63,9 @@ class DealActionCommentForm(BaseForm):
 
     class Meta:
         name = 'action_comment'
+
+    def get_attributes(self, request=None):
+        # Remove action comment, this field is handled separately in SaveDealView
+        attributes = super(DealActionCommentForm, self).get_attributes(request)
+        del attributes['tg_action_comment']
+        return attributes

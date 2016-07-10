@@ -59,13 +59,16 @@ class DealDetailView(PDFViewMixin, TemplateView):
         # TODO: Cache result for user
         deal_id = self.kwargs.get('deal_id')
         history_id = self.kwargs.get('history_id', None)
+        queryset = HistoricalActivity.objects
+        if not self.request.user.has_perm('landmatrix.review_activity'):
+            queryset = queryset.public()
         try:
             if history_id:
-                activity = HistoricalActivity.objects.get(id=history_id)
+                activity = queryset.get(id=history_id)
             else:
-                activity = HistoricalActivity.objects.public_or_deleted().filter(activity_identifier=deal_id).latest()
+                activity = queryset.filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
-            raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e))) 
+            raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e)))
         if not self.request.user.has_perm('landmatrix.change_activity'):
             if activity.fk_status_id == activity.STATUS_DELETED:
                 raise Http404('Activity %s has been deleted' % deal_id)
