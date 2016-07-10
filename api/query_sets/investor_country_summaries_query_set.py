@@ -19,7 +19,7 @@ class InvestorCountrySummariesQuerySet(FakeQuerySetFlat):
         ('lat_max',      'investor_country.point_lat_max'),
         ('lon_max',      'investor_country.point_lon_max'),
         ('deals',        'COUNT(DISTINCT a.activity_identifier)'),
-        ('deal_scope',   "pi.deal_scope")
+        ('deal_scope',   "a.deal_scope")
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_investorventureinvolvement AS ivi             ON ivi.fk_venture_id = operational_stakeholder.id",
@@ -30,7 +30,7 @@ class InvestorCountrySummariesQuerySet(FakeQuerySetFlat):
         "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.value AS NUMERIC) = deal_country.id",
     ]
     GROUP_BY = [
-        "investor_country.id, investor_region.name, pi.deal_scope",
+        "investor_country.id, investor_region.name, a.deal_scope",
         "investor_country.slug, investor_region.slug",
     ]
 

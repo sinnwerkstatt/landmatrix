@@ -9,6 +9,7 @@ from landmatrix.models.status import Status
 from landmatrix.models.activity_attribute_group import ActivityAttribute, HistoricalActivityAttribute
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
 from landmatrix.models.country import Country
+from grid.forms.choices import negotiation_status_choices, implementation_status_choices
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -96,9 +97,29 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
 class Activity(ActivityBase):
     """Just the most recent approved version of an activity (for simple queries in the public interface)"""
+    DEAL_SCOPE_CHOICES = (
+        ('domestic', _('Domestic')),
+        ('transnational', _('Transnational')),
+    )
+    is_public = models.BooleanField(_('Is this a public deal?'), default=False, db_index=True)
+    deal_scope = models.CharField(_('Deal scope'), max_length=16, choices=DEAL_SCOPE_CHOICES,
+        blank=True, null=True, db_index=True)
+    negotiation_status = models.CharField(_('Negotiation status'), max_length=64,
+        choices=negotiation_status_choices, blank=True, null=True, db_index=True)
+    implementation_status = models.CharField(
+        verbose_name=_('Implementation status'), max_length=64,
+        choices=implementation_status_choices, blank=True, null=True, db_index=True)
+    deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
+
     class Meta:
         verbose_name = _('Activity')
         verbose_name_plural = _('Activities')
+        index_together = [
+            ['is_public', 'deal_scope'],
+            ['is_public', 'deal_scope', 'negotiation_status'],
+            ['is_public', 'deal_scope', 'implementation_status'],
+            ['is_public', 'deal_scope', 'negotiation_status', 'implementation_status'],
+        ]
         permissions = (
             ("review_activity", "Can review activity changes"),
         )

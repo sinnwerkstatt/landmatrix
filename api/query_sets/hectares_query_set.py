@@ -7,7 +7,7 @@ class HectaresQuerySet(FakeQuerySetWithSubquery):
 
     FIELDS = [
         ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
-        ('hectares',          "ROUND(SUM(pi.deal_size))")
+        ('hectares',          "ROUND(SUM(a.deal_size))")
     ]
     SUBQUERY_FIELDS = []
 

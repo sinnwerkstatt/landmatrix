@@ -18,7 +18,7 @@ class TargetCountrySummariesQuerySet(FakeQuerySetWithSubquery):
         ('lat_max',    'sub.point_lat_max'),
         ('lon_max',    'sub.point_lon_max'),
         ('deals',      'COUNT(DISTINCT a.activity_identifier)'),
-        ('hectares',   "ROUND(SUM(pi.deal_size))"),
+        ('hectares',   "ROUND(SUM(a.deal_size))"),
         ('intentions', 'ARRAY_AGG(sub.intention)')
     ]
     SUBQUERY_FIELDS = [

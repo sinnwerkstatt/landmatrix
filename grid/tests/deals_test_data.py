@@ -62,11 +62,11 @@ class DealsTestData:
                 value=value,
                 date=date.today(),
             )
-        PublicInterfaceCache.objects.create(
-            fk_activity=Activity.objects.last(),
-            is_public=True,
-            deal_scope='transnational'
-        )
+        #PublicInterfaceCache.objects.create(
+        #    fk_activity=Activity.objects.last(),
+        #    is_public=True,
+        #    deal_scope='transnational'
+        #)
 
     def create_country(self):
         if self.region: return

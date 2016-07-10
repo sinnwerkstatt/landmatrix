@@ -66,7 +66,7 @@ class TestActivityProtocol(TestCase, DealsTestData):
 --                    WHERE amax.fk_status_id = st.id AND amax.activity_identifier = a.activity_identifier AND st.name IN ('active', 'overwritten', 'deleted')
 --                )
 --                AND
-                pi.is_public
+                a.is_public = 't' 
                 AND status.name IN ('active', 'overwritten')
                 AND (NOT DEFINED(intention.value) OR intention.value NOT LIKE '%Mining%')
             GROUP BY a.id"""

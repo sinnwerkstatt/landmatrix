@@ -10,10 +10,10 @@ class ImplementationStatusQuerySet(FakeQuerySetWithSubquery):
     FIELDS = [
         ('implementation_status', 'sub.implementation_status'),
         ('deal_count',         'COUNT(DISTINCT a.activity_identifier)'),
-        ('deal_size',          "ROUND(SUM(pi.deal_size))")
+        ('deal_size',          "ROUND(SUM(a.deal_size))")
     ]
     SUBQUERY_FIELDS = [
-        ('implementation_status',    "pi.implementation_status")
+        ('implementation_status',    "a.implementation_status")
     ]
     GROUP_BY = ['sub.implementation_status']
     ORDER_BY = ['sub.implementation_status']

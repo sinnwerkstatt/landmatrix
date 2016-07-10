@@ -55,13 +55,13 @@ class DealsTestData:
             value=Country.objects.last().id
         )
         aag.save()
-        pi = PublicInterfaceCache(
-            fk_activity = Activity.objects.last(),
-            is_public=True,
-            deal_scope='transnational',
-            timestamp=datetime.now()
-        )
-        pi.save()
+        #pi = PublicInterfaceCache(
+        #    fk_activity = Activity.objects.last(),
+        #    is_public=True,
+        #    deal_scope='transnational',
+        #    timestamp=datetime.now()
+        #)
+        #pi.save()
 
     language = None
     def _generate_language(self):
@@ -111,14 +111,14 @@ class DealsTestData:
         op = self._generate_operational_stakeholder(activity, self.investor_country)
         self._generate_stakeholder(op)
 
-        PublicInterfaceCache(
-            fk_activity=activity,
-            is_public=attributes['pi_deal'],
-            deal_scope=deal_scope,
-            negotiation_status=attributes.get('pi_negotiation_status'),
-            implementation_status=attributes.get('pi_implementation_status'),
-            deal_size=deal_size
-        ).save()
+        #PublicInterfaceCache(
+        #    fk_activity=activity,
+        #    is_public=attributes['pi_deal'],
+        #    deal_scope=deal_scope,
+        #    negotiation_status=attributes.get('pi_negotiation_status'),
+        #    implementation_status=attributes.get('pi_implementation_status'),
+        #    deal_size=deal_size
+        #).save()
 
     def _generate_operational_stakeholder(self, activity, country=None):
 
@@ -209,14 +209,14 @@ class DealsTestData:
 
         op = self._generate_operational_stakeholder(activity, investor_country)
         self._generate_stakeholder(op)
-        PublicInterfaceCache(
-            fk_activity=activity,
-            is_public=attributes['pi_deal'],
-            deal_scope=attributes.get('deal_scope'),
-            negotiation_status=attributes.get('pi_negotiation_status'),
-            implementation_status=attributes.get('pi_implementation_status'),
-            deal_size=attributes.get('pi_deal_size')
-        ).save()
+        #PublicInterfaceCache(
+        #    fk_activity=activity,
+        #    is_public=attributes['pi_deal'],
+        #    deal_scope=attributes.get('deal_scope'),
+        #    negotiation_status=attributes.get('pi_negotiation_status'),
+        #    implementation_status=attributes.get('pi_implementation_status'),
+        #    deal_size=attributes.get('pi_deal_size')
+        #).save()
 
 
 def get_latest_investor_identifier():

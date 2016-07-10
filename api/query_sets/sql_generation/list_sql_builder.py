@@ -58,7 +58,6 @@ sub.name AS name,
 'dummy' AS dummy
 FROM
 landmatrix_activity AS a """ + "\n" \
-+  "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_public\n" \
 + join_attributes('intended_size') + "\n" \
 + join_attributes('contract_size') + "\n" \
 + join_attributes('production_size') + "\n" \
@@ -71,7 +70,6 @@ JOIN (
     %(columns)s    'dummy' AS dummy
     FROM landmatrix_activity AS a
     %(from)s""" + "\n" + \
-    "LEFT JOIN landmatrix_publicinterfacecache   AS pi        ON a.id = pi.fk_activity_id AND pi.is_public\n" +\
      join_attributes('deal_scope') + """
     %(from_filter)s
     WHERE """ + "\nAND ".join(filter(None, [

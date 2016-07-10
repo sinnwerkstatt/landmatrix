@@ -174,7 +174,7 @@ class SQLBuilder(SQLBuilderData):
         if self.is_staff:
             return ""
         else:
-            return "pi.is_public"
+            return "a.is_public = 't'"
 
     def not_mining_condition(self):
         return "a.activity_identifier NOT IN (%s)" % ', '.join(map(str, self.mining_deals()))
@@ -190,7 +190,6 @@ class SQLBuilder(SQLBuilderData):
 
         sql = """SELECT DISTINCT a.activity_identifier AS deal_id
 FROM landmatrix_activity AS a
-LEFT JOIN landmatrix_publicinterfacecache AS pi ON a.id = pi.fk_activity_id AND pi.is_public
 LEFT JOIN landmatrix_activityattribute AS intention ON a.id = intention.fk_activity_id AND intention.name = 'intention'
           WHERE
 """ + "\nAND ".join(filter(None, [

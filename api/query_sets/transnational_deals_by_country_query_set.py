@@ -11,7 +11,7 @@ class TransnationalDealsQuerySetBase(FakeQuerySetWithSubquery):
         ('region_id', 'sub.region_id'),
         ('region',    'sub.region'),
         ('deals',     'COUNT(DISTINCT a.activity_identifier)'),
-        ('hectares',  'ROUND(SUM(pi.deal_size))'),
+        ('hectares',  'ROUND(SUM(a.deal_size))'),
     ]
     GROUP_BY = ['sub.region_id', 'sub.region']
 

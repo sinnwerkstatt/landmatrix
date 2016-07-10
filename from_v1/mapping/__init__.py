@@ -17,5 +17,5 @@ from mapping.map_investor_activity_involvement import MapInvestorActivityInvolve
 from mapping.map_land_observatory import MapLandObservatory
 from mapping.map_stakeholder_investor import MapStakeholderInvestor
 from mapping.map_stakeholder_venture_involvement import MapStakeholderVentureInvolvement
-from mapping.map_public_interface_cache import MapPublicInterfaceCache
+#from mapping.map_public_interface_cache import MapPublicInterfaceCache
 from mapping.map_threadedcomments import MapDjangoComments, MapThreadedComments

@@ -17,14 +17,14 @@ class TestNegotiationStatus(ApiTestFunctions, DealsTestData):
     RAW_SQL = """SELECT
     sub.negotiation_status                AS negotiation_status,
     COUNT(DISTINCT a.activity_identifier) AS deal_count,
-    ROUND(SUM(pi.deal_size)) AS deal_size
+    ROUND(SUM(a.deal_size)) AS deal_size
 FROM landmatrix_activity AS a
 LEFT JOIN landmatrix_publicinterfacecache      AS pi               ON a.id = pi.fk_activity_id,
 (
     SELECT DISTINCT
         a.id,
-        pi.negotiation_status AS negotiation_status,
-        pi.implementation_status AS implementation_status
+        a.negotiation_status AS negotiation_status,
+        a.implementation_status AS implementation_status
     FROM landmatrix_activity AS a
     JOIN      landmatrix_status                                        ON landmatrix_status.id = a.fk_status_id
     LEFT JOIN landmatrix_publicinterfacecache      AS pi               ON a.id = pi.fk_activity_id
@@ -43,10 +43,10 @@ LEFT JOIN landmatrix_publicinterfacecache      AS pi               ON a.id = pi.
 --            SELECT MAX(version) FROM landmatrix_activity AS amax
 --            WHERE amax.activity_identifier = a.activity_identifier AND amax.fk_status_id IN (2, 3, 4)
 --        ) AND
-            a.fk_status_id IN (2, 3)
-        AND pi.is_public
---        AND pi.deal_scope = 'transnational'
---        AND pi.deal_scope = 'domestic'
+        a.is_public = 't'
+        AND a.fk_status_id IN (2, 3)
+--        AND a.deal_scope = 'transnational'
+--        AND a.deal_scope = 'domestic'
 ) AS sub
 WHERE sub.id = a.id
 GROUP BY sub.negotiation_status ORDER BY sub.negotiation_status"""

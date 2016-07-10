@@ -64,7 +64,7 @@ FROM """ + Activity._meta.db_table + """ AS a,
     FROM """ + Activity._meta.db_table + """ AS a
     """ + BASE_JOIN + """
     WHERE """ + BASE_CONDITION + """
-    GROUP BY a.activity_identifier, a.id, pi.deal_size
+    GROUP BY a.activity_identifier, a.id, a.deal_size
 ) AS sub
 WHERE a.id = sub.id
 """

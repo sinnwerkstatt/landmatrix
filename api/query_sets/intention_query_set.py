@@ -11,7 +11,7 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
     FIELDS = [
         ('intention',  'sub.intention'),
         ('deal_count', 'COUNT(DISTINCT a.activity_identifier)'),
-        ('deal_size',  'ROUND(SUM(pi.deal_size))')
+        ('deal_size',  'ROUND(SUM(a.deal_size))')
     ]
     SUBQUERY_FIELDS = [
         ('intention', """CASE

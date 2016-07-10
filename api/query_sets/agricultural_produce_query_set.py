@@ -9,7 +9,7 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
     FIELDS = [
         ('agricultural_produce', 'sub.agricultural_produce'),
         ('deals',      'COUNT(DISTINCT a.activity_identifier)'),
-        ('hectares',   "ROUND(SUM(pi.deal_size))"),
+        ('hectares',   "ROUND(SUM(a.deal_size))"),
     ]
     SUBQUERY_FIELDS = [
         ('agricultural_produce', """CASE

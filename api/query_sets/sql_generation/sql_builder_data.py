@@ -297,8 +297,8 @@ class SQLBuilderData:
             " deal_region.name AS target_region"
         ],
         "deal_size": [
-            "IFNULL(pi.deal_size, 0) + 0 AS deal_size",
-            "IFNULL(pi.deal_size, 0) + 0 AS deal_size"
+            "IFNULL(a.deal_size, 0) + 0 AS deal_size",
+            "IFNULL(a.deal_size, 0) + 0 AS deal_size"
         ],
         "year": [
             "SUBSTR(negotiation_status.date, 1, 4) AS year",

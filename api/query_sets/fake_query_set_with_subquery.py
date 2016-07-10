@@ -12,18 +12,17 @@ SELECT DISTINCT
 --  columns:
     %s
 FROM landmatrix_activity                    AS a
-LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_activity_id AND pi.is_public,
 (
     SELECT DISTINCT
         a.id
 --  subquery columns:
         %s
     FROM landmatrix_activity                       AS a
-    LEFT JOIN landmatrix_publicinterfacecache   AS pi               ON a.id = pi.fk_activity_id AND pi.is_public
 --  additional joins:
     %s
     WHERE
-           a.fk_status_id IN (2, 3)
+        a.is_public = 't' 
+        AND a.fk_status_id IN (2, 3)
 --  additional where conditions:
         %s
 --  filter sql:
@@ -66,13 +65,13 @@ SELECT DISTINCT
 --  columns:
     %s
 FROM landmatrix_activity                       AS a
-LEFT JOIN landmatrix_publicinterfacecache      AS pi               ON a.id = pi.fk_activity_id AND pi.is_public
 LEFT JOIN landmatrix_investoractivityinvolvement AS iai            ON iai.fk_activity_id = a.id
 LEFT JOIN landmatrix_investor                  AS operational_stakeholder ON iai.fk_investor_id = operational_stakeholder.id
 --  additional joins:
 %s
 WHERE
-    a.fk_status_id IN (2, 3)
+    a.is_public = 't' 
+    AND a.fk_status_id IN (2, 3)
 --  additional where conditions:
     %s
 --  filter sql:

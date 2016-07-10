@@ -10,7 +10,7 @@ class Top10InvestorCountriesQuerySet(FakeQuerySetWithSubquery):
     FIELDS = [
         ('investor_country', 'investor_country'),
         ('investor_country_id', 'investor_country_id'),
-        ('hectares',          "COALESCE(ROUND(SUM(pi.deal_size)), 0)"),
+        ('hectares',          "COALESCE(ROUND(SUM(a.deal_size)), 0)"),
         ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
     ]
     SUBQUERY_FIELDS = [
@@ -35,7 +35,7 @@ class Top10TargetCountriesQuerySet(FakeQuerySetWithSubquery):
     FIELDS = [
         ('target_country', 'sub.target_country'),
         ('target_country_id', 'sub.target_country_id'),
-        ('hectares',          "COALESCE(ROUND(SUM(pi.deal_size)), 0)"),
+        ('hectares',          "COALESCE(ROUND(SUM(a.deal_size)), 0)"),
         ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
     ]
     SUBQUERY_FIELDS = [

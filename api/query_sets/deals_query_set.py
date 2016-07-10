@@ -188,7 +188,7 @@ class DealsQuerySet(FakeQuerySetFlat):
             stati.extend(self.BASE_FILTER_MAP.get(n))
 
         self._additional_wheres = add_to_list_if_not_present(
-            self._additional_wheres, ["LOWER(pi.negotiation_status) IN ('%s') " % "', '".join(stati)]
+            self._additional_wheres, ["LOWER(a.negotiation_status) IN ('%s') " % "', '".join(stati)]
         )
 
 

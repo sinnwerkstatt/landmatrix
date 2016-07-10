@@ -221,7 +221,7 @@ class FilterToSQL:
     def _where_activity_deal_scope(self):
         where = []
         if self.filters.get("deal_scope") and self.filters.get("deal_scope") != "all":
-            where.append("AND pi.deal_scope = '%s' " % self.filters.get("deal_scope"))
+            where.append("AND a.deal_scope = '%s' " % self.filters.get("deal_scope"))
 
         return where
 

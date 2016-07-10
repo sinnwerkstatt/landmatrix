@@ -18,9 +18,13 @@ BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status ON status.i
     LEFT JOIN """ + ActivityAttribute._meta.db_table + """ AS target_country ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country' 
     LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON CAST(target_country.value AS NUMERIC) = deal_country.id
     LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id
-    LEFT JOIN """ + PublicInterfaceCache._meta.db_table + """ AS pi ON a.id = pi.fk_activity_id AND pi.is_public"""
+"""
 HECTARES_SQL = "ROUND(COALESCE(SUM(sub.deal_size)), 0) AS deal_size"
-BASE_CONDITION = "status.name IN ('active', 'overwritten') AND os_st.name IN ('active', 'overwritten')"
+BASE_CONDITION = """
+    a.is_public = 't'
+    AND status.name IN ('active', 'overwritten')
+    AND os_st.name IN ('active', 'overwritten')
+"""
 
 
 class StatisticsQuerySet(FakeQuerySetFlat):
@@ -43,13 +47,13 @@ LEFT JOIN """ + ActivityAttribute._meta.db_table + """ AS activity_attrs ON a.id
 (
     SELECT DISTINCT
         a.id,
-        pi.negotiation_status AS negotiation_status,
-        pi.deal_size AS deal_size
+        a.negotiation_status AS negotiation_status,
+        a.deal_size AS deal_size
     FROM """ + Activity._meta.db_table + """ AS a
     """ + BASE_JOIN + """
     WHERE """ + BASE_CONDITION + ' ' + self.regional_condition() + """
-    AND pi.negotiation_status IS NOT NULL
-    GROUP BY a.activity_identifier, a.id, pi.negotiation_status, pi.deal_size
+    AND a.negotiation_status IS NOT NULL
+    GROUP BY a.activity_identifier, a.id, a.negotiation_status, a.deal_size
 ) AS sub
 WHERE a.id = sub.id
 GROUP BY sub.negotiation_status"""

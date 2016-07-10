@@ -20,6 +20,5 @@ from landmatrix.models.filter_condition import FilterCondition
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
 from landmatrix.models.language import Language
 from landmatrix.models.mineral import Mineral
-from landmatrix.models.public_interface_cache import PublicInterfaceCache
 from landmatrix.models.region import Region
 from landmatrix.models.status import Status
