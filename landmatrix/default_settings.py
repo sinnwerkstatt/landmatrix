@@ -294,3 +294,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     )
 }
+
+LOGIN_REDIRECT_URL = '/'
