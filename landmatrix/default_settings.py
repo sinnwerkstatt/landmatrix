@@ -111,6 +111,7 @@ INSTALLED_APPS += (
     'notifications',
     'public_comments',
     'feeds',
+    'impersonate',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -136,6 +137,7 @@ MIDDLEWARE_CLASSES = (
     # wagtail and dependencies
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+    'impersonate.middleware.ImpersonateMiddleware',
 )
 
 if FRONTENDDEV:
