@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load i18n custom_tags %}
+
+{% block breadcrumb_inner %}
+    <li><a href="{% url 'editor' %}">{% trans "Dashboard" %}</a></li>
+    <li>{% trans "Change log " %}</li>
+{% endblock %}
+
+{% block page_title %}{% trans "Change log" %}{% endblock %}
+{% block title %}{% trans "Change log" %}{% endblock %}
+
+{% block subnav %}
+    <ul class="subnav nav nav-pills pull-right">
+        <li role="presentation"><a href="{% url 'map' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+            <i class="lm lm-map-marker"></i>{% trans "Map" %}
+        </a></li>
+        <li role="presentation"><a href="{% url 'data' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+            <i class="lm lm-table"></i>{% trans "Data" %}
+        </a></li>
+        <li role="presentation"><a href="{% url 'chart_transnational_deals' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+            <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+        </a></li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            {% if request.GET.selected %}
+                $('ul.manage.nav li i.icon-chevron-down').removeClass("icon-white");
+                $('ul.manage.nav li a[href="#{{ request.GET.selected }}"]').tab("show").find("i.icon-chevron-down").addClass("icon-white");
+            {% else %}
+                $('ul.manage.nav li:first-child a').tab("show");
+            {% endif %}
+        });
+    </script>
+    <div class="navbar navbar-default navbar-subnav" role="navigation">
+        <div class="container-fluid">
+            <ul class="manage nav navbar-nav" id="manage-sections">
+                    <li{% if action == 'inserts' %} class="active"{% endif %}><a href="{% url 'log' action='inserts' %}">
+                        {% trans "Latest added" %}
+                    </a></li>
+                    <li{% if action == 'updates' %} class="active"{% endif %}><a href="{% url 'log' action='updates' %}">
+                        {% trans "Latest modified" %}
+                    </a></li>
+                    <li{% if action == 'deletes' %} class="active"{% endif %}><a href="{% url 'log' action='deletes' %}">
+                        {% trans "Latest deleted" %}
+                    </a></li>
+            </ul>
+        </div>
+    </div>
+    <p>&nbsp;</p>
+    <div class="tab-content">
+            <div id="items" class="tab-pane active">
+                <table class="table table-striped table-condensed">
+                    <colgroup>
+                        <col width="10%">
+                        <col width="10%">
+                        <col width="10%">
+                        <col width="35%">
+                        <col width="25%">
+                    </colgroup>
+                    <thead>
+                    <th class="deal">{% trans "Deal #" %}</th>
+                    <th class="user">{% trans "Last revision" %}</th>
+                    <th class="comment">{% trans "Comment" %}</th>
+                    </thead>
+                    <tbody>
+                    {% for activity in activities %}
+                        <tr>
+                            <td class="deal"><a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
+                            </td>
+                            <td class="user">{{ activity.user }}</td>
+                            <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <!-- ul class="pagination">
+                    {% if "previous" in updates.pagination %}
+                        <li><a class="btn btn-default" type="button"
+                               href="{% add_get_parameter updates_page=updates.pagination.previous,selected='updates' %}">&laquo;</a>
+                        </li>
+                    {% endif %}
+                    <li class="active">
+                        <a class="btn disabled" href="#">{% trans "Page" %} {{ updates.pagination.current }} {% trans "of" %} {{ updates.pagination.last }}</a>
+                    </li>
+                    {% if "next" in updates.pagination %}
+                        <li><a class="btn btn-default" type="button"
+                               href="{% add_get_parameter updates_page=updates.pagination.next,selected='updates' %}">&raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul -->
+            </div>
+    </div>
+{% endblock %}

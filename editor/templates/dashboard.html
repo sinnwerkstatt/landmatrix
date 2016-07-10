@@ -184,7 +184,10 @@
             <div class="col-md-6">
                 <div class="alert alert-success">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
-                    <h3>{% trans "Latest added" %}</h3>
+                    <h3>
+                        {% trans "Latest added" %}
+                        <a class="" href="{% url 'log' action='inserts' %}"><small>{% trans "Show all" %}</small></a>
+                    </h3>
                     {% if latest_added %}
                         <table class="table table-condensed">
                             <thead>
@@ -211,14 +214,16 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        <!--a href="">{% trans "Show all" %}</a-->
                     {% else %}
                         <p>{% trans "No deals have been added lately." %}</p>
                     {% endif %}
                 </div>
                 <div class="alert alert-warning">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
-                    <h3>{% trans "Latest modified" %}</h3>
+                    <h3>
+                        {% trans "Latest modified" %}
+                        <a class="" href="{% url 'log' action='updates' %}"><small>{% trans "Show all" %}</small></a>
+                    </h3>
                     {% if latest_modified %}
                         <table class="table table-condensed">
                             <thead>
@@ -245,14 +250,15 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        <!--a href="">{% trans "Show all" %}</a-->
                     {% else %}
                         <p>{% trans "No deals have been modified lately." %}</p>
                     {% endif %}
                 </div>
                 <div class="alert alert-danger">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
-                    <h3>{% trans "Latest deleted" %}</h3>
+                    <h3>{% trans "Latest deleted" %} 
+                        <a class="" href="{% url 'log' action='deletes' %}"><small>{% trans "Show all" %}</small></a>
+                    </h3>
                     {% if latest_deleted %}
                         <table class="table table-condensed">
                             <thead>
@@ -279,7 +285,6 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        <!--a href="">{% trans "Show all" %}</a-->
                     {% else %}
                         <p>{% trans "No deals have been deleted lately." %}</p>
                     {% endif %}
@@ -353,7 +358,6 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
-                            <!--a href="{% url 'manage' %}">{% trans "Show all" %}</a-->
                         {% else %}
                             <p>{% trans "No pending activities require your attention." %}</p>
                         {% endif %}

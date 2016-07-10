@@ -133,3 +133,36 @@ class ManageContentView(UpdateView):
         return super(ManageContentView, self).form_valid(form)
 
 
+class LogView(TemplateView):
+
+    template_name = 'log.html'
+
+    def get(self, request, action="inserts"):
+        csp = ChangesetProtocol()
+        request.POST = MultiValueDict(
+            {"data": [json.dumps(
+                {"activities": [action],
+                 "investors": []}
+            )]}
+        )
+        response = csp.dispatch(request, action="list")
+        response = json.loads(response.content.decode())
+
+        activities = response.get("activities", {})
+        activities = action in activities and activities[action] or []
+        data = {
+            "view": "log",
+            "action": action,
+            "activities": activities,
+        }
+
+        
+
+        #if "updates" in data and data["updates"] and data["updates"]:
+        #    changed = []
+        #    for activity in data["updates"]:
+        #        for k in activity.get("fields_changed", []):
+        #            changed.append(str(get_field_by_a_key_id(k).label))
+        #        activity["fields_changed"] = ", ".join(changed)
+
+        return render_to_response(self.template_name, data, context_instance=RequestContext(request))

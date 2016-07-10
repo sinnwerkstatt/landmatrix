@@ -1,5 +1,4 @@
-from editor.views.editor_view import EditorView
-from editor.views.manage_view import ManageView, ManageContentView
+from editor.views import *
 from grid.views.add_deal_view import AddDealView
 
 from django.conf.urls import url, patterns
@@ -20,5 +19,10 @@ urlpatterns = patterns('editor.views',
         r'^manage/',
         login_required(ManageView.as_view()),
         name='manage'
+    ),
+    url(
+        r'^log/(?P<action>updates|deletes|inserts)/',
+        login_required(LogView.as_view()),
+        name='log'
     ),
 )
