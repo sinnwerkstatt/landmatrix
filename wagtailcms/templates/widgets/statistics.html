@@ -41,9 +41,9 @@
     </div>
     <div class="well-square legend">
           <ul class="list-inline">
-              <li><i class="icon icon-none" style="background-color: #ed881b;"></i> Concluded</li>
-              <li><i class="icon icon-none" style="background-color: #b96c12;"></i> Intended</li>
-              <li><i class="icon icon-none" style="background-color: #884e0e;"></i> Failed</li>
+              <li><i class="icon icon-none" style="background-color: #ed881b;"></i> {% trans "Concluded" %}</li>
+              <li><i class="icon icon-none" style="background-color: #b96c12;"></i> {% trans "Intended" %}</li>
+              <li><i class="icon icon-none" style="background-color: #884e0e;"></i> {% trans "Failed" %}</li>
           </ul>
     </div>
 </div>
@@ -59,13 +59,16 @@ $(document).ready(function () {
     for (var i = 0; i < data.length; i++) {
       item = data[i];
       // Update numbers
-      if (item[0].startsWith('Concluded')) {
+      // Concluded
+      if (['Oral agreement', 'Contract signed'].indexOf(item[0]) > 0) {
         by_deals[1] += item[1];
         by_size[1] += item[2];
-      } else if (item[0].startsWith('Intended')) {
+      // Intended
+      } else if (['Expression of interest', 'Under negotiation', 'Memorandum of understanding'].indexOf(item[0]) > 0) {
         by_deals[2] += item[1];
         by_size[2] += item[2];
-      } else if (item[0].startsWith('Failed')) {
+      // Failed
+      } else if (['Negotiations failed', 'Contract canceled', 'Contract expired'].indexOf(item[0]) > 0) {
         by_deals[3] += item[1];
         by_size[3] += item[2];
       }

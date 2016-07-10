@@ -9,6 +9,7 @@ from django.db import connection
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
+# FIXME: Delete this, once there are no dependencies anymore
 BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status ON status.id = a.fk_status_id
     LEFT JOIN """ + InvestorActivityInvolvement._meta.db_table + """ AS iai ON iai.fk_activity_id = a.id
     LEFT JOIN """ + Investor._meta.db_table + """ AS os ON iai.fk_investor_id = os.id
@@ -38,25 +39,19 @@ class StatisticsQuerySet(FakeQuerySetFlat):
 
     def all(self):
         cursor = connection.cursor()
-        sql = """SELECT
-    sub.negotiation_status,
-    COUNT(DISTINCT a.activity_identifier) AS deals,
-    """ + HECTARES_SQL + """
-FROM """ + Activity._meta.db_table + """ AS a
-LEFT JOIN """ + ActivityAttribute._meta.db_table + """ AS activity_attrs ON a.id = activity_attrs.fk_activity_id,
-(
-    SELECT DISTINCT
-        a.id,
-        a.negotiation_status AS negotiation_status,
-        a.deal_size AS deal_size
+        sql = """
+    SELECT
+        a.negotiation_status,
+        COUNT(DISTINCT a.activity_identifier) AS deals,
+        ROUND(COALESCE(SUM(a.deal_size)), 0) AS deal_size
     FROM """ + Activity._meta.db_table + """ AS a
-    """ + BASE_JOIN + """
-    WHERE """ + BASE_CONDITION + ' ' + self.regional_condition() + """
-    AND a.negotiation_status IS NOT NULL
-    GROUP BY a.activity_identifier, a.id, a.negotiation_status, a.deal_size
-) AS sub
-WHERE a.id = sub.id
-GROUP BY sub.negotiation_status"""
+    WHERE
+        a.is_public = 't'
+        AND a.fk_status_id IN (2,3)
+        """ + self.regional_condition() + """
+        AND a.negotiation_status IS NOT NULL
+    GROUP BY a.negotiation_status
+        """
 
         if self.DEBUG: print(sql)
         cursor.execute(sql)
@@ -67,10 +62,10 @@ GROUP BY sub.negotiation_status"""
     def regional_condition(self):
         if self.country:
             return """
-    AND target_country.value = '%s'
+    AND a.target_country = '%s'
             """ % self.country
         elif self.region:
             return """
-    AND deal_country.fk_region_id = %s
+    AND target_country.fk_region_id = %s
             """ % self.region
         return ''
