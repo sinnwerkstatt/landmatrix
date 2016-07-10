@@ -28,7 +28,7 @@ class UserSerializer(serializers.BaseSerializer):
     Returns a user as a list: [id, username, fullname].
     '''
     def to_representation(self, obj):
-        return [obj.id, obj.username, obj.get_full_name()]
+        return [obj.id, obj.username, obj.get_full_name() or obj.username]
 
 
 class DealSerializer(serializers.Serializer):
