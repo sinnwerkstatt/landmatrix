@@ -19,13 +19,7 @@ class EditorView(TemplateView):
 
     template_name = 'dashboard.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return self.render_authenticated_user(request)
-        else:
-            return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
-
-    def render_authenticated_user(self, request):
+    def get(self, request):
         csp = ChangesetProtocol()
         data = {
             "activities": ["updates", "deletes", "inserts"],
@@ -79,5 +73,38 @@ WHERE a.id = sub.id
     result = cursor.fetchone()
     return result[0]
 
+
+class LogView(TemplateView):
+
+    template_name = 'log.html'
+
+    def get(self, request, action="latest_added"):
+        csp = ChangesetProtocol()
+        ACTION_MAP = {
+            'latest_added': 'inserts',
+            'latest_modified': 'updates',
+            'latest_deleted': 'deletes',
+        }
+        data = {
+            "activities": [ACTION_MAP.get(action)],
+            "investors": [],
+        }
+        request.POST = MultiValueDict({"data": [json.dumps(data)]})
+        request.GET = MultiValueDict({
+            '%s_page'%action: request.GET.get("page", "1"),
+            '%s_per_page'%action: ["50"],
+        })
+        response = csp.dispatch(request, action="dashboard")
+        response = json.loads(response.content.decode())
+
+        activities = response.get(action, [])
+        data = {
+            "view": "log",
+            "action": action,
+            "activities": activities['items'],
+            "pagination": activities['pagination']
+        }
+
+        return render_to_response(self.template_name, data, context_instance=RequestContext(request))
 
 

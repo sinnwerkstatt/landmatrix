@@ -21,7 +21,7 @@ urlpatterns = patterns('editor.views',
         name='manage'
     ),
     url(
-        r'^log/(?P<action>updates|deletes|inserts)/',
+        r'^log/(?P<action>latest_added|latest_modified|latest_deleted)/',
         login_required(LogView.as_view()),
         name='log'
     ),

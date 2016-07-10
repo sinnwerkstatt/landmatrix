@@ -58,18 +58,22 @@ class ChangesetProtocol(View):
             raise IOError("Unknown action")
 
     def dashboard(self, request):
+        a = request.GET
         res = {
             "latest_added": self.get_paged_results(
                 self.filter_activities(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_ACTIVE))[:self.DEFAULT_MAX_NUM_CHANGESETS],
-                request.GET.get('latest_added_page')
+                request.GET.get('latest_added_page'),
+                int(request.GET.get('latest_added_per_page', 10))
             ),
             "latest_modified": self.get_paged_results(
                 self.filter_activities(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_OVERWRITTEN))[:self.DEFAULT_MAX_NUM_CHANGESETS],
-                request.GET.get('latest_modified_page')
+                request.GET.get('latest_modified_page'),
+                int(request.GET.get('latest_modified_per_page', 10))
             ),
             "latest_deleted": self.get_paged_results(
                 self.filter_activities(HistoricalActivity.objects.filter(fk_status_id=Activity.STATUS_DELETED))[:self.DEFAULT_MAX_NUM_CHANGESETS],
-                request.GET.get('latest_deleted_page')
+                request.GET.get('latest_deleted_page'),
+                int(request.GET.get('latest_deleted_per_page', 10))
             ),
             "manage": self._activity_to_json(limit=10),
             "feedbacks": _feedbacks_to_json(request.user, limit=10),
@@ -152,11 +156,13 @@ class ChangesetProtocol(View):
         paginator = Paginator(records, per_page)
         page = _get_page(page_number, paginator)
 
-        results = []
+        items = []
         for changeset in page.object_list:
-            results.append(self.changeset_template_data(changeset))
-        # results["pagination"] = self._pagination_to_json(paginator, page)
-        return results
+            items.append(self.changeset_template_data(changeset))
+        return {
+            "items": items,
+            "pagination": _pagination_to_json(paginator, page),
+        }
 
     def changeset_template_data(self, activity, extra_data=None):
         if activity:

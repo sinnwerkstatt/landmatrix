@@ -37,13 +37,13 @@
     <div class="navbar navbar-default navbar-subnav" role="navigation">
         <div class="container-fluid">
             <ul class="manage nav navbar-nav" id="manage-sections">
-                    <li{% if action == 'inserts' %} class="active"{% endif %}><a href="{% url 'log' action='inserts' %}">
+                    <li{% if action == 'latest_added' %} class="active"{% endif %}><a href="{% url 'log' action='latest_added' %}">
                         {% trans "Latest added" %}
                     </a></li>
-                    <li{% if action == 'updates' %} class="active"{% endif %}><a href="{% url 'log' action='updates' %}">
+                    <li{% if action == 'latest_modified' %} class="active"{% endif %}><a href="{% url 'log' action='latest_modified' %}">
                         {% trans "Latest modified" %}
                     </a></li>
-                    <li{% if action == 'deletes' %} class="active"{% endif %}><a href="{% url 'log' action='deletes' %}">
+                    <li{% if action == 'latest_deleted' %} class="active"{% endif %}><a href="{% url 'log' action='latest_deleted' %}">
                         {% trans "Latest deleted" %}
                     </a></li>
             </ul>
@@ -55,15 +55,15 @@
                 <table class="table table-striped table-condensed">
                     <colgroup>
                         <col width="10%">
-                        <col width="10%">
-                        <col width="10%">
-                        <col width="35%">
-                        <col width="25%">
+                        <col width="20%">
+                        <col width="40%">
+                        <col width="30%">
                     </colgroup>
                     <thead>
-                    <th class="deal">{% trans "Deal #" %}</th>
-                    <th class="user">{% trans "Last revision" %}</th>
-                    <th class="comment">{% trans "Comment" %}</th>
+                        <th class="deal">{% trans "Deal #" %}</th>
+                        <th class="user">{% trans "User" %}</th>
+                        <th class="comment">{% trans "Comment" %}</th>
+                        <th class="comment">{% trans "Time" %}</th>
                     </thead>
                     <tbody>
                     {% for activity in activities %}
@@ -72,25 +72,23 @@
                             </td>
                             <td class="user">{{ activity.user }}</td>
                             <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
+                            {% if activity.timestamp %}
+                                <td class="date">{{ activity.timestamp|naturaltime_from_string }}</td>
+                            {% else %}
+                                <td class="date">-</td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
-                <!-- ul class="pagination">
-                    {% if "previous" in updates.pagination %}
-                        <li><a class="btn btn-default" type="button"
-                               href="{% add_get_parameter updates_page=updates.pagination.previous,selected='updates' %}">&laquo;</a>
-                        </li>
+                <ul class="pager">
+                    {% if "previous" in pagination %}
+                        <li><a class="pull-left" href="?page={{ pagination.previous }}">{% trans "Previous" %}</a></li>
                     {% endif %}
-                    <li class="active">
-                        <a class="btn disabled" href="#">{% trans "Page" %} {{ updates.pagination.current }} {% trans "of" %} {{ updates.pagination.last }}</a>
-                    </li>
-                    {% if "next" in updates.pagination %}
-                        <li><a class="btn btn-default" type="button"
-                               href="{% add_get_parameter updates_page=updates.pagination.next,selected='updates' %}">&raquo;</a>
-                        </li>
+                    {% if "next" in pagination %}
+                        <li><a class="pull-right" href="?page={{ pagination.next }}">{% trans "Next" %}</a></li>
                     {% endif %}
-                </ul -->
+                </ul>
             </div>
     </div>
 {% endblock %}
