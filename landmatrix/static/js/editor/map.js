@@ -32,7 +32,7 @@ function unlockMaps() {
 function getLocationFields(mapId) {
     var result = {
         lat: $('#id_' + prefix + '-'+(mapId)+'-point_lat'),
-        lon: $('#id_' + prefix + '-'+(mapId)+'-point_lon')
+        lon: $('#id_' + prefix + '-'+(mapId)+'-point_lon'),
     };
     return result;
 }
@@ -101,13 +101,7 @@ function updateGeocoding(mapId) {
     //console.log(accuracy);
     if (fields.lat != null && fields.lat != "" && fields.lon != null && fields.lon != "") {
         geocoders[mapId].geocode({"latLng" : latLng, "language": "en"}, function(results, status) {
-            for(var i = 0; i < results[0].address_components.length; i++) {
-                if (results[0].address_components[i].types.indexOf("country") != -1) {
-                    var country = results[0].address_components[i].short_name;
-                    $('#id_' + prefix + '-'+mapId+"-target_country option[title='" + country + "']").attr('selected', 'selected');
-                    $('#id_' + prefix + '-'+mapId+"-target_country option:not([title='" + country + "'])").removeAttr("selected");
-                }
-            }
+            updateTargetCountry(results[0], mapId);
             map.prev().val(results[0].formatted_address);
         });
     }
@@ -120,6 +114,15 @@ function updateGeocoding(mapId) {
         }
     });
 
+}
+
+function updateTargetCountry(place, mapId) {
+    for(var i = 0; i < place.address_components.length; i++) {
+        if (place.address_components[i].types.indexOf("country") != -1) {
+            var country = place.address_components[i].short_name;
+            $('#id_' + prefix + '-'+mapId+"-target_country option").removeAttr("selected").filter("option[title='" + country + "']").attr('selected', 'selected');
+        }
+    }
 }
 
 var markerStyle = new ol.style.Style({
@@ -230,24 +233,25 @@ function initGeocoder(mapId) {
                     return;
                 }
                 var map = maps[mapId];
-
                 // If the place has a geometry, then present it on a map.
-                if (place.geometry.viewport) {
-                    function fitBounds(geom) {
-                        var bounds = new ol.extent.boundingExtent([[geom.j.j, geom.R.R], [geom.j.R, geom.R.j]]);
-
-                        bounds = ol.proj.transformExtent(bounds, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
-
-                        map.getView().fit(bounds, map.getSize());
-                    }
-
-                    fitBounds(place.geometry.viewport);
-                } else {
-                    var target = [place.geometry.location.lng(), place.geometry.location.lat()]
-                    target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
-                    map.getView().setCenter(target);
-                    map.getView().setZoom(17);  // Why 17? Because it looks good.
-                }
+                // FIXME: This doesn't work anymore, seems the viewport vars change names randomly?
+                //if (place.geometry.viewport) {
+                //    // Fit bounds
+                //    var geom = place.geometry.viewport,
+                //      bounds = new ol.extent.boundingExtent([[geom.j.j, geom.R.R], [geom.j.R, geom.R.j]]);
+                //    bounds = ol.proj.transformExtent(bounds, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
+                //    map.getView().fit(bounds, map.getSize());
+                //} else {
+                var target = [place.geometry.location.lng(), place.geometry.location.lat()]
+                target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
+                map.getView().setCenter(target);
+                map.getView().setZoom(17);  // Why 17? Because it looks good.
+                //}
+                // Update fields (coordinates and target country)
+                var fields = getLocationFields(mapId);
+                fields.lat.val(target[1]);
+                fields.lon.val(target[0]);
+                updateTargetCountry(place, mapId);
             });
         }
     }
