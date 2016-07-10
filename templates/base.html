@@ -76,7 +76,10 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa {% if request.user.is_impersonate %}fa-user-secret{% else %}fa-user{% endif %} messages"></i></a>
                                 <ul class="dropdown-menu">
                                     <li class="dropdown-header">{{ request.user }}</li>
-                                    {% if request.user.is_impersonate %}<li><a href="{% url 'impersonate-stop' %}">{% trans "Stop impersonation" %}</a></li>{% endif %}
+                                    {% if request.user.is_impersonate %}
+                                    <li><a href="{% url 'impersonate-stop' %}">{% trans "Stop impersonation" %}</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    {% endif %}
                                     <li><a href="{% url 'editor' %}">{% trans "Dashboard" %}</a></li>
                                     <li><a href="{% url 'manage' %}">{% trans "Manage" %}</a></li>
                                     <li><a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a></li>
