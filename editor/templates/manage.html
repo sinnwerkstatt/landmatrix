@@ -37,12 +37,13 @@
     <div class="navbar navbar-default navbar-subnav" role="navigation">
         <div class="container-fluid">
             <ul class="manage nav navbar-nav" id="manage-sections">
-                <li><a href="#feedbacks"><i class="icon-chevron-down icon-white"></i>
-                    {% trans "Feedback" %}{% if feedbacks.feeds %} <small><span class="label label-default">{{ feedbacks.feeds|length }}){% endif %}</a></li>
                 {% if not perms.landmatrix.change_activity %}
                     <li><a href="#my-pending-deals"><i class="icon-chevron-down"></i>
-                        {% trans "My deals" %}{% if my_deals %} <small><span class="label label-default">{{ my_deals|length }}</span></small>{% endif %}</a></li>
-                {% else %}
+                        {% trans "My deals" %}{% if my_deals_page %} <small><span class="label label-default">{{ my_deals|length }}</span></small>{% endif %}</a></li>
+                {% endif %}
+                {% if perms.landmatrix.review_activity %}
+                    <li><a href="#feedbacks"><i class="icon-chevron-down icon-white"></i>
+                        {% trans "Feedback" %}{% if feedbacks.feeds %} <small><span class="label label-default">{{ feedbacks.feeds|length }}){% endif %}</a></li>
                     <li><a href="#updates"><i class="icon-chevron-down"></i>
                         {% trans "Pending updates" %}{% if updates %} <small><span class="label label-default">{{ updates|length }}</span></small>{% endif %}</a></li>
                     <li><a href="#deletions"><i class="icon-chevron-down"></i>
@@ -53,7 +54,7 @@
                         {% trans "Pending investor deletions" %}{% if sh_deletes %} <small><span class="label label-default">{{ sh_deletes|length }}</span></small>{% endif %}
                     </a></li>
                     <li><a href="#rejected"><i class="icon-chevron-down"></i>
-                        {% trans "Rejected changes" %}{% if rejected %} <small><span class="label label-default">{{ rejected|length }}</span></small>{% endif %}
+                        {% trans "Rejected by me" %}{% if rejected %} <small><span class="label label-default">{{ rejected|length }}</span></small>{% endif %}
                     </a></li>
                 {% endif %}
             </ul>
@@ -106,7 +107,6 @@
                 <p class="alert bg-info">{% trans "Currently there are no feedback requests." %}</p>
             {% endif %}
         </div>
-        {% if not perms.editor.change_activity %}
             <div id="my-pending-deals" class="tab-pane active">
                 {% if my_deals %}
                     <table class="table table-striped table-condensed">
@@ -159,21 +159,18 @@
                     <p class="alert bg-info">{% trans "Currently there are no pending updates." %}</p>
                 {% endif %}
             </div>
-        {% else %}
             <div id="updates" class="tab-pane active">
                 {% if updates %}
                     <table class="table table-striped table-condensed">
                         <colgroup>
                             <col width="10%">
                             <col width="10%">
-                            <col width="10%">
-                            <col width="35%">
+                            <col width="55%">
                             <col width="25%">
                         </colgroup>
                         <thead>
                         <th class="deal">{% trans "Deal #" %}</th>
                         <th class="user">{% trans "Last revision" %}</th>
-                        <th class="modified">{% trans "Modified areas" %}</th>
                         <th class="comment">{% trans "Comment" %}</th>
                         <th class="action">{% trans "Actions" %}</th>
                         </thead>
@@ -183,7 +180,6 @@
                                 <td class="deal"><a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
                                 </td>
                                 <td class="user">{{ activity.user }}</td>
-                                <td class="modified">{{ activity.fields_changed }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
                                 <td class="action">
                                     <a href="{% url 'manage_deal' type='deal' action='approve' id=activity.id %}"
@@ -424,7 +420,6 @@
                     <p class="alert bg-info">{% trans "Currently there are no rejected changes." %}</p>
                 {% endif %}
             </div>
-        {% endif %}
         <script type="text/javascript">
             $(function () {
                 $('#manage-sections a').click(function (e) {

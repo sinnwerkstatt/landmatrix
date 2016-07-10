@@ -291,7 +291,7 @@
                 </div>
             </div>
             <div class="col-md-6">
-        {% if perms.editor.change_activity %}
+        {% if perms.landmatrix.review_activity %}
                     <div class="alert alert-info">
                         <a class="close hidden" data-dismiss="alert">&times;</a>
                         <h3>
@@ -368,7 +368,10 @@
             {% endif %}
                 <div class="alert alert-info">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
-                    <h3>{% trans "Feedback requests" %}</h3>
+                    <h3>
+                        {% trans "Feedback requests" %}
+                        <a class="" href="{% url 'manage' %}"><small>{% trans "Show all" %}</small></a>
+                    </h3>
                     {% if feedbacks.feeds %}
                         <table class="table table-condensed">
                             <thead>

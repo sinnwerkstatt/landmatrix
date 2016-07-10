@@ -262,31 +262,28 @@ $(document).ready(function () {
         },
     }).each(function () { init_investor_form($(this)); });
 
-    //$(".investorfield").each(function (index) {
-    //    console.log("Initializing investorfield with select and sankey.");
-    //    var investorId = $(this).val();
-    //    $(this).select2({
-    //        placeholder: 'Select Investor'
-    //    });
-    //    /*
-    //     var investorId = $(this).val();
-    //     $(this).select2({
-    //     placeholder: 'Select Investor',
-    //     ajax: {
-    //     url: '/api/investors.json',
-    //     cache: true
-    //     }
-    //     });
-    //     */
-    //    console.log('Investor:', investorId);
-//
-    //    generateButtons($(this), index);
-//
-    //    $(this).on('change', function () {
-    //        generateButtons($(this), index);
-    //    //    loadSankey(index, $(this).val());
-    //    });
-    //    //loadSankey(index, investorId);
-//
-    //});
+    // Init operational company field (deal add/edit)
+    $(".investorfield").each(function (index) {
+        console.log("Initializing investorfield with select and sankey.");
+        var investorId = $(this).val();
+        $(this).select2({
+            placeholder: 'Select Investor'
+        });
+        /*
+         var investorId = $(this).val();
+         $(this).select2({
+         placeholder: 'Select Investor',
+         ajax: {
+         url: '/api/investors.json',
+         cache: true
+         }
+         });
+         */
+        generateButtons($(this), index);
+        $(this).on('change', function () {
+            generateButtons($(this), index);
+        //    loadSankey(index, $(this).val());
+        });
+        //loadSankey(index, investorId);
+    });
 });

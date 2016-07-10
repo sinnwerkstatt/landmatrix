@@ -88,12 +88,17 @@ class ChangesetProtocol(View):
             "investors": ["updates", "deletes", "inserts"]
         """
         user = request.user
-        if user.has_perm("editor.change_activity"):
+        # Editor or Administrator?
+        if user.has_perm("landmatrix.review_activity"):
             self.data = {
                 "activities": ["updates", "deletes", "inserts"],
                 "investors": ["deletes"],
             }
+            # Editor?
+            if not user.has_perm("landmatrix.change_activity"):
+                self.data["activities"].append("my_deals")
         else:
+            # Reporter
             self.data = {
                 "activities": ["my_deals"],
             }
@@ -220,15 +225,15 @@ class ChangesetProtocol(View):
             activities = activities.filter(models.Q(changesets__fk_country__fk_region__in=regions) | models.Q(changesets__fk_country__isnull=True))
         elif users:
             activities = activities.filter(models.Q(changesets__fk_user__in=users) | models.Q(changesets__fk_user__isnull=True))
-        
+
         # Filter activities for role, required by manage deals sections
         if manage:
             # Admin: Show only activites, that already have been added/changed/reviewed by moderators
-            if self.request.user.has_perm('landmatrix.change_activity'):
-                activities = activities.filter(changesets__timestamp__isnull=False)
-            # Moderator: Show only activites, that have been added/changed by public users
-            elif self.request.user.has_perm('landmatrix.review_activity'):
-                activities = activities.filter(changesets__timestamp__isnull=True)
+            #if self.request.user.has_perm('landmatrix.change_activity'):
+            #    activities = activities.filter(changesets__timestamp__isnull=False)
+            # Editor: Show only activites, that have been added/changed by public users
+            if self.request.user.has_perm('landmatrix.review_activity') and not self.request.user.has_perm('landmatrix.change_activity'):
+                activities = activities.filter(history_user__groups__name='Reporters')
         return activities
 
     def handle_activities(self, deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user):
