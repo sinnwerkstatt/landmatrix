@@ -174,6 +174,7 @@ class ChangesetProtocol(View):
             template_data = {
                 'id': activity.pk,
                 "deal_id": activity.activity_identifier,
+                "history_id": activity.id,
                 "user": user,
                 "timestamp": activity.history_date.strftime("%Y-%m-%d %H:%M:%S"),
                 "comment": activity.comment,
@@ -182,6 +183,7 @@ class ChangesetProtocol(View):
             template_data = {
                 'id': 0,
                 "deal_id": 0,
+                "history_id": 0,
                 "user": force_text(_("Public User")),
                 "timestamp": 0,
                 "comment": activity.comment
@@ -300,6 +302,7 @@ class ChangesetProtocol(View):
             #deletes.append({
             #    "id": activity.id,
             #    "deal_id": activity.activity_identifier,
+            #    "history_id": activity.id,
             #    "user": activity.history_user,
             #    "comment": comment
             #})
@@ -381,6 +384,7 @@ def _feedbacks_to_json(user, feedbacks_page=1, limit=None):
     for feedback in feed:
         feedbacks.append({
             "deal_id": feedback.fk_activity.activity_identifier,
+            "history_id": feedback.fk_activity_id,
             "from_user": feedback.fk_user_created.username,
             "comment": feedback.comment,
             "timestamp": feedback.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
@@ -392,7 +396,7 @@ def _feedbacks_to_json(user, feedbacks_page=1, limit=None):
 
 
 def _rejected_to_json(user, limit=None):
-    rejected = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_REJECTED, history_user_id=user.id)
+    rejected = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_REJECTED, changesets__fk_user_id=user.id)
     feed = limit and rejected[:limit] or rejected
     paginator = Paginator(feed, 10)
     page = _get_page(1, paginator)
@@ -400,6 +404,7 @@ def _rejected_to_json(user, limit=None):
     rejected = [
         {
             "deal_id": activity.activity_identifier,
+            "history_id": activity.id,
             "user": user.username,
             "comment": _get_comment(activity),
             "timestamp": activity.history_date.strftime("%Y-%m-%d %H:%M:%S")

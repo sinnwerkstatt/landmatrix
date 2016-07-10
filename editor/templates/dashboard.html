@@ -294,7 +294,10 @@
         {% if perms.editor.change_activity %}
                     <div class="alert alert-info">
                         <a class="close hidden" data-dismiss="alert">&times;</a>
-                        <h3>{% trans "Needs your attention" %}</h3>
+                        <h3>
+                            {% trans "Needs your attention" %}
+                            <a class="" href="{% url 'manage' %}"><small>{% trans "Show all" %}</small></a>
+                        </h3>
                         {% if manage.activities or manage.investors %}
                             <table class="table table-condensed">
                                 <thead>

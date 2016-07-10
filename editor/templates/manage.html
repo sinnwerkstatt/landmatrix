@@ -394,7 +394,7 @@
                         {% for activity in rejected %}
                             <tr class="deletes">
                                 <td class="dealid"><a
-                                        href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
+                                        href="{% url 'deal_detail' deal_id=activity.deal_id history_id=activity.history_id %}">#{{ activity.deal_id }}</a>
                                 </td>
                                 <td class="user">{{ activity.user }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
