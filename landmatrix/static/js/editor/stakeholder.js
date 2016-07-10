@@ -46,13 +46,17 @@ function init_investor_form(form) {
         minimumInputLength: 3,
         templateResult: formatInvestor,
         templateSelection: formatInvestorSelection
+    }).on('change', function () {
+        generateButtons($(this));
+        //    loadSankey(index, $(this).val());
     });
+    generateButtons(form.find('select.investorfield'));
 
     form.find('.loans_amount input').attr('placeholder', 'Loans');
     form.find('.loans_date input').attr('placeholder', 'YYYY-MM-DD');
 }
 
-function generateButtons(field, index) {
+function generateButtons(field) {
     var investorId = field.val();
     console.log("Setting up buttons!");
 
@@ -64,7 +68,7 @@ function generateButtons(field, index) {
 
     field.parent().find('.investorops').remove();
     field.parent().append(wrap);
-    field.parent().parent().parent().append('<div id="chart' + index + '"></div>');
+    //field.parent().parent().parent().append('<div id="chart' + index + '"></div>');
 
     // Bind handlers
     $('a.add-investor').click(function (e) {
@@ -92,7 +96,7 @@ function addSankeyData(data, response, jqxhdr) {
 
 function loadSankey(index, investorId) {
     if (investorId > 0) {
-        console.log("Loading new Investornetwork diagram data ");
+        console.log("Loading new Investornetwork diagram data");
 
         $.get(
             "/api/investor_network.json?operational_stakeholder=" + investorId + '&operational_stakeholder_diagram=' + index,
@@ -240,6 +244,8 @@ $(document).ready(function () {
         deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
         deleteCssClass: 'formset-remove-form hidden',
         added: function (row) {
+            // Unselect selected options
+            row.find("option:selected").removeAttr("selected");
             init_investor_form(row);
         }
     }).each(function () { init_investor_form($(this)); });
@@ -250,35 +256,37 @@ $(document).ready(function () {
         deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
         deleteCssClass: 'formset-remove-form hidden',
         added: function (row) {
+            // Unselect selected options
+            row.find("option:selected").removeAttr("selected");
             init_investor_form(row);
         },
     }).each(function () { init_investor_form($(this)); });
 
-    $(".investorfield").each(function (index) {
-        console.log("Initializing investorfield with select and sankey.");
-        var investorId = $(this).val();
-        $(this).select2({
-            placeholder: 'Select Investor'
-        });
-        /*
-         var investorId = $(this).val();
-         $(this).select2({
-         placeholder: 'Select Investor',
-         ajax: {
-         url: '/api/investors.json',
-         cache: true
-         }
-         });
-         */
-        console.log('Investor:', investorId);
-
-        generateButtons($(this), index);
-
-        $(this).on('change', function () {
-            generateButtons($(this), index);
-        //    loadSankey(index, $(this).val());
-        });
-        //loadSankey(index, investorId);
-
-    });
+    //$(".investorfield").each(function (index) {
+    //    console.log("Initializing investorfield with select and sankey.");
+    //    var investorId = $(this).val();
+    //    $(this).select2({
+    //        placeholder: 'Select Investor'
+    //    });
+    //    /*
+    //     var investorId = $(this).val();
+    //     $(this).select2({
+    //     placeholder: 'Select Investor',
+    //     ajax: {
+    //     url: '/api/investors.json',
+    //     cache: true
+    //     }
+    //     });
+    //     */
+    //    console.log('Investor:', investorId);
+//
+    //    generateButtons($(this), index);
+//
+    //    $(this).on('change', function () {
+    //        generateButtons($(this), index);
+    //    //    loadSankey(index, $(this).val());
+    //    });
+    //    //loadSankey(index, investorId);
+//
+    //});
 });

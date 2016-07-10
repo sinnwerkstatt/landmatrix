@@ -107,7 +107,8 @@ class StakeholderFormsMixin:
     def form_invalid(self, investor_form, stakeholders_formset,
                      investors_formset):
         context = self.get_context_data(
-            form=investor_form, parent_stakeholders=stakeholders_formset,
+            form=investor_form,
+            parent_stakeholders=stakeholders_formset,
             parent_investors=investors_formset)
         return self.render_to_response(context)
 

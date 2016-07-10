@@ -34,8 +34,6 @@
                         form.find('.remove-form').click(function () {
                             form.find('.formset-remove-form').trigger('click');
                         });
-                        // Unselect selected options
-                        form.find("option:selected").removeAttr("selected");
                         // Init map
                         var map = form.find('.maptemplate').removeClass("maptemplate").addClass("map");
                         if (map.length > 0) {
@@ -75,6 +73,8 @@
                                 });
                                 // Remove link to existing file in file fields
                                 row.find('.file a.input-group-addon').remove();
+                                // Unselect selected options
+                                form.find("option:selected").removeAttr("selected");
                                 init_form(row);
                                 // Scroll to the new row
                                 $('html, body').animate({

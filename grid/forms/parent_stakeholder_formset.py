@@ -23,7 +23,7 @@ investor_widget = Select(attrs={'class': 'form-control investorfield'})
 class ParentStakeholderForm(forms.ModelForm):
     fk_investor = forms.ModelChoiceField(
         required=True, label=_("Existing stakeholder"),
-        queryset=EXISTING_INVESTORS, widget=investor_widget)
+        queryset=Investor.objects.all(), widget=investor_widget)
     percentage = forms.DecimalField(
         required=False, max_digits=5, decimal_places=2,
         label=_("Percentage of investment"), help_text=_("%"))
@@ -36,7 +36,7 @@ class ParentStakeholderForm(forms.ModelForm):
 class ParentInvestorForm(ParentStakeholderForm):
     fk_investor = forms.ModelChoiceField(
         required=True, label=_("Existing investor"),
-        queryset=EXISTING_INVESTORS, widget=investor_widget)
+        queryset=Investor.objects.all(), widget=investor_widget)
 
     class Meta:
         model = InvestorVentureInvolvement
