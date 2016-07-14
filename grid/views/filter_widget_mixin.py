@@ -62,11 +62,30 @@ class FilterWidgetMixin:
                     else:
                         group_items.append({
                             'name': field_name,
-                            'label': str(field.label),
+                            'label': field.label,
                         })
 
             if group_title and group_items:
                 variable_table[group_title] = group_items
+
+            # TODO: this is fragile, rethink this whole mess
+            if _('Operational company') in variable_table:
+                stakeholder_extras = [
+                    {
+                        'name': 'parent_investors',
+                        'label': _("Parent stakeholders"),
+                    },
+                    {
+                        'name': 'investor_percentage',
+                        'label': _("Parent stakeholder percentages"),
+                    },
+                    {
+                        'name': 'investor_classification',
+                        'label': _("Parent stakeholder classifications"),
+                    },
+                ]
+                variable_table[_('Operational company')].extend(
+                    stakeholder_extras)
 
             self._variable_table = variable_table
 

@@ -13,7 +13,9 @@ from grid.views.profiling_decorators import \
     print_execution_time_and_num_queries
 from grid.views.activity_protocol import ActivityProtocol
 from .view_aux_functions import render_to_response, get_field_label
-from grid.forms.choices import intention_choices
+from grid.forms.choices import (
+    intention_choices, investor_choices, operational_company_choices,
+)
 from django.utils.datastructures import SortedDict
 from django.template.defaultfilters import slugify
 
@@ -173,6 +175,9 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             'investor_region': _('Operational company region'),
             'operational_stakeholder': _('Operational company'),
             'investor_name': _('Operational company name'),
+            'parent_investors': _('Parent stakeholders'),
+            'investor_percentage': _('Parent stakeholder percentages'),
+            'investor_classification': _('Parent stakeholder classifications'),
             'crop': _('Crop'),
             'data_source_type': _('Data source type'),
         }
@@ -241,16 +246,13 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         process_functions = {
             'intention': self._process_intention,
             'investor_name': self._process_investor_name,
-            'investor_name': self._process_investor_name,
             'investor_country': self._process_stitched_together_field,
             'investor_region': self._process_stitched_together_field,
+            'investor_classification': self._process_investor_classification,
             'crop': self._process_stitched_together_field,
             'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
             'negotiation_status': self._process_name_and_year,
             'implementation_status': self._process_name_and_year,
-            #"intended_size": lambda v: v,
-            #"production_size": lambda v: v and v[0],
-            #"contract_size": lambda v: v and v[0],
         }
         if column in process_functions:
             return process_functions[column](value)
@@ -306,16 +308,24 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         ]
         return result
 
+    def _process_investor_classification(self, values):
+        if not isinstance(values, list):
+            values = [values]
 
-    def _process_investor_name(self, value):
-        if not isinstance(value, list):
-            value = [value]
-        result = [
-            {"name": inv.split("#!#")[0], "id": inv.split("#!#")[1]} if len(inv.split("#!#")) > 1 else inv
-            for inv in value
-        ]
-        return result
+        processed = []
 
+        for value in values:
+            processed_value = None
+
+            for choice in operational_company_choices + investor_choices:
+                code, label = choice
+                if str(code) == str(value):
+                    processed_value = label
+                    break
+
+            processed.append(processed_value or _('Unknown'))
+
+        return processed
 
     def _process_stitched_together_field(self, value):
         if not isinstance(value, list):

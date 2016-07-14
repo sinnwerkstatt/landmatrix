@@ -171,7 +171,7 @@ class SQLBuilder(SQLBuilderData):
         if self.is_staff:
             return ""
         else:
-            return "a.is_public = 't'"
+            return "a.is_public IS TRUE"
 
     def not_mining_condition(self):
         return "a.activity_identifier NOT IN (%s)" % ', '.join(map(str, self.mining_deals()))

@@ -1,4 +1,4 @@
-from collections import defaultdict
+import collections
 
 from api.query_sets.sql_generation.join_functions import *
 from landmatrix.models import *
@@ -6,7 +6,7 @@ from landmatrix.models import *
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class DefaultDictWithKeyArg(defaultdict):
+class DefaultDict(collections.defaultdict):
     '''
     defaultdict that passes the key name to the default value factory.
     '''
@@ -44,6 +44,7 @@ class SQLBuilderData:
         'investor_name':        'stakeholders.name',
         'data_source_type':     'data_source_type.value'
     }
+    # TODO: should country actually join region?
     TARGET_COUNTRY_COLUMNS = (
         'target_country', [
             join_attributes('target_country'),
@@ -54,7 +55,13 @@ class SQLBuilderData:
             join_expression(Region, 'deal_region', 'deal_country.fk_region_id')
         ]
     )
-    COLUMNS = DefaultDictWithKeyArg(default_column, {
+    INVESTOR_COLUMNS = [
+        join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+        join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
+        join(InvestorVentureInvolvement, 'ivi', on='ivi.fk_venture_id = operational_stakeholder.id'),
+        join(Investor, 'stakeholders', on='ivi.fk_investor_id = stakeholders.id'),
+    ]
+    COLUMNS = DefaultDict(default_column, {
         'deal_count': [],
         'availability': [],
         'year': [ join_attributes('negotiation_status') ],
@@ -72,24 +79,18 @@ class SQLBuilderData:
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id')
         ],
-        'investor_name': [
+        'investor_name': INVESTOR_COLUMNS,
+        'parent_investors': INVESTOR_COLUMNS,
+        'investor_percentage': [
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
             join(InvestorVentureInvolvement, 'ivi', on='ivi.fk_venture_id = operational_stakeholder.id'),
-            join(Investor, 'stakeholders', on='ivi.fk_investor_id = stakeholders.id'),
         ],
-        'investor_country': [
-            join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
-            join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
-            join(InvestorVentureInvolvement, 'ivi', on='ivi.fk_venture_id = operational_stakeholder.id'),
-            join(Investor, 'stakeholders', on='ivi.fk_investor_id = stakeholders.id'),
+        'investor_classification': INVESTOR_COLUMNS,
+        'investor_country': INVESTOR_COLUMNS + [
             join(Country, 'investor_country', on='investor_country.id = stakeholders.fk_country_id'),
         ],
-        'investor_region': [
-            join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
-            join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
-            join(InvestorVentureInvolvement, 'ivi', on='ivi.fk_venture_id = operational_stakeholder.id'),
-            join(Investor, 'stakeholders', on='ivi.fk_investor_id = stakeholders.id'),
+        'investor_region': INVESTOR_COLUMNS + [
             join(Country, 'investor_country', on='investor_country.id = stakeholders.fk_country_id'),
             join(Region, 'investor_region', on='investor_region.id = investor_country.fk_region_id')
         ],
@@ -111,7 +112,7 @@ class SQLBuilderData:
             join_activity_attributes('level_of_accuracy', 'level_of_accuracy'),
         ],
     })
-    SQL_COLUMN_MAP = DefaultDictWithKeyArg(default_column_map, {
+    SQL_COLUMN_MAP = DefaultDict(default_column_map, {
         "investor_name": [
             "ARRAY_AGG(DISTINCT CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier)) AS investor_name",
             "CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier) AS investor_name"
@@ -123,6 +124,18 @@ class SQLBuilderData:
         "investor_region": [
             "ARRAY_AGG(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id)) AS investor_region",
             "CONCAT(investor_region.name, '#!#', investor_region.id) AS investor_region"
+        ],
+        "investor_percentage": [
+            "ARRAY_AGG(ivi.percentage) AS investor_percentage",
+            "ivi.percentage AS investor_percentage",
+        ],
+        "parent_investors": [
+            "ARRAY_AGG(stakeholders.name) AS parent_investors",
+            "stakeholders.name AS parent_investors",
+        ],
+        "investor_classification": [
+            "ARRAY_AGG(stakeholders.classification) AS investor_classification",
+            "stakeholders.classification AS investor_classification",
         ],
         "intention": [
             "ARRAY_AGG(DISTINCT intention.value ORDER BY intention.value) AS intention",
@@ -196,6 +209,7 @@ class SQLBuilderData:
             "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT intended_size.value), ', '), '') AS intended_size",
             "0 AS intended_size"
         ],
+        # TODO: surely 0 as contract_size, etc. isn't right
         "contract_size": [
             # TODO: This creates the array twice, should be optimized by someone who's more into postgres
             "(ARRAY_AGG(DISTINCT contract_size.value))[ARRAY_LENGTH(ARRAY_AGG(DISTINCT contract_size.value), 1)] AS contract_size",

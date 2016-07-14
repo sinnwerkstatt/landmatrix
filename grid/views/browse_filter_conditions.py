@@ -1,3 +1,8 @@
+from pprint import pprint
+
+from django import forms
+from django.db.models.fields import IntegerField
+
 from grid.forms.deal_produce_info_form import DealProduceInfoForm
 from grid.forms.deal_history_form import DealHistoryForm
 from grid.forms.deal_local_communities_form import DealLocalCommunitiesForm
@@ -16,8 +21,6 @@ from grid.widgets import NestedMultipleChoiceField
 from grid.views.profiling_decorators import print_execution_time_and_num_queries
 from grid.views.profiling_decorators import print_func_execution_time, print_func_num_queries
 
-
-from django.db.models.fields import IntegerField
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -172,7 +175,6 @@ class BrowseFilterConditions:
 @print_func_execution_time
 @print_func_num_queries
 def get_field_by_key(key):
-
     if key.isnumeric():
         key = get_key_from_id(int(key))
     for form in CHANGE_FORMS:
@@ -191,7 +193,6 @@ def form_field(form, key):
 
 
 def debug_found_form(form, key):
-    from pprint import pprint
     if BrowseFilterConditions.DEBUG and not debug_found_form.printed:
         debug_found_form.printed = True
         pprint(key)
@@ -277,7 +278,6 @@ def get_key_from_id(id):
 
 
 def get_display_value_by_field(field, value):
-    from django import forms
     choices_dict = {}
     if isinstance(field, forms.MultiValueField):
         field = field.fields[0]
