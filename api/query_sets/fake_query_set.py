@@ -1,11 +1,16 @@
-from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
-from grid.views.browse_filter_conditions import BrowseFilterConditions
-from grid.views.view_aux_functions import create_condition_formset, apply_filters_from_session
-from landmatrix.models.browse_condition import BrowseCondition
-from landmatrix.models.activity_attribute_group import ActivityAttribute
+import time
+import re
 
 from django.db.models.query import QuerySet
 from django.db import connection
+
+from landmatrix.models.browse_condition import BrowseCondition
+from landmatrix.models.activity_attribute_group import ActivityAttribute
+from grid.views.browse_filter_conditions import BrowseFilterConditions
+from grid.views.view_aux_functions import (
+    create_condition_formset, apply_filters_from_session,
+)
+from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -38,6 +43,7 @@ class FakeQuerySet(QuerySet):
         self._group_by = self.GROUP_BY
         self._order_by = self.ORDER_BY
         self._limit = self.LIMIT
+        self.user = request.user
         super().__init__()
 
     def all(self):
@@ -69,14 +75,12 @@ class FakeQuerySet(QuerySet):
         return False
 
     def _join_components(self, join):
-        import re
         m = re.match('LEFT JOIN (?P<table>\w+)\s+AS\s+(?P<alias>\w+)\s+ON\s+(?P<condition>.+)', join)
         if not m:
             return None, None, None
         return m.group('table'), m.group('alias'), m.group('condition')
 
     def _joins_equal(self, join_1, join_2):
-
         table_1, alias_1, condition_1 = self._join_components(join_1)
         table_2, alias_2, condition_2 = self._join_components(join_2)
         if table_1 is None or table_2 is None:
@@ -86,7 +90,6 @@ class FakeQuerySet(QuerySet):
         if not 'attr_' in alias_1 or not 'attr_' in alias_2:
             return False
         return condition_1 == condition_2.replace(alias_2, alias_1)
-
 
     def additional_wheres(self):
         return 'AND ' + "\n    AND ".join(self._additional_wheres) if self._additional_wheres else ''
@@ -114,7 +117,6 @@ class FakeQuerySet(QuerySet):
                 self._all_results.append(as_model)
 
     def _execute_query(self):
-        import time
         start_time = time.time()
 
         if self.DEBUG:
@@ -191,3 +193,11 @@ class FakeQuerySet(QuerySet):
             self._additional_joins.append(additional_joins)
 
         return filter_sql
+
+    def is_public_condition(self):
+        if self.user.is_staff:
+            condition = ''
+        else:
+            condition = 'a.is_public IS TRUE'
+
+        return condition

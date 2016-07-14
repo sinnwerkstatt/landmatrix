@@ -11,7 +11,7 @@ class FakeQuerySetWithSubquery(FakeQuerySet):
 SELECT DISTINCT
 --  columns:
     %s
-FROM landmatrix_activity                    AS a
+FROM landmatrix_activity                    AS a,
 (
     SELECT DISTINCT
         a.id
@@ -21,8 +21,7 @@ FROM landmatrix_activity                    AS a
 --  additional joins:
     %s
     WHERE
-        a.is_public = 't' 
-        AND a.fk_status_id IN (2, 3)
+        a.fk_status_id IN (2, 3)
 --  additional where conditions:
         %s
 --  filter sql:
@@ -40,6 +39,9 @@ WHERE sub.id = a.id
     def __init__(self, get_data):
         super().__init__(get_data)
         self._additional_subquery_options = self.ADDITIONAL_SUBQUERY_OPTIONS
+        is_public_condition = self.is_public_condition()
+        if is_public_condition:
+            self._additional_wheres.append(is_public_condition)
 
     def sql_query(self):
         return (self.QUERY + '\n%s') % (
@@ -56,7 +58,6 @@ WHERE sub.id = a.id
 
     def subquery_columns(self):
         return ",\n        " + ",\n        ".join([definition+" AS "+alias for alias, definition in self.SUBQUERY_FIELDS]) if self.SUBQUERY_FIELDS else ''
-
 
 class FakeQuerySetFlat(FakeQuerySet):
 
