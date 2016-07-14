@@ -33,7 +33,6 @@ class FilterToSQL:
     def __init__(self, filters, columns):
         FilterToSQL.count_offset += 10
         self.filters = filters
-        
         self.columns = columns
         if self.DEBUG:
             print('FilterToSQL: filters', self.filters)

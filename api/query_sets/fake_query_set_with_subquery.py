@@ -37,11 +37,8 @@ WHERE sub.id = a.id
 """
 
     def __init__(self, get_data):
-        super().__init__(get_data)
         self._additional_subquery_options = self.ADDITIONAL_SUBQUERY_OPTIONS
-        is_public_condition = self.is_public_condition()
-        if is_public_condition:
-            self._additional_wheres.append(is_public_condition)
+        super().__init__(get_data)
 
     def sql_query(self):
         return (self.QUERY + '\n%s') % (

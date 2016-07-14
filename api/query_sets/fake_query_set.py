@@ -7,10 +7,9 @@ from django.db import connection
 from landmatrix.models.browse_condition import BrowseCondition
 from landmatrix.models.activity_attribute_group import ActivityAttribute
 from grid.views.browse_filter_conditions import BrowseFilterConditions
-from grid.views.view_aux_functions import (
-    create_condition_formset, apply_filters_from_session,
-)
+from grid.views.view_aux_functions import create_condition_formset
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
+from api.filters import load_filters
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -38,13 +37,22 @@ class FakeQuerySet(QuerySet):
 
         self._additional_joins = self.ADDITIONAL_JOINS
         self._additional_wheres = self.ADDITIONAL_WHERES
-        self._set_filter_sql(self._get_filter(request))
         self._fields = self.FIELDS
         self._group_by = self.GROUP_BY
         self._order_by = self.ORDER_BY
         self._limit = self.LIMIT
+        self._filter_sql = self._get_filter(request)
         self.user = request.user
+
+        is_public_condition = self.is_public_condition()
+        if is_public_condition:
+            self._additional_wheres.append(is_public_condition)
+
         super().__init__()
+
+    def __repr__(self):
+        return '<{cls} query: {query}>'.format(
+            cls=self.__class__.__name__, query=self.sql_query())
 
     def all(self):
         self._fetch_all()
@@ -102,9 +110,6 @@ class FakeQuerySet(QuerySet):
 
     def limit(self):
         return 'LIMIT ' + str(self._limit) if self._limit else ''
-
-    def _set_filter_sql(self, filter):
-        self._filter_sql = filter
 
     def _fetch_all(self):
         if not self._all_results:
@@ -183,9 +188,9 @@ class FakeQuerySet(QuerySet):
         self._set_filters(get_data)
         # self._add_order_by_columns()
 
-        apply_filters_from_session(request, self.filters)
+        self.filters.update(load_filters(request))
 
-        self.filter_to_sql = FilterToSQL(self.filters, self.columns)
+        self.filter_to_sql = FilterToSQL(self.filters, self.columns())
         additional_sql = self.filter_to_sql.filter_where()
         filter_sql += additional_sql
         additional_joins = self.filter_to_sql.filter_from()
