@@ -1,5 +1,7 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
+from django.utils.translation import ugettext_lazy as _
+
 from grid.widgets.year_based_text_input import YearBasedTextInput
 
 from django import forms

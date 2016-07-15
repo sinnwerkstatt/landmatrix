@@ -74,7 +74,7 @@
                                 // Remove link to existing file in file fields
                                 row.find('.file a.input-group-addon').remove();
                                 // Unselect selected options
-                                form.find("option:selected").removeAttr("selected");
+                                row.find("option:selected").removeAttr("selected");
                                 init_form(row);
                                 // Scroll to the new row
                                 $('html, body').animate({
