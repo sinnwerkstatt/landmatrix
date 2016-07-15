@@ -45,7 +45,7 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
         # OR intention.value = ''
         self._filter_sql += intention_filter_sql
 
-        found = FakeQuerySet.all(self)
+        found = super().all()
 
         intentions = {}
 

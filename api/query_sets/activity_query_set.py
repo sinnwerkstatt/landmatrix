@@ -2,7 +2,7 @@ import json
 from pprint import pprint
 
 from api.query_sets.sql_generation.record_reader import RecordReader
-from grid.views.view_aux_functions import apply_filters_from_session
+from api.filters import load_filters
 from grid.views.profiling_decorators import print_execution_time_and_num_queries
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -15,7 +15,7 @@ class ActivityQuerySet:
     def __init__(self, request):
         data = request.POST.get('data', '{"filters": {}, "columns": {}, "status": {}}')
         self.data = json.loads(data)
-        apply_filters_from_session(request, self.data['filters'])
+        self.data['filters'].update(load_filters(request))
         self.is_staff = request.user.is_staff
         if self.DEBUG: pprint(self.data['filters'], width=120, compact=True)
         if 'columns' not in self.data:
