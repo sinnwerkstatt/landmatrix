@@ -8,10 +8,11 @@ class NegotiationStatusQuerySet(FakeQuerySetWithSubquery):
     FIELDS = [
         ('name',     'sub.negotiation_status'),
         ('deals',    'COUNT(DISTINCT a.activity_identifier)'),
-        ('hectares', 'ROUND(SUM(a.deal_size))')
+        ('hectares', 'ROUND(SUM(COALESCE(a.deal_size, 0)))')
     ]
     SUBQUERY_FIELDS = [
         ('negotiation_status', 'a.negotiation_status'),
     ]
+    ADDITIONAL_WHERES = ['a.negotiation_status IS NOT NULL']
     ORDER_BY = ['sub.negotiation_status']
     GROUP_BY = ['sub.negotiation_status']
