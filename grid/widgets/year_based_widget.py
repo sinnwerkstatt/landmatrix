@@ -10,6 +10,8 @@ class YearBasedWidget(forms.MultiWidget):
 
     def __init__(self, *args, **kwargs):
         self.help_text = kwargs.pop("help_text", "")
+        if 'attrs' in kwargs:
+            self.widget.attrs.update(kwargs.pop('attrs'))
         kwargs["widgets"] = self.get_widgets()
         super(YearBasedWidget, self).__init__(*args, **kwargs)
 
@@ -98,7 +100,7 @@ class YearBasedWidget(forms.MultiWidget):
             if id_:
                 final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))
             attrs = dict(final_attrs)
-            attrs['class'] = ' '.join([final_attrs.get('class', ''), widget.attrs.get('class', '')])
+            attrs['class'] = ' '.join([final_attrs.get('class', ''), hasattr(widget, 'attrs') and widget.attrs.get('class', '') or ''])
             output.append(widget.render(name + '_%s' % i, widget_value, attrs))
             # Append helptext and close reopen div every n element
             if ((i+1) % widgets_row_count) == 0:

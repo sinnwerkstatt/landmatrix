@@ -11,7 +11,11 @@ class YearBasedIntegerField(forms.MultiValueField):
 
     def __init__(self, *args, **kwargs):
         kwargs["fields"] = [forms.IntegerField(required=False), forms.CharField(required=False)]
-        kwargs["widget"] = YearBasedTextInput(help_text=kwargs.pop("help_text", ""), attrs={})
+        if 'placeholder' in kwargs:
+            attrs = {'placeholder': kwargs.pop('placeholder', None)}
+        else:
+            attrs = {}
+        kwargs["widget"] = YearBasedTextInput(help_text=kwargs.pop("help_text", ""), attrs=attrs)
         super(YearBasedIntegerField, self).__init__(*args, **kwargs)
 
     def clean(self, value):

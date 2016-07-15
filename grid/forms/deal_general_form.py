@@ -30,14 +30,14 @@ class DealGeneralForm(BaseForm):
         required=False, label="", initial=_("Land area"))
     intended_size = forms.IntegerField(
         required=False, label=_("Intended size (in ha)"), help_text=_("ha"),
-        widget=NumberInput(attrs={'placeholder': _('Size')}))
+        widget=forms.NumberInput(attrs={'placeholder': _('Size')}))
     contract_size = YearBasedIntegerField(
         required=False,
         label=_("Size under contract (leased or purchased area, in ha)"),
-        help_text=_("ha"), widget=NumberInput(attrs={'placeholder': _('Size')}))
+        help_text=_("ha"), placeholder=_('Size'))
     production_size = YearBasedIntegerField(
         required=False, label=_("Size in operation (production, in ha)"),
-        help_text=_("ha"), widget=NumberInput(attrs={'placeholder': _('Size')}))
+        help_text=_("ha"), placeholder=_('Size'))
     tg_land_area_comment = forms.CharField(
         required=False, label=_("Comment on Land area"), widget=CommentInput)
 
@@ -96,7 +96,7 @@ class DealGeneralForm(BaseForm):
         choices=price_type_choices)
     purchase_price_area = forms.IntegerField(
         required=False, label=_("Purchase price area"), help_text=_("ha"),
-        widget=NumberInput(attrs={'placeholder': _('Size')}))
+        widget=forms.NumberInput(attrs={'placeholder': _('Size')}))
     tg_purchase_price_comment = forms.CharField(
         required=False, label=_("Comment on Purchase price"),
         widget=CommentInput)
@@ -115,7 +115,7 @@ class DealGeneralForm(BaseForm):
         choices=price_type_choices)
     annual_leasing_fee_area = forms.IntegerField(
         required=False, label=_("Purchase price area"), help_text=_("ha"),
-        widget=NumberInput(attrs={'placeholder': _('Size')}))
+        widget=forms.NumberInput(attrs={'placeholder': _('Size')}))
     tg_leasing_fees_comment = forms.CharField(
         required=False, label=_("Comment on Leasing fees"), widget=CommentInput)
 
@@ -129,26 +129,26 @@ class DealGeneralForm(BaseForm):
         required=False, label=_("On leased / purchased area"))
     on_the_lease_area = YearBasedIntegerField(
         required=False, label=_("On leased / purchased area (in ha)"),
-        help_text=_("ha"), widget=NumberInput(attrs={'placeholder': _('Size')}))
+        help_text=_("ha"), placeholder=_('Size'))
     on_the_lease_farmers = YearBasedIntegerField(
         required=False, label=_("On leased / purchased farmers"),
-        help_text=_("farmers"), widget=NumberInput)
+        help_text=_("farmers"))
     on_the_lease_households = YearBasedIntegerField(
         required=False, label=_("On leased / purchased households"),
-        help_text=_("households"), widget=NumberInput)
+        help_text=_("households"))
     off_the_lease = forms.BooleanField(
         required=False, label=_("Not on leased / purchased area (out-grower)"))
     off_the_lease_area = YearBasedIntegerField(
         required=False, label=_("Not on leased / purchased area (out-grower, in ha)"),
-        help_text=_("ha"), widget=NumberInput(attrs={'placeholder': _('Size')}))
+        help_text=_("ha"), placeholder=_('Size'))
     off_the_lease_farmers = YearBasedIntegerField(
         required=False,
         label=_("Not on leased / purchased farmers (out-grower)"),
-        help_text=_("farmers"), widget=NumberInput)
+        help_text=_("farmers"))
     off_the_lease_households = YearBasedIntegerField(
         required=False,
         label=_("Not on leased / purchased households (out-grower)"),
-        help_text=_("households"), widget=NumberInput)
+        help_text=_("households"))
     tg_contract_farming_comment = forms.CharField(
         required=False, label=_("Comment on Contract farming"),
         widget=CommentInput)
