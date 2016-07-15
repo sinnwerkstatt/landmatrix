@@ -88,8 +88,8 @@ class DealsQuerySet(FakeQuerySetFlat):
         self._set_target_region(request.GET.get('target_region'))
         self._set_attributes(request.GET.getlist('attributes', []))
         if request.GET.get('window'):
-            lat_min, lat_max, lon_min, lon_max = request.GET.get('window').split(',')
-            self._set_window(lat_min, lat_max, lon_min, lon_max)
+            lat_min, lon_min, lat_max, lon_max = request.GET.get('window').split(',')
+            self._set_window(lat_min, lon_min, lat_max, lon_max)
 
     def all(self):
         start_time = timeit.default_timer()
@@ -170,14 +170,17 @@ class DealsQuerySet(FakeQuerySetFlat):
             self._additional_wheres, ["deal_country.fk_region_id = " + region_id]
         )
 
-    def _set_window(self, lat_min, lat_max, lon_min, lon_max):
+    def _set_window(self, lat_min, lon_min, lat_max, lon_max):
         # respect the 180th meridian
-        if lon_min > lon_max: lon_max, lon_min = lon_min, lon_max
+        if lon_min > lon_max:
+            lon_max, lon_min = lon_min, lon_max
+        if lat_min > lat_max:
+            lat_max, lat_min = lat_min, lat_max
         self._additional_wheres = add_to_list_if_not_present(
             self._additional_wheres, [
                 "CAST(point_lat.value AS NUMERIC) >= " + lat_min,
-                "CAST(point_lat.value AS NUMERIC) <= " + lat_max,
                 "CAST(point_lon.value AS NUMERIC) >= " + lon_min,
+                "CAST(point_lat.value AS NUMERIC) <= " + lat_max,
                 "CAST(point_lon.value AS NUMERIC) <= " + lon_max,
         ])
 

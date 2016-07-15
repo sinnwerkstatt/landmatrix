@@ -507,6 +507,17 @@ $(document).ready(function () {
 
     }
 
+    // Set zoom and pan handlers
+    map.on("moveend", function() {
+        console.log("moveend");
+        getApiData();
+    });
+
+    map.on("zoomend", function() {
+        console.log("zoomend");
+        getApiData();
+    });
+
     NProgress.configure(
         {
             trickleRate: 0.02,
@@ -518,16 +529,21 @@ $(document).ready(function () {
         NProgress.start();
         // TODO: (Later) initiate spinner before fetchin' stuff
         markerSource.clear();
+        console.log("Get API data");
         var query_params = 'limit=500&attributes=' + fieldnames[currentVariable];
         if (typeof mapParams !== 'undefined') {
             query_params += mapParams;
         }
         // Window
+        extent = map.getView().calculateExtent(map.getSize()).join(',');
         $.get(
-            "/api/deals.json?" + query_params,
-            //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lat_max,lon_min,lon_max>
+            "/api/deals.json?" + query_params + '&window=' + extent,
+            //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lon_min,lat_max,lat_max>
             addData
-        );
+        ).fail(function () {
+            NProgress.done();
+
+        });
 
         NProgress.set(0.2);
     }
@@ -624,6 +640,7 @@ $(document).ready(function () {
         if (data.length < 1) {
             $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
         } else {
+            $('#alert_placeholder').empty();
             for (var i = 0; i < data.length; i++) {
                 NProgress.inc();
                 var marker = data[i];
