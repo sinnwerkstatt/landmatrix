@@ -60,7 +60,7 @@ class DealSpatialForm(BaseForm):
         widget=OSMWidget(attrs=AREA_WIDGET_ATTRS))
 
     tg_location_comment = forms.CharField(
-        required=False, label=_("Location comments"), widget=CommentInput)
+        required=False, label=_("Comment on Location"), widget=CommentInput)
 
     class Meta:
         name = 'location'

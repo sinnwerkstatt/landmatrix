@@ -27,7 +27,7 @@ class DealVGGTForm(BaseForm):
         label=_("Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"),
         choices=APPLIED_CHOICES, widget=forms.RadioSelect)
     tg_vggt_applied_comment = forms.CharField(
-        required=False, label=_("VGGT comments"), widget=CommentInput)
+        required=False, label=_("Comment on VGGT"), widget=CommentInput)
 
     tg_prai = TitleField(
         required=False,
@@ -37,7 +37,7 @@ class DealVGGTForm(BaseForm):
         label=_("Application of Principles for Responsible Agricultural Investments (PRAI)"),
         choices=APPLIED_CHOICES, widget=forms.RadioSelect)
     tg_prai_applied_comment = forms.CharField(
-        required=False, label=_("PRAI comments"), widget=CommentInput)
+        required=False, label=_("Comment on PRAI"), widget=CommentInput)
 
     class Meta:
         name = 'vggt'

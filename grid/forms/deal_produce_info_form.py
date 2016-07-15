@@ -29,15 +29,15 @@ class DealProduceInfoForm(BaseForm):
     crops = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Crops"), queryset=Crop.objects.all())
     tg_crops_comment = forms.CharField(
-        required=False, label=_("Crops comments"), widget=CommentInput)
+        required=False, label=_("Comment on Crops"), widget=CommentInput)
     animals = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Livestock"), queryset=Animal.objects.all())
     tg_animals_comment = forms.CharField(
-        required=False, label=_("Livestock comments"), widget=CommentInput)
+        required=False, label=_("Comment on Livestock"), widget=CommentInput)
     minerals = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Resources"), queryset=Mineral.objects.all())
     tg_minerals_comment = forms.CharField(
-        required=False, label=_("Resources comments"), widget=CommentInput)
+        required=False, label=_("Comment on Resources"), widget=CommentInput)
 
     # Detailed contract farming crop, animal and mineral information
     tg_contract_farming_crop_animal_mineral = TitleField(
@@ -48,14 +48,14 @@ class DealProduceInfoForm(BaseForm):
         queryset=Crop.objects.all())
     tg_contract_farming_crops_comment = forms.CharField(
         required=False,
-        label=_("Contract farming crops comments"),
+        label=_("Comment on Contract farming crops"),
         widget=CommentInput)
 
     contract_farming_animals = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Contract farming livestock"),
         queryset=Animal.objects.all())
     tg_contract_farming_animals_comment = forms.CharField(
-        required=False, label=_("Contract farming livestock comments"), widget=CommentInput)
+        required=False, label=_("Comment on Contract farming livestock"), widget=CommentInput)
 
     # Use of produce
     tg_use_of_produce = TitleField(
@@ -89,7 +89,7 @@ class DealProduceInfoForm(BaseForm):
         required=False, label=_("Country 3 ratio"), help_text=_("%"),
         widget=NumberInput)
     tg_use_of_produce_comment = forms.CharField(
-        required=False, label=_("Use of produce comments"),
+        required=False, label=_("Comment on Use of produce"),
         widget=CommentInput)
 
     # In-country processing of produce
@@ -101,7 +101,7 @@ class DealProduceInfoForm(BaseForm):
         required=False, label=_("In country processing of produce"),
         choices=BOOLEAN_CHOICES, widget=forms.RadioSelect)
     tg_in_country_processing_comment = forms.CharField(
-        required=False, label=_("In country processing of produce comments"), widget=CommentInput)
+        required=False, label=_("Comment on In country processing of produce"), widget=CommentInput)
     processing_facilities = forms.CharField(
         required=False,
         label=_("Processing facilities / production infrastructure of the project (e.g. oil mill, "

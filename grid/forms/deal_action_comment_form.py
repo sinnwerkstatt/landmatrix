@@ -52,7 +52,7 @@ class DealActionCommentForm(BaseForm):
     not_public_reason = forms.ChoiceField(
         required=False, label=_("Reason"), choices=NOT_PUBLIC_REASON_CHOICES)
     tg_not_public_comment = forms.CharField(
-        required=False, label=_("Public deal comments"), widget=CommentInput)
+        required=False, label=_("Comment on Not Public"), widget=CommentInput)
 
     tg_feedback = TitleField(required=False, label="", initial=_("Feedback"))
     assign_to_user = UserModelChoiceField(

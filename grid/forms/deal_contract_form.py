@@ -34,7 +34,7 @@ class DealContractForm(BaseForm):
         required=False, label=_("Duration of the agreement (in years)"), help_text=_("years")
     )
     tg_contract_comment = forms.CharField(
-        required=False, label=_("Contract comments"), widget=CommentInput
+        required=False, label=_("Comment on Contract"), widget=CommentInput
     )
 
     class Meta:

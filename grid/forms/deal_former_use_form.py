@@ -46,7 +46,7 @@ class DealFormerUseForm(BaseForm):
         required=False, label=_("Former land owner"),
         choices=FORMER_LAND_OWNER_CHOICES, widget=forms.CheckboxSelectMultiple)
     tg_land_owner_comment = forms.CharField(
-        required=False, label=_("Former land owner comments"),
+        required=False, label=_("Comment on Former land owner"),
         widget=CommentInput)
 
     tg_land_use = TitleField(
@@ -55,7 +55,7 @@ class DealFormerUseForm(BaseForm):
         required=False, label=_("Former land use"),
         choices=FORMER_LAND_USE_CHOICES, widget=forms.CheckboxSelectMultiple)
     tg_land_use_comment = forms.CharField(
-        required=False, label=_("Former land use comments"),
+        required=False, label=_("Comment on Former land use"),
         widget=CommentInput)
 
     tg_land_cover = TitleField(
@@ -64,7 +64,7 @@ class DealFormerUseForm(BaseForm):
         required=False, label=_("Former land cover"),
         choices=FORMER_LAND_COVER_CHOICES, widget=forms.CheckboxSelectMultiple)
     tg_land_cover_comment = forms.CharField(
-        required=False, label=_("Former land cover comments"),
+        required=False, label=_("Comment on Former land cover"),
         widget=CommentInput)
 
     class Meta:

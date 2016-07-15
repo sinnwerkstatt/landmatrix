@@ -88,7 +88,7 @@ class DealLocalCommunitiesForm(BaseForm):
         required=False, label=_("Name of indigenous people"),
         widget=forms.TextInput)
     tg_affected_comment = forms.CharField(
-        required=False, label=_("Names of affected peoples comments"),
+        required=False, label=_("Comment on Names of affected people"),
         widget=CommentInput)
 
     # Recognitions status of community land tenure
@@ -101,7 +101,7 @@ class DealLocalCommunitiesForm(BaseForm):
         widget=forms.CheckboxSelectMultiple)
     tg_recognition_status_comment = forms.CharField(
         required=False,
-        label=_("Recognitions status of community land tenure comments"),
+        label=_("Comment on Recognitions status of community land tenure"),
         widget=CommentInput)
 
     # Consultation of local community
@@ -112,7 +112,7 @@ class DealLocalCommunitiesForm(BaseForm):
         choices=COMMUNITY_CONSULTATION_CHOICES, widget=forms.RadioSelect)
     tg_community_consultation_comment = forms.CharField(
         required=False,
-        label=_("Consultation of local community comments"),
+        label=_("Comment on Consultation of local community"),
         widget=CommentInput)
 
     # How did community react?
@@ -122,7 +122,7 @@ class DealLocalCommunitiesForm(BaseForm):
         required=False, label=_("Community reaction"),
         choices=COMMUNITY_REACTION_CHOICES, widget=forms.RadioSelect)
     tg_community_reaction_comment = forms.CharField(
-        required=False, label=_("Community reaction comments"),
+        required=False, label=_("Comment on Community reaction"),
         widget=CommentInput)
 
     # Land conflicts
@@ -132,7 +132,7 @@ class DealLocalCommunitiesForm(BaseForm):
         required=False, label=_("Presence of land conflicts"),
         choices=BOOLEAN_CHOICES, widget=forms.RadioSelect)
     tg_land_conflicts_comment = forms.CharField(
-        required=False, label=_("Presence of land conflicts comments"),
+        required=False, label=_("Comment on Presence of land conflicts"),
         widget=CommentInput)
 
     # Displacement of people
@@ -165,7 +165,7 @@ class DealLocalCommunitiesForm(BaseForm):
         label=_('Number of people facing displacement once project is fully implemented'),
         widget=NumberInput)
     tg_number_of_displaced_people_comment = forms.CharField(
-        required=False, label=_("Displacement of people comments"),
+        required=False, label=_("Comment on Displacement of people"),
         widget=CommentInput)
 
     tg_negative_impacts = TitleField(
@@ -176,7 +176,7 @@ class DealLocalCommunitiesForm(BaseForm):
         choices=NEGATIVE_IMPACTS_CHOICES, widget=forms.CheckboxSelectMultiple)
     tg_negative_impacts_comment = forms.CharField(
         required=False,
-        label=_("Negative impacts for local communities comments"),
+        label=_("Comment on Negative impacts for local communities"),
         widget=CommentInput)
 
     # Promised compensation
@@ -201,7 +201,7 @@ class DealLocalCommunitiesForm(BaseForm):
         choices=BENEFITS_CHOICES, widget=forms.CheckboxSelectMultiple)
     tg_promised_benefits_comment = forms.CharField(
         required=False,
-        label=_("Promised benefits for local communities comments"),
+        label=_("Comment on Promised benefits for local communities"),
         widget=CommentInput)
 
     # Materialized benefits for local communities
@@ -214,7 +214,7 @@ class DealLocalCommunitiesForm(BaseForm):
         choices=BENEFITS_CHOICES, widget=forms.CheckboxSelectMultiple)
     tg_materialized_benefits_comment = forms.CharField(
         required=False,
-        label=_("Materialized benefits for local communities comments"),
+        label=_("Comment on Materialized benefits for local communities"),
         widget=CommentInput)
 
     # Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)
