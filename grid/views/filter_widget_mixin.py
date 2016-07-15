@@ -36,59 +36,91 @@ class FilterWidgetMixin:
         Cache the resulting data strucutre, as it is used on each
         page load and doesn't change.
         '''
-        if not hasattr(self, '_variable_table'):
-            # for formsets, we want form.form
-            deal_forms = [
-                form.form if hasattr(form, 'form') else form
-                for form in SaveDealView.FORMS
+        if hasattr(self, '_variable_table'):
+            return self._variable_table
+
+        # for formsets, we want form.form
+        deal_forms = [
+            form.form if hasattr(form, 'form') else form
+            for form in SaveDealView.FORMS
+        ]
+        variable_table = OrderedDict()
+        group_items = []
+        group_title = ''
+
+        # Add an ID filter
+        variable_table[_('Deal ID')] = [{
+            'name': 'activity_identifier',
+            'label': _("Deal ID"),
+        }]
+
+        for form in deal_forms:
+            for field_name, field in form.base_fields.items():
+                if isinstance(field, TitleField):
+                    if group_title and group_items:
+                        variable_table[group_title] = group_items
+                        group_items = []
+                    group_title = str(field.initial)
+                else:
+                    group_items.append({
+                        'name': field_name,
+                        'label': field.label,
+                    })
+
+        if group_title and group_items:
+            variable_table[group_title] = group_items
+
+        # TODO: this is fragile, rethink this whole mess
+        if _('Operational company') in variable_table:
+            stakeholder_extras = [
+                {
+                    'name': 'operational_stakeholder_country',
+                    'label': _(
+                        "Operational stakeholder country of registration/origin"),
+                },
+                {
+                    'name': 'operational_stakeholder_region',
+                    'label': _(
+                        "Operational stakeholder region of registration/origin"),
+                },
+                {
+                    'name': 'parent_investor',
+                    'label': _("Parent stakeholders"),
+                },
+                {
+                    'name': 'parent_investor_country',
+                    'label': _(
+                        "Parent stakeholder country of registration/origin"),
+                },
+                {
+                    'name': 'parent_investor_region',
+                    'label': _(
+                        "Parent stakeholder region of registration/origin"),
+                },
+                {
+                    'name': 'parent_investor_percentage',
+                    'label': _("Parent stakeholder percentages"),
+                },
+                {
+                    'name': 'parent_investor_classification',
+                    'label': _("Parent stakeholder classifications"),
+                },
+                {
+                    'name': 'parent_investor_homepage',
+                    'label': _("Parent stakeholder homepages"),
+                },
+                {
+                    'name': 'parent_investor_opencorporates_link',
+                    'label': _("Parent stakeholder Opencorporates links"),
+                },
+                {
+                    'name': 'parent_investor_comment',
+                    'label': _("Parent stakeholder comments"),
+                },
             ]
-            variable_table = OrderedDict()
-            group_items = []
-            group_title = ''
+            variable_table[_('Operational company')].extend(stakeholder_extras)
 
-            # Add an ID filter
-            variable_table[_('Deal ID')] = [{
-                'name': 'activity_identifier',
-                'label': _("Deal ID"),
-            }]
-
-            for form in deal_forms:
-                for field_name, field in form.base_fields.items():
-                    if isinstance(field, TitleField):
-                        if group_title and group_items:
-                            variable_table[group_title] = group_items
-                            group_items = []
-                        group_title = str(field.initial)
-                    else:
-                        group_items.append({
-                            'name': field_name,
-                            'label': field.label,
-                        })
-
-            if group_title and group_items:
-                variable_table[group_title] = group_items
-
-            # TODO: this is fragile, rethink this whole mess
-            if _('Operational company') in variable_table:
-                stakeholder_extras = [
-                    {
-                        'name': 'parent_investors',
-                        'label': _("Parent stakeholders"),
-                    },
-                    {
-                        'name': 'investor_percentage',
-                        'label': _("Parent stakeholder percentages"),
-                    },
-                    {
-                        'name': 'investor_classification',
-                        'label': _("Parent stakeholder classifications"),
-                    },
-                ]
-                variable_table[_('Operational company')].extend(
-                    stakeholder_extras)
-
-            self._variable_table = variable_table
-
+        self._variable_table = variable_table
         return self._variable_table
 
     def example_set_filters(self):

@@ -37,7 +37,7 @@ FILTER_NEW = [
     "total_jobs_planned_daily_workers", "total_jobs_planned_employees", "type", "url",
     "water_extraction_amount", "water_extraction_envisaged"
 ]
-FILTER_VAR_INV = ['investor', "investor_name", "country", 'stakeholder_country']
+FILTER_VAR_INV = ['investor', "operational_stakeholder_name", "country", 'operational_stakeholder_country']
 # TODO: this counter is shared by all users, and is per thread.
 # It should probably be moved to the session
 FILTER_COUNTER = 0
