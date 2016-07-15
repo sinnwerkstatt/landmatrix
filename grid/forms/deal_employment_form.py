@@ -38,7 +38,7 @@ class DealEmploymentForm(BaseForm):
         required=False, label=_("Current number of daily/seasonal workers (total)"),
         help_text=_("workers"), widget=NumberInput)
     tg_total_number_of_jobs_created_comment = forms.CharField(
-        required=False, label=_("Additional comments on jobs created (total)"),
+        required=False, label=_("Comments on jobs created (total)"),
         widget=CommentInput)
 
     # Number of jobs for foreigners created
@@ -65,7 +65,7 @@ class DealEmploymentForm(BaseForm):
         required=False, label=_("Current number of daily/seasonal workers (foreign)"),
         help_text=_("workers"))
     tg_foreign_jobs_created_comment = forms.CharField(
-        required=False, label=_("Additional comments on jobs created (foreign)"),
+        required=False, label=_("Comments on jobs created (foreign)"),
         widget=CommentInput)
 
     # Number of domestic jobs created
@@ -91,7 +91,7 @@ class DealEmploymentForm(BaseForm):
         required=False, label=_("Current number of daily/seasonal workers (domestic)"),
         help_text=_("workers"))
     tg_domestic_jobs_created_comment = forms.CharField(
-        required=False, label=_("Additional comments on jobs created (domestic)"),
+        required=False, label=_("Comments on jobs created (domestic)"),
         widget=CommentInput)
 
     class Meta:
