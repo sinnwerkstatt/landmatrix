@@ -112,8 +112,7 @@ class Filter(BaseFilter):
         if 'in' in self['operator'] and not isinstance(value, list):
             value = [value]
 
-        definition_key = '__'.join(
-            (self['variable'], self['key'], self['operator']))
+        definition_key = '__'.join((self['variable'], key, self['operator']))
         formatted_filter = {
             definition_key: value,
         }
@@ -188,7 +187,7 @@ def format_filters(filters):
                     ('{}_{}'.format(filter_obj.name, i), condition.to_filter()),
                     group=group)
         else:
-            _update_filters(formatted_filters, filter_obj)
+            _update_filters(formatted_filters, (filter_name, filter_obj))
 
     return formatted_filters
 
