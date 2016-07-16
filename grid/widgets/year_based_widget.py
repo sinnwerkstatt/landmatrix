@@ -11,7 +11,7 @@ class YearBasedWidget(forms.MultiWidget):
     def __init__(self, *args, **kwargs):
         self.help_text = kwargs.pop("help_text", "")
         if 'attrs' in kwargs:
-            self.widget.attrs.update(kwargs.pop('attrs'))
+            self.widget.update(kwargs.pop('attrs'))
         kwargs["widgets"] = self.get_widgets()
         super(YearBasedWidget, self).__init__(*args, **kwargs)
 
