@@ -127,10 +127,15 @@ class SQLBuilder(SQLBuilderData):
         return any(x in self.SQL_COLUMN_MAP[c][0] for x in ['ARRAY_AGG', 'COUNT'])
 
     def _need_involvements_and_stakeholders(self):
-        return self._investor_filter_is_set() or any(
-            x in ("investor_country","investor_region", "investor_name", 'primary_investor', "primary_investor_name")
+        matching_columns = any(
+            x in (
+                "operational_stakeholder_country",
+                "operational_stakeholder_region",
+                "operational_stakeholder_name",
+            )
             for x in self.columns
         )
+        return self._investor_filter_is_set() or matching_columns
 
     def _investor_filter_is_set(self):
         return 'investor' in self.filters and 'tags' in self.filters['investor'] and self.filters['investor']['tags']
