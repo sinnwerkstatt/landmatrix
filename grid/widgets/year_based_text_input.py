@@ -7,7 +7,11 @@ from django.utils.translation import ugettext_lazy as _
 from grid.widgets.year_based_widget import YearBasedWidget
 
 class YearBasedTextInput(YearBasedWidget):
-    widget = forms.NumberInput(attrs={"class": "year-based"})
+    widget = None
+
+    def __init__(self, *args, **kwargs):
+        self.widget = forms.NumberInput(attrs={"class": "year-based"})
+        super().__init__(*args, **kwargs)
 
     def decompress(self, value):
         if value:

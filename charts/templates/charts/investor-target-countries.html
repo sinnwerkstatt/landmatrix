@@ -47,10 +47,10 @@
 
 {% block after %}
 {{ block.super }}
-<script type="text/javascript" src="{% static "legacy/vendor/raphael.min.js" %}"></script>
-<script src="{% static "legacy/vendor/raphael-svg-import.js" %}" type="text/javascript" charset="utf-8"></script>
-<script src="{% static "legacy/world.min.js" %}" type="text/javascript" charset="utf-8"></script>
-<script src="{% static "legacy/map.js" %}" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="{% static "js/vendor/raphael.min.js" %}"></script>
+<script src="{% static "js/vendor/raphael-svg-import.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "js/world.min.js" %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static "js/investor-target-countries.js" %}" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 function draw(callback) {
     drawMap(callback);

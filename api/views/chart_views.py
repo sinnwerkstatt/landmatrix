@@ -20,7 +20,6 @@ from api.query_sets.transnational_deals_by_country_query_set import \
     TransnationalDealsByCountryQuerySet
 from api.query_sets.transnational_deals_query_set import \
     TransnationalDealsQuerySet
-from api.query_sets.investor_target_countries_query_set import *
 
 from api.serializers import DealSerializer
 from api.views.base import FakeQuerySetListView, FakeQuerySetRetrieveView
@@ -69,12 +68,3 @@ class TransnationalDealsByCountryView(FakeQuerySetRetrieveView):
 
 class HectaresView(FakeQuerySetRetrieveView):
     fake_queryset_class = HectaresQuerySet
-
-
-class TargetCountriesForInvestorCountryView(FakeQuerySetListView):
-    fake_queryset_class = TargetCountriesForInvestorCountryQuerySet
-
-
-class InvestorCountriesForTargetCountryView(FakeQuerySetListView):
-    fake_queryset_class = InvestorCountriesForTargetCountryQuerySet
-

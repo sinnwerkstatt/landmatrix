@@ -434,12 +434,12 @@ function buildAgriculturalPies() {
         var pie_data = [];
         for (var i = 0; i < data.length; i++) {
             pie_data = [];
-            $('#pie-' + data[i]["region"]).parent().next().find('.food-crop').text(data[i]["agricultural_produce"]["food_crop"] + "%" + " (" + numberWithCommas(data[i]["hectares"]["food_crop"]) + " ha)");
-            $('#pie-' + data[i]["region"]).parent().next().find('.non-food-crop').text(data[i]["agricultural_produce"]["non_food"] + "%" + " (" + numberWithCommas(data[i]["hectares"]["non_food"]) + " ha)");
-            $('#pie-' + data[i]["region"]).parent().next().find('.flex-crop').text(data[i]["agricultural_produce"]["flex_crop"] + "%" + " (" + numberWithCommas(data[i]["hectares"]["flex_crop"]) + " ha)");
-            $('#pie-' + data[i]["region"]).parent().next().find('.multiple-crop').text(data[i]["agricultural_produce"]["multiple_use"] + "%" + " (" + numberWithCommas(data[i]["hectares"]["multiple_use"]) + " ha)");
+            $('#pie-' + data[i]["region"]).parent().next().find('.food-crop').text(data[i]["agricultural_produce"]["food_crop"] + "%" + numberWithCommas(data[i]["hectares"]["food_crop"]) + " ha");
+            $('#pie-' + data[i]["region"]).parent().next().find('.non-food-crop').text(data[i]["agricultural_produce"]["non_food"] + "%" + numberWithCommas(data[i]["hectares"]["non_food"]) + " ha");
+            $('#pie-' + data[i]["region"]).parent().next().find('.flex-crop').text(data[i]["agricultural_produce"]["flex_crop"] + "%" + numberWithCommas(data[i]["hectares"]["flex_crop"]) + " ha");
+            $('#pie-' + data[i]["region"]).parent().next().find('.multiple-crop').text(data[i]["agricultural_produce"]["multiple_use"] + "%" + numberWithCommas(data[i]["hectares"]["multiple_use"]) + " ha");
             var sum = data[i]["hectares"]["food_crop"] + data[i]["hectares"]["non_food"] + data[i]["hectares"]["flex_crop"] + data[i]["hectares"]["multiple_use"];
-            $('#pie-' + data[i]["region"]).closest(".row").prev().find("h2 span").text("(" + numberWithCommas(sum) + " ha)");
+            $('#pie-' + data[i]["region"]).closest(".row").prev().find("h2 span").text(numberWithCommas(sum) + " ha");
             pie_data.push(data[i]["agricultural_produce"]["food_crop"]);
             pie_data.push(data[i]["agricultural_produce"]["non_food"]);
             pie_data.push(data[i]["agricultural_produce"]["flex_crop"]);

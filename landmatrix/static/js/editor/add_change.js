@@ -213,10 +213,10 @@ $(document).ready(function(){
     }
     $("input#id_contract_farming_0").click(function (){
       if ( $(this).is(":checked")){
-        $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.on_the_lease_households, div.off_the_lease_area, div.off_the_lease_farmers, div.off_the_lease_households").slideDown("fast");
+        $("div.on_the_lease, div.off_the_lease, div.lease_type").slideDown("fast");
       }
       else {
-        $("div.on_the_lease, div.off_the_lease, div.lease_type, div.on_the_lease_area, div.on_the_lease_farmers, div.on_the_lease_households, div.off_the_lease_area, div.off_the_lease_farmers, div.off_the_lease_households").slideUp("fast");
+        $("div.on_the_lease, div.off_the_lease, div.lease_type").slideUp("fast");
       }
     });
     $("input#id_contract_farming_1").click(function (){
