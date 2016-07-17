@@ -1,0 +1,157 @@
+{% load i18n %}
+            <div class="agricultural_drivers chart row data hidden">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2>{% trans "All Continents" %} <small><span>0 ha</span></small></h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <canvas id="pie-overall" width="420" height="420"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="media-list legend">
+                                <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                        class="food-crop"></span></li>
+                                <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                        class="non-food-crop"></span></li>
+                                <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                        class="flex-crop"></span></li>
+                                <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                        class="multiple-crop"></span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>{% trans "Africa" %} <small><span>0 ha</span></small></h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <canvas id="pie-africa" width="92" height="92"></canvas>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="media-list legend">
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                                class="food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                                class="non-food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                                class="flex-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                                class="multiple-crop"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>{% trans "Europe" %} <small><span>0 ha</span></small></h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <canvas id="pie-europe" width="92" height="92"></canvas>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="media-list legend">
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                                class="food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                                class="non-food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                                class="flex-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                                class="multiple-crop"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>{% trans "America" %} <small><span>0 ha</span></small></h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <canvas id="pie-america" width="92" height="92"></canvas>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="media-list legend">
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                                class="food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                                class="non-food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                                class="flex-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                                class="multiple-crop"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>{% trans "Oceania" %} <small><span>0 ha</span></small></h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <canvas id="pie-oceania" width="92" height="92"></canvas>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="media-list legend">
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                                class="food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                                class="non-food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                                class="flex-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                                class="multiple-crop"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>{% trans "Asia" %} <small><span>0 ha</span></small></h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <canvas id="pie-asia" width="92" height="92"></canvas>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="media-list legend">
+                                        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span
+                                                class="food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span
+                                                class="non-food-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #179961;"></i><span
+                                                class="flex-crop"></span></li>
+                                        <li><i class="icon icon-none" style="background-color: #7c9a61;"></i><span
+                                                class="multiple-crop"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
