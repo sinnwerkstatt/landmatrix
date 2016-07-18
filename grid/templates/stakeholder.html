@@ -22,6 +22,7 @@
     <form action="{% if investor %}{% url 'stakeholder_form' investor.id %}{% else %}{% url 'add_stakeholder_form' %}{% endif %}{% if request.GET.popup %}?popup=1{% endif %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row">
+            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
             {% include "form.html" %}
         </div>
         <div class="row">
@@ -38,6 +39,10 @@
                         {# ID is hidden, but must be in the form #}
                         {{ form.id }}
                         {{ form.id.errors }}
+                        {# Handle row deletion #}
+                        {% if parent_stakeholders.can_delete %}
+                            <div style="display: none;">{{ form.DELETE }}</div>
+                        {% endif %}
                     </div>
                     <div class="controls col-md-2 loans_amount">
                         {{ form.loans_amount|add_class:'form-control' }}
@@ -76,6 +81,10 @@
                             {# ID is hidden, but must be in the form #}
                             {{ form.id }}
                             {{ form.id.errors }}
+                            {# Handle row deletion #}
+                            {% if parent_investors.can_delete %}
+                                <div style="display: none;">{{ form.DELETE }}</div>
+                            {% endif %}
                         </div>
                         <div class="controls col-md-6">
                             <div class="input-group">

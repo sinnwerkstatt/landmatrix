@@ -60,7 +60,13 @@ function generateButtons(field) {
     var investorId = field.val();
     console.log("Setting up buttons!");
 
-    var buttons = '<a id="add_' + $(field).attr("id") + '" class="add-investor" href="/stakeholder/add/" class="noul"><i class="lm lm-plus"></i></a>';
+    var addLink = '/stakeholder/add/';
+    var parentId = $('#id_id').val();
+    if (parentId) {
+        addLink = addLink + '?parent_id=' + parentId;
+    }
+
+    var buttons = '<a id="add_' + $(field).attr("id") + '" class="add-investor" href="' + addLink + '" class="noul"><i class="lm lm-plus"></i></a>';
     if (field.val() !== '') {
         buttons += '<a id="change_' + $(field).attr("id") + '" class="change-investor" href="/stakeholder/' + investorId + '/" class="noul"><i class="lm lm-pencil"></i></a>';
     }

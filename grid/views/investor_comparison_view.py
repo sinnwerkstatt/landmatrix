@@ -1,14 +1,15 @@
+import datetime
+from dateutil.tz import tzlocal
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.formsets import BaseFormSet
 from django.template.context import RequestContext
 from django.views.generic.base import TemplateView
 
-
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
-from grid.views.deal_detail_view import get_forms
-from grid.views.stakeholder_view import _investor_from_id_and_timestamp
 from grid.views.view_aux_functions import render_to_response
 from landmatrix.models.investor import Investor
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -28,7 +29,8 @@ class InvestorComparisonView(TemplateView):
         context['investors'] = [investor_1, investor_2]
         context['comparison_forms'] = get_comparison(investor_1, investor_2)
 
-        return render_to_response('investor-comparison.html', context, RequestContext(request))
+        return render_to_response(
+            'investor-comparison.html', context, RequestContext(request))
 
 
 def investor_from_historical(old_version):
@@ -111,3 +113,32 @@ def _construct_form(self, i, **kwargs):
         form = self.form(**defaults)
         self.add_fields(form, i)
         return form
+
+
+def investor_from_id(investor_id):
+    try:
+        if '_' in investor_id:
+            return _investor_from_id_and_timestamp(investor_id)
+        else:
+            return Investor.objects.get(pk=investor_id)
+    except ObjectDoesNotExist:
+        return None
+
+
+def _investor_from_id_and_timestamp(id_and_timestamp):
+    if '_' not in id_and_timestamp:
+        message = 'should contain _ separating investor id and timestamp: {}'.format(id_and_timestamp)
+        raise ValueError(message)
+
+    investor_id, timestamp = id_and_timestamp.split('_')
+
+    investor = Investor.objects.get(pk=investor_id)
+
+    history_date = datetime.datetime.fromtimestamp(
+        float(timestamp), tz=tzlocal())
+    old_version = investor.history.filter(
+        history_date__lte=history_date).last()
+    if old_version is None:
+        raise ObjectDoesNotExist('Investor %s as of timestamp %s' % (investor_id, timestamp))
+
+    return old_version
