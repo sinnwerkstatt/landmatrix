@@ -5,12 +5,13 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from landmatrix.models.default_string_representation import \
     DefaultStringRepresentation
 from grid.forms.choices import operational_company_choices, investor_choices
-#from simple_history.models import HistoricalRecords
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-class InvestorManager(models.Manager):
+
+class InvestorQuerySet(models.QuerySet):
+
     def public(self):
         return self.filter(fk_status_id__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN))
 
@@ -19,6 +20,14 @@ class InvestorManager(models.Manager):
 
     def pending(self):
         return self.filter(fk_status_id__in=(InvestorBase.STATUS_PENDING, InvestorBase.STATUS_TO_DELETE))
+
+    def existing_operational_stakeholders(self):
+        # TODO: not sure we should be filtering on this instead of
+        # something else
+        stakeholder_ids = InvestorActivityInvolvement.objects.values(
+            'fk_investor_id').distinct()
+        return self.filter(pk__in=stakeholder_ids)
+
 
 class InvestorBase(DefaultStringRepresentation, models.Model):
     # FIXME: Replace fk_status with Choice Field
@@ -60,9 +69,8 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
-    #history = HistoricalRecords()
 
-    objects = InvestorManager()
+    objects = InvestorQuerySet.as_manager()
 
     class Meta:
         ordering = ('-name',)
@@ -98,7 +106,22 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
 
     @property
     def history(self):
-        return HistoricalInvestor.objects.filter(investor_identifier=self.investor_identifier)
+        return HistoricalInvestor.objects.filter(
+            investor_identifier=self.investor_identifier)
+
+    @property
+    def is_deleted(self):
+        return self.fk_status_id == self.STATUS_DELETED
+
+    @property
+    def is_operational_company(self):
+        '''
+        Moved this logic from the view. Not sure though if we should
+        determine this using classification in future.
+        '''
+        return (
+            hasattr(self, 'investoractivityinvolvement_set') and
+            self.investoractivityinvolvement_set.exists())
 
 
 class Investor(InvestorBase):
@@ -109,6 +132,7 @@ class Investor(InvestorBase):
     class Meta:
         verbose_name = _("Investor")
         verbose_name_plural = _("Investors")
+
 
 class HistoricalInvestor(InvestorBase):
     history_date = models.DateTimeField(auto_now_add=True)
@@ -156,8 +180,7 @@ class InvestorVentureInvolvement(models.Model):
 
     fk_venture = models.ForeignKey(Investor, db_index=True,
                                    related_name='venture_involvements')
-    fk_investor = models.ForeignKey(Investor, db_index=True, related_name='+',
-                                    limit_choices_to={'fk_status_id__in': (2, 3)})
+    fk_investor = models.ForeignKey(Investor, db_index=True, related_name='+')
     percentage = models.FloatField(
         _('Ownership share'), blank=True, null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
