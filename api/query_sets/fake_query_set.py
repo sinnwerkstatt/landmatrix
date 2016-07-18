@@ -123,12 +123,13 @@ class FakeQuerySet(QuerySet):
 
     def _execute_query(self):
         start_time = time.time()
+        query = self.sql_query()
 
         if self.DEBUG:
-            print('*'*80, 'SQL: \n', self.sql_query())
+            print('*'*80, 'SQL: \n', query)
 
         cursor = connection.cursor()
-        cursor.execute(self.sql_query())
+        cursor.execute(query)
         all_results = list(cursor.fetchall())
 
         if self.DEBUG:
