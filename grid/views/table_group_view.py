@@ -50,7 +50,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     ]
     QUERY_LIMITED_GROUPS = ["target_country", "operational_stakeholder_name", "operational_stakeholder_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
-        "deal_id", "target_country", "operational_stakeholder", "operational_stakeholder_name", "operational_stakeholder_country", "intention",
+        "deal_id", "target_country", "operational_stakeholder", "operational_stakeholder_country", "intention",
         "negotiation_status", "implementation_status", "intended_size", "contract_size",
     ]
     DEFAULT_GROUP = "by-target-region"

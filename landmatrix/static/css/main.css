@@ -1318,7 +1318,7 @@ table tbody {
   margin-top: -4px;
   margin-bottom: 4px; }
 
-.container table th {
+.container table thead th {
   font-weight: bold;
   padding-left: 10px;
   color: #fcfcfc;

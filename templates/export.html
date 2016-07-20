@@ -7,7 +7,7 @@
   {# FIXME: EXPORT_FORMATS available in the context would make this much cleaner #}
   {% if group_slug %}
     {% if group_value %}
-    <a href="{% url "export" group=group_slug list=group_value format="xml" %}" class="btn-media xml">
+    <a href="{% url "export" group=group_slug group_value=group_value format="xml" %}" class="btn-media xml">
     {% else %}
     <a href="{% url "export" group=group_slug format="xml" %}" class="btn-media xml">
     {% endif %}
@@ -22,7 +22,7 @@
   </a>
   {% if group_slug %}
     {% if group_value %}
-    <a href="{% url "export" group=group_slug list=group_value format="csv" %}?{{ request.GET.urlencode }}" class="btn-media csv">
+    <a href="{% url "export" group=group_slug group_value=group_value format="csv" %}?{{ request.GET.urlencode }}" class="btn-media csv">
     {% else %}
     <a href="{% url "export" group=group_slug format="csv" %}?{{ request.GET.urlencode }}" class="btn-media csv">
     {% endif %}
@@ -37,7 +37,7 @@
   </a>
   {% if group_slug %}
     {% if group_value %}
-    <a href="{% url "export" group=group_slug list=group_value format="xls" %}?{{ request.GET.urlencode }}" class="btn-media xls">
+    <a href="{% url "export" group=group_slug group_value=group_value format="xls" %}?{{ request.GET.urlencode }}" class="btn-media xls">
     {% else %}
     <a href="{% url "export" group=group_slug format="xls" %}?{{ request.GET.urlencode }}" class="btn-media xls">
     {% endif %}

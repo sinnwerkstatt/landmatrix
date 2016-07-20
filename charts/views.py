@@ -83,37 +83,57 @@ class MapOfInvestmentsChartView(ChartPDFView):
     pdf_javascript_delay = 2000
 
 
-class AgriculturalDriversChartView(ChartPDFView):
-    template_name = "charts/agricultural-produce.html"
-    chart = "chart_agricultural_drivers"
-
-
 class PerspectiveChartView(ChartView):
     template_name = "charts/perspective.html"
     chart = "chart_perspective"
 
 
-class SpecialInterestView(ChartPDFView):
-    template_name = "charts/special-interest.html"
-    chart = "special_interest"
+#class SpecialInterestView(ChartPDFView):
+#    template_name = "charts/special-interest.html"
+#    chart = "special_interest"
+#    pdf_javascript_delay = 10000
+#
+#    def get_pdf_export_url(self, request, *args, **kwargs):
+#        '''
+#        Special handling for the 'variable' switch
+#        '''
+#        url = super().get_pdf_export_url(request, *args, **kwargs)
+#        if 'variable' in request.GET:
+#            url += '?variable={}'.format(request.GET['variable'])
+#
+#        return url
+#
+#    def get_pdf_render_url(self, request, *args, **kwargs):
+#        '''
+#        Special handling for the 'variable' switch
+#        '''
+#        url = super().get_pdf_render_url(request, *args, **kwargs)
+#        if 'variable' in request.GET:
+#            url += '?variable={}'.format(request.GET['variable'])
+#
+#        return url
+
+class AgriculturalDriversChartView(ChartPDFView):
+    template_name = "charts/special-interest/agricultural-drivers.html"
+    chart = "chart_agricultural_drivers"
     pdf_javascript_delay = 10000
 
-    def get_pdf_export_url(self, request, *args, **kwargs):
-        '''
-        Special handling for the 'variable' switch
-        '''
-        url = super().get_pdf_export_url(request, *args, **kwargs)
-        if 'variable' in request.GET:
-            url += '?variable={}'.format(request.GET['variable'])
+class ProduceInfoChartView(ChartPDFView):
+    template_name = "charts/special-interest/produce-info.html"
+    chart = "chart_produce_info"
+    pdf_javascript_delay = 10000
 
-        return url
+class ResourceExtractionChartView(ChartPDFView):
+    template_name = "charts/special-interest/resource-extraction.html"
+    chart = "chart_resource_extraction"
+    pdf_javascript_delay = 10000
 
-    def get_pdf_render_url(self, request, *args, **kwargs):
-        '''
-        Special handling for the 'variable' switch
-        '''
-        url = super().get_pdf_render_url(request, *args, **kwargs)
-        if 'variable' in request.GET:
-            url += '?variable={}'.format(request.GET['variable'])
+class LoggingChartView(ChartPDFView):
+    template_name = "charts/special-interest/logging.html"
+    chart = "chart_logging"
+    pdf_javascript_delay = 10000
 
-        return url
+class ContractFarmingChartView(ChartPDFView):
+    template_name = "charts/special-interest/contract-farming.html"
+    chart = "chart_contract_farming"
+    pdf_javascript_delay = 10000

@@ -1,4 +1,7 @@
-{% load i18n %}
+{% extends "charts/special-interest/base.html" %}
+{% load i18n static wagtailcore_tags %}
+
+{% block chart %}
             <div class="agricultural_drivers chart row data hidden">
                 <div class="col-md-6">
                     <div class="row">
@@ -155,3 +158,10 @@
                     </div>
                 </div>
             </div>
+<script type="text/javascript">
+function draw() {
+    $(".agricultural_drivers").removeClass('hidden');
+            buildAgriculturalPies();
+};
+</script>
+{% endblock %}

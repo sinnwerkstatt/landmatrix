@@ -1,4 +1,7 @@
-{% load i18n %}
+{% extends "charts/special-interest/base.html" %}
+{% load i18n static wagtailcore_tags %}
+
+{% block chart %}
             <div class="logging chart hidden" id="logging">
                 <div class="col-sm-12 text-center">
                     <h3>{% trans "Logging: " %} <a class="toggle-tooltip bottom" href="/about/#what-is-a-land-deal"
@@ -42,3 +45,63 @@
                     <p class="percentage percentage-failed">0%</p>
                 </div>
             </div>
+<script type="text/javascript">
+function draw() {
+                $.get('/api/statistics.json', function (data) {
+                    var stats = $('#logging'),
+                            size = stats.find('.size'),
+                            deals = stats.find('.deals'),
+                            by_deals = [0, 0, 0, 0],
+                            by_size = [0, 0, 0, 0],
+                            item, percentage;
+                    for (var i = 0; i < data.length; i++) {
+                        item = data[i];
+                        // Update numbers
+                        if (item[0].startsWith('Concluded')) {
+                            by_deals[1] += item[1];
+                            by_size[1] += item[2];
+                        } else if (item[0].startsWith('Intended')) {
+                            by_deals[2] += item[1];
+                            by_size[2] += item[2];
+                        } else if (item[0].startsWith('Failed')) {
+                            by_deals[3] += item[1];
+                            by_size[3] += item[2];
+                        }
+                        // Update totals
+                        by_deals[0] += item[1];
+                        by_size[0] += item[2];
+                    }
+
+                    // Update by size
+                    size.find('.number-concluded').text(by_size[1] + ' ha');
+                    percentage = parseInt(by_size[1] / by_size[0] * 100) + '%';
+                    size.find('.progress-concluded .bar').css('width', percentage);
+                    size.find('.percentage-concluded').text(percentage);
+                    size.find('.number-intended').text(by_size[2] + ' ha');
+                    percentage = parseInt(by_size[2] / by_size[0] * 100) + '%';
+                    size.find('.progress-intended .bar').css('width', percentage);
+                    size.find('.percentage-intended').text(percentage);
+                    size.find('.number-failed').text(by_size[3] + ' ha');
+                    percentage = parseInt(by_size[3] / by_size[0] * 100) + '%';
+                    size.find('.progress-failed .bar').css('width', percentage);
+                    size.find('.percentage-failed').text(percentage);
+
+                    // Update by deals
+                    deals.find('.number-concluded').text(by_deals[1]);
+                    percentage = parseInt(by_deals[1] / by_deals[0] * 100) + '%';
+                    deals.find('.progress-concluded .bar').css('width', percentage);
+                    deals.find('.percentage-concluded').text(percentage);
+                    deals.find('.number-intended').text(by_deals[2]);
+                    percentage = parseInt(by_deals[2] / by_deals[0] * 100) + '%';
+                    deals.find('.progress-intended .bar').css('width', percentage);
+                    deals.find('.percentage-intended').text(percentage);
+                    deals.find('.number-failed').text(by_deals[3]);
+                    percentage = parseInt(by_deals[3] / by_deals[0] * 100) + '%';
+                    deals.find('.progress-failed .bar').css('width', percentage);
+                    deals.find('.percentage-failed').text(percentage);
+                });
+
+                $(".logging").removeClass('hidden');
+};
+</script>
+{% endblock %}

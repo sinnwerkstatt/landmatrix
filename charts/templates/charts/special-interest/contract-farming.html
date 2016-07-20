@@ -1,3 +1,7 @@
+{% extends "charts/special-interest/base.html" %}
+{% load i18n static wagtailcore_tags %}
+
+{% block chart %}
             <div class="contract_farming row chart hidden">
                 <div class="col-md-6">
                     <div id="PieChart" class="charts" align="center">
@@ -8,3 +12,12 @@
                     </div>
                 </div>
             </div>
+<script type="text/javascript">
+function draw() {
+    $(".contract_farming").removeClass('hidden');
+    buildPieChart();
+    buildDotChart();
+    $("#size,#legendbox").hide();
+};
+</script>
+{% endblock %}

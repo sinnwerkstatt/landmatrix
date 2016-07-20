@@ -1,0 +1,118 @@
+{% extends "charts/base_chart.html" %}
+{% load i18n static wagtailcore_tags %}
+
+{% block page_title %}{% trans "Dynamics Overview" %}{% endblock %}
+{% block title %}{% trans "Dynamics Overview" %}{% endblock %}
+{% block breadcrumb_inner %}
+    {{ block.super }}
+    <li>{% trans "Dynamics Overview" %}</li>
+{% endblock %}
+
+{% comment %}
+get the filters that are active with {{ filters }}
+the filter formset/widget is in {{ empty_form_conditions }}
+or {% include "filters.html" %}, if the downloads are removed from filters.html
+{% endcomment %}
+
+{% block before %}
+{% endblock %}
+
+{% block description %}
+    <div class="desc">
+
+        <p class="agricultural_drivers">{% trans 'This infographic shows how agricultural land acquisitions that include information on crops are subdivided according to destination of use.' %}<a
+                href="{% slugurl 'agricultural-drivers' %}"><i class="lm lm-question-circle"> </i></a></p>
+        <p class="produce_info" style="display: none">{% trans 'Deals divided by intention of investment.' %}</p>
+        <p class="resource_extraction"
+           style="display: none">{% trans 'Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %}
+            <a href="{% slugurl 'about' %}#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation"
+               class="toggle-tooltip left noul"
+               title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i
+                    class="lm lm-question-circle"> </i></a></p>
+        <p class="logging" style="display: none">{% trans 'Wood chopping.' %}</p>
+        <p class="contract_farming"
+           style="display: none">{% trans 'Deals having „agriculture“ as main intention of investment disaggregated into sub-sections.' %}</p>
+        <form action="./" method="POST">
+            {% csrf_token %}
+            <select id="size" name="size">
+                <option value="size_in_operation">{% trans "Size in operation" %}</option>
+                <option value="size_under_contract">{% trans "Size under contract" %}</option>
+                <option value="intended_size">{% trans "Intended Size" %}</option>
+            </select>
+        </form>
+    </div>
+{% endblock %}
+{% block legend %}
+    <ul class="media-list legend offset agricultural_drivers hidden">
+        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span> {% trans "Food-Crops" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Non-Food Crops" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #179961;"></i><span> {% trans "Flex-Crops" %}</span></li>
+        <li><i class="icon icon-none"
+               style="background-color: #7c9a61;"></i><span> {% trans "Multiple Use - Several crops in different categories" %}</span>
+        </li>
+    </ul>
+    <ul class="media-list legend offset produce_info hidden">
+        <li><i class="icon icon-none" style="background-color: #fc941f;"></i><span> {% trans "Animals" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Minerals" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #b9d635;"></i><span> {% trans "Crops" %}</span></li>
+    </ul>
+    <ul class="media-list legend offset resource_extraction logging hidden">
+        <li><i class="icon icon-none" style="background-color: #ed881b;"></i><span>{% trans "Concluded" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #b96c12;"></i><span>{% trans "Intended" %}</span></li>
+        <li><i class="icon icon-none" style="background-color: #884e0e;"></i><span>{% trans "Failed" %}</span></li>
+    </ul>
+{% endblock %}
+
+{% block data %}
+    <div class="row">
+        <div id="chartarea" class="col-md-12">
+        	{% block chart %}
+            {% endblock %}
+		    <script type="text/javascript">
+		        $(document).ready(function () {
+		            var dataSwitch = $("[name='use_deal_size']");
+		            dataSwitch.bootstrapSwitch({
+		                onText: 'Size',
+		                offText: 'Count',
+		                offColor: 'info',
+		                onSwitchChange: function (event, state) {
+		                    if (state) {
+		                        datatype = 'size';
+		                    } else {
+		                        datatype = 'count;'
+		                    }
+		                }
+		            });
+		            $('#size').change(function () {
+		                location.href = location.href.replace(/[?&]size=.*[&$]?/, '') + '&size=' + $(this).find('option:selected').val();
+		            });
+		            $(".views .btn").click(function (e) {
+		                e.preventDefault();
+		                var c_self = this;
+		                $(".views .active").removeClass("active");
+		                $(c_self).addClass("active");
+		                draw();
+		                return false;
+		            });
+		            // Init chart
+			        $(".chart,.legend").addClass('hidden');
+			        $("#size").show();
+			        $("#legendbox").show();
+			        draw();
+		        });
+
+		    </script>
+        </div>
+    </div>
+{% endblock %}
+
+{% block after %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "js/charts.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendor/d3-areachart/rectangularAreaChart.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/vendor/RGraph.pie.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.core.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.effects.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.dynamic.js" %}"></script>
+    <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.tooltips.js" %}"></script>
+{% endblock %}

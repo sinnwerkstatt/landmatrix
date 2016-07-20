@@ -1,2 +1,13 @@
+{% extends "charts/special-interest/base.html" %}
+{% load i18n static wagtailcore_tags %}
+
+{% block chart %}
 <div class="produce_info chart hidden" id="TreeChart" align="center">
 </div>
+<script type="text/javascript">
+function draw() {
+	$(".produce_info").removeClass('hidden');
+    buildTreeChart();
+};
+</script>
+{% endblock %}
