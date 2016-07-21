@@ -785,6 +785,9 @@ h6 {
 .newsitem small {
   color: #919191; }
 
+.blog-post-item {
+  margin-bottom: 40px; }
+
 .meta.date {
   color: #919191; }
 
