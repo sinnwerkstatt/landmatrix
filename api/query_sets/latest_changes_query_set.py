@@ -83,14 +83,7 @@ def status_string(status):
 def deal_to_data(activity, change_date, action):
     return {
         'deal_id': activity.activity_identifier, 'change_date': change_date, 'action': action,
-        'target_country': target_country(activity)
+        'target_country': activity.target_country and activity.target_country.name or '',
     }
 
-
-def target_country(activity):
-    country = ActivityAttribute.objects.filter(fk_activity_id=activity.id, name='target_country').order_by('-id')
-    if country.count() > 0:
-        return Country.objects.get(pk=country[0].value).name
-    else:
-        raise ValueError('No target_country in attributes for activity ()'.format(activity.id))
 
