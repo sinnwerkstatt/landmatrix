@@ -65,7 +65,19 @@ class LinkBlock(StructBlock):
         context['text'] = value.get('text')
         context['class'] = value.get('cls')
         return context
-    ('link', URLBlock(icon="link")),
+
+class AnchorBlock(StructBlock):
+    slug = blocks.CharBlock()
+
+    class Meta:
+        icon = 'anchor'
+        template = 'widgets/anchor.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['slug'] = value.get('slug')
+        return context
+
 
 # Overwrite Stream block to disable wrapping DIVs
 class NoWrapsStreamBlock(StreamBlock):
@@ -194,6 +206,7 @@ CONTENT_BLOCKS = [
     ('media', EmbedBlock(icon="media")),
     ('html', RawHTMLBlock(icon="code")),
     ('link', LinkBlock(icon="link")),
+    ('anchor', AnchorBlock(icon="link")),
     ('gallery', GalleryBlock()),
     ('slider', SliderBlock()),
     ('section_divider', SectionDivider()),
