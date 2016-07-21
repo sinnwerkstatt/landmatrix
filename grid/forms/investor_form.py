@@ -18,10 +18,14 @@ class InvestorField(forms.ChoiceField):
 
 
 class InvestorFormBase(BaseModelForm):
+    # We use ID to build related form links
+    id = forms.CharField(required=False, widget=forms.HiddenInput())
     name = forms.CharField(required=False, label=_("Name"), max_length=255)
-    classification = forms.ChoiceField(required=False, label=_("Classification"),
+    classification = forms.ChoiceField(
+        required=False, label=_("Classification"),
         choices=(('', _("---------")),) + investor_choices)
-    comment = forms.CharField(required=False, label=_("Comment"), widget=CommentInput)
+    comment = forms.CharField(
+        required=False, label=_("Comment"), widget=CommentInput)
 
     class Meta:
         model = Investor
@@ -32,7 +36,7 @@ class InvestorFormBase(BaseModelForm):
         Force status to pending on update.
         '''
         instance = super().save(commit=False)
-        instance.fk_status = Status.objects.get(name='pending')
+        instance.fk_status_id = Investor.STATUS_PENDING
         if commit:
             instance.save()
 
@@ -47,11 +51,17 @@ class InvestorFormBase(BaseModelForm):
     def get_data(cls, investor):
         return {}
 
+
 class InvestorForm(InvestorFormBase):
     class Meta:
         model = Investor
-        exclude = ('fk_status', 'subinvestors', 'investor_identifier', 'parent_relation')
+        exclude = (
+            'fk_status', 'subinvestors', 'investor_identifier',
+            'parent_relation',
+        )
+
 
 class OperationalCompanyForm(InvestorFormBase):
-    classification = forms.ChoiceField(required=False, label=_("Classification"),
+    classification = forms.ChoiceField(
+        required=False, label=_("Classification"),
         choices=(('', _("---------")),) + operational_company_choices)

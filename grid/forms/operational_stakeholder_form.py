@@ -13,11 +13,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class OperationalStakeholderForm(BaseForm):
-    # TODO: move queryset to manager
-    OPERATIONAL_STAKEHOLDER_IDS = InvestorActivityInvolvement.objects.values(
-        'fk_investor_id').distinct()
-    STAKEHOLDER_QUERYSET = Investor.objects.filter(
-        pk__in=OPERATIONAL_STAKEHOLDER_IDS).order_by('name')
+    STAKEHOLDER_QUERYSET = Investor.objects.existing_operational_stakeholders().order_by('name')
     form_title = _('Investor info')
 
     tg_operational_stakeholder = TitleField(
@@ -48,21 +44,3 @@ class OperationalStakeholderForm(BaseForm):
 
     class Meta:
         name = 'investor_info'
-
-
-def investor_description(investor):
-    return '{} ({}) {}'.format(
-        _investor_name(investor), _investor_country_name(investor),
-        _investor_classification(investor))
-
-
-def _investor_name(investor):
-    return investor.name if len(investor.name) <= 80 else investor.name[:80] + '...'
-
-
-def _investor_country_name(investor):
-    return investor.fk_country.name if investor.fk_country_id else '-'
-
-
-def _investor_classification(investor):
-    return investor.get_classification_display() if investor.classification else '-'

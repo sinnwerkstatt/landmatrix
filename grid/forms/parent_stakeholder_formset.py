@@ -10,13 +10,6 @@ from django import forms
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-# TODO: shoud we really be limiting stakeholder selection to existing
-# investors? How can anyone add a new one?
-# Also, move to manager
-INVESTOR_INVOLVEMENT_IDS = InvestorVentureInvolvement.objects.values(
-    'fk_investor_id').distinct()
-EXISTING_INVESTORS = Investor.objects.filter(
-    pk__in=INVESTOR_INVOLVEMENT_IDS).order_by('name')
 investor_widget = Select(attrs={'class': 'form-control investorfield'})
 
 
@@ -30,7 +23,10 @@ class ParentStakeholderForm(forms.ModelForm):
 
     class Meta:
         model = InvestorVentureInvolvement
-        fields = ['id', 'fk_investor', 'loans_amount', 'loans_currency', 'loans_date']
+        fields = [
+            'id', 'fk_investor', 'loans_amount', 'loans_currency',
+            'loans_date',
+        ]
 
 
 class ParentInvestorForm(ParentStakeholderForm):
@@ -52,21 +48,17 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
         '''
         instances = super().save(commit=False)
 
-        # Status constants would be more efficient but may lead to DB errors
-        pending_status = Status.objects.get(name='pending')
-
         for instance in instances:
             instance.fk_venture = fk_venture
             instance.role = self.ROLE
-            instance.fk_status = pending_status
+            instance.fk_status_id = Investor.STATUS_PENDING
             if commit:
                 instance.save()
 
         # Soft delete by setting status to deleted
         if self.deleted_objects:
-            deleted_status = Status.objects.get(name='deleted')
             for deleted in self.deleted_objects:
-                deleted.fk_status = deleted_status
+                deleted.fk_status_id = Investor.STATUS_DELETED
                 if commit:
                     deleted.save()
 
@@ -83,8 +75,10 @@ class BaseInvestorFormSet(BaseInvolvementFormSet):
 
 ParentStakeholderFormSet = forms.modelformset_factory(
     InvestorVentureInvolvement, form=ParentStakeholderForm,
-    formset=BaseStakeholderFormSet, extra=1, min_num=0, max_num=1, can_delete=True)
+    formset=BaseStakeholderFormSet, extra=1, min_num=0, max_num=1,
+    can_delete=True)
 
 ParentInvestorFormSet = forms.modelformset_factory(
     InvestorVentureInvolvement, form=ParentInvestorForm,
-    formset=BaseInvestorFormSet, extra=1, min_num=0, max_num=1, can_delete=True)
+    formset=BaseInvestorFormSet, extra=1, min_num=0, max_num=1,
+    can_delete=True)
