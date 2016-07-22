@@ -147,8 +147,8 @@ class FilterToSQL:
                     # without major surgery. Works by lining up the
                     # columns that we're joining twice :(
                     where.append(
-                        """%(relation)s attr_%(count)i.name = 'type'
-                           AND attr_%(count)i.value = data_source_type.value""" % {
+                        """%(relation)s attr_d%(count)i.name = 'type'
+                           AND attr_d%(count)i.value = data_source_type.value""" % {
                             'relation': relation,
                             "count": i,
                         })
