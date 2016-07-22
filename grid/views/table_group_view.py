@@ -182,7 +182,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             'parent_investor_homepage': _('Parent stakeholder homepages'),
             'parent_investor_opencorporates_link': _(
                 'Parent stakeholder Opencorporates links'),
-            'parent_investor_comment': _('Parent stakeholder comments'),
+            'parent_investor_comment': _('Comment on parent stakeholder'),
             'crop': _('Crop'),
             'data_source_type': _('Data source type'),
         }

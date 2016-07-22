@@ -115,7 +115,7 @@ class FilterWidgetMixin:
                 },
                 {
                     'name': 'parent_investor_comment',
-                    'label': _("Parent stakeholder comments"),
+                    'label': _("Comment on parent stakeholder"),
                 },
             ]
             variable_table[_('Operational company')].extend(stakeholder_extras)
