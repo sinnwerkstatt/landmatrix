@@ -57,7 +57,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     COLUMN_GROUPS = {
         "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
         "target_region": ["target_region", "intention", "deal_count", "availability"],
-        "operational_stakeholder_name": ["operational_stakeholder_name", "operational_stakeholder_country", "intention", "deal_count", "availability"],
+        "operational_stakeholder_name": ["operational_stakeholder", "operational_stakeholder_country", "intention", "deal_count", "availability"],
         "operational_stakeholder_country": ["operational_stakeholder_country", "intention", "deal_count", "availability"],
         "operational_stakeholder_region": ["operational_stakeholder_region", "deal_count", "availability"],
         "intention": ["intention", "deal_count", "availability"],
@@ -67,6 +67,11 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         "all": ["deal_id", "target_country", "operational_stakeholder", "operational_stakeholder_country",
                 "intention", "negotiation_status", "implementation_status", "intended_size",
                 "contract_size", ]
+    }
+    GROUP_NAMES = {
+        "operational_stakeholder_name": _("Investor name"),
+        "operational_stakeholder_country": _("Investor country"),
+        "operational_stakeholder_region": _("Investor region"),
     }
 
     template_name = "group-by.html"
@@ -95,7 +100,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             "load_more": self._load_more_amount(),
             "group_slug": self.group,
             "group_value": self.group_value,
-            "group": self.group.replace("_", " "),
+            "group": self.GROUP_NAMES.get(self.group, self.group.replace("_", " ")),
             # "rules": self.rules,
         }
         self.add_filter_context_data(context, self.request)
