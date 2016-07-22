@@ -56,6 +56,19 @@
 <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
 <script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
 
+<script type="text/javascript">
+{% if country %}
+var mapBounds = [
+    {{ country.point_lat_min }}, {{ country.point_lon_min }},
+    {{ country.point_lat_max }}, {{ country.point_lon_max }},
+];
+{% elif region %}
+var mapBounds = [
+    {{ region.point_lat_min }}, {{ region.point_lon_min }},
+    {{ region.point_lat_max }}, {{ region.point_lon_max }},
+];
+{% endif %}
+</script>
 <script type="text/javascript" src="{% static "js/map.js" %}"></script>
 <script type="text/javascript" src="{% static "js/layers.js" %}"></script>
 <script type="text/javascript" src="{% static "js/main.js" %}"></script>

@@ -206,7 +206,7 @@
                                     <td class="comment" title="{{ activity.comment }}"><span
                                             class="truncate">{{ activity.comment }}</span></td>
                                     {% if activity.timestamp %}
-                                        <td class="date">{{ activity.timestamp|naturaltime_from_string }}</td>
+                                        <td class="date"><span title="{{ activity.timestamp }}">{{ activity.timestamp|naturaltime_from_string }}</span></td>
                                     {% else %}
                                         <td class="date">-</td>
                                     {% endif %}
@@ -242,7 +242,7 @@
                                     <td class="comment" title="{{ activity.comment }}"><span
                                             class="truncate">{{ activity.comment }}</span></td>
                                     {% if activity.timestamp %}
-                                        <td class="date">{{ activity.timestamp|naturaltime_from_string }}</td>
+                                        <td class="date"><span title="{{ activity.timestamp }}">{{ activity.timestamp|naturaltime_from_string }}</span></td>
                                     {% else %}
                                         <td class="date">-</td>
                                     {% endif %}
@@ -277,7 +277,7 @@
                                     <td class="comment" title="{{ activity.comment }}"><span
                                             class="truncate">{{ activity.comment }}</span></td>
                                     {% if activity.timestamp %}
-                                        <td class="date">{{ activity.timestamp|naturaltime_from_string }}</td>
+                                        <td class="date"><span title="{{ activity.timestamp }}">{{ activity.timestamp|naturaltime_from_string }}</span></td>
                                     {% else %}
                                         <td class="date">-</td>
                                     {% endif %}
@@ -388,7 +388,7 @@
                                     <td class="user">{{ feedback.from_user }}</td>
                                     <td class="comment" title="{{ feedback.comment }}"><span
                                             class="truncate">{{ feedback.comment }}</span></td>
-                                    <td class="date">{{ feedback.timestamp|naturaltime_from_string }}</td>
+                                    <td class="date"><span title="{{ feedback.timestamp }}">{{ feedback.timestamp|naturaltime_from_string }}</span></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
