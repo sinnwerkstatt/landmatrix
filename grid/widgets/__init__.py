@@ -25,3 +25,4 @@ from .year_based_multiple_select import YearBasedMultipleSelect
 from .year_based_select import YearBasedSelect
 from .year_based_text_input import YearBasedTextInput
 from .actors_field import ActorsField
+from .multi_char_field import MultiCharField

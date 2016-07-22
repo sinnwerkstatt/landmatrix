@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from grid.forms.base_form import BaseForm
-from grid.widgets import TitleField, CommentInput, NumberInput
+from grid.widgets import TitleField, CommentInput, NumberInput, MultiCharField
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -82,9 +82,9 @@ class DealLocalCommunitiesForm(BaseForm):
     tg_names_of_affected = TitleField(
         required=False, label="",
         initial=_("Names of communities / indigenous peoples affected"))
-    name_of_community = forms.CharField(
+    name_of_community = MultiCharField(
         required=False, label=_("Name of community"), widget=forms.TextInput)
-    name_of_indigenous_people = forms.CharField(
+    name_of_indigenous_people = MultiCharField(
         required=False, label=_("Name of indigenous people"),
         widget=forms.TextInput)
     tg_affected_comment = forms.CharField(
