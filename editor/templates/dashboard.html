@@ -384,7 +384,7 @@
                             {% for feedback in feedbacks.feeds %}
                                 <tr>
                                     <td class="deal"><a
-                                            href="{% if request.user.is_staff %}{% url 'change_deal' feedback.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ feedback.deal_id }}</a></td>
+                                            href="{% if request.user.is_staff %}{% url 'change_deal' feedback.deal_id %}{% else %}{% url 'deal_detail' feedback.deal_id %}{% endif %}">#{{ feedback.deal_id }}</a></td>
                                     <td class="user">{{ feedback.from_user }}</td>
                                     <td class="comment" title="{{ feedback.comment }}"><span
                                             class="truncate">{{ feedback.comment }}</span></td>
