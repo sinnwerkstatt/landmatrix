@@ -57,9 +57,9 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
     COLUMN_GROUPS = {
         "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
         "target_region": ["target_region", "intention", "deal_count", "availability"],
-        "operational_stakeholder_name": ["operational_stakeholder", "operational_stakeholder_country", "intention", "deal_count", "availability"],
-        "operational_stakeholder_country": ["operational_stakeholder_country", "intention", "deal_count", "availability"],
-        "operational_stakeholder_region": ["operational_stakeholder_region", "deal_count", "availability"],
+        "investor_name": ["investor_name", "operational_stakeholder_country", "intention", "deal_count", "availability"],
+        "investor_country": ["investor_country", "intention", "deal_count", "availability"],
+        "investor_region": ["investor_region", "deal_count", "availability"],
         "intention": ["intention", "deal_count", "availability"],
         "crop": ["crop", "deal_count", "availability"],
         "year": ["year", "intention", "deal_count", "availability"],

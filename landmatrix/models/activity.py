@@ -92,7 +92,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         if country.count() > 0:
             country = country.first()
             try:
-                return Country.objects.get(id=country)
+                return Country.objects.get(id=country.value)
             except:
                 return None
         else:
