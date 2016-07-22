@@ -89,11 +89,12 @@ function dismissChangeInvestorPopup(win, newId, newRepr) {
     if (elem) {
         if (elem[0].nodeName == 'SELECT') {
             $(elem).find("option[value=" + newId + "]").html(newRepr);
+            $(elem).select2("destroy").select2();
             // update list of secondary investors
-            $.get("/ajax/widget/values", {key_id:  "secondary_investor", name: "investor", time: $.now() }, function (data) {
-              $("ul.form.empty .field.investor div").html(data);
-              $(elem).change(); // trigger change
-            });
+            //$.get("/ajax/widget/values", {key_id:  "secondary_investor", name: "investor", time: $.now() }, function (data) {
+            //  $("ul.form.empty .field.investor div").html(data);
+            //  $(elem).change(); // trigger change
+            //});
         }
     } else {
         console.log("Could not get input id for win " + name);
