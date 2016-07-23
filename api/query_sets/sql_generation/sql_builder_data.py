@@ -92,11 +92,11 @@ class SQLBuilderData:
         ],
         'investor_name': INVESTOR_COLUMNS,
         'investor_country': INVESTOR_COLUMNS + [
-            join(Country, 'operational_stakeholder_country', on='operational_stakeholder_country.id = operational_stakeholder.fk_country_id'),
+            join(Country, 'investor_country', on='investor_country.id = operational_stakeholder.fk_country_id'),
         ],
         'investor_region': INVESTOR_COLUMNS + [
-            join(Country, 'operational_stakeholder_country', on='operational_stakeholder_country.id = operational_stakeholder.fk_country_id'),
-            join(Region, 'operational_stakeholder_region', on='operational_stakeholder_region.id = operational_stakeholder_country.fk_region_id')
+            join(Country, 'investor_country', on='investor_country.id = operational_stakeholder.fk_country_id'),
+            join(Region, 'investor_region', on='investor_region.id = operational_stakeholder_country.fk_region_id')
         ],
         'parent_investor': INVESTOR_COLUMNS,
         'parent_investor_percentage': [
@@ -154,8 +154,8 @@ class SQLBuilderData:
             "CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier) AS investor_name"
         ],
         "investor_country": [
-            "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_country.name, '#!#', operational_stakeholder_country.code_alpha3)) AS investor_country",
-            "CONCAT(operational_stakeholder_country.name, '#!#', operational_stakeholder_country.code_alpha3) AS investor_country"
+            "ARRAY_AGG(DISTINCT CONCAT(investor_country.name, '#!#', investor_country.code_alpha3)) AS investor_country",
+            "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) AS investor_country"
         ],
         "investor_region": [
             "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id)) AS investor_region",

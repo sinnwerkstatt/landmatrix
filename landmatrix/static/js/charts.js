@@ -44,45 +44,35 @@ function buildTreeChart() {
         .append("svg:g")
         .attr("transform", "translate(.5,.5)");
 
-    const DemoTreeData = {
+    const treedata = {
         "name": "",
         "children": [
             {
                 "name": "Animals",
                 "color": "#fc941f",
                 "children": [
-                    {"name": "Birds", "size": 3938},
-                    {"name": "Apes", "size": 3812},
-                    {"name": "Sheep", "size": 6714},
-                    {"name": "Mules", "size": 743}
                 ]
             },
             {
                 "name": "Minerals",
                 "color": "#4bbb87",
                 "children": [
-                    {"name": "Iron", "size": 17010},
-                    {"name": "Aluminium", "size": 5842},
-                    {"name": "Titanium", "size": 1041},
-                    {"name": "Gold", "size": 5176}
                 ]
             },
             {
                 "name": "Crops",
                 "color": "#b9d635",
                 "children": [
-                    {"name": "Salad", "size": 721},
-                    {"name": "Carrots", "size": 4294},
-                    {"name": "Peas", "size": 9800},
-                    {"name": "Cabbage", "size": 1314},
-                    {"name": "Radish", "size": 2220}
                 ]
             }
         ]
     };
 
-    d3.json("", function (data) {
-        node = root = DemoTreeData;
+    d3.json("/api/produce-info.json", function (data) {
+        treedata.children[0].children = data.animals;
+        treedata.children[1].children = data.minerals;
+        treedata.children[2].children = data.crops;
+        node = root = treedata;
 
         var nodes = treemap.nodes(root)
             .filter(function (d) {
