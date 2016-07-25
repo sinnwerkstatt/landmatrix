@@ -77,6 +77,9 @@ class FilterToSQL:
                 relation = index > 0 and 'OR' or ''
             else:
                 relation = 'AND'
+            # Replace boolean
+            if value == 'on':
+                value = 'True'
             if not isinstance(value, list):
                 value = [value]
             sanitized_values = [v.strip().replace("'", "\\'") for v in value]
