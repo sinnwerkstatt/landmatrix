@@ -4,6 +4,14 @@
 {% block page_title %}{% trans "Server Error" %}{% endblock %}
 {% block title %}{% trans "Looks like something went wrong" %}{% endblock %}
 
+{% block subnav_inner %}
+    <li role="presentation">
+        <a href="/api/filters.json?clear=1" target="_blank"><i class="fa fa-trash"></i> {% trans "Clear filters" %}</a>
+    </li>
+	<li class="divider"></li>
+	{{ block.super }}
+{% endblock %}
+
 {% block content %}
 <div class="block">
 	<p>{% trans "We track these errors automatically, but if the problem persists feel free to contact us. In the meantime, try refreshing." %}</p>
