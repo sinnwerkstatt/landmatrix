@@ -6,10 +6,21 @@
 
 {% block subnav_inner %}
     <li role="presentation">
-        <a href="/api/filters.json?clear=1" target="_blank"><i class="fa fa-trash"></i> {% trans "Clear filters" %}</a>
+        <a id="clear-filters" href="/api/filter.json?clear=1" target="_blank"><i class="fa fa-trash"></i> {% trans "Clear filters" %}</a>
     </li>
 	<li class="divider"></li>
 	{{ block.super }}
+<script type="text/javascript">
+$(document).ready(function () {
+	$('#clear-filters').click(function (e) {
+		e.preventDefault();
+		$.get($(this).attr('href'), function () {
+			location.reload();
+		};
+		return false;
+	});
+});
+</script>
 {% endblock %}
 
 {% block content %}
