@@ -69,10 +69,10 @@ urlpatterns = [
         name='agricultural_produce_api'),
     url(r'^produce-info\.json', ProduceInfoView.as_view(), {'format': 'json'},
         name='produce_info_api'),
-    url(r'^produce-info\.json', ResourceExtractionView.as_view(), {'format': 'json'},
+    url(r'^resource-extraction\.json', ResourceExtractionView.as_view(), {'format': 'json'},
         name='resource_extraction_api'),
-    url(r'^produce-info\.json', LoggingView.as_view(), {'format': 'json'},
+    url(r'^logging\.json', LoggingView.as_view(), {'format': 'json'},
         name='logging_api'),
-    url(r'^produce-info\.json', ContractFarmingView.as_view(), {'format': 'json'},
+    url(r'^contract-farming\.json', ContractFarmingView.as_view(), {'format': 'json'},
         name='contract_farming_api'),
 ]

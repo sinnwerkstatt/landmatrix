@@ -43,8 +43,9 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
     GROUP_BY = ['sub.agricultural_produce']
     ORDER_BY = ['sub.agricultural_produce']
 
-    def __init__(self, get_data, region_ids):
-        super().__init__(get_data)
+
+    def __init__(self, request, region_ids):
+        super().__init__(request)
         self.region_ids = region_ids
 
     def all(self):

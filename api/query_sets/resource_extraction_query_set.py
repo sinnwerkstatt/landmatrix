@@ -1,7 +1,6 @@
 from django.utils.translation import ugettext_lazy as _
 
-from api.query_sets.simple_fake_query_set import SimpleFakeQuerySet
+from api.query_sets.statistics_query_set import StatisticsQuerySet
 
-class ResourceExtractionQuerySet(SimpleFakeQuerySet):
-    def all(self):
-        pass
+class ResourceExtractionQuerySet(StatisticsQuerySet):
+	pass

@@ -1,6 +1,7 @@
 '''
 API calls used for generating charts.
 '''
+from api.views.base import FakeQuerySetListView
 from api.query_sets.deals_query_set import DealsQuerySet
 from api.query_sets.hectares_query_set import HectaresQuerySet
 from api.query_sets.implementation_status_query_set import \
@@ -83,7 +84,7 @@ class ProduceInfoView(FakeQuerySetRetrieveView):
     fake_queryset_class = ProduceInfoQuerySet
 
 
-class ResourceExtractionView(FakeQuerySetRetrieveView):
+class ResourceExtractionView(FakeQuerySetListView):
     fake_queryset_class = ResourceExtractionQuerySet
 
 
