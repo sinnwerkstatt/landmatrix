@@ -61,10 +61,10 @@ function generateButtons(field) {
     console.log("Setting up buttons!");
 
     var addLink = '/stakeholder/add/';
-    var parentId = $('#id_id').val();
-    if (parentId) {
-        addLink = addLink + '?parent_id=' + parentId;
-    }
+    //var parentId = $('#id_id').val();
+    //if (parentId) {
+    //    addLink = addLink + '?parent_id=' + parentId;
+    //}
 
     var buttons = '<a id="add_' + $(field).attr("id") + '" class="add-investor" href="' + addLink + '" class="noul"><i class="lm lm-plus"></i></a>';
     if (field.val() !== '') {
