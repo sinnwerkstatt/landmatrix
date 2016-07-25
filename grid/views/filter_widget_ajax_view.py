@@ -39,20 +39,20 @@ class FilterWidgetAjaxView(View):
 
         if operation == 'is_empty':
             return HttpResponse('', content_type="text/plain")
-        # ID
-        elif key_id == "-1":
+        # Deal ID
+        elif key_id == 'activity_identifier':
             if operation in ("in", "not_in"):
                 widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
             else:
                 widget = NumberInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
         # deal scope
-        elif key_id == "-2":
-            widget = CheckboxSelectMultiple()
-            widget.choices = (
-                (10, "Domestic"),
-                (20, "Transnational")
-            )
-            widget = widget.render(request.GET.get("name", ""), value, attrs=vf_attrs)
+        #elif key_id == "-2":
+        #    widget = CheckboxSelectMultiple()
+        #    widget.choices = (
+        #        (10, "Domestic"),
+        #        (20, "Transnational")
+        #    )
+        #    widget = widget.render(request.GET.get("name", ""), value, attrs=vf_attrs)
 
         elif key_id == "fully_updated" or key_id == "last_modification":
             value = len(value) > 0 and value[0] or ""

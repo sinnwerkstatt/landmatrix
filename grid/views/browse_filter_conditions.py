@@ -20,6 +20,7 @@ from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.widgets import NestedMultipleChoiceField
 from grid.views.profiling_decorators import print_execution_time_and_num_queries
 from grid.views.profiling_decorators import print_func_execution_time, print_func_num_queries
+from grid.views.change_deal_view import ChangeDealView
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -177,7 +178,7 @@ class BrowseFilterConditions:
 def get_field_by_key(key):
     if key.isnumeric():
         key = get_key_from_id(int(key))
-    for form in CHANGE_FORMS:
+    for form in ChangeDealView.FORMS:
         form = hasattr(form, "form") and form.form or form
         if key in form.base_fields:
             debug_found_form(form, key)
@@ -201,25 +202,6 @@ def debug_found_form(form, key):
         pprint(type(form().fields[key]))
         pprint(vars(form().fields[key]))
 debug_found_form.printed = False
-
-
-CHANGE_FORMS = [
-    DealSpatialFormSet,
-    DealGeneralForm,
-    DealEmploymentForm,
-    InvestorForm,
-    ChangeDealDataSourceFormSet,
-    DealLocalCommunitiesForm,
-    DealFormerUseForm,
-    DealProduceInfoForm,
-    DealWaterForm,
-    DealGenderRelatedInfoForm,
-    DealOverallCommentForm,
-    DealActionCommentForm,
-    DealHistoryForm,
-    OperationalStakeholderForm
-]
-
 
 def a_keys():
     return {
