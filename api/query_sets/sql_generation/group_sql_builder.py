@@ -28,7 +28,7 @@ class GroupSQLBuilder(SQLBuilder):
             if not c in group_by:
                 if not self.is_aggregate_column(c):
                     group_by.append(c)
-        return "GROUP BY %s" % ', '.join(group_by)
+        return "GROUP BY %s" % ', '.join((group_by[0],))
 
     def get_inner_group_sql(self):
         # query deals grouped by a key

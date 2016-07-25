@@ -44,7 +44,6 @@ class SQLBuilderData:
         'operational_stakeholder_name':        'operational_stakeholder.name',
         'investor_region':      'operational_stakeholder_region.name',
         'investor_country':     'operational_stakeholder_country.name',
-        'investor_name':        'operational_stakeholder.name',
         'data_source_type':     'data_source_type.value'
     }
     # TODO: should country actually join region?
