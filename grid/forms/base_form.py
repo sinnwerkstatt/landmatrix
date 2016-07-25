@@ -24,18 +24,9 @@ class BaseForm(forms.Form):
 
     def get_attributes(self, request=None):
         """
-        Load previously saved attributes from the database.
-        Returns:
-        {
-            'Name of attribute 1': {
-                value: 'Value for attribute',
-                value2: 'Optional second value for attribute, e.g. ha for crops',
-                date: 'Date of value for year based fields',
-            },
-            'Name of attribute 2': {
-                ...
-            }
-        }
+        Get posted form data, for saving to the database.
+        For activity or stakeholder, using attribute group only - if given
+        (for formsets)
         """
         attributes = {}
         for i, (n, f) in enumerate(self.fields.items()):
@@ -132,6 +123,7 @@ class BaseForm(forms.Form):
                 if value:
                     attributes[name] = {'value': value}
             elif isinstance(f, forms.DecimalField):
+                raise IOError(f)
                 value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
                 if value:
                     attributes[name] = {'value': str(value)}
@@ -147,9 +139,18 @@ class BaseForm(forms.Form):
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
         """
-        Get posted form data, for saving to the database.
-        For activity or stakeholder, using attribute group only - if given
-        (for formsets)
+        Load previously saved attributes from the database.
+        Returns:
+        {
+            'Name of attribute 1': {
+                value: 'Value for attribute',
+                value2: 'Optional second value for attribute, e.g. ha for crops',
+                date: 'Date of value for year based fields',
+            },
+            'Name of attribute 2': {
+                ...
+            }
+        }
         """
         data = MultiValueDict()
 

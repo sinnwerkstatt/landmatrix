@@ -37,7 +37,7 @@ FILTER_NEW = [
     "total_jobs_planned_daily_workers", "total_jobs_planned_employees", "type", "url",
     "water_extraction_amount", "water_extraction_envisaged"
 ]
-FILTER_VAR_INV = ['investor', "operational_stakeholder_name", "country", 'operational_stakeholder_country']
+FILTER_VAR_INV = ["investor", "operational_stakeholder", "operational_stakeholder_name", "operational_stakeholder_country", "country"]
 # TODO: this counter is shared by all users, and is per thread.
 # It should probably be moved to the session
 FILTER_COUNTER = 0
@@ -61,12 +61,9 @@ class BaseFilter(dict):
     @property
     def type(self):
         if self['name'] in FILTER_VAR_INV:
-            filter_type = self.INVESTOR_TYPE
+            return self.INVESTOR_TYPE
         else:
-            filter_type = self.ACTIVITY_TYPE
-
-        return filter_type
-
+            return self.ACTIVITY_TYPE
 
 class Filter(BaseFilter):
 

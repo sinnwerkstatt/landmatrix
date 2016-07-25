@@ -55,7 +55,6 @@ class FilterView(APIView):
                 del stored_filters[name]
             except KeyError:
                 pass
-
         request.session['filters'] = stored_filters
 
         return Response(stored_filters)
@@ -79,8 +78,12 @@ class FilterView(APIView):
     #    return label
 
     def get(self, request, *args, **kwargs):
-        filters = self.get_object()
 
+        # FIXME: Helpful for debugging, can be removed once filters are working 100%
+        if request.GET.get('clear', '') == '1':
+            request.session['filters'] = {}
+
+        filters = self.get_object()
         return Response(filters)
 
 
@@ -144,8 +147,7 @@ class DashboardFilterView(APIView):
 
     def get(self, request, *args, **kwargs):
         if 'clear' in request.query_params:
-            filters = {}
-            request.session['dashboard_filters'] = filters
+            request.session['dashboard_filters'] = {}
         else:
             filters = self.get_object()
 

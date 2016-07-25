@@ -183,7 +183,7 @@ class FilterToSQL:
                         )
                     else:
                         if operation in ('lt', 'lte', 'gt', 'gte', 'is') and str(v).isnumeric():
-                            comparator = "attr_%(count)i.name = '%(variable)s' AND CAST(attr_%(count)i.%(key)s AS NUMERIC)" % {
+                            comparator = "attr_%(count)i.name = '%(variable)s' AND CAST(attr_%(count)i.%(key)s AS DECIMAL)" % {
                                 "count": i,
                                 'variable': variable,
                                 'key': key,
