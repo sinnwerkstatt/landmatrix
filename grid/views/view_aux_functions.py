@@ -5,6 +5,7 @@ from django.template import loader
 from django.http import HttpResponse
 from django.forms.formsets import formset_factory
 from django.utils.functional import curry
+from django.utils.translation import ugettext_lazy as _
 
 from api.filters import FILTER_VAR_ACT, FILTER_VAR_INV
 from landmatrix.models.country import Country
@@ -35,6 +36,11 @@ def render_to_string(template_name, context, context_instance):
 
 
 def get_field_label(name):
+    CUSTOM_FIELDS = {
+        'activity_identifier': _('Deal ID')
+    }
+    if name in CUSTOM_FIELDS.keys():
+        return str(CUSTOM_FIELDS[name])
     label = None
     for form in SaveDealView.FORMS:
         # Formset?
