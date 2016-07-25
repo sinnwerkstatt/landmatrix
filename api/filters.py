@@ -1,8 +1,8 @@
+from collections import OrderedDict
 from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models import Country
 from landmatrix.models.filter_preset import FilterPreset
-from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -37,7 +37,28 @@ FILTER_NEW = [
     "total_jobs_planned_daily_workers", "total_jobs_planned_employees", "type", "url",
     "water_extraction_amount", "water_extraction_envisaged"
 ]
-FILTER_VAR_INV = ["investor", "operational_stakeholder", "operational_stakeholder_name", "operational_stakeholder_country", "country"]
+FILTER_VAR_INV = [
+    "investor", "operational_stakeholder", "operational_stakeholder_name",
+    "operational_stakeholder_country", "operational_stakeholder_region",
+    "country",
+]
+# operation => (numeric operand, character operand, description )
+# This is an ordered dict as the keys are used to generate model choices.
+# It is here in order to resolve circular imports
+FILTER_OPERATION_MAP = OrderedDict([
+    ("is", ("= %s", "= '%s'", _("is"))),
+    ("in", ("IN (%s)", "IN (%s)", _("is one of"))),
+    ("not_in", ("NOT IN (%s)", "NOT IN (%s)", _("isn't any of"))),
+    ("gte", (">= %s", ">= '%s'", _("is >="))),
+    ("gt", ("> %s", "> '%s'", _("is >"))),
+    ("lte", ("<= %s", "<= '%s'", _("is <="))),
+    ("lt", ("< %s", "< '%s'", _("is <"))),
+    ("contains", (
+        "LIKE '%%%%%%%%%s%%%%%%%%'", "LIKE '%%%%%%%%%s%%%%%%%%'",
+        _("contains")
+    )),
+    ("is_empty", ("IS NULL", "IS NULL", _("is empty"))),
+])
 # TODO: this counter is shared by all users, and is per thread.
 # It should probably be moved to the session
 FILTER_COUNTER = 0
@@ -60,16 +81,17 @@ class BaseFilter(dict):
 
     @property
     def type(self):
-        if self['name'] in FILTER_VAR_INV:
+        if self['variable'] in FILTER_VAR_INV:
             return self.INVESTOR_TYPE
         else:
             return self.ACTIVITY_TYPE
+
 
 class Filter(BaseFilter):
 
     def __init__(
             self, variable, operator, value, name=None, label=None, key=None):
-        if operator not in FilterToSQL.OPERATION_MAP:
+        if operator not in FILTER_OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
 
         if name is None:
