@@ -103,6 +103,7 @@
                                 <p class="alert alert-info">{% trans "There are no comments to this deal yet." %}</p>
                             {% endif %}
                         </div>
+                        {% if not is_pdf_export %}
                         <form method="post" action="{% comment_form_target %}">
                             {% get_comment_form for deal.activity as comment_form %}
                             {% csrf_token %}
@@ -114,6 +115,7 @@
                             {% include "form.html" with form=comment_form %}
                             <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
                         </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>
