@@ -1,10 +1,9 @@
-from django.forms.widgets import Select
+from django.utils.translation import ugettext_lazy as _
+from django import forms
+from django.forms.widgets import Select, Textarea
 
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 from landmatrix.models.status import Status
-
-from django.utils.translation import ugettext_lazy as _
-from django import forms
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -19,13 +18,17 @@ class ParentStakeholderForm(forms.ModelForm):
         queryset=Investor.objects.all(), widget=investor_widget)
     percentage = forms.DecimalField(
         required=False, max_digits=5, decimal_places=2,
-        label=_("Percentage of investment"), help_text=_("%"))
+        label=_("Ownership share"), help_text=_("%"))
+    comment = forms.CharField(
+        required=False, help_text=_('Comment'),
+        widget=Textarea(attrs={'rows': 1, 'placeholder': _('Comment')}))
 
     class Meta:
         model = InvestorVentureInvolvement
         fields = [
-            'id', 'fk_investor', 'loans_amount', 'loans_currency',
-            'loans_date',
+            'id', 'fk_investor', 'percentage', 'investment_type',
+            'loans_amount', 'loans_currency', 'loans_date',
+            'comment'
         ]
 
 
@@ -36,7 +39,11 @@ class ParentInvestorForm(ParentStakeholderForm):
 
     class Meta:
         model = InvestorVentureInvolvement
-        fields = ['id', 'fk_investor', 'percentage']
+        fields = [
+            'id', 'fk_investor', 'percentage', 'investment_type',
+            'loans_amount', 'loans_currency', 'loans_date',
+            'comment'
+        ]
 
 
 class BaseInvolvementFormSet(forms.BaseModelFormSet):

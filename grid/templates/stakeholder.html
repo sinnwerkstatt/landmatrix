@@ -29,81 +29,13 @@
             <div class="col-sm-12">
                 <h3>{% trans "Parent companies" %}</h3>
             </div>
-            <div class="col-sm-12">
-                {{ parent_stakeholders.management_form }}
-                {% for form in parent_stakeholders %}
-                <div class="parent-stakeholder-form row control-group {{ field.name }}">
-                    <div class="controls col-md-6">
-                        {{ form.fk_investor|add_class:'form-control' }}
-                        {{ form.fk_investor.errors }}
-                        {# ID is hidden, but must be in the form #}
-                        {{ form.id }}
-                        {{ form.id.errors }}
-                        {# Handle row deletion #}
-                        {% if parent_stakeholders.can_delete %}
-                            <div style="display: none;">{{ form.DELETE }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="controls col-md-2 loans_amount">
-                        {{ form.loans_amount|add_class:'form-control' }}
-                    </div>
-                    <div class="controls col-md-1 loans_currency">
-                        {{ form.loans_currency|add_class:'form-control' }}
-                    </div>
-                    <div class="controls col-md-1 loans_date">
-                        {{ form.loans_date|add_class:'form-control' }}
-                    </div>
-                    <div class="controls col-md-2">
-                        <a class="btn pull-right add-form">
-                            <i class="fa fa-plus"></i>
-                            {% trans "Add another" %}
-                        </a>
-                        <a class="btn pull-right remove-form">
-                            <i class="fa fa-minus"></i>
-                            {% trans "Remove" %}
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+            {% include 'includes/stakeholder-involvements-formset.html' with formset=parent_stakeholders %}
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <h3>{% trans "Investors" %}</h3>
             </div>
-            <div class="col-sm-12">
-                {{ parent_investors.management_form }}
-                {% for form in parent_investors %}
-                    <div class="parent-investor-form row control-group {{ field.name }}">
-                        <div class="controls col-md-6">
-                            {{ form.fk_investor|add_class:'form-control' }}
-                            {{ form.fk_investor.errors }}
-                            {# ID is hidden, but must be in the form #}
-                            {{ form.id }}
-                            {{ form.id.errors }}
-                            {# Handle row deletion #}
-                            {% if parent_investors.can_delete %}
-                                <div style="display: none;">{{ form.DELETE }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="controls col-md-6">
-                            <div class="input-group">
-                                {{ form.percentage|add_class:'form-control' }}
-                                <div class="input-group-addon">{{ form.percentage.help_text }}</div>
-                                <a class="btn pull-right add-form">
-                                    <i class="fa fa-plus"></i>
-                                    {% trans "Add another" %}
-                                </a>
-                                <a class="btn pull-right remove-form">
-                                    <i class="fa fa-minus"></i>
-                                    {% trans "Remove" %}
-                                </a>
-                            </div>
-                        </div>
-                        {{ form.percentage.errors }}
-                    </div>
-                {% endfor %}
-            </div>
+            {% include 'includes/stakeholder-involvements-formset.html' with formset=parent_investors %}
         </div>
         {#% include "includes/stakeholder-history.html" %#}
 

@@ -194,8 +194,8 @@ class InvestorVentureInvolvement(models.Model):
         (STAKEHOLDER_ROLE, _('Stakeholder')),
         (INVESTOR_ROLE, _('Investor')),
     )
-    EQUITY_INVESTMENT_TYPE = 10
-    DEBT_FINANCING_INVESTMENT_TYPE = 20
+    EQUITY_INVESTMENT_TYPE = '10'
+    DEBT_FINANCING_INVESTMENT_TYPE = '20'
     INVESTMENT_TYPE_CHOICES = (
         (EQUITY_INVESTMENT_TYPE, _('Shares/Equity')),
         (DEBT_FINANCING_INVESTMENT_TYPE, _('Debt financing')),
