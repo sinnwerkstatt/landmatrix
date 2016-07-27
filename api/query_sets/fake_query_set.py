@@ -6,8 +6,8 @@ from django.db import connection
 
 from landmatrix.models.browse_condition import BrowseCondition
 from landmatrix.models.activity_attribute_group import ActivityAttribute
+from grid.forms.browse_condition_form import ConditionFormset
 from grid.views.browse_filter_conditions import BrowseFilterConditions
-from grid.views.view_aux_functions import create_condition_formset
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from api.filters import load_filters
 
@@ -146,7 +146,6 @@ class FakeQuerySet(QuerySet):
 
     def _set_filters(self, GET):
         self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
-        ConditionFormset = create_condition_formset()
         # if self._filter_set():
         # set given filters
         formset_data = GET.copy()

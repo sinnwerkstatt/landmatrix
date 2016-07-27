@@ -3,10 +3,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 from .activity_protocol import *
 from .add_deal_view import *
 from .all_deals_view import *
-from .base_model_form import *
-from .browse_condition_form import *
 from .browse_filter_conditions import *
-from .browse_text_input import *
 from .change_deal_view import *
 from .deal_comparison_view import *
 from .deal_detail_view import *

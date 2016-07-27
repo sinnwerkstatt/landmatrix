@@ -572,7 +572,6 @@ $(document).ready(function () {
                 var investor = feat.attributes.investor;
                 var status = feat.attributes.negotiation_status;
                 var accuracy = feat.attributes.geospatial_accuracy;
-                console.log(contract_size);
 
                 // TODO: Here, some javascript should be called to get the deal details from the API
                 // and render it inside the actual content popup, instead of getting this from the db for every marker!
@@ -672,7 +671,9 @@ $(document).ready(function () {
         NProgress.done(true);
     };
 
-    typeof mapDisableDeals === 'undefined' && getApiData();
+    if (typeof mapDisableDeals === 'undefined') {
+        getApiData();
+    }
 });
 
 // MARKERS in clusters. ONE MARKER = ONE DEAL

@@ -3,25 +3,13 @@ import json
 
 from django.template import loader
 from django.http import HttpResponse
-from django.forms.formsets import formset_factory
-from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
 
-from api.filters import FILTER_VAR_ACT, FILTER_VAR_INV
 from landmatrix.models.country import Country
-from grid.views.browse_condition_form import BrowseConditionForm
 from grid.views.save_deal_view import SaveDealView
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-
-def create_condition_formset():
-    ConditionFormset = formset_factory(BrowseConditionForm, extra=0)
-    ConditionFormset.form = staticmethod(
-        curry(BrowseConditionForm, variables_activity=FILTER_VAR_ACT, variables_investor=FILTER_VAR_INV)
-    )
-    return ConditionFormset
 
 
 def render_to_response(template_name, context, context_instance):
