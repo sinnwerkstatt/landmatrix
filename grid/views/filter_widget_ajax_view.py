@@ -129,11 +129,6 @@ class FilterWidgetAjaxView(View):
             else:
 
                 if issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple, RadioSelect)):
-                    # TODO: this is a quick hack to get intention filters
-                    # working. In future we should align the form values (ints)
-                    # and DB representations (strings)
-                    if key_id == 'intention':
-                        field.choices = int_choice_to_string(intention_choices)
                     widget = widget.render(request.GET.get("name", ""), value)
                 elif issubclass(type(field.widget), (YearBasedMultipleSelect, YearBasedSelect, YearBasedTextInput)):
                     widget = widget.render(request.GET.get("name", ""), ",".join(value),
