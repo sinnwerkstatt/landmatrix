@@ -7,13 +7,13 @@
 {% block subnav %}
     <ul class="subnav nav nav-pills pull-right">
         {% block subnav_inner %}
-        <li role="presentation"><a href="{% url 'map' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+        <li role="presentation"><a href="{% url 'map' %}{% if country %}?country={{ country.id }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
             <i class="lm lm-map-marker"></i>{% trans "Map" %}
         </a></li>
-        <li role="presentation"><a href="{% url 'data' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+        <li role="presentation"><a href="{% url 'data' %}{% if country %}?country={{ country.id }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
             <i class="lm lm-table"></i>{% trans "Data" %}
         </a></li>
-        <li role="presentation"><a href="{% url 'chart_transnational_deals' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+        <li role="presentation"><a href="{% url 'chart_transnational_deals' %}{% if country %}?country={{ country.id }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
             <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
         </a></li>
         <li class="divider"></li>

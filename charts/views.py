@@ -7,15 +7,12 @@ from django.views.generic.base import RedirectView
 
 from landmatrix.pdfgen import PDFViewMixin
 from grid.views.filter_widget_mixin import FilterWidgetMixin
-from grid.views.view_aux_functions import render_to_response
 
 
-class ChartView(TemplateView, FilterWidgetMixin):
+class ChartView(FilterWidgetMixin, TemplateView):
     chart = ""
 
     def get_context_data(self, **kwargs):
-        self._set_filters()
-
         context = super(ChartView, self).get_context_data(**kwargs)
         context.update({
             "view": "chart view",
@@ -23,15 +20,7 @@ class ChartView(TemplateView, FilterWidgetMixin):
             "chart": self.chart,
         })
 
-        self.add_filter_context_data(context, self.request)
-
         return context
-
-    def _set_filters(self):
-        data = self.request.GET.copy()
-        self.current_formset_conditions = self.get_formset_conditions(
-            self._filter_set(data), data)
-        self.filters = self.get_filter_context(self.current_formset_conditions)
 
 
 class ChartPDFView(PDFViewMixin, ChartView):
