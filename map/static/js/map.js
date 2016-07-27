@@ -535,9 +535,10 @@ $(document).ready(function () {
             query_params += mapParams;
         }
         // Window
-        extent = map.getView().calculateExtent(map.getSize()).join(',');
+        extent = map.getView().calculateExtent(map.getSize());
+        extent = ol.extent.applyTransform(extent, ol.proj.getTransform("EPSG:3857", "EPSG:4326"));
         $.get(
-            "/api/deals.json?" + query_params + '&window=' + extent,
+            "/api/deals.json?" + query_params + '&window=' + extent.join(','),
             //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lon_min,lat_max,lat_max>
             addData
         ).fail(function () {
