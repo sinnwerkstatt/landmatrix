@@ -220,9 +220,11 @@ class InvestorVentureInvolvement(models.Model):
 
     objects = InvestorVentureQuerySet.as_manager()
 
-    def __str__(self):
-        return 'venture: %i stakeholder: %i percentage: %s role: %s timestamp: %s' % \
-               (self.fk_venture_id, self.fk_investor_id, self.percentage, self.role, self.timestamp)
+    class Meta:
+        ordering = ('-timestamp',)
+        get_latest_by = 'timestamp'
+        verbose_name = _('Investor Venture Involvement')
+        verbose_name_plural = _('Investor Venture Involvements')
 
 
 class InvestorActivityInvolvementManager(models.Manager):
@@ -282,7 +284,7 @@ class InvestorActivityInvolvement(models.Model):
         ordering = ('-timestamp',)
         get_latest_by = 'timestamp'
         verbose_name = _('Investor Activity Involvement')
-        verbose_name = _('Investor Activity Involvements')
+        verbose_name_plural = _('Investor Activity Involvements')
 
 
 def update_public_investor():

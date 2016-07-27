@@ -20,7 +20,7 @@ class ParentStakeholderForm(forms.ModelForm):
         required=False, label="", initial=_("Parent company")
     )
     fk_investor = forms.ModelChoiceField(
-        required=True, label=_("Existing stakeholder"),
+        required=True, label=_("Existing parent company"),
         queryset=Investor.objects.all(), widget=investor_widget)
     percentage = forms.DecimalField(
         required=False, max_digits=5, decimal_places=2,
