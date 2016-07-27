@@ -297,10 +297,10 @@ class ColumnsBlock(CountryRegionStructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
-    def get_context(self, value, columns=['left_column', 'right_column']):
+    def get_context(self, value):
         context = super().get_context(value)
         
-        for column in columns:
+        for column in ['left_column', 'right_column']:
             context[column] = value.get(column)
         country_or_region = {}
         if hasattr(self, 'country') and self.country:
@@ -308,7 +308,7 @@ class ColumnsBlock(CountryRegionStructBlock):
         if hasattr(self, 'region') and self.region:
             country_or_region['region'] = self.region
         if country_or_region:
-            for column in columns:
+            for column in ['left_column', 'right_column']:
                 for data in DATA_BLOCKS:
                     context[column].stream_block.child_blocks[data[0]] = type(data[1])(**country_or_region)
         return context
