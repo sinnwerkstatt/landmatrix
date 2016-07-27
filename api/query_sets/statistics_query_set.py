@@ -46,6 +46,7 @@ class StatisticsQuerySet(FakeQuerySetFlat):
         ROUND(COALESCE(SUM(a.deal_size)), 0) AS deal_size
     FROM """ + Activity._meta.db_table + """ AS a
         LEFT JOIN """ + ActivityAttribute._meta.db_table + """ AS target_country ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country' 
+        LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON CAST(target_country.value AS NUMERIC) = deal_country.id
     WHERE
         a.is_public = 't'
         AND a.fk_status_id IN (2,3)
@@ -63,10 +64,10 @@ class StatisticsQuerySet(FakeQuerySetFlat):
     def regional_condition(self):
         if self.country:
             return """
-    AND target_country.value = '%s'
+    AND deal_country.value = '%s'
             """ % self.country
         elif self.region:
             return """
-    AND target_country.fk_region_id = %s
+    AND deal_country.fk_region_id = %s
             """ % self.region
         return ''
