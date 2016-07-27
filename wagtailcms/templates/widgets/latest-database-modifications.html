@@ -1,10 +1,10 @@
-<table class="table table-striped" id="latest-database-modifications" style="display:none">
+{% load i18n %}<table class="table table-striped" id="latest-database-modifications" style="display:none">
     <thead>
         <tr>
-            <th>Deal #</th>
-            <th>Date</th>
-            <th>State</th>
-            <th>Target Country</th>
+            <th{% trans "Deal #" %}</th>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Target country" %}</th>
         </tr>
     </thead>
     <tbody>
