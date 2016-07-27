@@ -3,7 +3,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models import BrowseCondition
-from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
+from api.filters import FILTER_OPERATION_MAP
 from grid.views.base_model_form import BaseModelForm
 from grid.views.browse_text_input import BrowseTextInput
 from grid.views.browse_filter_conditions import get_field_by_key, a_keys
@@ -69,5 +69,5 @@ class BrowseConditionForm(BaseModelForm):
 
 def _operators():
     operators = [("", "-----")]
-    operators.extend([(op, op_name[2]) for op, op_name in FilterToSQL.OPERATION_MAP.items()])
+    operators.extend([(op, op_name[2]) for op, op_name in FILTER_OPERATION_MAP.items()])
     return operators

@@ -1,11 +1,10 @@
-from django.forms.widgets import Select
+from django.utils.translation import ugettext_lazy as _
+from django import forms
+from django.forms.widgets import Select, Textarea
 
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 from landmatrix.models.status import Status
-
-from django.utils.translation import ugettext_lazy as _
-from django import forms
-
+from grid.widgets import TitleField, CommentInput
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -14,29 +13,53 @@ investor_widget = Select(attrs={'class': 'form-control investorfield'})
 
 
 class ParentStakeholderForm(forms.ModelForm):
+
+    form_title = _('Parent companies')
+
+    tg_contract = TitleField(
+        required=False, label="", initial=_("Parent company")
+    )
     fk_investor = forms.ModelChoiceField(
         required=True, label=_("Existing stakeholder"),
         queryset=Investor.objects.all(), widget=investor_widget)
     percentage = forms.DecimalField(
         required=False, max_digits=5, decimal_places=2,
-        label=_("Percentage of investment"), help_text=_("%"))
+        label=_("Ownership share"), help_text=_("%"))
+    comment = forms.CharField(
+        required=False, label=_("Comment"),
+        widget=CommentInput)
 
     class Meta:
+        name = 'parent-company'
         model = InvestorVentureInvolvement
-        fields = [
-            'id', 'fk_investor', 'loans_amount', 'loans_currency',
-            'loans_date',
-        ]
+        fields = ()
+        #fields = [
+        #    'id', 'fk_investor', 'percentage', 'investment_type',
+        #    'loans_amount', 'loans_currency', 'loans_date',
+        #    'comment'
+        #]
 
 
 class ParentInvestorForm(ParentStakeholderForm):
+
+    form_title = _('Parent investors')
+
+    tg_contract = TitleField(
+        required=False, label="", initial=_("Parent investor")
+    )
     fk_investor = forms.ModelChoiceField(
         required=True, label=_("Existing investor"),
         queryset=Investor.objects.all(), widget=investor_widget)
 
     class Meta:
+        name = 'parent-investor'
         model = InvestorVentureInvolvement
-        fields = ['id', 'fk_investor', 'percentage']
+        fields = ()
+        #fields = [
+        #    'id', 'fk_investor', 'percentage', 'investment_type',
+        #    'loans_amount', 'loans_currency', 'loans_date',
+        #    'comment'
+        #]
 
 
 class BaseInvolvementFormSet(forms.BaseModelFormSet):
@@ -66,11 +89,19 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
 
 
 class BaseStakeholderFormSet(BaseInvolvementFormSet):
+    form_title = _('Parent companies')
     ROLE = InvestorVentureInvolvement.STAKEHOLDER_ROLE
+
+    class Meta:
+        name = 'parent-company'
 
 
 class BaseInvestorFormSet(BaseInvolvementFormSet):
+    form_title = _('Parent investors')
     ROLE = InvestorVentureInvolvement.INVESTOR_ROLE
+
+    class Meta:
+        name = 'parent-investor'
 
 
 ParentStakeholderFormSet = forms.modelformset_factory(

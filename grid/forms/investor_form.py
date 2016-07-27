@@ -1,13 +1,20 @@
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.fields import BLANK_CHOICE_DASH
 from django import forms
 
 from landmatrix.models.investor import Investor
 from landmatrix.models.status import Status
 from grid.forms.base_model_form import BaseModelForm
 from grid.widgets import CommentInput
-from grid.forms.choices import operational_company_choices, investor_choices
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
+
+INVESTOR_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
+    Investor.CLASSIFICATION_CHOICES)
+OPERATIONAL_STAKEHOLDER_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
+    Investor.OPERATIONAL_COMPANY_CLASSIFICATIONS)
 
 
 # TODO: move to fields.
@@ -23,7 +30,7 @@ class InvestorFormBase(BaseModelForm):
     name = forms.CharField(required=False, label=_("Name"), max_length=255)
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
-        choices=(('', _("---------")),) + investor_choices)
+        choices=INVESTOR_CLASSIFICATION_CHOICES)
     comment = forms.CharField(
         required=False, label=_("Comment"), widget=CommentInput)
 
@@ -64,4 +71,4 @@ class InvestorForm(InvestorFormBase):
 class OperationalCompanyForm(InvestorFormBase):
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
-        choices=(('', _("---------")),) + operational_company_choices)
+        choices=OPERATIONAL_STAKEHOLDER_CLASSIFICATION_CHOICES)

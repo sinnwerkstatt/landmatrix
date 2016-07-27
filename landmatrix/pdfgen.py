@@ -2,15 +2,20 @@
 django-wkhtmltopdf almost works, however when piping a file to it, it has
 trouble finding all assets.
 
-Instead, just pass the URL and let wkhtmltopdf work its magic.
+Instead, just pass the URL and let wkhtmltopdf (the script) work its magic.
 '''
+import os
 import copy
+import subprocess
+import shlex
 import urllib.parse as urlparse
-from tempfile import NamedTemporaryFile
+from tempfile import TemporaryFile, NamedTemporaryFile
+from itertools import chain
 
 from django.core.urlresolvers import reverse
 from django.http import FileResponse
-from wkhtmltopdf.utils import wkhtmltopdf
+from django.conf import settings
+from wkhtmltopdf.utils import _options_to_args
 
 
 def _update_querystring(url, params):
@@ -25,6 +30,83 @@ def _update_querystring(url, params):
     new_url = urlparse.urlunparse(url_components)
 
     return new_url
+
+
+def wkhtmltopdf(pages, output=None, **kwargs):
+    """
+    Copied from wkhtmltopdf to improve error handling.
+    If wkhtmltopdf fails, there's nothing we can do, but at least this version
+    captures the output so it appears in the stack trace
+
+    Converts html to PDF using http://wkhtmltopdf.org/.
+    pages: List of file paths or URLs of the html to be converted.
+    output: Optional output file path. If None, the output is returned.
+    **kwargs: Passed to wkhtmltopdf via _extra_args() (See
+              https://github.com/antialize/wkhtmltopdf/blob/master/README_WKHTMLTOPDF
+              for acceptable args.)
+              Kwargs is passed through as arguments. e.g.:
+                  {'footer_html': 'http://example.com/foot.html'}
+              becomes
+                  '--footer-html http://example.com/foot.html'
+              Where there is no value passed, use True. e.g.:
+                  {'disable_javascript': True}
+              becomes:
+                  '--disable-javascript'
+              To disable a default option, use None. e.g:
+                  {'quiet': None'}
+              becomes:
+                  ''
+    example usage:
+        wkhtmltopdf(pages=['/tmp/example.html'],
+                    dpi=300,
+                    orientation='Landscape',
+                    disable_javascript=True)
+    """
+    if isinstance(pages, str):
+        # Support a single page.
+        pages = [pages]
+
+    if output is None:
+        # Standard output.
+        output = '-'
+
+    # Default options:
+    options = getattr(settings, 'WKHTMLTOPDF_CMD_OPTIONS', None)
+    if options is None:
+        options = {'quiet': True}
+    else:
+        options = copy.copy(options)
+    options.update(kwargs)
+
+    # Force --encoding utf8 unless the user has explicitly overridden this.
+    options.setdefault('encoding', 'utf8')
+
+    env = getattr(settings, 'WKHTMLTOPDF_ENV', None)
+    if env is not None:
+        env = dict(os.environ, **env)
+
+    cmd = 'WKHTMLTOPDF_CMD'
+    cmd = getattr(settings, cmd, os.environ.get(cmd, 'wkhtmltopdf'))
+
+    ck_args = list(chain(shlex.split(cmd),
+                         _options_to_args(**options),
+                         list(pages),
+                         [output]))
+
+    with TemporaryFile() as errors_tempfile:
+        ck_kwargs = {
+            'env': env,
+            'stderr': errors_tempfile,
+        }
+
+        try:
+            output = subprocess.check_output(ck_args, **ck_kwargs)
+        except subprocess.CalledProcessError as err:
+            errors_tempfile.seek(0)
+            wkhtmltopdf_output = errors_tempfile.read()
+            raise err
+
+    return output
 
 
 class PDFResponse(FileResponse):
@@ -115,6 +197,7 @@ class PDFViewMixin:
 
     def render_url_to_pdf_response(self, url, filename):
         pdf_output = NamedTemporaryFile(delete=True)
+
         wkhtmltopdf(
             [url], javascript_delay=self.pdf_javascript_delay or 0,
             output=pdf_output.name, load_error_handling='ignore',

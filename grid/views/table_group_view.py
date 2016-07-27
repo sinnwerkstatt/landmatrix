@@ -7,14 +7,13 @@ from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
 from django.template import RequestContext
 
+from landmatrix.models import Investor
 from grid.views.filter_widget_mixin import FilterWidgetMixin
 from grid.views.profiling_decorators import \
     print_execution_time_and_num_queries
 from grid.views.activity_protocol import ActivityProtocol
 from .view_aux_functions import render_to_response, get_field_label
-from grid.forms.choices import (
-    intention_choices, investor_choices, operational_company_choices,
-)
+from grid.forms.choices import intention_choices
 from django.utils.datastructures import SortedDict
 from django.template.defaultfilters import slugify
 
@@ -334,7 +333,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
         for value in values:
             processed_value = None
 
-            for choice in operational_company_choices + investor_choices:
+            for choice in Investor.CLASSIFICATION_CHOICES:
                 code, label = choice
                 if str(code) == str(value):
                     processed_value = label

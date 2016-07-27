@@ -1,8 +1,13 @@
-from collections import OrderedDict
+
 from django.utils.translation import ugettext_lazy as _
 
 from grid.forms.choices import intention_choices, get_choice_parent
-from api.query_sets.sql_generation.join_functions import join_attributes
+from api.query_sets.sql_generation.join_functions import (
+    join_attributes, join_expression,
+)
+from api.query_sets.sql_generation.sql_builder_data import SQLBuilderData
+from api.filters import FILTER_OPERATION_MAP
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -10,23 +15,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class FilterToSQL:
 
     DEBUG = False
-
-    # operation => (numeric operand, character operand, description )
-    # This is an ordered dict as the keys are used to generate model choices
-    OPERATION_MAP = OrderedDict([
-        ("is", ("= %s", "= '%s'", _("is"))),
-        ("in", ("IN (%s)", "IN (%s)", _("is one of"))),
-        ("not_in", ("NOT IN (%s)", "NOT IN (%s)", _("isn't any of"))),
-        ("gte", (">= %s", ">= '%s'", _("is >="))),
-        ("gt", ("> %s", "> '%s'", _("is >"))),
-        ("lte", ("<= %s", "<= '%s'", _("is <="))),
-        ("lt", ("< %s", "< '%s'", _("is <"))),
-        ("contains", (
-            "LIKE '%%%%%%%%%s%%%%%%%%'", "LIKE '%%%%%%%%%s%%%%%%%%'",
-            _("contains")
-        )),
-        ("is_empty", ("IS NULL", "IS NULL", _("is empty"))),
-    ])
+    OPERATION_MAP = FILTER_OPERATION_MAP
 
     count_offset = 1
 
@@ -83,7 +72,7 @@ class FilterToSQL:
             if not isinstance(value, list):
                 value = [value]
             sanitized_values = [v.strip().replace("'", "\\'") for v in value]
- 
+
             try:
                 variable, key, operation = tag.split("__")
             except ValueError:
@@ -263,58 +252,6 @@ class FilterToSQL:
 
         return where
 
-    def where_investor(self):
-        where_inv = ''
-        if self.filters.get("investor", {}).get("tags"):
-            tags = self.filters.get("investor").get("tags")
-            for index, (tag, value) in enumerate(tags.items()):
-                i = index+FilterToSQL.count_offset
-                if not value:
-                    continue
-                variable_operation = tag.split("__")
-                variable = variable_operation[0]
-                # if self.DEBUG: print('FilterToSQL.where_investor:', index, tag, value, variable_operation)
-
-                # choose operation depending on variable type default 0(int)
-                operation = ""
-                if len(variable_operation) > 1:
-                    operation = variable_operation[1]
-                if operation == "is_empty" or not value or (value and not value[0]):
-                    where_inv += " AND skv%(count)i.value IS NULL " % {
-                        "count": i,
-                    }
-                elif operation in ("in", "not_in"):
-                    value = value[0].split(",")
-                    in_values = ",".join(["'%s'" % v.strip().replace("'", "\\'") for v in value])
-                    if variable == "region":
-                        where_inv += " AND skvr%(count)i.name %(op)s" % {
-                            "count": i,
-                            "op": self.OPERATION_MAP[operation][0] % in_values
-                        }
-                    else:
-                        where_inv += " AND skv%(count)i.value %(op)s" % {
-                            "count": i,
-                            "op": self.OPERATION_MAP[operation][0] % in_values
-                        }
-                else:
-                    if not isinstance(value, list):
-                        value = [value]
-                    for v in value:
-
-                        operation_type = not v.isdigit() and 1 or 0
-
-                        if self.DEBUG: print('FilterToSQL.where_investor:', index, variable, operation, v, operation_type)
-
-                        if variable == "region":
-                            where_inv += " AND skvr%i.name %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
-                        elif 'country' in variable:
-                            where_inv += ' AND stakeholder.fk_country_id = {}'.format(v)
-                        elif 'investor' == variable:
-                            where_inv += ' AND stakeholder.investor_identifier = {}'.format(v)
-                        else:
-                            where_inv += " AND skv%i.value %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
-        return where_inv
-
     def _tables_activity(self, taggroup=None, last_index=0):
         tables_from = []
         #if self.filters.get("activity", {}).get("tags"):
@@ -367,26 +304,107 @@ class FilterToSQL:
                 tables_from.append(join_attributes("attr_%(count)i" % {"count": i}, variable))
         return '\n'.join(tables_from)
 
+    def where_investor(self):
+        where_inv = ''
+        tags = self.filters.get("investor", {}).get("tags", {})
+        for index, (tag, value) in enumerate(tags.items()):
+            i = index + FilterToSQL.count_offset
+
+            if not value:
+                continue
+
+            try:
+                variable, key, operation = tag.split("__")
+            except ValueError:
+                variable = tag
+                key = 'value'
+                operation = 'is'
+
+            if operation == "is_empty" or not value or (value and not value[0]):
+                where_inv += " AND opsh_{count}.id IS NULL ".format(count)
+            elif operation in ("in", "not_in"):
+                value = value[0].split(",")
+                in_values = ",".join(["'%s'" % v.strip().replace("'", "\\'") for v in value])
+                op_sql = self.OPERATION_MAP[operation][0] % in_values
+                if variable == "operational_stakeholder_region":
+                    where_inv += "AND opsh_region_{count}.id {op}".format(
+                        count=i, op=op_sql)
+                elif variable == "operational_stakeholder_country":
+                    where_inv += "AND opsh_country_{count}.id {op}".format(
+                        count=i, op=op_sql)
+                else:
+                    where_inv += "AND opsh_{count}.id {op}".format(
+                        count=i, op=op_sql)
+            else:
+                if not isinstance(value, list):
+                    value = [value]
+
+                for v in value:
+                    operation_type = not v.isdigit() and 1 or 0
+                    op_sql = self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")
+
+                    if self.DEBUG:
+                        print('FilterToSQL.where_investor:', index, variable, operation, v, operation_type)
+
+                    if variable == 'operational_stakeholder_region':
+                        where_inv += "AND opsh_region_{count}.id {op}".format(
+                            count=i, op=op_sql)
+                    elif variable == 'operational_stakeholder_country':
+                        where_inv += "AND opsh_country_{count}.id {op}".format(
+                            count=i, op=op_sql)
+                    elif variable == 'investor':
+                        where_inv += ' AND sh.investor_identifier = {}'.format(v)
+                    elif variable == 'operational_stakeholder' and operation != 'contains':
+                        where_inv += " AND opsh_%i.id %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
+                    else:
+                        where_inv += " AND opsh_%i.name %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
+
+        return where_inv
+
     def _tables_investor(self):
-        tables_from_inv = ''
-        if self.filters.get("investor", {}).get("tags"):
-            tags = self.filters.get("investor").get("tags")
-            for index, (tag, value) in enumerate(tags.items()):
-                if self.DEBUG: print('FilterToSQL._tables_investor:', index, tag, value)
-                i = index+FilterToSQL.count_offset
-                if not value:
-                    continue
-                variable_operation = tag.split("__")
-                variable = variable_operation[0]
-                # join tag tables for each condition
-                if variable == "region":
-                    # tables_from_inv += "LEFT JOIN (sh_key_value_lookup skv%(count)i, countries skvc%(count)i, regions skvr%(count)i) \n" % {"count": i}
-                    # tables_from_inv += " ON (skv%(count)i.stakeholder_identifier = s.stakeholder_identifier AND skv%(count)i.key = 'country' AND skv%(count)i.value = skvc%(count)i.name AND skvr%(count)i.id = skvc%(count)i.fk_region)"%{"count": i, "key": variable}
-                    tables_from_inv += "LEFT JOIN countries skvc%(count)i, regions skvr%(count)i \n" % {"count": i}
-                    tables_from_inv += " ON stakeholder.fk_country_id = skvc%(count)i.id AND skvr%(count)i.id = skvc%(count)i.fk_region)"%{"count": i, "key": variable}
-                elif 'country' in variable:
-                    pass
+        # TODO: resuse previous joins. This duplicates a lot of SQLBuilderData
+        investor_tables = []
+        tags = self.filters.get("investor", {}).get("tags", {})
 
-        if self.DEBUG: print('FilterToSQL._tables_investor tables:', tables_from_inv)
-        return tables_from_inv
+        for index, (tag, value) in enumerate(tags.items()):
+            i = index + FilterToSQL.count_offset
 
+            if value:
+                variable = tag.split("__")[0]
+
+            investor_tables.extend([
+                join_expression(
+                    'landmatrix_investoractivityinvolvement',
+                    'iai_{count}'.format(count=i), 'a.id', 'fk_activity_id'),
+                join_expression(
+                    'landmatrix_investor', 'opsh_{count}'.format(count=i),
+                    'iai_{count}.fk_investor_id'.format(count=i)),
+                join_expression(
+                    'landmatrix_investorventureinvolvement',
+                    'ivi_{count}'.format(count=i),
+                    'opsh_{count}.id'.format(count=i), 'fk_venture_id'),
+                join_expression(
+                    'landmatrix_investor', 'sh_{count}'.format(count=i),
+                    'ivi_{count}.fk_investor_id'.format(count=i)),
+                ])
+
+            is_country_or_region = variable in (
+                'operational_stakeholder_country',
+                'operational_stakeholder_region',
+            )
+
+            if is_country_or_region:
+                country_join = join_expression(
+                    'landmatrix_country',
+                    'opsh_country_{count}'.format(count=i),
+                    'opsh_{count}.fk_country_id'.format(count=i))
+                investor_tables.append(country_join)
+
+            if variable == 'operational_stakeholder_region':
+                region_join = join_expression(
+                    'landmatrix_region',
+                    'opsh_region_{count}'.format(count=i),
+                    'opsh_region_{count}.fk_region_id'.format(count=i))
+                investor_tables.append(region_join)
+
+        return '\n'.join(investor_tables)

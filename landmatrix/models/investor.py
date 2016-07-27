@@ -4,7 +4,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from landmatrix.models.default_string_representation import \
     DefaultStringRepresentation
-from grid.forms.choices import operational_company_choices, investor_choices
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -46,7 +45,31 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         STATUS_TO_DELETE, _('To delete'),
     )
     INVESTOR_IDENTIFIER_DEFAULT = 2147483647  # max safe int
-    CLASSIFICATION_CHOICES = operational_company_choices + investor_choices
+    OPERATIONAL_COMPANY_CLASSIFICATIONS = (
+        ('10', _("Private company")),
+        ('20', _("Stock-exchange listed company")),
+        ('30', _("Individual entrepreneur")),
+        ('40', _("Investment fund")),
+        ('50', _("Semi state-owned company")),
+        ('60', _("State-/government (owned) company")),
+        ('70', _("Other (please specify in comment field)")),
+    )
+    INVESTOR_CLASSIFICATIONS = (
+        ('110', _("Government")),
+        ('120', _("Government institution")),
+        ('130', _("Multilateral Development Bank (MDB)")),
+        ('140', _("Bilateral Development Bank / Development Finance Institution")),
+        ('150', _("Commercial Bank")),
+        ('160', _("Investment Bank")),
+        ('170', _("Investment Fund (all types incl. pension, hedge, mutual, private equity funds etc.)")),
+        ('180', _("Insurance firm")),
+        ('190', _("Private equity firm")),
+        ('200', _("Asset management firm")),
+        ('210', _("Non - Profit organization (e.g. Church, University etc.)")),
+    )
+    CLASSIFICATION_CHOICES = (
+        OPERATIONAL_COMPANY_CLASSIFICATIONS + INVESTOR_CLASSIFICATIONS
+    )
     PARENT_RELATION_CHOICES = (
         ('Subsidiary', _("Subsidiary of parent company")),
         ('Local branch', _("Local branch of parent company")),
@@ -171,8 +194,8 @@ class InvestorVentureInvolvement(models.Model):
         (STAKEHOLDER_ROLE, _('Stakeholder')),
         (INVESTOR_ROLE, _('Investor')),
     )
-    EQUITY_INVESTMENT_TYPE = 10
-    DEBT_FINANCING_INVESTMENT_TYPE = 20
+    EQUITY_INVESTMENT_TYPE = '10'
+    DEBT_FINANCING_INVESTMENT_TYPE = '20'
     INVESTMENT_TYPE_CHOICES = (
         (EQUITY_INVESTMENT_TYPE, _('Shares/Equity')),
         (DEBT_FINANCING_INVESTMENT_TYPE, _('Debt financing')),

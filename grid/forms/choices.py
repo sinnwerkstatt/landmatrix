@@ -77,32 +77,6 @@ actor_choices = (
     ('Other', _("Other (please specify)")),
 )
 
-operational_company_choices = (
-    ('10', _("Private company")),
-    ('20', _("Stock-exchange listed company")),
-    ('30', _("Individual entrepreneur")),
-    ('40', _("Investment fund")),
-    ('50', _("Semi state-owned company")),
-    ('60', _("State-/government (owned) company")),
-    ('70', _("Other (please specify in comment field)")),
-)
-
-investor_choices = (
-    ('110', _("Government")),
-    ('120', _("Government institution")),
-    ('130', _("Multilateral Development Bank (MDB)")),
-    ('140', _("Bilateral Development Bank / Development Finance Institution")),
-    ('150', _("Commercial Bank")),
-    ('160', _("Investment Bank")),
-    ('170', _("Investment Fund (all types incl. pension, hedge, mutual, private equity funds etc.)")),
-    ('180', _("Insurance firm")),
-    ('190', _("Private equity firm")),
-    ('200', _("Asset management firm")),
-    ('210', _("Non - Profit organization (e.g. Church, University etc.)")),
-)
-
-
-
 
 def int_choice_to_string(choices):
     if choices and len(choices[0]) == 3:

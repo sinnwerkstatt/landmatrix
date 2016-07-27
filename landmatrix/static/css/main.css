@@ -1440,25 +1440,25 @@ table th a {
   margin: 0 auto; }
 
 /* FIXME: Cleanup */
-.progress-intended,
-.progress-failed {
+#stats .progress-intended,
+#stats .progress-failed {
   height: 10px; }
 
-.percentage-intended,
-.percentage-failed {
+#stats .percentage-intended,
+#stats .percentage-failed {
   margin-top: -3px; }
 
-.progress {
+#stats .progress {
   width: 80%;
   float: left;
   clear: left; }
 
-.percentage {
+#stats .percentage {
   width: 20%;
   float: right;
   text-align: right; }
 
-.number {
+#stats .number {
   clear: both; }
 
 /* ==========================================================================

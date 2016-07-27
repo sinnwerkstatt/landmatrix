@@ -1,17 +1,14 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from api.filters import Filter
-from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
+from api.filters import Filter, FILTER_OPERATION_MAP
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FilterCondition(models.Model):
-    OPERATOR_CHOICES = (
-        (key, key) for key in FilterToSQL.OPERATION_MAP.keys()
-    )
+    OPERATOR_CHOICES = ((key, key) for key in FILTER_OPERATION_MAP.keys())
     KEY_CHOICE_VALUE = 'value'
     KEY_CHOICE_VALUE2 = 'value2'
     KEY_CHOICE_DATE = 'date'

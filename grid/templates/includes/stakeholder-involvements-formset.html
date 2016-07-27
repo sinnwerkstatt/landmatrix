@@ -1,0 +1,60 @@
+{% load i18n custom_tags %}
+<div class="col-sm-12">
+    {{ formset.management_form }}
+    {% for form in formset %}
+    <div class="{{ formset.prefix }} row control-group {{ field.name }}">
+        {% if form.errors %}
+        {# TODO: these need some context, should probably be with the field #}
+        <div class="row">
+            {{ form.errors }}
+        </div>
+        {% endif %}
+        <div class="control-group row">
+            <div class="controls col-md-4">
+                {{ form.fk_investor|add_class:'form-control' }}
+                {# ID is hidden, but must be in the form #}
+                {{ form.id }}
+                {# Handle row deletion #}
+                {% if formset.can_delete %}
+                    <div style="display: none;">{{ form.DELETE }}</div>
+                {% endif %}
+            </div>
+            <div class="controls col-md-3">
+                <div class="input-group">
+                    {{ form.percentage|add_class:'form-control' }}
+                    <div class="input-group-addon">{{ form.percentage.help_text }}</div>
+                </div>
+            </div>
+            <div class="controls col-md-3">
+                {{ form.investment_type|add_class:'form-control' }}
+            </div>
+        </div>
+        <div class="control-group row">
+            <div class="controls col-md-4 loans_amount">
+                {{ form.loans_amount|add_class:'form-control' }}
+            </div>
+            <div class="controls col-md-3 loans_currency">
+                {{ form.loans_currency|add_class:'form-control' }}
+            </div>
+            <div class="controls col-md-3 loans_date">
+                {{ form.loans_date|add_class:'form-control' }}
+            </div>
+        </div>
+        <div class="control-group row">
+            <div class="controls col-md-8 comment">
+                {{ form.comment|add_class:'form-control' }}
+            </div>
+            <div class="controls col-md-2">
+                <a class="btn pull-right add-form">
+                    <i class="fa fa-plus"></i>
+                    {% trans "Add another" %}
+                </a>
+                <a class="btn pull-right remove-form">
+                    <i class="fa fa-minus"></i>
+                    {% trans "Remove" %}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
