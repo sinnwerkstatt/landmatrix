@@ -744,7 +744,7 @@ function initGeocoder(el) {
                 var target = [place.geometry.location.lng(), place.geometry.location.lat()]
                 target = ol.proj.transform(target, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
                 map.getView().setCenter(target);
-                map.getView().setZoom(16);
+                //map.getView().setZoom(16);
             }
 
             var address = '';
