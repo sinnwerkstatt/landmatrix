@@ -1,28 +1,29 @@
-var baseLayers = [
-    new ol.layer.Tile({
-        title: 'OpenStreetMap',
-        type: 'base',
-        visible: true,
-        source: new ol.source.OSM()
-    }),
-    new ol.layer.Tile({
-        title: 'Satellite',
-        type: 'base',
-        visible: false,
-        source: new ol.source.MapQuest({layer: 'sat'})
-    }),
-    new ol.layer.Tile({
+var stamenLayer = new ol.layer.Tile({
         title: 'Watercolor',
         type: 'base',
         visible: false,
         source: new ol.source.Stamen({layer: 'watercolor'})
-    })
+    }),
+    googleLayer = new olgm.layer.Google({
+        title: 'Satellite',
+        type: 'base',
+        visible: true,
+    }),
+    osmLayer = new ol.layer.Tile({
+        title: 'OpenStreetMap',
+        type: 'base',
+        visible: false,
+        source: new ol.source.OSM()
+    });
+
+var baseLayers = [
+    stamenLayer,
+    googleLayer,
+    osmLayer
 ];
 
 var contextLayers = [
-
     // Global layers
-
     new ol.layer.Tile({
         title: 'Accessibility<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
         source: new ol.source.TileWMS({
@@ -71,9 +72,7 @@ var contextLayers = [
         visible: false,
         opacity: 0.6
     }),
-
     // LAOS LOCAL LAYER! TODO!
-
     new ol.layer.Tile({
         title: 'Incidence of poverty<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
         source: new ol.source.TileWMS({

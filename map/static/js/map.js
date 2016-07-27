@@ -3,7 +3,11 @@
 //EPSG:3857:Spherical Web Mercator projection used by Google and OpenStreetMap
 
 // Globale Variablen 
-var map;
+var map,
+    layers = [],
+    controls = [],
+    interactions = [],
+    olGM;
 
 var currentVariable = 'Deal Intention';
 var markerSource = new ol.source.Vector();
@@ -12,8 +16,6 @@ var clusterSource = new ol.source.Cluster({
     distance: 50,
     source: markerSource
 });
-
-var layers = [];
 
 var fieldnames = {
     'Geospatial Accuracy': 'accuracy',
@@ -368,15 +370,16 @@ $(document).ready(function () {
             ]
         })
     ];
-    var interactions = [
-            new ol.interaction.Select(),
-            new ol.interaction.MouseWheelZoom(),
-            new ol.interaction.PinchZoom(),
-            new ol.interaction.DragZoom(),
-            new ol.interaction.DoubleClickZoom(),
-            new ol.interaction.DragPan()
-        ],
-        controls = [];
+    interaction = olgm.interaction.defaults();
+    interactions.push(
+        new ol.interaction.Select(),
+        new ol.interaction.MouseWheelZoom(),
+        new ol.interaction.PinchZoom(),
+        new ol.interaction.DragZoom(),
+        new ol.interaction.DoubleClickZoom(),
+        new ol.interaction.DragPan()
+    );
+    controls = [];
 
     if (typeof mapDisableControls === 'undefined') {
         controls = [
@@ -404,7 +407,7 @@ $(document).ready(function () {
         layers: layers,
         controls: controls,
         interactions: interactions,
-        overlays: [PopupOverlay],
+        //overlays: [PopupOverlay],
         // Set the map view : here it's set to see the all world.
         view: new ol.View({
             center: [0, 0],
@@ -414,6 +417,9 @@ $(document).ready(function () {
 
         })
     });
+
+    olGM = new olgm.OLGoogleMaps({map: map});
+    olGM.activate();
 
     // Set boundaries if given
     if (typeof mapBounds !== 'undefined') {
@@ -494,7 +500,7 @@ $(document).ready(function () {
             currentVariable = dropdown.value;
             console.log(currentVariable);
             updateVariableSelection(currentVariable);
-            mapDisableDeals === 'undefined' && getApiData();
+            typeof mapDisableDeals === 'undefined' && getApiData();
         }
 
         dropdown.onchange = pickNewVariable;
@@ -508,11 +514,11 @@ $(document).ready(function () {
     }
 
     // Set zoom and pan handlers
-    mapDisableDeals === 'undefined' && map.on("moveend", function() {
+    typeof mapDisableDeals === 'undefined' && map.on("moveend", function() {
         getApiData();
     });
 
-    mapDisableDeals === 'undefined' && map.on("zoomend", function() {
+    typeof mapDisableDeals === 'undefined' && map.on("zoomend", function() {
         getApiData();
     });
 
