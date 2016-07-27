@@ -238,18 +238,18 @@ class FilterToSQL:
             if not allowed_values:
                 allowed_values = (value[-1].replace("'", "\\'"),)
 
-            # Exclude deals with given and other values
-            #where.append("""
-            #    AND a.id NOT IN (
-            #        SELECT fk_activity_id
-            #        FROM landmatrix_activityattribute
-            #        WHERE landmatrix_activityattribute.name = '%(variable)s'
-            #        AND landmatrix_activityattribute.value NOT IN ('%(value)s')
-            #    )
-            #    """ % {
-            #    'variable': variable,
-            #    'value': "', '".join([str(v) for v in allowed_values]),
-            #})
+            # Exclude deals with given AND other values
+            where.append("""
+                AND a.id NOT IN (
+                    SELECT fk_activity_id
+                    FROM landmatrix_activityattribute
+                    WHERE landmatrix_activityattribute.name = '%(variable)s'
+                    AND landmatrix_activityattribute.value NOT IN ('%(value)s')
+                )
+                """ % {
+                'variable': variable,
+                'value': "', '".join([str(v) for v in allowed_values]),
+            })
 
         return where
 

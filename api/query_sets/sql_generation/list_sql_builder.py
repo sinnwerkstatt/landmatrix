@@ -75,7 +75,7 @@ JOIN (
 #            cls.max_version_condition(),
             self.status_active_condition(),
             self.is_public_condition(),
-            self.not_mining_condition()
+            #self.not_mining_condition()
         ])) + """
     %(where)s
     %(where_filter)s

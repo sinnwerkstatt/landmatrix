@@ -27,7 +27,7 @@ FROM landmatrix_activity AS a
 WHERE """ + "\nAND ".join(filter(None, [
             self.status_active_condition(),
             self.is_public_condition(),
-            self.not_mining_condition()
+            #self.not_mining_condition()
         ])) + """
 %(where)s
 %(where_filter)s
