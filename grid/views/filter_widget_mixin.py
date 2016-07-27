@@ -11,143 +11,148 @@ from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models import BrowseCondition, FilterPresetGroup
 from api.filters import Filter
 from grid.widgets import TitleField
+from grid.forms.browse_condition_form import ConditionFormset
 from grid.views.save_deal_view import SaveDealView
 from grid.views.browse_filter_conditions import BrowseFilterConditions
-from grid.views.view_aux_functions import create_condition_formset
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class FilterWidgetMixin:
+def get_variable_table():
+    '''
+    Create an OrderedDict of group name keys with lists of dicts for each
+    variable in the group (each dict contains 'name' and 'label' keys).
 
-    rules = []
-    # leave to test how transnational/domestic deals are filtered for
-    # rules = BrowseCondition.objects.filter(rule__rule_type="generic")
+    This whole thing is static, and maybe should just be written out, but
+    for now generate it dynamcially on app load.
+    '''
+    # for formsets, we want form.form
+    deal_forms = [
+        form.form if hasattr(form, 'form') else form
+        for form in SaveDealView.FORMS
+    ]
+    variable_table = OrderedDict()
+    group_items = []
+    group_title = ''
 
-    current_formset_conditions = None
-    filters = None
+    # Add an ID filter
+    variable_table[_('Deal ID')] = [{
+        'name': 'activity_identifier',
+        'label': _("Deal ID"),
+    }]
 
-    def get_variable_table(self):
-        '''
-        Create an OrderedDict of group name keys with lists of dicts for each
-        variable in the group (each dict contains 'name' and 'label' keys).
+    for form in deal_forms:
+        for field_name, field in form.base_fields.items():
+            if isinstance(field, TitleField):
+                if group_title and group_items:
+                    variable_table[group_title] = group_items
+                    group_items = []
+                group_title = str(field.initial)
+            else:
+                group_items.append({
+                    'name': field_name,
+                    'label': field.label,
+                })
 
-        Cache the resulting data strucutre, as it is used on each
-        page load and doesn't change.
-        '''
-        if hasattr(self, '_variable_table'):
-            return self._variable_table
+    if group_title and group_items:
+        variable_table[group_title] = group_items
 
-        # for formsets, we want form.form
-        deal_forms = [
-            form.form if hasattr(form, 'form') else form
-            for form in SaveDealView.FORMS
+    # TODO: this is fragile, rethink this whole mess
+    if _('Operational company') in variable_table:
+        stakeholder_extras = [
+            {
+                'name': 'operational_stakeholder_country',
+                'label': _(
+                    "Operational stakeholder country of registration/origin"),
+            },
+            {
+                'name': 'operational_stakeholder_region',
+                'label': _(
+                    "Operational stakeholder region of registration/origin"),
+            },
+            {
+                'name': 'parent_investor',
+                'label': _("Parent stakeholders"),
+            },
+            {
+                'name': 'parent_investor_country',
+                'label': _(
+                    "Parent stakeholder country of registration/origin"),
+            },
+            {
+                'name': 'parent_investor_region',
+                'label': _(
+                    "Parent stakeholder region of registration/origin"),
+            },
+            {
+                'name': 'parent_investor_percentage',
+                'label': _("Parent stakeholder percentages"),
+            },
+            {
+                'name': 'parent_investor_classification',
+                'label': _("Parent stakeholder classifications"),
+            },
+            {
+                'name': 'parent_investor_homepage',
+                'label': _("Parent stakeholder homepages"),
+            },
+            {
+                'name': 'parent_investor_opencorporates_link',
+                'label': _("Parent stakeholder Opencorporates links"),
+            },
+            {
+                'name': 'parent_investor_comment',
+                'label': _("Comment on parent stakeholder"),
+            },
         ]
-        variable_table = OrderedDict()
-        group_items = []
-        group_title = ''
+        variable_table[_('Operational company')].extend(stakeholder_extras)
 
-        # Add an ID filter
-        variable_table[_('Deal ID')] = [{
-            'name': 'activity_identifier',
-            'label': _("Deal ID"),
-        }]
+    return variable_table
 
-        for form in deal_forms:
-            for field_name, field in form.base_fields.items():
-                if isinstance(field, TitleField):
-                    if group_title and group_items:
-                        variable_table[group_title] = group_items
-                        group_items = []
-                    group_title = str(field.initial)
-                else:
-                    group_items.append({
-                        'name': field_name,
-                        'label': field.label,
-                    })
 
-        if group_title and group_items:
-            variable_table[group_title] = group_items
+class FilterWidgetMixin:
+    variable_table = get_variable_table()
 
-        # TODO: this is fragile, rethink this whole mess
-        if _('Operational company') in variable_table:
-            stakeholder_extras = [
-                {
-                    'name': 'operational_stakeholder_country',
-                    'label': _(
-                        "Operational stakeholder country of registration/origin"),
-                },
-                {
-                    'name': 'operational_stakeholder_region',
-                    'label': _(
-                        "Operational stakeholder region of registration/origin"),
-                },
-                {
-                    'name': 'parent_investor',
-                    'label': _("Parent stakeholders"),
-                },
-                {
-                    'name': 'parent_investor_country',
-                    'label': _(
-                        "Parent stakeholder country of registration/origin"),
-                },
-                {
-                    'name': 'parent_investor_region',
-                    'label': _(
-                        "Parent stakeholder region of registration/origin"),
-                },
-                {
-                    'name': 'parent_investor_percentage',
-                    'label': _("Parent stakeholder percentages"),
-                },
-                {
-                    'name': 'parent_investor_classification',
-                    'label': _("Parent stakeholder classifications"),
-                },
-                {
-                    'name': 'parent_investor_homepage',
-                    'label': _("Parent stakeholder homepages"),
-                },
-                {
-                    'name': 'parent_investor_opencorporates_link',
-                    'label': _("Parent stakeholder Opencorporates links"),
-                },
-                {
-                    'name': 'parent_investor_comment',
-                    'label': _("Comment on parent stakeholder"),
-                },
-            ]
-            variable_table[_('Operational company')].extend(stakeholder_extras)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # TODO: not sure rules is still used - check this and remove
+        self.rules = []
 
-        self._variable_table = variable_table
-        return self._variable_table
+    @property
+    def filters(self):
+        return self.get_filter_context(self.current_formset_conditions)
 
-    def example_set_filters(self):
-        self.current_formset_conditions = self.get_formset_conditions(
-            self._filter_set(self.GET), self.GET, self.rules, self.group
-        )
+    @property
+    def current_formset_conditions(self):
+        data = self.request.GET.copy()
+        filter_set = self._filter_set(data)
+        conditions_formset = self.get_formset_conditions(filter_set, data)
 
-        self.filters = self.get_filter_context(
-            self.current_formset_conditions, self._order_by(), self.group, self.group_value,
-            self.GET.get("starts_with", None)
-        )
+        return conditions_formset
 
-    def add_filter_context_data(self, context, request):
-        context['request'] = request
-        context['filters'] = self.filters
-        context["empty_form_conditions"] = self.current_formset_conditions
-        context["rules"] = self.rules
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-        context['variables'] = self.get_variable_table()
-        context['presets'] = FilterPresetGroup.objects.all()
+        context.update({
+            'filters': self.filters,
+            'empty_form_conditions': self.current_formset_conditions,
+            'rules': self.rules,
+            'variables': self.variable_table,
+            'presets': FilterPresetGroup.objects.all(),
+        })
 
-    @print_execution_time_and_num_queries
-    def get_filter_context(self, formset_conditions, order_by=None, group_by=None, group_value=None, starts_with=None):
-        filters = BrowseFilterConditions(formset_conditions, [order_by] if order_by else [], 0).parse()
-        filters["group_by"] = group_by
-        filters["group_value"] = group_value
-        filters["starts_with"] = starts_with
+        return context
+
+    def get_filter_context(
+            self, formset_conditions, order_by=None, group_by=None,
+            group_value=None, starts_with=None):
+        filters = BrowseFilterConditions(formset_conditions, [], 0).parse()
+
+        filters['group_by'] = group_by
+        filters['group_value'] = group_value
+        filters['starts_with'] = starts_with
+
         return filters
 
     def set_country_region_filter(self, data):
@@ -185,7 +190,7 @@ class FilterWidgetMixin:
     @print_execution_time_and_num_queries
     def get_formset_conditions(self, filter_set, data, group_by=None):
         self.set_country_region_filter(data)
-        ConditionFormset = create_condition_formset()
+
         if filter_set:
             # set given filters
             result = ConditionFormset(data, prefix="conditions_empty")

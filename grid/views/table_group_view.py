@@ -37,7 +37,8 @@ for choice, value, choices in intention_choices:
             'order_by': '%s (%s)' % (value, svalue),
         }
 
-class TableGroupView(TemplateView, FilterWidgetMixin):
+
+class TableGroupView(FilterWidgetMixin, TemplateView):
 
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = [
@@ -85,7 +86,7 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
 
         query_result = self.get_records()
         items = self._get_items(query_result)
-        context = {
+        context.update({
             "view": "data",
             "data": {
                 "items": items,
@@ -99,9 +100,8 @@ class TableGroupView(TemplateView, FilterWidgetMixin):
             "group_slug": self.group,
             "group_value": self.group_value,
             "group": self.GROUP_NAMES.get(self.group, self.group.replace("_", " ")),
-            # "rules": self.rules,
-        }
-        self.add_filter_context_data(context, self.request)
+        })
+
         return context
 
     @print_execution_time_and_num_queries

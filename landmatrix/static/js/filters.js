@@ -90,7 +90,15 @@ function removeFilter(filterName) {
     $.post(
         "/api/filter.json?action=remove&name=" + filterName,
         function () {
-            window.location.reload();
+            // Drop querystring params before reload, as they can add filters
+            // that were just removed
+            var baseURL = window.location.href.split("?")[0];
+            if (baseURL != window.location) {
+                window.location.replace(baseURL);
+            }
+            else {
+                window.location.reload();
+            }
         }
     );
 }
