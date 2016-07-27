@@ -68,7 +68,6 @@ class RecordReader:
             print('*'*80, 'SQL: \n', sql)
 
         cursor = connection.cursor()
-        raise IOError(sql)
         cursor.execute(sql)
 
         if self.DEBUG:
