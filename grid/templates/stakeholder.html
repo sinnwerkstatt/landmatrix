@@ -21,75 +21,70 @@
 <div class="popup">
     <form action="{% if investor %}{% url 'stakeholder_form' investor.id %}{% else %}{% url 'add_stakeholder_form' %}{% endif %}{% if request.GET.popup %}?popup=1{% endif %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="row">
-            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
-            {% include "form.html" %}
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <h3>{% trans "Parent companies" %}</h3>
-            </div>
-            <div class="col-sm-12">
-                {{ parent_stakeholders.management_form }}
-                {% for form in parent_stakeholders %}
-                <div class="parent-stakeholder-form row control-group {{ field.name }}">
-                    <div class="controls col-md-6">
-                        {{ form.fk_investor|add_class:'form-control' }}
-                        {{ form.fk_investor.errors }}
-                        {# ID is hidden, but must be in the form #}
-                        {{ form.id }}
-                        {{ form.id.errors }}
-                        {# Handle row deletion #}
-                        {% if parent_stakeholders.can_delete %}
-                            <div style="display: none;">{{ form.DELETE }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="controls col-md-2 loans_amount">
-                        {{ form.loans_amount|add_class:'form-control' }}
-                    </div>
-                    <div class="controls col-md-1 loans_currency">
-                        {{ form.loans_currency|add_class:'form-control' }}
-                    </div>
-                    <div class="controls col-md-1 loans_date">
-                        {{ form.loans_date|add_class:'form-control' }}
-                    </div>
-                    <div class="controls col-md-2">
-                        <a class="btn pull-right add-form">
-                            <i class="fa fa-plus"></i>
-                            {% trans "Add another" %}
-                        </a>
-                        <a class="btn pull-right remove-form">
-                            <i class="fa fa-minus"></i>
-                            {% trans "Remove" %}
-                        </a>
+
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default{% if form.errors %} with-error{% endif %}">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#general_info_body"
+                       id="general_info">
+                        <h5 class="panel-title">
+                            {% trans "General Info" %}
+                            <span id="collapsebtn_{{ forloop.counter }}"
+                                  class="lm-chevron-circle-down pull-right mgrey1"></span>
+                        </h5>
+                    </a>
+                </div>
+
+                <div id="general_info_body"
+                     class="panel-collapse collapse in{% if form.errors %} with-error{% endif %}">
+                    <div class="panel-body">
+                    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                    {% include "form.html" %}
                     </div>
                 </div>
-                {% endfor %}
             </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <h3>{% trans "Investors" %}</h3>
-            </div>
-            <div class="col-sm-12">
-                {{ parent_investors.management_form }}
-                {% for form in parent_investors %}
-                    <div class="parent-investor-form row control-group {{ field.name }}">
-                        <div class="controls col-md-6">
-                            {{ form.fk_investor|add_class:'form-control' }}
-                            {{ form.fk_investor.errors }}
-                            {# ID is hidden, but must be in the form #}
-                            {{ form.id }}
-                            {{ form.id.errors }}
-                            {# Handle row deletion #}
-                            {% if parent_investors.can_delete %}
-                                <div style="display: none;">{{ form.DELETE }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="controls col-md-6">
-                            <div class="input-group">
-                                {{ form.percentage|add_class:'form-control' }}
-                                <div class="input-group-addon">{{ form.percentage.help_text }}</div>
+
+            <div class="panel panel-default{% if parent_stakeholders.errors %} with-error{% endif %}">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#parent_companies_body"
+                       id="parent_companies">
+                        <h5 class="panel-title">
+                            {% trans "Parent companies" %}
+                            <span id="collapsebtn_{{ forloop.counter }}"
+                                  class="lm-chevron-circle-down pull-right mgrey1"></span>
+                        </h5>
+                    </a>
+                </div>
+
+                <div id="parent_companies_body"
+                     class="panel-collapse collapse{% if parent_stakeholders.errors %} with-error{% endif %}">
+                    <div class="panel-body">
+                        {{ parent_stakeholders.management_form }}
+                        {% for form in parent_stakeholders %}
+                        <div class="parent-stakeholder-form row control-group {{ field.name }}">
+                            <div class="controls col-md-6">
+                                {{ form.fk_investor|add_class:'form-control' }}
+                                {{ form.fk_investor.errors }}
+                                {# ID is hidden, but must be in the form #}
+                                {{ form.id }}
+                                {{ form.id.errors }}
+                                {# Handle row deletion #}
+                                {% if parent_stakeholders.can_delete %}
+                                    <div style="display: none;">{{ form.DELETE }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="controls col-md-2 loans_amount">
+                                {{ form.loans_amount|add_class:'form-control' }}
+                            </div>
+                            <div class="controls col-md-1 loans_currency">
+                                {{ form.loans_currency|add_class:'form-control' }}
+                            </div>
+                            <div class="controls col-md-1 loans_date">
+                                {{ form.loans_date|add_class:'form-control' }}
+                            </div>
+                            <div class="controls col-md-2">
                                 <a class="btn pull-right add-form">
                                     <i class="fa fa-plus"></i>
                                     {% trans "Add another" %}
@@ -100,11 +95,62 @@
                                 </a>
                             </div>
                         </div>
-                        {{ form.percentage.errors }}
+                        {% endfor %}
                     </div>
-                {% endfor %}
+                </div>
             </div>
-        </div>
+
+            <div class="panel panel-default{% if parent_investors.errors %} with-error{% endif %}">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#parent_investors_body"
+                       id="parent_investors">
+                        <h5 class="panel-title">
+                            {% trans "Investors" %}
+                            <span id="collapsebtn_{{ forloop.counter }}"
+                                  class="lm-chevron-circle-down pull-right mgrey1"></span>
+                        </h5>
+                    </a>
+                </div>
+
+                <div id="parent_investors_body"
+                     class="panel-collapse collapse{% if parent_investors.errors %} with-error{% endif %}">
+                    <div class="panel-body">
+                        {{ parent_investors.management_form }}
+                        {% for form in parent_investors %}
+                            <div class="parent-investor-form row control-group {{ field.name }}">
+                                <div class="controls col-md-6">
+                                    {{ form.fk_investor|add_class:'form-control' }}
+                                    {{ form.fk_investor.errors }}
+                                    {# ID is hidden, but must be in the form #}
+                                    {{ form.id }}
+                                    {{ form.id.errors }}
+                                    {# Handle row deletion #}
+                                    {% if parent_investors.can_delete %}
+                                        <div style="display: none;">{{ form.DELETE }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="controls col-md-6">
+                                    <div class="input-group">
+                                        {{ form.percentage|add_class:'form-control' }}
+                                        <div class="input-group-addon">{{ form.percentage.help_text }}</div>
+                                        <a class="btn pull-right add-form">
+                                            <i class="fa fa-plus"></i>
+                                            {% trans "Add another" %}
+                                        </a>
+                                        <a class="btn pull-right remove-form">
+                                            <i class="fa fa-minus"></i>
+                                            {% trans "Remove" %}
+                                        </a>
+                                    </div>
+                                </div>
+                                {{ form.percentage.errors }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
         {#% include "includes/stakeholder-history.html" %#}
 
         <div class="row">
