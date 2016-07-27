@@ -20,7 +20,7 @@
                 {% if form.forms %}
                     {{ form.management_form }}
                     {% for subform in form %}
-                        <div class="{{ form.form_title|slugify }}-form{% if subform.errors %} with-error{% endif %}">
+                        <div class="dynamic-form {{ form.form_title|slugify }}-form{% if subform.errors %} with-error{% endif %}">
                         {% include "form.html" with form=subform form_count=forloop.counter %}
                         </div>
                         {% if form.form_description %}<div class="col-sm-12"><p class="alert alert-info">{{ form.form_description }}</p></div>{% endif %}

@@ -16,7 +16,7 @@ class ParentStakeholderForm(forms.ModelForm):
 
     form_title = _('Parent companies')
 
-    tg_contract = TitleField(
+    tg_parent_stakeholder = TitleField(
         required=False, label="", initial=_("Parent company")
     )
     fk_investor = forms.ModelChoiceField(
@@ -32,19 +32,18 @@ class ParentStakeholderForm(forms.ModelForm):
     class Meta:
         name = 'parent-company'
         model = InvestorVentureInvolvement
-        fields = ()
-        #fields = [
-        #    'id', 'fk_investor', 'percentage', 'investment_type',
-        #    'loans_amount', 'loans_currency', 'loans_date',
-        #    'comment'
-        #]
+        fields = [
+            'tg_parent_stakeholder', 'id', 'fk_investor', 'percentage', 'investment_type',
+            'loans_amount', 'loans_currency', 'loans_date',
+            'comment'
+        ]
 
 
 class ParentInvestorForm(ParentStakeholderForm):
 
     form_title = _('Parent investors')
 
-    tg_contract = TitleField(
+    tg_parent_stakeholder = TitleField(
         required=False, label="", initial=_("Parent investor")
     )
     fk_investor = forms.ModelChoiceField(
@@ -54,12 +53,11 @@ class ParentInvestorForm(ParentStakeholderForm):
     class Meta:
         name = 'parent-investor'
         model = InvestorVentureInvolvement
-        fields = ()
-        #fields = [
-        #    'id', 'fk_investor', 'percentage', 'investment_type',
-        #    'loans_amount', 'loans_currency', 'loans_date',
-        #    'comment'
-        #]
+        fields = [
+            'tg_parent_stakeholder', 'id', 'fk_investor', 'percentage', 'investment_type',
+            'loans_amount', 'loans_currency', 'loans_date',
+            'comment'
+        ]
 
 
 class BaseInvolvementFormSet(forms.BaseModelFormSet):

@@ -36,15 +36,14 @@
                 </div>
 
                 <div id="general_info_body"
-                     class="panel-collapse collapse in{% if form.errors %} with-error{% endif %}">
+                     class="panel-collapse collapse{% if not request.POST %} in{% endif %}{% if form.errors %} with-error{% endif %}">
                     <div class="panel-body">
-                    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
                     {% include "form.html" %}
                     </div>
                 </div>
             </div>
 
-            <div class="panel panel-default{% if parent_stakeholders.errors %} with-error{% endif %}">
+            <div class="panel panel-default{% for form in parent_stakeholders.forms %}{% if form.errors %} with-error{% endif %}{% endfor %}">
                 <div class="panel-heading">
                     <a data-toggle="collapse" data-parent="#accordion"
                        href="#parent_companies_body"
@@ -58,11 +57,11 @@
                 </div>
 
                 <div id="parent_companies_body"
-                     class="panel-collapse collapse{% if parent_stakeholders.errors %} with-error{% endif %}">
+                     class="panel-collapse collapse{% for form in parent_stakeholders.forms %}{% if form.errors %} in{% endif %}{% endfor %}">
                     <div class="panel-body">
                         {{ parent_stakeholders.management_form }}
                         {% for form in parent_stakeholders.forms %}
-                            <div class="{{ parent_stakeholders.form_title|slugify }}-form{% if form.errors %} with-error{% endif %}">
+                            <div class="dynamic-form {{ parent_stakeholders.form_title|slugify }}-form{% if form.errors %} with-error{% endif %}">
                             {% include "form.html" with form_count=forloop.counter %}
                             </div>
                         {% endfor %}
@@ -71,7 +70,7 @@
                 </div>
             </div>
 
-            <div class="panel panel-default{% if parent_investors.errors %} with-error{% endif %}">
+            <div class="panel panel-default{% for form in parent_investors.forms %}{% if form.errors %} with-error{% endif %}{% endfor %}">
                 <div class="panel-heading">
                     <a data-toggle="collapse" data-parent="#accordion"
                        href="#parent_investors_body"
@@ -85,11 +84,11 @@
                 </div>
 
                 <div id="parent_investors_body"
-                     class="panel-collapse collapse{% if parent_investors.errors %} with-error{% endif %}">
+                     class="panel-collapse collapse{% for form in parent_investors.forms %}{% if form.errors %} in{% endif %}{% endfor %}">
                     <div class="panel-body">
                         {{ parent_investors.management_form }}
                         {% for form in parent_investors.forms %}
-                            <div class="{{ parent_investors.form_title|slugify }}-form{% if form.errors %} with-error{% endif %}">
+                            <div class="dynamic-form {{ parent_investors.form_title|slugify }}-form{% if form.errors %} with-error{% endif %}">
                             {% include "form.html" with form_count=forloop.counter %}
                             </div>
                         {% endfor %}
@@ -98,54 +97,6 @@
                 </div>
             </div>
         {#% include "includes/stakeholder-history.html" %#}
-            <script type="text/javascript">
-            function added(row) {
-                // Update form counters
-                var form_count = 1;
-                row.parent().find('h3 small').each(function () {
-                    $(this).text('#' + form_count++);
-                });
-                // Unselect selected options
-                row.find("option:selected").removeAttr("selected");
-                init_investor_form(row);
-                // Scroll to the new row
-                $('html, body').animate({
-                    scrollTop: row.offset().top
-                }, 600);
-
-            }
-            function removed() {
-                // Update form counters
-                var form_count = 1;
-                $('.{{ form.form_title|slugify }}-form h3 small').each(function () {
-                    $(this).text('#' + form_count++);
-                });
-            }
-            $(document).ready(function () {
-                $('.{{ parent_stakeholders.form_title|slugify }}-form').formset({
-                    addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
-                    addCssClass: 'formset-add-form hidden',
-                    deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
-                    deleteCssClass: 'formset-remove-form hidden',
-                    prefix: '{{ parent_stakeholders.prefix }}',
-                    formCssClass: '{{ parent_stakeholders.prefix }}-form',
-                    extraClasses: ['dynamic-form'],
-                    added: added,
-                    removed: removed,
-                }).each(function () { init_investor_form($(this)); });
-                $('.{{ parent_investors.form_title|slugify }}-form').formset({
-                    addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
-                    addCssClass: 'formset-add-form hidden',
-                    deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
-                    deleteCssClass: 'formset-remove-form hidden',
-                    prefix: '{{ parent_investors.prefix }}',
-                    formCssClass: '{{ parent_investors.prefix }}-form',
-                    extraClasses: ['dynamic-form'],
-                    added: added,
-                    removed: removed,
-                }).each(function () { init_investor_form($(this)); });
-            });
-            </script>
 
         <div class="row">
             <div class="col-sm-12">

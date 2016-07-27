@@ -7,7 +7,7 @@ var sankeydata = [];
 function init_investor_form(form) {
     // Init buttons
     form.find('.add-form').click(function () {
-        $(this).parents('.row').find('.formset-add-form').trigger('click');
+        $(this).parents('.panel-body').find('.formset-add-form').trigger('click');
     });
     form.find('.remove-form').click(function () {
         form.find('.formset-remove-form').trigger('click');
@@ -15,11 +15,9 @@ function init_investor_form(form) {
 
 
     function formatInvestor (investor) {
-        console.log(investor);
         return investor.text;
     }
     function formatInvestorSelection (investor) {
-        console.log(investor);
         return investor.text;
     }
 
@@ -29,13 +27,11 @@ function init_investor_form(form) {
             dataType: 'json',
             delay: 250,
             data: function (params) {
-                console.log(params);
                 return {
                     q: params.term
                 };
             },
             processResults: function (data) {
-                console.log(data);
                 return {
                     results: data
                 };
@@ -52,14 +48,12 @@ function init_investor_form(form) {
     });
     generateButtons(form.find('select.investorfield'));
 
-    form.find('.loans_amount input').attr('placeholder', 'Loans');
     form.find('.loans_date input').attr('placeholder', 'YYYY-MM-DD');
+    form.find('.loans_currency select').select2();
 }
 
 function generateButtons(field) {
     var investorId = field.val();
-    console.log("Setting up buttons!");
-
     var addLink = '/stakeholder/add/';
     //var parentId = $('#id_id').val();
     //if (parentId) {
@@ -239,38 +233,58 @@ function setupSankey(index) {
     setupData(data);
 }
 
+function stakeholderAdded(row) {
+    // Update form counters
+    var form_count = 1;
+    row.parent().find('h3 small').each(function () {
+        $(this).text('#' + form_count++);
+    });
+    // Unselect selected options
+    row.find("option:selected").removeAttr("selected");
+    init_investor_form(row);
+    // Scroll to the new row
+    $('html, body').animate({
+        scrollTop: row.offset().top
+    }, 600);
+}
+function stakeholderRemoved(row) {
+    // Update form counters
+    var form_count = 1;
+    row.parent().find('small').each(function () {
+        $(this).text('#' + form_count++);
+    });
+}
 
 $(document).ready(function () {
     // Erm, this should probably be called more locally. We'll see.
     $('.country select').select2();
-    $('.parent-stakeholder-form').formset({
+            
+    $('.parent-companies-form').formset({
+        addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+        addCssClass: 'formset-add-form hidden',
+        deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
+        deleteCssClass: 'formset-remove-form hidden',
         prefix: 'parent-stakeholder-form',
+        formCssClass: 'parent-companies-form',
+        //extraClasses: ['dynamic-form'],
+        added: stakeholderAdded,
+        removed: stakeholderRemoved,
+    }).each(function () { init_investor_form($(this)); });
+    $('.parent-investors-form').formset({
         addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
         addCssClass: 'formset-add-form hidden',
         deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
         deleteCssClass: 'formset-remove-form hidden',
-        added: function (row) {
-            // Unselect selected options
-            row.find("option:selected").removeAttr("selected");
-            init_investor_form(row);
-        }
-    }).each(function () { init_investor_form($(this)); });
-    $('.parent-investor-form').formset({
         prefix: 'parent-investor-form',
-        addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
-        addCssClass: 'formset-add-form hidden',
-        deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
-        deleteCssClass: 'formset-remove-form hidden',
-        added: function (row) {
-            // Unselect selected options
-            row.find("option:selected").removeAttr("selected");
-            init_investor_form(row);
-        },
+        formCssClass: 'parent-investors-form',
+        //extraClasses: ['dynamic-form'],
+        added: stakeholderAdded,
+        removed: stakeholderRemoved,
     }).each(function () { init_investor_form($(this)); });
+
 
     // Init operational company field (deal add/edit)
     $(".investorfield").each(function (index) {
-        console.log("Initializing investorfield with select and sankey.");
         var investorId = $(this).val();
         $(this).select2({
             placeholder: 'Select Investor'
