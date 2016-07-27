@@ -204,13 +204,11 @@ ol.control.LayerSwitcher.prototype.setVisible_ = function (lyr, visible) {
 ol.control.LayerSwitcher.prototype.renderLayer_ = function (lyr, idx) {
 
     var this_ = this;
-
-
     var lyrTitle = lyr.get('title');
     var lyrId = lyr.get('title').replace(' ', '-') + '_' + idx;
 
-
-    if (lyr.getLayers) {
+    // Layer group?
+    if (lyr.getLayers && !lyr.mapTypeId_) {
         var item = document.createElement('div');
         item.className = 'layer';
 
@@ -290,12 +288,25 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function (lyr, idx) {
  * @param {Element} elm DOM element that children will be appended to.
  */
 ol.control.LayerSwitcher.prototype.renderLayers_ = function (lyr, elm) {
-    var lyrs = lyr.getLayers().getArray().slice().reverse();
-    for (var i = 0, l; i < lyrs.length; i++) {
+    var lyrs = lyr.getLayers().getArray().slice().reverse(),
+        collectBaseLayers = !lyr.get('title'),
+        baseLayers = [],
+        i = 0, l;
+    for (i = 0; i < lyrs.length; i++) {
         l = lyrs[i];
-        if (l.get('title')) {
+        if (collectBaseLayers && l.get('type') == 'base') {
+            baseLayers.push(l);
+        } else if (l.get('title')) {
             elm.appendChild(this.renderLayer_(l, i));
         }
+    }
+    // Group base layers into one group
+    if (baseLayers.length > 0) {
+        var baseGroup = new ol.layer.Group({
+            title: 'Base Layers',
+            layers: baseLayers
+        });
+        elm.appendChild(this.renderLayer_(baseGroup, i+1));
     }
 };
 

@@ -1,13 +1,14 @@
-var stamenLayer = new ol.layer.Tile({
-        title: 'Watercolor',
-        type: 'base',
-        visible: false,
-        source: new ol.source.Stamen({layer: 'watercolor'})
-    }),
-    googleLayer = new olgm.layer.Google({
-        title: 'Satellite',
+var terrainLayer = new olgm.layer.Google({
+        title: 'Terrain',
         type: 'base',
         visible: true,
+        mapTypeId: google.maps.MapTypeId.TERRAIN
+    }),
+    satelliteLayer = new olgm.layer.Google({
+        title: 'Satellite',
+        type: 'base',
+        visible: false,
+        mapTypeId: google.maps.MapTypeId.SATELLITE
     }),
     osmLayer = new ol.layer.Tile({
         title: 'OpenStreetMap',
@@ -17,9 +18,9 @@ var stamenLayer = new ol.layer.Tile({
     });
 
 var baseLayers = [
-    stamenLayer,
-    googleLayer,
-    osmLayer
+    osmLayer,
+    satelliteLayer,
+    terrainLayer,
 ];
 
 var contextLayers = [

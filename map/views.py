@@ -26,7 +26,7 @@ class MapView(TemplateView, FilterWidgetMixin):
         self.add_filter_context_data(context, request)
 
         # Target country or region set?
-        filters = request.session.get('filters')
+        filters = request.session.get('filters') or []
         if 'Target country' in filters:
             try:
                 context['country'] = Country.objects.get(pk=filters['Target country']['value'])

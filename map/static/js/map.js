@@ -351,11 +351,8 @@ $(document).ready(function () {
         style: styleFunction
     });
 
-    var layers = [
-        new ol.layer.Group({
-            title: 'Base Maps',
-            layers: baseLayers
-        }),
+    layers = baseLayers;
+    layers.push(
         // Context Layers from the Landobservatory Geoserver.
         new ol.layer.Group({
             title: 'Context Layers',
@@ -369,8 +366,8 @@ $(document).ready(function () {
                 cluster
             ]
         })
-    ];
-    interaction = olgm.interaction.defaults();
+    );
+    //interactions = olgm.interaction.defaults();
     interactions.push(
         new ol.interaction.Select(),
         new ol.interaction.MouseWheelZoom(),
@@ -402,12 +399,10 @@ $(document).ready(function () {
 
     map = new ol.Map({
         target: 'map',
-        // Base Maps Layers. To change the default Layer : "visible: true or false".
-        // ol.layer.Group defines the LayerSwitcher organisation
         layers: layers,
         controls: controls,
         interactions: interactions,
-        //overlays: [PopupOverlay],
+        overlays: [PopupOverlay],
         // Set the map view : here it's set to see the all world.
         view: new ol.View({
             center: [0, 0],
@@ -498,7 +493,6 @@ $(document).ready(function () {
 
         function pickNewVariable() {
             currentVariable = dropdown.value;
-            console.log(currentVariable);
             updateVariableSelection(currentVariable);
             typeof mapDisableDeals === 'undefined' && getApiData();
         }
@@ -532,7 +526,6 @@ $(document).ready(function () {
     function getApiData() {
         NProgress.start();
         // TODO: (Later) initiate spinner before fetchin' stuff
-        markerSource.clear();
         console.log("Get API data");
         var query_params = 'limit=500&attributes=' + fieldnames[currentVariable];
         if (typeof mapParams !== 'undefined') {
@@ -642,6 +635,7 @@ $(document).ready(function () {
         var duplicates = 0;
 
         NProgress.set(0.8);
+        markerSource.clear();
         if (data.length < 1) {
             $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
         } else {
