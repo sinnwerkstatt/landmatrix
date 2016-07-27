@@ -18,28 +18,13 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 {% endblock %}
 
 {% block description %}
-    <div class="desc">
-
-        <p class="agricultural_drivers">{% trans 'This infographic shows how agricultural land acquisitions that include information on crops are subdivided according to destination of use.' %}<a
-                href="{% slugurl 'agricultural-drivers' %}"><i class="lm lm-question-circle"> </i></a></p>
-        <p class="produce_info" style="display: none">{% trans 'Deals divided by intention of investment.' %}</p>
-        <p class="resource_extraction"
-           style="display: none">{% trans 'Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %}
-            <a href="{% slugurl 'about' %}#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation"
-               class="toggle-tooltip left noul"
-               title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i
-                    class="lm lm-question-circle"> </i></a></p>
-        <p class="logging" style="display: none">{% trans 'Wood chopping.' %}</p>
-        <p class="contract_farming"
-           style="display: none">{% trans 'Deals with contract farming schemes.' %}</p>
-        <!--form action="./" method="GET">
-            <select id="size" name="size">
-                <option value="size_in_operation"{% if size = "size_in_operation" %} selected{% endif %}>{% trans "Size in operation" %}</option>
-                <option value="size_under_contract"{% if size = "size_under_contract" %} selected{% endif %}>{% trans "Size under contract" %}</option>
-                <option value="intended_size"{% if size = "intended_size" %} selected{% endif %}>{% trans "Intended Size" %}</option>
-            </select>
-        </form-->
-    </div>
+<!--form action="./" method="GET">
+    <select id="size" name="size">
+        <option value="size_in_operation"{% if size = "size_in_operation" %} selected{% endif %}>{% trans "Size in operation" %}</option>
+        <option value="size_under_contract"{% if size = "size_under_contract" %} selected{% endif %}>{% trans "Size under contract" %}</option>
+        <option value="intended_size"{% if size = "intended_size" %} selected{% endif %}>{% trans "Intended Size" %}</option>
+    </select>
+</form-->
 {% endblock %}
 {% block legend %}
     <ul class="media-list legend offset agricultural_drivers hidden">

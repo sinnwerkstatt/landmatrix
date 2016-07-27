@@ -1,6 +1,12 @@
 {% extends "charts/special-interest/base.html" %}
 {% load i18n static wagtailcore_tags %}
 
+{% block description %}
+<p>
+    {% trans 'Deals with contract farming schemes.' %}
+</p>
+{% endblock %}
+
 {% block chart %}
             <div class="contract_farming row chart hidden">
                 <div class="col-md-6">

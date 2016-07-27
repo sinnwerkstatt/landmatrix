@@ -1,6 +1,12 @@
 {% extends "charts/special-interest/base.html" %}
 {% load i18n static wagtailcore_tags %}
 
+{% block description %}
+<p>
+  {% trans 'Wood chopping.' %}
+</p>
+{% endblock %}
+
 {% block chart %}
 <div id="stats">
     <div class="col-sm-6 size">
