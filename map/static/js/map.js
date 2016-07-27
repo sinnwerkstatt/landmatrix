@@ -492,9 +492,10 @@ $(document).ready(function () {
 
         function pickNewVariable() {
             currentVariable = dropdown.value;
-            console.log(currentVariable);
             updateVariableSelection(currentVariable);
-            mapDisableDeals === 'undefined' && getApiData();
+            if (typeof mapDisableDeals === 'undefined') {
+                getApiData();
+            }
         }
 
         dropdown.onchange = pickNewVariable;
@@ -508,13 +509,14 @@ $(document).ready(function () {
     }
 
     // Set zoom and pan handlers
-    mapDisableDeals === 'undefined' && map.on("moveend", function() {
-        getApiData();
-    });
-
-    mapDisableDeals === 'undefined' && map.on("zoomend", function() {
-        getApiData();
-    });
+    if (typeof mapDisableDeals === 'undefined') {
+        map.on("moveend", function() {
+            getApiData();
+        });
+        map.on("zoomend", function() {
+            getApiData();
+        });
+    }
 
     NProgress.configure(
         {
@@ -573,7 +575,6 @@ $(document).ready(function () {
                 var investor = feat.attributes.investor;
                 var status = feat.attributes.negotiation_status;
                 var accuracy = feat.attributes.geospatial_accuracy;
-                console.log(contract_size);
 
                 // TODO: Here, some javascript should be called to get the deal details from the API
                 // and render it inside the actual content popup, instead of getting this from the db for every marker!
@@ -672,7 +673,9 @@ $(document).ready(function () {
         NProgress.done(true);
     };
 
-    typeof mapDisableDeals === 'undefined' && getApiData();
+    if (typeof mapDisableDeals === 'undefined') {
+        getApiData();
+    }
 });
 
 // MARKERS in clusters. ONE MARKER = ONE DEAL
