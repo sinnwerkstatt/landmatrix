@@ -38,6 +38,7 @@ class StakeholderFormsMixin:
             queryset = self.object.venture_involvements.active()
         else:
             queryset = InvestorVentureInvolvement.objects.none()
+        queryset = queryset.order_by('fk_investor__name')
 
         return queryset
 
