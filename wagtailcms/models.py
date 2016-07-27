@@ -177,6 +177,8 @@ class GalleryBlock(StructBlock):
         images = []
         if images_data:
             for image in images_data:
+                if not image.get('image'):
+                    continue
                 rendition = image.get('image').get_rendition('max-1200x1200')
                 url = rendition.url
                 name = image.get('image').title
