@@ -30,6 +30,7 @@ var mapDisableControls = true,
     {% endif %}
     mapParams = '&{% if country %}target_country={{ country.id }}{% elif region %}target_region={{ region.id }}{% endif %}';
 </script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
 <script type="text/javascript" src="{% static "vendor/ol3-google-maps/ol3gm-debug.js" %}"></script>
 <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
 <script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
