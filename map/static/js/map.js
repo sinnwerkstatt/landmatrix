@@ -494,7 +494,7 @@ $(document).ready(function () {
             currentVariable = dropdown.value;
             console.log(currentVariable);
             updateVariableSelection(currentVariable);
-            getApiData();
+            mapDisableDeals === 'undefined' && getApiData();
         }
 
         dropdown.onchange = pickNewVariable;
@@ -508,13 +508,11 @@ $(document).ready(function () {
     }
 
     // Set zoom and pan handlers
-    map.on("moveend", function() {
-        console.log("moveend");
+    mapDisableDeals === 'undefined' && map.on("moveend", function() {
         getApiData();
     });
 
-    map.on("zoomend", function() {
-        console.log("zoomend");
+    mapDisableDeals === 'undefined' && map.on("zoomend", function() {
         getApiData();
     });
 
