@@ -29,3 +29,5 @@ class MapView(FilterWidgetMixin, TemplateView):
                 context['region'] = Region.objects.get(pk=target_region_id)
             except (Region.DoesNotExist, ValueError):
                 pass
+
+        return context
