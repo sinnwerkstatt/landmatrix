@@ -61,13 +61,13 @@
 <script type="text/javascript">
 {% if country %}
 var mapBounds = [
-    {{ country.point_lat_min }}, {{ country.point_lon_min }},
-    {{ country.point_lat_max }}, {{ country.point_lon_max }},
+    {{ country.point_lat_min|default_if_none:"null" }}, {{ country.point_lon_min|default_if_none:"null" }},
+    {{ country.point_lat_max|default_if_none:"null" }}, {{ country.point_lon_max|default_if_none:"null" }},
 ];
 {% elif region %}
 var mapBounds = [
-    {{ region.point_lat_min }}, {{ region.point_lon_min }},
-    {{ region.point_lat_max }}, {{ region.point_lon_max }},
+    {{ region.point_lat_min|default_if_none:"null" }}, {{ region.point_lon_min|default_if_none:"null" }},
+    {{ region.point_lat_max|default_if_none:"null" }}, {{ region.point_lon_max|default_if_none:"null" }},
 ];
 {% endif %}
 </script>   
