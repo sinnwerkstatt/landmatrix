@@ -1,15 +1,13 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.models.currency import Currency
+from landmatrix.models import Activity, Currency
 from grid.widgets import (
     TitleField, CommentInput, NumberInput, NestedMultipleChoiceField,
     YearBasedChoiceField, YearBasedIntegerField, YearBasedNestedMultipleChoiceField
 )
-from .choices import (
-    negotiation_status_choices, implementation_status_choices,
-    intention_choices, nature_choices, price_type_choices,
-)
+from .choices import intention_choices, nature_choices, price_type_choices
+
 from .base_form import BaseForm
 
 
@@ -67,7 +65,7 @@ class DealGeneralForm(BaseForm):
     )
     negotiation_status = YearBasedChoiceField(
         required=False, label=_("Negotiation status"),
-        choices=negotiation_status_choices)
+        choices=Activity.NEGOTIATION_STATUS_CHOICES)
     tg_negotiation_status_comment = forms.CharField(
         required=False, label=_("Comment on Negotiation status"),
         widget=CommentInput)
@@ -77,7 +75,7 @@ class DealGeneralForm(BaseForm):
         required=False, label="", initial=_("Implementation status"))
     implementation_status = YearBasedChoiceField(
         required=False, label=_("Implementation status"),
-        choices=implementation_status_choices)
+        choices=Activity.IMPLEMENTATION_STATUS_CHOICES)
     tg_implementation_status_comment = forms.CharField(
         required=False, label=_("Comment on Implementation status"),
         widget=CommentInput)

@@ -10,7 +10,7 @@ from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.investor import InvestorActivityInvolvement, InvestorVentureInvolvement
 from grid.views.profiling_decorators import print_execution_time_and_num_queries
-from grid.forms.choices import negotiation_status_choices, implementation_status_choices
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 

@@ -9,9 +9,10 @@ from landmatrix.models.status import Status
 from landmatrix.models.activity_attribute_group import ActivityAttribute, HistoricalActivityAttribute
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
 from landmatrix.models.country import Country
-from grid.forms.choices import negotiation_status_choices, implementation_status_choices
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 class ActivityManager(models.Manager):
     def public(self):
@@ -104,14 +105,34 @@ class Activity(ActivityBase):
         ('domestic', _('Domestic')),
         ('transnational', _('Transnational')),
     )
+    NEGOTIATION_STATUS_CHOICES = (
+        ('', _("---------")),
+        ("Expression of interest", _("Intended (Expression of interest)")),
+        ("Under negotiation", _("Intended (Under negotiation)")),
+        ("Memorandum of understanding", _("Intended (Memorandum of understanding)")),
+        ("Oral agreement", _("Concluded (Oral Agreement)")),
+        ("Contract signed", _("Concluded (Contract signed)")),
+        ("Negotiations failed", _("Failed (Negotiations failed)")),
+        ("Contract canceled", _("Failed (Contract canceled)")),
+        ("Contract expired", _("Failed (Contract expired)")),
+        ("Change of ownership", _("Change of ownership"))
+    )
+    IMPLEMENTATION_STATUS_CHOICES = (
+        ('', _("---------")),
+        ("Project not started", _("Project not started")),
+        ("Startup phase (no production)", _("Startup phase (no production)")),
+        ("In operation (production)", _("In operation (production)")),
+        ("Project abandoned", _("Project abandoned")),
+    )
+
     is_public = models.BooleanField(_('Is this a public deal?'), default=False, db_index=True)
     deal_scope = models.CharField(_('Deal scope'), max_length=16, choices=DEAL_SCOPE_CHOICES,
         blank=True, null=True, db_index=True)
     negotiation_status = models.CharField(_('Negotiation status'), max_length=64,
-        choices=negotiation_status_choices, blank=True, null=True, db_index=True)
+        choices=NEGOTIATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
     implementation_status = models.CharField(
         verbose_name=_('Implementation status'), max_length=64,
-        choices=implementation_status_choices, blank=True, null=True, db_index=True)
+        choices=IMPLEMENTATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
     deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
 
     class Meta:

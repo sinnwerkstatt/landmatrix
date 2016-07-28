@@ -8,27 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-negotiation_status_choices = (
-    ('', _("---------")),
-    ("Expression of interest", _("Intended (Expression of interest)")),
-    ("Under negotiation", _("Intended (Under negotiation)")),
-    ("Memorandum of understanding", _("Intended (Memorandum of understanding)")),
-    ("Oral agreement", _("Concluded (Oral Agreement)")),
-    ("Contract signed", _("Concluded (Contract signed)")),
-    ("Negotiations failed", _("Failed (Negotiations failed)")),
-    ("Contract canceled", _("Failed (Contract canceled)")),
-    ("Contract expired", _("Failed (Contract expired)")),
-    ("Change of ownership", _("Change of ownership"))
-)
-
-implementation_status_choices = (
-    ('', _("---------")),
-    ("Project not started", _("Project not started")),
-    ("Startup phase (no production)", _("Startup phase (no production)")),
-    ("In operation (production)", _("In operation (production)")),
-    ("Project abandoned", _("Project abandoned")),
-)
-
 intention_choices = (
     ("Agriculture", _("Agriculture"), (
         ("Biofuels", _("Biofuels")),

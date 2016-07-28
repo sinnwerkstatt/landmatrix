@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from grid.forms.choices import int_choice_to_string, negotiation_status_choices, implementation_status_choices
+from grid.forms.choices import int_choice_to_string
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.activity import Activity
 
@@ -18,12 +18,12 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 #        db_index=True
 #    )
 #    negotiation_status = models.CharField(
-#        verbose_name=_('Negotiation status'), max_length=64, choices=int_choice_to_string(negotiation_status_choices),
+#        verbose_name=_('Negotiation status'), max_length=64, choices=int_choice_to_string(Activity.NEGOTIATION_STATUS_CHOICES),
 #        blank=True, null=True, db_index=True
 #    )
 #    implementation_status = models.CharField(
 #        verbose_name=_('Implementation status'), max_length=64,
-#        choices=int_choice_to_string(implementation_status_choices), blank=True, null=True, db_index=True
+#        choices=int_choice_to_string(Activity.IMPLEMENTATION_STATUS_CHOICES), blank=True, null=True, db_index=True
 #    )
 #    deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
 #
