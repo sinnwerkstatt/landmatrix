@@ -175,7 +175,7 @@ class FilterWidgetMixin:
                 filter_values['label'] = str(_('Target region'))
                 data.pop('region')
             # Remove existing target country/region filters
-            filters = filter(lambda f: f['variable'] in ('target_country', 'target_region'), stored_filters.values())
+            filters = filter(lambda f: f.get('variable') in ('target_country', 'target_region'), stored_filters.values())
             for stored_filter in list(filters):
                 stored_filters.pop(stored_filter['name'], None)
             # Set filter
