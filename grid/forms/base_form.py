@@ -105,16 +105,16 @@ class BaseForm(forms.Form):
                             value2 = self.data.get(len(keys) > i+1 and keys[i] or "-", "")
                         year = self.data.get(len(keys) > i+2 and keys[i+1] or "-", "")
                         if value or value2 or year:
-                            if value and isinstance(f.fields[0], forms.ChoiceField):
-                                try:
-                                    value = str(dict(f.fields[0].choices).get(value))
-                                except:
-                                    raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
-                            if value2 and isinstance(f.fields[0], forms.ChoiceField):
-                                try:
-                                    value2 = str(dict(f.fields[0].choices).get(value2))
-                                except:
-                                    raise IOError("Value '%s' for field %s (%s) not allowed." % (value2, n, type(self)))
+                            #if value and isinstance(f.fields[0], forms.ChoiceField):
+                            #    try:
+                            #        value = str(dict(f.fields[0].choices).get(value))
+                            #    except:
+                            #        raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
+                            #if value2 and isinstance(f.fields[0], forms.ChoiceField):
+                            #    try:
+                            #        value2 = str(dict(f.fields[0].choices).get(value2))
+                            #    except:
+                            #        raise IOError("Value '%s' for field %s (%s) not allowed." % (value2, n, type(self)))
                             attributes[name] = {
                                 'value': value,
                                 'value2': value2,

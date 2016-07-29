@@ -40,10 +40,10 @@ class SQLBuilderData:
         'crop':                 'crop.name',
         'intention':            'intention.value',
         'operational_stakeholder_region':      'operational_stakeholder_region.name',
-        'operational_stakeholder_country':     'operational_stakeholder_country.name',
-        'operational_stakeholder_name':        'operational_stakeholder.name',
-        'investor_region':      'operational_stakeholder_region.name',
-        'investor_country':     'operational_stakeholder_country.name',
+        'parent_stakeholder_country':     'parent_stakeholder_region.name',
+        'parent_stakeholder_name':        'parent_stakeholder_country.name',
+        'investor_region':      'parent_stakeholder_region.name',
+        'investor_country':     'parent_stakeholder_country.name',
         'data_source_type':     'data_source_type.value'
     }
     # TODO: should country actually join region?
@@ -60,7 +60,7 @@ class SQLBuilderData:
     INVESTOR_COLUMNS = [
         join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
         join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
-        join(InvestorVentureInvolvement, 'ivi', on='ivi.fk_venture_id = operational_stakeholder.id'),
+        join(InvestorVentureInvolvement, 'ivi', on="ivi.fk_venture_id = operational_stakeholder.id AND ivi.role = 'ST'"),
         join(Investor, 'stakeholders', on='ivi.fk_investor_id = stakeholders.id'),
     ]
     COLUMNS = DefaultDict(default_column, {
@@ -82,38 +82,31 @@ class SQLBuilderData:
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id')
         ],
         'operational_stakeholder_name': INVESTOR_COLUMNS,
-        'operational_stakeholder_country': INVESTOR_COLUMNS + [
-            join(Country, 'operational_stakeholder_country', on='operational_stakeholder_country.id = operational_stakeholder.fk_country_id'),
-        ],
-        'operational_stakeholder_region': INVESTOR_COLUMNS + [
-            join(Country, 'operational_stakeholder_country', on='operational_stakeholder_country.id = operational_stakeholder.fk_country_id'),
-            join(Region, 'operational_stakeholder_region', on='operational_stakeholder_region.id = operational_stakeholder_country.fk_region_id')
-        ],
         'investor_name': INVESTOR_COLUMNS,
         'investor_country': INVESTOR_COLUMNS + [
-            join(Country, 'investor_country', on='investor_country.id = operational_stakeholder.fk_country_id'),
+            join(Country, 'investor_country', on='investor_country.id = stakeholders.fk_country_id'),
         ],
         'investor_region': INVESTOR_COLUMNS + [
-            join(Country, 'investor_country', on='investor_country.id = operational_stakeholder.fk_country_id'),
-            join(Region, 'investor_region', on='investor_region.id = operational_stakeholder_country.fk_region_id')
+            join(Country, 'investor_country', on='investor_country.id = stakeholders.fk_country_id'),
+            join(Region, 'investor_region', on='investor_region.id = parent_stakeholder_country.fk_region_id')
         ],
-        'parent_investor': INVESTOR_COLUMNS,
-        'parent_investor_percentage': [
+        'parent_stakeholder': INVESTOR_COLUMNS,
+        'parent_stakeholder_percentage': [
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
-            join(InvestorVentureInvolvement, 'ivi', on='ivi.fk_venture_id = operational_stakeholder.id'),
+            join(InvestorVentureInvolvement, 'ivi', on='ivi.fk_venture_id = operational_stakeholder.id AND ivi.role = "ST"'),
         ],
-        'parent_investor_classification': INVESTOR_COLUMNS,
-        'parent_investor_country': INVESTOR_COLUMNS + [
-            join(Country, 'parent_investor_country', on='parent_investor_country.id = stakeholders.fk_country_id'),
+        'parent_stakeholder_classification': INVESTOR_COLUMNS,
+        'parent_stakeholder_country': INVESTOR_COLUMNS + [
+            join(Country, 'parent_stakeholder_country', on='parent_stakeholder_country.id = stakeholders.fk_country_id'),
         ],
-        'parent_investor_region': INVESTOR_COLUMNS + [
-            join(Country, 'parent_investor_country', on='parent_investor_country.id = stakeholders.fk_country_id'),
-            join(Region, 'parent_investor_region', on='parent_investor_region.id = parent_investor_country.fk_region_id')
+        'parent_stakeholder_region': INVESTOR_COLUMNS + [
+            join(Country, 'parent_stakeholder_country', on='parent_stakeholder_country.id = stakeholders.fk_country_id'),
+            join(Region, 'parent_stakeholder_region', on='parent_stakeholder_region.id = parent_stakeholder_country.fk_region_id')
         ],
-        'parent_investor_homepage': INVESTOR_COLUMNS,
-        'parent_investor_opencorporates_link': INVESTOR_COLUMNS,
-        'parent_investor_comment': INVESTOR_COLUMNS,
+        'parent_stakeholder_homepage': INVESTOR_COLUMNS,
+        'parent_stakeholder_opencorporates_link': INVESTOR_COLUMNS,
+        'parent_stakeholder_comment': INVESTOR_COLUMNS,
         'data_source_type':   (
             'data_source',
             [join_attributes('data_source_type', 'type')],
@@ -133,20 +126,9 @@ class SQLBuilderData:
         ],
     })
     SQL_COLUMN_MAP = DefaultDict(default_column_map, {
-        # Deprecated? (investor_name)
         "operational_stakeholder_name": [
             "ARRAY_AGG(DISTINCT CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier)) AS operational_stakeholder_name",
             "CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier) AS operational_stakeholder_name"
-        ],
-        # Deprecated? (investor_country)
-        "operational_stakeholder_country": [
-            "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_country.name, '#!#', operational_stakeholder_country.code_alpha3)) AS operational_stakeholder_country",
-            "CONCAT(operational_stakeholder_country.name, '#!#', operational_stakeholder_country.code_alpha3) AS operational_stakeholder_country"
-        ],
-        # Deprecated? (investor_region)
-        "operational_stakeholder_region": [
-            "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id)) AS operational_stakeholder_region",
-            "CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id) AS operational_stakeholder_region"
         ],
         "investor_name": [
             "ARRAY_AGG(DISTINCT CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier)) AS investor_name",
@@ -160,37 +142,37 @@ class SQLBuilderData:
             "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id)) AS investor_region",
             "CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id) AS investor_region"
         ],
-        "parent_investor": [
-            "ARRAY_AGG(stakeholders.name) AS parent_investor",
-            "stakeholders.name AS parent_investor",
+        "parent_stakeholder": [
+            "ARRAY_AGG(stakeholders.name) AS parent_stakeholder",
+            "stakeholders.name AS parent_stakeholder",
         ],
-        "parent_investor_percentage": [
-            "ARRAY_AGG(ivi.percentage) AS parent_investor_percentage",
-            "ivi.percentage AS parent_investor_percentage",
+        "parent_stakeholder_percentage": [
+            "ARRAY_AGG(ivi.percentage) AS parent_stakeholder_percentage",
+            "ivi.percentage AS parent_stakeholder_percentage",
         ],
-        "parent_investor_country": [
-            "ARRAY_AGG(DISTINCT CONCAT(parent_investor_country.name, '#!#', parent_investor_country.code_alpha3)) AS parent_investor_country",
-            "CONCAT(parent_investor_country.name, '#!#', parent_investor_country.code_alpha3) AS parent_investor_country"
+        "parent_stakeholder_country": [
+            "ARRAY_AGG(DISTINCT CONCAT(parent_stakeholder_country.name, '#!#', parent_stakeholder_country.code_alpha3)) AS parent_stakeholder_country",
+            "CONCAT(parent_stakeholder_country.name, '#!#', parent_stakeholder_country.code_alpha3) AS parent_stakeholder_country"
         ],
-        "parent_investor_region": [
-            "ARRAY_AGG(DISTINCT CONCAT(parent_investor_region.name, '#!#', parent_investor_region.id)) AS parent_investor_region",
-            "CONCAT(parent_investor_region.name, '#!#', parent_investor_region.id) AS parent_investor_region"
+        "parent_stakeholder_region": [
+            "ARRAY_AGG(DISTINCT CONCAT(parent_stakeholder_region.name, '#!#', parent_stakeholder_region.id)) AS parent_stakeholder_region",
+            "CONCAT(parent_stakeholder_region.name, '#!#', parent_stakeholder_region.id) AS parent_stakeholder_region"
         ],
-        "parent_investor_classification": [
-            "ARRAY_AGG(stakeholders.classification) AS parent_investor_classification",
-            "stakeholders.classification AS parent_investor_classification",
+        "parent_stakeholder_classification": [
+            "ARRAY_AGG(stakeholders.classification) AS parent_stakeholder_classification",
+            "stakeholders.classification AS parent_stakeholder_classification",
         ],
-        "parent_investor_homepage": [
-            "ARRAY_AGG(stakeholders.homepage) AS parent_investor_homepage",
-            "stakeholders.homepage AS parent_investor_homepage",
+        "parent_stakeholder_homepage": [
+            "ARRAY_AGG(stakeholders.homepage) AS parent_stakeholder_homepage",
+            "stakeholders.homepage AS parent_stakeholder_homepage",
         ],
-        "parent_investor_opencorporates_link": [
-            "ARRAY_AGG(stakeholders.opencorporates_link) AS parent_investor_opencorporates_link",
-            "stakeholders.opencorporates_link AS parent_investor_opencorporates_link",
+        "parent_stakeholder_opencorporates_link": [
+            "ARRAY_AGG(stakeholders.opencorporates_link) AS parent_stakeholder_opencorporates_link",
+            "stakeholders.opencorporates_link AS parent_stakeholder_opencorporates_link",
         ],
-        "parent_investor_comment": [
-            "ARRAY_AGG(stakeholders.comment) AS parent_investor_comment",
-            "stakeholders.comment AS parent_investor_comment",
+        "parent_stakeholder_comment": [
+            "ARRAY_AGG(stakeholders.comment) AS parent_stakeholder_comment",
+            "stakeholders.comment AS parent_stakeholder_comment",
         ],
         "intention": [
             "ARRAY_AGG(DISTINCT intention.value ORDER BY intention.value) AS intention",

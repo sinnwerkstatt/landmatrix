@@ -63,11 +63,19 @@ def clean_crops(key, value):
 
 def clean_animals(key, value):
     from old_editor.models import Animal
+    #if value == ' Tilapia Fish':
+    #    value = 'Fish'
+    #elif value == 'Aquaculture':
+    #    value = 'Aquaculture (animals)'
     value = replace_model_name_with_id(Animal, value)
     return key, value
 
 def clean_minerals(key, value):
     from old_editor.models import Mineral
+    # Diamond mining
+    # Iron
+    # Pyrolisis Plant
+    # Petroleum
     value = replace_model_name_with_id(Mineral, value)
     return key, value
 

@@ -21,7 +21,7 @@ FROM landmatrix_activity                    AS a,
 --  additional joins:
     %s
     WHERE
-        a.fk_status_id IN (2, 3)
+        %s
 --  additional where conditions:
         %s
 --  filter sql:
@@ -45,6 +45,10 @@ WHERE sub.id = a.id
             self.columns(),
             self.subquery_columns(),
             self.additional_joins(),
+            "\nAND ".join(filter(None, [
+                self.status_active_condition(),
+                self.is_public_condition()
+            ])),
             self.additional_wheres(),
             self._filter_sql,
             self._additional_subquery_options,
@@ -68,8 +72,7 @@ LEFT JOIN landmatrix_investor                  AS operational_stakeholder ON iai
 --  additional joins:
 %s
 WHERE
-    a.is_public = 't' 
-    AND a.fk_status_id IN (2, 3)
+    %s
 --  additional where conditions:
     %s
 --  filter sql:
@@ -86,6 +89,10 @@ WHERE
         return self.QUERY % (
             self.columns(),
             self.additional_joins(),
+            "\nAND ".join(filter(None, [
+                self.status_active_condition(),
+                self.is_public_condition()
+            ])),
             self.additional_wheres(),
             filter_sql,
             self.group_by(),

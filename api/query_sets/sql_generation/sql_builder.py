@@ -2,6 +2,7 @@ from landmatrix.models import *
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from api.query_sets.sql_generation.join_functions import *
 from api.query_sets.sql_generation.sql_builder_data import SQLBuilderData
+from landmatrix.models.activity import Activity
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -129,8 +130,10 @@ class SQLBuilder(SQLBuilderData):
     def _need_involvements_and_stakeholders(self):
         matching_columns = any(
             x in (
-                "operational_stakeholder_country",
-                "operational_stakeholder_region",
+                "investor_country",
+                "investor_region",
+                "parent_stakeholder_country",
+                "parent_stakeholder_region",
                 "operational_stakeholder_name",
             )
             for x in self.columns
@@ -170,13 +173,13 @@ class SQLBuilder(SQLBuilderData):
         )""" % (alias, model._meta.db_table, id_field, alias, id_field, ', '.join(map(str, cls.registered_status_ids())))
 
     def status_active_condition(self):
-        return "a.fk_status_id IN (%s)" % ', '.join(map(str, self.valid_status_ids()))
+        return "a.fk_status_id IN (%s)" % ', '.join((str(Activity.STATUS_ACTIVE), str(Activity.STATUS_OVERWRITTEN)))
 
     def is_public_condition(self):
         if self.is_staff:
-            return ""
+            return ''
         else:
-            return "a.is_public IS TRUE"
+            return "a.is_public = 't'"
 
     def not_mining_condition(self):
         return "a.activity_identifier NOT IN (%s)" % ', '.join(map(str, self.mining_deals()))

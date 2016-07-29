@@ -17,8 +17,6 @@ from grid.forms.choices import intention_choices
 from django.utils.datastructures import SortedDict
 from django.template.defaultfilters import slugify
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
 INTENTION_MAP = {}
 for choice, value, choices in intention_choices:
     INTENTION_MAP[choice] = {
@@ -42,35 +40,35 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
 
     LOAD_MORE_AMOUNT = 20
     DOWNLOAD_COLUMNS = [
-        "deal_id", "target_country", "location", "operational_stakeholder_name", "operational_stakeholder_country", "intention", "negotiation_status",
+        "deal_id", "target_country", "location", "operational_stakeholder_name", "parent_stakeholder_country", "intention", "negotiation_status",
         "implementation_status", "intended_size", "contract_size", "production_size", "nature_of_the_deal",
         "data_source_type", "data_source_url", "data_source_date", "data_source_organisation",
         "contract_farming", "crop"
     ]
-    QUERY_LIMITED_GROUPS = ["target_country", "operational_stakeholder_name", "operational_stakeholder_country", "all", "crop"]
+    QUERY_LIMITED_GROUPS = ["target_country", "operational_stakeholder_name", "parent_stakeholder_country", "all", "crop"]
     GROUP_COLUMNS_LIST = [
-        "deal_id", "target_country", "operational_stakeholder", "operational_stakeholder_country", "intention",
+        "deal_id", "target_country", "operational_stakeholder", "parent_stakeholder_country", "intention",
         "negotiation_status", "implementation_status", "intended_size", "contract_size",
     ]
     DEFAULT_GROUP = "by-target-region"
     COLUMN_GROUPS = {
         "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
         "target_region": ["target_region", "intention", "deal_count", "availability"],
-        "investor_name": ["investor_name", "operational_stakeholder_country", "intention", "deal_count", "availability"],
+        "investor_name": ["investor_name", "parent_stakeholder_country", "intention", "deal_count", "availability"],
         "investor_country": ["investor_country", "intention", "deal_count", "availability"],
         "investor_region": ["investor_region", "deal_count", "availability"],
         "intention": ["intention", "deal_count", "availability"],
         "crop": ["crop", "deal_count", "availability"],
         "year": ["year", "intention", "deal_count", "availability"],
         "data_source_type": ["data_source_type", "intention", "deal_count", "availability"],
-        "all": ["deal_id", "target_country", "operational_stakeholder", "operational_stakeholder_country",
+        "all": ["deal_id", "target_country", "operational_stakeholder", "parent_stakeholder_country",
                 "intention", "negotiation_status", "implementation_status", "intended_size",
                 "contract_size", ]
     }
     GROUP_NAMES = {
         "operational_stakeholder_name": _("Investor name"),
-        "operational_stakeholder_country": _("Investor country"),
-        "operational_stakeholder_region": _("Investor region"),
+        #"operational_stakeholder_country": _("Investor country"),
+        #"operational_stakeholder_region": _("Investor region"),
     }
 
     template_name = "group-by.html"
@@ -172,23 +170,23 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             'deal_id': _('ID'),
             'deal_count': _('Deals'),
             'availability': _('Availability'),
-            'operational_stakeholder_country': _('Operational company country'),
-            'operational_stakeholder_region': _('Operational company region'),
+            #'operational_stakeholder_country': _('Operational company country'),
+            #'operational_stakeholder_region': _('Operational company region'),
             'operational_stakeholder': _('Operational company'),
             'investor_country': _('Operational company country'),
-            'investor_region': _('Operational company region'),
-            'investor_name': _('Operational company'),
+            #'investor_region': _('Operational company region'),
+            #'investor_name': _('Operational company'),
             'operational_stakeholder_name': _('Operational company name'),
-            'parent_investor': _('Parent stakeholders'),
-            'parent_investor_country': _('Parent stakeholder country'),
-            'parent_investor_region': _('Parent stakeholder region'),
-            'parent_investor_percentage': _('Parent stakeholder percentages'),
-            'parent_investor_classification': _(
+            'parent_stakeholder': _('Parent stakeholders'),
+            'parent_stakeholder_country': _('Parent stakeholder country'),
+            'parent_stakeholder_region': _('Parent stakeholder region'),
+            'parent_stakeholder_percentage': _('Parent stakeholder percentages'),
+            'parent_stakeholder_classification': _(
                 'Parent stakeholder classifications'),
-            'parent_investor_homepage': _('Parent stakeholder homepages'),
-            'parent_investor_opencorporates_link': _(
+            'parent_stakeholder_homepage': _('Parent stakeholder homepages'),
+            'parent_stakeholder_opencorporates_link': _(
                 'Parent stakeholder Opencorporates links'),
-            'parent_investor_comment': _('Comment on parent stakeholder'),
+            'parent_stakeholder_comment': _('Comment on parent stakeholder'),
             'crop': _('Crop'),
             'data_source_type': _('Data source type'),
         }
@@ -257,14 +255,14 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
         process_functions = {
             'intention': self._process_intention,
             'operational_stakeholder_name': self._process_investor_name,
-            'operational_stakeholder_country': self._process_stitched_together_field,
-            'operational_stakeholder_region': self._process_stitched_together_field,
+            #'operational_stakeholder_country': self._process_stitched_together_field,
+            #'operational_stakeholder_region': self._process_stitched_together_field,
             'investor_name': self._process_investor_name,
-            'investor_country': self._process_stitched_together_field,
-            'investor_region': self._process_stitched_together_field,
-            'parent_investor_classification': self._process_investor_classification,
-            'parent_investor_country': self._process_stitched_together_field,
-            'parent_investor_region': self._process_stitched_together_field,
+            #'investor_country': self._process_stitched_together_field,
+            #'investor_region': self._process_stitched_together_field,
+            'parent_stakeholder_classification': self._process_investor_classification,
+            'parent_stakeholder_country': self._process_stitched_together_field,
+            'parent_stakeholder_region': self._process_stitched_together_field,
             'crop': self._process_stitched_together_field,
             'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
             'negotiation_status': self._process_name_and_year,
@@ -346,7 +344,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
     def _process_stitched_together_field(self, value):
         if not isinstance(value, list):
             value = [value]
-        return [field.split("#!#")[0] for field in value]
+        return [field and field.split("#!#")[0] or "" for field in value]
 
 
     def _process_name_and_year(self, value):

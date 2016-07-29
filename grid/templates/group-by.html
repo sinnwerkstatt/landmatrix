@@ -78,7 +78,7 @@
                     {% if group == 'intention' %}
                       <li><a href="/data/by-intention/{{ i.slug }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if i.parent %}style="padding-left: 20px;"{% endif %}><span>{{ i.value }}</span></a></li>
                     {% elif not i.parent %}
-                    <li><a href="/data/by-intention/{{ i.slug }}/?{% add_or_update_param request.GET 'order_by' '' %}" class="toggle-tooltip intention-icon {{ i.value|slugify }}" title="{{ i.value }}"><span>{{ i.value }}</span></a></li>
+                    <li><a href="/data/by-intention/{{ i.slug }}/?{% add_or_update_param request.GET 'order_by' '' %}" class="toggle-tooltip intention-icon {{ i.slug }}" title="{{ i.value }}"><span>{{ i.value }}</span></a></li>
                     {% endif %}
                   {% endfor %}
                 </ul>
@@ -215,6 +215,9 @@
 {% endif %}
 {% else %}
 <p>{% trans "There are currently no deals matching your search criteria" %}. <a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.</p>
+{% endif %}
+{% if group_value %}
+        <p class="pull-right"><span class="label label-default">{{ data.count|intcomma }}</span> {% trans "deals" %}</p>
 {% endif %}
 {% endblock %}
 }

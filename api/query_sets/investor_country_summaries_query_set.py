@@ -1,9 +1,6 @@
 from api.query_sets.fake_query_set_with_subquery import FakeQuerySetFlat
 from django.core.urlresolvers import reverse
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-
 class InvestorCountrySummariesQuerySet(FakeQuerySetFlat):
 
     FIELDS = [
@@ -22,7 +19,7 @@ class InvestorCountrySummariesQuerySet(FakeQuerySetFlat):
         ('domestic',     'COUNT(DISTINCT CASE WHEN investor_country.id = deal_country.id THEN a.activity_identifier ELSE NULL END)'),
     ]
     ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_investorventureinvolvement AS ivi             ON ivi.fk_venture_id = operational_stakeholder.id",
+        "LEFT JOIN landmatrix_investorventureinvolvement AS ivi             ON ivi.fk_venture_id = operational_stakeholder.id AND ivi.role = 'ST'",
         "LEFT JOIN landmatrix_investor                  AS stakeholder      ON ivi.fk_investor_id = stakeholder.id",
         "LEFT JOIN landmatrix_country                   AS investor_country ON stakeholder.fk_country_id = investor_country.id",
         "LEFT JOIN landmatrix_region                    AS investor_region  ON investor_country.fk_region_id = investor_region.id",

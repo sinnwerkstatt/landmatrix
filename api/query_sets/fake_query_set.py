@@ -6,6 +6,7 @@ from django.db import connection
 
 from landmatrix.models.browse_condition import BrowseCondition
 from landmatrix.models.activity_attribute_group import ActivityAttribute
+from landmatrix.models.activity import Activity
 from grid.forms.browse_condition_form import ConditionFormset
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
@@ -201,8 +202,9 @@ class FakeQuerySet(QuerySet):
 
     def is_public_condition(self):
         if self.user.is_staff:
-            condition = ''
+            return ''
         else:
-            condition = 'a.is_public IS TRUE'
+            return "a.is_public = 't'"
 
-        return condition
+    def status_active_condition(self):
+        return "a.fk_status_id IN (%s)" % ', '.join((str(Activity.STATUS_ACTIVE), str(Activity.STATUS_OVERWRITTEN)))
