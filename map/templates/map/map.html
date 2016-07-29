@@ -5,13 +5,9 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
-
     <link rel="stylesheet" href="{% static "css/nprogress.css" %}"/>
     <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
-    <!-- <link rel="stylesheet" href="{% static "css/map.css" %}"/> -->
-    <link href="{% sass_src 'css/map.scss' %}" rel="stylesheet" type="text/css" />
-
-
+    <link rel="stylesheet" href="{% static "css/map.css" %}"/>
 {% endblock %}
 
 {% block page_title %}{% trans "Map" %}{% endblock %}

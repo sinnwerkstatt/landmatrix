@@ -1,4 +1,5 @@
-{% extends "charts/base_chart.html" %}{% load i18n static wagtailcore_tags  sass_tags %}
+{% extends "charts/base_chart.html" %}
+{% load i18n static wagtailcore_tags sass_tags %}
 
 {% block page_title %}{% trans "Perspective" %}{% endblock %}
 {% block title %}{% trans "Perspective" %}{% endblock %}
@@ -7,16 +8,12 @@
     <li>{% trans "Perspective" %}</li>
 {% endblock %}
 
-<link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
-<link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
-
-
-<link rel="stylesheet" href="{% static "css/nprogress.css" %}"/>
-<!-- <link rel="stylesheet" href="{% static "css/map.css" %}"/> -->
-<link href="{% sass_src 'css/map.scss' %}" rel="stylesheet" type="text/css" />
-
-
-<div id="alert_placeholder"></div>
+{% block head %}
+    <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/nprogress.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/map.css" %}"/>
+{% endblock %}
 
 {% block description %}
     <p>{% trans "Enter a location to set the center of a circle that displays an area equal to the size of the intended, concluded or failed land acquisitions (according to the selected option)." %}</p>
@@ -37,16 +34,13 @@
 {% endblock %}
 
 {% block data %}
-    <div id="map" class="map" title='{% trans "Perspective" %}'></div>
+<div id="map" class="map" title='{% trans "Perspective" %}'></div>
 
 <div id="popup" class="ol-popup">
     <a href="#" id="popup-closer" class="noul ol-popup-closer"></a>
     <div id="popup-content"></div>
 </div>
-
 {% endblock data %}
-
-
 
 {% block after %}
 {{ block.super }}
@@ -57,6 +51,7 @@ var mapDisableDeals = true,
 
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
 <script type="text/javascript" src="{% static "vendor/ol3-google-maps/ol3gm-debug.js" %}"></script>
+<script type="text/javascript" src="{% static "js/layers.js" %}"></script>
 <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
 <script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
 
@@ -65,19 +60,18 @@ var mapDisableDeals = true,
 var bigdealVectorLayer = new ol.layer.Vector()
     bigdealArea = 0;
 
-const
-        bigdealSphere = new ol.Sphere(6378137),
-        bigdealStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
-        color: '#fc941f',
-        width: 2
-    }),
-    fill: new ol.style.Fill({
-        color: 'rgba(252, 148, 31, 0.2)'
-    })
-});
-
-bigdealVectorLayer.setStyle([bigdealStyle]);
+const bigdealSphere = new ol.Sphere(6378137);
+//    bigdealStyle = new ol.style.Style({
+//        stroke: new ol.style.Stroke({
+//            color: '#fc941f',
+//            width: 2
+//        }),
+//        fill: new ol.style.Fill({
+//            color: 'rgba(252, 148, 31, 0.2)'
+//        })
+//    });
+//
+//bigdealVectorLayer.setStyle([bigdealStyle]);
 
 function drawCircleInMeter(coords, area) {
     if (!coords) {
@@ -117,9 +111,6 @@ $(document).ready(function () {
     });
 });
 </script>
-<script type="text/javascript" src="{% static "js/layers.js" %}"></script>
 <script type="text/javascript" src="{% static "js/main.js" %}"></script>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB59at4M4o0ERqk8OkvZOYjxH7N-8_HkNE&libraries=places"></script>
 
 {% endblock %}
