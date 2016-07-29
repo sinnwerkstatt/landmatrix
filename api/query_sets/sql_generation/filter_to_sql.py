@@ -12,6 +12,102 @@ from api.filters import FILTER_OPERATION_MAP
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
+class WhereCondition:
+    '''
+    Try and take an OO approach here. This is just a starting point.
+    WhereCondition objects build simple SQL strings, but there's a lot of
+    logic around that.
+    '''
+    def __init__(self, table_name, column_name, operator, value):
+        self.table_name = table_name
+        self.column_name = column_name
+        self.operator = operator
+        self.operator_sql = FILTER_OPERATION_MAP[operator][0]
+        self.value = value
+
+    @property
+    def is_value_numeric(self):
+        return (
+            isinstance(self.value, str) and
+            self.value.isnumeric() and
+            self.operator in ('lt', 'lte', 'gt', 'gte', 'is')
+        )
+
+    @property
+    def is_id_column(self):
+        return (
+            self.column_name == 'id' or
+            self.column_name == 'activity_identifier' or
+            self.column_name.endswith('_id')
+        )
+
+    def quote_value(self, value):
+        if value == 'on':
+            quote_value = 'TRUE'
+        elif self.operator in ('in', 'not_in') and isinstance(value, list):
+            sanitized_values = [v.strip().replace("'", "\\'") for v in value]
+            quoted_value = ",".join(
+                ["'{}'".format(v) for v in sanitized_values])
+        elif isinstance(value, str):
+            sanitized_value = value.strip().replace("'", "\\'")
+            if '##!##' in sanitized_value:
+                sanitized_value = sanitized_value.split('##!##')[0]
+            should_quote_string = (
+                self.operator != 'contains' and
+                not (self.is_value_numeric or self.is_id_column)
+            )
+            if should_quote_string:
+                quoted_value = "'{}'".format(sanitized_value)
+            else:
+                quoted_value = sanitized_value
+        else:
+            quoted_value = value
+
+        return quoted_value
+
+    def __str__(self):
+        if self.operator == 'is_empty':
+            operator_with_value = self.operator_sql
+        else:
+            quoted_value = self.quote_value(self.value)
+            operator_with_value = self.operator_sql % quoted_value
+
+        if self.is_value_numeric and not self.is_id_column:
+            column = "CAST({}.{} AS DECIMAL)".format(
+                self.table_name, self.column_name)
+        else:
+            column = "{}.{}".format(self.table_name, self.column_name)
+
+        sql = "{column} {operation}".format(
+            column=column, operation=operator_with_value)
+
+        return sql
+
+
+class WhereConditions:
+    '''
+    Wraps multiple WhereCondition objects (or raw SQL strings, or other
+    WhereConditions objects).
+    '''
+
+    def __init__(self, *conditions, conjunction='AND'):
+        self.conditions = list(conditions)
+        self.conjunction = conjunction
+
+    def append(self, condition):
+        self.conditions.append(condition)
+
+    def __bool__(self):
+        return bool(self.conditions)
+
+    def __str__(self):
+        joiner = ' {}\n'.format(self.conjunction)
+        clause = joiner.join([str(cond) for cond in self.conditions])
+        sql = '({})'.format(clause) if clause else ''
+
+        return sql
+
+
 class FilterToSQL:
 
     DEBUG = False
@@ -42,36 +138,33 @@ class FilterToSQL:
             print('FilterToSQL:   where', where_activity, "\n", where_investor)
         return "\n".join([where_activity, where_investor])
 
-    def _where_activity(self, taggroup=None, last_index=0):
+    def _where_activity(self, taggroup=None, start_index=0):
         # TODO: Split this beast up a bit better
         # TODO: lots of sql injection vulnerabilities here
-        where = []
         if taggroup:
-            where.append('AND (')
+            tags = taggroup
+            where = WhereConditions(conjunction='OR')
         else:
-            where.extend(self._where_activity_identifier())
-            where.extend(self._where_activity_deal_scope())
+            tags = self.filters.get("activity", {}).get("tags", {})
+            where = WhereConditions(conjunction='AND')
 
-        tags = taggroup or self.filters.get("activity", {}).get("tags", {})
+        if self.filters.get("deal_scope") and self.filters["deal_scope"] != "all":
+            condition = WhereCondition(
+                'a', 'deal_scope', 'is', self.filters["deal_scope"])
+            where.append(condition)
+
         for index, (tag, value) in enumerate(tags.items()):
-            i = last_index + index
+            if self.DEBUG:
+                print('_where_activity', index, tag, value)
+
+            i = start_index + index
             # Multiple rules?
             if isinstance(value, dict):
-                where.append(self._where_activity(taggroup=value, last_index=i))
-                last_index += len(value) - 1
+                sub_clauses = self._where_activity(
+                    taggroup=value, start_index=i)
+                where.append(sub_clauses)
+                start_index += len(value) - 1
                 continue
-            # Relation
-            relation = ''
-            if taggroup:
-                relation = index > 0 and 'OR' or ''
-            else:
-                relation = 'AND'
-            # Replace boolean
-            if value == 'on':
-                value = 'True'
-            if not isinstance(value, list):
-                value = [value]
-            sanitized_values = [v.strip().replace("'", "\\'") for v in value]
 
             try:
                 variable, key, operation = tag.split("__")
@@ -79,135 +172,51 @@ class FilterToSQL:
                 variable = tag
                 key = 'value'
                 operation = None
-                operation_sql = None
-            else:
-                operation_sql = self.OPERATION_MAP[operation][0]
+
+            table_name = 'attr_{}'.format(i)
 
             if variable == 'activity_identifier':
-                where.append(
-                    "%(relation)s a.activity_identifier %(operation)s" % {
-                        'relation': relation,
-                        'operation': operation_sql % value[0],
-                    }
-                )
-            # empty as operation or no value given
-            elif operation == "is_empty" or not value[0]:
-                where.append(
-                    "%(relation)s attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.%(key)s IS NULL " % {
-                        'relation': relation,
-                        'count': i,
-                        'variable': variable,
-                        'key': key,
-                    }
-                )
-            elif operation in ("in", "not_in"):
-                in_values = ",".join(
-                    ["'%s'" % value for value in sanitized_values])
-                if variable == 'target_region':
-                    where.append(
-                        "%(relation)s ar%(count)i.name %(op)s " % {
-                            'relation': relation,
-                            "count": i,
-                            "op": operation_sql % in_values,
-                        }
-                    )
-                elif variable in 'deal_country':
-                    where.append(
-                        "%(relation)s ac%(count)i.%(key)s %(op)s " % {
-                            'relation': relation,
-                            "count": i,
-                            "op": operation_sql % in_values,
-                            'key': key,
-                        }
-                    )
-                else:
-                    where.append(
-                        "%(relation)s attr_%(count)i.name = '%(variable)s' AND "
-                        "attr_%(count)i.%(key)s %(op)s " % {
-                            'relation': relation,
-                            "count": i,
-                            "key": key,
-                            "op": operation_sql % in_values,
-                            'variable': variable
-                        }
-                    )
-
+                condition = WhereCondition(
+                    'a', 'activity_identifier', operation, value)
+                where.append(condition)
+            elif variable == 'target_region':
+                table_name = 'ar{}'.format(i)
+                condition = WhereCondition(
+                    table_name, 'id', operation, value)
+                where.append(condition)
+            elif variable == 'deal_country':
+                table_name = 'ac{}'.format(i)
+                condition = WhereCondition(
+                    table_name, 'id', operation, value)
+                where.append(condition)
+            elif variable == 'type' and 'data_source_type' in self.columns:
                 # Special hack for weird results in data source filtering
-                if variable == 'type' and 'data_source_type' in self.columns:
-                    # This is results in a pretty broken query, but it's a
-                    # way to get the exclude media reports filter working
-                    # without major surgery. Works by lining up the
-                    # columns that we're joining twice :(
-                    where.append(
-                        """%(relation)s attr_d%(count)i.name = 'type'
-                           AND attr_d%(count)i.value = data_source_type.value""" % {
-                            'relation': relation,
-                            "count": i,
-                        })
-            elif operation == 'is' and variable in ('target_region', 'deal_country'):
-                where.append(
-                    "%(relation)s ar%(count)i.id %(op)s " % {
-                        'relation': relation,
-                        "count": i,
-                        "op": operation_sql % value[-1].replace("'", "\\'"),
-                    }
-                )
+                # This is results in a pretty broken query, but it's a
+                # way to get the exclude media reports filter working
+                # without major surgery. Works by lining up the
+                # columns that we're joining twice :(
+                conditions = WhereConditions(
+                    WhereCondition(table_name, 'name', 'is', 'type'),
+                    "{}.value = data_source_type.value".format(table_name))
+                where.append(conditions)
+            elif operation not in ('in', 'not_in') and isinstance(value, list):
+                for subvalue in value:
+                    conditions = WhereConditions(
+                        WhereCondition(table_name, 'name', 'is', variable),
+                        WhereCondition(table_name, key, operation, subvalue))
+                    where.append(conditions)
             else:
-                if self.DEBUG:
-                    print('_where_activity', index, tag, value)
+                conditions = WhereConditions(
+                    WhereCondition(table_name, 'name', 'is', variable),
+                    WhereCondition(table_name, key, operation, value))
+                where.append(conditions)
 
-                for v in value:
-                    year = None
-                    if "##!##" in v:
-                        v, year = v.split("##!##")[0], v.split("##!##")[1]
-                    operation_type = not v.isdigit() and 1 or 0
-                    operation_sql = self.OPERATION_MAP[operation][operation_type]
-                    if variable == "region":
-                        where.append(
-                            "%(relation)s ar%(count)i.name %(op)s " % {
-                                'relation': relation,
-                                "count": i,
-                                "op": operation_sql % v.replace("'", "\\'")
-                            }
-                        )
-                    else:
-                        if operation in ('lt', 'lte', 'gt', 'gte', 'is') and str(v).isnumeric():
-                            comparator = "attr_%(count)i.name = '%(variable)s' AND CAST(attr_%(count)i.%(key)s AS DECIMAL)" % {
-                                "count": i,
-                                'variable': variable,
-                                'key': key,
-                            }
-                        else:
-                            comparator = "attr_%(count)i.name = '%(variable)s' AND attr_%(count)i.%(key)s" % {
-                                "count": i,
-                                'variable': variable,
-                                'key': key,
-                            }
-                        where.append(
-                            v and "%(relation)s %(comparator)s %(op)s " % {
-                                'relation': relation,
-                                'comparator': comparator,
-                                "op": operation_sql % v.replace("'", "\\'"),
-                            } or ""
-                        )
             is_operation_limits = self._where_activity_filter_is_operator(
                 variable, operation, value)
-            where.extend(is_operation_limits)
-        if taggroup:
-            where.append(')')
-        return '\n'.join(where)
+            if is_operation_limits:
+                where.append(is_operation_limits)
 
-    def _where_activity_identifier(self):
-        # TODO: I don't think this is used anymore?
-        where = []
-
-        if self.filters.get("activity", {}).get("identifier"):
-            for f in self.filters.get("activity").get("identifier"):
-                operation = f.get("op")
-                value = ",".join(filter(None, [s.strip() for s in f.get("value").split(",")]))
-                where.append("AND a.activity_identifier %s " % self.OPERATION_MAP[operation][0] % value)
-
-        return where
+        return 'AND {}'.format(where) if where else ''
 
     def _where_activity_deal_scope(self):
         where = []
@@ -217,10 +226,17 @@ class FilterToSQL:
         return where
 
     def _where_activity_filter_is_operator(self, variable, operation, value):
-        where = []
+        if not isinstance(value, list):
+            value = [value]
+
+        where = ''
         # TODO: optimize SQL? This query seems painful, it could be
         # better as an array_agg possibly
-        if operation == 'is' and variable not in ('deal_country', 'target_country', 'target_region', 'investor_country', 'investor_region'):
+        excluded_variables = (
+            'deal_country', 'target_country', 'target_region', 
+            'investor_country', 'investor_region',
+        )
+        if operation == 'is' and variable not in excluded_variables:
             # 'Is' operations requires that we exclude other values,
             # otherwise it's just the same as contains
 
@@ -239,8 +255,8 @@ class FilterToSQL:
                 allowed_values = (value[-1].replace("'", "\\'"),)
 
             # Exclude deals with given AND other values
-            where.append("""
-                AND a.id NOT IN (
+            where = """
+                a.id NOT IN (
                     SELECT fk_activity_id
                     FROM landmatrix_activityattribute
                     WHERE landmatrix_activityattribute.name = '%(variable)s'
@@ -249,7 +265,7 @@ class FilterToSQL:
                 """ % {
                 'variable': variable,
                 'value': "', '".join([str(v) for v in allowed_values]),
-            })
+            }
 
         return where
 
