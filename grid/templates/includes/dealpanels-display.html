@@ -8,7 +8,11 @@
                     {{ field.label }}
                 </div>
                 <div class="col-md-9">
-                    {{ field.value|safe|decimalgroupstring }}
+                    {% if field.name == 'url' %}
+                        <a href="{{ field.value|safe|decimalgroupstring }}" target="_blank">{{ field.value|safe|decimalgroupstring }}</a>
+                    {% else %}
+                        {{ field.value|safe|decimalgroupstring }}
+                    {% endif %}
                 </div>
             </div>
             {% if field.name == 'location' %}

@@ -15,7 +15,7 @@ class PublicUserInformationForm(BaseForm):
 
     tg_public_user = TitleField(
         required=False, label="", initial=_("User information"))
-    action_comment = forms.CharField(
+    tg_action_comment = forms.CharField(
         required=True, label="",
         help_text=_("Write something about yourself and your company. This won't be published."),
         widget=CommentInput)

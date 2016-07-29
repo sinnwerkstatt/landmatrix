@@ -14,10 +14,6 @@ from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.comment import Comment
 from grid.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
 
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-
 class BaseForm(forms.Form):
     DEBUG = False
     error_css_class = "error"
@@ -101,21 +97,27 @@ class BaseForm(forms.Form):
                 keys = list(filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n), o), self.data.keys()))
                 keys.sort()
                 for i in range(len(keys)):
-                    if i % 2 == 0:
+                    count = len(f.widget.get_widgets())
+                    if i % count == 0:
                         value = self.data.get(len(keys) > i and keys[i] or "-", "")
-                        year = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
-                        if value or year:
-                            # allow zero value if yearbasedintegerfield
-                            if value and (isinstance(f.fields[0], forms.IntegerField) or value != "0"):
-                                if isinstance(f.fields[0], forms.ChoiceField):
-                                    try:
-                                        value = str(dict(f.fields[0].choices).get(value))
-                                    except:
-                                        raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
-                                else:
-                                    value = value
+                        value2 = None
+                        if count > 2:
+                            value2 = self.data.get(len(keys) > i+1 and keys[i] or "-", "")
+                        year = self.data.get(len(keys) > i+2 and keys[i+1] or "-", "")
+                        if value or value2 or year:
+                            if value and isinstance(f.fields[0], forms.ChoiceField):
+                                try:
+                                    value = str(dict(f.fields[0].choices).get(value))
+                                except:
+                                    raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
+                            if value2 and isinstance(f.fields[0], forms.ChoiceField):
+                                try:
+                                    value2 = str(dict(f.fields[0].choices).get(value2))
+                                except:
+                                    raise IOError("Value '%s' for field %s (%s) not allowed." % (value2, n, type(self)))
                             attributes[name] = {
                                 'value': value,
+                                'value2': value2,
                                 'date': year,
                             }
             elif isinstance(f, forms.FileField):
@@ -123,7 +125,6 @@ class BaseForm(forms.Form):
                 if value:
                     attributes[name] = {'value': value}
             elif isinstance(f, forms.DecimalField):
-                raise IOError(f)
                 value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
                 if value:
                     attributes[name] = {'value': str(value)}
