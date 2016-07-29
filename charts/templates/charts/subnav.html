@@ -18,16 +18,16 @@
                         {% if not request.GET.country and not request.GET.region %}
                         <li{% if chart == "chart_transnational_deals" %} class="active"{% endif %}><a href="{% url "chart_transnational_deals" %}">{% trans "Web of transnational deals" %}</a></li>
                         {% endif %}
-                        <li class="dropdown{% if chart == "chart_overview" %} active{% endif %}">
-                            <a href="{% url "chart_overview" %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 {% trans "Dynamics Overview" %}
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="change-variable" href="{% url "chart_overview" %}?variable=intention_of_investment">{% trans "Intention of investment" %}</a></li>
-                                <li><a class="change-variable" href="{% url "chart_overview" %}?variable=negotiation_status">{% trans "Negotiation status" %}</a></li>
-                                <li><a class="change-variable" href="{% url "chart_overview" %}?variable=implementation_status">{% trans "Implementation status" %}</a></li>
-                                <li><a class="change-variable" href="{% url "chart_overview" %}?variable=agriculture">{% trans "Investment in Agriculture" %}</a></li>
+                                <li{% if chart == "chart_overview" %} class="active"{% endif %}><a href="{% url "chart_intention" %}">{% trans "Intention of investment" %}</a></li>
+                                <li{% if chart == "chart_overview" %} class="active"{% endif %}><a href="{% url "chart_negotiation_status" %}">{% trans "Negotiation status" %}</a></li>
+                                <li{% if chart == "chart_overview" %} class="active"{% endif %}><a href="{% url "chart_implementation_status" %}">{% trans "Implementation status" %}</a></li>
+                                <li{% if chart == "chart_overview" %} class="active"{% endif %}><a href="{% url "chart_intention_agriculture" %}">{% trans "Investment in Agriculture" %}</a></li>
                             </ul>
                         </li>
                         {% if not request.GET.country and not request.GET.region %}

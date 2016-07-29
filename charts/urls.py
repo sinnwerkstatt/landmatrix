@@ -14,17 +14,16 @@ Including another URLconf
 from django.conf.urls import url, patterns
 from .views import *
 
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-
 urlpatterns = patterns(
     'chart.views',
     url(r'^$', ChartRedirectView.as_view(),
         name='charts'),
     url(r'^web-of-transnational-deals/$', TransnationalDealsChartView.as_view(),
         name='chart_transnational_deals'),
-    url(r'^overview$', OverviewChartView.as_view(), name='chart_overview'),
+    url(r'^intention/$', IntentionChartView.as_view(), name='chart_intention'),
+    url(r'^negotiation-status/$', NegotiationStatusChartView.as_view(), name='chart_negotiation_status'),
+    url(r'^implementation-status/$', ImplementationStatusChartView.as_view(), name='chart_implementation_status'),
+    url(r'^intention-agriculture/$', IntentionAgricultureChartView.as_view(), name='chart_intention_agriculture'),
     url(r'^map-of-investments/$', MapOfInvestmentsChartView.as_view(),
         name='chart_map_of_investments'),
     url(r'^perspective/$', PerspectiveChartView.as_view(),
@@ -42,8 +41,6 @@ urlpatterns = patterns(
         name='chart_contract_farming'),
 
     # PDF views for charts
-    url(r'^overview\.pdf$', OverviewChartView.as_view(),
-        {'format': 'PDF'}, name='chart_overview_pdf'),
     url(r'^transnational-deals\.pdf$', TransnationalDealsChartView.as_view(),
         {'format': 'PDF'}, name='chart_transnational_deals_pdf'),
     url(r'^map-of-investments\.pdf$', MapOfInvestmentsChartView.as_view(),
@@ -60,5 +57,13 @@ urlpatterns = patterns(
         {'format': 'PDF'}, name='chart_logging_pdf'),
     url(r'^contract-farming/$', ContractFarmingChartView.as_view(),
         {'format': 'PDF'}, name='chart_contract_farming_pdf'),
+    url(r'^intention/$', IntentionChartView.as_view(),
+        {'format': 'PDF'}, name='chart_intention_pdf'),
+    url(r'^negotiation-status/$', NegotiationStatusChartView.as_view(),
+        {'format': 'PDF'}, name='chart_negotiation_status_pdf'),
+    url(r'^implementation-status/$', ImplementationStatusChartView.as_view(),
+        {'format': 'PDF'}, name='chart_implementation_status_pdf'),
+    url(r'^intention-agriculture/$', IntentionAgricultureChartView.as_view(),
+        {'format': 'PDF'}, name='chart_intention_agriculture_pdf'),
 
 )

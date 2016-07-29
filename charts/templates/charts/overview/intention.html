@@ -1,0 +1,11 @@
+{% extends "charts/overview/base.html" %}
+{% load i18n %}
+
+{% block description %}
+<p>
+	{% trans 'Deals divided by intention of investment.' %}
+</p>
+{{ block.super }}
+{% endblock %}
+
+{% block variable %}intention{% endblock %}

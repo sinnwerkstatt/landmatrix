@@ -54,9 +54,30 @@ class ChartRedirectView(RedirectView):
             return reverse('chart_transnational_deals')
 
 
-class OverviewChartView(ChartPDFView):
-    template_name = "charts/overview.html"
-    chart = "chart_overview"
+class IntentionChartView(ChartPDFView):
+    template_name = "charts/overview/intention.html"
+    chart = "chart_intention"
+    # This page needs a massive delay for some reason
+    pdf_javascript_delay = 4000
+
+
+class NegotiationStatusChartView(ChartPDFView):
+    template_name = "charts/overview/negotiation_status.html"
+    chart = "chart_negotiation_status"
+    # This page needs a massive delay for some reason
+    pdf_javascript_delay = 4000
+
+
+class ImplementationStatusChartView(ChartPDFView):
+    template_name = "charts/overview/implementation_status.html"
+    chart = "chart_implementation_status"
+    # This page needs a massive delay for some reason
+    pdf_javascript_delay = 4000
+
+
+class IntentionAgricultureChartView(ChartPDFView):
+    template_name = "charts/overview/intention-agriculture.html"
+    chart = "chart_intention_agriculture"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
 

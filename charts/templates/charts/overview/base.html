@@ -1,4 +1,5 @@
-{% extends "charts/base_chart.html" %}{% load i18n static wagtailcore_tags %}
+{% extends "charts/base_chart.html" %}
+{% load i18n static wagtailcore_tags %}
 
 {% block page_title %}{% trans "Dynamics Overview" %}{% endblock %}
 {% block title %}{% trans "Dynamics Overview" %}{% endblock %}
@@ -17,15 +18,7 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 {% endblock %}
 
 {% block description %}
-<div class="desc">
-    <p class="intention_of_investment" style="display: none">{% trans 'Deals divided by intention of investment.' %}</p>
-    <p class="negotiation_status">{%  trans 'Deals divided by negotiation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %}<a href="{% slugurl 'about' %}#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left noul" title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i class="lm lm-question-circle"> </i></a></p>
-    <p class="implementation_status" style="display: none">{%trans 'Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately.' %} <a href="{% slugurl 'about' %}#how-does-the-global-observatory-deal-with-different-stages-of-negotiation-and-implementation" class="toggle-tooltip left noul" title="{% trans 'The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark.' %}"><i class="lm lm-question-circle"> </i></a></p>
-    <p class="agriculture" style="display: none">{% trans 'Deals having „agriculture“ as main intention of investment disaggregated into sub-sections.' %}</p>
-
-    <input type="checkbox" name="use_deal_size" checked>
-
-</div>
+<input type="checkbox" name="use_deal_size" checked>
 {% endblock %}
 
 {% block legend %}{% endblock %}
@@ -46,21 +39,11 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.dynamic.js" %}"></script>
 <script type="text/javascript" src="{% static "legacy/vendor/RGraph.common.tooltips.js" %}"></script>
 <script type="text/javascript">
-
-var datatype = 'size';
+var datatype = 'size'
+    variable = "{% block variable %}{% endblock %}";
 
 $(document).ready(function () {
-    $("a.change-variable").click(function (e) {
-        e.preventDefault();
-        var c_self = this;
-        $(".navbar-subnav .active").removeClass("active");
-        $(".navbar-subnav a[href='" + $(this).attr("href") + "']").parents("li").addClass("active");
-        //($(".navbar-subnav .active a").attr("href").indexOf("intention") > -1 && $(".negotiation_status").show() || $(".negotiation_status").hide());
-        $(".desc p").hide().filter("." + $(this).attr("href").replace(/.*\?variable=/, "")).show();
-        draw();
-        return false;
-    });
-    $("a.change-variable:first").click();
+    draw();
 
     var dataSwitch = $("[name='use_deal_size']");
     dataSwitch.bootstrapSwitch({
@@ -162,11 +145,11 @@ function draw (callback, chart_data) {
         //$("ul.legend li:last span").text(" (" + numberWithCommas(not_available) + (show_deals && " deals" || " hectares") + ", " + not_available_per + "%)");
         (typeof callback == "function") && callback();
     } else {
-        var json_query = $(".navbar-subnav li .active a").attr("href").replace(/.*\?variable=/, "") + ".json";
+        var json_query = variable + ".json";
         var query_params = "";
         // rename agriculture
         if (json_query == "agriculture.json") {
-            json_query = "intention_of_investment.json";
+            json_query = "intention.json";
             query_params += "&intention=agriculture";
         }
         if ((json_query + query_params) in storage) {
