@@ -150,7 +150,7 @@ function draw (callback, chart_data) {
         // rename agriculture
         if (json_query == "agriculture.json") {
             json_query = "intention.json";
-            query_params += "&intention=agriculture";
+            query_params += "?intention=Agriculture";
         }
         if ((json_query + query_params) in storage) {
             draw(callback, storage[json_query + query_params]);

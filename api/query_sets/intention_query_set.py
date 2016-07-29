@@ -7,11 +7,12 @@ from grid.forms.deal_general_form import DealGeneralForm
 
 
 class IntentionQuerySet(FakeQuerySetWithSubquery):
+    intention = None
 
     FIELDS = [
         ('intention',  'sub.intention'),
         ('deal_count', 'COUNT(DISTINCT a.activity_identifier)'),
-        ('deal_size',  'ROUND(SUM(a.deal_size))')
+        ('deal_size',  'COALESCE(ROUND(SUM(a.deal_size)), 0)')
     ]
     SUBQUERY_FIELDS = [
         ('intention', """CASE
@@ -30,7 +31,7 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
         super().__init__(request)
         self.intention = request.GET.get("intention", "")
 
-    INTENTIONS = list(filter(lambda k: "Mining" not in k, [str(i[1]) for i in DealGeneralForm().fields["intention"].choices]))
+    INTENTIONS = list(filter(lambda k: "Resource extraction" not in k, [str(i[1]) for i in DealGeneralForm().fields["intention"].choices]))
     INTENTIONS_AGRICULTURE = [str(i[1]) for i in DealGeneralForm().fields["intention"].choices[0][2]]
 
     def all(self):
@@ -57,6 +58,7 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
                  "deals": i['deal_count'],
                  "hectares": i['deal_size'],
              }
+
         output = []
         for i in filter_intentions:
             i = (i == "Agriunspecified" and "Non-specified") or (i == "Other (please specify)" and "Other") or i
