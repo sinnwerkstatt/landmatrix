@@ -47,7 +47,7 @@ class DealDataSourceForm(BaseForm):
     )
     file = FileFieldWithInitial(
         required=False, label=_("File"),
-        help_text=_("Maximum file size: 2MB")
+        help_text=_("Maximum file size: 10MB")
     )
     file_not_public = forms.BooleanField(
         required=False, label=_("Keep PDF not public")
