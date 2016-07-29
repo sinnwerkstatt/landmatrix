@@ -199,6 +199,20 @@ class FilterToSQL:
                     WhereCondition(table_name, 'name', 'is', 'type'),
                     "{}.value = data_source_type.value".format(table_name))
                 where.append(conditions)
+            elif variable == 'negotiation_status':
+                # Negotiation status is a special case in that we need to
+                # filter on the latest by year.
+                subselect = '''
+                    SELECT MAX(date)
+                    FROM landmatrix_activityattribute
+                    WHERE name = 'negotiation_status' AND
+                        fk_activity_id = a.id
+                '''
+                conditions = WhereConditions(
+                    WhereCondition(table_name, 'name', 'is', variable),
+                    "{}.date = ({})".format(table_name, subselect),
+                    WhereCondition(table_name, key, operation, value))
+                where.append(conditions)
             elif operation not in ('in', 'not_in') and isinstance(value, list):
                 for subvalue in value:
                     conditions = WhereConditions(
