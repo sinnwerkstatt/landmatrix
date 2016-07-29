@@ -18,7 +18,9 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 {% endblock %}
 
 {% block description %}
-<input type="checkbox" name="use_deal_size" checked>
+<p>
+    {% trans "Show size or number of deals" %}: <input type="checkbox" name="use_deal_size" checked>
+</p>
 {% endblock %}
 
 {% block legend %}{% endblock %}
