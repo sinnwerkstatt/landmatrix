@@ -1215,16 +1215,18 @@ a.cc-icons:hover {
 .intention-icon:hover {
   background-position: 0 -32px; }
 
+.logging,
 .forestry {
   background-position: -32px 0; }
 
+.logging:hover,
 .forestry:hover {
   background-position: -32px -32px; }
 
-.mining {
+.resource-extraction {
   background-position: -64px 0; }
 
-.mining:hover {
+.resource-extraction:hover {
   background-position: -64px -32px; }
 
 .tourism {
