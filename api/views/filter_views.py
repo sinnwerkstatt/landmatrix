@@ -41,13 +41,14 @@ class FilterView(APIView):
                     variable = request_data['variable']
                     operator = request_data['operator']
                     value = request_data['value']
+                    display_value = request_data.get('display_value', None)
                 except KeyError as err:
                     raise serializers.ValidationError(
                         {err.args[0]: _("This field is required.")})
                 label = get_field_label(variable)
                 new_filter = Filter(
                     variable=variable, operator=operator, value=value,
-                    label=label, name=name)
+                    label=label, name=name, display_value=display_value)
 
             stored_filters[new_filter.name] = new_filter
         elif action == 'remove':

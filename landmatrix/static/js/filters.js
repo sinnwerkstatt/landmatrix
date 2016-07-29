@@ -65,7 +65,7 @@ function updateFilters(data) {
             }
             filternames.push(tag);
             var finalHtml = '<a class="delete-row toggle-tooltip" href="javascript:removeFilter(\'' + data[item].name + '\')" title="'
-            var filterPopup = data[item].variable + " " + data[item].operator + " " + data[item].value;
+            var filterPopup = data[item].label + " " + data[item].operator + " " + data[item].display_value;
             finalHtml = finalHtml + filterPopup + '">' + label + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
         }
@@ -215,10 +215,15 @@ $(document).ready(function () {
 
     $("#filterrow form").submit(function (e) {
         e.preventDefault();
-        var form = $(this);
-        var data = form.serialize();
-        console.log("Filter for transmit: ", data);
-
+        var data = $(this).serialize(),
+            value = $(this).find('[name=value]');
+        // display value (for select/radio/checkbox)
+            debugger;
+        if (value.is('select')) {
+            data += '&display_value=' + value.find(':selected').text();
+        } else if (value.is(':checkbox,:radio')) {
+            data += '&display_value=' + value.filter(':checked').parent().text().trim();
+        }
         $.post(
             '/api/filter.json?action=set&' + data,
             function () {

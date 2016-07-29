@@ -90,15 +90,18 @@ class BaseFilter(dict):
 class Filter(BaseFilter):
 
     def __init__(
-            self, variable, operator, value, name=None, label=None, key=None):
+            self, variable, operator, value, name=None, label=None, key=None, display_value=None):
         if operator not in FILTER_OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
 
         if name is None:
             name = generate_filter_name()
 
+        if not display_value:
+            display_value = value
+
         super().__init__(name=name, variable=variable, operator=operator,
-                         value=value, label=label, key=key)
+                         value=value, label=label, key=key, display_value=display_value)
 
     @classmethod
     def from_session(cls, filter_dict):
@@ -109,7 +112,8 @@ class Filter(BaseFilter):
         return cls(
             filter_dict['variable'], filter_dict['operator'],
             filter_dict['value'], name=filter_dict.get('name'),
-            label=filter_dict.get('label'), key=filter_dict.get('key'))
+            label=filter_dict.get('label'), key=filter_dict.get('key'),
+            display_value=filter_dict.get('display_value'))
 
     def to_sql_format(self):
         """
