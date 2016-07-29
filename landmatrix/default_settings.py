@@ -275,7 +275,7 @@ WAGTAIL_SITE_NAME = 'Land Matrix'
 
 # Limit all uploads to 20MB, and data sources to 1MB
 MAX_UPLOAD_SIZE = 20971520
-DATA_SOURCE_MAX_UPLOAD_SIZE = 1048576
+DATA_SOURCE_MAX_UPLOAD_SIZE = 10485760
 DATA_SOURCE_DIR = 'uploads'  # appended to MEDIA_ROOT/MEDIA_URL
 
 DEFAULT_FROM_EMAIL = 'noreply@beta.landmatrix.org'

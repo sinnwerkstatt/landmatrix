@@ -72,4 +72,4 @@ class FileFieldWithInitial(forms.FileField):
         webserver) but it does let us give the user a nice error message.
         '''
         if value and value._size > settings.DATA_SOURCE_MAX_UPLOAD_SIZE:
-            raise ValidationError(_("Uploaded files must be less than 1MB."))
+            raise ValidationError(_("Uploaded files must be less than 10MB."))
