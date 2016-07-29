@@ -15,7 +15,6 @@ BASE_JOIN = """LEFT JOIN """ + Status._meta.db_table + """ AS status ON status.i
     LEFT JOIN """ + Investor._meta.db_table + """ AS os ON iai.fk_investor_id = os.id
     LEFT JOIN """ + InvestorVentureInvolvement._meta.db_table + """ AS ivi ON ivi.fk_venture_id = os.id
     LEFT JOIN """ + Investor._meta.db_table + """ AS s ON ivi.fk_investor_id = s.id
-    LEFT JOIN """ + Status._meta.db_table + """ AS os_st ON os.fk_status_id = os_st.id
     LEFT JOIN """ + ActivityAttribute._meta.db_table + """ AS target_country ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country' 
     LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON CAST(target_country.value AS NUMERIC) = deal_country.id
     LEFT JOIN """ + Region._meta.db_table + """ AS deal_region ON deal_country.fk_region_id = deal_region.id
@@ -24,7 +23,7 @@ HECTARES_SQL = "ROUND(COALESCE(SUM(sub.deal_size)), 0) AS deal_size"
 BASE_CONDITION = """
     a.is_public = 't'
     AND status.name IN ('active', 'overwritten')
-    AND os_st.name IN ('active', 'overwritten')
+    AND os.fk_status_id IN ('active', 'overwritten')
 """
 
 
@@ -48,9 +47,11 @@ class StatisticsQuerySet(FakeQuerySetFlat):
         LEFT JOIN """ + ActivityAttribute._meta.db_table + """ AS target_country ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country' 
         LEFT JOIN """ + Country._meta.db_table + """ AS deal_country ON CAST(target_country.value AS NUMERIC) = deal_country.id
     WHERE
-        a.is_public = 't'
-        AND a.fk_status_id IN (2,3)
-        """ + self.regional_condition() + """
+        """ + "\nAND ".join(filter(None, [
+                self.status_active_condition(),
+                self.is_public_condition(),
+                self.regional_condition()
+            ])) + """
         AND a.negotiation_status IS NOT NULL
     GROUP BY a.negotiation_status
         """
@@ -61,13 +62,11 @@ class StatisticsQuerySet(FakeQuerySetFlat):
         if self.DEBUG: pprint(result)
         return result
 
+
+
     def regional_condition(self):
         if self.country:
-            return """
-    AND deal_country.value = '%s'
-            """ % self.country
+            return "deal_country.value = '%s'" % self.country
         elif self.region:
-            return """
-    AND deal_country.fk_region_id = %s
-            """ % self.region
+            return "deal_country.fk_region_id = %s" % self.region
         return ''
