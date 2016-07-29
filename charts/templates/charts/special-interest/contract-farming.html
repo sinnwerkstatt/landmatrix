@@ -8,19 +8,18 @@
 {% endblock %}
 
 {% block chart %}
-            <div class="contract_farming row chart hidden">
-                <div class="col-md-6">
-                    <div id="PieChart" class="charts" align="center">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div id="DotChart" class="charts" align="center">
-                    </div>
-                </div>
-            </div>
+<div class="contract_farming row chart">
+    <div class="col-md-6">
+        <div id="PieChart" class="charts" align="center">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div id="DotChart" class="charts" align="center">
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
 function draw() {
-    $(".contract_farming").removeClass('hidden');
     buildPieChart();
     buildDotChart();
     $("#size,#legendbox").hide();

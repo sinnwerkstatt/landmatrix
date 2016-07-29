@@ -218,7 +218,6 @@ $(document).ready(function () {
         var data = $(this).serialize(),
             value = $(this).find('[name=value]');
         // display value (for select/radio/checkbox)
-            debugger;
         if (value.is('select')) {
             data += '&display_value=' + value.find(':selected').text();
         } else if (value.is(':checkbox,:radio')) {

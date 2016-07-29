@@ -7,12 +7,19 @@
 </p>
 {% endblock %}
 
+{% block legend %}
+<ul class="media-list legend offset">
+    <li><i class="icon icon-none" style="background-color: #fc941f;"></i><span> {% trans "Animals" %}</span></li>
+    <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Minerals" %}</span></li>
+    <li><i class="icon icon-none" style="background-color: #b9d635;"></i><span> {% trans "Crops" %}</span></li>
+</ul>
+{% endblock %}
+
 {% block chart %}
-<div class="produce_info chart hidden" id="TreeChart" align="center">
+<div class="produce_info chart" id="TreeChart" align="center">
 </div>
 <script type="text/javascript">
 function draw() {
-	$(".produce_info").removeClass('hidden');
     buildTreeChart();
 };
 </script>

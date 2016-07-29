@@ -7,6 +7,14 @@
 </p>
 {% endblock %}
 
+{% block legend %}
+<ul class="media-list legend offset">
+    <li><i class="icon icon-none" style="background-color: #ed881b;"></i><span>{% trans "Concluded" %}</span></li>
+    <li><i class="icon icon-none" style="background-color: #b96c12;"></i><span>{% trans "Intended" %}</span></li>
+    <li><i class="icon icon-none" style="background-color: #884e0e;"></i><span>{% trans "Failed" %}</span></li>
+</ul>
+{% endblock %}    
+
 {% block chart %}
 <div id="stats">
     <div class="col-sm-6 size">

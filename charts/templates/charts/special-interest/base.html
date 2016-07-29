@@ -26,26 +26,6 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
     </select>
 </form-->
 {% endblock %}
-{% block legend %}
-    <ul class="media-list legend offset agricultural_drivers hidden">
-        <li><i class="icon icon-none" style="background-color: #44c42d;"></i><span> {% trans "Food-Crops" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Non-Food Crops" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #179961;"></i><span> {% trans "Flex-Crops" %}</span></li>
-        <li><i class="icon icon-none"
-               style="background-color: #7c9a61;"></i><span> {% trans "Multiple Use - Several crops in different categories" %}</span>
-        </li>
-    </ul>
-    <ul class="media-list legend offset produce_info hidden">
-        <li><i class="icon icon-none" style="background-color: #fc941f;"></i><span> {% trans "Animals" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #4bbb87;"></i><span> {% trans "Minerals" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #b9d635;"></i><span> {% trans "Crops" %}</span></li>
-    </ul>
-    <ul class="media-list legend offset resource_extraction logging hidden">
-        <li><i class="icon icon-none" style="background-color: #ed881b;"></i><span>{% trans "Concluded" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #b96c12;"></i><span>{% trans "Intended" %}</span></li>
-        <li><i class="icon icon-none" style="background-color: #884e0e;"></i><span>{% trans "Failed" %}</span></li>
-    </ul>
-{% endblock %}
 
 {% block data %}
     <div class="row">
@@ -79,9 +59,6 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 		                return false;
 		            });
 		            // Init chart
-			        $(".chart,.legend").addClass('hidden');
-			        $("#size").show();
-			        $("#legendbox").show();
 			        draw();
 		        });
 

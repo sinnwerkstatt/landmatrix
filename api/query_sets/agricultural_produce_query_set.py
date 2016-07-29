@@ -20,7 +20,7 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
                 JOIN landmatrix_activityattribute      AS kv
                     ON a.id = kv.fk_activity_id
                     AND kv.name = 'crops'
-                    AND kv.value LIKE '%' || c.id || '%'
+                    AND CAST(kv.value AS NUMERIC) = c.id
             ) > 1 THEN 'Multiple use'
             ELSE (
                 SELECT ap.name
@@ -29,7 +29,7 @@ class AgriculturalProduceQuerySet(FakeQuerySetWithSubquery):
                 JOIN landmatrix_activityattribute      AS kv
                     ON a.id = kv.fk_activity_id
                     AND kv.name = 'crops'
-                    AND kv.value LIKE '%' || c.id || '%'
+                    AND CAST(kv.value AS NUMERIC) = c.id
                 LIMIT 1
             )
         END"""),
