@@ -185,7 +185,6 @@ class FakeQuerySet(QuerySet):
             FROM %s AS activity_attrs
             WHERE a.id = activity_attrs.fk_activity_id AND activity_attrs.name = 'type'
         ) = ARRAY['Media report']""" % ActivityAttribute._meta.db_table
-
         self._set_filters(get_data)
         # self._add_order_by_columns()
 

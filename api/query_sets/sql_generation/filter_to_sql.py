@@ -9,9 +9,6 @@ from api.query_sets.sql_generation.sql_builder_data import SQLBuilderData
 from api.filters import FILTER_OPERATION_MAP
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-
 class WhereCondition:
     '''
     Try and take an OO approach here. This is just a starting point.
@@ -136,7 +133,7 @@ class FilterToSQL:
         where_investor = self.where_investor()
         if self.DEBUG:
             print('FilterToSQL:   where', where_activity, "\n", where_investor)
-        return "\n".join([where_activity, where_investor])
+        return "\n".join(filter(None, [where_activity, where_investor]))
 
     def _where_activity(self, taggroup=None, start_index=0):
         # TODO: Split this beast up a bit better
