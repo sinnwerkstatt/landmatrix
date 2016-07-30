@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from pprint import pprint
 from traceback import print_stack
 import json
+import pytz
 
 from django.utils.encoding import force_text
 from django.views.generic import View
@@ -10,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, models
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 from editor.models import UserRegionalInfo
 from grid.views.activity_protocol import ActivityProtocol
@@ -176,12 +178,13 @@ class ChangesetProtocol(View):
             except:
                 # User doesn't exist anymore
                 user = force_text(_("Deleted User"))
+            history_date = timezone.localtime(activity.history_date, timezone.get_current_timezone())
             template_data = {
                 'id': activity.pk,
                 "deal_id": activity.activity_identifier,
                 "history_id": activity.id,
                 "user": user,
-                "timestamp": activity.history_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "timestamp": history_date.strftime("%Y-%m-%d %H:%M:%S"),
                 "comment": activity.comment,
             }
         else:
