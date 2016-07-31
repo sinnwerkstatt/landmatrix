@@ -77,8 +77,8 @@ class SaveDealView(TemplateView):
         if all(form.is_valid() for form in forms):
             # Register user if not authenticated
             if not self.request.user.is_authenticated():
-                user_information = forms[-1]
-                if not isinstance(user_information, PublicUserInformationForm):
+                user_information = self.get_form_by_type(forms, PublicUserInformationForm)
+                if not user_information:
                     raise IOError(_('User is not authenticated and not user information given.'))
                 data = user_information.cleaned_data
                 names = data.get('public_user_name', '').split(' ')
@@ -112,13 +112,19 @@ class SaveDealView(TemplateView):
         hactivity.save()
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)
-        hactivity.fully_updated = self.get_fully_updated(forms[-1])
+        form = self.get_form_by_type(forms, DealActionCommentForm)
+        if form:
+            hactivity.fully_updated = self.get_fully_updated(form)
+        else:
+            hactivity.fully_updated = False
         hactivity.save()
         hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
 
         # Create activity feedback
-        self.create_activity_feedback(hactivity, forms[-1])
+        form = self.get_form_by_type(forms, DealActionCommentForm)
+        if form:
+            self.create_activity_feedback(hactivity, form)
 
         # Create success message
         if self.request.user.has_perm('landmatrix.change_activity'):
@@ -209,10 +215,14 @@ class SaveDealView(TemplateView):
         )
         involvement.save()
 
-    def create_activity_feedback(self, activity, form):
-        if not isinstance(form, DealActionCommentForm):
-            # Public user
+    def get_form_by_type(self, forms, type):
+        form = list(filter(lambda f: isinstance(f, type), forms))
+        if len(form) == 0:
             return
+        else:
+            return form[0]       
+
+    def create_activity_feedback(self, activity, form):
         data = form.cleaned_data
         if data.get('assign_to_user', None):
             ActivityFeedback.objects.filter(fk_activity__activity_identifier=self.get_object().activity_identifier).delete()
@@ -224,9 +234,6 @@ class SaveDealView(TemplateView):
             )
 
     def get_fully_updated(self, form):
-        if not isinstance(form, DealActionCommentForm):
-            # Public user
-            return False
         return form.cleaned_data.get('fully_updated', False)
 
     def create_activity_changeset(self, activity):
