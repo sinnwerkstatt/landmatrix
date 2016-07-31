@@ -215,6 +215,7 @@ class SaveDealView(TemplateView):
             return
         data = form.cleaned_data
         if data.get('assign_to_user', None):
+            ActivityFeedback.objects.filter(fk_activity__activity_identifier=self.get_object().activity_identifier).delete()
             feedback = ActivityFeedback.objects.create(
                 fk_activity_id=self.get_object().id,
                 fk_user_assigned=data.get('assign_to_user'),

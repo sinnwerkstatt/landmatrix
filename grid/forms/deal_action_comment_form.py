@@ -69,3 +69,11 @@ class DealActionCommentForm(BaseForm):
         attributes = super(DealActionCommentForm, self).get_attributes(request)
         del attributes['tg_action_comment']
         return attributes
+
+    @classmethod
+    def get_data(cls, activity, group=None, prefix=""):
+        # Remove action comment, due to an old bug it seems to exist as an attribute too
+        data = super().get_data(activity, group, prefix)
+        if 'tg_action_comment' in data:
+            del data['tg_action_comment']
+        return data
