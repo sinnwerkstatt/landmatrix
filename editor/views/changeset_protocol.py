@@ -130,9 +130,9 @@ class ChangesetProtocol(View):
                 _approve_activity_deletion(activity, activity_dict.get("comment"), request)
 
             investor = get_activity_investor(activity)
+            latest_investor = investor.get_latest_active_investor(investor.investor_identifier)
             if investor:
-                # FIXME: previous_version is never set, find a better solution
-                investor.fk_status_id = investor.STATUS_OVERWRITTEN# if changeset.previous_version else investor.STATUS_ACTIVE),
+                investor.fk_status_id = latest_investor and investor.STATUS_OVERWRITTEN or investor.STATUS_ACTIVE
                 investor.save()
 
     @transaction.atomic
@@ -463,10 +463,10 @@ def _pagination_to_json(paginator, page):
 
 
 def _approve_activity_change(activity, comment, request):
+    latest_activity = activity.get_latest_active_activity(activity.activity_identifier)
     _change_status_with_review(
         activity,
-        # FIXME: previous_version is never set, find a better solution
-        activity.STATUS_OVERWRITTEN,# if changeset.previous_version else activity.STATUS_ACTIVE,
+        latest_activity and activity.STATUS_OVERWRITTEN or activity.STATUS_ACTIVE,
         request.user,
         None,#ReviewDecision.objects.get(name="approved"),
         comment

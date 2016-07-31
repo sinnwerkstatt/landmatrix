@@ -39,8 +39,8 @@ class AddDealView(SaveDealView):
             activity_identifier=activity_identifier,
             history_user=self.request.user,
         )
-        if not self.request.user.is_superuser:
-            hactivity.fk_status_id = 1
+        if not self.request.user.has_perm('landmatrix.add_activity'):
+            hactivity.fk_status_id = hactivity.STATUS_PENDING
         hactivity.save()
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)
@@ -48,7 +48,7 @@ class AddDealView(SaveDealView):
         # Create new activity (required for involvement)
         hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
-        if self.request.user.has_perm('landmatrix.change_activity'):
+        if self.request.user.has_perm('landmatrix.add_activity'):
             messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
         else:
             self.create_activity_changeset(hactivity)

@@ -36,7 +36,7 @@
 {% block messages %}
 {{ block.super }}
 {% if activity.fk_status_id == 1 %}
-<p class="alert alert-danger">{% trans "This deal version is pending, please accept or reject it in the manage section." %}</p>
+<p class="alert alert-danger">{% trans "This deal version is pending." %}{% if perms.landmatrix.review_activity %}{% trans "Please accept or reject it in the manage section." %}{% endif %}</p>
 {% else %}{% if activity.fk_status_id == 4 %}
 <p class="alert alert-danger">{% trans "This deal has been deleted." %}</p>
 {% endif %}{% endif %}

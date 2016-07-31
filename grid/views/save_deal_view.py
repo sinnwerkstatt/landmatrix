@@ -109,6 +109,8 @@ class SaveDealView(TemplateView):
         hactivity.pk = None
         hactivity.history_user = self.request.user
         hactivity.history_date = datetime.now()
+        if not self.request.user.has_perm('landmatrix.change_activity'):
+            hactivity.fk_status_id = hactivity.STATUS_PENDING
         hactivity.save()
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)

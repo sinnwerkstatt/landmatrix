@@ -146,6 +146,15 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
             hasattr(self, 'investoractivityinvolvement_set') and
             self.investoractivityinvolvement_set.exists())
 
+    @classmethod
+    def get_latest_investor(cls, investor_identifier):
+        return cls.objects.filter(investor_identifier=investor_identifier).order_by('-id').first()
+
+    @classmethod
+    def get_latest_active_investor(cls, investor_identifier):
+        return cls.objects.filter(investor_identifier=investor_identifier).\
+            filter(fk_status__name__in=("active", "overwritten", "deleted")).order_by('-id').first()
+
 
 class Investor(InvestorBase):
     subinvestors = models.ManyToManyField(
