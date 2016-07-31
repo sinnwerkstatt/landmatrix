@@ -130,9 +130,10 @@ class ChangesetProtocol(View):
                 _approve_activity_deletion(activity, activity_dict.get("comment"), request)
 
             investor = get_activity_investor(activity)
-            # FIXME: previous_version is never set, find a better solution
-            investor.fk_status_id = investor.STATUS_OVERWRITTEN# if changeset.previous_version else investor.STATUS_ACTIVE),
-            investor.save()
+            if investor:
+                # FIXME: previous_version is never set, find a better solution
+                investor.fk_status_id = investor.STATUS_OVERWRITTEN# if changeset.previous_version else investor.STATUS_ACTIVE),
+                investor.save()
 
     @transaction.atomic
     def reject(self, request, *args, **kwargs):
@@ -319,7 +320,10 @@ class ChangesetProtocol(View):
             activities["deletes"] = deletes
 
 def get_activity_investor(activity):
-    iai = InvestorActivityInvolvement.objects.get(fk_activity_id=activity.id)
+    try:
+        iai = InvestorActivityInvolvement.objects.get(fk_activity_id=activity.id)
+    except:
+        return
     return iai.fk_investor
 
 def _uniquify_activities_dict(activities):
