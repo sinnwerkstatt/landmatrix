@@ -32,5 +32,5 @@ class GermanyForm(BaseForm):
 
 
 COUNTRY_SPECIFIC_FORMS = {
-    'germany': GermanyForm,
+    #'germany': GermanyForm,
 }
