@@ -37,10 +37,10 @@ class FilterWidgetAjaxView(View):
         value = value and value.split(",") or []
         widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
 
-        if operation == 'is_empty':
-            return HttpResponse('', content_type="text/plain")
+        #if operation == 'is_empty':
+        #    return HttpResponse('', content_type="text/plain")
         # Deal ID
-        elif key_id == 'activity_identifier':
+        if key_id == 'activity_identifier':
             if operation in ("in", "not_in"):
                 widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
             else:

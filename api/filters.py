@@ -64,12 +64,6 @@ FILTER_OPERATION_MAP = OrderedDict([
 FILTER_COUNTER = 0
 
 
-def generate_filter_name():
-    global FILTER_COUNTER
-    FILTER_COUNTER += 1
-    return 'filter_{}'.format(FILTER_COUNTER)
-
-
 # TODO: convert to object, these don't need to be dicts.
 class BaseFilter(dict):
     ACTIVITY_TYPE = 'activity'
@@ -89,13 +83,9 @@ class BaseFilter(dict):
 
 class Filter(BaseFilter):
 
-    def __init__(
-            self, variable, operator, value, name=None, label=None, key=None, display_value=None):
+    def __init__(self, variable, operator, value, name=None, label=None, key=None, display_value=None):
         if operator not in FILTER_OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
-
-        if name is None:
-            name = generate_filter_name()
 
         if not display_value:
             display_value = value
@@ -150,9 +140,6 @@ class PresetFilter(BaseFilter):
         # Store this obj during init, rather than doing seperate validation
         # and a get method
         self.filter = FilterPreset.objects.get(id=self.preset_id)
-
-        if name is None:
-            name = generate_filter_name()
 
         if label is None:
             label = self.filter.name

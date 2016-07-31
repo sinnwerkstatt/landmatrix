@@ -31,6 +31,8 @@ class FilterView(APIView):
 
         action = request_data.get('action', 'nothing').lower()
         name = request_data.get('name', None)
+        if not name:
+            name = 'filter_%i' % (len(request.session.get('filters', [])) + 1)
 
         if action == 'set':
             if 'preset' in request_data:
