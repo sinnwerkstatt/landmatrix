@@ -40,7 +40,8 @@ class WhereCondition:
 
     def quote_value(self, value):
         if value == 'on':
-            quoted_value = 'TRUE'
+            # Boolean fields (like not_public)
+            quoted_value = "'True'"
         elif self.operator in ('in', 'not_in') and isinstance(value, list):
             sanitized_values = [v.strip().replace("'", "\\'") for v in value]
             quoted_value = ",".join(
