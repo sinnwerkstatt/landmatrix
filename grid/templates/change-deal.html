@@ -22,7 +22,7 @@
 {% block messages %}
 {{ block.super }}
 {% if activity.fk_status_id == 1 %}
-<p class="alert alert-danger">{% trans "This deal version is pending, please accept or reject it in the manage section." %}</p>
+<p class="alert alert-danger">{% trans "This deal version is pending." %}{% if perms.landmatrix.review_activity %} {% trans "Please accept or reject it in the manage section." %}{% endif %}</p>
 {% else %}{% if activity.fk_status_id == 4 %}
 <p class="alert alert-danger">{% trans "This deal has been deleted. It is not visible for public users." %}</p>
 {% endif %}{% endif %}
@@ -37,11 +37,18 @@
             {% include "includes/dealpanels.html" %}
             {% include "includes/deal-history.html" %}
         </div>
-
+        {% if activity.fk_status_id == 4 %}
+        {% if perms.landmatrix.change_activity %}<a href="javascript:;" data-toggle="modal" data-target="#recover-deal" class="pull-right"><i class="fa fa-recycle"></i> {% trans "Recover this deal" %}</a>{% endif %}
+        {% else %}
         <input type="submit" class="btn btn-primary" value="{% trans 'Submit' %}"/>
         {% if perms.landmatrix.delete_activity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-deal" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this deal" %}</a>{% endif %}
+        {% endif %}
     </form>
-    {% include "modals/delete-deal.html" %}
+    {% if activity.fk_status_id == 4 %}
+        {% include "modals/recover-deal.html" %}
+    {% else %}
+        {% include "modals/delete-deal.html" %}
+    {% endif %}
 {% endblock %}
 
 {% block global_js %}

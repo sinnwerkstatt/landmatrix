@@ -216,12 +216,12 @@ class HistoricalActivity(ActivityBase):
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=new_activity.activity_identifier)
         if involvements.count() > 0:
             latest = involvements.latest()
+            latest.fk_activity_id = new_activity.id
             if latest.fk_status_id not in (latest.STATUS_ACTIVE, latest.STATUS_OVERWRITTEN):
-                latest.fk_activity_id = new_activity.id
                 latest.fk_status_id = latest.STATUS_OVERWRITTEN
-                latest.save()
-                # Delete other involvments for activity, since we don't need a history of involvements
-                involvements.exclude(id=latest.id).delete()
+            latest.save()
+            # Delete other involvments for activity, since we don't need a history of involvements
+            involvements.exclude(id=latest.id).delete()
         if old_activity:
             old_activity.delete()
         return True

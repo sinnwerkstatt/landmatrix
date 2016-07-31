@@ -26,9 +26,6 @@ from grid.forms.country_specific_forms import get_country_specific_form_classes
 from grid.forms.public_user_information_form import PublicUserInformationForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-
 class ChangeDealView(SaveDealView):
 
     FORMS = [

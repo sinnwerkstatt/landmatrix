@@ -36,6 +36,7 @@ class DeleteDealView(SaveDealView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         hactivity = self.get_object()
+        attributes = hactivity.attributes.all()
         # Create new historical activity
         hactivity.pk = None
         if self.request.user.has_perm('landmatrix.delete_activity'):
@@ -45,6 +46,11 @@ class DeleteDealView(SaveDealView):
         hactivity.history_user = self.request.user
         hactivity.history_date = datetime.now()
         hactivity.save()
+        for hattribute in attributes:
+            hattribute.pk = None
+            hattribute.fk_activity_id = hactivity.id
+            hattribute.save()
+
         hactivity.update_public_activity()
 
         # Create success message
@@ -53,5 +59,52 @@ class DeleteDealView(SaveDealView):
         else:
             self.create_activity_changeset(hactivity)
             messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
+
+        return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier})) 
+
+
+class RecoverDealView(SaveDealView):
+    success_message = None
+    success_message_admin = _('The deal #{} has been recovered successfully.')
+
+    def get_object(self):
+        # TODO: Cache result for user
+        deal_id = self.kwargs.get('deal_id')
+        history_id = self.kwargs.get('history_id', None)
+        queryset = HistoricalActivity.objects
+        if not self.request.user.has_perm('landmatrix.review_activity'):
+            queryset = queryset.public()
+        try:
+            if history_id:
+                activity = queryset.get(id=history_id)
+            else:
+                activity = queryset.filter(activity_identifier=deal_id).latest()
+        except ObjectDoesNotExist as e:
+            raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e))) 
+        if not self.request.user.has_perm('landmatrix.change_activity'):
+            if activity.fk_status_id != activity.STATUS_DELETED:
+                raise Http404('Activity %s is already active' % deal_id)
+        return activity 
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        if not self.request.user.has_perm('landmatrix.delete_activity'):
+            return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier})) 
+        hactivity = self.get_object()
+        attributes = hactivity.attributes.all()
+        # Create new historical activity
+        hactivity.pk = None
+        hactivity.fk_status_id = hactivity.STATUS_OVERWRITTEN
+        hactivity.history_user = self.request.user
+        hactivity.history_date = datetime.now()
+        hactivity.save()
+        for hattribute in attributes:
+            hattribute.pk = None
+            hattribute.fk_activity_id = hactivity.id
+            hattribute.save()
+        hactivity.update_public_activity()
+
+        # Create success message
+        messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
 
         return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier})) 

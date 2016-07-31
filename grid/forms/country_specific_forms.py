@@ -8,12 +8,13 @@ from grid.widgets import TitleField, NumberInput
 
 def get_country_specific_form_classes(activity, data=None, files=None):
     try:
-        form_class = COUNTRY_SPECIFIC_FORMS[activity.target_country.slug]
-    except KeyError:
-        pass
+        form_class = COUNTRY_SPECIFIC_FORMS.get(activity.target_country.slug, None)
+    except:
+        return []
+    if form_class:
+        return [form_class]
     else:
-        yield form_class
-
+        return []
 
 class GermanyForm(BaseForm):
     '''

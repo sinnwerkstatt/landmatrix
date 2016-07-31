@@ -29,7 +29,8 @@ from wagtail.wagtailcore import urls as wagtail_urls
 from grid.views import (
     AddDealView, ChangeDealView, DealComparisonView, DealDetailView,
     FilterWidgetAjaxView, AddStakeholderView, ChangeStakeholderView,
-    InvestorComparisonView, DealDetailExportView, DeleteDealView
+    InvestorComparisonView, DealDetailExportView, DeleteDealView,
+    RecoverDealView
 )
 from feeds.views import DealChangesFeed
 from api import urls as api_urls
@@ -118,6 +119,12 @@ urlpatterns = patterns('',
         r'^deal/delete/(?P<deal_id>\d+)/$',
         DeleteDealView.as_view(),
         name='delete_deal'
+    ),
+
+    url(
+        r'^deal/recover/(?P<deal_id>\d+)/$',
+        RecoverDealView.as_view(),
+        name='recover_deal'
     ),
 
     url(
