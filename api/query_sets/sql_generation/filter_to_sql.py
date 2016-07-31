@@ -40,7 +40,7 @@ class WhereCondition:
 
     def quote_value(self, value):
         if value == 'on':
-            quote_value = 'TRUE'
+            quoted_value = 'TRUE'
         elif self.operator in ('in', 'not_in') and isinstance(value, list):
             sanitized_values = [v.strip().replace("'", "\\'") for v in value]
             quoted_value = ",".join(

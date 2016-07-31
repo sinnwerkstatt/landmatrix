@@ -323,6 +323,7 @@ def get_activity_investor(activity):
     try:
         iai = InvestorActivityInvolvement.objects.get(fk_activity_id=activity.id)
     except:
+        # FIXME: This should not happen (but it did: sentry #4889)
         return
     return iai.fk_investor
 
