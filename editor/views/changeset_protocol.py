@@ -389,8 +389,8 @@ def _feedbacks_to_json(user, feedbacks_page=1, limit=None):
     paginator = Paginator(feed, 10)
     page = _get_page(feedbacks_page, paginator)
     feed = page.object_list
-    timestamp = timezone.localtime(feedback.timestamp, timezone.get_current_timezone())
     for feedback in feed:
+        timestamp = timezone.localtime(feedback.timestamp, timezone.get_current_timezone())
         feedbacks.append({
             "deal_id": feedback.fk_activity.activity_identifier,
             "history_id": feedback.fk_activity_id,
