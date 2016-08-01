@@ -1,3 +1,4 @@
+# TODO: Move out of views
 import re
 import json
 from django.http import HttpResponse
@@ -13,6 +14,7 @@ from grid.views.profiling_decorators import print_execution_time_and_num_queries
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 class ActivityProtocol:
     @print_execution_time_and_num_queries
@@ -49,14 +51,26 @@ class ActivityProtocol:
 
     def calculate_public_interface_values(self, activity_identifier):
         pi_values = {}
-        # Implementation status (last entered, highest ID)
-        attributes = self.attributes_for_activity(activity_identifier, 'implementation_status').order_by('-id')
+        # Implementation status (Latest date entered for the deal, then highest id)
+        # Null dates go last
+        attributes = self.attributes_for_activity(
+            activity_identifier, 'implementation_status')
+        attributes = attributes.extra(select={'date_is_null': 'date IS NULL'})
+        attributes = attributes.extra(
+            order_by=['date_is_null', '-date', '-id'])
+
         if attributes.count() > 0:
             pi_values['implementation_status'] = attributes.first().value
         else:
             pi_values['implementation_status'] = None
-        # Negotiation status (last entered, highest ID)
-        attributes = self.attributes_for_activity(activity_identifier, 'negotiation_status').order_by('-id')
+        # Negotiation status (Latest date entered for the deal, then highest id)
+        # Null dates go last
+        attributes = self.attributes_for_activity(
+            activity_identifier, 'negotiation_status')
+        attributes = attributes.extra(select={'date_is_null': 'date IS NULL'})
+        attributes = attributes.extra(
+            order_by=['date_is_null', '-date', '-id'])
+
         if attributes.count() > 0:
             pi_values['negotiation_status'] = attributes.first().value
         else:
