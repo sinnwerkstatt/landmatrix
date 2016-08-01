@@ -346,7 +346,13 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             value = [value]
         return [field and field.split("#!#")[0] or "" for field in value]
 
-
     def _process_name_and_year(self, value):
-        return [{"name": n.split("#!#")[0], "year": n.split("#!#")[1]or 0} for n in value]
+        split_values = [
+            {
+                "name": n.split("#!#")[0],
+                "year": int(n.split("#!#")[1]) if n.split("#!#")[1] else 0,
+            } for n in value
+        ]
 
+        # Sort values by year (last one is usually displayed)
+        return sorted(split_values, key=lambda v: v['year'])

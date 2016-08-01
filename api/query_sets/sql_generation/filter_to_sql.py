@@ -197,20 +197,12 @@ class FilterToSQL:
                     WhereCondition(table_name, 'name', 'is', 'type'),
                     "{}.value = data_source_type.value".format(table_name))
                 where.append(conditions)
-            elif variable == 'negotiation_status':
-                # Negotiation status is a special case in that we need to
-                # filter on the latest by year.
-                subselect = '''
-                    SELECT MAX(date)
-                    FROM landmatrix_activityattribute
-                    WHERE name = 'negotiation_status' AND
-                        fk_activity_id = a.id
-                '''
-                conditions = WhereConditions(
-                    WhereCondition(table_name, 'name', 'is', variable),
-                    "{}.date = ({})".format(table_name, subselect),
-                    WhereCondition(table_name, key, operation, value))
-                where.append(conditions)
+            elif variable in ('negotiation_status', 'implementation_status'):
+                # Negotiation/implementation status are special cases in that
+                # we need to filter on the activity table (as the most recent
+                # status is cached there)
+                condition = WhereCondition('a', variable, operation, value)
+                where.append(condition)
             elif operation not in ('in', 'not_in') and isinstance(value, list):
                 for subvalue in value:
                     conditions = WhereConditions(
@@ -245,8 +237,9 @@ class FilterToSQL:
         # TODO: optimize SQL? This query seems painful, it could be
         # better as an array_agg possibly
         excluded_variables = (
-            'deal_country', 'target_country', 'target_region', 
-            'investor_country', 'investor_region',
+            'deal_country', 'target_country', 'target_region',
+            'investor_country', 'investor_region', 'negotiation_status',
+            'implementation_status',
         )
         if operation == 'is' and variable not in excluded_variables:
             # 'Is' operations requires that we exclude other values,
@@ -295,8 +288,12 @@ class FilterToSQL:
             variable_operation = tag.split("__")
             variable = variable_operation[0]
 
+            no_join_required = variable in (
+                'activity_identifier', 'negotiation_status',
+                'implementation_status',
+            )
             # join tag tables for each condition
-            if variable == 'activity_identifier':
+            if no_join_required:
                 continue
             elif variable in ('target_region', 'deal_country'):
                 tables_from.append(
