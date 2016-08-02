@@ -235,26 +235,27 @@ class ActivityProtocol:
         contract_size = len(contract_size) > 0 and contract_size[0].value or None
         production_size = self.nonnull_attributes_for_activity(activity_identifier, "production_size").order_by("-date")
         production_size = len(production_size) > 0 and production_size[0].value or None
-        if negotiation_status in ("Expression of interest", "Under negotiation", "Memorandum of understanding"):
+
+        if negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
             # intended deal
             if not intended_size and contract_size:
                 intended_size = contract_size
             elif not intended_size and not contract_size and production_size:
                 intended_size = production_size
             return intended_size
-        elif negotiation_status in ("Oral Agreement", "Contract signed"):
+        elif negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
             # concluded deal
             if not contract_size and production_size:
                 contract_size = production_size
             return contract_size
-        elif negotiation_status == "Negotiations failed":
+        elif negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
             # intended but failed deal
             if not intended_size and contract_size:
                 intended_size = contract_size
             elif not intended_size and not contract_size and production_size:
                 intended_size = production_size
             return intended_size
-        elif negotiation_status == "Contract canceled":
+        elif negotiation_status in Activity.NEGOTIATION_STATUSES_FAILED:
             # concluded but failed
             if not contract_size and production_size:
                 contract_size = production_size

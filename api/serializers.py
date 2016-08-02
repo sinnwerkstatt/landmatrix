@@ -4,8 +4,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
-from landmatrix.models.filter_preset import FilterPreset
-from landmatrix.models.investor import InvestorVentureInvolvement
+from landmatrix.models import FilterPreset, InvestorVentureInvolvement
 
 
 class PassThruSerializer(serializers.BaseSerializer):
@@ -152,3 +151,9 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             })
 
         return {'nodes': nodes, 'links': links}
+
+
+class NegotiationStatusSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    deals = serializers.IntegerField()
+    hectares = serializers.IntegerField()
