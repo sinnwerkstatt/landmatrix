@@ -2,7 +2,6 @@
 API calls used for generating charts.
 '''
 from rest_framework.generics import ListAPIView
-from rest_framework.response import Response
 
 from landmatrix.models import Activity
 from api.query_sets.filter_query_set import FilterQuerySet
@@ -13,8 +12,6 @@ from api.query_sets.implementation_status_query_set import \
 from api.query_sets.intention_query_set import IntentionQuerySet
 from api.query_sets.investor_country_summaries_query_set import \
     InvestorCountrySummariesQuerySet
-from api.query_sets.negotiation_status_query_set import \
-    NegotiationStatusQuerySet
 from api.query_sets.target_country_summaries_query_set import \
     TargetCountrySummariesQuerySet
 from api.query_sets.top_10_countries_query_set import \
