@@ -185,12 +185,10 @@ class Activity(ActivityBase):
             _("Failed (Contract cancelled)"),
         ),
         (
-            NEGOTIATION_STATUS_CONTRACT_EXPIRED,
-            _("Failed (Contract expired)"),
+            NEGOTIATION_STATUS_CONTRACT_EXPIRED, _("Contract expired"),
         ),
         (
-            NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP,
-            _("Change of ownership"),
+            NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP, _("Change of ownership"),
         )
     )
 
