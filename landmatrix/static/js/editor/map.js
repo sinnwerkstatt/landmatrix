@@ -248,8 +248,8 @@ function initGeocoder(mapId) {
                 //}
                 // Update fields (coordinates and target country)
                 var fields = getLocationFields(mapId);
-                fields.lat.val(target[1]);
-                fields.lon.val(target[0]);
+                fields.lat.val(place.geometry.location.lat());
+                fields.lon.val(place.geometry.location.lng());
                 updateTargetCountry(place, mapId);
             });
         }
