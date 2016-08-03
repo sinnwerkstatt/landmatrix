@@ -1,7 +1,10 @@
 '''
 API calls used for generating charts.
 '''
-from api.views.base import FakeQuerySetListView
+from rest_framework.generics import ListAPIView
+
+from landmatrix.models import Activity
+from api.query_sets.filter_query_set import FilterQuerySet
 from api.query_sets.deals_query_set import DealsQuerySet
 from api.query_sets.hectares_query_set import HectaresQuerySet
 from api.query_sets.implementation_status_query_set import \
@@ -9,8 +12,6 @@ from api.query_sets.implementation_status_query_set import \
 from api.query_sets.intention_query_set import IntentionQuerySet
 from api.query_sets.investor_country_summaries_query_set import \
     InvestorCountrySummariesQuerySet
-from api.query_sets.negotiation_status_query_set import \
-    NegotiationStatusQuerySet
 from api.query_sets.target_country_summaries_query_set import \
     TargetCountrySummariesQuerySet
 from api.query_sets.top_10_countries_query_set import \
@@ -29,14 +30,49 @@ from api.query_sets.logging_query_set import \
     LoggingQuerySet
 from api.query_sets.contract_farming_query_set import \
     ContractFarmingQuerySet
-
-
-from api.serializers import DealSerializer
+from api.serializers import DealSerializer, NegotiationStatusSerializer
 from api.views.base import FakeQuerySetListView, FakeQuerySetRetrieveView
 
 
-class NegotiationStatusListView(FakeQuerySetListView):
-    fake_queryset_class = NegotiationStatusQuerySet
+class NegotiationStatusListView(ListAPIView):
+    serializer_class = NegotiationStatusSerializer
+
+    def get_queryset(self):
+        '''
+        Get deal and deal_size data for activities by negotiation status.
+        To do this we use a combination of FakeQueryset (for filtering),
+        regular Django queryset, and some manipulation for ordering and
+        adding of missing statuses (those not in the DB.)
+        '''
+        filter_queryset = FilterQuerySet(self.request)
+        filtered_ids = [obj['id'] for obj in filter_queryset.all()]
+
+        queryset = Activity.negotiation_status_objects.all()
+        queryset = queryset.filter(pk__in=filtered_ids)
+        queryset = list(queryset)
+
+        response_data = []
+        # Filter out the blank choice
+        status_choices = filter(
+            lambda c: c[0], Activity.NEGOTIATION_STATUS_CHOICES)
+        for status, description in status_choices:
+            deals_count = 0
+            hectares_sum = 0
+            # It may seem strange to iterate over qs results, but it's
+            # better than the extra queries
+            for obj in queryset:
+                if obj['negotiation_status'] == status:
+                    deals_count = obj['deals_count']
+                    hectares_sum = obj['hectares_sum']
+                    break
+
+            response_data.append({
+                'name': description,
+                'deals': deals_count,
+                'hectares': hectares_sum,
+            })
+
+        return response_data
 
 
 class DealListView(FakeQuerySetListView):

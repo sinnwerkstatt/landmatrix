@@ -81,6 +81,9 @@ function draw (callback, chart_data) {
                 var label = chart_data[i]["name"];
                 if (String(label).indexOf('(') > 0) {
                     label = label.replace('(', '\n(');
+                    if (String(label).indexOf('Memorandum of ') > 0) {
+                        label = label.replace('Memorandum of ', 'Memorandum of \n');
+                    }
                 } else if (String(label).length > 15) {
                     label = label.replace(' ', '\n');
                 }
@@ -92,6 +95,7 @@ function draw (callback, chart_data) {
         for (var i = 0; i < bar_data.length; i++) {
             bar_labels_ingraph.push("<p>" + (show_deals && (bar_data[i] + " deals") || (numberWithCommas(bar_data[i]) +  " ha")) + "</p>");
         }
+
         var bar = new RGraph.Bar('chartcanvas', bar_data);
         bar.Set('chart.hmargin', 5);
         bar.Set('chart.gutter.bottom', 130);

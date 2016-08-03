@@ -6,12 +6,6 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class DealsQuerySet(FakeQuerySetFlat):
 
-    BASE_FILTER_MAP = {
-        "concluded": ("concluded (oral agreement)", "concluded (contract signed)"),
-        "intended": ("intended (expression of interest)", "intended (under negotiation)" ),
-        "failed": ("failed (contract canceled)", "failed (negotiations failed)"),
-    }
-
     FIELDS = [
         (   'deal_id',
             'a.activity_identifier'
