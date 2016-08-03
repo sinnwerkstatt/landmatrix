@@ -642,23 +642,28 @@ $(document).ready(function () {
             for (var i = 0; i < data.length; i++) {
                 NProgress.inc();
                 var marker = data[i];
-                marker.lat = parseFloat(marker.point_lat);
-                marker.lon = parseFloat(marker.point_lon);
+                if (marker.locations.length == 0) {
+                    // No locations, can't have markers
+                    continue;
+                }
+                var location = marker.locations[0];
+                marker.lat = parseFloat(location.point_lat);
+                marker.lon = parseFloat(location.point_lon);
 
                 //console.log(marker);
                 addClusteredMarker(marker);
                 //addClusteredMarkerNew(marker);
                 lats[marker.lat] = marker;
 
-                if (marker.hasOwnProperty('intended_area') && marker.intended_area != null) {
-                    var geometry = geoJSONReader.readGeometry(marker.intended_area, {
+                if (location.hasOwnProperty('intended_area') && location.intended_area != null) {
+                    var geometry = geoJSONReader.readGeometry(location.intended_area, {
                         dataProjection: 'EPSG:4326',
                         featureProjection: 'EPSG:3857'
                     });
                     intendedAreaFeatures.push(new ol.Feature({'geometry': geometry}));
                 }
-                if (marker.hasOwnProperty('production_area') && marker.production_area != null) {
-                    var geometry = geoJSONReader.readGeometry(marker.production_area, {
+                if (location.hasOwnProperty('production_area') && location.production_area != null) {
+                    var geometry = geoJSONReader.readGeometry(location.production_area, {
                         dataProjection: 'EPSG:4326',
                         featureProjection: 'EPSG:3857'
                     });
@@ -681,8 +686,8 @@ $(document).ready(function () {
 function addClusteredMarker(marker) { // dealid, longitude, latitude, intention, marker) {
     // .deal_id, parseFloat(marker.point_lon), parseFloat(marker.point_lat), marker.intention, marker
 
-    var lat = parseFloat(marker.point_lat);
-    var lon = parseFloat(marker.point_lon);
+    var lat = marker.lat;
+    var lon = marker.lon;
 
     if ((typeof lat == 'number') && (typeof lon == 'number')) {
         var feature = new ol.Feature({

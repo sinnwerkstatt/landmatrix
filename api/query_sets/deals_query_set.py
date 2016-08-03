@@ -1,5 +1,7 @@
-from api.query_sets.fake_query_set_with_subquery import FakeQuerySetFlat
 import timeit
+
+from api.query_sets.fake_query_set_with_subquery import FakeQuerySetFlat
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -11,11 +13,11 @@ class DealsQuerySet(FakeQuerySetFlat):
         ),
         (
             'point_lat',
-            "point_lat.value"
+            "ARRAY_TO_STRING(ARRAY_AGG(location.point_lat ORDER BY location.group_name),';')"
         ),
         (
             'point_lon',
-            "point_lon.value"
+            "ARRAY_TO_STRING(ARRAY_AGG(location.point_lon ORDER BY location.group_name),';')"
         ),
         (
             'intention',
@@ -42,29 +44,55 @@ class DealsQuerySet(FakeQuerySetFlat):
         ),
         (
             'intended_area',
-            'intended_area.polygon',
+            "ARRAY_TO_STRING(ARRAY_AGG(location.intended_area ORDER BY location.group_name),';')",
         ),
         (
             'production_area',
-            'production_area.polygon',
+            "ARRAY_TO_STRING(ARRAY_AGG(location.production_area ORDER BY location.group_name),';')",
         ),
     ]
+    # Location subquery is sadly required to avoid crossing lats/longs between
+    # multiple locations
+    LOCATION_JOIN = """
+    LEFT JOIN (
+        SELECT aag.name AS group_name,
+            point_lat.fk_activity_id AS fk_activity_id,
+            CAST(point_lat.value AS NUMERIC) AS point_lat,
+            CAST(point_lon.value AS NUMERIC) AS point_lon,
+            intended_area.polygon AS intended_area,
+            production_area.polygon AS production_area
+        FROM landmatrix_activityattributegroup AS aag
+        LEFT JOIN
+            landmatrix_activityattribute AS point_lat
+                ON (point_lat.name = 'point_lat'
+                AND point_lat.fk_group_id = aag.id)
+        LEFT JOIN landmatrix_activityattribute AS point_lon
+                ON (point_lon.name = 'point_lon'
+                AND point_lon.fk_group_id = aag.id
+                AND point_lon.fk_activity_id = point_lat.fk_activity_id)
+        LEFT JOIN landmatrix_activityattribute AS intended_area
+                ON (intended_area.name = 'intended_area'
+                AND intended_area.fk_group_id = aag.id
+                AND intended_area.fk_activity_id = point_lat.fk_activity_id
+                AND ST_IsValid(intended_area.polygon))
+        LEFT JOIN landmatrix_activityattribute AS production_area
+                ON (production_area.name = 'production_area'
+                AND production_area.fk_group_id = aag.id
+                AND production_area.fk_activity_id = point_lat.fk_activity_id
+                AND ST_IsValid(production_area.polygon))
+        WHERE aag.name LIKE 'location%%' AND
+        %s
+    ) location ON location.fk_activity_id = a.id
+    """
     ADDITIONAL_JOINS = [
-        "LEFT JOIN landmatrix_activityattribute    AS point_lat        ON a.id = point_lat.fk_activity_id AND point_lat.name = 'point_lat'",        
-        "LEFT JOIN landmatrix_activityattribute    AS point_lon        ON a.id = point_lon.fk_activity_id AND point_lon.name = 'point_lon'",
         "LEFT JOIN landmatrix_activityattribute    AS intention        ON a.id = intention.fk_activity_id AND intention.name = 'intention'",
         "LEFT JOIN landmatrix_activityattribute    AS intended_size    ON a.id = intended_size.fk_activity_id AND intended_size.name = 'intended_size'",
         "LEFT JOIN landmatrix_activityattribute    AS contract_size    ON a.id = contract_size.fk_activity_id AND contract_size.name = 'contract_size'",
         "LEFT JOIN landmatrix_activityattribute    AS production_size  ON a.id = production_size.fk_activity_id AND production_size.name = 'production_size'",
-        "LEFT JOIN landmatrix_activityattribute    AS intended_area    ON a.id = intended_area.fk_activity_id AND intended_area.name = 'intended_area' AND ST_IsValid(intended_area.polygon)"
-        "LEFT JOIN landmatrix_activityattribute    AS production_area  ON a.id = production_area.fk_activity_id AND production_area.name = 'production_area' AND ST_IsValid(production_area.polygon)"
     ]
-    ADDITIONAL_WHERES = [
-        "point_lat.name = 'point_lat' AND point_lon.name = 'point_lon'",
-    ]
+    ADDITIONAL_WHERES = []
     GROUP_BY = [
-        'point_lat.value', 'point_lon.value', 'intended_area.polygon',
-        'production_area.polygon', 'intended_size.value',
+        'intended_size.value',
         'contract_size.value', 'production_size.value',
         'operational_stakeholder.name', 'a.activity_identifier'
     ]
@@ -80,9 +108,16 @@ class DealsQuerySet(FakeQuerySetFlat):
         self._set_target_country(request.GET.get('target_country'))
         self._set_target_region(request.GET.get('target_region'))
         self._set_attributes(request.GET.getlist('attributes', []))
+
+        window_set = False
         if request.GET.get('window'):
             lon_min, lat_min, lon_max, lat_max = request.GET.get('window').split(',')
-            self._set_window(lat_min, lon_min, lat_max, lon_max)
+            window_set = self._set_window(lat_min, lon_min, lat_max, lon_max)
+
+        if not window_set:
+            location_join = self.LOCATION_JOIN % ' TRUE'
+            self._additional_joins = add_to_list_if_not_present(
+                self._additional_joins, [location_join])
 
     def all(self):
         start_time = timeit.default_timer()
@@ -169,7 +204,7 @@ class DealsQuerySet(FakeQuerySetFlat):
             lon_min, lon_max = float(lon_min), float(lon_max)
         except ValueError:
             # Don't set a window with bogus values
-            return
+            return False
 
         # respect the 180th meridian
         if lon_min > lon_max:
@@ -177,14 +212,26 @@ class DealsQuerySet(FakeQuerySetFlat):
         if lat_min > lat_max:
             lat_max, lat_min = lat_min, lat_max
 
-        window_wheres = [
+        window_join_wheres = [
             "CAST(point_lat.value AS NUMERIC) >= {}".format(lat_min),
-            "CAST(point_lon.value AS NUMERIC) >= {}".format(lon_min),
             "CAST(point_lat.value AS NUMERIC) <= {}".format(lat_max),
+            "CAST(point_lon.value AS NUMERIC) >= {}".format(lon_min),
             "CAST(point_lon.value AS NUMERIC) <= {}".format(lon_max),
+        ]
+        location_join = self.LOCATION_JOIN % ' AND '.join(window_join_wheres)
+        self._additional_joins = add_to_list_if_not_present(
+            self._additional_joins, [location_join])
+
+        window_wheres = [
+            "location.point_lat >= {}".format(lat_min),
+            "location.point_lat <= {}".format(lat_max),
+            "location.point_lon >= {}".format(lon_min),
+            "location.point_lon <= {}".format(lon_max),
         ]
         self._additional_wheres = add_to_list_if_not_present(
             self._additional_wheres, window_wheres)
+
+        return True
 
     def _set_negotiation_status(self, negotiation_status):
         if not negotiation_status: return
