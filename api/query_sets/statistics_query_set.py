@@ -57,7 +57,7 @@ class StatisticsQuerySet(FakeQuerySetFlat):
 
     def regional_condition(self):
         if self.country:
-            return "AND deal_country.value = '%s'" % self.country
+            return "AND deal_country.id = %s" % self.country
         elif self.region:
             return "AND deal_country.fk_region_id = %s" % self.region
         return ''
