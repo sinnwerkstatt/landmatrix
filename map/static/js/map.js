@@ -585,7 +585,8 @@ $(document).ready(function () {
 
     map.on('click', function (evt) {
         var handleFeatureClick = function (feature, layer) {
-            if (feature.attributes.country) {
+            // A country feature was clicked.
+            if (feature && feature.attributes && feature.attributes.country) {
                 handleCountryClick(feature);
                 return;
             }
@@ -594,11 +595,14 @@ $(document).ready(function () {
             if (!features) {
                 return;
             }
+            // A cluster was clicked.
             if (features.length > 1) {
-                var popup = '<div><span><strong>Cluster of ' + features.length + ' deals.</strong></span>';
-                popup += '<br><span>Zoom here for more details.</span></div>';
-                console.log(popup);
-                content.innerHTML = popup;
+                // var popup = '<div><span><strong>Cluster of ' + features.length + ' deals.</strong></span>';
+                // popup += '<br><span>Zoom here for more details.</span></div>';
+                // console.log(popup);
+                // content.innerHTML = popup;
+                handleClusterClick(features);
+                return;
             } else {
                 var feat = features[0];
                 console.log("This is clicked: ", feat);
@@ -655,6 +659,14 @@ $(document).ready(function () {
         var a = feature.attributes;
         var countryBounds = [a.lat_min, a.lon_min, a.lat_max, a.lon_max];
         var extent = ol.extent.applyTransform(countryBounds, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+        map.getView().fit(extent, map.getSize());
+    };
+
+    var handleClusterClick = function (features) {
+        var extent = ol.extent.createEmpty();
+        $(features).each(function (index, feature) {
+            ol.extent.extend(extent, feature.getGeometry().getExtent());
+        });
         map.getView().fit(extent, map.getSize());
     };
 
