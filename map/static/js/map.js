@@ -2,12 +2,15 @@
 //EPSG:4326: is the WGS84 projection, commun use for the World (ex: GPS)
 //EPSG:3857:Spherical Web Mercator projection used by Google and OpenStreetMap
 
-// Globale Variablen 
+// Globale Variablen
 var map,
+    view,
     layers = [],
     controls = [],
     interactions = [],
     olGM;
+
+var countryThreshold = 6;
 
 var currentVariable = 'Deal Intention';
 var markerSource = new ol.source.Vector();
@@ -16,6 +19,8 @@ var clusterSource = new ol.source.Cluster({
     distance: 50,
     source: markerSource
 });
+
+var countriesSource = new ol.source.Vector();
 
 var fieldnames = {
     'Geospatial Accuracy': 'accuracy',
@@ -170,6 +175,30 @@ $(document).ready(function () {
 
             }
 
+            return style;
+        }
+    });
+
+    var countries = new ol.layer.Vector({
+        title: 'Countries',
+        source: countriesSource,
+        visible: true,
+        style: function () {
+            var color = '#fc941f';
+
+            var image = new ol.style.Circle({
+                radius: 10,
+                stroke: new ol.style.Stroke({
+                    color: '#fff'
+                }),
+                fill: new ol.style.Fill({
+                    color: color
+                })
+            });
+
+            var style = [new ol.style.Style({
+                image: image,
+            })];
             return style;
         }
     });
@@ -363,7 +392,8 @@ $(document).ready(function () {
             layers: [
                 intendedAreaLayer,
                 productionAreaLayer,
-                cluster
+                cluster,
+                countries
             ]
         })
     );
@@ -397,6 +427,13 @@ $(document).ready(function () {
         ];
     }
 
+    view = new ol.View({
+        center: [0, 0],
+        zoom: 2,
+        maxZoom: 17,
+        minZoom: 2
+    });
+
     map = new ol.Map({
         target: 'map',
         layers: layers,
@@ -404,13 +441,7 @@ $(document).ready(function () {
         interactions: interactions,
         overlays: [PopupOverlay],
         // Set the map view : here it's set to see the all world.
-        view: new ol.View({
-            center: [0, 0],
-            zoom: 2,
-            maxZoom: 17,
-            minZoom: 2
-
-        })
+        view: view
     });
 
     olGM = new olgm.OLGoogleMaps({map: map});
@@ -527,22 +558,28 @@ $(document).ready(function () {
         NProgress.start();
         // TODO: (Later) initiate spinner before fetchin' stuff
         console.log("Get API data");
-        var query_params = 'limit=500&attributes=' + fieldnames[currentVariable];
-        if (typeof mapParams !== 'undefined') {
-            query_params += mapParams;
+        // If the zoom level is below the clustering threshold, show
+        // country-based "clusters".
+        if (view.getZoom() < countryThreshold) {
+            $.get('/api/target_country_summaries.json', addCountrySummariesData);
+        // Otherwise fetch individual deals for the current map viewport.
+        } else {
+            var limit = 500;
+            var query_params = 'limit=' + limit + '&attributes=' + fieldnames[currentVariable];
+            if (typeof mapParams !== 'undefined') {
+                query_params += mapParams;
+            }
+            // Window
+            extent = map.getView().calculateExtent(map.getSize());
+            extent = ol.extent.applyTransform(extent, ol.proj.getTransform("EPSG:3857", "EPSG:4326"));
+            $.get(
+                "/api/deals.json?" + query_params + '&window=' + extent.join(','),
+                //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lon_min,lat_max,lat_max>
+                addData
+            ).fail(function () {
+                NProgress.done();
+            });
         }
-        // Window
-        extent = map.getView().calculateExtent(map.getSize());
-        extent = ol.extent.applyTransform(extent, ol.proj.getTransform("EPSG:3857", "EPSG:4326"));
-        $.get(
-            "/api/deals.json?" + query_params + '&window=' + extent.join(','),
-            //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lon_min,lat_max,lat_max>
-            addData
-        ).fail(function () {
-            NProgress.done();
-
-        });
-
         NProgress.set(0.2);
     }
 
@@ -673,6 +710,21 @@ $(document).ready(function () {
             }
             console.log('Added deals: ', i, ', ', duplicates, ' duplicates.');
         }
+        NProgress.done(true);
+    };
+
+    var addCountrySummariesData = function (data) {
+        countriesSource.clear();
+        $('#alert_placeholder').empty();
+        $(data).each(function (index, country) {
+            var feature = new ol.Feature({
+                geometry: new ol.geom.Point(ol.proj.transform(
+                    [country.lon, country.lat],
+                    'EPSG:4326', 'EPSG:3857')
+                )
+            });
+            countriesSource.addFeature(feature);
+        });
         NProgress.done(true);
     };
 
