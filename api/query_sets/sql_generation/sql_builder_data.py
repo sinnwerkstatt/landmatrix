@@ -40,8 +40,8 @@ class SQLBuilderData:
         #'crop':                 'crop.name', # breaks table group view "by crop"
         'intention':            'intention.value',
         'operational_stakeholder_region':      'operational_stakeholder_region.name',
-        'parent_stakeholder_country':     'parent_stakeholder_country.name',
-        'parent_stakeholder_name':        'parent_stakeholder.name',
+        #'parent_stakeholder_country':     'parent_stakeholder_country.name',
+        #'parent_stakeholder_name':        'parent_stakeholder.name',
         #'investor_region':      'investor_region.name',
         #'investor_country':     'investor_country.name',
         'data_source_type':     'data_source_type.value'
