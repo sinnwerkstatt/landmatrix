@@ -98,7 +98,7 @@
                                 </td>
                             {% elif "investor_country" == column %}
                                 <td class="{{ column }} investor-country">
-                                    {% for investor_country  in item.investor_country %}
+                                    {% for investor_country in item.investor_country %}
                                         <a href="{% url 'data' %}by-investor-country/{{ investor_country|slugify }}/">{{ investor_country }}</a>
                                         <br/>
                                     {% empty %}
@@ -107,7 +107,7 @@
                                 </td>
                             {% elif "investor_region" == column %}
                                 <td class="{{ column }} investor-region">
-                                    {% for investor_region  in item.investor_region %}
+                                    {% for investor_region in item.investor_region %}
                                         <a href="{% url 'data' %}?variable=investor_region&operator=is&value={{ investor_region|slugify }}">{{ investor_region }}</a>
                                         <br/>
                                     {% empty %}
@@ -116,7 +116,7 @@
                                 </td>
                             {% elif column == "target_country" %}
                                 <td class="{{ column }}">
-                                    {% for target_country  in item.target_country %}
+                                    {% for target_country in item.target_country %}
                                         <a href="{% url 'data' %}?variable=target_country&operator=is&value={{ target_country|slugify }}">{{ target_country }}</a>
                                         <br/>
                                     {% empty %}
