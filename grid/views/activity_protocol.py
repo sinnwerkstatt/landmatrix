@@ -229,6 +229,7 @@ class ActivityProtocol:
             return None
 
     def _calculate_deal_size(self, activity_identifier, negotiation_status):
+        # FIXME: This should probably not sort by -date but by -id (latest element instead of newest)
         intended_size = self.nonnull_attributes_for_activity(activity_identifier, "intended_size").order_by("-date")
         intended_size = len(intended_size) > 0 and intended_size[0].value or None
         contract_size = self.nonnull_attributes_for_activity(activity_identifier, "contract_size").order_by("-date")

@@ -46,7 +46,7 @@ class GroupSQLBuilder(SQLBuilder):
     def get_base_sql(self):
         return u"""SELECT DISTINCT
               %(name)s as name,
-              %(columns)s,'dummy' as dummy
+              %(columns)s
 FROM landmatrix_activity                    AS a
 %(from)s
 LEFT JOIN landmatrix_activityattribute      AS deal_scope ON a.id = deal_scope.fk_activity_id AND deal_scope.name = 'deal_scope'

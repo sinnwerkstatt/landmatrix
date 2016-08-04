@@ -37,13 +37,13 @@ class SQLBuilderData:
         'target_region':        'deal_region.name',
         'target_country':       'deal_country.name',
         'year':                 'SUBSTR(negotiation_status.date, 1, 4)',
-        'crop':                 'crop.name',
+        #'crop':                 'crop.name', # breaks table group view "by crop"
         'intention':            'intention.value',
         'operational_stakeholder_region':      'operational_stakeholder_region.name',
-        'parent_stakeholder_country':     'parent_stakeholder_region.name',
-        'parent_stakeholder_name':        'parent_stakeholder_country.name',
-        'investor_region':      'parent_stakeholder_region.name',
-        'investor_country':     'parent_stakeholder_country.name',
+        #'parent_stakeholder_country':     'parent_stakeholder_country.name',
+        #'parent_stakeholder_name':        'parent_stakeholder.name',
+        #'investor_region':      'investor_region.name',
+        #'investor_country':     'investor_country.name',
         'data_source_type':     'data_source_type.value'
     }
     # TODO: should country actually join region?
@@ -88,7 +88,7 @@ class SQLBuilderData:
         ],
         'investor_region': INVESTOR_COLUMNS + [
             join(Country, 'investor_country', on='investor_country.id = stakeholders.fk_country_id'),
-            join(Region, 'investor_region', on='investor_region.id = parent_stakeholder_country.fk_region_id')
+            join(Region, 'investor_region', on='investor_region.id = investor_country.fk_region_id')
         ],
         'parent_stakeholder': INVESTOR_COLUMNS,
         'parent_stakeholder_percentage': [
@@ -139,8 +139,8 @@ class SQLBuilderData:
             "CONCAT(investor_country.name, '#!#', investor_country.code_alpha3) AS investor_country"
         ],
         "investor_region": [
-            "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id)) AS investor_region",
-            "CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id) AS investor_region"
+            "ARRAY_AGG(DISTINCT CONCAT(investor_region.name, '#!#', investor_region.id)) AS investor_region",
+            "CONCAT(investor_region.name, '#!#', investor_region.id) AS investor_region"
         ],
         "parent_stakeholder": [
             "ARRAY_AGG(stakeholders.name) AS parent_stakeholder",
