@@ -61,7 +61,8 @@ class ExportView(TemplateView):
     def export_csv(self, header, data, filename):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-        writer = csv.writer(response, delimiter=";", encoding='cp1252')
+        writer = csv.writer(response, delimiter=";", encoding='utf-8')
+        #writer = csv.writer(response, delimiter=";", encoding='cp1252')
         # write csv header
         writer.writerow([column['label'] for name, column in header.items()])
         for row in data:
