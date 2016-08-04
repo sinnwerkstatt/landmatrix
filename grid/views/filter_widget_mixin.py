@@ -149,6 +149,7 @@ class FilterWidgetMixin:
             group_value=None, starts_with=None):
         filters = BrowseFilterConditions(formset_conditions, [], 0).parse()
 
+        filters['order_by'] = order_by # required for table group view
         filters['group_by'] = group_by
         filters['group_value'] = group_value
         filters['starts_with'] = starts_with

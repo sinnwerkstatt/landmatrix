@@ -77,10 +77,10 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
     group_value = None
 
     def get_context_data(self, group, group_value=None):
-        context = super(TableGroupView, self).get_context_data()
         self.group = group or self.DEFAULT_GROUP
         self.group = self.group.replace("by-", "").replace("-", "_")
         self.group_value = group_value or ''
+        context = super(TableGroupView, self).get_context_data()
 
         query_result = self.get_records()
         items = self._get_items(query_result)
@@ -208,7 +208,10 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
     def filters(self):
         data = self.request.GET.copy()
         return self.get_filter_context(
-            self.current_formset_conditions, self.order_by, self.group, self.group_value,
+            self.current_formset_conditions,
+            self.order_by,
+            self.group,
+            self.group_value,
             data.get("starts_with")
         )
 
@@ -280,12 +283,12 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
     def order_by(self):
         order_by = None
         if 'order_by' in self.request.GET:
-            order_by = self.request.GET.get("order_by")
+            order_by = self.request.GET.getlist("order_by")
         elif self.group and self.group != 'all':
-            order_by = self.group
+            order_by = [self.group]
         #elif self.group_value or order_by == "all" or order_by == "database"
         else:
-            order_by = 'deal_id'
+            order_by = ['deal_id']
         return order_by
 
     def _map_values_of_group(self, value_list, format_string):
