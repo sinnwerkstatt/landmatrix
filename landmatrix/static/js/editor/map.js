@@ -39,6 +39,7 @@ function getLocationFields(mapId) {
 
 function updateMapLocation(mapId) {
     if (lock == false) {
+
         var fields = getLocationFields(mapId);
 
         var lat = 0.0;
@@ -81,7 +82,7 @@ function updateLocationFields(mapId, coords) {
         try {
             updateGeocoding(mapId);
         } catch (err) {
-            console.log(err);
+            //console.log(err);
         }
     }
 }
@@ -118,9 +119,8 @@ function updateGeocoding(mapId) {
 function updateTargetCountry(place, mapId) {
     for(var i = 0; i < place.address_components.length; i++) {
         if (place.address_components[i].types.indexOf("country") != -1) {
-            var country = place.address_components[i].short_name,
-                select = $('#id_' + prefix + '-'+mapId+"-target_country");
-            select.val(select.find("option[title='" + country + "']").val());
+            var country = place.address_components[i].short_name;
+            $('#id_' + prefix + '-'+mapId+"-target_country option").removeAttr("selected").filter("option[title='" + country + "']").attr('selected', 'selected');
         }
     }
 }
@@ -176,31 +176,21 @@ function initializeMap (mapId, lat, lon) {
         source: source
     });
 
-    layers = baseLayers;
-    layers.push(
-        // Context Layers from the Landobservatory Geoserver.
-        new ol.layer.Group({
-            title: 'Context Layers',
-            layers: contextLayers
-        }),
-        new ol.layer.Group({
-            title: 'Deals',
-            layers: [
-                intendedAreaLayer,
-                productionAreaLayer,
-                cluster
-            ]
-        })
-    );
+    console.log("Building map: ", target);
 
     var map = new ol.Map({
        target: target,
-       layers: layers,
+       layers: [
+            new ol.layer.Tile({
+                title: 'OpenStreetMap',
+                type: 'base',
+                visible: true,
+                source: new ol.source.OSM()
+            }),
+            vectorLayer
+        ],
         view: view
     });
-
-    olGM = new olgm.OLGoogleMaps({map: map});
-    olGM.activate();
 
     maps[mapId] = map;
     views[mapId] = view;
@@ -236,11 +226,12 @@ function initGeocoder(mapId) {
 
             autocomplete.addListener('place_changed', function () {
                 var place = autocomplete.getPlace();
-                //if (!place.geometry) {
-                //    $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>Sorry, that place cannot be found.</span></div>')
-                //    //window.alert("Autocomplete's returned place contains no geometry");
-                //    return;
-                //}
+                if (!place.geometry) {
+                    $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>Sorry, that place cannot be found.</span></div>')
+
+                    //window.alert("Autocomplete's returned place contains no geometry");
+                    return;
+                }
                 var map = maps[mapId];
                 // If the place has a geometry, then present it on a map.
                 // FIXME: This doesn't work anymore, seems the viewport vars change names randomly?
