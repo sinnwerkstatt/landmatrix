@@ -37,7 +37,7 @@ class SQLBuilderData:
         'target_region':        'deal_region.name',
         'target_country':       'deal_country.name',
         'year':                 'SUBSTR(negotiation_status.date, 1, 4)',
-        'crop':                 'crop.name',
+        #'crop':                 'crop.name', # breaks table group view "by crop"
         'intention':            'intention.value',
         'operational_stakeholder_region':      'operational_stakeholder_region.name',
         'parent_stakeholder_country':     'parent_stakeholder_region.name',
