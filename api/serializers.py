@@ -30,18 +30,9 @@ class UserSerializer(serializers.BaseSerializer):
         return [obj.id, obj.username, obj.get_full_name() or obj.username]
 
 
-class DealSerializer(serializers.Serializer):
-    '''
-    Used to serialize the deal list view.
-    '''
-    deal_id = serializers.IntegerField()
+class DealLocationSerializer(serializers.Serializer):
     point_lat = serializers.DecimalField(max_digits=11, decimal_places=8)
     point_lon = serializers.DecimalField(max_digits=11, decimal_places=8)
-    intention = serializers.CharField()
-    intended_size = serializers.IntegerField()
-    contract_size = serializers.IntegerField()
-    production_size = serializers.IntegerField()
-    investor = serializers.CharField()
     intended_area = GeometryField()
     production_area = GeometryField()
 
@@ -53,6 +44,36 @@ class DealSerializer(serializers.Serializer):
             if geo_field in obj and obj[geo_field]:
                 if not isinstance(obj[geo_field], GEOSGeometry):
                     obj[geo_field] = GEOSGeometry(obj[geo_field], srid=4326)
+
+        return super().to_representation(obj)
+
+
+class DealSerializer(serializers.Serializer):
+    '''
+    Used to serialize the deal list view.
+    '''
+    deal_id = serializers.IntegerField()
+    intention = serializers.CharField()
+    intended_size = serializers.IntegerField()
+    contract_size = serializers.IntegerField()
+    production_size = serializers.IntegerField()
+    investor = serializers.CharField()
+    locations = serializers.ListField(child=DealLocationSerializer())
+
+    def to_representation(self, obj):
+        locations = []
+        location_fields = self.fields['locations'].child.fields.keys()
+        array_elements = [obj[field] for field in location_fields]
+        split_elements = [elem.split(';') for elem in array_elements]
+
+        for values in zip(*split_elements):
+            location = {}
+            for field_name, value in zip(location_fields, values):
+                location[field_name] = value or None
+
+            locations.append(location)
+
+        obj['locations'] = locations
 
         return super().to_representation(obj)
 
