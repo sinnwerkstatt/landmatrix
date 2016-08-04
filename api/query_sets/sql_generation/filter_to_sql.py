@@ -239,7 +239,7 @@ class FilterToSQL:
         excluded_variables = (
             'deal_country', 'target_country', 'target_region',
             'investor_country', 'investor_region', 'negotiation_status',
-            'implementation_status',
+            'implementation_status', 'not_public'
         )
         if operation == 'is' and variable not in excluded_variables:
             # 'Is' operations requires that we exclude other values,

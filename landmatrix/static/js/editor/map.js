@@ -176,21 +176,31 @@ function initializeMap (mapId, lat, lon) {
         source: source
     });
 
-    console.log("Building map: ", target);
+    layers = baseLayers;
+    layers.push(
+        // Context Layers from the Landobservatory Geoserver.
+        new ol.layer.Group({
+            title: 'Context Layers',
+            layers: contextLayers
+        }),
+        new ol.layer.Group({
+            title: 'Deals',
+            layers: [
+                intendedAreaLayer,
+                productionAreaLayer,
+                cluster
+            ]
+        })
+    );
 
     var map = new ol.Map({
        target: target,
-       layers: [
-            new ol.layer.Tile({
-                title: 'OpenStreetMap',
-                type: 'base',
-                visible: true,
-                source: new ol.source.OSM()
-            }),
-            vectorLayer
-        ],
+       layers: layers,
         view: view
     });
+
+    olGM = new olgm.OLGoogleMaps({map: map});
+    olGM.activate();
 
     maps[mapId] = map;
     views[mapId] = view;
@@ -248,8 +258,8 @@ function initGeocoder(mapId) {
                 //}
                 // Update fields (coordinates and target country)
                 var fields = getLocationFields(mapId);
-                fields.lat.val(target[1]);
-                fields.lon.val(target[0]);
+                fields.lat.val(place.geometry.location.lat());
+                fields.lon.val(place.geometry.location.lng());
                 updateTargetCountry(place, mapId);
             });
         }

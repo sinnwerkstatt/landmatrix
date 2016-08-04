@@ -10,7 +10,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 class RecordReader:
 
-    DEBUG = False
+    DEBUG = True
 
     def __init__(self, filters, columns, status, is_staff=False):
         self.filters = filters

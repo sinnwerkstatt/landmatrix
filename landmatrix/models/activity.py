@@ -1,8 +1,8 @@
+from django.db.models.fields import BLANK_CHOICE_DASH
+from django.db.models.functions import Coalesce
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-
-#from simple_history.models import HistoricalRecords
 
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.status import Status
@@ -14,7 +14,7 @@ from landmatrix.models.country import Country
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class ActivityManager(models.Manager):
+class ActivityQuerySet(models.QuerySet):
     def public(self):
         return self.filter(fk_status_id__in=(ActivityBase.STATUS_ACTIVE, ActivityBase.STATUS_OVERWRITTEN))
 
@@ -26,6 +26,27 @@ class ActivityManager(models.Manager):
 
     def pending(self):
         return self.filter(fk_status_id__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_TO_DELETE))
+
+
+class NegotiationStatusManager(models.Manager):
+    '''
+    Manager for Negotiation status grouped query. (used by API call)
+    '''
+
+    def get_queryset(self):
+        deals_count = Coalesce(
+            models.Count('activity_identifier'), models.Value(0))
+        hectares_sum = Coalesce(models.Sum('deal_size'), models.Value(0))
+
+        queryset = ActivityQuerySet(self.model, using=self._db)
+        queryset = queryset.exclude(negotiation_status__isnull=True)
+        queryset = queryset.values('negotiation_status')
+        queryset = queryset.annotate(
+            deals_count=deals_count, hectares_sum=hectares_sum)
+        queryset = queryset.distinct()
+
+        return queryset
+
 
 class ActivityBase(DefaultStringRepresentation, models.Model):
     # FIXME: Replace fk_status with Choice Field
@@ -49,7 +70,8 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     fully_updated = models.BooleanField(_("Fully updated"), default=False)#, auto_now_add=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
 
-    objects = ActivityManager()
+    objects = ActivityQuerySet.as_manager()
+    negotiation_status_objects = NegotiationStatusManager()
 
     class Meta:
         abstract = True
@@ -101,28 +123,97 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
 class Activity(ActivityBase):
     """Just the most recent approved version of an activity (for simple queries in the public interface)"""
+    DEAL_SCOPE_DOMESTIC = 'domestic'
+    DEAL_SCOPE_TRANSNATIONAL = 'transnational'
     DEAL_SCOPE_CHOICES = (
-        ('domestic', _('Domestic')),
-        ('transnational', _('Transnational')),
+        (DEAL_SCOPE_DOMESTIC, _('Domestic')),
+        (DEAL_SCOPE_DOMESTIC, _('Transnational')),
+    )
+
+    NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST = 'Expression of interest'
+    NEGOTIATION_STATUS_UNDER_NEGOTIATION = 'Under negotiation'
+    NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING = 'Memorandum of understanding'
+    NEGOTIATION_STATUS_ORAL_AGREEMENT = 'Oral agreement'
+    NEGOTIATION_STATUS_CONTRACT_SIGNED = 'Contract signed'
+    NEGOTIATION_STATUS_NEGOTIATIONS_FAILED = 'Negotiations failed'
+    NEGOTIATION_STATUS_CONTRACT_CANCELLED = 'Contract canceled'
+    NEGOTIATION_STATUS_CONTRACT_EXPIRED = 'Contract expired'
+    NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP = 'Change of ownership'
+    # These groupings are used for determining filter behaviour
+    NEGOTIATION_STATUSES_INTENDED = (
+        NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST,
+        NEGOTIATION_STATUS_UNDER_NEGOTIATION,
+        NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING,
+    )
+    NEGOTIATION_STATUSES_CONCLUDED = (
+        NEGOTIATION_STATUS_ORAL_AGREEMENT,
+        NEGOTIATION_STATUS_CONTRACT_SIGNED,
+    )
+    NEGOTIATION_STATUSES_FAILED = (
+        NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
+        NEGOTIATION_STATUS_CONTRACT_CANCELLED,
+        NEGOTIATION_STATUS_CONTRACT_EXPIRED,
     )
     NEGOTIATION_STATUS_CHOICES = (
-        ('', _("---------")),
-        ("Expression of interest", _("Intended (Expression of interest)")),
-        ("Under negotiation", _("Intended (Under negotiation)")),
-        ("Memorandum of understanding", _("Intended (Memorandum of understanding)")),
-        ("Oral agreement", _("Concluded (Oral Agreement)")),
-        ("Contract signed", _("Concluded (Contract signed)")),
-        ("Negotiations failed", _("Failed (Negotiations failed)")),
-        ("Contract canceled", _("Failed (Contract canceled)")),
-        ("Contract expired", _("Failed (Contract expired)")),
-        ("Change of ownership", _("Change of ownership"))
+        BLANK_CHOICE_DASH[0],
+        (
+            NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST,
+            _("Intended (Expression of interest)"),
+        ),
+        (
+            NEGOTIATION_STATUS_UNDER_NEGOTIATION,
+            _("Intended (Under negotiation)"),
+        ),
+        (
+            NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING,
+            _("Intended (Memorandum of understanding)"),
+        ),
+        (
+            NEGOTIATION_STATUS_ORAL_AGREEMENT,
+            _("Concluded (Oral Agreement)"),
+        ),
+        (
+            NEGOTIATION_STATUS_CONTRACT_SIGNED,
+            _("Concluded (Contract signed)"),
+        ),
+        (
+            NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
+            _("Failed (Negotiations failed)"),
+        ),
+        (
+            NEGOTIATION_STATUS_CONTRACT_CANCELLED,
+            _("Failed (Contract cancelled)"),
+        ),
+        (
+            NEGOTIATION_STATUS_CONTRACT_EXPIRED, _("Contract expired"),
+        ),
+        (
+            NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP, _("Change of ownership"),
+        )
     )
+
+    IMPLEMENTATION_STATUS_PROJECT_NOT_STARTED = 'Project not started'
+    IMPLEMENTATION_STATUS_STARTUP_PHASE = 'Startup phase (no production)'
+    IMPLEMENTATION_STATUS_IN_OPERATION = 'In operation (production)'
+    IMPLEMENTATION_STATUS_PROJECT_ABANDONED = 'Project abandoned'
     IMPLEMENTATION_STATUS_CHOICES = (
-        ('', _("---------")),
-        ("Project not started", _("Project not started")),
-        ("Startup phase (no production)", _("Startup phase (no production)")),
-        ("In operation (production)", _("In operation (production)")),
-        ("Project abandoned", _("Project abandoned")),
+        BLANK_CHOICE_DASH[0],
+        (
+            IMPLEMENTATION_STATUS_PROJECT_NOT_STARTED,
+            _("Project not started"),
+        ),
+        (
+            IMPLEMENTATION_STATUS_STARTUP_PHASE,
+            _("Startup phase (no production)"),
+        ),
+        (
+            IMPLEMENTATION_STATUS_IN_OPERATION,
+            _("In operation (production)"),
+        ),
+        (
+            IMPLEMENTATION_STATUS_PROJECT_ABANDONED,
+            _("Project abandoned"),
+        ),
     )
 
     is_public = models.BooleanField(_('Is this a public deal?'), default=False, db_index=True)
@@ -149,19 +240,21 @@ class Activity(ActivityBase):
         )
 
 
-class HistoricalActivityManager(ActivityManager):
+class HistoricalActivityQuerySet(ActivityQuerySet):
 
     def get_my_deals(self, user):
         return self.filter(history_user=user).\
             filter(fk_status__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_REJECTED))
         #return queryset.values_list('fk_activity_id', flat=True).distinct()
+
+
 class HistoricalActivity(ActivityBase):
     """All versions (including the current) of activities"""
     history_date = models.DateTimeField(auto_now_add=True)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
     comment = models.TextField(_('Comment'), blank=True, null=True)
 
-    objects = HistoricalActivityManager()
+    objects = HistoricalActivityQuerySet.as_manager()
 
     #@property
     #def attributes(self):

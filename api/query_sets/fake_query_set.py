@@ -33,6 +33,21 @@ class FakeQuerySet(QuerySet):
     ORDER_BY = []
     LIMIT = None
 
+    BASE_FILTER_MAP = {
+        "concluded": (
+            status.lower() for status in
+            Activity.NEGOTIATION_STATUSES_CONCLUDED
+        ),
+        "intended": (
+            status.lower() for status in
+            Activity.NEGOTIATION_STATUSES_INTENDED
+        ),
+        "failed": (
+            status.lower() for status in
+            Activity.NEGOTIATION_STATUSES_FAILED
+        ),
+    }
+
     def __init__(self, request):
         self._all_results = []
 
@@ -139,12 +154,6 @@ class FakeQuerySet(QuerySet):
 
         return all_results
 
-    BASE_FILTER_MAP = {
-        "concluded": ("concluded (oral agreement)", "concluded (contract signed)"),
-        "intended": ("intended (expression of interest)", "intended (under negotiation)" ),
-        "failed": ("failed (contract canceled)", "failed (negotiations failed)"),
-    }
-
     def _set_filters(self, GET):
         self.rules = BrowseCondition.objects.filter(rule__rule_type="generic")
         # if self._filter_set():
@@ -172,6 +181,7 @@ class FakeQuerySet(QuerySet):
         deal_scope = get_data.getlist("deal_scope", [])
         data_source_type = get_data.get("data_source_type")
         filter_sql = ""
+
         if negotiation_status:
             stati = []
             for n in negotiation_status:
