@@ -10,7 +10,7 @@ var map,
     interactions = [],
     olGM;
 
-var countryThreshold = 6;
+var countryThreshold = 4;
 
 var currentVariable = 'Deal Intention';
 var markerSource = new ol.source.Vector();
@@ -585,6 +585,10 @@ $(document).ready(function () {
 
     map.on('click', function (evt) {
         var handleFeatureClick = function (feature, layer) {
+            if (feature.attributes.country) {
+                handleCountryClick(feature);
+                return;
+            }
 
             var features = feature.getProperties().features;
             if (!features) {
@@ -647,6 +651,13 @@ $(document).ready(function () {
         }
     });
 
+    var handleCountryClick = function (feature) {
+        var a = feature.attributes;
+        var countryBounds = [a.lat_min, a.lon_min, a.lat_max, a.lon_max];
+        var extent = ol.extent.applyTransform(countryBounds, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+        map.getView().fit(extent, map.getSize());
+    };
+
     // change Mouse Cursor when over Marker
     var target = map.getTarget();
     var jTarget = typeof target === "string" ? $("#" + target) : $(target);
@@ -671,6 +682,7 @@ $(document).ready(function () {
         var duplicates = 0;
 
         NProgress.set(0.8);
+        countriesSource.clear();
         markerSource.clear();
         if (data.length < 1) {
             $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
@@ -715,6 +727,7 @@ $(document).ready(function () {
 
     var addCountrySummariesData = function (data) {
         countriesSource.clear();
+        markerSource.clear();
         $('#alert_placeholder').empty();
         $(data).each(function (index, country) {
             var feature = new ol.Feature({
@@ -723,6 +736,7 @@ $(document).ready(function () {
                     'EPSG:4326', 'EPSG:3857')
                 )
             });
+            feature.attributes = country;
             countriesSource.addFeature(feature);
         });
         NProgress.done(true);
