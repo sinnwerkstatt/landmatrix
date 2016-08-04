@@ -118,6 +118,15 @@ class DealSpatialForm(BaseForm):
 
         return data
 
+    def get_fields_display(self):
+        fields = super().get_fields_display()
+        # Hide coordinates depending on level of accuracy
+        accuracy = self.initial['level_of_accuracy']
+        if accuracy in ('Country', 'Administrative region', 'Approximate location'):
+            fields = filter(lambda f: f['name'] not in ('point_lat', 'point_lon'), fields)
+        if accuracy == 'Country':
+            fields = filter(lambda f: f['name'] not in ('target_country'), fields)
+        return fields
 
 class DealSpatialBaseFormSet(BaseFormSet):
 
