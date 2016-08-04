@@ -60,15 +60,15 @@ $(document).ready(function () {
       item = data[i];
       // Update numbers
       // Concluded
-      if (['Oral agreement', 'Contract signed'].indexOf(item[0]) > 0) {
+      if (['Oral agreement', 'Contract signed'].indexOf(item[0]) > -1) {
         by_deals[1] += item[1];
         by_size[1] += item[2];
       // Intended
-      } else if (['Expression of interest', 'Under negotiation', 'Memorandum of understanding'].indexOf(item[0]) > 0) {
+      } else if (['Expression of interest', 'Under negotiation', 'Memorandum of understanding'].indexOf(item[0]) > -1) {
         by_deals[2] += item[1];
         by_size[2] += item[2];
       // Failed
-      } else if (['Negotiations failed', 'Contract canceled', 'Contract expired'].indexOf(item[0]) > 0) {
+      } else if (['Negotiations failed', 'Contract canceled', 'Contract expired'].indexOf(item[0]) > -1) {
         by_deals[3] += item[1];
         by_size[3] += item[2];
       }
