@@ -9,7 +9,7 @@ from .models import NotificationEmail
 
 
 User = get_user_model()
-comment_notification_subject = _("Land Matrix: A comment was posted")
+comment_notification_subject = _("Land Matrix: New comment")
 
 
 def get_recipients_for_comment_on_activity(comment, activity):
@@ -18,12 +18,12 @@ def get_recipients_for_comment_on_activity(comment, activity):
         Q(region=activity.target_country.fk_region))
     recipients = [u.user.email for u in recipients]
     # Add author of original comment (if reply)
-    print("A")
-    print(dir(comment))
     if comment.parent:
-        print("B")
-        recipients.append(comment.parent.user.email)
-    return recipients
+        if comment.parent.user:
+            recipients.append(comment.parent.user.email)
+        else:
+            recipients.append(comment.parent.user_email)
+    return set(filter(None, recipients))
 
 def send_notifications_for_comment_on_activity(comment, request, activity):
     context = {
@@ -31,9 +31,8 @@ def send_notifications_for_comment_on_activity(comment, request, activity):
         'request': request,
     }
     recipients = get_recipients_for_comment_on_activity(comment, activity)
-    print(recipients)
-    for recipient in filter(None, recipients):
-      NotificationEmail.objects.send(template_name='comment_posted',
-                                     context=context,
-                                     subject=comment_notification_subject,
-                                     to=recipient)
+    for recipient in recipients:
+        NotificationEmail.objects.send(template_name='comment_posted',
+            context=context,
+            subject=comment_notification_subject,
+            to=recipient)
