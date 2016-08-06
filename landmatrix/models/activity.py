@@ -273,27 +273,24 @@ class HistoricalActivity(ActivityBase):
         self.save()
 
         # Historical activity already is the newest version of activity?
-        #old_activity = Activity.objects.get(activity_identifier=self.activity_identifier)
-        old_activity = Activity.objects.filter(activity_identifier=self.activity_identifier).order_by('-id').first()
-        if old_activity and self.id == old_activity.id:
+        #activity = Activity.objects.get(activity_identifier=self.activity_identifier)
+        activity = Activity.objects.filter(activity_identifier=self.activity_identifier).order_by('-id').first()
+        if activity and self.id == activity.id:
             return False
         # Activity has been deleted?
         if self.fk_status_id == self.STATUS_DELETED:
-            if old_activity:
-                old_activity.delete()
+            if activity:
+                activity.delete()
             return True
 
-        # Exchange new activity (create new and delete old)
-        new_activity = Activity.objects.create(
-            id = self.id,
-            activity_identifier = self.activity_identifier,
-            availability = self.availability,
-            fully_updated = self.fully_updated,
-            fk_status_id = self.fk_status_id,
-        )
+        # Update activity (keeping comments)
+        #activity.activity_identifier = self.activity_identifier
+        activity.availability = self.availability
+        activity.fully_updated = self.fully_updated
+        activity.fk_status_id = self.fk_status_id
         # Delete old and create new activity attributes
-        if old_activity:
-            old_activity.attributes.all().delete()
+        if activity:
+            activity.attributes.all().delete()
         for hattribute in self.attributes.all():
             attribute = ActivityAttribute.objects.create(
                 fk_activity_id = self.id,
@@ -315,9 +312,11 @@ class HistoricalActivity(ActivityBase):
             latest.save()
             # Delete other involvments for activity, since we don't need a history of involvements
             involvements.exclude(id=latest.id).delete()
-        if old_activity:
-            old_activity.delete()
+        ap.prepare_deal_for_public_interface(activity.activity_identifier)
         return True
+
+    def get_activity(self):
+        return Activity.objects.filter(activity_identifier=self.activity_identifier).first()
 
     class Meta:
         verbose_name = _('Historical activity')

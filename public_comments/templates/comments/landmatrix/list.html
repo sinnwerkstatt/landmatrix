@@ -10,6 +10,7 @@
         <li id="c{{ comment.id }}">{# c## is used by the absolute URL of the Comment model, so keep that as it is. #}
             <dl class="comment">
                 <dt>
+                    <small>
                     {{ comment.submit_date }} {% trans "by" %} {{ comment.name }} 
                     | <a href="#c{{ comment.id }}" data-comment-id="{{ comment.id }}" class="comment-reply-link">{% trans "Reply" %}</a>
                     {% if perms.django_comments.can_moderate %}
@@ -22,7 +23,7 @@
                         </form>
                     </span>
                     {% endif %}
-
+                    </small>
                 </dt>
                 <dd>
                     {{ comment.comment|linebreaks }}

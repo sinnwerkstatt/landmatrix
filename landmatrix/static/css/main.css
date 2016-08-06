@@ -492,6 +492,10 @@ select:not([multiple]) {
   height: 42px !important;
   /* A good number.. */ }
 
+.small input,
+small input {
+  font-size: 100% !important; }
+
 #filters {
   margin-bottom: 20px; }
 
@@ -1466,7 +1470,7 @@ table th a {
 #stats .number {
   clear: both; }
 
-#comments ul {
+#comments > ul {
   padding: 0; }
 
 #comments .comment-moderation form {

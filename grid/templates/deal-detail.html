@@ -35,9 +35,9 @@
 
 {% block messages %}
 {{ block.super }}
-{% if activity.fk_status_id == 1 %}
+{% if deal.activity.fk_status_id == 1 %}
 <p class="alert alert-danger">{% trans "This deal version is pending." %}{% if perms.landmatrix.review_activity %} {% trans "Please accept or reject it in the manage section." %}{% endif %}</p>
-{% else %}{% if activity.fk_status_id == 4 %}
+{% else %}{% if deal.activity.fk_status_id == 4 %}
 <p class="alert alert-danger">{% trans "This deal has been deleted. It is not visible for public users." %}</p>
 {% endif %}{% endif %}
 {% endblock %}
@@ -88,7 +88,7 @@
                 <div class="panel-heading">
                     <a id="comments" data-toggle="collapse" data-parent="#accordion" href="#collapse_comments">
                         <h5 class="panel-title">
-                            {% trans "Comments" %} ({{ comment_count }})
+                            {% trans "Comments" %} <small>({{ comment_count }} {% trans "comments" %})</small>
                                 <span id="collapsebtn_history"
                                       class="lm-chevron-circle-down pull-right mgrey1"></span>
                         </h5>
@@ -98,14 +98,14 @@
                     <div class="panel-body">
                         <div class="col-sm-12">
                             {% if comment_count > 0 %}
-                                {% render_comment_list for deal.activity %}
+                                {% render_comment_list for activity.get_activity %}
                             {% else %}
                                 <p class="alert alert-info">{% trans "There are no comments to this deal yet." %}</p>
                             {% endif %}
                         </div>
                         {% if not is_pdf_export %}
                         <form method="post" action="{% comment_form_target %}">
-                            {% get_comment_form for deal.activity as comment_form %}
+                            {% get_comment_form for activity.get_activity as comment_form %}
                             {% csrf_token %}
                             {# TODO: move next into the form logic #}
                             <input type="hidden" name="next" value="{% url 'deal_detail' deal.activity_identifier %}">

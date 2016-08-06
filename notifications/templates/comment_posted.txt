@@ -1,11 +1,8 @@
 {% load i18n %}
 
-{% trans "Hello" %} {{ name }},
-
-{{ comment.name }} {% trans "has posted a new comment on" %} {% trans "Activity" %} {{ comment.content_object.activity_identifier }}:
+{{ comment.name }} {% trans "has posted a new comment on" %} {% trans "Deal" %} {{ comment.content_object.activity_identifier }}:
 
 {{ comment.title }}
-
 {{ comment.comment }}
 
 {% trans "Yours" %},

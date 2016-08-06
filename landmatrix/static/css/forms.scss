@@ -265,3 +265,8 @@ a.remove-ybd:hover {
 select:not([multiple]) {
   height: 42px !important; /* A good number.. */
 }
+
+.small input,
+small input {
+  font-size: 100% !important;
+}
