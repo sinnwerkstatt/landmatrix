@@ -12,6 +12,7 @@ from django.template.defaultfilters import slugify
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from wkhtmltopdf import wkhtmltopdf
+from django.conf import settings
 
 from landmatrix.storage import data_source_storage
 from grid.forms.base_form import BaseForm
@@ -266,7 +267,8 @@ def handle_url(form_data, request):
                                          ContentFile(response.read()))
             else:
                 # Create PDF from URL
-                # TODO: fix NameError (uploaded_pdf_path)
+                uploaded_pdf_path = '%s%s/%s' % (
+                    settings.MEDIA_ROOT, settings.DATA_SOURCE_DIR, url_slug)
                 output = wkhtmltopdf(pages=url, output=uploaded_pdf_path)
             form_data['date'] = timezone.now().strftime("%Y-%m-%d")
             form_data['file'] = url_slug
