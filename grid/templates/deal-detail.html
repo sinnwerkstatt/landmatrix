@@ -107,9 +107,6 @@
                         <form method="post" action="{% comment_form_target %}">
                             {% get_comment_form for deal.activity as comment_form %}
                             {% csrf_token %}
-                            {% for hidden in comment_form.hidden_fields %}
-                                {{ hidden }}
-                            {% endfor %}
                             {# TODO: move next into the form logic #}
                             <input type="hidden" name="next" value="{% url 'deal_detail' deal.activity_identifier %}">
                             {% include "form.html" with form=comment_form %}
