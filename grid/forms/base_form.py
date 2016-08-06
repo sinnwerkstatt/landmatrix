@@ -375,9 +375,7 @@ class BaseForm(forms.Form):
         return ''
 
     def get_display_value_file_field(self, field_name):
-        value = self.is_valid() and self.cleaned_data.get(field_name) and hasattr(self.cleaned_data.get(field_name),
-            "name") and self.cleaned_data.get(field_name).name or self.data.get(self.prefix and "%s-%s" % (
-                self.prefix, field_name) or field_name)
+        value = self.initial.get(field_name, '')
         return value
 
     def get_display_value_multi_value_field(self, field, field_name):

@@ -164,6 +164,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
                 'wagtailcms.context_processors.add_root_page',
+                'wagtailcms.context_processors.add_data_source_dir',
             ],
         },
     },

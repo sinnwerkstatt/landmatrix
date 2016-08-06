@@ -10,6 +10,8 @@
                 <div class="col-md-9">
                     {% if field.name == 'url' %}
                         <a href="{{ field.value|safe|decimalgroupstring }}" target="_blank">{{ field.value|safe|decimalgroupstring }}</a>
+                    {% elif field.name == 'file' %}
+                        <a href="{{ MEDIA_URL }}{{ DATA_SOURCE_DIR }}/{{ field.value|safe }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
                     {% else %}
                         {{ field.value|safe|decimalgroupstring }}
                     {% endif %}
