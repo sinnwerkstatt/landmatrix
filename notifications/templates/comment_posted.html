@@ -1,9 +1,8 @@
 {% load i18n %}
 <html>
 <body>
-
-<b>{{ comment.name }}</b> {% trans "has posted a new comment on" %} <b>{% trans "Activity" %} {{ comment.content_object.activity_identifier }}</b>:
-<h1>{{ comment.title }}</h1>
+<b>{{ comment.name }}</b> {% trans "has posted a new comment on" %} <a href="{% url "deal_detail" deal_id=comment.content_object.activity_identifier %}">{% trans "Deal" %} {{ comment.content_object.activity_identifier }}</b>:
+<b>{{ comment.title }}</b>
 <blockquote>
 {{ comment.comment }}
 </blockquote>
