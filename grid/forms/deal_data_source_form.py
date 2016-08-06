@@ -147,6 +147,8 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
                     form_attributes['file'] = {'value': uploaded}
             if 'url' in form_attributes and form_attributes['url'] and 'file' not in form_attributes:
                 form_attributes = handle_url(form_attributes, request)
+            #else:
+            #    raise IOError("no")
 
             attributes.append(form_attributes)
         return attributes
@@ -240,7 +242,7 @@ def get_file_from_upload(files, form_index):
 
 
 def handle_url(form_data, request):
-    url = form_data['url']
+    url = form_data['url']['value']
     url_slug = get_url_slug(request, url)
 
     # TODO: this is a quick and dirty KeyError fix, needs some cleanup
