@@ -279,8 +279,6 @@ MAX_UPLOAD_SIZE = 20971520
 DATA_SOURCE_MAX_UPLOAD_SIZE = 10485760
 DATA_SOURCE_DIR = 'uploads'  # appended to MEDIA_ROOT/MEDIA_URL
 
-DEFAULT_FROM_EMAIL = 'admin@landmatrix.org'
-
 # Recaptcha spam protection for comments
 # Replace these with real keys and don't commit them
 RECAPTCHA_PUBLIC_KEY = '6LfmBB8TAAAAAPntejlNyxcW86R7uBUFH_yAyofS'
