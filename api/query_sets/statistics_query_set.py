@@ -1,6 +1,7 @@
-from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery, FakeQuerySetFlat
-
 from django.db import connection
+
+from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery, FakeQuerySetFlat
+from landmatrix.models.activity import Activity
 
 class StatisticsQuerySet(FakeQuerySetWithSubquery):
 
