@@ -2,7 +2,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.test import TestCase
 
-from landmatrix.models import Activity
+from landmatrix.models.activity import Activity
 from .deals_test_data import DealsTestData
 from .generate_old_sql import GenerateOldSQL
 from api.query_sets.sql_generation.join_functions import join_expression

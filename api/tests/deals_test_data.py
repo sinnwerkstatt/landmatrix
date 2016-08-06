@@ -1,8 +1,9 @@
 from datetime import datetime
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-from landmatrix.models import *
+from landmatrix.models.language import Language
+from landmatrix.models.country import Country
+from landmatrix.models.region import Region
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 
 class DealsTestData:
 

@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import Country
+from landmatrix.models.country import Country
 
 from django import forms
 from django.utils.encoding import force_text

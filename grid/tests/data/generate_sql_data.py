@@ -22,7 +22,7 @@ os.chdir(proj_path)
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from grid.views import ActivityProtocol
+from grid.views.activity_protocol import ActivityProtocol
 
 def read_data(filename):
     with open(os.path.dirname(os.path.realpath(__file__)) + '/' + filename, 'r') as f:

@@ -1,6 +1,6 @@
 import datetime
 
-from landmatrix.models import DealHistoryItem
+from landmatrix.models.deal_history import DealHistoryItem
 
 
 def _get_added_attributes(earlier_deal, later_deal):

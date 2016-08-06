@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = 'Populates the operational companies with country and classification'
 
     def handle(self, *args, **options):
-        from landmatrix.models import InvestorActivityInvolvement
+        from landmatrix.models.investor import InvestorActivityInvolvement
 
         iai = InvestorActivityInvolvement.objects.all()
         for involvement in iai:

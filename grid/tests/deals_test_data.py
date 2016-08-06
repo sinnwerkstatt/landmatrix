@@ -1,6 +1,10 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import *
+from landmatrix.models.status import Status
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement
+from landmatrix.models.language import Language
+from landmatrix.models.activity import Activity, HistoricalActivity
+from landmatrix.models.activity_attribute_group import ActivityAttribute, HistoricalActivityAttribute
 
 from datetime import date
 

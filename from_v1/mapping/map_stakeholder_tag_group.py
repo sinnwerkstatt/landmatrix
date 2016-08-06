@@ -2,7 +2,8 @@ from migrate import V1, V2
 from mapping.map_tag_groups import MapTagGroups
 
 from mapping.aux_functions import stakeholder_ids
-from landmatrix.models import Language, StakeholderAttributeGroup, Country
+from landmatrix.models.language import Language
+from landmatrix.models.country import Country
 
 if V1 == 'v1_my':
     from editor.models import Comment, SH_Tag_Group, SH_Tag

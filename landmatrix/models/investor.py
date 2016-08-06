@@ -237,8 +237,8 @@ class InvestorVentureInvolvement(models.Model):
 
 
 class InvestorActivityInvolvementManager(models.Manager):
-    def get_involvements_for_activity(self, activity_id):
-        return InvestorActivityInvolvement.objects.filter(fk_activity_id=activity_id).\
+    def get_involvements_for_activity(self, activity_identifier):
+        return InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=activity_identifier).\
             filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE, Investor.STATUS_OVERWRITTEN))
 
 

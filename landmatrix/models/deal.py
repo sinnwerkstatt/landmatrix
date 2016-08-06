@@ -6,7 +6,9 @@ from landmatrix.models.investor import Investor, InvestorActivityInvolvement, In
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import Activity, ActivityAttribute, Country
+from landmatrix.models.activity import Activity
+from landmatrix.models.activity_attribute_group import ActivityAttribute
+from landmatrix.models.country import Country
 
 from django.db.models import Max
 import itertools

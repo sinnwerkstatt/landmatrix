@@ -8,7 +8,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 def find_attached_activity(activity_id):
     from old_editor.models import Activity as OldActivity
-    from landmatrix.models import Activity as NewActivity
+    from landmatrix.models.activity import Activity as NewActivity
     old_activity = OldActivity.objects.using(V1).get(pk=activity_id)
     new_activity = NewActivity.objects.using(V2).\
         filter(activity_identifier=old_activity.activity_identifier).\

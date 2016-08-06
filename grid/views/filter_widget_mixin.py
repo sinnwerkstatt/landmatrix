@@ -8,7 +8,8 @@ from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 
 from .profiling_decorators import print_execution_time_and_num_queries
-from landmatrix.models import BrowseCondition, FilterPresetGroup
+from landmatrix.models.browse_condition import BrowseCondition
+from landmatrix.models.filter_preset import FilterPresetGroup
 from api.filters import Filter
 from grid.widgets import TitleField
 from grid.forms.browse_condition_form import ConditionFormset

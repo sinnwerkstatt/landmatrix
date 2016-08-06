@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.models import Country
+from landmatrix.models.country import Country
 from landmatrix.models.filter_preset import FilterPreset
 
 

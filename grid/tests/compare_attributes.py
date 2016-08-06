@@ -27,7 +27,7 @@ application = get_wsgi_application()
 #
 # actual script follows.
 #
-from landmatrix.models import ActivityAttribute
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 import json
 import argparse
 

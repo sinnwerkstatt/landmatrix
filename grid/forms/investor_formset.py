@@ -52,7 +52,7 @@ class InvestorFormSet(BaseInvestorFormSet):
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
         data = []
-        involvements = activity.involvement_set().all() #get_involvements_for_activity(activity.id)
+        involvements = activity.involvement_set().all() 
         for i, involvement in enumerate(involvements):
             if not involvement.fk_stakeholder:
                 continue

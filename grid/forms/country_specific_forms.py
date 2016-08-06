@@ -1,7 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.models import Country, ActivityAttribute
+from landmatrix.models.country import Country
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 from grid.forms.base_form import BaseForm
 from grid.widgets import TitleField, NumberInput
 

@@ -3,7 +3,8 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 
 from editor.models import UserRegionalInfo
-from landmatrix.models import Country, Region
+from landmatrix.models.country import Country
+from landmatrix.models.region import Region
 from .models import NotificationEmail
 
 

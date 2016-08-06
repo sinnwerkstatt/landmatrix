@@ -1,7 +1,7 @@
 from django.dispatch import receiver
 from django_comments.signals import comment_was_posted
 
-from landmatrix.models import HistoricalActivity
+from landmatrix.models.activity import HistoricalActivity
 from .distribution import send_notifications_for_comment_on_activity
 
 

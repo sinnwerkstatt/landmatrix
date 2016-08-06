@@ -1,6 +1,3 @@
-from pprint import pprint
-
-from landmatrix.models import *
 from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery, FakeQuerySetFlat
 
 from django.db import connection

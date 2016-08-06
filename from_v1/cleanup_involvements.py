@@ -18,7 +18,7 @@ def load_project(proj_path, app_name):
 BASE_PATH = '/Users/Simon/Sites'
 load_project(BASE_PATH+'/landmatrix', 'landmatrix')
 
-from landmatrix.models import InvestorVentureInvolvement, InvestorActivityInvolvement
+from landmatrix.models.investor import InvestorVentureInvolvement, InvestorActivityInvolvement
 
 if False:
     pairs = InvestorVentureInvolvement.objects.values_list('fk_venture_id', 'fk_investor_id').distinct()
@@ -45,7 +45,7 @@ if False:
                 print('DELETE:', involvement)
                 involvement.delete()
 
-from landmatrix.models import Activity
+from landmatrix.models.activity import Activity
 
 deal_ids = Activity.objects.values_list('activity_identifier', flat=True).distinct()
 for id in deal_ids:

@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import transaction
 
 from grid.views.save_deal_view import SaveDealView
-from landmatrix.models import HistoricalActivity
+from landmatrix.models.activity import HistoricalActivity
 from django.contrib import messages
 
 class DeleteDealView(SaveDealView):
@@ -51,7 +51,8 @@ class DeleteDealView(SaveDealView):
             hattribute.fk_activity_id = hactivity.id
             hattribute.save()
 
-        hactivity.update_public_activity()
+        if self.request.user.has_perm('landmatrix.delete_activity'):
+            hactivity.update_public_activity()
 
         # Create success message
         if self.request.user.has_perm('landmatrix.delete_activity'):

@@ -8,8 +8,9 @@ from mapping.aux_functions import year_to_date
 from migrate import V1, V2
 from mapping.map_tag_groups import MapTagGroups
 
-from landmatrix.models import Language, Activity, HistoricalActivity, ActivityAttributeGroup, ActivityAttribute, HistoricalActivityAttribute
-import landmatrix.models
+from landmatrix.models.language import Language
+from landmatrix.models.activity import Activity, HistoricalActivity
+from landmatrix.models.activity_attribute_group import ActivityAttributeGroup, ActivityAttribute, HistoricalActivityAttribute
 
 if V1 == 'v1_my':
     from old_editor.models import A_Tag, A_Tag_Group, A_Key_Value_Lookup, Comment

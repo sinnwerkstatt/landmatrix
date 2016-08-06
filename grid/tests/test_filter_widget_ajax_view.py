@@ -43,7 +43,8 @@ class TestFilterWidgetAjaxView(WithStatus):
         self._test_for_specific_attribute('deal scope')
 
     def test_crops(self):
-        from landmatrix.models import AgriculturalProduce, Crop
+        from landmatrix.models.agricultural_produce import AgriculturalProduce
+        from landmatrix.models.crop import Crop
         AgriculturalProduce(name='Food Crop').save()
         Crop(code='ALG', name='Algae', slug='algae', fk_agricultural_produce=AgriculturalProduce.objects.last()).save()
         self._test_for_specific_attribute('crops')

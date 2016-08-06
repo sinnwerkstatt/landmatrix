@@ -1,8 +1,9 @@
-from landmatrix.models import *
+from landmatrix.models.activity import Activity
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
+from landmatrix.models.status import Status
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from api.query_sets.sql_generation.join_functions import *
 from api.query_sets.sql_generation.sql_builder_data import SQLBuilderData
-from landmatrix.models.activity import Activity
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'

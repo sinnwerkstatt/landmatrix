@@ -1,7 +1,11 @@
 import collections
 
 from api.query_sets.sql_generation.join_functions import *
-from landmatrix.models import *
+from landmatrix.models.country import Country
+from landmatrix.models.region import Region
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
+from landmatrix.models.crop import Crop
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 

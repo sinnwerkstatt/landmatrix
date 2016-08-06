@@ -20,7 +20,8 @@ from wagtail.wagtailadmin.edit_handlers import ObjectList
 from wagtail.wagtailadmin.views.pages import PAGE_EDIT_HANDLERS
 from blog.models import BlogPage
 
-from landmatrix.models import Region as DataRegion, Country as DataCountry
+from landmatrix.models.region import Region as DataRegion
+from landmatrix.models.country import Country as DataCountry
 
 class SplitMultiLangTabsMixin(object):
     """ This mixin detects multi-language fields and splits them into seperate tabs per language """

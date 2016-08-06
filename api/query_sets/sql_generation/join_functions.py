@@ -1,6 +1,6 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-from landmatrix.models import ActivityAttribute
+from landmatrix.models.activity_attribute_group import ActivityAttribute
 
 
 def get_join_columns(columns, group, group_value):

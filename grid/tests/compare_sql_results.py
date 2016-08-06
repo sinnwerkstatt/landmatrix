@@ -23,7 +23,7 @@ application = get_wsgi_application()
 #
 # actual script follows.
 #
-from grid.views import ActivityProtocol
+from grid.views.activity_protocol import ActivityProtocol
 from api.query_sets.sql_generation.record_reader import RecordReader
 
 RecordReader.DEBUG = False

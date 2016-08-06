@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
 from django.template import RequestContext
 
-from landmatrix.models import Investor
+from landmatrix.models.investor import Investor
 from grid.views.filter_widget_mixin import FilterWidgetMixin
 from grid.views.profiling_decorators import \
     print_execution_time_and_num_queries

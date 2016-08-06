@@ -3,7 +3,7 @@ API calls used for generating charts.
 '''
 from rest_framework.generics import ListAPIView
 
-from landmatrix.models import Activity
+from landmatrix.models.activity import Activity
 from api.query_sets.filter_query_set import FilterQuerySet
 from api.query_sets.deals_query_set import DealsQuerySet
 from api.query_sets.hectares_query_set import HectaresQuerySet

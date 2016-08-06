@@ -4,7 +4,7 @@ from django.db.models import Max
 from django.views.generic import TemplateView
 from django.template import RequestContext
 
-from landmatrix.models import Deal
+from landmatrix.models.deal import Deal
 from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.country import Country
 from landmatrix.models.deal_history import DealHistoryItem

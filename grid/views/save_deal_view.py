@@ -120,7 +120,8 @@ class SaveDealView(TemplateView):
         else:
             hactivity.fully_updated = False
         hactivity.save()
-        hactivity.update_public_activity()
+        if self.request.user.has_perm('landmatrix.change_activity'):
+            hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
 
         # Create activity feedback

@@ -1,8 +1,7 @@
 from psycopg2._psycopg import ProgrammingError
 
 from .deals_test_data import DealsTestData
-from grid.views import ActivityProtocol
-from landmatrix.models import Activity
+from landmatrix.models.activity import Activity, ActivityProtocol
 
 from django.test import TestCase
 from django.conf import settings

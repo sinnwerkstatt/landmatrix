@@ -2,7 +2,7 @@ from django import forms
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.models import BrowseCondition
+from landmatrix.models.browse_condition import BrowseCondition
 from api.filters import FILTER_OPERATION_MAP, FILTER_VAR_ACT, FILTER_VAR_INV
 from grid.forms.base_model_form import BaseModelForm
 from grid.widgets.browse_text_input import BrowseTextInput

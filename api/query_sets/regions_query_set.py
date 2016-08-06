@@ -1,8 +1,6 @@
 from api.query_sets.simple_fake_query_set import SimpleFakeQuerySet
 from wagtailcms.models import RegionPage
-from landmatrix.models import Region
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+from landmatrix.models.region import Region
 
 
 class RegionsQuerySet(SimpleFakeQuerySet):

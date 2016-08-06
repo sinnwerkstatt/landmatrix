@@ -4,7 +4,8 @@ from django.contrib.gis.geos import GEOSGeometry
 from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
-from landmatrix.models import FilterPreset, InvestorVentureInvolvement
+from landmatrix.models.filter_preset import FilterPreset
+from landmatrix.models.investor import InvestorVentureInvolvement
 
 
 class PassThruSerializer(serializers.BaseSerializer):

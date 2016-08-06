@@ -14,7 +14,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
 from editor.models import UserRegionalInfo
-from grid.views.activity_protocol import ActivityProtocol
 from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.activity_feedback import ActivityFeedback
@@ -471,15 +470,15 @@ def _approve_activity_change(activity, comment, request):
         None,#ReviewDecision.objects.get(name="approved"),
         comment
     )
-    involvements = InvestorActivityInvolvement.objects.get_involvements_for_activity(activity.id)
-    ap = ActivityProtocol()
-    if len(involvements) > 0:
-        _conditionally_update_stakeholders(activity, ap, involvements, request)
+    activity.update_public_activity()
+    #ap = ActivityProtocol()
+    #if len(activity.involvements) > 0:
+    #    _conditionally_update_stakeholders(activity, ap, involvements, request)
     # FIXME
     # Problem here: Involvements are not historical yet, but activity and investors are.
     # As an intermediate solution another involvement is created for each historical activity
     # which links to the public activity. Let's confirm the new and remove the old involvement.
-    ap.prepare_deal_for_public_interface(activity.activity_identifier)
+    #ap.prepare_deal_for_public_interface(activity.activity_identifier)
 
 def _change_status_with_review(activity, status, user, review_decision, comment):
     activity.fk_status_id = status
@@ -491,19 +490,19 @@ def _change_status_with_review(activity, status, user, review_decision, comment)
     changeset.timestamp = datetime.now()
     changeset.save()
 
-def _conditionally_update_stakeholders(activity, ap, involvements, request):
-    operational_stakeholder = involvements[0].fk_investor
-    if _any_investor_has_changed(operational_stakeholder, involvements):
-        # TODO make sure this is correct: secondary investors changed
-        involvement_stakeholders = [
-            {"stakeholder": ivi.fk_stakeholder, "investment_ratio": ivi.investment_ratio}
-            for iai in involvements
-            for ivi in InvestorVentureInvolvement.objects.filter(fk_investor=iai.fk_investor)
-        ]
-
-        ap.update_secondary_investors(
-            activity, operational_stakeholder, involvement_stakeholders, request
-        )
+#def _conditionally_update_stakeholders(activity, ap, involvements, request):
+#    operational_stakeholder = involvements[0].fk_investor
+#    if _any_investor_has_changed(operational_stakeholder, involvements):
+#        # TODO make sure this is correct: secondary investors changed
+#        involvement_stakeholders = [
+#            {"stakeholder": ivi.fk_stakeholder, "investment_ratio": ivi.investment_ratio}
+#            for iai in involvements
+#            for ivi in InvestorVentureInvolvement.objects.filter(fk_investor=iai.fk_investor)
+#        ]
+#
+#        ap.update_secondary_investors(
+#            activity, operational_stakeholder, involvement_stakeholders, request
+#        )
 
 
 def _approve_activity_deletion(activity, changeset, cs_comment, request):
@@ -515,11 +514,11 @@ def _approve_activity_deletion(activity, changeset, cs_comment, request):
     changeset.fk_review_decision = None#review_decision
     changeset.comment = cs_comment
     changeset.timestamp = datetime.now()
-    ActivityProtocol().remove_from_lookup_table(activity.activity_identifier)
+    activity.update_public_activity()
 
 
-def _any_investor_has_changed(operational_stakeholder, involvements):
-    op_subinvestor_ids = set(s.investor_identifier for s in operational_stakeholder.subinvestors.all())
-    involvement_investor_ids = (i.fk_investor.investor_identifier for i in involvements)
-    return any(op_subinvestor_ids.symmetric_difference(involvement_investor_ids))
+#def _any_investor_has_changed(operational_stakeholder, involvements):
+#    op_subinvestor_ids = set(s.investor_identifier for s in operational_stakeholder.subinvestors.all())
+#    involvement_investor_ids = (i.fk_investor.investor_identifier for i in involvements)
+#    return any(op_subinvestor_ids.symmetric_difference(involvement_investor_ids))
 

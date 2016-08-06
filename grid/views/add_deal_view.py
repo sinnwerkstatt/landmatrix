@@ -45,8 +45,9 @@ class AddDealView(SaveDealView):
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)
         hactivity.save()
-        # Create new activity (required for involvement)
-        hactivity.update_public_activity()
+        if self.request.user.has_perm('landmatrix.add_activity'):
+            # Create new activity (required for involvement)
+            hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
         if self.request.user.has_perm('landmatrix.add_activity'):
             messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))

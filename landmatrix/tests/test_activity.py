@@ -1,7 +1,7 @@
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.utils import timezone
-from landmatrix.models import Activity
+from landmatrix.models.activity import Activity
 from landmatrix.tests.with_status import WithStatus
 
 class TestActivity(WithStatus):

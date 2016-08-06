@@ -1,7 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.models import Activity, Currency
+from landmatrix.models.activity import Activity
+from landmatrix.models.currency import Currency
 from grid.widgets import (
     TitleField, CommentInput, NumberInput, NestedMultipleChoiceField,
     YearBasedChoiceField, YearBasedIntegerField, YearBasedNestedMultipleChoiceField

@@ -2,7 +2,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from grid.tests.deals_test_data import DealsTestData
 from grid.tests.test_view_base import TestViewBase
-from landmatrix.models import Country
+from landmatrix.models.country import Country
 
 from django.conf import settings
 from django.test import TestCase
