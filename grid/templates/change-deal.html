@@ -5,9 +5,11 @@
 {% block head %}
 {{ block.super }}
 {#     <script src="{% static "js/editor/livesearch.js" %}" type="text/javascript" charset="utf-8"></script> #}
+    <script src="{% static "vendor/d3/d3.js" %}" type="text/javascript" charset="utf-8"></script>
     <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
     <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
     <script src="{% static "gis/js/OLMapWidget.js" %}" type="text/javascript" charset="utf-8"></script>
+
 {% endblock %}
 
 

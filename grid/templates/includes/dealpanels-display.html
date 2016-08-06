@@ -16,7 +16,12 @@
                 </div>
             </div>
             {% if field.name == 'location' %}
-                <div class="map"></div>
+            <div class="map"></div>
+            {% elif field.name == 'operational_stakeholder' %}
+            <div class="investor-network"></div>
+            <script type="text/javascript">
+            loadInvestorNetwork({{ form.initial.operational_stakeholder }});
+            </script>
             {% endif %}
         {% endif %}
     {% endfor %}

@@ -100,7 +100,7 @@ class DealDetailSerializer(serializers.BaseSerializer):
 class InvestorNetworkSerializer(serializers.BaseSerializer):
     '''
     This serializer takes an investor and outputs a list of involvements
-    formatted like so:
+    formatted like:
     {
         "nodes": [
             {"id": "stakeholders", "name": "Stakeholders"},
@@ -111,67 +111,84 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             {"source": 0, "target": 1, "value": 0.001}
         ]
     }
+    {
+        "operational_stakeholder": {
+            "id": 123,
+            "name": "",
+            "fk_country": "",
+            "classification": "",
+            "parent_relation": "",
+            "homepage": "",
+            "opencorporates_link": "",
+            "comment": "",
+            "parent_stakeholders": [
+                {
+                    "id": 345,
+                    "name": "",
+                    [...]
+                    "involvement": [
+                        "percentage": "",
+                        "investment_type": "",
+                        "loans_amount": "",
+                        "loans_currency": "",
+                        "loans_date": "",
+                        "comment": "",
+                    ]
+                },
+                [...]
+            ],
+            "parent_investors": [
+                [...]
+            ]
+        }
+    }
     This is not REST, but it maintains compatibility with the existing API.
     '''
 
-    def to_representation(self, obj):
-        '''
-        TODO: split this up a bit, and use nested serializers.
-        '''
-        involvements = InvestorVentureInvolvement.objects.filter(
-            fk_venture=obj)
-        # TODO: these should be manager methods on involvements
-        stakeholder_involvements = involvements.filter(role='ST')
-        investor_involvements = involvements.filter(role='IN')
+    def to_representation(self, obj, parent_types=['parent_stakeholders', 'parent_investors']):
+        
 
-        nodes = []
-        links = []
+        response = {}
+        response["operational_stakeholder"] = {
+            "id": obj.id,
+            "name": obj.name,
+            "fk_country": str(obj.fk_country),
+            "classification": obj.get_classification_display(),
+            "parent_relation": obj.get_parent_relation_display(),
+            "homepage": obj.homepage,
+            "opencorporates_link": obj.opencorporates_link,
+            "comment": obj.comment,
+        }
+        involvements = InvestorVentureInvolvement.objects.filter(fk_venture=obj)
+        for parent_type in parent_types:
+            parents = []
+            if parent_type == 'parent_investors':
+                parent_involvements = involvements.investors()
+            else:
+                parent_involvements = involvements.stakeholders()
+            for i, involvement in enumerate(parent_involvements):
+                parent = involvement.fk_investor
+                parents.append({
+                    "id": parent.id,
+                    "name": parent.name,
+                    "fk_country": str(parent.fk_country),
+                    "classification": parent.get_classification_display(),
+                    "parent_relation": obj.get_parent_relation_display(),
+                    "homepage": parent.homepage,
+                    "opencorporates_link": parent.opencorporates_link,
+                    "comment": parent.comment,
+                    "involvement": {
+                        "percentage": involvement.percentage,
+                        "investment_type": involvement.investment_type,
+                        "loans_amount": involvement.loans_amount,
+                        "loans_currency": involvement.loans_currency,
+                        "loans_date": involvement.loans_date,
+                        "comment": involvement.comment,
+                    }
+                })
+            response[parent_type] = parents
 
-        # We are evaluating the queryset later anyways so don't bother with
-        # .exists
-        if bool(stakeholder_involvements):
-            stakeholder_index = 0
-            nodes.append({
-                "name": "Stakeholders",
-                "id": "stakeholders"
-            })
-
-        if bool(investor_involvements):
-            investor_index = len(nodes)
-            nodes.append({
-                "name": "Investors",
-                "id": "investors"
-            })
-
-        stakeholder_start_index = len(nodes)
-        for involvement in stakeholder_involvements:
-            nodes.append({
-                'name': involvement.fk_investor.name,
-                'id': 'stakeholder_{}'.format(involvement.fk_investor_id)
-            })
-
-        investor_start_index = len(nodes)
-        for involvement in investor_involvements:
-            nodes.append({
-                'name': involvement.fk_investor.name,
-                'id': 'investor_{}'.format(involvement.fk_investor_id)
-            })
-
-        for i, involvement in enumerate(stakeholder_involvements):
-            links.append({
-                'source': stakeholder_index,
-                'target': stakeholder_start_index + i,
-                'value': max(0.001, involvement.percentage)
-            })
-
-        for i, involvement in enumerate(investor_involvements):
-            links.append({
-                'source': investor_index,
-                'target': investor_start_index + i,
-                'value': max(0.001, involvement.percentage)
-            })
-
-        return {'nodes': nodes, 'links': links}
+        return response
 
 
 class NegotiationStatusSerializer(serializers.Serializer):

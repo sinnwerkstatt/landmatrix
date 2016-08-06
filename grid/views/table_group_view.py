@@ -283,7 +283,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
     def order_by(self):
         order_by = None
         if 'order_by' in self.request.GET:
-            order_by = self.request.GET.getlist("order_by")
+            order_by = list(filter(None, self.request.GET.getlist("order_by")))
         elif self.group and self.group != 'all':
             order_by = [self.group]
         #elif self.group_value or order_by == "all" or order_by == "database"

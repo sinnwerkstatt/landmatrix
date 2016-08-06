@@ -37,23 +37,10 @@ class InvestorNetworkView(APIView):
         it seems to just be passed back in the response.
         '''
         operational_stakeholder = self.get_object()
-
-        try:
-            investor_diagram = int(
-                request.query_params['operational_stakeholder_diagram'])
-        except KeyError:
-            raise serializers.ValidationError(
-                {'operational_stakeholder_diagram':
-                    _("This field is required.")})
-        except ValueError:
-            raise serializers.ValidationError(
-                {'operational_stakeholder_diagram':
-                    _("This field must be an integer.")})
-
-        serialized_response = InvestorNetworkSerializer(
-            operational_stakeholder)
+        serialized_response = InvestorNetworkSerializer(operational_stakeholder)
+        #parent_type=request.query_params.get('parent_type', 'parent_stakeholders'))
 
         response_data = serialized_response.data.copy()
-        response_data['index'] = investor_diagram
+        #response_data['index'] = investor_diagram
 
         return Response(response_data)
