@@ -1466,6 +1466,15 @@ table th a {
 #stats .number {
   clear: both; }
 
+#comments ul {
+  padding: 0; }
+
+#comments .comment-moderation form {
+  display: inline-block; }
+  #comments .comment-moderation form input {
+    border: none;
+    background: none; }
+
 /* ==========================================================================
  *    BUTTONS
  * ========================================================================== */

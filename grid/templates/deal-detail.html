@@ -114,6 +114,7 @@
                             <input type="hidden" name="next" value="{% url 'deal_detail' deal.activity_identifier %}">
                             {% include "form.html" with form=comment_form %}
                             <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
+                            <a href="#c0" id="cancel-reply" style="display:none">{% trans "Cancel reply" %}</a>
                         </form>
                         {% endif %}
                     </div>

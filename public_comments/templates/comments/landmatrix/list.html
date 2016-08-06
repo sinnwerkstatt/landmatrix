@@ -10,7 +10,7 @@
         <li id="c{{ comment.id }}">{# c## is used by the absolute URL of the Comment model, so keep that as it is. #}
             <dl class="comment">
                 <dt>
-                    {{ comment.submit_date }} - {{ comment.name }}
+                    {{ comment.submit_date }} {% trans "by" %} {{ comment.name }} | <a href="#c{{ comment.id }}" data-comment-id="{{ comment.id }}" class="comment-reply-link">{% trans "Reply" %}</a>
 
                 </dt>
                 <dd>

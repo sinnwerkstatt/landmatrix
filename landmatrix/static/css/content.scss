@@ -937,4 +937,17 @@ table th a {
   clear: both;
 }
 
-
+#comments {
+  ul {
+    padding: 0;
+  }
+  .comment-moderation {
+    form {
+      display: inline-block;
+      input {
+        border: none;
+        background: none;
+      }
+    }
+  }
+}

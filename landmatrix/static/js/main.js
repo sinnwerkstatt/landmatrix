@@ -369,6 +369,19 @@ function update_widget(el, key_id, form) {
 }
 
 
+function show_reply_form(event) {
+    var $this = $(this);
+    var comment_id = $this.data('comment-id');
+    $('#id_parent').val(comment_id);
+    $('#form-comment').insertAfter($this.closest('.comment'));
+    $('#cancel-reply').show();
+};
+function cancel_reply_form(event) {
+    $('#id_comment').val('');
+    $('#id_parent').val('');
+    $('#form-comment').appendTo($('#wrap_write_comment'));
+    $('#cancel-reply').hide();
+}
 $(document).ready(function () {
 
 
@@ -642,4 +655,7 @@ $(document).ready(function () {
     $('.toggle-tooltip:not(.left,.bottom)').tooltip({placement: "top", html: true});
     $('.toggle-tooltip.left').tooltip({placement: "left", html: true});
     $('.toggle-tooltip.bottom').tooltip({placement: "bottom", html: true});
+
+    $('.comment-reply-link').click(show_reply_form);
+    $('#cancel-reply').click(cancel_reply_form);
 });
