@@ -1,3 +1,5 @@
+import re
+
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.db.models.functions import Coalesce
 from django.db import models
@@ -261,7 +263,7 @@ class Activity(ActivityBase):
         if not self.is_minimum_information_requirement_satisfied():
             return False
         involvements = self.investoractivityinvolvement_set.all()
-        if not self._has_valid_investors(involvements):
+        if not self.has_valid_investors(involvements):
             return False
         return True
 
