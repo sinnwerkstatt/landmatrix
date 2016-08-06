@@ -11,129 +11,49 @@
 {% block breadcrumb_inner %}
     <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
     <li><a href="{% url 'deal_details' deal_id=deal.activity_id %}">{% trans "Deal Details" %}</a></li>
-  <li>{% trans "Compare deal history" %}</li>
+    <li>{% trans "Compare deal history" %}</li>
 {% endblock %}
 
-
 {% block content %}
-
-
-  {% for comparison_forms in forms %}
     <div class="row" id="comparison">
-
-        <div class="col-md-6{% if not comparison_forms.2 %} bg-warning{% endif %}">
-
-            <div class="panel-group" id="accordion">
-
-            {% if not comparison_forms.2 %}<strong>{% trans "Different" %}</strong>{% endif %}
-            {% if comparison_forms.0 %}
-
-                <div class="panel panel-default">
-
-                  {% if comparison_forms.0.forms %}                                                      {# this is a formset #}
-
-                    {% for form in comparison_forms.0.forms %}
-
-                      <div class="panel-heading">
-                        <h4 class="panel-title">
-                          <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                            {{ form.form_title }}:
-                          </a>
-                        </h4>
-                      </div>
-
-                      <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
-                        <div class="panel-body">
-                          {% include "includes/dealpanels-display.html" with form=form %}
-                        </div>
-                      </div>
-
-                    {% endfor %}
-
-                  {% else %}      {# comparison_forms.0.forms #}
-
-                    <div class="panel-heading">
-                      <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                          {{ comparison_forms.0.form_title }}:
-                        </a>
-                      </h4>
-                    </div>
-
-                    <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
-                      <div class="panel-body">
-
-                        {% include "includes/dealpanels-display.html" with form=comparison_forms.0 %}
-                      </div>
-                    </div>
-
-                  {% endif %}     {# form.forms #}
-
-                </div>            {# class="panel panel-default" #}
-
-            {% endif %}           {# comparison_forms.0 #}
-
+      <div class="panel-group" id="accordion">
+        {% for comparison_forms in forms %}
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ forloop.counter }}" class="{% if not comparison_forms.2 %}bg-warning{% endif %}">
+              <h5 class="panel-title">
+                  {{ comparison_forms.0.form_title }}
+                  {% if not comparison_forms.2 %} <small>({% trans "changed" %})</small>{% endif %}
+              <span id="collapsebtn_{{ forloop.counter }}"
+                    class="lm-chevron-circle-down pull-right mgrey1"></span>
+              </h5>
+            </a>
           </div>
-
-    </div>
-
-    <div class="col-md-6">
-
-        <div class="panel-group" id="accordion">
-
-        {% if not comparison_forms.2 %}<strong>{% trans "DIFFERENT" %}</strong>{% endif %}
-
-        {% if comparison_forms.1 %}
-
-            <div class="panel panel-default">
-
-              {% if comparison_forms.1.forms %}                                                      {# this is a formset #}
-
-                {% for form in comparison_forms.1.forms %}
-
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                        {{ form.form_title }}:
-                      </a>
-                    </h4>
-                  </div>
-
-                  <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
-                    <div class="panel-body">
-                        {% include "includes/dealpanels-display.html" with form=form %}
-                    </div>
-                  </div>
-
+          <div id="collapse_{{ forloop.counter }}" 
+               class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
+            <div class="panel-body{% if not comparison_forms.2 %} bg-warning{% endif %}">
+              <div class="col-md-6">
+              {% if comparison_forms.0.forms %}
+                {% for form in comparison_forms.0.forms %}
+                  {% include "includes/dealpanels-display.html" with form=form form_count=forloop.counter %}
                 {% endfor %}
-
-              {% else %}      {# comparison_forms.1.forms #}
-
-                <div class="panel-heading">
-                  <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                      {{ comparison_forms.1.form_title }}:
-                    </a>
-                  </h4>
-                </div>
-
-                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
-                  <div class="panel-body">
-                    {% include "includes/dealpanels-display.html" with form=comparison_forms.1 %}
-                  </div>
-                </div>
-
-              {% endif %}     {# form.forms #}
-
-            </div>            {# class="panel panel-default" #}
-
-            {% endif %}           {# comparison_forms.1 #}
-
+              {% else %}
+                {% include "includes/dealpanels-display.html" with form=comparison_forms.0 %}
+              {% endif %}
+              </div>
+              <div class="col-md-6">
+              {% if comparison_forms.1.forms %}
+                {% for form in comparison_forms.1.forms %}
+                  {% include "includes/dealpanels-display.html" with form=form form_count=forloop.counter %}
+                {% endfor %}
+              {% else %}
+                {% include "includes/dealpanels-display.html" with form=comparison_forms.1 %}
+              {% endif %}
+              </div>
+            </div>
           </div>
         </div>
-
+        {% endfor %}
+      </div>
     </div>
-
-  {% endfor %}
-
 {% endblock %}
