@@ -46,13 +46,22 @@ var detailviews = {
     },
     'Deal Intention': {
         'Agriculture': '#1D6914',
+            'Biofuels': '#1D6914',
+            'Food crops': '#1D6914',
+            'Fodder': '#1D6914',
+            'Livestock': '#1D6914',
+            'Non-food agricultural commodities': '#1D6914',
+            'Agriculture unspecified': '#1D6914',
         'Forestry': '#2A4BD7',
+             'For wood and fibre': '#2A4BD7',
+             'For carbon sequestration/REDD': '#2A4BD7',
+             'Forestry unspecified': '#2A4BD7',
         'Conservation': '#575757',
         'Industry': '#AD2323',
         'Renewable Energy': '#81C57A',
         'Tourism': '#9DAFFF',
         'Other': '#8126C0',
-        'Mining': '#814A19',
+        'Resource extraction': '#814A19',
         'Undefined': '#FF0000'
     }
 };
@@ -148,7 +157,7 @@ $(document).ready(function () {
      };
      */
 
-    initMap();
+    initMap('map');
 });
 
 function initMap(target) {
@@ -435,7 +444,7 @@ function initMap(target) {
         minZoom: 2
     });
     map = new ol.Map({
-        target: 'map',
+        target: target,
         layers: layers,
         controls: controls,
         interactions: interactions,
@@ -749,6 +758,11 @@ function addCountrySummariesData (data) {
                 [country.lon, country.lat],
                 'EPSG:4326', 'EPSG:3857')
             )
+        });
+        feature.animate({r: radius}, 1000, "bounce", investor_target && function () {
+            // shrink so bubbles don't overlap
+            a.animate({r: 8}, 1000, "backIn");
+            a.caption.hide();
         });
         feature.attributes = country;
         countriesSource.addFeature(feature);
