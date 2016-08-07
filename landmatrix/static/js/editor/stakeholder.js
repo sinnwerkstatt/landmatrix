@@ -159,8 +159,8 @@ $(document).ready(function () {
     });
     var dataSwitch = $("[name='parent_type']");
     dataSwitch.bootstrapSwitch({
-        onText: 'Parent companies',
-        offText: 'Parent investors',
+        onText: 'Parent&nbsp;companies',
+        offText: 'Parent&nbsp;investors',
         offColor: 'info',
         onSwitchChange: function(event, state) {
             if (state) {
