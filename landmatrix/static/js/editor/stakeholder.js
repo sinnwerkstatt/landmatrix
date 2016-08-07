@@ -260,11 +260,10 @@ function createInvestorNetwork() {
       });
 
   node.append("circle")
-    .attr("cx", function (d) { if (d.involvement) { return 0; } else { return 10; } })
+    .attr("cx", function (d) { if (d.involvement) { return 0; } else { return 9; } })
     .attr("cy", 0)
     .attr("r", 8)
     .attr("class", "circle")
-    .html(function(d) { return '<i class="fa fa-question-circle"></i>'; })
     .on("click", function (d) {
         var modal = $('#stakeholder');
         modal.find('.modal-header h4').text(d.name);
