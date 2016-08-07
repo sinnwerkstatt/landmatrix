@@ -828,15 +828,33 @@ table th a {
   pointer-events: none;
 }
 
-.link {
+#investor-network .link {
   fill: none;
-  stroke: #000;
-  stroke-opacity: .2;
+  stroke: #44c42d;
+  stroke-width: 2px;
 }
 
-.link:hover {
-  stroke-opacity: .5;
+#investor-network.investors .link {
+  stroke: #fc941f;
 }
+
+#investor-network .circle {
+  fill: #44c42d;
+  stroke: #ffffff;
+  stroke-width: 2px;
+}
+
+#investor-network.investors .circle {
+  fill: #fc941f;
+}
+
+#investor-network .circle:hover {
+  stroke: #000000;
+  stroke-width: 2px;
+}
+
+
+
 
 /* ==========================================================================
  *    STATS

@@ -103,57 +103,44 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
     This serializer takes an investor and outputs a list of involvements
     formatted like:
     {
-        "nodes": [
-            {"id": "stakeholders", "name": "Stakeholders"},
-            {"id": "stakeholder_106406", "name": "Lao Thaihua Rubber Co"}
+        "id": 123,
+        "name": "",
+        "country": "",
+        "classification": "",
+        "parent_relation": "",
+        "homepage": "",
+        "opencorporates_link": "",
+        "comment": "",
+        "parent_stakeholders": [
+            {
+                "id": 345,
+                "name": "",
+                [...]
+                "involvement": [
+                    "percentage": "",
+                    "investment_type": "",
+                    "loans_amount": "",
+                    "loans_currency": "",
+                    "loans_date": "",
+                    "comment": "",
+                ],
+                "parent_stakeholders": [],
+                "parent_investors": []
+            },
+            [...]
         ],
-        "index": 4,
-        "links": [
-            {"source": 0, "target": 1, "value": 0.001}
+        "parent_investors": [
+            [...]
         ]
-    }
-    {
-        "operational_stakeholder": {
-            "id": 123,
-            "name": "",
-            "fk_country": "",
-            "classification": "",
-            "parent_relation": "",
-            "homepage": "",
-            "opencorporates_link": "",
-            "comment": "",
-            "parent_stakeholders": [
-                {
-                    "id": 345,
-                    "name": "",
-                    [...]
-                    "involvement": [
-                        "percentage": "",
-                        "investment_type": "",
-                        "loans_amount": "",
-                        "loans_currency": "",
-                        "loans_date": "",
-                        "comment": "",
-                    ]
-                },
-                [...]
-            ],
-            "parent_investors": [
-                [...]
-            ]
-        }
     }
     This is not REST, but it maintains compatibility with the existing API.
     '''
 
     def to_representation(self, obj, parent_types=['parent_stakeholders', 'parent_investors']):
-        
-
-        response = {}
-        response["operational_stakeholder"] = {
+        response = {
             "id": obj.id,
             "name": obj.name,
-            "fk_country": str(obj.fk_country),
+            "country": str(obj.fk_country),
             "classification": obj.get_classification_display(),
             "parent_relation": obj.get_parent_relation_display(),
             "homepage": obj.homepage,
@@ -168,25 +155,16 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             else:
                 parent_involvements = involvements.stakeholders()
             for i, involvement in enumerate(parent_involvements):
-                parent = involvement.fk_investor
-                parents.append({
-                    "id": parent.id,
-                    "name": parent.name,
-                    "fk_country": str(parent.fk_country),
-                    "classification": parent.get_classification_display(),
-                    "parent_relation": obj.get_parent_relation_display(),
-                    "homepage": parent.homepage,
-                    "opencorporates_link": parent.opencorporates_link,
-                    "comment": parent.comment,
-                    "involvement": {
-                        "percentage": involvement.percentage,
-                        "investment_type": involvement.investment_type,
-                        "loans_amount": involvement.loans_amount,
-                        "loans_currency": involvement.loans_currency,
-                        "loans_date": involvement.loans_date,
-                        "comment": involvement.comment,
-                    }
-                })
+                parent = self.to_representation(involvement.fk_investor, parent_types)
+                parent["involvement"] = {
+                    "percentage": involvement.percentage,
+                    "investment_type": involvement.get_investment_type_display(),
+                    "loans_amount": involvement.loans_amount,
+                    "loans_currency": involvement.loans_currency,
+                    "loans_date": involvement.loans_date,
+                    "comment": involvement.comment,
+                }
+                parents.append(parent)
             response[parent_type] = parents
 
         return response
