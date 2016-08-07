@@ -159,7 +159,7 @@ $(document).ready(function () {
     });
     var dataSwitch = $("[name='parent_type']");
     dataSwitch.bootstrapSwitch({
-        onText: 'Parent stakeholders',
+        onText: 'Parent companies',
         offText: 'Parent investors',
         offColor: 'info',
         onSwitchChange: function(event, state) {
@@ -252,10 +252,10 @@ function createInvestorNetwork() {
       .text(function(d) {
         if (d.involvement) {
           var inv = d.involvement;
-          return (parent_type == "investors" && "Parent investor" || "Parent stakeholder") + 
+          return (parent_type == "investors" && "Parent investor" || "Parent company") + 
             (inv.percentage && " ("+inv.percentage+"%"+(inv.investment_type && " "+inv.investment_type || "")+")" || "");
         } else {
-          return "Operational stakeholder";
+          return "Operational company";
         }
       });
 
