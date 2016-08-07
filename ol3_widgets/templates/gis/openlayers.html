@@ -17,9 +17,14 @@
 <a href="#" id="show_{{ id }}_div_map" class="pull-right">{% trans "Show area" %}</a>
 
 <script type="text/javascript">
-    {% block map_options %}var map_options = {};{% endblock %}
+var map_options,
+    base_layer,
+    options,
+    {{ module }};
+$(document).ready(function () {
+    {% block map_options %}map_options = {};{% endblock %}
     {% block base_layer %}
-        var base_layer = new ol.layer.Tile({
+        base_layer = new ol.layer.Tile({
             source: new ol.source.XYZ({
                 attributions: "NASA Worldview",
                 maxZoom: 8,
@@ -29,7 +34,7 @@
             })
         });
     {% endblock %}
-    {% block options %}var options = {
+    {% block options %}options = {
         base_layer: base_layer,
         geom_name: '{{ geom_type }}',
         id: '{{ id }}',
@@ -39,7 +44,7 @@
         name: '{{ name }}'
     };
     {% endblock %}
-    var {{ module }} = new MapWidget(options);
+    {{ module }} = new MapWidget(options);
 
     $('#show_{{ id }}_div_map').on('click', function (event) {
         event.preventDefault();
@@ -53,4 +58,5 @@
             $(this).text('{% trans "Show area" %}');
         }
     });
+});
 </script>

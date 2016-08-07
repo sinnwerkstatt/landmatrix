@@ -63,21 +63,106 @@ const GeoJSONColors = {  // Back, Border
     'Intended area (ha)': ['rgba(0, 196, 0, 0.6)', '#0a0']
 };
 
+var geoJSONReader = new ol.format.GeoJSON(),
+    PopupOverlay,
+    container,
+    content,
+    closer,
+    cluster,
+    countries,
+    image,
+    styles;
+
 //Map, Layers and Map Controls
 $(document).ready(function () {
-    // Set up popup
+    /*
+     var geojsonObject = {
+     'type': 'FeatureCollection',
+     'crs': {
+     'type': 'name',
+     'properties': {
+     'name': 'EPSG:3857'
+     }
+     },
+     'features': [{
+     'type': 'Feature',
+     'geometry': {
+     'type': 'Point',
+     'coordinates': [0, 0]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'LineString',
+     'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'LineString',
+     'coordinates': [[4e6, 2e6], [8e6, -2e6]]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'Polygon',
+     'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'MultiLineString',
+     'coordinates': [
+     [[-1e6, -7.5e5], [-1e6, 7.5e5]],
+     [[1e6, -7.5e5], [1e6, 7.5e5]],
+     [[-7.5e5, -1e6], [7.5e5, -1e6]],
+     [[-7.5e5, 1e6], [7.5e5, 1e6]]
+     ]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'MultiPolygon',
+     'coordinates': [
+     [[[-5e6, 6e6], [-5e6, 8e6], [-3e6, 8e6], [-3e6, 6e6]]],
+     [[[-2e6, 6e6], [-2e6, 8e6], [0, 8e6], [0, 6e6]]],
+     [[[1e6, 6e6], [1e6, 8e6], [3e6, 8e6], [3e6, 6e6]]]
+     ]
+     }
+     }, {
+     'type': 'Feature',
+     'geometry': {
+     'type': 'GeometryCollection',
+     'geometries': [{
+     'type': 'LineString',
+     'coordinates': [[-5e6, -5e6], [0, -5e6]]
+     }, {
+     'type': 'Point',
+     'coordinates': [4e6, -5e6]
+     }, {
+     'type': 'Polygon',
+     'coordinates': [[[1e6, -6e6], [2e6, -4e6], [3e6, -6e6]]]
+     }]
+     }
+     }]
+     };
+     */
 
+    initMap();
+});
+
+function initMap(target) {
     /**
      * Elements that make up the popup.
      */
-    var container = document.getElementById('popup');
-    var content = document.getElementById('popup-content');
-    var closer = document.getElementById('popup-closer');
+    container = document.getElementById('popup');
+    content = document.getElementById('popup-content');
+    closer = document.getElementById('popup-closer');
 
     /**
      * Create an overlay to anchor the popup to the map.
      */
-    var PopupOverlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
+    PopupOverlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
         element: container,
         autoPan: true,
         autoPanAnimation: {
@@ -85,24 +170,13 @@ $(document).ready(function () {
         }
     }));
 
-    var closePopup = function () {
-        PopupOverlay.setPosition(undefined);
-        closer.blur();
-        return false;
-    };
-
     /**
      * Add a click handler to hide the popup.
      * @return {boolean} Don't follow the href.
      */
     closer.onclick = closePopup;
 
-    var changeIntentionTypes = function () {
-        console.log(this);
-    };
-
-
-    var cluster = new ol.layer.Vector({
+    cluster = new ol.layer.Vector({
         title: 'Markers',
         source: clusterSource,
         style: function (feature, resolution) {
@@ -179,7 +253,7 @@ $(document).ready(function () {
         }
     });
 
-    var countries = new ol.layer.Vector({
+    countries = new ol.layer.Vector({
         title: 'Countries',
         source: countriesSource,
         visible: true,
@@ -209,13 +283,13 @@ $(document).ready(function () {
      *
      */
 
-    var image = new ol.style.Circle({
+    image = new ol.style.Circle({
         radius: 5,
         fill: null,
         stroke: new ol.style.Stroke({color: 'red', width: 1})
     });
 
-    var styles = {
+    styles = {
         'Point': [new ol.style.Style({
             image: image
         })],
@@ -280,83 +354,6 @@ $(document).ready(function () {
         })]
     };
 
-    var styleFunction = function (feature, resolution) {
-        return styles[feature.getGeometry().getType()];
-    };
-
-    /*
-     var geojsonObject = {
-     'type': 'FeatureCollection',
-     'crs': {
-     'type': 'name',
-     'properties': {
-     'name': 'EPSG:3857'
-     }
-     },
-     'features': [{
-     'type': 'Feature',
-     'geometry': {
-     'type': 'Point',
-     'coordinates': [0, 0]
-     }
-     }, {
-     'type': 'Feature',
-     'geometry': {
-     'type': 'LineString',
-     'coordinates': [[4e6, -2e6], [8e6, 2e6]]
-     }
-     }, {
-     'type': 'Feature',
-     'geometry': {
-     'type': 'LineString',
-     'coordinates': [[4e6, 2e6], [8e6, -2e6]]
-     }
-     }, {
-     'type': 'Feature',
-     'geometry': {
-     'type': 'Polygon',
-     'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
-     }
-     }, {
-     'type': 'Feature',
-     'geometry': {
-     'type': 'MultiLineString',
-     'coordinates': [
-     [[-1e6, -7.5e5], [-1e6, 7.5e5]],
-     [[1e6, -7.5e5], [1e6, 7.5e5]],
-     [[-7.5e5, -1e6], [7.5e5, -1e6]],
-     [[-7.5e5, 1e6], [7.5e5, 1e6]]
-     ]
-     }
-     }, {
-     'type': 'Feature',
-     'geometry': {
-     'type': 'MultiPolygon',
-     'coordinates': [
-     [[[-5e6, 6e6], [-5e6, 8e6], [-3e6, 8e6], [-3e6, 6e6]]],
-     [[[-2e6, 6e6], [-2e6, 8e6], [0, 8e6], [0, 6e6]]],
-     [[[1e6, 6e6], [1e6, 8e6], [3e6, 8e6], [3e6, 6e6]]]
-     ]
-     }
-     }, {
-     'type': 'Feature',
-     'geometry': {
-     'type': 'GeometryCollection',
-     'geometries': [{
-     'type': 'LineString',
-     'coordinates': [[-5e6, -5e6], [0, -5e6]]
-     }, {
-     'type': 'Point',
-     'coordinates': [4e6, -5e6]
-     }, {
-     'type': 'Polygon',
-     'coordinates': [[[1e6, -6e6], [2e6, -4e6], [3e6, -6e6]]]
-     }]
-     }
-     }]
-     };
-     */
-
     var intendedAreaFeatures = new ol.Collection();
     var productionAreaFeatures = new ol.Collection();
     var intendedAreaSource = new ol.source.Vector({
@@ -370,14 +367,18 @@ $(document).ready(function () {
         title: 'Intended area (ha)',
         visible: true,
         source: intendedAreaSource,
-        style: styleFunction
+        style: function (feature, resolution) {
+            return styles[feature.getGeometry().getType()];
+        }
     });
 
     var productionAreaLayer = new ol.layer.Vector({
         title: 'Current area in operation (ha)',
         visible: true,
         source: productionAreaSource,
-        style: styleFunction
+        style: function (feature, resolution) {
+            return styles[feature.getGeometry().getType()];
+        }
     });
 
     layers = baseLayers;
@@ -433,7 +434,6 @@ $(document).ready(function () {
         maxZoom: 17,
         minZoom: 2
     });
-
     map = new ol.Map({
         target: 'map',
         layers: layers,
@@ -474,37 +474,6 @@ $(document).ready(function () {
             $(this).append(legendSpan);
         });
         layerSwitcher.showPanel();
-
-        function updateVariableSelection(variableName) {
-            var legend = document.getElementById('legend');
-
-            var variableSet = detailviews[variableName];
-
-            while (legend.hasChildNodes()) {
-                legend.removeChild(legend.lastChild)
-            }
-
-            for (name in variableSet) {
-                var varItem = document.createElement('li');
-                varItem.className = 'legend-entry';
-
-                var varName = name;
-                var varColor = variableSet[name];
-
-                var legendSpan = document.createElement('span');
-                legendSpan.className = 'legend-symbol';
-                legendSpan.setAttribute('style', 'color: ' + varColor + '; background-color:' + varColor + ";");
-                legendSpan.innerHTML = ".";
-
-                var legendLabel = document.createElement('div');
-                legendLabel.innerHTML = varName;
-
-                varItem.appendChild(legendSpan);
-                varItem.appendChild(legendLabel);
-
-                legend.appendChild(varItem);
-            }
-        }
 
         var variableLabel = document.getElementById('legendLabel');
 
@@ -554,121 +523,13 @@ $(document).ready(function () {
         }
     );
 
-    function getApiData() {
-        NProgress.start();
-        // TODO: (Later) initiate spinner before fetchin' stuff
-        console.log("Get API data");
-        // If the zoom level is below the clustering threshold, show
-        // country-based "clusters".
-        if (view.getZoom() < countryThreshold) {
-            $.get('/api/target_country_summaries.json', addCountrySummariesData);
-        // Otherwise fetch individual deals for the current map viewport.
-        } else {
-            var limit = 500;
-            var query_params = 'limit=' + limit + '&attributes=' + fieldnames[currentVariable];
-            if (typeof mapParams !== 'undefined') {
-                query_params += mapParams;
-            }
-            // Window
-            extent = map.getView().calculateExtent(map.getSize());
-            extent = ol.extent.applyTransform(extent, ol.proj.getTransform("EPSG:3857", "EPSG:4326"));
-            $.get(
-                "/api/deals.json?" + query_params + '&window=' + extent.join(','),
-                //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lon_min,lat_max,lat_max>
-                addData
-            ).fail(function () {
-                NProgress.done();
-            });
-        }
-        NProgress.set(0.2);
-    }
-
     map.on('click', function (evt) {
-        var handleFeatureClick = function (feature, layer) {
-            // A country feature was clicked.
-            if (feature && feature.attributes && feature.attributes.country) {
-                handleCountryClick(feature);
-                return;
-            }
-
-            var features = feature.getProperties().features;
-            if (!features) {
-                return;
-            }
-            // A cluster was clicked.
-            if (features.length > 1) {
-                // var popup = '<div><span><strong>Cluster of ' + features.length + ' deals.</strong></span>';
-                // popup += '<br><span>Zoom here for more details.</span></div>';
-                // console.log(popup);
-                // content.innerHTML = popup;
-                handleClusterClick(features);
-                return;
-            } else {
-                var feat = features[0];
-                console.log("This is clicked: ", feat);
-
-                var id = feat.attributes.deal_id;
-                var lat = feat.attributes.lat.toFixed(4);
-                var lon = feat.attributes.lon.toFixed(4);
-                var intention = feat.attributes.intention;
-                var intended_size = feat.attributes.intended_size;
-                var production_size = feat.attributes.production_size;
-                var contract_size = feat.attributes.contract_size;
-                var investor = feat.attributes.investor;
-                var status = feat.attributes.negotiation_status;
-                var accuracy = feat.attributes.geospatial_accuracy;
-
-                // TODO: Here, some javascript should be called to get the deal details from the API
-                // and render it inside the actual content popup, instead of getting this from the db for every marker!
-                content.innerHTML = '<div><span><a href="/deal/' + id + '"><strong>Deal #' + id + '</strong></a></span>';
-                //content.innerHTML += '<p>Coordinates:</p><code>' + lat + ' ' + lon + '</code>';
-                if (intended_size !== null) {
-                    content.innerHTML += '<span>Intended area (ha):</span><span class="pull-right">' + parseInt(intended_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
-                }
-                if (production_size !== null) {
-                    content.innerHTML += '<span>Production size (ha):</span><span class="pull-right">' + parseInt(production_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
-                }
-                if (contract_size !== null) {
-                    content.innerHTML += '<span>Contract size (ha):</span><span class="pull-right">' + parseInt(contract_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
-                }
-                content.innerHTML += '<span>Intention:</span><span class="pull-right">' + intention + '</span><br/>';
-                content.innerHTML += '<span>Investor:</span><span class="pull-right">' + investor + '</span><br />';
-                // TODO: Handle other possibly already known attributes from currentVariable
-                if (status) {
-                    content.innerHTML += '<span>Negotiation Status:</span><span class="pull-right">' + status + '</span><br />';
-                }
-                if (accuracy) {
-                    content.innerHTML += '<span>Geospatial Accuracy:</span><span class="pull-right">' + accuracy + '</span><br />';
-                }
-                content.innerHTML += '<span><a href="/deal/' + id + '">More details</a></span></div>';
-            }
-
-            PopupOverlay.setPosition(evt.coordinate);
-            return features;
-        };
-
         var PopupFeature = map.forEachFeatureAtPixel(evt.pixel, handleFeatureClick);
-
         if (PopupFeature) {
         } else {
             closePopup();
         }
     });
-
-    var handleCountryClick = function (feature) {
-        var a = feature.attributes;
-        var countryBounds = [a.lat_min, a.lon_min, a.lat_max, a.lon_max];
-        var extent = ol.extent.applyTransform(countryBounds, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
-        map.getView().fit(extent, map.getSize());
-    };
-
-    var handleClusterClick = function (features) {
-        var extent = ol.extent.createEmpty();
-        $(features).each(function (index, feature) {
-            ol.extent.extend(extent, feature.getGeometry().getExtent());
-        });
-        map.getView().fit(extent, map.getSize());
-    };
 
     // change Mouse Cursor when over Marker
     var target = map.getTarget();
@@ -687,77 +548,213 @@ $(document).ready(function () {
         }
     });
 
-    var geoJSONReader = new ol.format.GeoJSON();
-
-    var addData = function (data) {
-        var lats = {};
-        var duplicates = 0;
-
-        NProgress.set(0.8);
-        countriesSource.clear();
-        markerSource.clear();
-        if (data.length < 1) {
-            $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
-        } else {
-            $('#alert_placeholder').empty();
-            for (var i = 0; i < data.length; i++) {
-                NProgress.inc();
-                var marker = data[i];
-                if (marker.locations.length == 0) {
-                    // No locations, can't have markers
-                    continue;
-                }
-                var location = marker.locations[0];
-                marker.lat = parseFloat(location.point_lat);
-                marker.lon = parseFloat(location.point_lon);
-
-                //console.log(marker);
-                addClusteredMarker(marker);
-                //addClusteredMarkerNew(marker);
-                lats[marker.lat] = marker;
-
-                if (location.hasOwnProperty('intended_area') && location.intended_area != null) {
-                    var geometry = geoJSONReader.readGeometry(location.intended_area, {
-                        dataProjection: 'EPSG:4326',
-                        featureProjection: 'EPSG:3857'
-                    });
-                    intendedAreaFeatures.push(new ol.Feature({'geometry': geometry}));
-                }
-                if (location.hasOwnProperty('production_area') && location.production_area != null) {
-                    var geometry = geoJSONReader.readGeometry(location.production_area, {
-                        dataProjection: 'EPSG:4326',
-                        featureProjection: 'EPSG:3857'
-                    });
-                    intendedAreaFeatures.push(new ol.Feature({'geometry': geometry}));
-                }
-
-            }
-            console.log('Added deals: ', i, ', ', duplicates, ' duplicates.');
-        }
-        NProgress.done(true);
-    };
-
-    var addCountrySummariesData = function (data) {
-        countriesSource.clear();
-        markerSource.clear();
-        $('#alert_placeholder').empty();
-        $(data).each(function (index, country) {
-            var feature = new ol.Feature({
-                geometry: new ol.geom.Point(ol.proj.transform(
-                    [country.lon, country.lat],
-                    'EPSG:4326', 'EPSG:3857')
-                )
-            });
-            feature.attributes = country;
-            countriesSource.addFeature(feature);
-        });
-        NProgress.done(true);
-    };
-
     if (typeof mapDisableDeals === 'undefined') {
         getApiData();
     }
-});
+};
+
+function getApiData() {
+    NProgress.start();
+    // TODO: (Later) initiate spinner before fetchin' stuff
+    console.log("Get API data");
+    // If the zoom level is below the clustering threshold, show
+    // country-based "clusters".
+    if (view.getZoom() < countryThreshold) {
+        $.get('/api/target_country_summaries.json', addCountrySummariesData);
+    // Otherwise fetch individual deals for the current map viewport.
+    } else {
+        var limit = 500;
+        var query_params = 'limit=' + limit + '&attributes=' + fieldnames[currentVariable];
+        if (typeof mapParams !== 'undefined') {
+            query_params += mapParams;
+        }
+        // Window
+        extent = map.getView().calculateExtent(map.getSize());
+        extent = ol.extent.applyTransform(extent, ol.proj.getTransform("EPSG:3857", "EPSG:4326"));
+        $.get(
+            "/api/deals.json?" + query_params + '&window=' + extent.join(','),
+            //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lon_min,lat_max,lat_max>
+            addData
+        ).fail(function () {
+            NProgress.done();
+        });
+    }
+    NProgress.set(0.2);
+}
+
+function updateVariableSelection(variableName) {
+    var legend = document.getElementById('legend');
+
+    var variableSet = detailviews[variableName];
+
+    while (legend.hasChildNodes()) {
+        legend.removeChild(legend.lastChild)
+    }
+
+    for (name in variableSet) {
+        var varItem = document.createElement('li');
+        varItem.className = 'legend-entry';
+
+        var varName = name;
+        var varColor = variableSet[name];
+
+        var legendSpan = document.createElement('span');
+        legendSpan.className = 'legend-symbol';
+        legendSpan.setAttribute('style', 'color: ' + varColor + '; background-color:' + varColor + ";");
+        legendSpan.innerHTML = ".";
+
+        var legendLabel = document.createElement('div');
+        legendLabel.innerHTML = varName;
+
+        varItem.appendChild(legendSpan);
+        varItem.appendChild(legendLabel);
+
+        legend.appendChild(varItem);
+    }
+}
+
+function handleFeatureClick (feature, layer) {
+    // A country feature was clicked.
+    if (feature && feature.attributes && feature.attributes.country) {
+        handleCountryClick(feature);
+        return;
+    }
+
+    var features = feature.getProperties().features;
+    if (!features) {
+        return;
+    }
+    // A cluster was clicked.
+    if (features.length > 1) {
+        // var popup = '<div><span><strong>Cluster of ' + features.length + ' deals.</strong></span>';
+        // popup += '<br><span>Zoom here for more details.</span></div>';
+        // console.log(popup);
+        // content.innerHTML = popup;
+        handleClusterClick(features);
+        return;
+    } else {
+        var feat = features[0];
+        console.log("This is clicked: ", feat);
+
+        var id = feat.attributes.deal_id;
+        var lat = feat.attributes.lat.toFixed(4);
+        var lon = feat.attributes.lon.toFixed(4);
+        var intention = feat.attributes.intention;
+        var intended_size = feat.attributes.intended_size;
+        var production_size = feat.attributes.production_size;
+        var contract_size = feat.attributes.contract_size;
+        var investor = feat.attributes.investor;
+        var status = feat.attributes.negotiation_status;
+        var accuracy = feat.attributes.geospatial_accuracy;
+
+        // TODO: Here, some javascript should be called to get the deal details from the API
+        // and render it inside the actual content popup, instead of getting this from the db for every marker!
+        content.innerHTML = '<div><span><a href="/deal/' + id + '"><strong>Deal #' + id + '</strong></a></span>';
+        //content.innerHTML += '<p>Coordinates:</p><code>' + lat + ' ' + lon + '</code>';
+        if (intended_size !== null) {
+            content.innerHTML += '<span>Intended area (ha):</span><span class="pull-right">' + parseInt(intended_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
+        }
+        if (production_size !== null) {
+            content.innerHTML += '<span>Production size (ha):</span><span class="pull-right">' + parseInt(production_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
+        }
+        if (contract_size !== null) {
+            content.innerHTML += '<span>Contract size (ha):</span><span class="pull-right">' + parseInt(contract_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
+        }
+        content.innerHTML += '<span>Intention:</span><span class="pull-right">' + intention + '</span><br/>';
+        content.innerHTML += '<span>Investor:</span><span class="pull-right">' + investor + '</span><br />';
+        // TODO: Handle other possibly already known attributes from currentVariable
+        if (status) {
+            content.innerHTML += '<span>Negotiation Status:</span><span class="pull-right">' + status + '</span><br />';
+        }
+        if (accuracy) {
+            content.innerHTML += '<span>Geospatial Accuracy:</span><span class="pull-right">' + accuracy + '</span><br />';
+        }
+        content.innerHTML += '<span><a href="/deal/' + id + '">More details</a></span></div>';
+    }
+
+    PopupOverlay.setPosition(evt.coordinate);
+    return features;
+};
+
+function handleCountryClick (feature) {
+    var a = feature.attributes;
+    var countryBounds = [a.lat_min, a.lon_min, a.lat_max, a.lon_max];
+    var extent = ol.extent.applyTransform(countryBounds, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+    map.getView().fit(extent, map.getSize());
+};
+
+function handleClusterClick (features) {
+    var extent = ol.extent.createEmpty();
+    $(features).each(function (index, feature) {
+        ol.extent.extend(extent, feature.getGeometry().getExtent());
+    });
+    map.getView().fit(extent, map.getSize());
+};
+
+function addData (data) {
+    var lats = {};
+    var duplicates = 0;
+
+    NProgress.set(0.8);
+    countriesSource.clear();
+    markerSource.clear();
+    if (data.length < 1) {
+        $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
+    } else {
+        $('#alert_placeholder').empty();
+        for (var i = 0; i < data.length; i++) {
+            NProgress.inc();
+            var marker = data[i];
+            if (marker.locations.length == 0) {
+                // No locations, can't have markers
+                continue;
+            }
+            var location = marker.locations[0];
+            marker.lat = parseFloat(location.point_lat);
+            marker.lon = parseFloat(location.point_lon);
+
+            //console.log(marker);
+            addClusteredMarker(marker);
+            //addClusteredMarkerNew(marker);
+            lats[marker.lat] = marker;
+
+            if (location.hasOwnProperty('intended_area') && location.intended_area != null) {
+                var geometry = geoJSONReader.readGeometry(location.intended_area, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:3857'
+                });
+                intendedAreaFeatures.push(new ol.Feature({'geometry': geometry}));
+            }
+            if (location.hasOwnProperty('production_area') && location.production_area != null) {
+                var geometry = geoJSONReader.readGeometry(location.production_area, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:3857'
+                });
+                intendedAreaFeatures.push(new ol.Feature({'geometry': geometry}));
+            }
+
+        }
+        console.log('Added deals: ', i, ', ', duplicates, ' duplicates.');
+    }
+    NProgress.done(true);
+};
+
+function addCountrySummariesData (data) {
+    countriesSource.clear();
+    markerSource.clear();
+    $('#alert_placeholder').empty();
+    $(data).each(function (index, country) {
+        var feature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.transform(
+                [country.lon, country.lat],
+                'EPSG:4326', 'EPSG:3857')
+            )
+        });
+        feature.attributes = country;
+        countriesSource.addFeature(feature);
+    });
+    NProgress.done(true);
+};
 
 // MARKERS in clusters. ONE MARKER = ONE DEAL
 //longitude, latitude, intention im Index.html definiert
@@ -853,3 +850,13 @@ function initGeocoder(el) {
     }
 
 }
+
+function unlockMaps() {
+    lock = false;
+}
+
+function closePopup () {
+    PopupOverlay.setPosition(undefined);
+    closer.blur();
+    return false;
+};

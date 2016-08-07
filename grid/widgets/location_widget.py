@@ -12,6 +12,10 @@ class LocationWidget(forms.TextInput):
         return """
         <input id="id_%(name)s" name="%(name)s" type="text" value="%(value)s" %(attrs)s/>
         <div class="maptemplate"></div>
+        <div id="popup" class="ol-popup">
+            <a href="#" id="popup-closer" class="noul ol-popup-closer"></a>
+            <div id="popup-content"></div>
+        </div>
         """ % {
             "name": str(name or ""),
             "value": str(value or ""),
