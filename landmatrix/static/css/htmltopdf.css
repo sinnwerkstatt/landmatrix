@@ -5,8 +5,9 @@
 footer,
 #collapsebtn_history,
 #collapse_comments form,
-#filters {
-    display: none;
+#filters,
+#crowd-shortcut {
+    display: none !important;
 }
 .collapse {
     display: block;
@@ -42,4 +43,22 @@ footer,
 .agricultural_drivers .row .col-md-5 {
     width: 100px;
     height: 100px;
+}
+.top-10-countries {
+    position: static !important;
+    display: block !important;
+    clear: both !important;
+    margin: 0 auto;
+    height: 100% !important;
+    width: 100% !important;
+}
+.top-10-countries #investor-countries,
+.top-10-countries #target-countries {
+    display: block !important;
+    width: 50% !important;
+    float: left;
+}
+.top-10-countries .nav-tabs li {
+    width: 50% !important;
+    display: inline-block !important;
 }
