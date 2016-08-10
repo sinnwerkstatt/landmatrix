@@ -8,13 +8,15 @@
     {% endblock %}
 </style>
 
-<div id="{{ id }}_div_map" style="display: none;">
+<div id="{{ id }}_div_map"{% if toggle_map_display %} style="display: none;"{% endif %}>
     <div id="{{ id }}_map"></div>
     {% if not disabled %}<span class="clear_features"><a href="javascript:{{ module }}.clearFeatures()">{% trans "Delete all Features" %}</a></span>{% endif %}
     {% if display_raw %}<p>{% trans "Debugging window (serialized value)" %}</p>{% endif %}
     <textarea id="{{ id }}" class="vSerializedField required" cols="150" rows="10" name="{{ name }}">{{ serialized }}</textarea>
 </div>
+{% if toggle_map_display %}
 <a href="#" id="show_{{ id }}_div_map" class="pull-right">{% trans "Show area" %}</a>
+{% endif %}
 
 <script type="text/javascript">
 var map_options,
@@ -45,7 +47,14 @@ $(document).ready(function () {
     };
     {% endblock %}
     {{ module }} = new MapWidget(options);
+    {% if not show_controls %}
+    {{ module }}.map.controls = [];
+    {% endif %}
+    {% if disabled %}
+    {{ module }}.disableDrawing();
+    {% endif %}
 
+    {% if toggle_map_display %}
     $('#show_{{ id }}_div_map').on('click', function (event) {
         event.preventDefault();
         $('#{{ id }}_div_map').toggle();
@@ -58,5 +67,6 @@ $(document).ready(function () {
             $(this).text('{% trans "Show area" %}');
         }
     });
+    {% endif %}
 });
 </script>

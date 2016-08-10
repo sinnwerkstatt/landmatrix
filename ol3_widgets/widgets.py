@@ -24,11 +24,16 @@ class BaseGeometryWidget(Widget):
     display_raw = False
 
     supports_3d = False
+    toggle_map_display = False
     template_name = ''  # set on subclasses
 
     def __init__(self, attrs=None):
         self.attrs = {}
-        for key in ('geom_type', 'map_srid', 'map_width', 'map_height', 'display_raw'):
+        defaults = (
+            'geom_type', 'map_srid', 'map_width', 'map_height', 'display_raw',
+            'toggle_map_display',
+        )
+        for key in defaults:
             self.attrs[key] = getattr(self, key)
         if attrs:
             self.attrs.update(attrs)
@@ -40,10 +45,11 @@ class BaseGeometryWidget(Widget):
         try:
             return GEOSGeometry(value, self.map_srid)
         except (GEOSException, ValueError) as err:
-            logger.error("Error creating geometry from value '%s' (%s)", value, err)
+            logger.error(
+                "Error creating geometry from value '%s' (%s)", value, err)
         return None
 
-    def render(self, name, value, attrs=None):
+    def get_context(self, name, value, attrs=None):
         # If a string reaches here (via a validation error on another
         # field) then just reconstruct the Geometry.
         if isinstance(value, six.string_types):
@@ -58,9 +64,8 @@ class BaseGeometryWidget(Widget):
                     value = ogr
                 except gdal.GDALException as err:
                     logger.error(
-                        "Error transforming geometry from srid '%s' to srid '%s' (%s)",
-                        value.srid, self.map_srid, err
-                    )
+                        "Error transforming geometry from srid '%s' to srid "
+                        "'%s' (%s)", value.srid, self.map_srid, err)
 
         context = self.build_attrs(
             attrs,
@@ -71,6 +76,11 @@ class BaseGeometryWidget(Widget):
             STATIC_URL=settings.STATIC_URL,
             LANGUAGE_BIDI=translation.get_language_bidi(),
         )
+
+        return context
+
+    def render(self, name, value, attrs=None):
+        context = self.get_context(name, value, attrs=attrs)
         return loader.render_to_string(self.template_name, context)
 
 
@@ -80,11 +90,11 @@ class OpenLayersWidget(BaseGeometryWidget):
     class Media:
         css = {
             'all': (
-                'vendor/openlayers/ol.css',
+                'css/ol.css',
             )
         }
         js = (
-            'vendor/openlayers/ol.js',
+            'js/ol.js',
             'gis/js/OLMapWidget.js',
         )
 
@@ -116,3 +126,24 @@ class OSMWidget(OpenLayersWidget):
             return 3857
         else:
             return 900913
+
+
+class MapWidget(OSMWidget):
+    show_controls = True
+    show_deals = False
+    geom_type = 'POINT'
+
+    def __init__(self, attrs=None):
+        # TODO: bind to fields
+        for key in ('show_controls', 'show_deals'):
+            if key not in attrs:
+                attrs[key] = getattr(self, key)
+
+        super().__init__(attrs=attrs)
+
+    def get_context(self, name, value, attrs=None):
+        context = super().get_context(name, value, attrs=attrs)
+        if not self.attrs['show_controls']:
+            context['disabled'] = True
+
+        return context
