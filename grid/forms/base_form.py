@@ -126,10 +126,6 @@ class BaseForm(forms.Form):
                                 'value2': value2,
                                 'date': year,
                             })
-
-                if name == 'contract_size':
-                    data = self.data
-                    raise IOError(values)
                 if values:
                     attributes[name] = values
             elif isinstance(f, forms.FileField):
