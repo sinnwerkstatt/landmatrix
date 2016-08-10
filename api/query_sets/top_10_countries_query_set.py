@@ -27,7 +27,7 @@ class Top10InvestorCountriesQuerySet(FakeQuerySetWithSubquery):
     ADDITIONAL_WHERES = ["investor_country.id IS NOT NULL"]
     GROUP_BY = ['sub.investor_country', 'sub.investor_country_id']
     ORDER_BY = ['hectares DESC']
-    LIMIT = 10
+    LIMIT = 100
 
 
 class Top10TargetCountriesQuerySet(FakeQuerySetWithSubquery):
@@ -53,7 +53,7 @@ class Top10TargetCountriesQuerySet(FakeQuerySetWithSubquery):
     ADDITIONAL_WHERES = ["stakeholder.fk_country_id IS NOT NULL"]
     GROUP_BY = ['sub.target_country', 'sub.target_country_id']
     ORDER_BY = ['hectares DESC']
-    LIMIT = 10
+    LIMIT = 100
 
 
 class Top10CountriesQuerySet:
