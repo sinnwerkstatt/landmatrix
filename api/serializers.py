@@ -160,7 +160,7 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
                     "percentage": involvement.percentage,
                     "investment_type": involvement.get_investment_type_display(),
                     "loans_amount": involvement.loans_amount,
-                    "loans_currency": involvement.loans_currency,
+                    "loans_currency": str(involvement.loans_currency),
                     "loans_date": involvement.loans_date,
                     "comment": involvement.comment,
                 }

@@ -23,7 +23,7 @@ class MultiCharField(forms.MultiValueField):
             data = []
             for i in range(len(data_list)):
                 if data_list[i]:
-                    yb_data.append(str(data_list[i]))
+                    data.append(str(data_list[i]))
             return "#".join(data)
         else:
             self.fields = [forms.CharField(required=False)]
