@@ -102,8 +102,8 @@ class BaseForm(forms.Form):
                         value = self.data.get(len(keys) > i and keys[i] or "-", "")
                         value2 = None
                         if count > 2:
-                            value2 = self.data.get(len(keys) > i+1 and keys[i] or "-", "")
-                        year = self.data.get(len(keys) > i+2 and keys[i+1] or "-", "")
+                            value2 = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
+                        year = self.data.get(len(keys) > i+2 and keys[i+2] or "-", "")
                         if value or value2 or year:
                             #if value and isinstance(f.fields[0], forms.ChoiceField):
                             #    try:
@@ -256,7 +256,7 @@ class BaseForm(forms.Form):
                 if values_count == 1:
                     attributes_by_date[attribute.date] = [attribute.value]
                 else:
-                    attributes_by_date[attribute.date] = [attribute.value, attribute.value2 or '']
+                    attributes_by_date[attribute.date] = [attribute.value, attribute.value2 or '']  
         if values_count == 1:
             values = [':'.join([a[0], d or '']) for d, a in attributes_by_date.items()]
         else:
