@@ -242,7 +242,7 @@ class LatestNewsBlock(CountryRegionStructBlock):
 
     def get_context(self, value):
         context = super().get_context(value)
-        queryset = BlogPage.objects.all()
+        queryset = BlogPage.objects.order_by('-date')
         if self.country or self.region:
             tag = self.country.slug or self.region.slug
             filter_queryset = queryset.filter(tags__slug=tag)
