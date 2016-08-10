@@ -44,12 +44,6 @@
                             // (Needs this kind of stuff for the other fields. no Way!)
                             initializeMap(mapId);
                         }
-                        // Init investor
-                        var investor = form.find('.operational_stakeholder');
-                        if (investor.length > 0) {
-                            var index = 0;
-                            setupSankey(index);
-                        }
                         // Init data sources
                         var data_source_type = form.find('.type');
                         if (data_source_type.length > 0) {
@@ -94,6 +88,9 @@
                 {% else %}
                     {% if form.form_description %}<div class="col-sm-12"><p class="alert alert-info">{{ form.form_description }}</p></div>{% endif %}
                     {% include "form.html" with form=form %}
+                    {% if form.Meta.name == 'investor_info' %}
+                        {% include "includes/investor-network.html" %}
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

@@ -211,6 +211,9 @@ def load_filters(request):
             filters[filter_name] = Filter.from_session(filter_dict)
     filters.update(load_filters_from_url(request))
 
+    # Global view?
+#    raise IOError(filters)
+
     formatted_filters = format_filters(filters)
 
     return formatted_filters
