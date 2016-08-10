@@ -120,6 +120,7 @@
         });
 
         function get_top_10() {
+            console.error("get top 10");
             $(".top-10-countries .table").empty();
             var json_query = "/api/top-10-countries.json";
             jQuery.getJSON(json_query, function (data) {
@@ -143,17 +144,14 @@
             clicked = false;
             $(".country-info").css("display", "none");
             $(".top-10-countries").css("display", "block");
-            draw(function () {
-            });
             $(".show-all").addClass("disabled");
             return false;
         });
 
 
         var clicked = false;
-        function draw(callback) {
+        function draw() {
             init_canvas();
-            get_top_10();
 
             d3.select("div.canvas")
                     .on("mousemove", mousemove)
@@ -168,8 +166,7 @@
             return false;
         });
         $(document).ready(function () {
-            draw(function () {
-            });
+            draw(function () {});
             $(".deal_scope").hide();
         });
     </script>
