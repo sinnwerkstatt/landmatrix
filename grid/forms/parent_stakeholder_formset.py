@@ -20,7 +20,7 @@ class ParentStakeholderForm(forms.ModelForm):
         required=False, label="", initial=_("Parent company")
     )
     fk_investor = forms.ModelChoiceField(
-        required=True, label=_("Existing parent company"),
+        required=False, label=_("Existing parent company"),
         queryset=Investor.objects.all(), widget=investor_widget)
     percentage = forms.DecimalField(
         required=False, max_digits=5, decimal_places=2,
@@ -47,7 +47,7 @@ class ParentInvestorForm(ParentStakeholderForm):
         required=False, label="", initial=_("Parent investor")
     )
     fk_investor = forms.ModelChoiceField(
-        required=True, label=_("Existing investor"),
+        required=False, label=_("Existing investor"),
         queryset=Investor.objects.all(), widget=investor_widget)
 
     class Meta:
@@ -70,6 +70,8 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
         instances = super().save(commit=False)
 
         for instance in instances:
+            if not hasattr(instance, 'fk_investor'):
+                continue
             instance.fk_venture = fk_venture
             instance.role = self.ROLE
             instance.fk_status_id = Investor.STATUS_PENDING

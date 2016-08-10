@@ -46,6 +46,7 @@ var detailviews = {
     },
     'Deal Intention': {
         'Agriculture': '#1D6914',
+            // FIXME: Subchoices probably can be removed by now
             'Biofuels': '#1D6914',
             'Food crops': '#1D6914',
             'Fodder': '#1D6914',
@@ -53,6 +54,7 @@ var detailviews = {
             'Non-food agricultural commodities': '#1D6914',
             'Agriculture unspecified': '#1D6914',
         'Forestry': '#2A4BD7',
+            // FIXME: Subchoices probably can be removed by now
              'For wood and fibre': '#2A4BD7',
              'For carbon sequestration/REDD': '#2A4BD7',
              'Forestry unspecified': '#2A4BD7',

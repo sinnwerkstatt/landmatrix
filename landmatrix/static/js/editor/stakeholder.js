@@ -20,8 +20,8 @@ function init_investor_form(form) {
     function formatInvestorSelection (investor) {
         return investor.text;
     }
-
-    form.find('select.investorfield').select2({
+    var investorfield = form.find('select.investorfield');
+    investorfield.select2({
         ajax: {
             url: '/api/investors.json',
             dataType: 'json',
@@ -46,7 +46,7 @@ function init_investor_form(form) {
         generateButtons($(this));
         loadInvestorNetwork($(this).val());
     });
-    generateButtons(form.find('select.investorfield'));
+    generateButtons(investorfield);
 
     form.find('.loans_date input').attr('placeholder', 'YYYY-MM-DD');
     form.find('.loans_currency select').select2();
@@ -92,6 +92,8 @@ function stakeholderAdded(row) {
     });
     // Unselect selected options
     row.find("option:selected").removeAttr("selected");
+    row.find(".select2").remove();
+    row.find(".select2-hidden-accessible").removeClass("select2-hidden-accessible").data('select2', null);
     init_investor_form(row);
     // Scroll to the new row
     $('html, body').animate({
@@ -107,7 +109,6 @@ function stakeholderRemoved(row) {
 }
 
 $(document).ready(function () {
-    // Erm, this should probably be called more locally. We'll see.
     $('.country select').select2();
             
     $('.parent-companies-form').formset({
