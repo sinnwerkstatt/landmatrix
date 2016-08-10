@@ -163,7 +163,7 @@ class SaveDealView(TemplateView):
                 for count, form_attributes in enumerate(attributes):
                     if form_attributes:
                         aag, created = ActivityAttributeGroup.objects.get_or_create(
-                            name='%s_%i' % (form.Meta.name, count),
+                            name='%s_%02i' % (form.Meta.name, count), # two digits required for ordering
                         )
                         for name, kwargs in form_attributes.items():
                             kwargs.update({

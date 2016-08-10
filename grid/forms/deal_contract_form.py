@@ -49,7 +49,8 @@ class DealContractFormSet(formset_factory(DealContractForm, extra=1, max_num=1))
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=None):
-        groups = activity.attributes.filter(fk_group__name__startswith=cls.Meta.name).values_list('fk_group__name', flat=True).distinct()
+        groups = activity.attributes.filter(fk_group__name__startswith=cls.Meta.name).values_list(
+            'fk_group__name', flat=True).order_by('fk_group__name').distinct()
 
         data = []
         for i, group in enumerate(groups):
