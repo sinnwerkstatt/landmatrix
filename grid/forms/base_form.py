@@ -54,6 +54,7 @@ class BaseForm(forms.Form):
                 #tag["op"] = "select"
                 a = self.data
                 value = self.data.getlist(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
+                values = []
                 for v in list(value):
                     if v:
                         try:
@@ -71,7 +72,9 @@ class BaseForm(forms.Form):
                         if not value:
                             value = v
                         if value:
-                            attributes[name] = {'value': value}
+                            values.append({'value': value})
+                if values:
+                    attributes[name] = values
             elif isinstance(f, forms.ChoiceField):
                 #tag["op"] = "select"
                 value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
@@ -96,6 +99,7 @@ class BaseForm(forms.Form):
             elif isinstance(f, forms.MultiValueField):
                 keys = list(filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n), o), self.data.keys()))
                 keys.sort()
+                values = []
                 for i in range(len(keys)):
                     count = len(f.widget.get_widgets())
                     if i % count == 0:
@@ -103,7 +107,9 @@ class BaseForm(forms.Form):
                         value2 = None
                         if count > 2:
                             value2 = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
-                        year = self.data.get(len(keys) > i+2 and keys[i+2] or "-", "")
+                            value2 = self.data.get(len(keys) > i+2 and keys[i+2] or "-", "")
+                        else:
+                            year = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
                         if value or value2 or year:
                             #if value and isinstance(f.fields[0], forms.ChoiceField):
                             #    try:
@@ -115,11 +121,17 @@ class BaseForm(forms.Form):
                             #        value2 = str(dict(f.fields[0].choices).get(value2))
                             #    except:
                             #        raise IOError("Value '%s' for field %s (%s) not allowed." % (value2, n, type(self)))
-                            attributes[name] = {
+                            values.append({
                                 'value': value,
                                 'value2': value2,
                                 'date': year,
-                            }
+                            })
+
+                if name == 'contract_size':
+                    data = self.data
+                    raise IOError(values)
+                if values:
+                    attributes[name] = values
             elif isinstance(f, forms.FileField):
                 value = self.get_display_value_file_field(n)
                 if value:

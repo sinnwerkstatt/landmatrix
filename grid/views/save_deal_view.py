@@ -160,32 +160,43 @@ class SaveDealView(TemplateView):
                 continue
             # Formset?
             if isinstance(attributes, list):
+                # Loop forms
                 for count, form_attributes in enumerate(attributes):
                     if form_attributes:
                         aag, created = ActivityAttributeGroup.objects.get_or_create(
                             name='%s_%02i' % (form.Meta.name, count), # two digits required for ordering
                         )
-                        for name, kwargs in form_attributes.items():
-                            kwargs.update({
-                                'name': name,
-                                'fk_activity': activity,
-                                'fk_group': aag,
-                                'fk_language_id': 1,
-                            })
-                            aa = HistoricalActivityAttribute.objects.create(**kwargs)
+                        # Loop fields
+                        for name, attribute in form_attributes.items():
+                            if isinstance(attribute, dict):
+                                attribute = [attribute]
+                            # Loop values (= attributes)
+                            for kwargs in attribute:
+                                kwargs.update({
+                                    'name': name,
+                                    'fk_activity': activity,
+                                    'fk_group': aag,
+                                    'fk_language_id': 1,
+                                })
+                                aa = HistoricalActivityAttribute.objects.create(**kwargs)
             # Form
             elif attributes:
                 aag, created = ActivityAttributeGroup.objects.get_or_create(
                     name=form.Meta.name
                 )
-                for name, kwargs in attributes.items():
-                    kwargs.update({
-                        'name': name,
-                        'fk_activity': activity,
-                        'fk_group': aag,
-                        'fk_language_id': 1,
-                    })
-                    aa = HistoricalActivityAttribute.objects.create(**kwargs)
+                # Loop fields
+                for name, attribute in attributes.items():
+                    if isinstance(attribute, dict):
+                        attribute = [attribute]
+                    # Loop values (= attributes)
+                    for kwargs in attribute:
+                        kwargs.update({
+                            'name': name,
+                            'fk_activity': activity,
+                            'fk_group': aag,
+                            'fk_language_id': 1,
+                        })
+                        aa = HistoricalActivityAttribute.objects.create(**kwargs)
 
         return action_comment
 

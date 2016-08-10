@@ -5,8 +5,8 @@
 {% endblock %}
 
 
-{% block page_title %}{% trans "Deal history comparison" %}{% endblock %}
-{% block title %}{% trans "Deal history comparison" %}{% endblock %}
+{% block page_title %}{% trans "Deal history comparison" %} #{{ deals.0.activity_identifier }}{% endblock %}
+{% block title %}{% trans "Deal history comparison" %} #{{ deals.0.activity_identifier }}{% endblock %}
 
 {% block breadcrumb_inner %}
     <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
