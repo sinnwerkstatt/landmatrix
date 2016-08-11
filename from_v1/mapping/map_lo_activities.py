@@ -66,20 +66,22 @@ class MapLOActivities(MapLOModel):
         if not imported:
             versions = cls.get_activity_versions(new)
             for i, version in enumerate(versions):
-                historical_activity = landmatrix.models.HistoricalActivity(
-                    activity_identifier=activity_identifier,
-                    availability=version['reliability'],
-                    fk_status_id=version['fk_status'],
-                    fully_updated=False,
-                    history_date=calculate_history_date(versions, i),
-                    history_user=get_history_user(version))
-                changeset = landmatrix.models.ActivityChangeset(
-                    comment='Imported from Land Observatory',
-                    fk_activity=historical_activity)
+                # Only save newest version
+                if i+1 == len(version):
+                    historical_activity = landmatrix.models.HistoricalActivity(
+                        activity_identifier=activity_identifier,
+                        availability=version['reliability'],
+                        fk_status_id=version['fk_status'],
+                        fully_updated=False,
+                        history_date=calculate_history_date(versions, i),
+                        history_user=get_history_user(version))
+                    changeset = landmatrix.models.ActivityChangeset(
+                        comment='Imported from Land Observatory',
+                        fk_activity=historical_activity)
 
-                if save:
-                    historical_activity.save(using=V2)
-                    changeset.save(using=V2)
+                    if save:
+                        historical_activity.save(using=V2)
+                        changeset.save(using=V2)
 
         if save:
             new.id = None  # Don't assume that ids line up
@@ -255,6 +257,7 @@ class MapLOActivities(MapLOModel):
         english = landmatrix.models.Language.objects.get(pk=1)
         if save:
             aag.save(using=V2)
+            raise IOError("ok")
 
         if activity_id:
             for key, value in attrs.items():
@@ -266,14 +269,23 @@ class MapLOActivities(MapLOModel):
                     date=year,
                     polygon=polygon
                 )
+                aa = landmatrix.models.HistoricalActivityAttribute(
+                    fk_activity_id=activity_id,
+                    fk_language=english,
+                    name=key,
+                    value=value,
+                    date=year,
+                    polygon=polygon,
+                    history_date=cls.get_history_date(tag_group),
+                )
                 if save:
                     aa.save(using=V2)
 
         # No need to import LO history
         #if cls._save:
         #    if not cls.is_current_version(tag_group):
-        #        aag = landmatrix.models.ActivityAttribute.history.using(V2).create(
-        #            id=cls.get_last_id() + 1,
+        #        
+        #        aag = landmatrix.models.HistoricalActivityAttribute.objects.create(
         #            history_date=cls.get_history_date(tag_group),
         #            fk_activity_id=activity_id,
         #            fk_language=landmatrix.models.Language.objects.get(pk=1),
@@ -282,7 +294,7 @@ class MapLOActivities(MapLOModel):
         #            name=name,
         #            polygon=polygon
         #        )
-
+#
         if hasattr(aag, 'id'):
             cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
 
@@ -290,7 +302,7 @@ class MapLOActivities(MapLOModel):
 
     @classmethod
     def is_current_version(cls, tag_group):
-        return tag_group.fk_activity == cls.matching_activity_id(tag_group)
+        return tag_group.fk_activity_id == cls.matching_activity_id(tag_group)
 
     @classmethod
     @lru_cache(maxsize=128, typed=True)

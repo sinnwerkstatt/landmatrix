@@ -2,7 +2,11 @@ from django.contrib import admin
 
 from landmatrix.models import *
 
-admin.site.register(FilterPreset)
+
+class FilterPresetAdmin(admin.ModelAdmin):
+	list_display = ['name', 'group', 'relation', 'is_default', 'overrides_default']
+admin.site.register(FilterPreset, FilterPresetAdmin)
+
 admin.site.register(FilterPresetGroup)
 admin.site.register(FilterCondition)
 

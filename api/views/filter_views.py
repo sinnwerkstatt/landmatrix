@@ -81,8 +81,6 @@ class FilterView(APIView):
     #    return label
 
     def get(self, request, *args, **kwargs):
-
-        # FIXME: Helpful for debugging, can be removed once filters are working 100%
         if request.GET.get('clear', '') == '1':
             request.session['filters'] = {}
 

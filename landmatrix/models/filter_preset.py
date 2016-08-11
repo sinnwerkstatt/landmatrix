@@ -30,8 +30,8 @@ class FilterPreset(models.Model):
                               null=True)
     relation = models.CharField(max_length=3, choices=RELATION_CHOICES,
                                 default=RELATION_AND)
-    is_default = models.BooleanField(default=False)
-    overrides_default = models.BooleanField(default=False)
+    is_default = models.BooleanField(_("Country/Region"), default=False)
+    overrides_default = models.BooleanField(_("Global"), default=False)
 
     def __str__(self):
         return '{}: {}'.format(self.group, self.name)

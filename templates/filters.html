@@ -72,15 +72,15 @@
                     <input id="filter_variable" type="hidden" name="variable" value=""/>
                     <div class="">
                         <select id="filter_operator" name="operator" class="form-control">
-                            <option value="lt">is <</option>
-                            <option value="gt">is ></option>
-                            <option value="gte">is >=</option>
-                            <option value="lte">is =<</option>
-                            <option value="is">is</option>
-                            <option value="is_empty">is empty</option>
-                            <option value="not_in">isn't any of</option>
-                            <option value="in">is one of</option>
-                            <option value="contains">contains</option>
+                            <option value="lt">{% trans "is <" %}</option>
+                            <option value="gt">{% trans "is >" %}</option>
+                            <option value="gte">{% trans "is >=" %}</option>
+                            <option value="lte">{% trans "is =<" %}</option>
+                            <option value="is">{% trans "is" %}</option>
+                            <option value="is_empty">{% trans "is empty" %}</option>
+                            <option value="not_in">{% trans "isn't any of" %}</option>
+                            <option value="in">{% trans "is one of" %}</option>
+                            <option value="contains">{% trans "contains" %}</option>
                         </select>
 
                     </div>
@@ -94,6 +94,12 @@
                     </div>
                 </div>
             </form>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <input type="checkbox"{% if filters_default %} checked="checked"{% endif %}>
+                {% trans "Set default filters when empty" %}
+            </div>
         </div>
         <form method="GET" action="./">
             {% if columns and group == 'all' %}
