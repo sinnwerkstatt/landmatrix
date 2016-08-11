@@ -8,6 +8,7 @@ from .map_lo_model import MapLOModel
 from .map_activity import calculate_history_date, get_history_user
 from django.utils import timezone
 from migrate import V2
+from .map_activity_tag_group import MapActivityTagGroupBase
 
 import landmatrix.models
 
@@ -63,12 +64,20 @@ class MapLOActivities(MapLOModel):
     def save_activity_record(cls, new, save, imported=False):
         latest_historical_activity = None
         activity_identifier = cls.get_deal_id(new)
+        if save:
+            new.id = None  # Don't assume that ids line up
+            new.activity_identifier = activity_identifier
+            new.fk_status = landmatrix.models.Status.objects.get(
+                name="pending")
+            new.save(using=V2)
+
         if not imported:
             versions = cls.get_activity_versions(new)
             for i, version in enumerate(versions):
                 # Only save newest version
                 if i+1 == len(version):
                     historical_activity = landmatrix.models.HistoricalActivity(
+                        id=new.id,
                         activity_identifier=activity_identifier,
                         availability=version['reliability'],
                         fk_status_id=version['fk_status'],
@@ -83,12 +92,7 @@ class MapLOActivities(MapLOModel):
                         historical_activity.save(using=V2)
                         changeset.save(using=V2)
 
-        if save:
-            new.id = None  # Don't assume that ids line up
-            new.activity_identifier = activity_identifier
-            new.fk_status = landmatrix.models.Status.objects.get(
-                name="pending")
-            new.save(using=V2)
+
 
         return new
 
@@ -276,7 +280,7 @@ class MapLOActivities(MapLOModel):
                     value=value,
                     date=year,
                     polygon=polygon,
-                    history_date=cls.get_history_date(tag_group),
+                    history_date=MapActivityTagGroupBase.get_history_date(tag_group),
                 )
                 if save:
                     aa.save(using=V2)
