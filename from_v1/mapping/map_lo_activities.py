@@ -384,10 +384,11 @@ def is_imported_deal_groups(groups):
 
 def transform_attributes(attrs):
     try:
-        attrs = {}
+        clean_attrs = {}
         for key, value in attrs.items():
             key = rename_key(key)
-            attrs[key] = clean_attribute(key, value)
+            clean_attrs[key] = clean_attribute(key, value)
+        attrs = clean_attrs
         if 'NUMBER_OF_FARMERS' in attrs:
             if attrs.get('contract_farming', '') == 'On the lease':
                 attrs['on_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
