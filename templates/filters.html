@@ -126,10 +126,10 @@
                 <div class="col-sm-12">
                     <h6>{% trans "Select status of deals" %}</h6>
                     <select id="id_status" name="status" multiple="multiple">
-                        <option value="2"{% if 2 in status %} selected="selected"{% endif %}>{% trans "Added (not changed)" %}</option>
-                        <option value="3"{% if 3 in status %} selected="selected"{% endif %}>{% trans "Changed" %}</option>
-                        <option value="4"{% if 4 in status %} selected="selected"{% endif %}>{% trans "Deleted" %}</option>
-                        <option value="1"{% if 1 in status %} selected="selected"{% endif %}>{% trans "Pending" %}</option>
+                        <option value="2"{% if "2" in status %} selected="selected"{% endif %}>{% trans "Added (not changed)" %}</option>
+                        <option value="3"{% if "3" in status %} selected="selected"{% endif %}>{% trans "Changed" %}</option>
+                        <option value="4"{% if "4" in status %} selected="selected"{% endif %}>{% trans "Deleted" %}</option>
+                        <option value="1"{% if "1" in status %} selected="selected"{% endif %}>{% trans "Pending" %}</option>
                     </select>
                 </div>
             </div>
