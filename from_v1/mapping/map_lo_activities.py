@@ -140,7 +140,7 @@ class MapLOActivities(MapLOModel):
         uuid = Activity.objects.using(cls.DB).filter(id=lo_record_id).values_list('activity_identifier', flat=True).first()
         cls.write_activity_attribute_group(
             new,
-            {'type': 'Land Observatory Import', 'landobservatory_uuid': str(uuid)},
+            {'type': 'Land Observatory Import', 'tg_data_source_comment': str(uuid)},
             group_proxy,
             None,
             'data_source_1',
@@ -289,7 +289,7 @@ class MapLOActivities(MapLOModel):
                 date=year,
                 polygon=polygon
             )
-            aa = landmatrix.models.HistoricalActivityAttribute(
+            haa = landmatrix.models.HistoricalActivityAttribute(
                 fk_activity_id=activity.id,
                 fk_language=english,
                 name=key,
@@ -299,6 +299,7 @@ class MapLOActivities(MapLOModel):
             )
             if save:
                 aa.save(using=V2)
+                haa.save(using=V2)
 
         # No need to import LO history
         #if cls._save:

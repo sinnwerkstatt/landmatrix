@@ -72,7 +72,7 @@ class MapLOInvolvements(MapLOModel):
         new_activity_attr = new_activity_attr_queryset.first()
         if new_activity_attr:
             try:
-                new_record = new_activity_attr.fk_activity
+                new_activity = new_activity_attr.fk_activity
             except new_models.Activity.DoesNotExist:
                 pass
             else:
