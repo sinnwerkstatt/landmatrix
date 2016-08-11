@@ -107,7 +107,7 @@ class BaseForm(forms.Form):
                         value2 = None
                         if count > 2:
                             value2 = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
-                            value2 = self.data.get(len(keys) > i+2 and keys[i+2] or "-", "")
+                            year = self.data.get(len(keys) > i+2 and keys[i+2] or "-", "")
                         else:
                             year = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
                         if value or value2 or year:
