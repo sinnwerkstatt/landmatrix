@@ -275,7 +275,7 @@ class MapLOActivities(MapLOModel):
             del attrs['YEAR']
 
         save = cls._save# and cls.is_current_version(tag_group)
-        aag, created = landmatrix.models.ActivityAttributeGroup.get_or_create(name=name)
+        aag, created = landmatrix.models.ActivityAttributeGroup.objects.get_or_create(name=name)
         english = landmatrix.models.Language.objects.get(pk=1)
         #if save:
         #    aag.save(using=V2)
