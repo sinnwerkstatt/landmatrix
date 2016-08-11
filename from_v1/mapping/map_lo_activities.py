@@ -344,7 +344,7 @@ class MapLOActivities(MapLOModel):
     def get_activity_versions(cls, activity):
         cursor = connections[cls.DB].cursor()
         cursor.execute(
-            """SELECT id FROM activities AS a WHERE activity_identifier = {}
+            """SELECT id FROM activities AS a WHERE activity_identifier = '{}'
             ORDER BY version """.format(activity.activity_identifier)
         )
         ids = [id[0] for id in cursor.fetchall()]
