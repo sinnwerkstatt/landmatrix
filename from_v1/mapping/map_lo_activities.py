@@ -69,30 +69,41 @@ class MapLOActivities(MapLOModel):
             new.fk_status = landmatrix.models.Status.objects.get(
                 name="pending")
             new.save(using=V2)
+        versions = cls.get_activity_versions(new)
+        historical_activity = landmatrix.models.HistoricalActivity(
+            id=new.id,
+            activity_identifier=activity_identifier,
+            fk_status_id=1,
+            history_date=calculate_history_date(versions, len(versions)-1),
+            history_user=get_history_user(new))
+        changeset = landmatrix.models.ActivityChangeset(
+            comment='Imported from Land Observatory',
+            fk_activity=historical_activity)
+        if save:
+            historical_activity.save(using=V2)
+            changeset.save(using=V2)
+
 
         #if not imported:
-        versions = cls.get_activity_versions(new)
-        for i, version in enumerate(versions):
-            # Only save newest version
-            if i+1 == len(version):
-                historical_activity = landmatrix.models.HistoricalActivity(
-                    id=new.id,
-                    activity_identifier=activity_identifier,
-                    availability=version['reliability'],
-                    fk_status_id=version['fk_status'],
-                    fully_updated=False,
-                    history_date=calculate_history_date(versions, i),
-                    history_user=get_history_user(version))
-                changeset = landmatrix.models.ActivityChangeset(
-                    comment='Imported from Land Observatory',
-                    fk_activity=historical_activity)
-
-                if save:
-                    historical_activity.save(using=V2)
-                    changeset.save(using=V2)
-
-
-
+        #versions = cls.get_activity_versions(new)
+        #for i, version in enumerate(versions):
+        #    # Only save newest version
+        #    if i+1 == len(version):
+        #        historical_activity = landmatrix.models.HistoricalActivity(
+        #            id=new.id,
+        #            activity_identifier=activity_identifier,
+        #            availability=version['reliability'],
+        #            fk_status_id=version['fk_status'],
+        #            fully_updated=False,
+        #            history_date=calculate_history_date(versions, i),
+        #            history_user=get_history_user(version))
+        #        changeset = landmatrix.models.ActivityChangeset(
+        #            comment='Imported from Land Observatory',
+        #            fk_activity=historical_activity)
+#
+        #        if save:
+        #            historical_activity.save(using=V2)
+        #            changeset.save(using=V2)
         return new
 
     @classmethod
@@ -114,18 +125,22 @@ class MapLOActivities(MapLOModel):
 
         group_proxy = type('MockTagGroup', (object,), {"fk_activity": new.id, 'id': None})
         cls.write_activity_attribute_group(
+            new,
             {'not_public_reason': 'Land Observatory Import (new)' if not imported else 'Land Observatory Import (duplicate)'},
             group_proxy,
             None,
-            'not_public', None
+            'not_public',
+            None
         )
 
         uuid = Activity.objects.using(cls.DB).filter(id=lo_record_id).values_list('activity_identifier', flat=True).first()
         cls.write_activity_attribute_group(
+            new,
             {'type': 'Land Observatory Import', 'landobservatory_uuid': str(uuid)},
             group_proxy,
             None,
-            'data_source_1', None
+            'data_source_1',
+            None
         )
 
     @classmethod
@@ -149,16 +164,16 @@ class MapLOActivities(MapLOModel):
                 value = tag.value.value
 
                 if key in attrs and value != attrs[key]:
-                    cls.write_activity_attribute_group_with_comments(attrs, tag_group, None,
-                                                                     group_name, polygon)
+                    cls.write_activity_attribute_group_with_comments(new, attrs, tag_group,
+                        None, group_name, polygon)
                     attrs = {}
                     polygon = None
 
                 attrs[key] = value
 
             if attrs:
-                cls.write_activity_attribute_group_with_comments(attrs, tag_group, None,
-                                                                 group_name, polygon)
+                cls.write_activity_attribute_group_with_comments(new, attrs, tag_group,
+                    None, group_name, polygon)
 
     @classmethod
     def tag_group_name(cls, tag_group):
@@ -239,33 +254,32 @@ class MapLOActivities(MapLOModel):
         return tag_group.tags
 
     @classmethod
-    def write_activity_attribute_group_with_comments(cls, attrs, tag_group, year, name, polygon):
+    def write_activity_attribute_group_with_comments(cls, activity, attrs, tag_group, year, name, polygon):
         if (len(attrs) == 1) and attrs.get('name'):
             return
 
         attrs = transform_attributes(attrs)
         aag = cls.write_activity_attribute_group(
-            attrs, tag_group, year, name, polygon
+            activity, attrs, tag_group, year, name, polygon
         )
 
     @classmethod
-    def write_activity_attribute_group(cls, attrs, tag_group, year, name, polygon):
-        activity_id = cls.matching_activity_id(tag_group)
+    def write_activity_attribute_group(cls, activity, attrs, tag_group, year, name, polygon):
+        #activity_id = cls.matching_activity_id(tag_group)
         if 'YEAR' in attrs:
             year = attrs['YEAR']
             del attrs['YEAR']
 
-        save = cls._save and cls.is_current_version(tag_group)
+        save = cls._save# and cls.is_current_version(tag_group)
         aag = landmatrix.models.ActivityAttributeGroup(name=name)
         english = landmatrix.models.Language.objects.get(pk=1)
         if save:
             aag.save(using=V2)
-            raise IOError("ok")
 
         if activity_id:
             for key, value in attrs.items():
                 aa = landmatrix.models.ActivityAttribute(
-                    fk_activity_id=activity_id,
+                    fk_activity_id=activity.id,
                     fk_language=english,
                     name=key,
                     value=value,
@@ -273,7 +287,7 @@ class MapLOActivities(MapLOModel):
                     polygon=polygon
                 )
                 aa = landmatrix.models.HistoricalActivityAttribute(
-                    fk_activity_id=activity_id,
+                    fk_activity_id=activity.id,
                     fk_language=english,
                     name=key,
                     value=value,
