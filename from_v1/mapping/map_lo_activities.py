@@ -8,7 +8,6 @@ from .map_lo_model import MapLOModel
 from .map_activity import calculate_history_date, get_history_user
 from django.utils import timezone
 from migrate import V2
-from .map_activity_tag_group import MapActivityTagGroupBase
 
 import landmatrix.models
 
@@ -71,26 +70,26 @@ class MapLOActivities(MapLOModel):
                 name="pending")
             new.save(using=V2)
 
-        if not imported:
-            versions = cls.get_activity_versions(new)
-            for i, version in enumerate(versions):
-                # Only save newest version
-                if i+1 == len(version):
-                    historical_activity = landmatrix.models.HistoricalActivity(
-                        id=new.id,
-                        activity_identifier=activity_identifier,
-                        availability=version['reliability'],
-                        fk_status_id=version['fk_status'],
-                        fully_updated=False,
-                        history_date=calculate_history_date(versions, i),
-                        history_user=get_history_user(version))
-                    changeset = landmatrix.models.ActivityChangeset(
-                        comment='Imported from Land Observatory',
-                        fk_activity=historical_activity)
+        #if not imported:
+        versions = cls.get_activity_versions(new)
+        for i, version in enumerate(versions):
+            # Only save newest version
+            if i+1 == len(version):
+                historical_activity = landmatrix.models.HistoricalActivity(
+                    id=new.id,
+                    activity_identifier=activity_identifier,
+                    availability=version['reliability'],
+                    fk_status_id=version['fk_status'],
+                    fully_updated=False,
+                    history_date=calculate_history_date(versions, i),
+                    history_user=get_history_user(version))
+                changeset = landmatrix.models.ActivityChangeset(
+                    comment='Imported from Land Observatory',
+                    fk_activity=historical_activity)
 
-                    if save:
-                        historical_activity.save(using=V2)
-                        changeset.save(using=V2)
+                if save:
+                    historical_activity.save(using=V2)
+                    changeset.save(using=V2)
 
 
 
@@ -280,7 +279,6 @@ class MapLOActivities(MapLOModel):
                     value=value,
                     date=year,
                     polygon=polygon,
-                    history_date=MapActivityTagGroupBase.get_history_date(tag_group),
                 )
                 if save:
                     aa.save(using=V2)
