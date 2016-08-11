@@ -81,7 +81,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     @classmethod
     def get_latest_active_activity(cls, activity_identifier):
         return cls.objects.filter(activity_identifier=activity_identifier).\
-            filter(fk_status__name__in=("active", "overwritten", "deleted")).order_by('-id').first()
+            filter(fk_status__in=(cls.STATUS_ACTIVE, cls.STATUS_OVERWRITTEN, cls.STATUS_DELETED)).order_by('-id').first()
 
     @property
     def operational_stakeholder(self):

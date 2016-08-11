@@ -149,15 +149,17 @@ class MapLOActivities(MapLOModel):
 
     @classmethod
     def write_standard_tag_groups(cls, new, tag_groups):
+        location_set = False
         for tag_group in tag_groups:
             attrs = {}
             polygon = None
             group_name = cls.tag_group_name(tag_group)
 
             # set location - stored in activity in LO, but tag group in LM
-            #if group_name == 'location_0':
-            #    attrs['point_lat'] = new.point.get_y()
-            #    attrs['point_lon'] = new.point.get_x()
+            if group_name == 'location_0' and not location_set:
+                attrs['point_lat'] = new.point.get_y()
+                attrs['point_lon'] = new.point.get_x()
+                location_set = True
 
             # area boundaries.
             if tag_group.geometry is not None:
@@ -443,21 +445,28 @@ def clean_attribute(key, value):
     if isinstance(value, str):
         # HSTORE attribute values can not take strings longer than that due to index constraints :-(
         value = value[:3000]
-    if key == 'nature' and 'Lease/Concession' in value:
-        value = value.replace('Lease/Concession', 'Lease')
-    elif key == 'implementation_status' and 'Startup phase' in value:
-        value = value.replace('Startup phase', 'Startup phase (no production)')
+    if key == 'nature':
+        if 'Lease/Concession' in value:
+            value = value.replace('Lease/Concession', 'Lease')
+    elif key == 'implementation_status'
+        if ('Startup phase' in value:
+            value = value.replace('Startup phase', 'Startup phase (no production)')
     elif key == 'level_of_accuracy':
-        if value == "worse than 100 km":
+        if value == "worse than 100km":
             value = 'Country'
-        elif value == "10 km to 100 km":
+        elif value == "10km to 100km":
             value = 'Administrative region'
-        elif value == "1 km to 10 km":
+        elif value == "1km to 10km":
             value = 'Approximate location'
-        elif value == "100 m to 1 km":
+        elif value == "100m to 1km":
             value = 'Exact location'
-        elif value == "better than 100 m":
+        elif value == "better than 100m":
             value = 'Coordinates'
+    elif key == 'target_country':
+        try:
+            value = landmatrix.models.Activity.objects.get(name=value).id
+        except:
+            pass
     return value
 
 

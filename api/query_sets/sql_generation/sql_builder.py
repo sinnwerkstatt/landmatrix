@@ -174,7 +174,8 @@ class SQLBuilder(SQLBuilderData):
         )""" % (alias, model._meta.db_table, id_field, alias, id_field, ', '.join(map(str, cls.registered_status_ids())))
 
     def status_active_condition(self):
-        return "a.fk_status_id IN (%s)" % ', '.join((str(Activity.STATUS_ACTIVE), str(Activity.STATUS_OVERWRITTEN)))
+        status = self.status or [Activity.STATUS_ACTIVE, Activity.STATUS_OVERWRITTEN]
+        return "a.fk_status_id IN (%s)" % ', '.join(map(str, status))
 
     def is_public_condition(self):
         if self.is_staff:
@@ -213,9 +214,5 @@ LEFT JOIN landmatrix_activityattribute AS intention ON a.id = intention.fk_activ
     @classmethod
     def registered_status_ids(cls):
         if not cls.registeredstatusids:
-            cls.registeredstatusids = Status.objects.filter(name__in=['active', 'overwritten', 'deleted']).values_list('id', flat=True)
+            cls.registeredstatusids = [Activity.STATUS_ACTIVE, Activity.STATUS_OVERWRITTEN, Activity.STATUS_DELETED]
         return cls.registeredstatusids
-
-    def valid_status_ids(self):
-        status = self.status or ['active', 'overwritten']
-        return Status.objects.filter(name__in=status).values_list('id', flat=True)

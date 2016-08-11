@@ -226,8 +226,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
     def status(self):
         if self.request.user.is_staff and "status" in self.request.GET:
             return self.request.GET.getlist("status")
-        else:
-            return ["active", "overwritten"]
+        return [2,3] # FIXME: Use Activity.STATUS_ACTIVE + Activity.STATUS_OVERWRITTEN
 
     @print_execution_time_and_num_queries
     def _get_items(self, query_result):
