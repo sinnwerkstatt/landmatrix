@@ -302,7 +302,7 @@ class MapLOActivities(MapLOModel):
 
     @classmethod
     def is_current_version(cls, tag_group):
-        return tag_group.fk_activity_id == cls.matching_activity_id(tag_group)
+        return tag_group.fk_activity == cls.matching_activity_id(tag_group)
 
     @classmethod
     @lru_cache(maxsize=128, typed=True)
