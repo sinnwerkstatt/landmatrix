@@ -79,7 +79,7 @@ class MapLOActivities(MapLOModel):
             activity_identifier=activity_identifier,
             fk_status_id=1,
             history_date=calculate_history_date(versions, i),
-            history_user=get_history_user(new))
+            history_user_id=75)
         changeset = landmatrix.models.ActivityChangeset(
             comment='Imported from Land Observatory',
             fk_activity=historical_activity)
@@ -155,9 +155,9 @@ class MapLOActivities(MapLOModel):
             group_name = cls.tag_group_name(tag_group)
 
             # set location - stored in activity in LO, but tag group in LM
-            if group_name == 'location_0':
-                attrs['point_lat'] = new.point.get_y()
-                attrs['point_lon'] = new.point.get_x()
+            #if group_name == 'location_0':
+            #    attrs['point_lat'] = new.point.get_y()
+            #    attrs['point_lon'] = new.point.get_x()
 
             # area boundaries.
             if tag_group.geometry is not None:
@@ -281,9 +281,14 @@ class MapLOActivities(MapLOModel):
         #    aag.save(using=V2)
 
         for key, value in attrs.items():
+            if '#' in value:
+                values = value.split('#')
+                if len(values) == 2:
+                    value, year = values
             aa = landmatrix.models.ActivityAttribute(
                 fk_activity_id=activity.id,
                 fk_language=english,
+                fk_group=aag,
                 name=key,
                 value=value,
                 date=year,
@@ -292,6 +297,7 @@ class MapLOActivities(MapLOModel):
             haa = landmatrix.models.HistoricalActivityAttribute(
                 fk_activity_id=activity.id,
                 fk_language=english,
+                fk_group=aag,
                 name=key,
                 value=value,
                 date=year,
@@ -398,33 +404,31 @@ def transform_attributes(attrs):
             if attrs.get('url') == 'http://www.landmatrix.org':
                 pass
             elif 'implementation_status' in attrs:
-                attrs['implementation_status_comment'] = attrs['REMARK']
+                attrs['tg_implementation_status_comment'] = attrs['REMARK']
             elif 'data_source' in attrs:
-                attrs['data_source_1_comment'] = attrs['REMARK']
+                attrs['tg_data_source_comment'] = attrs['REMARK']
             elif 'intended_size' in attrs:
-                attrs['land_area_comment'] = attrs['REMARK']
+                attrs['tg_land_area_comment'] = attrs['REMARK']
             elif 'point_lat' in attrs:
-                attrs['location_1_comment'] = attrs['REMARK']
+                attrs['tg_location_comment'] = attrs['REMARK']
             elif 'community_consultation' in attrs:
-                attrs['community_consultation_comment'] = attrs['REMARK']
+                attrs['tg_community_consultation_comment'] = attrs['REMARK']
             elif 'community_reaction' in attrs:
-                attrs['community_reaction_comment'] = attrs['REMARK']
+                attrs['tg_community_reaction_comment'] = attrs['REMARK']
             elif 'contract_farming' in attrs:
-                attrs['contract_farming_comment'] = attrs['REMARK']
+                attrs['tg_contract_farming_comment'] = attrs['REMARK']
             elif 'annual_leasing_fee' in attrs:
-                attrs['leasing_fees_comment'] = attrs['REMARK']
+                attrs['tg_leasing_fees_comment'] = attrs['REMARK']
             elif 'purchase_price' in attrs:
-                attrs['purchase_price_comment'] = attrs['REMARK']
+                attrs['tg_purchase_price_comment'] = attrs['REMARK']
             elif 'water_extraction_envisaged' in attrs:
-                attrs['water_extraction_envisaged_comment'] = attrs['REMARK']
+                attrs['tg_water_extraction_envisaged_comment'] = attrs['REMARK']
             elif 'number_of_displaced_people' in attrs:
-                attrs['number_of_displaced_people_comment'] = attrs['REMARK']
-
+                attrs['tg_number_of_displaced_people_comment'] = attrs['REMARK']
             elif 'use_of_produce' in attrs or 'use_of_produce_comment' in attrs:
-                attrs['use_of_produce_comment'] += attrs['REMARK']
-
+                attrs['tg_use_of_produce_comment'] += attrs['REMARK']
             elif 'benefits' in attrs['REMARK']:
-                attrs['materialized_benefits_comment'] = attrs['REMARK']
+                attrs['tg_materialized_benefits_comment'] = attrs['REMARK']
 
             del attrs['REMARK']
 
@@ -439,6 +443,21 @@ def clean_attribute(key, value):
     if isinstance(value, str):
         # HSTORE attribute values can not take strings longer than that due to index constraints :-(
         return value[:3000]
+    if key == 'nature' and 'Lease/Concession' in value:
+        value = value.replace('Lease/Concession', 'Lease')
+    if key == 'implementation_status' and 'Startup phase' in value:
+        value = value.replace('Startup phase', 'Startup phase (no production)')
+    if key == 'level_of_accuracy':
+        if value == "worse than 100 km":
+            value = 'Country'
+        elif value == "10 km to 100 km":
+            value = 'Administrative region'
+        elif value == "1 km to 10 km":
+            value = 'Approximate location'
+        elif value == "100 m to 1 km":
+            value = 'Exact location'
+        elif value == "better than 100 m":
+            value = 'Coordinates'
     return value
 
 
@@ -488,8 +507,8 @@ LM_ATTRIBUTES = {
     'Current total number of jobs':     'total_jobs_current',
     "Número total de empleos actual":     'total_jobs_current',
     "Emplois total créés":     'total_jobs_current',
-    'Data source':                      'data_source',
-    "Source des données":                      'data_source',
+    'Data source':                      'type',
+    "Source des données":                      'type',
     'Date':                             'date',
     'Duration of Agreement (years)':    'agreement_duration',
     "Duración del Contrato (años)":    'agreement_duration',
@@ -509,9 +528,9 @@ LM_ATTRIBUTES = {
     'How did community react':          'community_reaction',
     '¿Cómo ha reaccionado la comunidad?':          'community_reaction',
     "Réactions des communautés locales":          'community_reaction',
-    'How much do investors pay for water': 'how_much_do_investors_pay_comment',
-    "Cuánto paga el inversor por el agua": 'how_much_do_investors_pay_comment',
-    "Redevances hydrauliques en AR/m3": 'how_much_do_investors_pay_comment',
+    'How much do investors pay for water': 'tg_how_much_do_investors_pay_comment',
+    "Cuánto paga el inversor por el agua": 'tg_how_much_do_investors_pay_comment',
+    "Redevances hydrauliques en AR/m3": 'tg_how_much_do_investors_pay_comment',
     'How much water is extracted (m3/year)': 'water_extraction_amount',
     "Cuánta agua es extraida (m3/año)": 'water_extraction_amount',
     "Volume d'eau prélevé en m3/année": 'water_extraction_amount',
@@ -579,6 +598,8 @@ LM_ATTRIBUTES = {
     'Year':                             'YEAR',
     "Année":                             'YEAR',
     "Año":                             'YEAR',
+    "Remark (Negotiation Status)":  'tg_negotiation_status_comment',
+    "Remark (Intention of Investment)": 'tg_intention_comment',
 }
 
 
