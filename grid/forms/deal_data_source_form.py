@@ -39,7 +39,7 @@ class DealDataSourceForm(BaseForm):
             ("Contract (contract farming agreement)", _("Contract (contract farming agreement)")),
             ("Personal information", _("Personal information")),
             ("Crowdsourcing", _("Crowdsourcing")),
-            ("Other (Please specify in comment  field)", _("Other (Please specify in comment  field)")),
+            ("Other", _("Other (Please specify in comment field)")),
         )
     )
     url = forms.URLField(

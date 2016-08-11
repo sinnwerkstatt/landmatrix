@@ -68,7 +68,7 @@ class MapLOInvolvements(MapLOModel):
 
         attr_model = new_models.ActivityAttribute
         new_activity_attr_queryset = attr_model.objects.using(V2).filter(
-            name='landobservatory_uuid', value__contains=uuid)
+            name='tg_data_source_comment', value__contains=uuid)
         new_activity_attr = new_activity_attr_queryset.first()
         if new_activity_attr:
             try:

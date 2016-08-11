@@ -140,10 +140,10 @@ class MapLOActivities(MapLOModel):
         uuid = Activity.objects.using(cls.DB).filter(id=lo_record_id).values_list('activity_identifier', flat=True).first()
         cls.write_activity_attribute_group(
             new,
-            {'type': 'Land Observatory Import', 'tg_data_source_comment': str(uuid)},
+            {'type': 'Other', 'tg_data_source_comment': str(uuid)},
             group_proxy,
             None,
-            'data_source_1',
+            'data_source_0',
             None
         )
 
@@ -155,7 +155,7 @@ class MapLOActivities(MapLOModel):
             group_name = cls.tag_group_name(tag_group)
 
             # set location - stored in activity in LO, but tag group in LM
-            if group_name == 'location_1':
+            if group_name == 'location_0':
                 attrs['point_lat'] = new.point.get_y()
                 attrs['point_lon'] = new.point.get_x()
 
@@ -193,16 +193,16 @@ class MapLOActivities(MapLOModel):
             'Contract date': 'contract_farming',
             'Contract farming': 'contract_farming',
             'Contract Number': 'contract_farming',
-            'Country': 'location_1',
+            'Country': 'location_0',
             'Crop': 'crop_animal_mineral',
             'Current area in operation (ha)': 'production_size',
             'Current Number of daily/seasonal workers': 'total_number_of_jobs_created',
             'Current number of employees': 'total_number_of_jobs_created',
             'Current total number of jobs': 'total_number_of_jobs_created',
-            'Data source': 'data_source_1',
+            'Data source': 'data_source_0',
             'Date': '',
             'Duration of Agreement (years)': 'agreement_duration',
-            'Files': 'data_source_1',
+            'Files': 'data_source_0',
             'Former predominant land cover': 'land_cover',
             'Former predominant land owner': 'land_owner',
             'Former predominant land use': 'land_use',
@@ -227,11 +227,11 @@ class MapLOActivities(MapLOModel):
             'Promised or received compensation': 'community_compensation',
             'Purchase price': 'purchase_price',
             'Purchase price area (ha)': 'purchase_price',
-            'Remark': 'data_source_1',
+            'Remark': 'data_source_0',
             'Scope of agriculture': '',
             'Scope of forestry': '',
-            'Spatial Accuracy': 'location_1',
-            'URL / Web': 'data_source_1',
+            'Spatial Accuracy': 'location_0',
+            'URL / Web': 'data_source_0',
             'Use of produce': 'use_of_produce',
             'Water extraction': 'water_extraction_envisaged',
             'Year': '',
@@ -275,10 +275,10 @@ class MapLOActivities(MapLOModel):
             del attrs['YEAR']
 
         save = cls._save# and cls.is_current_version(tag_group)
-        aag = landmatrix.models.ActivityAttributeGroup(name=name)
+        aag, created = landmatrix.models.ActivityAttributeGroup.get_or_create(name=name)
         english = landmatrix.models.Language.objects.get(pk=1)
-        if save:
-            aag.save(using=V2)
+        #if save:
+        #    aag.save(using=V2)
 
         for key, value in attrs.items():
             aa = landmatrix.models.ActivityAttribute(
