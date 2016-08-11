@@ -449,7 +449,7 @@ def clean_attribute(key, value):
         if 'Lease/Concession' in value:
             value = value.replace('Lease/Concession', 'Lease')
     elif key == 'implementation_status':
-        if ('Startup phase' in value:
+        if 'Startup phase' in value:
             value = value.replace('Startup phase', 'Startup phase (no production)')
     elif key == 'level_of_accuracy':
         if value == "worse than 100km":
