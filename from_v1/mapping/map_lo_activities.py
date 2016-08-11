@@ -426,7 +426,7 @@ def transform_attributes(attrs):
             elif 'number_of_displaced_people' in attrs:
                 attrs['tg_number_of_displaced_people_comment'] = attrs['REMARK']
             elif 'use_of_produce' in attrs or 'use_of_produce_comment' in attrs:
-                attrs['tg_use_of_produce_comment'] += attrs['REMARK']
+                attrs['tg_use_of_produce_comment'] = attrs['REMARK']
             elif 'benefits' in attrs['REMARK']:
                 attrs['tg_materialized_benefits_comment'] = attrs['REMARK']
 
@@ -590,8 +590,8 @@ LM_ATTRIBUTES = {
     'URL / Web':                        'url',
     "Página Web":                        'url',
     "URL : Web":                        'url',
-    'Use of produce':                   'use_of_produce_comment',
-    "Uso de los productos":                   'use_of_produce_comment',
+    'Use of produce':                   'tg_use_of_produce_comment',
+    "Uso de los productos":                   'tg_use_of_produce_comment',
     'Water extraction':                 'water_extraction_envisaged',
     "Extracción de agua":                 'water_extraction_envisaged',
     "Utilisation d'eau ":                 'water_extraction_envisaged',
