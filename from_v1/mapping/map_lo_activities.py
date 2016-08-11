@@ -442,12 +442,12 @@ def transform_attributes(attrs):
 def clean_attribute(key, value):
     if isinstance(value, str):
         # HSTORE attribute values can not take strings longer than that due to index constraints :-(
-        return value[:3000]
+        value = value[:3000]
     if key == 'nature' and 'Lease/Concession' in value:
         value = value.replace('Lease/Concession', 'Lease')
-    if key == 'implementation_status' and 'Startup phase' in value:
+    elif key == 'implementation_status' and 'Startup phase' in value:
         value = value.replace('Startup phase', 'Startup phase (no production)')
-    if key == 'level_of_accuracy':
+    elif key == 'level_of_accuracy':
         if value == "worse than 100 km":
             value = 'Country'
         elif value == "10 km to 100 km":
