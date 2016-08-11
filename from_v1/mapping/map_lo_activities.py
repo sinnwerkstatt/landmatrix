@@ -283,7 +283,7 @@ class MapLOActivities(MapLOModel):
         #    aag.save(using=V2)
 
         for key, value in attrs.items():
-            if '#' in value:
+            if '#' in str(value):
                 values = value.split('#')
                 if len(values) == 2 and len(values[1]) <= 10:
                     value, year = values
