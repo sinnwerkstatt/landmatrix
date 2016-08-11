@@ -384,9 +384,10 @@ def is_imported_deal_groups(groups):
 
 def transform_attributes(attrs):
     try:
-        attrs = {
-            rename_key(key): clean_attribute(key, value) for key, value in attrs.items()
-        }
+        attrs = {}
+        for key, value in attrs.items():
+            key = rename_key(key)
+            attrs[key] = clean_attribute(key, value)
         if 'NUMBER_OF_FARMERS' in attrs:
             if attrs.get('contract_farming', '') == 'On the lease':
                 attrs['on_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
@@ -463,8 +464,10 @@ def clean_attribute(key, value):
         elif value == "better than 100m":
             value = 'Coordinates'
     elif key == 'target_country':
+        if value == "Lao People's Democratic Republic":
+            value = 'Lao PDR'
         try:
-            value = landmatrix.models.Activity.objects.get(name=value).id
+            value = landmatrix.models.Country.objects.get(name=value).id
         except:
             pass
     return value
