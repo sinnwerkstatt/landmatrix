@@ -70,11 +70,15 @@ class MapLOActivities(MapLOModel):
                 name="pending")
             new.save(using=V2)
         versions = cls.get_activity_versions(new)
+        if len(versions) > 0:
+            i = len(versions) -1
+        else:
+            i = 0
         historical_activity = landmatrix.models.HistoricalActivity(
             id=new.id,
             activity_identifier=activity_identifier,
             fk_status_id=1,
-            history_date=calculate_history_date(versions, len(versions)-1),
+            history_date=calculate_history_date(versions, i),
             history_user=get_history_user(new))
         changeset = landmatrix.models.ActivityChangeset(
             comment='Imported from Land Observatory',
@@ -276,26 +280,25 @@ class MapLOActivities(MapLOModel):
         if save:
             aag.save(using=V2)
 
-        if activity_id:
-            for key, value in attrs.items():
-                aa = landmatrix.models.ActivityAttribute(
-                    fk_activity_id=activity.id,
-                    fk_language=english,
-                    name=key,
-                    value=value,
-                    date=year,
-                    polygon=polygon
-                )
-                aa = landmatrix.models.HistoricalActivityAttribute(
-                    fk_activity_id=activity.id,
-                    fk_language=english,
-                    name=key,
-                    value=value,
-                    date=year,
-                    polygon=polygon,
-                )
-                if save:
-                    aa.save(using=V2)
+        for key, value in attrs.items():
+            aa = landmatrix.models.ActivityAttribute(
+                fk_activity_id=activity.id,
+                fk_language=english,
+                name=key,
+                value=value,
+                date=year,
+                polygon=polygon
+            )
+            aa = landmatrix.models.HistoricalActivityAttribute(
+                fk_activity_id=activity.id,
+                fk_language=english,
+                name=key,
+                value=value,
+                date=year,
+                polygon=polygon,
+            )
+            if save:
+                aa.save(using=V2)
 
         # No need to import LO history
         #if cls._save:
