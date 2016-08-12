@@ -229,6 +229,7 @@ $(document).ready(function () {
             document.getElementById(this.options.id).value = jsonFormat.writeGeometry(geometry);
         };
 
+        // TODO: can be set on the layer?
         MapWidget.prototype.featureStyle = new ol.style.Style({
             text: new ol.style.Text({
                 text: '\uf041',
@@ -239,6 +240,18 @@ $(document).ready(function () {
                 })
              })
         });
+
+        MapWidget.prototype.addPoint = function(lat, lon) {
+            // TODO: still getting an error here, fix
+            var pos = ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857');
+            var marker = new ol.geom.Point(pos);
+            var feature = new ol.Feature({});
+            feature.setGeometry(marker);
+            feature.setStyle(this.featureStyle);
+            this.featureOverlay.getSource().addFeature(feature);
+
+            return feature;
+        }
 
         MapWidget.prototype.bindLocationField = function(locationField) {
             this.locationField = locationField;
@@ -276,6 +289,14 @@ $(document).ready(function () {
         MapWidget.prototype.bindLatLongFields = function(latField, lonField) {
             this.latField = latField;
             this.lonField = lonField;
+
+            var lat = parseFloat(this.latField.val());
+            var lon = parseFloat(this.lonField.val());
+
+            // create an initial marker if there isn't one
+            if (lat && lon && lat != NaN && lon != NaN && this.featureCollection.getLength() < 1) {
+                this.addPoint(lat, lon);
+            }
         };
 
         MapWidget.prototype.updateLatLongFields = function(coordinates) {

@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
-from ol3_widgets.widgets import OSMWidget, MapWidget
+from ol3_widgets.widgets import OSMWidget
 from grid.widgets import TitleField, LocationWidget, CountryField, CommentInput
 from .base_form import BaseForm
 
@@ -36,16 +36,14 @@ class DealSpatialForm(BaseForm):
     level_of_accuracy = forms.ChoiceField(
         required=False, label=_("Spatial accuracy level"),
         choices=ACCURACY_CHOICES)
-    location = forms.CharField(required=True, label=_("Location"))
+    location = forms.CharField(
+        required=True, label=_("Location"), widget=LocationWidget)
     point_lat = forms.CharField(
         required=False, label=_("Latitude"), widget=forms.TextInput,
         initial="")
     point_lon = forms.CharField(
         required=False, label=_("Longitude"), widget=forms.TextInput,
         initial="")
-    # TODO: merge with location field
-    map = forms.CharField(
-        required=False, label=_('Map'), widget=MapWidget, initial="")
     facility_name = forms.CharField(
         required=False, label=_("Facility name"), widget=forms.TextInput,
         initial="")
@@ -74,11 +72,12 @@ class DealSpatialForm(BaseForm):
         If we already have a lat/long, set the default positioning to match.
         '''
         super().__init__(*args, **kwargs)
-        initial_lat = self.fields['point_lat'].initial
-        initial_lon = self.fields['point_lon'].initial
+        initial_lat = self['point_lat'].value()
+        initial_lon = self['point_lon'].value()
 
         # Pass related fields through to the mapwidget
         map_widget_attrs = {
+            'id': '{}-map'.format(self['location'].auto_id),
             'bound_location_field_id': self['location'].auto_id,
             'bound_lat_field_id': self['point_lat'].auto_id,
             'bound_lon_field_id': self['point_lon'].auto_id,
@@ -88,21 +87,25 @@ class DealSpatialForm(BaseForm):
         }
 
         if initial_lat or initial_lon:
-            area_widget_attrs = AREA_WIDGET_ATTRS.copy()
+            area_widget_attrs = self.AREA_WIDGET_ATTRS.copy()
 
-            if initial_lat and initial_lat.isnumeric():
-                area_widget_attrs['default_lat'] = initial_lat
-                map_widget_attrs['default_lat'] = initial_lat
-            if initial_lon and initial_lon.isnumeric():
-                area_widget_attrs['default_lon'] = initial_lon
-                map_widget_attrs['default_lon'] = initial_lon
+            try:
+                lat, lon = float(initial_lat), float(initial_lon)
+            except ValueError:
+                pass
+            else:
+                area_widget_attrs['default_lat'] = lat
+                area_widget_attrs['default_lon'] = lon
+                map_widget_attrs['default_lat'] = lat
+                map_widget_attrs['default_lon'] = lon
 
             self.fields['intended_area'].widget = OSMWidget(
                 attrs=area_widget_attrs)
             self.fields['production_area'].widget = OSMWidget(
                 attrs=area_widget_attrs)
 
-        self.fields['map'].widget = MapWidget(attrs=map_widget_attrs)
+        self.fields['location'].widget = LocationWidget(
+            map_attrs=map_widget_attrs)
 
     def get_attributes(self, request=None):
         attributes = super().get_attributes()
