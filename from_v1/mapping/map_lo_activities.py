@@ -235,7 +235,7 @@ class MapLOActivities(MapLOModel):
             'Spatial Accuracy': 'location_0',
             'URL / Web': 'data_source_0',
             'Use of produce': 'use_of_produce',
-            'Water extraction': 'water_extraction_envisaged',
+            'Water extraction': 'source_of_water_extraction',
             'Year': '',
         }
 
@@ -386,8 +386,8 @@ def transform_attributes(attrs):
     try:
         clean_attrs = {}
         for key, value in attrs.items():
-            key = rename_key(key)
-            clean_attrs[key] = clean_attribute(key, value)
+            key, value = clean_attribute(key, value)
+            clean_attrs[key] = value
         attrs = clean_attrs
         if 'NUMBER_OF_FARMERS' in attrs:
             if attrs.get('contract_farming', '') == 'On the lease':
@@ -425,8 +425,8 @@ def transform_attributes(attrs):
                 attrs['tg_leasing_fees_comment'] = attrs['REMARK']
             elif 'purchase_price' in attrs:
                 attrs['tg_purchase_price_comment'] = attrs['REMARK']
-            elif 'water_extraction_envisaged' in attrs:
-                attrs['tg_water_extraction_envisaged_comment'] = attrs['REMARK']
+            elif 'source_of_water_extraction' in attrs:
+                attrs['tg_source_of_water_extraction_comment'] = attrs['REMARK']
             elif 'number_of_displaced_people' in attrs:
                 attrs['tg_number_of_displaced_people_comment'] = attrs['REMARK']
             elif 'use_of_produce' in attrs or 'use_of_produce_comment' in attrs:
@@ -444,15 +444,41 @@ def transform_attributes(attrs):
 
 
 def clean_attribute(key, value):
+    # Check key
+    key = LM_ATTRIBUTES.get(key, key)
+    if key == 'contract_farming':
+        if value == 'On the lease':
+            key = 'on_the_lease'
+            value = 't'
+        elif value == 'Off the lease':
+            key = 'off_the_lease'
+            value = 't'
+
+    # Check value
     if isinstance(value, str):
         # HSTORE attribute values can not take strings longer than that due to index constraints :-(
         value = value[:3000]
     if key == 'nature':
         if 'Lease/Concession' in value:
             value = value.replace('Lease/Concession', 'Lease')
+        elif 'Exploitation License' in value:
+            value = value.replace('Exploitation License', 'Resource exploitation license / concession')
     elif key == 'implementation_status':
         if 'Startup phase' in value:
             value = value.replace('Startup phase', 'Startup phase (no production)')
+        elif 'In operation' in value:
+            value = value.replace('In operation', 'In operation (production)')
+    elif key == 'intention':
+        if value == 'Mining':
+            value = value.replace('Mining', 'Resource extraction')
+        elif value == 'carbon sequestration':
+            value = value.replace('carbon sequestration', 'For carbon sequestration/REDD')
+        elif value == 'wood and fibre':
+            value = value.replace('wood and fibre', 'For wood and fibre')
+        elif value == 'Renewable energy':
+            value = value.replace('Renewable energy', 'Renewable Energy')
+        elif value == 'Agrofuels':
+            value = value.replace('Agrofuels', 'Biofuels')
     elif key == 'level_of_accuracy':
         if value == "worse than 100km":
             value = 'Country'
@@ -471,12 +497,42 @@ def clean_attribute(key, value):
             value = landmatrix.models.Country.objects.get(name=value).id
         except:
             pass
-    return value
+    elif key == 'type':
+        if value == 'Research paper':
+             value = 'Research Paper / Policy Report'
+    elif key == 'community_consultation':
+        if value not in ("Not consulted", "Limited consultation",
+            "Free, Prior and Informed Consent (FPIC)",
+            "Certified Free, Prior and Informed Consent (FPIC)", "Other"):
+            key = 'tg_community_consultation_comment'
+    elif key == 'community_reaction':
+        if value not in ("Consent", "Mixed reaction", "Rejection"):
+            key = 'tg_community_reaction_comment'
+    elif key == 'promised_benefits':
+        if value == 'Financial support':
+            value = 'Financial Support'
+        elif value == 'Water supply':
+            value = 'Other'
+        elif value == 'Capacity building':
+            value = 'Capacity Building'
+    elif key == 'land_use':
+        if value == 'Pastoralists':
+            value = 'Pastoralism'
+    elif key == 'land_cover':
+        if value == 'Grassland':
+            value = 'Shrub land/Grassland'
+    elif key == 'source_of_water_extraction':
+        if value == 'Ground water':
+            value = 'Groundwater'
 
-
-def rename_key(key):
-    return LM_ATTRIBUTES.get(key, key)
-
+    SOURCE_OF_WATER_EXTRACTION_CHOICES = (
+        ("Groundwater", _("Groundwater"), None),
+        ("Surface water", _("Surface water"), (
+           ("River", _("River")),
+           ("Lake", _("Lake")),
+        )),
+    )
+    return key, value
 
 LM_ATTRIBUTES = {
     'Animals':                          'animals',
@@ -605,9 +661,9 @@ LM_ATTRIBUTES = {
     "URL : Web":                        'url',
     'Use of produce':                   'tg_use_of_produce_comment',
     "Uso de los productos":                   'tg_use_of_produce_comment',
-    'Water extraction':                 'water_extraction_envisaged',
-    "Extracción de agua":                 'water_extraction_envisaged',
-    "Utilisation d'eau ":                 'water_extraction_envisaged',
+    'Water extraction':                 'source_of_water_extraction',
+    "Extracción de agua":                 'source_of_water_extraction',
+    "Utilisation d'eau ":                 'source_of_water_extraction',
     'Year':                             'YEAR',
     "Année":                             'YEAR',
     "Año":                             'YEAR',

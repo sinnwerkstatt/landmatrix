@@ -63,7 +63,7 @@ class DealLocalCommunitiesForm(BaseForm):
         ("Health", _("Health")),
         ("Education", _("Education")),
         (
-            "Productive infrastructure (e.g. irrigation, tractors, machinery...)",
+            "Productive infrastructure",
             _("Productive infrastructure (e.g. irrigation, tractors, machinery...)")
         ),
         ("Roads", _("Roads")),

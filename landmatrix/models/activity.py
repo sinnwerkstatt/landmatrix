@@ -134,9 +134,10 @@ class Activity(ActivityBase):
     NEGOTIATION_STATUS_ORAL_AGREEMENT = 'Oral agreement'
     NEGOTIATION_STATUS_CONTRACT_SIGNED = 'Contract signed'
     NEGOTIATION_STATUS_NEGOTIATIONS_FAILED = 'Negotiations failed'
-    NEGOTIATION_STATUS_CONTRACT_CANCELLED = 'Contract canceled'
+    NEGOTIATION_STATUS_CONTRACT_CANCELLED = 'Contract cancelled'
     NEGOTIATION_STATUS_CONTRACT_EXPIRED = 'Contract expired'
     NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP = 'Change of ownership'
+
     # These groupings are used for determining filter behaviour
     NEGOTIATION_STATUSES_INTENDED = (
         NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST,
