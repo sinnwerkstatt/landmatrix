@@ -222,7 +222,7 @@ class InvestorVentureInvolvement(models.Model):
     loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
     loans_currency = models.ForeignKey(
         "Currency", verbose_name=_("Loan currency"), blank=True, null=True)
-    loans_date = models.DateField("Loan date", blank=True, null=True)
+    loans_date = models.CharField("Loan date", blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
