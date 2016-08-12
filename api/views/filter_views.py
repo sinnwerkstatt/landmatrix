@@ -58,6 +58,8 @@ class FilterView(APIView):
                 del stored_filters[name]
             except KeyError:
                 pass
+        elif action == 'set_default_filters':
+            request.session['set_default_filters'] = 'set_default_filters' in request_data
         request.session['filters'] = stored_filters
 
         return Response(stored_filters)

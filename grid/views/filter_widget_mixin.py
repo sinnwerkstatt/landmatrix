@@ -9,12 +9,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.browse_condition import BrowseCondition
-from landmatrix.models.filter_preset import FilterPresetGroup
-from api.filters import Filter
+from landmatrix.models.filter_preset import FilterPreset, FilterPresetGroup
+from api.filters import Filter, PresetFilter
 from grid.widgets import TitleField
 from grid.forms.browse_condition_form import ConditionFormset
 from grid.views.save_deal_view import SaveDealView
 from grid.views.browse_filter_conditions import BrowseFilterConditions
+from api.serializers import FilterPresetSerializer
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -135,12 +136,16 @@ class FilterWidgetMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        set_default_filters = True
+        if 'set_default_filters' in self.request.session and not self.request.session.get('set_default_filters'):
+            set_default_filters = False
         context.update({
             'filters': self.filters,
             'empty_form_conditions': self.current_formset_conditions,
             'rules': self.rules,
             'variables': self.variable_table,
             'presets': FilterPresetGroup.objects.all(),
+            'set_default_filters': set_default_filters,
         })
 
         return context
@@ -189,9 +194,40 @@ class FilterWidgetMixin:
             stored_filters[new_filter.name] = new_filter
             self.request.session['filters'] = stored_filters
 
+    def remove_country_region_filter(self):
+        stored_filters = self.request.session.get('filters', {})
+        stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
+        self.request.session['filters'] = stored_filters
+
+    def set_default_filters(self, data):
+        self.remove_default_filters()
+        # Don't set default filters?
+        if 'set_default_filters' in self.request.session:
+            if not self.request.session.get('set_default_filters'):
+                return
+        stored_filters = self.request.session.get('filters', {})
+        # Only target country or region set?
+        if len(stored_filters.items()) == 1:
+            values = list(stored_filters.values())[0]
+            if values.get('variable', '') in ('target_country', 'target_region'):
+                # Use national presets
+                for preset in FilterPreset.objects.filter(is_default=True):
+                    stored_filters['default_preset_%i'%preset.id] = PresetFilter(preset.id)
+        elif len(stored_filters.items()) == 0:
+            # Use global presets
+            for preset in FilterPreset.objects.filter(overrides_default=True):
+                stored_filters['default_preset_%i'%preset.id] = PresetFilter(preset.id)
+        self.request.session['filters'] = stored_filters
+    
+    def remove_default_filters(self):
+        stored_filters = self.request.session.get('filters', {})
+        stored_filters = dict(filter(lambda i: 'default_preset' not in i[0], stored_filters.items()))
+        self.request.session['filters'] = stored_filters
+
     @print_execution_time_and_num_queries
     def get_formset_conditions(self, filter_set, data, group_by=None):
         self.set_country_region_filter(data)
+        self.set_default_filters(data)
 
         if filter_set:
             # set given filters
