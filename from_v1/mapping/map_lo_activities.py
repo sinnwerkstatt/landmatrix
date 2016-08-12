@@ -524,14 +524,6 @@ def clean_attribute(key, value):
     elif key == 'source_of_water_extraction':
         if value == 'Ground water':
             value = 'Groundwater'
-
-    SOURCE_OF_WATER_EXTRACTION_CHOICES = (
-        ("Groundwater", _("Groundwater"), None),
-        ("Surface water", _("Surface water"), (
-           ("River", _("River")),
-           ("Lake", _("Lake")),
-        )),
-    )
     return key, value
 
 LM_ATTRIBUTES = {
