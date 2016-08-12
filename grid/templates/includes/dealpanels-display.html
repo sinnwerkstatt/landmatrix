@@ -3,7 +3,7 @@
         {% if field.name == 'tg' %}
             <h3>{{ field.value }}{% if form_count %} <small>#{{ form_count }}</small>{% endif %}</h3>
         {% else %}
-            <div class="row {{ field.name }}">
+            <div class="row {{ field.name }}{% if field.hidden %} hidden{% endif %}">
                 <div class="col-md-3">
                     {{ field.label }}
                 </div>

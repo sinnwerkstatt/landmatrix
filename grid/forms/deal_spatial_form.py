@@ -124,7 +124,9 @@ class DealSpatialForm(BaseForm):
         # Hide coordinates depending on level of accuracy
         accuracy = self.initial['level_of_accuracy']
         if accuracy in ('Country', 'Administrative region', 'Approximate location'):
-            fields = filter(lambda f: f['name'] not in ('point_lat', 'point_lon'), fields)
+            for field in fields:
+                if field['name'] in ('point_lat', 'point_lon'):
+                    field['hidden'] = True
         return fields
 
 class DealSpatialBaseFormSet(BaseFormSet):
