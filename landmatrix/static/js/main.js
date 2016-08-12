@@ -375,12 +375,14 @@ function show_reply_form(event) {
     $('#id_parent').val(comment_id);
     $('#form-comment').insertAfter($this.closest('.comment'));
     $('#cancel-reply').show();
+    $(this).parents('.panel-body').find('h3').text('Reply to comment');
 };
 function cancel_reply_form(event) {
     $('#id_comment').val('');
     $('#id_parent').val('');
     $('#form-comment').appendTo($('#wrap_write_comment'));
     $('#cancel-reply').hide();
+    $(this).parents('.panel-body').find('h3').text('Add a comment');
 }
 $(document).ready(function () {
 

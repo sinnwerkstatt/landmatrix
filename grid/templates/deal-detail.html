@@ -100,6 +100,9 @@
                         </div>
                         {% if not is_pdf_export %}
                         <form method="post" action="{% comment_form_target %}">
+                            <div class="col-sm-12">
+                                <h3>{% trans "Add a comment" %}</h3>
+                            </div>
                             {% get_comment_form for activity.get_activity as comment_form %}
                             {% csrf_token %}
                             {# TODO: move next into the form logic #}
