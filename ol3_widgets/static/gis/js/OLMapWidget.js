@@ -99,6 +99,7 @@ $(document).ready(function () {
                 var features = jsonFormat.readFeatures('{"type": "Feature", "geometry": ' + initial_value + '}');
                 var extent = ol.extent.createEmpty();
                 features.forEach(function(feature) {
+                    feature.setStyle(this.featureStyle);
                     this.featureOverlay.getSource().addFeature(feature);
                     ol.extent.extend(extent, feature.getGeometry().getExtent());
                 }, this);
@@ -226,6 +227,107 @@ $(document).ready(function () {
                 }
             }
             document.getElementById(this.options.id).value = jsonFormat.writeGeometry(geometry);
+        };
+
+        MapWidget.prototype.featureStyle = new ol.style.Style({
+            text: new ol.style.Text({
+                text: '\uf041',
+                font: 'normal 36px FontAwesome',
+                textBaseline: 'Bottom',
+                fill: new ol.style.Fill({
+                  color: '#4bbb87'
+                })
+             })
+        });
+
+        MapWidget.prototype.bindLocationField = function(locationField) {
+            this.locationField = locationField;
+        };
+
+        MapWidget.prototype.updateLocationField = function(results, status) {
+            var address = results[0].formatted_address;
+            if (address) {
+                this.locationField.val(address);
+            };
+        };
+
+        MapWidget.prototype.bindTargetCountryField = function(targetCountryField) {
+            this.targetCountryField = targetCountryField;
+        };
+
+        MapWidget.prototype.updateTargetCountryField = function(results) {
+            for (var i = 0; i < results[0].address_components.length; i++) {
+                if (results[0].address_components[i].types.indexOf("country") != -1) {
+                    var country = results[0].address_components[i].short_name;
+                    // TODO: better way to do this.
+                    this.targetCountryField.find('option').removeAttr("selected").filter("option[title='" + country + "']").attr('selected', 'selected');
+                }
+            }
+        };
+
+        MapWidget.prototype.bindLevelOfAccuracyField = function(levelOfAccuracyField) {
+            this.levelOfAccuracyField = levelOfAccuracyField;
+        };
+
+        MapWidget.prototype.updateLevelOfAccuracyField = function(results) {
+            // TODO: implement? Not sure if we actually need this.
+        };
+
+        MapWidget.prototype.bindLatLongFields = function(latField, lonField) {
+            this.latField = latField;
+            this.lonField = lonField;
+        };
+
+        MapWidget.prototype.updateLatLongFields = function(coordinates) {
+            this.latField.val(coordinates[1]);
+            this.lonField.val(coordinates[0]);
+        };
+
+        MapWidget.prototype.geocodeCoordinates = function(coordinates) {
+            if (!this.hasOwnProperty('geocoder')) {
+                this.geocoder = new google.maps.Geocoder();
+            }
+            var latLng = new google.maps.LatLng(coordinates[1], coordinates[0]);
+
+            var self = this;
+            var callback = function(results, status) {
+                if (results.length) {
+                    // update all bound fields
+                    if (self.hasOwnProperty('locationField')) {
+                        self.updateLocationField(results);
+                    }
+                    if (self.hasOwnProperty('targetCountryField')) {
+                        self.updateTargetCountryField(results);
+                    }
+                    if (self.hasOwnProperty('levelOfAccuracyField')) {
+                        self.updateLevelOfAccuracyField(results);
+                    }
+                }
+            };
+            this.geocoder.geocode({"latLng" : latLng, "language": "en"}, callback);
+        };
+
+        MapWidget.prototype.updateBoundFields = function(event) {
+            // Check that we don't trigger for non points
+            var point = null;
+            if (event.hasOwnProperty('feature')) {
+                var point = event.feature.getGeometry();
+            }
+            else if (event.hasOwnProperty('features')) {
+                var point = event.features.item(0)  .getGeometry();
+            }
+
+            if (point != null && point.getType() === 'Point') {
+                // return;
+            }
+
+            var latLon = ol.proj.transform(
+                point.getCoordinates(), 'EPSG:' + this.options.map_srid, 'EPSG:4326');
+            this.geocodeCoordinates(latLon);
+            if (this.hasOwnProperty('latField') && this.hasOwnProperty('lonField')) {
+                this.updateLatLongFields(latLon);                
+            }
+
         };
 
         window.MapWidget = MapWidget;

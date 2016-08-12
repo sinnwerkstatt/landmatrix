@@ -1,5 +1,5 @@
 {% extends "gis/openlayers.html" %}
-{% load l10n %}
+{% load l10n i18n %}
 
 {% block options %}{{ block.super }}
 options['default_lon'] = {{ default_lon|unlocalize }};
@@ -9,4 +9,21 @@ options['default_zoom'] = {{ default_zoom|unlocalize }};
 
 {% block base_layer %}
 var base_layer = new ol.layer.Tile({source: new ol.source.OSM()});
+{% endblock %}
+
+{% block extra_js %}
+    {% if toggle_map_display %}
+    $('#show_{{ id }}_div_map').on('click', function (event) {
+        event.preventDefault();
+        $('#{{ id }}_div_map').toggle();
+
+        if ($('#{{ id }}_div_map').is(':visible')) {
+            {{ module }}.map.updateSize();
+            $(this).text('{% trans "Hide area" %}');
+        }
+        else {
+            $(this).text('{% trans "Show area" %}');
+        }
+    });
+    {% endif %}
 {% endblock %}

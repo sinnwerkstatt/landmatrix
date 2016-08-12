@@ -129,17 +129,32 @@ class OSMWidget(OpenLayersWidget):
 
 
 class MapWidget(OSMWidget):
-    show_controls = True
-    show_deals = False
+    template_name = 'map_widget.html'
+    default_lon = 0
+    default_lat = 0
+    default_zoom = 5
     geom_type = 'POINT'
 
-    def __init__(self, attrs=None):
-        # TODO: bind to fields
-        for key in ('show_controls', 'show_deals'):
-            if key not in attrs:
-                attrs[key] = getattr(self, key)
+    show_controls = True
+    show_deals = False
+    bound_location_field_id = None
+    bound_target_country_field_id = None
+    bound_lat_field_id = None
+    bound_lon_field_id = None
+    bound_level_of_accuracy_field_id = None
 
+    def __init__(self, attrs=None):
         super().__init__(attrs=attrs)
+        defaults = (
+            'show_controls', 'show_deals', 'bound_location_field_id',
+            'bound_lat_field_id', 'bound_lon_field_id',
+            'bound_level_of_accuracy_field_id',
+            'bound_target_country_field_id',
+        )
+        for key in defaults:
+            self.attrs[key] = getattr(self, key)
+        if attrs:
+            self.attrs.update(attrs)
 
     def get_context(self, name, value, attrs=None):
         context = super().get_context(name, value, attrs=attrs)

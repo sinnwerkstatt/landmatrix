@@ -1,0 +1,31 @@
+{% extends "gis/openlayers-osm.html" %}
+{% load l10n %}
+
+{% block extra_js %}
+    {{ block.super }}
+    {{ module }}.interactions.draw.on('drawstart', function(event) {
+        event.feature.setStyle({{ module }}.featureStyle);
+    }, {{ module }});
+    {% if not show_controls %}
+    {{ module }}.map.controls = [];
+    {% endif %}
+    {% if disabled %}
+    {{ module }}.disableDrawing();
+    {% endif %}
+    {% if bound_location_field_id %}
+        {{ module }}.bindLocationField($('#{{ bound_location_field_id }}'));
+    {% endif %}
+    {% if bound_lat_field_id and bound_lon_field_id %}
+        {{ module }}.bindLatLongFields($('#{{ bound_lat_field_id }}'), $('#{{ bound_lon_field_id }}'));
+    {% endif %}
+    {% if bound_level_of_accuracy_field_id %}
+        {{ module }}.bindLevelOfAccuracyField($('#{{ bound_level_of_accuracy_field_id }}'));
+    {% endif %}
+    {% if bound_target_country_field_id %}
+        {{ module }}.bindTargetCountryField($('#{{ bound_target_country_field_id }}'));
+    {% endif %}    
+    {% if bound_location_field_id or bound_target_country_field_id or bound_lat_field_id or bound_lon_field_id or bound_level_of_accuracy_field_id %}
+        {{ module }}.interactions.draw.on('drawend', {{ module }}.updateBoundFields, {{ module }});
+        {{ module }}.interactions.modify.on('modifyend', {{ module }}.updateBoundFields, {{ module }});
+    {% endif %}
+{% endblock %}

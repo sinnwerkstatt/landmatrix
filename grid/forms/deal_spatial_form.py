@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
-from ol3_widgets.widgets import OSMWidget
+from ol3_widgets.widgets import OSMWidget, MapWidget
 from grid.widgets import TitleField, LocationWidget, CountryField, CommentInput
 from .base_form import BaseForm
 
@@ -27,6 +27,7 @@ class DealSpatialForm(BaseForm):
         'default_zoom': 8,
         'default_lat': 0,
         'default_lon': 0,
+        'toggle_map_display': True,
     }
 
     form_title = _('Location')
@@ -35,14 +36,16 @@ class DealSpatialForm(BaseForm):
     level_of_accuracy = forms.ChoiceField(
         required=False, label=_("Spatial accuracy level"),
         choices=ACCURACY_CHOICES)
-    location = forms.CharField(
-        required=True, label=_("Location"), widget=LocationWidget)
+    location = forms.CharField(required=True, label=_("Location"))
     point_lat = forms.CharField(
         required=False, label=_("Latitude"), widget=forms.TextInput,
         initial="")
     point_lon = forms.CharField(
         required=False, label=_("Longitude"), widget=forms.TextInput,
         initial="")
+    # TODO: merge with location field
+    map = forms.CharField(
+        required=False, label=_('Map'), widget=MapWidget, initial="")
     facility_name = forms.CharField(
         required=False, label=_("Facility name"), widget=forms.TextInput,
         initial="")
@@ -74,18 +77,32 @@ class DealSpatialForm(BaseForm):
         initial_lat = self.fields['point_lat'].initial
         initial_lon = self.fields['point_lon'].initial
 
+        # Pass related fields through to the mapwidget
+        map_widget_attrs = {
+            'bound_location_field_id': self['location'].auto_id,
+            'bound_lat_field_id': self['point_lat'].auto_id,
+            'bound_lon_field_id': self['point_lon'].auto_id,
+            'bound_level_of_accuracy_field_id':
+                self['level_of_accuracy'].auto_id,
+            'bound_target_country_field_id': self['target_country'].auto_id,
+        }
+
         if initial_lat or initial_lon:
             area_widget_attrs = AREA_WIDGET_ATTRS.copy()
 
             if initial_lat and initial_lat.isnumeric():
                 area_widget_attrs['default_lat'] = initial_lat
+                map_widget_attrs['default_lat'] = initial_lat
             if initial_lon and initial_lon.isnumeric():
                 area_widget_attrs['default_lon'] = initial_lon
+                map_widget_attrs['default_lon'] = initial_lon
 
             self.fields['intended_area'].widget = OSMWidget(
                 attrs=area_widget_attrs)
             self.fields['production_area'].widget = OSMWidget(
                 attrs=area_widget_attrs)
+
+        self.fields['map'].widget = MapWidget(attrs=map_widget_attrs)
 
     def get_attributes(self, request=None):
         attributes = super().get_attributes()
@@ -128,6 +145,7 @@ class DealSpatialForm(BaseForm):
                 if field['name'] in ('point_lat', 'point_lon'):
                     field['hidden'] = True
         return fields
+
 
 class DealSpatialBaseFormSet(BaseFormSet):
 

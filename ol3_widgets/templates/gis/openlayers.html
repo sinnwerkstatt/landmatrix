@@ -47,26 +47,7 @@ $(document).ready(function () {
     };
     {% endblock %}
     {{ module }} = new MapWidget(options);
-    {% if not show_controls %}
-    {{ module }}.map.controls = [];
-    {% endif %}
-    {% if disabled %}
-    {{ module }}.disableDrawing();
-    {% endif %}
-
-    {% if toggle_map_display %}
-    $('#show_{{ id }}_div_map').on('click', function (event) {
-        event.preventDefault();
-        $('#{{ id }}_div_map').toggle();
-
-        if ($('#{{ id }}_div_map').is(':visible')) {
-            {{ module }}.map.updateSize();
-            $(this).text('{% trans "Hide area" %}');
-        }
-        else {
-            $(this).text('{% trans "Show area" %}');
-        }
-    });
-    {% endif %}
+    {% block extra_js %}
+    {% endblock %}
 });
 </script>
