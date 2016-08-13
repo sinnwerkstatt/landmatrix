@@ -1,0 +1,19 @@
+{% extends "gis/openlayers-osm.html" %}
+{% load l10n %}
+
+{% block options %}
+{{ block.super }}
+{% if bound_lat_field_id and bound_lon_field_id %}
+    options['boundLatField'] = $('#{{ bound_lat_field_id }}');
+    options['boundLonField'] = $('#{{ bound_lon_field_id }}');
+{% endif %}
+{% if bound_location_field_id %}
+    options['boundLocationField'] = $('#{{ bound_location_field_id }}');
+{% endif %}
+{% if bound_level_of_accuracy_field_id %}
+    options['boundLevelOfAccuracyField'] = $('#{{ bound_level_of_accuracy_field_id }}');
+{% endif %}
+{% if bound_target_country_field_id %}
+    options['boundTargetCountryField'] = $('#{{ bound_target_country_field_id }}');
+{% endif %}
+{% endblock %}

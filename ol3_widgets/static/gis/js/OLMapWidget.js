@@ -1,4 +1,4 @@
-/* global ol */
+/* global ol, jQuery */
 
 var GeometryTypeControl = function(opt_options) {
     'use strict';
@@ -54,7 +54,12 @@ $(document).ready(function () {
                 default_lat: 0,
                 default_lon: 0,
                 default_zoom: 12,
-                isCollection: options.geom_name.indexOf('Multi') >= 0 || options.geom_name.indexOf('Collection') >= 0
+                isCollection: options.geom_name.indexOf('Multi') >= 0 || options.geom_name.indexOf('Collection') >= 0,
+                boundLatField: null,
+                boundLonField: null,
+                boundLocationField: null,
+                boundTargetCountryField: null,
+                boundLevelOfAccuracyField: null,
             };
 
             // Altering using user-provided options
@@ -94,11 +99,30 @@ $(document).ready(function () {
                 }
             });
 
-            var initial_value = document.getElementById(this.options.id).value;
-            if (initial_value) {
-                var features = jsonFormat.readFeatures('{"type": "Feature", "geometry": ' + initial_value + '}');
+            var initial_features = null;
+            if (this.options.boundLatField && this.options.boundLonField) {
+                var lat = parseFloat(this.options.boundLatField.val());
+                var lon = parseFloat(this.options.boundLonField.val());
+                if (lat && lon && lat != NaN && lon != NaN) {
+                    var coordinates = ol.proj.transform(
+                        [lon, lat], 'EPSG:4326', this.map.getView().getProjection());
+                    var feature = new ol.Feature({
+                        geometry: new ol.geom.Point(coordinates)
+                    });
+                    feature.setStyle(this.featureStyle);
+                    initial_features = [feature];
+                }
+            }
+            else {
+                var initial_value = document.getElementById(this.options.id).value;
+                if (initial_value) {
+                    initial_features = jsonFormat.readFeatures('{"type": "Feature", "geometry": ' + initial_value + '}');
+                }
+            }
+
+            if (initial_features) {
                 var extent = ol.extent.createEmpty();
-                features.forEach(function(feature) {
+                initial_features.forEach(function(feature) {
                     this.featureOverlay.getSource().addFeature(feature);
                     ol.extent.extend(extent, feature.getGeometry().getExtent());
                 }, this);
@@ -108,9 +132,17 @@ $(document).ready(function () {
                 this.map.getView().setCenter(this.defaultCenter());
             }
             this.createInteractions();
-            if (initial_value && !this.options.isCollection) {
+            if (initial_features && !this.options.isCollection) {
                 this.disableDrawing();
             }
+            if (this.options.boundLonField || this.options.boundLatField ||
+                this.options.boundTargetCountryField || this.options.boundLocationField ||
+                this.options.boundLevelOfAccuracyField) {
+                    this.interactions.draw.on('drawend', this.updateBoundFields, this);
+                    this.interactions.modify.on('modifyend', this.updateBoundFields, this);
+            }
+            this.initLinkHandlers();
+
             this.ready = true;
         }
 
@@ -153,6 +185,11 @@ $(document).ready(function () {
 
             this.map.addInteraction(this.interactions.draw);
             this.map.addInteraction(this.interactions.modify);
+            if (geomType === "Point") {
+                this.interactions.draw.on('drawstart', function(event) {
+                    event.feature.setStyle(this.featureStyle);
+                }, this);
+            }
         };
 
         MapWidget.prototype.defaultCenter = function() {
@@ -227,6 +264,123 @@ $(document).ready(function () {
             }
             document.getElementById(this.options.id).value = jsonFormat.writeGeometry(geometry);
         };
+
+        // TODO: can be set on the layer?
+        MapWidget.prototype.featureStyle = new ol.style.Style({
+            text: new ol.style.Text({
+                text: '\uf041',
+                font: 'normal 36px FontAwesome',
+                textBaseline: 'Bottom',
+                fill: new ol.style.Fill({
+                  color: '#4bbb87'
+                })
+             })
+        });
+
+        MapWidget.prototype.updateLocationField = function(results, status) {
+            var address = results[0].formatted_address;
+            if (address) {
+                this.options.boundLocationField.val(address);
+            };
+        };
+
+        MapWidget.prototype.updateTargetCountryField = function(results) {
+            for (var i = 0; i < results[0].address_components.length; i++) {
+                if (results[0].address_components[i].types.indexOf("country") != -1) {
+                    var country = results[0].address_components[i].short_name;
+                    // TODO: better way to do this.
+                    this.options.boundTargetCountryField
+                        .find('option')
+                        .removeAttr("selected")
+                        .filter("option[title='" + country + "']")
+                        .attr('selected', 'selected');
+                }
+            }
+        };
+
+        MapWidget.prototype.updateLevelOfAccuracyField = function(results) {
+            // TODO: implement? Not sure if we actually need this.
+        };
+
+        MapWidget.prototype.updateLatLongFields = function(coordinates) {
+            this.options.boundLatField.val(coordinates[1]);
+            this.options.boundLonField.val(coordinates[0]);
+        };
+
+        MapWidget.prototype.geocodeCoordinates = function(coordinates) {
+            if (!this.hasOwnProperty('geocoder')) {
+                this.geocoder = new google.maps.Geocoder();
+            }
+            var latLng = new google.maps.LatLng(coordinates[1], coordinates[0]);
+
+            var self = this;
+            var callback = function(results, status) {
+                if (results.length) {
+                    // update all bound fields
+                    if (self.options.boundLocationField) {
+                        self.updateLocationField(results);
+                    }
+                    if (self.options.boundTargetCountryField) {
+                        self.updateTargetCountryField(results);
+                    }
+                    if (self.options.boundLevelOfAccuracyField) {
+                        self.updateLevelOfAccuracyField(results);
+                    }
+                }
+            };
+            this.geocoder.geocode({"latLng" : latLng, "language": "en"}, callback);
+        };
+
+        MapWidget.prototype.updateBoundFields = function(event) {
+            // Check that we don't trigger for non points
+            var point = null;
+            if (event.hasOwnProperty('feature')) {
+                var point = event.feature.getGeometry();
+            }
+            else if (event.hasOwnProperty('features')) {
+                var point = event.features.item(0).getGeometry();
+            }
+
+            if (point != null && point.getType() !== 'Point') {
+                return;
+            }
+
+            var latLon = ol.proj.transform(
+                point.getCoordinates(), this.map.getView().getProjection(), 'EPSG:4326');
+            this.geocodeCoordinates(latLon);
+            if (this.options.boundLatField && this.options.boundLonField) {
+                this.updateLatLongFields(latLon);                
+            }
+
+        };
+
+        MapWidget.prototype.initLinkHandlers = function () {
+            var mapWidget = this;
+            var divMapId = this.options.id + '_div_map';
+            var divMap = jQuery('#' + divMapId);
+            var showLink = divMap.next('a.show-hide-map');
+            showLink.on('click', function (event) {
+                event.preventDefault();
+                var mapElement = jQuery('#' + divMapId);
+                mapElement.toggle();
+
+                var oldText = jQuery(this).text();
+                jQuery(this).text(jQuery(this).data('alternate'));
+                jQuery(this).data('alternate', oldText);
+
+                if (mapElement.is(':visible')) {
+                    mapWidget.map.updateSize();
+                }
+
+            });
+
+            var map = jQuery('#' + this.options.map_id);
+            var clearFeatures = map.next('.clear_features').children('a');
+            clearFeatures.on('click', function(event) {
+                event.preventDefault();
+                mapWidget.clearFeatures();
+            });
+        }
 
         window.MapWidget = MapWidget;
     })();

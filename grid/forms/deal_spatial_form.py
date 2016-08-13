@@ -27,6 +27,8 @@ class DealSpatialForm(BaseForm):
         'default_zoom': 8,
         'default_lat': 0,
         'default_lon': 0,
+        'toggle_map_display': True,
+        'geom_type': 'MULTIPOLYGON',
     }
 
     form_title = _('Location')
@@ -71,21 +73,45 @@ class DealSpatialForm(BaseForm):
         If we already have a lat/long, set the default positioning to match.
         '''
         super().__init__(*args, **kwargs)
-        initial_lat = self.fields['point_lat'].initial
-        initial_lon = self.fields['point_lon'].initial
+        initial_lat = self['point_lat'].value()
+        initial_lon = self['point_lon'].value()
+
+        # Pass related fields through to the mapwidget
+        map_widget_attrs = {}
+        if 'location' in self:
+            map_widget_attrs['id'] = '{}-map'.format(self['location'].auto_id),
+
+        bound_fields = (
+            ('location', 'bound_location_field_id'),
+            ('point_lat', 'bound_lat_field_id'),
+            ('point_lon', 'bound_lon_field_id'),
+            ('target_country', 'bound_target_country_field_id'),
+            ('level_of_accuracy', 'bound_level_of_accuracy_field_id'),
+        )
+        for field, attr in bound_fields:
+            if field in self:
+                map_widget_attrs[attr] = self[field].auto_id
 
         if initial_lat or initial_lon:
-            area_widget_attrs = AREA_WIDGET_ATTRS.copy()
+            area_widget_attrs = self.AREA_WIDGET_ATTRS.copy()
 
-            if initial_lat and initial_lat.isnumeric():
-                area_widget_attrs['default_lat'] = initial_lat
-            if initial_lon and initial_lon.isnumeric():
-                area_widget_attrs['default_lon'] = initial_lon
+            try:
+                lat, lon = float(initial_lat), float(initial_lon)
+            except ValueError:
+                pass
+            else:
+                area_widget_attrs['default_lat'] = lat
+                area_widget_attrs['default_lon'] = lon
+                map_widget_attrs['default_lat'] = lat
+                map_widget_attrs['default_lon'] = lon
 
             self.fields['intended_area'].widget = OSMWidget(
                 attrs=area_widget_attrs)
             self.fields['production_area'].widget = OSMWidget(
                 attrs=area_widget_attrs)
+
+        self.fields['location'].widget = LocationWidget(
+            map_attrs=map_widget_attrs)
 
     def get_attributes(self, request=None):
         attributes = super().get_attributes()
@@ -122,12 +148,16 @@ class DealSpatialForm(BaseForm):
     def get_fields_display(self):
         fields = super().get_fields_display()
         # Hide coordinates depending on level of accuracy
-        accuracy = self.initial['level_of_accuracy']
+        if 'level_of_accuracy' in self:
+            accuracy = self['level_of_accuracy']
+        else:
+            accuracy = ''
         if accuracy in ('Country', 'Administrative region', 'Approximate location'):
             for field in fields:
                 if field['name'] in ('point_lat', 'point_lon'):
                     field['hidden'] = True
         return fields
+
 
 class DealSpatialBaseFormSet(BaseFormSet):
 

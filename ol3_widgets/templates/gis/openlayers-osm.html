@@ -1,5 +1,5 @@
 {% extends "gis/openlayers.html" %}
-{% load l10n %}
+{% load l10n i18n %}
 
 {% block options %}{{ block.super }}
 options['default_lon'] = {{ default_lon|unlocalize }};
