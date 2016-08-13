@@ -185,7 +185,7 @@ class FilterToSQL:
             elif variable == 'deal_country':
                 table_name = 'ac{}'.format(i)
                 condition = WhereCondition(
-                    table_name, 'id', operation, value)
+                    table_name, key, operation, value)
                 where.append(condition)
             elif variable == 'type' and 'data_source_type' in self.columns:
                 # Special hack for weird results in data source filtering

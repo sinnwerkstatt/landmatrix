@@ -66,7 +66,7 @@
                     {% endfor %}
                 </ul>
             </div>
-            <form class="form" style="display:none">
+            <form class="form" method="POST" action="./" style="display:none">
                 <div class="col-md-2 filterbox filtercontrolbox">
                     <h6>&nbsp;</h6>
                     <input id="filter_variable" type="hidden" name="variable" value=""/>
@@ -95,12 +95,19 @@
                 </div>
             </form>
         </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <input type="checkbox"{% if filters_default %} checked="checked"{% endif %}>
-                {% trans "Set default filters when empty" %}
+        <form class="form" method="POST" action="./">
+            <div class="row">
+                <div class="col-sm-12">
+                    <label class="pull-right">
+                        <input type="checkbox" id="id_set_default_filters" name="set_default_filters"{% if set_default_filters %} checked="checked"{% endif %}>
+                        {% trans "Set default filters for global and national entry points" %}
+                        <a href="#" class="toggle-tooltip noul"
+               title="{% trans "Global: Concluded, Transnational deals only, Low income countries, Year <= 2000, Size > 200ha.<br>National: Concluded" %}">
+                <i class="lm lm-question-circle"> </i></a>
+                    </label>
+                </div>
             </div>
-        </div>
+        </form>
         <form method="GET" action="./">
             {% if columns and group == 'all' %}
             <div id="columnsrow" class="row">

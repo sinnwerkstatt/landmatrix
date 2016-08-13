@@ -32,6 +32,7 @@ from grid.views import (
     InvestorComparisonView, DealDetailExportView, DeleteDealView,
     RecoverDealView
 )
+from map.views import GlobalView
 from feeds.views import DealChangesFeed
 from api import urls as api_urls
 from grid import urls as grid_urls
@@ -57,6 +58,9 @@ urlpatterns = patterns('',
     url(r'^cms/', include(wagtailadmin_urls)),
     url(r'^news/', include('blog.urls', namespace='news')),
     url(r'^documents/', include(wagtaildocs_urls)),
+
+
+    url(r'^global/', GlobalView.as_view(), name='global'),
 
     url(r'^data/', include(grid_urls)),
     url(r'^map/', include(map_urls)),

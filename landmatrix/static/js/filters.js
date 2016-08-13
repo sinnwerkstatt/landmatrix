@@ -231,9 +231,19 @@ $(document).ready(function () {
         );
     });
 
+    $("#id_set_default_filters").click(function (e) {
+        var data = $(this).closest('form').serialize();
+        $.post(
+            '/api/filter.json?action=set_default_filters&' + data,
+            function () {
+                window.location.reload();
+            }
+        );
+    });
+
     $("#id_columns,#id_status").select2()
         .on('change', function () { $(this).closest("form").find(':submit').show(); });
-
+    
     var selectAllColumns = function (event) {
         event.preventDefault();
         $("#id_columns option").prop("selected", true);

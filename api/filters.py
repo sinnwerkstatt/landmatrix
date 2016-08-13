@@ -178,7 +178,7 @@ def format_filters(filters):
         else:
             tags = filter_dict[name]['tags']
         if filter[1]['variable'] == 'deal_scope':
-            filter_dict['deal_scope'] = filter[1].value
+            filter_dict['deal_scope'] = filter[1]['value']
         elif filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
             tags[definition_key].extend(definition[definition_key])
         else:
