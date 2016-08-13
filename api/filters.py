@@ -177,9 +177,10 @@ def format_filters(filters):
             tags = filter_dict[name]['tags'][group]
         else:
             tags = filter_dict[name]['tags']
-        if filter[1]['variable'] == 'deal_scope':
-            filter_dict['deal_scope'] = filter[1]['value']
-        elif filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
+        # FIXME: It seems deal_scope can be handled as a normal tag by now
+        #if filter[1]['variable'] == 'deal_scope':
+        #    filter_dict['deal_scope'] = filter[1]['value']
+        if filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
             tags[definition_key].extend(definition[definition_key])
         else:
             tags.update(definition)
@@ -188,17 +189,16 @@ def format_filters(filters):
         if isinstance(filter_obj, PresetFilter):
             conditions = filter_obj.filter.conditions.all()
             for i, condition in enumerate(conditions):
-                if filter_obj.filter.relation == filter_obj.filter.RELATION_AND:
-                    group = None
+                if filter_obj.filter.relation == filter_obj.filter.RELATION_OR:
+                    group = filter_obj.filter.name
                 else:
-                    group = filter_obj.name
+                    group = None
                 _update_filters(
                     formatted_filters,
                     ('{}_{}'.format(filter_obj.name, i), condition.to_filter()),
                     group=group)
         else:
             _update_filters(formatted_filters, (filter_name, filter_obj))
-
     return formatted_filters
 
 

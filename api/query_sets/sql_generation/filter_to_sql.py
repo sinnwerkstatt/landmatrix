@@ -50,17 +50,18 @@ class WhereCondition:
             sanitized_value = value.strip().replace("'", "\\'")
             if '##!##' in sanitized_value:
                 sanitized_value = sanitized_value.split('##!##')[0]
-            should_quote_string = (
-                self.operator != 'contains' and
-                not (self.is_value_numeric or self.is_id_column)
-            )
+            should_quote_string = False
+            if self.operator != 'contains':
+                if not (self.is_value_numeric or self.is_id_column):
+                    should_quote_string = True
+                elif self.column_name == 'date':
+                    should_quote_string = True
             if should_quote_string:
                 quoted_value = "'{}'".format(sanitized_value)
             else:
                 quoted_value = sanitized_value
         else:
             quoted_value = value
-
         return quoted_value
 
     def __str__(self):
@@ -70,7 +71,7 @@ class WhereCondition:
             quoted_value = self.quote_value(self.value)
             operator_with_value = self.operator_sql % quoted_value
 
-        if self.is_value_numeric and not self.is_id_column:
+        if self.is_value_numeric and not self.is_id_column and not self.column_name == 'date':
             column = "CAST({}.{} AS DECIMAL)".format(
                 self.table_name, self.column_name)
         else:
@@ -185,6 +186,7 @@ class FilterToSQL:
             elif variable == 'deal_country':
                 table_name = 'ac{}'.format(i)
                 condition = WhereCondition(
+                    #table_name, 'id', operation, value)
                     table_name, key, operation, value)
                 where.append(condition)
             elif variable == 'type' and 'data_source_type' in self.columns:
@@ -197,10 +199,9 @@ class FilterToSQL:
                     WhereCondition(table_name, 'name', 'is', 'type'),
                     "{}.value = data_source_type.value".format(table_name))
                 where.append(conditions)
-            elif variable in ('negotiation_status', 'implementation_status'):
-                # Negotiation/implementation status are special cases in that
-                # we need to filter on the activity table (as the most recent
-                # status is cached there)
+            elif variable in ('negotiation_status', 'implementation_status', 'deal_size', 'deal_scope') and key == 'value':
+                # Special cases in that we need to filter on the activity table
+                # (as the most recent status is cached there)
                 condition = WhereCondition('a', variable, operation, value)
                 where.append(condition)
             elif operation not in ('in', 'not_in') and isinstance(value, list):
@@ -219,8 +220,10 @@ class FilterToSQL:
                 variable, operation, value)
             if is_operation_limits:
                 where.append(is_operation_limits)
-
-        return 'AND {}'.format(where) if where else ''
+        if taggroup:
+            return where
+        else:
+            return 'AND {}'.format(where) if where else ''
 
     def _where_activity_deal_scope(self):
         where = []
@@ -287,11 +290,13 @@ class FilterToSQL:
                 continue
             variable_operation = tag.split("__")
             variable = variable_operation[0]
+            key = variable_operation[1]
 
-            no_join_required = variable in (
-                'activity_identifier', 'negotiation_status',
-                'implementation_status',
-            )
+            no_join_required = False
+            if variable == 'activity_identifier':
+                no_join_required = True
+            elif variable in ('negotiation_status', 'implementation_status') and key == 'value':
+                no_join_required = True
             # join tag tables for each condition
             if no_join_required:
                 continue
