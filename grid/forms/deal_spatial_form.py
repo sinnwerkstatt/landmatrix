@@ -28,6 +28,7 @@ class DealSpatialForm(BaseForm):
         'default_lat': 0,
         'default_lon': 0,
         'toggle_map_display': True,
+        'geom_type': 'MULTIPOLYGON',
     }
 
     form_title = _('Location')
@@ -76,15 +77,20 @@ class DealSpatialForm(BaseForm):
         initial_lon = self['point_lon'].value()
 
         # Pass related fields through to the mapwidget
-        map_widget_attrs = {
-            'id': '{}-map'.format(self['location'].auto_id),
-            'bound_location_field_id': self['location'].auto_id,
-            'bound_lat_field_id': self['point_lat'].auto_id,
-            'bound_lon_field_id': self['point_lon'].auto_id,
-            'bound_level_of_accuracy_field_id':
-                self['level_of_accuracy'].auto_id,
-            'bound_target_country_field_id': self['target_country'].auto_id,
-        }
+        map_widget_attrs = {}
+        if 'location' in self:
+            map_widget_attrs['id'] = '{}-map'.format(self['location'].auto_id),
+
+        bound_fields = (
+            ('location', 'bound_location_field_id'),
+            ('point_lat', 'bound_lat_field_id'),
+            ('point_lon', 'bound_lon_field_id'),
+            ('target_country', 'bound_target_country_field_id'),
+            ('level_of_accuracy', 'bound_level_of_accuracy_field_id'),
+        )
+        for field, attr in bound_fields:
+            if field in self:
+                map_widget_attrs[attr] = self[field].auto_id
 
         if initial_lat or initial_lon:
             area_widget_attrs = self.AREA_WIDGET_ATTRS.copy()
@@ -142,7 +148,10 @@ class DealSpatialForm(BaseForm):
     def get_fields_display(self):
         fields = super().get_fields_display()
         # Hide coordinates depending on level of accuracy
-        accuracy = self.initial['level_of_accuracy']
+        if 'level_of_accuracy' in self:
+            accuracy = self['level_of_accuracy']
+        else:
+            accuracy = ''
         if accuracy in ('Country', 'Administrative region', 'Approximate location'):
             for field in fields:
                 if field['name'] in ('point_lat', 'point_lon'):

@@ -1,4 +1,4 @@
-/* global ol */
+/* global ol, jQuery */
 
 var GeometryTypeControl = function(opt_options) {
     'use strict';
@@ -54,7 +54,12 @@ $(document).ready(function () {
                 default_lat: 0,
                 default_lon: 0,
                 default_zoom: 12,
-                isCollection: options.geom_name.indexOf('Multi') >= 0 || options.geom_name.indexOf('Collection') >= 0
+                isCollection: options.geom_name.indexOf('Multi') >= 0 || options.geom_name.indexOf('Collection') >= 0,
+                boundLatField: null,
+                boundLonField: null,
+                boundLocationField: null,
+                boundTargetCountryField: null,
+                boundLevelOfAccuracyField: null,
             };
 
             // Altering using user-provided options
@@ -94,12 +99,30 @@ $(document).ready(function () {
                 }
             });
 
-            var initial_value = document.getElementById(this.options.id).value;
-            if (initial_value) {
-                var features = jsonFormat.readFeatures('{"type": "Feature", "geometry": ' + initial_value + '}');
-                var extent = ol.extent.createEmpty();
-                features.forEach(function(feature) {
+            var initial_features = null;
+            if (this.options.boundLatField && this.options.boundLonField) {
+                var lat = parseFloat(this.options.boundLatField.val());
+                var lon = parseFloat(this.options.boundLonField.val());
+                if (lat && lon && lat != NaN && lon != NaN) {
+                    var coordinates = ol.proj.transform(
+                        [lon, lat], 'EPSG:4326', this.map.getView().getProjection());
+                    var feature = new ol.Feature({
+                        geometry: new ol.geom.Point(coordinates)
+                    });
                     feature.setStyle(this.featureStyle);
+                    initial_features = [feature];
+                }
+            }
+            else {
+                var initial_value = document.getElementById(this.options.id).value;
+                if (initial_value) {
+                    initial_features = jsonFormat.readFeatures('{"type": "Feature", "geometry": ' + initial_value + '}');
+                }
+            }
+
+            if (initial_features) {
+                var extent = ol.extent.createEmpty();
+                initial_features.forEach(function(feature) {
                     this.featureOverlay.getSource().addFeature(feature);
                     ol.extent.extend(extent, feature.getGeometry().getExtent());
                 }, this);
@@ -109,9 +132,17 @@ $(document).ready(function () {
                 this.map.getView().setCenter(this.defaultCenter());
             }
             this.createInteractions();
-            if (initial_value && !this.options.isCollection) {
+            if (initial_features && !this.options.isCollection) {
                 this.disableDrawing();
             }
+            if (this.options.boundLonField || this.options.boundLatField ||
+                this.options.boundTargetCountryField || this.options.boundLocationField ||
+                this.options.boundLevelOfAccuracyField) {
+                    this.interactions.draw.on('drawend', this.updateBoundFields, this);
+                    this.interactions.modify.on('modifyend', this.updateBoundFields, this);
+            }
+            this.initLinkHandlers();
+
             this.ready = true;
         }
 
@@ -154,6 +185,11 @@ $(document).ready(function () {
 
             this.map.addInteraction(this.interactions.draw);
             this.map.addInteraction(this.interactions.modify);
+            if (geomType === "Point") {
+                this.interactions.draw.on('drawstart', function(event) {
+                    event.feature.setStyle(this.featureStyle);
+                }, this);
+            }
         };
 
         MapWidget.prototype.defaultCenter = function() {
@@ -241,31 +277,11 @@ $(document).ready(function () {
              })
         });
 
-        MapWidget.prototype.addPoint = function(lat, lon) {
-            // TODO: still getting an error here, fix
-            var pos = ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857');
-            var marker = new ol.geom.Point(pos);
-            var feature = new ol.Feature({});
-            feature.setGeometry(marker);
-            feature.setStyle(this.featureStyle);
-            this.featureOverlay.getSource().addFeature(feature);
-
-            return feature;
-        }
-
-        MapWidget.prototype.bindLocationField = function(locationField) {
-            this.locationField = locationField;
-        };
-
         MapWidget.prototype.updateLocationField = function(results, status) {
             var address = results[0].formatted_address;
             if (address) {
-                this.locationField.val(address);
+                this.options.boundLocationField.val(address);
             };
-        };
-
-        MapWidget.prototype.bindTargetCountryField = function(targetCountryField) {
-            this.targetCountryField = targetCountryField;
         };
 
         MapWidget.prototype.updateTargetCountryField = function(results) {
@@ -273,35 +289,22 @@ $(document).ready(function () {
                 if (results[0].address_components[i].types.indexOf("country") != -1) {
                     var country = results[0].address_components[i].short_name;
                     // TODO: better way to do this.
-                    this.targetCountryField.find('option').removeAttr("selected").filter("option[title='" + country + "']").attr('selected', 'selected');
+                    this.options.boundTargetCountryField
+                        .find('option')
+                        .removeAttr("selected")
+                        .filter("option[title='" + country + "']")
+                        .attr('selected', 'selected');
                 }
             }
-        };
-
-        MapWidget.prototype.bindLevelOfAccuracyField = function(levelOfAccuracyField) {
-            this.levelOfAccuracyField = levelOfAccuracyField;
         };
 
         MapWidget.prototype.updateLevelOfAccuracyField = function(results) {
             // TODO: implement? Not sure if we actually need this.
         };
 
-        MapWidget.prototype.bindLatLongFields = function(latField, lonField) {
-            this.latField = latField;
-            this.lonField = lonField;
-
-            var lat = parseFloat(this.latField.val());
-            var lon = parseFloat(this.lonField.val());
-
-            // create an initial marker if there isn't one
-            if (lat && lon && lat != NaN && lon != NaN && this.featureCollection.getLength() < 1) {
-                this.addPoint(lat, lon);
-            }
-        };
-
         MapWidget.prototype.updateLatLongFields = function(coordinates) {
-            this.latField.val(coordinates[1]);
-            this.lonField.val(coordinates[0]);
+            this.options.boundLatField.val(coordinates[1]);
+            this.options.boundLonField.val(coordinates[0]);
         };
 
         MapWidget.prototype.geocodeCoordinates = function(coordinates) {
@@ -314,13 +317,13 @@ $(document).ready(function () {
             var callback = function(results, status) {
                 if (results.length) {
                     // update all bound fields
-                    if (self.hasOwnProperty('locationField')) {
+                    if (self.options.boundLocationField) {
                         self.updateLocationField(results);
                     }
-                    if (self.hasOwnProperty('targetCountryField')) {
+                    if (self.options.boundTargetCountryField) {
                         self.updateTargetCountryField(results);
                     }
-                    if (self.hasOwnProperty('levelOfAccuracyField')) {
+                    if (self.options.boundLevelOfAccuracyField) {
                         self.updateLevelOfAccuracyField(results);
                     }
                 }
@@ -335,21 +338,49 @@ $(document).ready(function () {
                 var point = event.feature.getGeometry();
             }
             else if (event.hasOwnProperty('features')) {
-                var point = event.features.item(0)  .getGeometry();
+                var point = event.features.item(0).getGeometry();
             }
 
-            if (point != null && point.getType() === 'Point') {
-                // return;
+            if (point != null && point.getType() !== 'Point') {
+                return;
             }
 
             var latLon = ol.proj.transform(
-                point.getCoordinates(), 'EPSG:' + this.options.map_srid, 'EPSG:4326');
+                point.getCoordinates(), this.map.getView().getProjection(), 'EPSG:4326');
             this.geocodeCoordinates(latLon);
-            if (this.hasOwnProperty('latField') && this.hasOwnProperty('lonField')) {
+            if (this.options.boundLatField && this.options.boundLonField) {
                 this.updateLatLongFields(latLon);                
             }
 
         };
+
+        MapWidget.prototype.initLinkHandlers = function () {
+            var mapWidget = this;
+            var divMapId = this.options.id + '_div_map';
+            var divMap = jQuery('#' + divMapId);
+            var showLink = divMap.next('a.show-hide-map');
+            showLink.on('click', function (event) {
+                event.preventDefault();
+                var mapElement = jQuery('#' + divMapId);
+                mapElement.toggle();
+
+                var oldText = jQuery(this).text();
+                jQuery(this).text(jQuery(this).data('alternate'));
+                jQuery(this).data('alternate', oldText);
+
+                if (mapElement.is(':visible')) {
+                    mapWidget.map.updateSize();
+                }
+
+            });
+
+            var map = jQuery('#' + this.options.map_id);
+            var clearFeatures = map.next('.clear_features').children('a');
+            clearFeatures.on('click', function(event) {
+                event.preventDefault();
+                mapWidget.clearFeatures();
+            });
+        }
 
         window.MapWidget = MapWidget;
     })();

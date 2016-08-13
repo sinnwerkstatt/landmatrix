@@ -133,7 +133,7 @@ class MapWidget(OSMWidget):
     default_lon = 0
     default_lat = 0
     default_zoom = 5
-    geom_type = 'Point'
+    geom_type = 'POINT'
 
     show_controls = True
     show_deals = False
