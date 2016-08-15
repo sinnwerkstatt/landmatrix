@@ -77,10 +77,15 @@ class BaseGeometryWidget(Widget):
             LANGUAGE_BIDI=translation.get_language_bidi(),
         )
 
+        # fallback if no id
+        if 'id' not in context:
+            context['id'] = name
+
         return context
 
     def render(self, name, value, attrs=None):
         context = self.get_context(name, value, attrs=attrs)
+
         return loader.render_to_string(self.template_name, context)
 
 

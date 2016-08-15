@@ -78,8 +78,6 @@ class DealSpatialForm(BaseForm):
 
         # Pass related fields through to the mapwidget
         map_widget_attrs = {}
-        if 'location' in self:
-            map_widget_attrs['id'] = '{}-map'.format(self['location'].auto_id),
 
         bound_fields = (
             ('location', 'bound_location_field_id'),
