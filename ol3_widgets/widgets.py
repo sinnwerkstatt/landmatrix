@@ -5,7 +5,7 @@ import logging
 from django.conf import settings
 from django.contrib.gis import gdal
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
-from django.forms.widgets import Widget
+from django.forms.widgets import Widget, TextInput
 from django.template import loader
 from django.utils import six, translation
 
@@ -167,3 +167,28 @@ class MapWidget(OSMWidget):
             context['disabled'] = True
 
         return context
+
+
+class LocationWidget(TextInput):
+    '''
+    LocationWidget combines a map and a Google autocomplete location field.
+    '''
+
+    def __init__(self, *args, **kwargs):
+        map_attrs = {}
+        if 'map_attrs' in kwargs:
+            map_attrs = kwargs.pop('map_attrs')
+
+        super().__init__(*args, **kwargs)
+        self.map_attrs = map_attrs
+
+    def render(self, name, value, attrs=None):
+        map_widget = MapWidget(attrs=self.map_attrs)
+        map_name = '{}-map'.format(name)
+
+        rendered_location = super().render(name, value, attrs=attrs)
+        rendered_map = map_widget.render(map_name, None)
+        output = '<div>{}</div><div>{}</div>'.format(
+            rendered_location, rendered_map)
+
+        return output

@@ -5,7 +5,6 @@ from .country_select import CountrySelect
 from .decimal_input import DecimalInput
 from .livesearch_select import LivesearchSelect
 from .livesearch_select_multiple import LivesearchSelectMultiple
-from .location_widget import LocationWidget
 from .nested_checkbox_select_multiple import NestedCheckboxSelectMultiple
 from .nested_multiple_choice_field import NestedMultipleChoiceField
 from .number_input import NumberInput

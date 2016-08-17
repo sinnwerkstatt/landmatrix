@@ -1,17 +1,23 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-from grid.views.browse_filter_conditions import get_field_by_key
-from grid.widgets import LocationWidget, YearBasedSelect, YearBasedMultipleSelect, YearBasedTextInput, NumberInput
-from grid.forms.choices import intention_choices, int_choice_to_string
-
-from django.http import HttpResponse
-from django.views.generic.edit import View
-from django.forms import TextInput, CheckboxSelectMultiple, HiddenInput, SelectMultiple, RadioSelect, Select
-
-from bootstrap3_datetime.widgets import DateTimePicker
 import datetime
 
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.views.generic.edit import View
+from django.forms import (
+    TextInput, CheckboxSelectMultiple, HiddenInput, SelectMultiple,
+    RadioSelect, Select,
+)
+from bootstrap3_datetime.widgets import DateTimePicker
+
+from ol3_widgets.widgets import LocationWidget
+from grid.views.browse_filter_conditions import get_field_by_key
+from grid.widgets import (
+    YearBasedSelect, YearBasedMultipleSelect, YearBasedTextInput, NumberInput,
+)
+from grid.forms.choices import intention_choices, int_choice_to_string
+
+
+__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FilterWidgetAjaxView(View):
