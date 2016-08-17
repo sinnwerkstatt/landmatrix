@@ -11,11 +11,14 @@ ol.control.LayerSwitcher = function(opt_options) {
     var options = opt_options || {};
 
     var tipLabel = options.tipLabel ?
-        options.tipLabel : 'Legend';
+      options.tipLabel : 'Legend';
 
     this.mapListeners = [];
 
     this.hiddenClassName = 'ol-unselectable ol-control layer-switcher';
+    if (ol.control.LayerSwitcher.isTouchDevice_()) {
+        this.hiddenClassName += ' touch';
+    }
     this.shownClassName = this.hiddenClassName + ' shown';
 
     var element = document.createElement('div');
@@ -25,117 +28,72 @@ ol.control.LayerSwitcher = function(opt_options) {
     button.setAttribute('title', tipLabel);
     element.appendChild(button);
 
-    var collapse = document.createElement('div');
-    collapse.setAttribute('id', 'legendstuff');
-    collapse.className = '';
-
-    var formdiv = document.createElement('div');
-
-    var formgroup = document.createElement('div');
-    formgroup.setAttribute('class', 'searchWrapper');
-
-    var searchfield = document.createElement('input');
-    searchfield.setAttribute('id', 'mapsearch');
-    searchfield.setAttribute('type', 'search');
-
-    var searchicon = document.createElement('span');
-    searchicon.className = 'lm lm-search searchAddon';
-
-    formgroup.appendChild(searchfield);
-    formgroup.appendChild(searchicon);
-
-    collapse.appendChild(formgroup);
-
-    this.layerpanel = document.createElement('div');
-    // TODO: Complete the collapse panel combo
-    this.layerpanel.className = 'panel';
-    this.layerpanel.setAttribute('id', 'layers');
-    formdiv.appendChild(this.layerpanel);
-
-    collapse.appendChild(formdiv);
-    element.appendChild(collapse);
+    this.panel = document.createElement('div');
+    this.panel.className = 'panel';
+    element.appendChild(this.panel);
+    ol.control.LayerSwitcher.enableTouchScroll_(this.panel);
 
     var this_ = this;
 
-    button.onclick = function (e) {
-        $('#legendstuff').toggleClass('hidden');
+    button.onmouseover = function(e) {
+        this_.showPanel();
     };
 
-    $('#legendstuff').mouseout().toggleClass('hidden');
+    button.onclick = function(e) {
+        e = e || window.event;
+        this_.showPanel();
+        e.preventDefault();
+    };
+
+    this_.panel.onmouseout = function(e) {
+        e = e || window.event;
+        if (!this_.panel.contains(e.toElement || e.relatedTarget)) {
+            this_.hidePanel();
+        }
+    };
 
     ol.control.Control.call(this, {
         element: element,
         target: options.target
     });
-    initGeocoder(searchfield);
 
 };
 
 ol.inherits(ol.control.LayerSwitcher, ol.control.Control);
 
 /**
- * Show the legend panel.
+ * Show the layer panel.
  */
-ol.control.LayerSwitcher.prototype.showPanel = function () {
+ol.control.LayerSwitcher.prototype.showPanel = function() {
     if (this.element.className != this.shownClassName) {
         this.element.className = this.shownClassName;
-        //this.renderPanel(); // CAREFUL. This destroys the whole custom legend operation for deals.
-        // I wonder WHY exactly this is here, it seems to work just fine without - i personally never saw a reason
-        // to rerender previously hidden stuff. Does it get moldy back there on some browsers?
+        this.renderPanel();
     }
 };
 
 /**
- * Hide the legend panel.
+ * Hide the layer panel.
  */
-ol.control.LayerSwitcher.prototype.hidePanel = function () {
-
+ol.control.LayerSwitcher.prototype.hidePanel = function() {
     if (this.element.className != this.hiddenClassName) {
-        console.log(this.element);
         this.element.className = this.hiddenClassName;
     }
 };
 
 /**
- * Show a layer panel.
- */
-ol.control.LayerSwitcher.prototype.toggleLayerPanel = function () {
-    console.log(this);
-    var chevron = $(this.lastElementChild);
-
-    var collapse = $(this.nextSibling);
-    if (collapse.hasClass('hidden') === true) {
-        console.log('Uncollapsing layer group panel');
-        chevron.removeClass('lm-chevron-right').addClass('lm-chevron-down');
-        collapse.removeClass('hidden');
-    } else {
-        console.log('Collapsing layer group panel');
-        chevron.removeClass('lm-chevron-down').addClass('lm-chevron-right');
-        collapse.addClass('hidden');
-    }
-
-};
-
-/**
- * Hide a layer panel.
- */
-ol.control.LayerSwitcher.prototype.hideLayerPanel = function (panelname) {
-    $(panelname).addClass('hidden');
-};
-
-
-/**
  * Re-draw the layer panel to represent the current state of the layers.
  */
-ol.control.LayerSwitcher.prototype.renderPanel = function () {
+ol.control.LayerSwitcher.prototype.renderPanel = function() {
 
     this.ensureTopVisibleBaseLayerShown_();
 
-    while (this.layerpanel.firstChild) {
-        this.layerpanel.removeChild(this.layerpanel.firstChild);
+    while(this.panel.firstChild) {
+        this.panel.removeChild(this.panel.firstChild);
     }
 
-    this.renderLayers_(this.getMap(), this.layerpanel);
+    var ul = document.createElement('ul');
+    this.panel.appendChild(ul);
+    this.renderLayers_(this.getMap(), ul);
 
 };
 
@@ -143,7 +101,7 @@ ol.control.LayerSwitcher.prototype.renderPanel = function () {
  * Set the map instance the control is associated with.
  * @param {ol.Map} map The map instance.
  */
-ol.control.LayerSwitcher.prototype.setMap = function (map) {
+ol.control.LayerSwitcher.prototype.setMap = function(map) {
     // Clean up listeners associated with the previous map
     for (var i = 0, key; i < this.mapListeners.length; i++) {
         this.getMap().unByKey(this.mapListeners[i]);
@@ -151,12 +109,11 @@ ol.control.LayerSwitcher.prototype.setMap = function (map) {
     this.mapListeners.length = 0;
     // Wire up listeners etc. and store reference to new map
     ol.control.Control.prototype.setMap.call(this, map);
-
     if (map) {
         var this_ = this;
-        /*this.mapListeners.push(map.on('pointerdown', function () {
-            $('#legendstuff').addClass('hidden');
-        })); */
+        this.mapListeners.push(map.on('pointerdown', function() {
+            this_.hidePanel();
+        }));
         this.renderPanel();
     }
 };
@@ -165,9 +122,9 @@ ol.control.LayerSwitcher.prototype.setMap = function (map) {
  * Ensure only the top-most base layer is visible if more than one is visible.
  * @private
  */
-ol.control.LayerSwitcher.prototype.ensureTopVisibleBaseLayerShown_ = function () {
+ol.control.LayerSwitcher.prototype.ensureTopVisibleBaseLayerShown_ = function() {
     var lastVisibleBaseLyr;
-    ol.control.LayerSwitcher.forEachRecursive(this.getMap(), function (l, idx, a) {
+    ol.control.LayerSwitcher.forEachRecursive(this.getMap(), function(l, idx, a) {
         if (l.get('type') === 'base' && l.getVisible()) {
             lastVisibleBaseLyr = l;
         }
@@ -182,12 +139,12 @@ ol.control.LayerSwitcher.prototype.ensureTopVisibleBaseLayerShown_ = function ()
  * @private
  * @param {ol.layer.Base} The layer whos visibility will be toggled.
  */
-ol.control.LayerSwitcher.prototype.setVisible_ = function (lyr, visible) {
+ol.control.LayerSwitcher.prototype.setVisible_ = function(lyr, visible) {
     var map = this.getMap();
     lyr.setVisible(visible);
     if (visible && lyr.get('type') === 'base') {
         // Hide all other base layers regardless of grouping
-        ol.control.LayerSwitcher.forEachRecursive(map, function (l, idx, a) {
+        ol.control.LayerSwitcher.forEachRecursive(map, function(l, idx, a) {
             if (l != lyr && l.get('type') === 'base') {
                 l.setVisible(false);
             }
@@ -201,46 +158,30 @@ ol.control.LayerSwitcher.prototype.setVisible_ = function (lyr, visible) {
  * @param {ol.layer.Base} lyr Layer to be rendered (should have a title property).
  * @param {Number} idx Position in parent group list.
  */
-ol.control.LayerSwitcher.prototype.renderLayer_ = function (lyr, idx) {
+ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
 
     var this_ = this;
+
+    var li = document.createElement('li');
+
     var lyrTitle = lyr.get('title');
-    var lyrId = lyr.get('title').replace(' ', '-') + '_' + idx;
+    var lyrId = lyr.get('title').replace(/\s+/g, '-') + '_' + idx;
 
-    // Layer group?
-    if (lyr.getLayers && !lyr.mapTypeId_) {
-        var item = document.createElement('div');
-        item.className = 'layer';
+    var label = document.createElement('label');
 
+    if (lyr.getLayers) {
 
-        var collapsename = lyrId + '_collapse';
-
-        var label = document.createElement('a');
-
-        item.className = 'layer-group';
-
-        label.setAttribute('role', "button");
-        label.setAttribute('aria-controls', collapsename);
-        label.setAttribute('aria-expanded', false);
-
-        label.innerHTML = '<i class="lm lm-chevron-down"></i>' + lyrTitle;
-        label.onclick = this.toggleLayerPanel;
-
-        item.appendChild(label);
-
-
+        li.className = 'group';
+        label.innerHTML = lyrTitle;
+        li.appendChild(label);
         var ul = document.createElement('ul');
-        ul.className = 'layercollapse';
-        item.appendChild(ul);
+        li.appendChild(ul);
 
         this.renderLayers_(lyr, ul);
 
     } else {
-        var item = document.createElement('li');
-        item.className = 'layer';
 
-        var label = document.createElement('label');
-
+        li.className = 'layer';
         var input = document.createElement('input');
         if (lyr.get('type') === 'base') {
             input.type = 'radio';
@@ -248,36 +189,20 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function (lyr, idx) {
         } else {
             input.type = 'checkbox';
         }
-
         input.id = lyrId;
         input.checked = lyr.get('visible');
-        input.onchange = function (e) {
+        input.onchange = function(e) {
             this_.setVisible_(lyr, e.target.checked);
         };
-        item.appendChild(input);
+        li.appendChild(input);
 
         label.htmlFor = lyrId;
-
-        if (lyrTitle === "Markers") {
-            label.id = 'legendLabel';
-        }
-
-        if (lyrTitle.indexOf('area') > -1) {
-            label.className = 'areaLabel';
-        }
-
         label.innerHTML = lyrTitle;
+        li.appendChild(label);
 
-        item.appendChild(label);
-
-        if (lyrTitle === "Markers") {
-            var legend = document.createElement('ul');
-            legend.id = 'legend';
-            item.appendChild(legend);
-        }
     }
 
-    return item;
+    return li;
 
 };
 
@@ -287,26 +212,13 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function (lyr, idx) {
  * @param {ol.layer.Group} lyr Group layer whos children will be rendered.
  * @param {Element} elm DOM element that children will be appended to.
  */
-ol.control.LayerSwitcher.prototype.renderLayers_ = function (lyr, elm) {
-    var lyrs = lyr.getLayers().getArray().slice().reverse(),
-        collectBaseLayers = !lyr.get('title'),
-        baseLayers = [],
-        i = 0, l;
-    for (i = 0; i < lyrs.length; i++) {
+ol.control.LayerSwitcher.prototype.renderLayers_ = function(lyr, elm) {
+    var lyrs = lyr.getLayers().getArray().slice().reverse();
+    for (var i = 0, l; i < lyrs.length; i++) {
         l = lyrs[i];
-        if (collectBaseLayers && l.get('type') == 'base') {
-            baseLayers.push(l);
-        } else if (l.get('title')) {
+        if (l.get('title')) {
             elm.appendChild(this.renderLayer_(l, i));
         }
-    }
-    // Group base layers into one group
-    if (baseLayers.length > 0) {
-        var baseGroup = new ol.layer.Group({
-            title: 'Base Layers',
-            layers: baseLayers
-        });
-        elm.appendChild(this.renderLayer_(baseGroup, i+1));
     }
 };
 
@@ -317,11 +229,42 @@ ol.control.LayerSwitcher.prototype.renderLayers_ = function (lyr, elm) {
  * @param {Function} fn Callback which will be called for each `ol.layer.Base`
  * found under `lyr`. The signature for `fn` is the same as `ol.Collection#forEach`
  */
-ol.control.LayerSwitcher.forEachRecursive = function (lyr, fn) {
-    lyr.getLayers().forEach(function (lyr, idx, a) {
+ol.control.LayerSwitcher.forEachRecursive = function(lyr, fn) {
+    lyr.getLayers().forEach(function(lyr, idx, a) {
         fn(lyr, idx, a);
         if (lyr.getLayers) {
             ol.control.LayerSwitcher.forEachRecursive(lyr, fn);
         }
     });
+};
+
+/**
+* @private
+* @desc Apply workaround to enable scrolling of overflowing content within an
+* element. Adapted from https://gist.github.com/chrismbarr/4107472
+*/
+ol.control.LayerSwitcher.enableTouchScroll_ = function(elm) {
+   if(ol.control.LayerSwitcher.isTouchDevice_()){
+       var scrollStartPos = 0;
+       elm.addEventListener("touchstart", function(event) {
+           scrollStartPos = this.scrollTop + event.touches[0].pageY;
+       }, false);
+       elm.addEventListener("touchmove", function(event) {
+           this.scrollTop = scrollStartPos - event.touches[0].pageY;
+       }, false);
+   }
+};
+
+/**
+ * @private
+ * @desc Determine if the current browser supports touch events. Adapted from
+ * https://gist.github.com/chrismbarr/4107472
+ */
+ol.control.LayerSwitcher.isTouchDevice_ = function() {
+    try {
+        document.createEvent("TouchEvent");
+        return true;
+    } catch(e) {
+        return false;
+    }
 };

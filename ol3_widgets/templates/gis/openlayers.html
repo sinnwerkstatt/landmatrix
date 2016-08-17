@@ -2,7 +2,7 @@
 {# TODO: move style to a new block #}
 <style type="text/css">
     {% block map_css %}
-    #{{ id }}_map .aligned label { float: inherit; }
+    #{{ id }}-map .aligned label { float: inherit; }
     {% endblock %}
 </style>
 {% get_current_language_bidi as LANGUAGE_BIDI %}
@@ -23,7 +23,7 @@ $(document).ready(function () {
         options;
     {% block map_options %}map_options = {};{% endblock %}
     {% block base_layer %}
-        base_layer = new ol.layer.Tile({
+        base_layers = [new ol.layer.Tile({
             source: new ol.source.XYZ({
                 attributions: "NASA Worldview",
                 maxZoom: 8,
@@ -31,10 +31,10 @@ $(document).ready(function () {
                      "BlueMarble_ShadedRelief_Bathymetry/default/%7BTime%7D/" +
                      "GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg"
             })
-        });
+        })];
     {% endblock %}
     options = {
-        base_layer: base_layer,
+        base_layers: base_layers,
         geom_name: '{{ geom_type }}',
         map_options: map_options,
         map_srid: {{ map_srid|unlocalize }},

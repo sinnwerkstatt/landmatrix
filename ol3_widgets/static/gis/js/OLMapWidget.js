@@ -68,11 +68,12 @@ $(document).ready(function () {
                     this.options[property] = options[property];
                 }
             }
-            if (!options.base_layer) {
-                this.options.base_layer = new ol.layer.Tile({source: new ol.source.OSM()});
+            if (!options.base_layers) {
+                this.options.base_layers = this.getBaseLayers();
             }
 
             this.map = this.createMap();
+
             this.featureCollection = new ol.Collection();
             this.featureOverlay = new ol.layer.Vector({
                 map: this.map,
@@ -141,6 +142,7 @@ $(document).ready(function () {
                     this.interactions.modify.on('modifyend', this.updateBoundFields, this);
             }
             this.initLinkHandlers();
+            this.initLayerSwitcher(true);
 
             this.ready = true;
         }
@@ -148,11 +150,14 @@ $(document).ready(function () {
         MapWidget.prototype.createMap = function() {
             var map = new ol.Map({
                 target: this.options.map_id,
-                layers: [this.options.base_layer],
+                layers: this.options.base_layers,
                 view: new ol.View({
                     zoom: this.options.default_zoom
                 })
             });
+            var olGM = new olgm.OLGoogleMaps({map: map});
+            olGM.activate();
+
             return map;
         };
 
@@ -261,6 +266,102 @@ $(document).ready(function () {
             document.getElementById(this.options.id).value = jsonFormat.writeGeometry(geometry);
         };
 
+
+        MapWidget.prototype.getBaseLayers = function() {
+            var baseLayers = [
+                new ol.layer.Tile({
+                    title: 'OpenStreetMap',
+                    type: 'base',
+                    visible: true,
+                    source: new ol.source.OSM(),
+                }),
+                new olgm.layer.Google({
+                    title: 'Satellite',
+                    type: 'base',
+                    visible: false,
+                    mapTypeId: google.maps.MapTypeId.SATELLITE
+                }),
+                new olgm.layer.Google({
+                    title: 'Terrain',
+                    type: 'base',
+                    visible: false,
+                    mapTypeId: google.maps.MapTypeId.TERRAIN
+                })
+            ];
+
+            return baseLayers;
+        };
+
+        MapWidget.prototype.getContextLayers = function() {
+            var contextLayers = [
+                // Global layers
+                new ol.layer.Tile({
+                    title: 'Accessibility<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
+                    source: new ol.source.TileWMS({
+                        url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
+                        params: {
+                            'srs': 'EPSG%3a900913',
+                            'layers': 'accessability' // Typo needed!
+                        }
+                    }),
+                    visible: false,
+                    opacity: 0.6
+                }),
+                new ol.layer.Tile({
+                    title: 'Global Land Cover 2009<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
+                    source: new ol.source.TileWMS({
+                        url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
+                        params: {
+                            'srs': 'EPSG%3a900913',
+                            'layers': 'globcover_2009'
+                        }
+                    }),
+                    visible: false,
+                    opacity: 0.6
+                }),
+                new ol.layer.Tile({
+                    title: 'Global Cropland<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
+                    source: new ol.source.TileWMS({
+                        url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
+                        params: {
+                            'srs': 'EPSG%3a900913',
+                            'layers': 'gl_cropland'
+                        }
+                    }),
+                    visible: false,
+                    opacity: 0.6
+                }),
+                new ol.layer.Tile({
+                    title: 'Global Pasture Land<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
+                    source: new ol.source.TileWMS({
+                        url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
+                        params: {
+                            'srs': 'EPSG%3a900913',
+                            'layers': 'gl_pasture'
+                        }
+                    }),
+                    visible: false,
+                    opacity: 0.6
+                }),
+                // LAOS LOCAL LAYER! TODO!
+                new ol.layer.Tile({
+                    title: 'Incidence of poverty<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
+                    source: new ol.source.TileWMS({
+                        url: "http://sdi.cde.unibe.ch/geoserver/gwc/service/wms",
+                        params: {
+                            "layers": "lo:laos_poverty_incidence",
+                            "srs": "EPSG%3A900913"
+                        }
+                    }),
+                    extent: [10018755, 181, 12801601, 3482189],
+                    visible: false,
+                    opacity: 0.7
+                })
+            ];
+
+            return contextLayers;
+        };
+
         MapWidget.prototype.getFeatureStyle = function(feature, resolution) {
             if (feature.getGeometry().getType() === 'Point') {
                 var style = new ol.style.Style({
@@ -290,6 +391,16 @@ $(document).ready(function () {
             return [style];
         };
 
+        MapWidget.prototype.initLayerSwitcher = function(showByDefault) {
+            var layerSwitcher = new ol.control.LayerSwitcher({
+                tipLabel: 'Legend'
+            });
+            this.map.addControl(layerSwitcher);
+            layerSwitcher.renderPanel();
+            if (showByDefault) {
+                layerSwitcher.showPanel();
+            }
+        };
 
         MapWidget.prototype.updateLocationField = function(results, status) {
             var address = results[0].formatted_address;
