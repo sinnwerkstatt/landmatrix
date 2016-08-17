@@ -19,7 +19,10 @@ class LocationWidget(forms.TextInput):
     def render(self, name, value, attrs=None):
         map_widget = MapWidget(attrs=self.map_attrs)
         map_name = '{}-map'.format(name)
-        output = super().render(name, value, attrs=attrs)
-        output += map_widget.render(map_name, None)
+
+        rendered_location = super().render(name, value, attrs=attrs)
+        rendered_map = map_widget.render(map_name, None)
+        output = '<div>{}</div><div>{}</div>'.format(
+            rendered_location, rendered_map)
 
         return output
