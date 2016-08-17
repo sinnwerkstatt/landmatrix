@@ -80,6 +80,7 @@ $(document).ready(function () {
                     features: this.featureCollection,
                     useSpatialIndex: false // improve performance
                 }),
+                style: this.getFeatureStyle,
                 updateWhileAnimating: true, // optional, for instant visual feedback
                 updateWhileInteracting: true // optional, for instant visual feedback
             });
@@ -108,7 +109,6 @@ $(document).ready(function () {
                     var feature = new ol.Feature({
                         geometry: new ol.geom.Point(coordinates)
                     });
-                    feature.setStyle(this.featureStyle);
                     initial_features = [feature];
                 }
             }
@@ -184,11 +184,6 @@ $(document).ready(function () {
 
             this.map.addInteraction(this.interactions.draw);
             this.map.addInteraction(this.interactions.modify);
-            if (geomType === "Point") {
-                this.interactions.draw.on('drawstart', function(event) {
-                    event.feature.setStyle(this.featureStyle);
-                }, this);
-            }
         };
 
         MapWidget.prototype.defaultCenter = function() {
@@ -266,17 +261,35 @@ $(document).ready(function () {
             document.getElementById(this.options.id).value = jsonFormat.writeGeometry(geometry);
         };
 
-        // TODO: can be set on the layer?
-        MapWidget.prototype.featureStyle = new ol.style.Style({
-            text: new ol.style.Text({
-                text: '\uf041',
-                font: 'normal 36px FontAwesome',
-                textBaseline: 'Bottom',
-                fill: new ol.style.Fill({
-                  color: '#4bbb87'
-                })
-             })
-        });
+        MapWidget.prototype.getFeatureStyle = function(feature, resolution) {
+            if (feature.getGeometry().getType() === 'Point') {
+                var style = new ol.style.Style({
+                    text: new ol.style.Text({
+                        text: '\uf041',
+                        font: 'normal 36px FontAwesome',
+                        textBaseline: 'Bottom',
+                        fill: new ol.style.Fill({
+                          color: '#4bbb87'
+                        })
+                     })
+                });
+            }
+            else {
+                // assume a polygon
+                var style = new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'blue',
+                        lineDash: [4],
+                        width: 3
+                    }),
+                    fill: new ol.style.Fill({
+                        color: 'rgba(0, 0, 255, 0.1)'
+                    })
+                });
+            }
+            return [style];
+        };
+
 
         MapWidget.prototype.updateLocationField = function(results, status) {
             var address = results[0].formatted_address;
