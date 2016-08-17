@@ -104,8 +104,7 @@ $(document).ready(function () {
                 var lat = parseFloat(this.options.boundLatField.val());
                 var lon = parseFloat(this.options.boundLonField.val());
                 if (lat && lon && lat != NaN && lon != NaN) {
-                    var coordinates = ol.proj.transform(
-                        [lon, lat], 'EPSG:4326', this.map.getView().getProjection());
+                    var coordinates = this.getCoordinates(lat, lon);
                     var feature = new ol.Feature({
                         geometry: new ol.geom.Point(coordinates)
                     });
@@ -193,11 +192,13 @@ $(document).ready(function () {
         };
 
         MapWidget.prototype.defaultCenter = function() {
-            var center = [this.options.default_lon, this.options.default_lat];
             if (this.options.map_srid) {
-                return ol.proj.transform(center, 'EPSG:4326', this.map.getView().getProjection());
+                return this.getCoordinates(
+                    this.options.default_lat, this.options.default_lon);
             }
-            return center;
+            else {
+                return [this.options.default_lon, this.options.default_lat];
+            }
         };
 
         MapWidget.prototype.enableDrawing = function() {
@@ -331,6 +332,27 @@ $(document).ready(function () {
             this.geocoder.geocode({"latLng" : latLng, "language": "en"}, callback);
         };
 
+        // Given a google autocomplete place, update the map
+        MapWidget.prototype.updateFromPlaceData = function(place) {
+            if (this.options.boundLatField && this.options.boundLonField) {
+                var lng = place.geometry.location.lng();
+                var lat = place.geometry.location.lat();
+                this.updateLatLongFields([lat, lng]);
+                this.movePointToLatLong(lat, lng);
+            }
+            // update all bound fields
+            if (this.options.boundLocationField) {
+                this.updateLocationField([place]);
+            }
+            if (this.options.boundTargetCountryField) {
+                this.updateTargetCountryField([place]);
+            }
+            if (this.options.boundLevelOfAccuracyField) {
+                this.updateLevelOfAccuracyField([place]);
+            }
+
+        };
+
         MapWidget.prototype.updateBoundFields = function(event) {
             // Check that we don't trigger for non points
             var point = null;
@@ -354,9 +376,26 @@ $(document).ready(function () {
 
         };
 
+        MapWidget.prototype.getCoordinates = function(lat, lon) {
+            // Get web projection coordinates
+            var proj = this.map.getView().getProjection();
+            return ol.proj.transform([lon, lat], 'EPSG:4326', proj);
+        };
+
+        MapWidget.prototype.movePointToLatLong = function(lat, lon) {
+            var coordinates = this.getCoordinates(lat, lon);
+            this.map.getView().setCenter(coordinates);
+            this.map.getView().setZoom(this.options.default_zoom);
+
+            // We shouldn't have multiple features here. If so, just move them.
+            this.featureOverlay.getSource().forEachFeature(function (feature) {
+                feature.getGeometry().setCoordinates(coordinates);
+            });
+        };
+
         MapWidget.prototype.initLinkHandlers = function () {
             var mapWidget = this;
-            var divMapId = this.options.id + '_div_map';
+            var divMapId = this.options.id + '-div-map';
             var divMap = jQuery('#' + divMapId);
             var showLink = divMap.next('a.show-hide-map');
             showLink.on('click', function (event) {

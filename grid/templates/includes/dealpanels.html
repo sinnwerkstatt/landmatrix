@@ -48,11 +48,13 @@
                             }
                         })
                         // Init map
+                        var mapWidgets = {};
                         var maps = form.find('.map-serialized-data');
                         maps.each(function(index) {
+                            var id = $(this).attr('id');
                             var options = $(this).data('map-widget-options');
-                            options['id'] = $(this).attr('id');
-                            options['map_id'] = $(this).attr('id') + '_map';
+                            options['id'] = id;
+                            options['map_id'] = id + '-map';
                             options['name'] = form.find('.location :input').attr('name');
                             // if we are part of the location row, bind to fields
                             if ($(this).parents('.location').length) {
@@ -62,16 +64,17 @@
                                 options['boundTargetCountryField'] = form.find('.target_country :input');
                                 options['boundLevelOfAccuracyField'] = form.find('.level_of_accuracy :input');
                             }
-                            var widget = new MapWidget(options);
+                            mapWidgets[id] = new MapWidget(options);
                         });
 
-
-                            // var formId = form.find('h3 small').text().replace('#', ''),
-                            //     mapId = formId - 1; //form.attr('class') + '-' + formId;
-                            // map.attr('id', 'map' + mapId);
-                            // TODO: Make jquery enumerate forms correctly, or this is the necessary work:
-                            // (Needs this kind of stuff for the other fields. no Way!)
-                            // initializeMap(mapId);
+                        // init location widget autocomplete
+                        form.find('.location :input.form-control').each(function(index) {
+                            var mapId = $(this).attr('name') + '-map';
+                            new LocationWidget({
+                                id: $(this).attr('id'),
+                                mapWidget: mapWidgets[mapId]
+                            });
+                        });
 
                         // Init data sources
                         var data_source_type = form.find('.type');
