@@ -4,6 +4,12 @@
 {% block page_title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
 {% block title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
 
+{% block head %}
+{{ block.super }}
+    <script src="{% static "gis/js/OLMapWidget.js" %}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+
 {% block breadcrumb_inner %}
     <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
     <li>{% trans "Deal" %} #{{ deal.activity_identifier }}</li>
@@ -126,17 +132,17 @@
     {% endif %}
 
 
-    <script type="text/javascript">
+    <script>
         $(document).ready(function () {
-            var count = 0;
-            $('.map').each(function (idx) {
-                console.log("Setting up detail map: ", idx, count);
-                var lat = parseFloat($('.point_lat div:last-child').text()),
-                        lon = parseFloat($('.point_lon div:last-child').text());
-                $(this).attr('id', 'map' + count).attr('class', 'col-md-9 col-md-offset-3');
-                initializeMap(count, lat, lon);
-                count++;
+            // Init maps
+            var mapWidgets = {};
+            $('.map-serialized-data').each(function(index) {
+                var id = $(this).attr('id');
+                var options = $(this).data('map-widget-options');
+                options['id'] = id;
+                options['map_id'] = id + '-map';
+                mapWidgets[id] = new MapWidget(options);
             });
-        })
+        });
     </script>
 {% endblock %}

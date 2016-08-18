@@ -51,9 +51,11 @@ $(document).ready(function () {
 
             // Default options
             this.options = {
-                default_lat: 0,
-                default_lon: 0,
-                default_zoom: 12,
+                initialPoint: null,
+                initialZoom: 12,
+                initialCenterLat: 0,
+                initialCenterLon: 0,
+                disableDrawing: false,
                 isCollection: options.geom_name.indexOf('Multi') >= 0 || options.geom_name.indexOf('Collection') >= 0,
                 boundLatField: null,
                 boundLonField: null,
@@ -102,16 +104,13 @@ $(document).ready(function () {
             });
 
             var initial_features = null;
-            if (this.options.boundLatField && this.options.boundLonField) {
-                var lat = parseFloat(this.options.boundLatField.val());
-                var lon = parseFloat(this.options.boundLonField.val());
-                if (lat && lon && lat != NaN && lon != NaN) {
-                    var coordinates = this.getCoordinates(lat, lon);
-                    var feature = new ol.Feature({
-                        geometry: new ol.geom.Point(coordinates)
-                    });
-                    initial_features = [feature];
-                }
+            if (this.options.initialPoint) {
+                var coordinates = this.getCoordinates(
+                    this.options.initialPoint[1], this.options.initialPoint[0]);
+                var feature = new ol.Feature({
+                    geometry: new ol.geom.Point(coordinates)
+                });
+                initial_features = [feature];
             }
             else {
                 var initial_value = document.getElementById(this.options.id).value;
@@ -127,22 +126,29 @@ $(document).ready(function () {
                     ol.extent.extend(extent, feature.getGeometry().getExtent());
                 }, this);
                 // Centering/zooming the map
-                this.map.getView().fit(extent, this.map.getSize(), {maxZoom: this.options.default_zoom});
+                this.map.getView().fit(
+                    extent, this.map.getSize(), {maxZoom: this.options.initialZoom});
             } else {
                 this.map.getView().setCenter(this.defaultCenter());
             }
-            this.createInteractions();
-            if (initial_features && !this.options.isCollection) {
-                this.disableDrawing();
+            
+            // don't allow any interactions if drawing is disabled
+            if (!this.options.disableDrawing) {
+                this.createInteractions();
+
+                if (initial_features && !this.options.isCollection) {
+                    this.disableDrawing();
+                }
+                if (this.options.boundLonField || this.options.boundLatField ||
+                    this.options.boundTargetCountryField || this.options.boundLocationField ||
+                    this.options.boundLevelOfAccuracyField) {
+                        this.interactions.draw.on('drawend', this.updateBoundFields, this);
+                        this.interactions.modify.on('modifyend', this.updateBoundFields, this);
+                }
             }
-            if (this.options.boundLonField || this.options.boundLatField ||
-                this.options.boundTargetCountryField || this.options.boundLocationField ||
-                this.options.boundLevelOfAccuracyField) {
-                    this.interactions.draw.on('drawend', this.updateBoundFields, this);
-                    this.interactions.modify.on('modifyend', this.updateBoundFields, this);
-            }
+
             this.initLinkHandlers();
-            this.initLayerSwitcher(true);
+            // this.initLayerSwitcher(true);
 
             this.ready = true;
         }
@@ -152,7 +158,7 @@ $(document).ready(function () {
                 target: this.options.map_id,
                 layers: this.options.base_layers,
                 view: new ol.View({
-                    zoom: this.options.default_zoom
+                    zoom: this.options.initialZoom
                 })
             });
             var olGM = new olgm.OLGoogleMaps({map: map});
@@ -193,12 +199,18 @@ $(document).ready(function () {
 
         MapWidget.prototype.defaultCenter = function() {
             if (this.options.map_srid) {
-                return this.getCoordinates(
-                    this.options.default_lat, this.options.default_lon);
+                var coords = this.getCoordinates(
+                    this.options.initialCenterLat,
+                    this.options.initialCenterLon);
             }
             else {
-                return [this.options.default_lon, this.options.default_lat];
+                var coords = [
+                    this.options.initialCenterLon,
+                    this.options.initialCenterLat
+                ];
             }
+
+            return coords;
         };
 
         MapWidget.prototype.enableDrawing = function() {
@@ -509,7 +521,7 @@ $(document).ready(function () {
         MapWidget.prototype.movePointToLatLong = function(lat, lon) {
             var coordinates = this.getCoordinates(lat, lon);
             this.map.getView().setCenter(coordinates);
-            this.map.getView().setZoom(this.options.default_zoom);
+            this.map.getView().setZoom(this.options.initialZoom);
 
             // We shouldn't have multiple features here. If so, just move them.
             this.featureOverlay.getSource().forEachFeature(function (feature) {

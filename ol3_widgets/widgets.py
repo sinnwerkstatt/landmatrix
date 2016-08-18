@@ -112,13 +112,14 @@ class OSMWidget(OpenLayersWidget):
     An OpenLayers/OpenStreetMap-based widget.
     """
     template_name = 'gis/openlayers-osm.html'
-    default_lon = 5
-    default_lat = 47
-    default_zoom = 8
+    initial_center_lon = 5
+    initial_center_lat = 47
+    initial_zoom = 8
 
     def __init__(self, attrs=None):
         super(OSMWidget, self).__init__()
-        for key in ('default_lon', 'default_lat', 'default_zoom'):
+        defaults = ('initial_center_lon', 'initial_center_lat', 'initial_zoom')
+        for key in defaults:
             self.attrs[key] = getattr(self, key)
         if attrs:
             self.attrs.update(attrs)
@@ -135,13 +136,15 @@ class OSMWidget(OpenLayersWidget):
 
 class MapWidget(OSMWidget):
     template_name = 'map_widget.html'
-    default_lon = 0
-    default_lat = 0
-    default_zoom = 5
+    initial_center_lon = 0
+    initial_center_lat = 0
+    initial_zoom = 5
+    initial_point = None
     geom_type = 'POINT'
 
     show_controls = True
     show_deals = False
+    disable_drawing = False
     bound_location_field_id = None
     bound_target_country_field_id = None
     bound_lat_field_id = None
@@ -151,22 +154,15 @@ class MapWidget(OSMWidget):
     def __init__(self, attrs=None):
         super().__init__(attrs=attrs)
         defaults = (
-            'show_controls', 'show_deals', 'bound_location_field_id',
-            'bound_lat_field_id', 'bound_lon_field_id',
-            'bound_level_of_accuracy_field_id',
+            'show_controls', 'show_deals', 'disable_drawing', 'initial_point',
+            'bound_location_field_id', 'bound_lat_field_id',
+            'bound_lon_field_id', 'bound_level_of_accuracy_field_id',
             'bound_target_country_field_id',
         )
         for key in defaults:
             self.attrs[key] = getattr(self, key)
         if attrs:
             self.attrs.update(attrs)
-
-    def get_context(self, name, value, attrs=None):
-        context = super().get_context(name, value, attrs=attrs)
-        if not self.attrs['show_controls']:
-            context['disabled'] = True
-
-        return context
 
 
 class LocationWidget(TextInput):

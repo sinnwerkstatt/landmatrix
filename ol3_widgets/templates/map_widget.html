@@ -16,6 +16,12 @@
 {% if bound_target_country_field_id %}
     options['boundTargetCountryField'] = $('#{{ bound_target_country_field_id }}');
 {% endif %}
+{% if disable_drawing %}
+    options['disableDrawing'] = true;
+{% endif %}
+{% if initial_point %}
+    options['initialPoint'] = [{{ initial_point.0 }}, {{ initial_point.1 }}];
+{% endif %}
 {% endblock %}
 
 

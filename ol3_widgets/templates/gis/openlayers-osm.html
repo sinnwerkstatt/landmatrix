@@ -2,9 +2,9 @@
 {% load l10n i18n %}
 
 {% block options %}{{ block.super }}
-options['default_lon'] = {{ default_lon|unlocalize }};
-options['default_lat'] = {{ default_lat|unlocalize }};
-options['default_zoom'] = {{ default_zoom|unlocalize }};
+options['initialCenterLon'] = {{ initial_center_lon|unlocalize }};
+options['initialCenterLat'] = {{ initial_center_lat|unlocalize }};
+options['initialZoom'] = {{ initial_zoom|unlocalize }};
 {% endblock %}
 
 {% block base_layer %}

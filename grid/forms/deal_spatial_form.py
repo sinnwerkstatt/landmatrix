@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
-from ol3_widgets.widgets import OSMWidget, LocationWidget
+from ol3_widgets.widgets import OSMWidget, LocationWidget, MapWidget
 from grid.widgets import TitleField, CountryField, CommentInput
 from .base_form import BaseForm
 
@@ -24,9 +24,9 @@ class DealSpatialForm(BaseForm):
     AREA_WIDGET_ATTRS = {
         'map_width': 600,
         'map_height': 400,
-        'default_zoom': 8,
-        'default_lat': 0,
-        'default_lon': 0,
+        'initial_zoom': 8,
+        'initial_center_lat': 0,
+        'initial_center_lon': 0,
         'toggle_map_display': True,
         'geom_type': 'MULTIPOLYGON',
     }
@@ -70,13 +70,28 @@ class DealSpatialForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         '''
-        If we already have a lat/long, set the default positioning to match.
+        Pass the values we need through to map widgets
         '''
         super().__init__(*args, **kwargs)
-        initial_lat = self['point_lat'].value()
-        initial_lon = self['point_lon'].value()
 
-        # Pass related fields through to the mapwidget
+        lat_lon_attrs = self.get_default_lat_lon_attrs()
+        if lat_lon_attrs:
+            area_widget_attrs = self.AREA_WIDGET_ATTRS.copy()
+            area_widget_attrs.update(lat_lon_attrs)
+            self.fields['intended_area'].widget = OSMWidget(
+                attrs=area_widget_attrs)
+            self.fields['production_area'].widget = OSMWidget(
+                attrs=area_widget_attrs)
+
+        location_attrs = self.get_location_map_widget_attrs()
+        # Public field gets a mapwidget, so check for that
+        if isinstance(self.fields['location'].widget, MapWidget):
+            self.fields['location'].widget = MapWidget(attrs=location_attrs)
+        else:
+            self.fields['location'].widget = LocationWidget(
+                map_attrs=location_attrs)
+
+    def get_location_map_widget_attrs(self):
         map_widget_attrs = {}
 
         bound_fields = (
@@ -90,26 +105,30 @@ class DealSpatialForm(BaseForm):
             if field in self:
                 map_widget_attrs[attr] = self[field].auto_id
 
-        if initial_lat or initial_lon:
-            area_widget_attrs = self.AREA_WIDGET_ATTRS.copy()
+        map_widget_attrs.update(self.get_default_lat_lon_attrs())
 
-            try:
-                lat, lon = float(initial_lat), float(initial_lon)
-            except ValueError:
-                pass
-            else:
-                area_widget_attrs['default_lat'] = lat
-                area_widget_attrs['default_lon'] = lon
-                map_widget_attrs['default_lat'] = lat
-                map_widget_attrs['default_lon'] = lon
+        return map_widget_attrs
 
-            self.fields['intended_area'].widget = OSMWidget(
-                attrs=area_widget_attrs)
-            self.fields['production_area'].widget = OSMWidget(
-                attrs=area_widget_attrs)
+    def get_default_lat_lon_attrs(self):
+        attrs = {}
+        try:
+            lat = float(self['point_lat'].value())
+        except ValueError:
+            lat = None
 
-        self.fields['location'].widget = LocationWidget(
-            map_attrs=map_widget_attrs)
+        try:
+            lon = float(self['point_lon'].value())
+        except ValueError:
+            lon = None
+
+        if lat and lon:
+            attrs.update({
+                'initial_center_lon': lon,
+                'initial_center_lat': lat,
+                'initial_point': [lon, lat],
+            })
+
+        return attrs
 
     def get_attributes(self, request=None):
         attributes = super().get_attributes()
@@ -157,6 +176,28 @@ class DealSpatialForm(BaseForm):
         return fields
 
 
+class PublicDealSpatialForm(DealSpatialForm):
+    AREA_WIDGET_ATTRS = {
+        'map_width': 600,
+        'map_height': 400,
+        'default_zoom': 8,
+        'default_lat': 0,
+        'default_lon': 0,
+        'toggle_map_display': True,
+        'geom_type': 'MULTIPOLYGON',
+        'disable_drawing': True,
+    }
+
+    location = forms.CharField(
+        required=True, label=_("Location"), widget=MapWidget)
+
+    def get_location_map_widget_attrs(self):
+        attrs = super().get_location_map_widget_attrs()
+        attrs['disable_drawing'] = True
+
+        return attrs
+
+
 class DealSpatialBaseFormSet(BaseFormSet):
 
     form_title = _('Location')
@@ -185,4 +226,4 @@ DealSpatialFormSet = formset_factory(
     DealSpatialForm, min_num=1, validate_min=True, extra=0,
     formset=DealSpatialBaseFormSet)
 PublicViewDealSpatialFormSet = formset_factory(
-    DealSpatialForm, formset=DealSpatialBaseFormSet, extra=0)
+    PublicDealSpatialForm, formset=DealSpatialBaseFormSet, extra=0)
