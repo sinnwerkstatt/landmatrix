@@ -22,6 +22,9 @@
 {% if initial_point %}
     options['initialPoint'] = [{{ initial_point.0 }}, {{ initial_point.1 }}];
 {% endif %}
+{% if show_layer_switcher %}
+    options['showLayerSwitcher'] = true;
+{% endif %}
 {% endblock %}
 
 

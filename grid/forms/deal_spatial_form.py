@@ -28,6 +28,7 @@ class DealSpatialForm(BaseForm):
         'initial_center_lat': 0,
         'initial_center_lon': 0,
         'toggle_map_display': True,
+        'show_layer_switcher': False,
         'geom_type': 'MULTIPOLYGON',
     }
 
@@ -92,7 +93,9 @@ class DealSpatialForm(BaseForm):
                 map_attrs=location_attrs)
 
     def get_location_map_widget_attrs(self):
-        map_widget_attrs = {}
+        map_widget_attrs = {
+            'show_layer_switcher': False,
+        }
 
         bound_fields = (
             ('location', 'bound_location_field_id'),
@@ -193,7 +196,10 @@ class PublicDealSpatialForm(DealSpatialForm):
 
     def get_location_map_widget_attrs(self):
         attrs = super().get_location_map_widget_attrs()
-        attrs['disable_drawing'] = True
+        attrs.update({
+            'show_layer_switcher': True,
+            'disable_drawing': True,
+        })
 
         return attrs
 

@@ -56,6 +56,7 @@ $(document).ready(function () {
                 initialCenterLat: 0,
                 initialCenterLon: 0,
                 disableDrawing: false,
+                showLayerSwitcher: true,
                 isCollection: options.geom_name.indexOf('Multi') >= 0 || options.geom_name.indexOf('Collection') >= 0,
                 boundLatField: null,
                 boundLonField: null,
@@ -69,9 +70,6 @@ $(document).ready(function () {
                 if (options.hasOwnProperty(property)) {
                     this.options[property] = options[property];
                 }
-            }
-            if (!options.base_layers) {
-                this.options.base_layers = this.getBaseLayers();
             }
 
             this.map = this.createMap();
@@ -147,8 +145,11 @@ $(document).ready(function () {
                 }
             }
 
+            if (this.options.showLayerSwitcher) {
+                this.initLayerSwitcher(true);
+            }
+
             this.initLinkHandlers();
-            // this.initLayerSwitcher(true);
 
             this.ready = true;
         }
@@ -156,7 +157,7 @@ $(document).ready(function () {
         MapWidget.prototype.createMap = function() {
             var map = new ol.Map({
                 target: this.options.map_id,
-                layers: this.options.base_layers,
+                layers: this.getLayers(this.options.base_layers),
                 view: new ol.View({
                     zoom: this.options.initialZoom
                 })
@@ -278,6 +279,16 @@ $(document).ready(function () {
             document.getElementById(this.options.id).value = jsonFormat.writeGeometry(geometry);
         };
 
+        MapWidget.prototype.getLayers = function(baseLayers) {
+            var layers = baseLayers || this.getBaseLayers();
+            var contextGroup = new ol.layer.Group({
+                title: 'Context Layers',
+                layers: this.getContextLayers()
+            });
+            layers.push(contextGroup);
+
+            return layers;
+        }
 
         MapWidget.prototype.getBaseLayers = function() {
             var baseLayers = [
@@ -404,13 +415,13 @@ $(document).ready(function () {
         };
 
         MapWidget.prototype.initLayerSwitcher = function(showByDefault) {
+
             var layerSwitcher = new ol.control.LayerSwitcher({
                 tipLabel: 'Legend'
             });
             this.map.addControl(layerSwitcher);
-            layerSwitcher.renderPanel();
             if (showByDefault) {
-                layerSwitcher.showPanel();
+                layerSwitcher.showPanel();                
             }
         };
 
@@ -422,6 +433,7 @@ $(document).ready(function () {
         };
 
         MapWidget.prototype.updateTargetCountryField = function(results) {
+            // TODO: doesn't work reliably, fix
             for (var i = 0; i < results[0].address_components.length; i++) {
                 if (results[0].address_components[i].types.indexOf("country") != -1) {
                     var country = results[0].address_components[i].short_name;
@@ -555,7 +567,7 @@ $(document).ready(function () {
                 event.preventDefault();
                 mapWidget.clearFeatures();
             });
-        }
+        };
 
         window.MapWidget = MapWidget;
     })();

@@ -134,7 +134,7 @@ class OSMWidget(OpenLayersWidget):
             return 900913
 
 
-class MapWidget(OSMWidget):
+class SerializedMapWidget(OSMWidget):
     template_name = 'map_widget.html'
     initial_center_lon = 0
     initial_center_lat = 0
@@ -144,6 +144,7 @@ class MapWidget(OSMWidget):
 
     show_controls = True
     show_deals = False
+    show_layer_switcher = False
     disable_drawing = False
     bound_location_field_id = None
     bound_target_country_field_id = None
@@ -154,7 +155,8 @@ class MapWidget(OSMWidget):
     def __init__(self, attrs=None):
         super().__init__(attrs=attrs)
         defaults = (
-            'show_controls', 'show_deals', 'disable_drawing', 'initial_point',
+            'show_controls', 'show_deals', 'disable_drawing',
+            'show_layer_switcher', 'initial_point',
             'bound_location_field_id', 'bound_lat_field_id',
             'bound_lon_field_id', 'bound_level_of_accuracy_field_id',
             'bound_target_country_field_id',
@@ -163,6 +165,25 @@ class MapWidget(OSMWidget):
             self.attrs[key] = getattr(self, key)
         if attrs:
             self.attrs.update(attrs)
+
+
+class MapWidget(SerializedMapWidget):
+    '''
+    MapWidgets are used where we just need a map, not anything serialized.
+    '''
+
+    def deserialize(self, value):
+        '''
+        MapWidget is not acutally serialized when used with location,
+        so ignore any values.
+        '''
+        return None
+
+    def serialize(self, value):
+        '''
+        See deserialize.
+        '''
+        return None
 
 
 class LocationWidget(TextInput):

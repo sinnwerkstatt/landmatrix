@@ -6,7 +6,7 @@
 
 {% block head %}
 {{ block.super }}
-    <script src="{% static "gis/js/OLMapWidget.js" %}" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
 {% endblock %}
 
 
@@ -131,7 +131,11 @@
         </p>
     {% endif %}
 
+{% endblock %}
 
+{% block js %}
+    {{ block.super }}
+    <script src="{% static "gis/js/OLMapWidget.js" %}" type="text/javascript" charset="utf-8"></script>
     <script>
         $(document).ready(function () {
             // Init maps
