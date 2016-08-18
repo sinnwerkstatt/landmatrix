@@ -6,7 +6,7 @@
 
 {% block head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher-custom.css" %}"/>
 {% endblock %}
 
 
@@ -135,6 +135,7 @@
 
 {% block js %}
     {{ block.super }}
+    <script type="text/javascript" src="{% static "js/ol3-layerswitcher-custom.js" %}"></script>
     <script src="{% static "gis/js/OLMapWidget.js" %}" type="text/javascript" charset="utf-8"></script>
     <script>
         $(document).ready(function () {

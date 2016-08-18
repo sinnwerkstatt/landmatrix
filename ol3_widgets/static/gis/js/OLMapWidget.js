@@ -48,7 +48,6 @@ $(document).ready(function () {
             this.interactions = {draw: null, modify: null};
             this.typeChoices = false;
             this.ready = false;
-
             // Default options
             this.options = {
                 initialPoint: null,
@@ -57,6 +56,8 @@ $(document).ready(function () {
                 initialCenterLon: 0,
                 disableDrawing: false,
                 showLayerSwitcher: true,
+                enableSearch: false,
+                enableFullscreen: false,
                 isCollection: options.geom_name.indexOf('Multi') >= 0 || options.geom_name.indexOf('Collection') >= 0,
                 boundLatField: null,
                 boundLonField: null,
@@ -87,19 +88,22 @@ $(document).ready(function () {
             });
 
             // Populate and set handlers for the feature container
-            var self = this;
-            this.featureCollection.on('add', function(event) {
-                var feature = event.element;
-                feature.on('change', function() {
-                    self.serializeFeatures();
-                });
-                if (self.ready) {
-                    self.serializeFeatures();
-                    if (!self.options.isCollection) {
-                        self.disableDrawing(); // Only allow one feature at a time
+            if (this.options.id) {
+                var self = this;
+
+                this.featureCollection.on('add', function(event) {
+                    var feature = event.element;
+                    feature.on('change', function() {
+                        self.serializeFeatures();
+                    });
+                    if (self.ready) {
+                        self.serializeFeatures();
+                        if (!self.options.isCollection) {
+                            self.disableDrawing(); // Only allow one feature at a time
+                        }
                     }
-                }
-            });
+                });
+            }
 
             var initial_features = null;
             if (this.options.initialPoint) {
@@ -110,7 +114,7 @@ $(document).ready(function () {
                 });
                 initial_features = [feature];
             }
-            else {
+            else if (this.options.id) {
                 var initial_value = document.getElementById(this.options.id).value;
                 if (initial_value) {
                     initial_features = jsonFormat.readFeatures('{"type": "Feature", "geometry": ' + initial_value + '}');
@@ -130,23 +134,20 @@ $(document).ready(function () {
                 this.map.getView().setCenter(this.defaultCenter());
             }
             
-            // don't allow any interactions if drawing is disabled
-            if (!this.options.disableDrawing) {
-                this.createInteractions();
+            this.createInteractions();
 
-                if (initial_features && !this.options.isCollection) {
-                    this.disableDrawing();
-                }
-                if (this.options.boundLonField || this.options.boundLatField ||
-                    this.options.boundTargetCountryField || this.options.boundLocationField ||
-                    this.options.boundLevelOfAccuracyField) {
-                        this.interactions.draw.on('drawend', this.updateBoundFields, this);
-                        this.interactions.modify.on('modifyend', this.updateBoundFields, this);
-                }
+            if (this.options.disableDrawing || (initial_features && !this.options.isCollection)) {
+                this.disableDrawing();
             }
 
-            if (this.options.showLayerSwitcher) {
-                this.initLayerSwitcher(true);
+            var hasBoundField = (this.options.boundLonField || this.options.boundLatField ||
+                this.options.boundTargetCountryField || this.options.boundLocationField ||
+                this.options.boundLevelOfAccuracyField);
+            var hasInteractions = (this.interactions.draw || this.interactions.modify);
+
+            if (hasInteractions && hasBoundField) {
+                    this.interactions.draw.on('drawend', this.updateBoundFields, this);
+                    this.interactions.modify.on('modifyend', this.updateBoundFields, this);
             }
 
             this.initLinkHandlers();
@@ -158,6 +159,7 @@ $(document).ready(function () {
             var map = new ol.Map({
                 target: this.options.map_id,
                 layers: this.getLayers(this.options.base_layers),
+                controls: this.getControls(),
                 view: new ol.View({
                     zoom: this.options.initialZoom
                 })
@@ -168,7 +170,38 @@ $(document).ready(function () {
             return map;
         };
 
+        MapWidget.prototype.getControls = function() {
+            var controls = [
+                new ol.control.Zoom(),
+                new ol.control.ScaleLine(),
+                new ol.control.Attribution
+            ];
+
+            if (this.options.enableFullscreen) {
+                controls.push(new ol.control.FullScreen());
+            }
+
+            if (this.options.showLayerSwitcher) {
+                var layerSwitcherOptions = {
+                    tipLabel: 'Legend'
+                };
+                if (this.options.enableSearch) {
+                    layerSwitcherOptions['search'] = true;
+                }
+                var layerSwitcher = new ol.control.LayerSwitcher(layerSwitcherOptions);
+                layerSwitcher.showPanel();
+                controls.push(layerSwitcher);
+            }
+
+            return controls;
+        }
+
         MapWidget.prototype.createInteractions = function() {
+            // don't allow any interactions if drawing is disabled
+            if (this.options.disableDrawing) {
+                return;
+            }
+
             // Initialize the modify interaction
             this.interactions.modify = new ol.interaction.Modify({
                 features: this.featureCollection,
@@ -414,15 +447,11 @@ $(document).ready(function () {
             return [style];
         };
 
-        MapWidget.prototype.initLayerSwitcher = function(showByDefault) {
-
-            var layerSwitcher = new ol.control.LayerSwitcher({
-                tipLabel: 'Legend'
-            });
-            this.map.addControl(layerSwitcher);
-            if (showByDefault) {
-                layerSwitcher.showPanel();                
-            }
+        MapWidget.prototype.fitToBounds = function(bounds) {
+            var proj = this.map.getView().getProjection();
+            var extent = ol.extent.applyTransform(
+                bounds, ol.proj.getTransform('EPSG:4326', proj));
+            this.map.getView().fit(extent, this.map.getSize());
         };
 
         MapWidget.prototype.updateLocationField = function(results, status) {
