@@ -18,12 +18,12 @@
 
 <script type="text/javascript">
 $(document).ready(function () {
-    var map_options,
-        base_layer,
+    var mapOptions,
+        baseLayer,
         options;
-    {% block map_options %}map_options = {};{% endblock %}
+    {% block map_options %}mapOptions = {};{% endblock %}
     {% block base_layer %}
-        base_layers = [new ol.layer.Tile({
+        baseLayers = [new ol.layer.Tile({
             source: new ol.source.XYZ({
                 attributions: "NASA Worldview",
                 maxZoom: 8,
@@ -34,10 +34,11 @@ $(document).ready(function () {
         })];
     {% endblock %}
     options = {
-        base_layers: base_layers,
-        geom_name: '{{ geom_type }}',
-        map_options: map_options,
-        map_srid: {{ map_srid|unlocalize }},
+        baseLayers: baseLayers,
+        geomName: '{{ geom_type }}',
+        mapOptions: mapOptions,
+        mapSRID: {{ map_srid|unlocalize }},
+        mapId: '{{ id }}-map'
     };
     {% block options %}
     {% endblock %}

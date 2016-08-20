@@ -50,7 +50,7 @@ $(document).ready(function () {
             this.ready = false;
             // Default options
             this.options = {
-                isCollection: options.geom_name.indexOf('Multi') >= 0 || options.geom_name.indexOf('Collection') >= 0,
+                isCollection: options.geomName.indexOf('Multi') >= 0 || options.geomName.indexOf('Collection') >= 0,
                 initialPoint: null,
                 initialZoom: 12,
                 initialCenterLat: 0,
@@ -106,24 +106,24 @@ $(document).ready(function () {
                 });
             }
 
-            var initial_features = null;
-            if (this.options.geom_name === 'Point' && this.options.initialPoint) {
+            var initialFeatures = null;
+            if (this.options.geomName === 'Point' && this.options.initialPoint) {
                 var coordinates = this.getCoordinates(
                     this.options.initialPoint[1], this.options.initialPoint[0]);
                 var feature = new ol.Feature({
                     geometry: new ol.geom.Point(coordinates)
                 });
-                initial_features = [feature];
+                initialFeatures = [feature];
             }
             else if (this.options.id) {
                 var initial_value = document.getElementById(this.options.id).value;
                 if (initial_value) {
-                    initial_features = jsonFormat.readFeatures('{"type": "Feature", "geometry": ' + initial_value + '}');
+                    initialFeatures = jsonFormat.readFeatures('{"type": "Feature", "geometry": ' + initial_value + '}');
                 }
             }
 
-            if (initial_features) {
-                initial_features.forEach(function(feature) {
+            if (initialFeatures) {
+                initialFeatures.forEach(function(feature) {
                     this.featureOverlay.getSource().addFeature(feature);
                 }, this);
             }
@@ -131,7 +131,7 @@ $(document).ready(function () {
             this.positionMap();
             this.createInteractions();
 
-            if (this.options.disableDrawing || (initial_features && !this.options.isCollection)) {
+            if (this.options.disableDrawing || (initialFeatures && !this.options.isCollection)) {
                 this.disableDrawing();
             }
 
@@ -152,8 +152,8 @@ $(document).ready(function () {
 
         MapWidget.prototype.createMap = function() {
             var map = new ol.Map({
-                target: this.options.map_id,
-                layers: this.getLayers(this.options.base_layers),
+                target: this.options.mapId,
+                layers: this.getLayers(this.options.baseLayers),
                 controls: this.getControls(),
                 view: new ol.View({
                     zoom: this.options.initialZoom
@@ -207,7 +207,7 @@ $(document).ready(function () {
             });
 
             // Initialize the draw interaction
-            var geomType = this.options.geom_name;
+            var geomType = this.options.geomName;
             if (geomType === "Unknown" || geomType === "GeometryCollection") {
                 // Default to Point, but create icons to switch type
                 geomType = "Point";
@@ -227,7 +227,7 @@ $(document).ready(function () {
         };
 
         MapWidget.prototype.defaultCenter = function() {
-            if (this.options.map_srid) {
+            if (this.options.mapSRID) {
                 var coords = this.getCoordinates(
                     this.options.initialCenterLat,
                     this.options.initialCenterLon);
@@ -278,7 +278,7 @@ $(document).ready(function () {
             var geometry = null;
             var features = this.featureOverlay.getSource().getFeatures();
             if (this.options.isCollection) {
-                if (this.options.geom_name === "GeometryCollection") {
+                if (this.options.geomName === "GeometryCollection") {
                     var geometries = [];
                     for (var i = 0; i < features.length; i++) {
                         geometries.push(features[i].getGeometry());
@@ -601,12 +601,11 @@ $(document).ready(function () {
                 if (mapElement.is(':visible')) {
                     mapWidget.map.updateSize();
                     mapWidget.positionMap();
-                    mapWidget.layerSwitcher.showPanel();
                 }
 
             });
 
-            var map = jQuery('#' + this.options.map_id);
+            var map = jQuery('#' + this.options.mapId);
             var clearFeatures = map.next('.clear_features').children('a');
             clearFeatures.on('click', function(event) {
                 event.preventDefault();

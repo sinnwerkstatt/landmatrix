@@ -8,5 +8,5 @@ options['initialZoom'] = {{ initial_zoom|unlocalize }};
 {% endblock %}
 
 {% block base_layer %}
-var base_layers = [new ol.layer.Tile({source: new ol.source.OSM()})];
+var baseLayers = [new ol.layer.Tile({source: new ol.source.OSM()})];
 {% endblock %}
