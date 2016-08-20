@@ -469,24 +469,40 @@ $(document).ready(function () {
         };
 
         MapWidget.prototype.updateLocationField = function(results, status) {
-            var address = results[0].formatted_address;
-            if (address) {
-                this.options.boundLocationField.val(address);
-            };
+            if (results.length) {
+                var address = results[0].formatted_address;
+                if (address) {
+                    this.options.boundLocationField.val(address);
+                };
+            }
         };
 
         MapWidget.prototype.updateTargetCountryField = function(results) {
-            // TODO: doesn't work reliably, fix
-            for (var i = 0; i < results[0].address_components.length; i++) {
-                if (results[0].address_components[i].types.indexOf("country") != -1) {
-                    var country = results[0].address_components[i].short_name;
-                    // TODO: better way to do this.
-                    this.options.boundTargetCountryField
-                        .find('option')
-                        .removeAttr("selected")
-                        .filter("option[title='" + country + "']")
-                        .attr('selected', 'selected');
+            var countryCode = null;
+            // iterate through all results, but country is usually last,
+            // so try that first.
+            resultsLoop:
+            for (var i = results.length - 1; i >= 0; i--) {
+                var components = results[i].address_components;
+                for (var j = components.length - 1; j >= 0; j--) {
+                    if (components[j].types.indexOf("country") != -1) {
+                        var shortName = components[j].short_name;
+                        if (shortName) {
+                            countryCode = shortName;
+                            break resultsLoop;
+                        }
+                    }
                 }
+            }
+
+            var options = this.options.boundTargetCountryField.find('option');
+            options.removeAttr('selected');
+
+            if (countryCode) {
+                var countryValue = options.filter('option[title="' + countryCode + '"]').val();
+                // This seems to be more robust than setting the option to selected
+                // manually
+                this.options.boundTargetCountryField.val(countryValue);                     
             }
         };
 
@@ -507,17 +523,15 @@ $(document).ready(function () {
 
             var self = this;
             var callback = function(results, status) {
-                if (results.length) {
-                    // update all bound fields
-                    if (self.options.boundLocationField) {
-                        self.updateLocationField(results);
-                    }
-                    if (self.options.boundTargetCountryField) {
-                        self.updateTargetCountryField(results);
-                    }
-                    if (self.options.boundLevelOfAccuracyField) {
-                        self.updateLevelOfAccuracyField(results);
-                    }
+                // update all bound fields
+                if (self.options.boundLocationField) {
+                    self.updateLocationField(results);
+                }
+                if (self.options.boundTargetCountryField) {
+                    self.updateTargetCountryField(results);
+                }
+                if (self.options.boundLevelOfAccuracyField) {
+                    self.updateLevelOfAccuracyField(results);
                 }
             };
             this.geocoder.geocode({"latLng" : latLng, "language": "en"}, callback);
