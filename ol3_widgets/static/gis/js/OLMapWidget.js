@@ -50,20 +50,21 @@ $(document).ready(function () {
             this.ready = false;
             // Default options
             this.options = {
+                isCollection: options.geom_name.indexOf('Multi') >= 0 || options.geom_name.indexOf('Collection') >= 0,
                 initialPoint: null,
                 initialZoom: 12,
                 initialCenterLat: 0,
                 initialCenterLon: 0,
+                initialLayer: 'osm',
                 disableDrawing: false,
                 showLayerSwitcher: true,
                 enableSearch: false,
                 enableFullscreen: false,
-                isCollection: options.geom_name.indexOf('Multi') >= 0 || options.geom_name.indexOf('Collection') >= 0,
                 boundLatField: null,
                 boundLonField: null,
                 boundLocationField: null,
                 boundTargetCountryField: null,
-                boundLevelOfAccuracyField: null,
+                boundLevelOfAccuracyField: null
             };
 
             // Altering using user-provided options
@@ -106,7 +107,7 @@ $(document).ready(function () {
             }
 
             var initial_features = null;
-            if (this.options.initialPoint) {
+            if (this.options.geom_name === 'Point' && this.options.initialPoint) {
                 var coordinates = this.getCoordinates(
                     this.options.initialPoint[1], this.options.initialPoint[0]);
                 var feature = new ol.Feature({
@@ -122,18 +123,12 @@ $(document).ready(function () {
             }
 
             if (initial_features) {
-                var extent = ol.extent.createEmpty();
                 initial_features.forEach(function(feature) {
                     this.featureOverlay.getSource().addFeature(feature);
-                    ol.extent.extend(extent, feature.getGeometry().getExtent());
                 }, this);
-                // Centering/zooming the map
-                this.map.getView().fit(
-                    extent, this.map.getSize(), {maxZoom: this.options.initialZoom});
-            } else {
-                this.map.getView().setCenter(this.defaultCenter());
             }
-            
+
+            this.positionMap();
             this.createInteractions();
 
             if (this.options.disableDrawing || (initial_features && !this.options.isCollection)) {
@@ -328,19 +323,19 @@ $(document).ready(function () {
                 new ol.layer.Tile({
                     title: 'OpenStreetMap',
                     type: 'base',
-                    visible: true,
+                    visible: this.options.initialLayer === 'osm' ? true : false,
                     source: new ol.source.OSM(),
                 }),
                 new olgm.layer.Google({
                     title: 'Satellite',
                     type: 'base',
-                    visible: false,
+                    visible: this.options.initialLayer === 'satellite' ? true : false,
                     mapTypeId: google.maps.MapTypeId.SATELLITE
                 }),
                 new olgm.layer.Google({
                     title: 'Terrain',
                     type: 'base',
-                    visible: false,
+                    visible: this.options.initialLayer === 'terrain' ? true : false,
                     mapTypeId: google.maps.MapTypeId.TERRAIN
                 })
             ];
@@ -447,11 +442,30 @@ $(document).ready(function () {
             return [style];
         };
 
-        MapWidget.prototype.fitToBounds = function(bounds) {
-            var proj = this.map.getView().getProjection();
-            var extent = ol.extent.applyTransform(
-                bounds, ol.proj.getTransform('EPSG:4326', proj));
-            this.map.getView().fit(extent, this.map.getSize());
+        MapWidget.prototype.positionMap = function() {
+            var extent = null;
+
+            if (this.options.initialBounds) {
+                var proj = this.map.getView().getProjection();
+                var extent = ol.extent.createEmpty();
+                var initialBounds = ol.extent.applyTransform(
+                    this.options.initialBounds, ol.proj.getTransform('EPSG:4326', proj));
+                ol.extent.extend(extent, initialBounds);
+            }
+            else if (this.featureOverlay.getSource().getFeatures().length > 0) {
+                var extent = ol.extent.createEmpty();
+                this.featureOverlay.getSource().forEachFeature(function (feature) {
+                    var featureExtent = feature.getGeometry().getExtent();
+                    ol.extent.extend(extent, featureExtent);
+                });
+            }
+
+            if (extent) {
+                this.map.getView().fit(extent, this.map.getSize(), {maxZoom: this.options.initialZoom});
+            }
+            else {
+                this.map.getView().setCenter(this.defaultCenter());
+            }
         };
 
         MapWidget.prototype.updateLocationField = function(results, status) {
@@ -586,6 +600,8 @@ $(document).ready(function () {
 
                 if (mapElement.is(':visible')) {
                     mapWidget.map.updateSize();
+                    mapWidget.positionMap();
+                    mapWidget.layerSwitcher.showPanel();
                 }
 
             });

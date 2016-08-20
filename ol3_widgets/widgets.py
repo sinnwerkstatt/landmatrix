@@ -142,6 +142,7 @@ class SerializedMapWidget(OSMWidget):
     initial_point = None
     geom_type = 'POINT'
 
+    initial_layer = 'osm'
     show_controls = True
     show_deals = False
     show_layer_switcher = False
@@ -155,7 +156,7 @@ class SerializedMapWidget(OSMWidget):
     def __init__(self, attrs=None):
         super().__init__(attrs=attrs)
         defaults = (
-            'show_controls', 'show_deals', 'disable_drawing',
+            'initial_layer', 'show_controls', 'show_deals', 'disable_drawing',
             'show_layer_switcher', 'initial_point',
             'bound_location_field_id', 'bound_lat_field_id',
             'bound_lon_field_id', 'bound_level_of_accuracy_field_id',
@@ -171,19 +172,20 @@ class MapWidget(SerializedMapWidget):
     '''
     MapWidgets are used where we just need a map, not anything serialized.
     '''
+    initial_layer = 'satellite'
 
     def deserialize(self, value):
         '''
         MapWidget is not acutally serialized when used with location,
         so ignore any values.
         '''
-        return None
+        return ''
 
     def serialize(self, value):
         '''
         See deserialize.
         '''
-        return None
+        return ''
 
 
 class LocationWidget(TextInput):

@@ -29,6 +29,7 @@ ol.control.LayerSwitcher = function(opt_options) {
 
     var button = document.createElement('button');
     button.setAttribute('title', tipLabel);
+    button.setAttribute('type', 'button'); // Don't submit forms on click!
     element.appendChild(button);
 
     var collapse = document.createElement('div');

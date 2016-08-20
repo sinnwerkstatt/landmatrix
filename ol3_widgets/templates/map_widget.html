@@ -25,6 +25,9 @@
 {% if show_layer_switcher %}
     options['showLayerSwitcher'] = true;
 {% endif %}
+{% if initial_layer %}
+    options['initialLayer'] = '{{ initial_layer }}';
+{% endif %}
 {% endblock %}
 
 
