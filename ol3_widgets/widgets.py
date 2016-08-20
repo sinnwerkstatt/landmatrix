@@ -90,17 +90,17 @@ class BaseGeometryWidget(Widget):
 
 
 class OpenLayersWidget(BaseGeometryWidget):
-    template_name = 'gis/openlayers.html'
+    template_name = 'widgets/openlayers.html'
 
     class Media:
         css = {
             'all': (
-                'css/ol.css',
+                'vendor/openlayers/ol.css',
             )
         }
         js = (
-            'js/ol.js',
-            'gis/js/OLMapWidget.js',
+            'vendor/openlayers/ol.js',
+            'js/mapwidget.js',
         )
 
     def serialize(self, value):
@@ -111,7 +111,7 @@ class OSMWidget(OpenLayersWidget):
     """
     An OpenLayers/OpenStreetMap-based widget.
     """
-    template_name = 'gis/openlayers-osm.html'
+    template_name = 'widgets/openlayers_osm.html'
     initial_center_lon = 5
     initial_center_lat = 47
     initial_zoom = 8
@@ -135,7 +135,7 @@ class OSMWidget(OpenLayersWidget):
 
 
 class SerializedMapWidget(OSMWidget):
-    template_name = 'map_widget.html'
+    template_name = 'widgets/map.html'
     initial_center_lon = 0
     initial_center_lat = 0
     initial_zoom = 5
@@ -155,6 +155,7 @@ class SerializedMapWidget(OSMWidget):
 
     def __init__(self, attrs=None):
         super().__init__(attrs=attrs)
+
         defaults = (
             'initial_layer', 'show_controls', 'show_deals', 'disable_drawing',
             'show_layer_switcher', 'initial_point',

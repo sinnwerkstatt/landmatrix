@@ -9,8 +9,10 @@
     <script src="{% static "vendor/d3/d3.js" %}" type="text/javascript" charset="utf-8"></script>
     <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
     <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script src="{% static "gis/js/OLMapWidget.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script src="{% static "js/location-widget.js" %}" type="text/javascript" charset="utf-8"></script>
+    {# TODO: these need to be in head because of how dealpanels inits the widgets, but we should be able to move them #}
+    <script src="{% static "js/locationwidget.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static "js/mapwidget.js" %}" type="text/javascript" charset="utf-8"></script>
+
 {% endblock %}
 
 
@@ -56,6 +58,5 @@
 
 {% block global_js %}
     <script type="text/javascript" src="{% static "js/ol3-layerswitcher-custom.js" %}"></script>
-
     <script>unlockMaps()</script>
 {% endblock %}
