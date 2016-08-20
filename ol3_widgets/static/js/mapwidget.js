@@ -145,6 +145,9 @@ $(document).ready(function () {
                     this.interactions.modify.on('modifyend', this.updateBoundFields, this);
             }
 
+            if (this.options.boundLonField && this.options.boundLatField) {
+                this.initLatLonChangeHandler();
+            }
             this.initLinkHandlers();
 
             this.ready = true;
@@ -598,7 +601,7 @@ $(document).ready(function () {
             });
         };
 
-        MapWidget.prototype.initLinkHandlers = function () {
+        MapWidget.prototype.initLinkHandlers = function() {
             var mapWidget = this;
             var divMapId = this.options.id + '-div-map';
             var divMap = jQuery('#' + divMapId);
@@ -625,6 +628,21 @@ $(document).ready(function () {
                 event.preventDefault();
                 mapWidget.clearFeatures();
             });
+        };
+
+        MapWidget.prototype.initLatLonChangeHandler = function() {
+            var self = this;
+            var changeHandler = function(event) {
+                var lat = parseFloat(self.options.boundLatField.val());
+                var lon = parseFloat(self.options.boundLonField.val());
+                if (lon !== undefined && lon !== NaN && lat !== undefined && lat !== NaN) {
+                    self.movePointToLatLong(lat, lon);
+                    // geocoding updates all other bound fields
+                    self.geocodeCoordinates([lon, lat]);
+                }
+            };
+            this.options.boundLonField.on('change', changeHandler);
+            this.options.boundLatField.on('change', changeHandler);
         };
 
         window.MapWidget = MapWidget;
