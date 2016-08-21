@@ -546,7 +546,14 @@ $(document).ready(function () {
                 var lng = place.geometry.location.lng();
                 var lat = place.geometry.location.lat();
                 this.updateLatLongFields([lat, lng]);
-                this.movePointToLatLong(lat, lng);
+
+                var hasFeatures = this.featureOverlay.getSource().getFeatures().length;
+                if (!hasFeatures) {
+                    this.createPointAtLatLong(lat, lng);
+                }
+                else {
+                    this.movePointToLatLong(lat, lng);
+                }
             }
             // update all bound fields
             if (this.options.boundLocationField) {
@@ -600,6 +607,17 @@ $(document).ready(function () {
                 feature.getGeometry().setCoordinates(coordinates);
             });
         };
+
+        MapWidget.prototype.createPointAtLatLong = function(lat, lon) {
+            var coordinates = this.getCoordinates(lat, lon);
+            this.map.getView().setCenter(coordinates);
+            this.map.getView().setZoom(this.options.initialZoom);
+            
+            this.featureOverlay.getSource().addFeature(new ol.Feature({
+                geometry: new ol.geom.Point(coordinates)
+            }));
+        };
+
 
         MapWidget.prototype.initLinkHandlers = function() {
             var mapWidget = this;
