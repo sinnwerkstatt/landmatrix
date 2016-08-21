@@ -5,8 +5,7 @@ $(document).ready(function () {
         function LocationWidget(options) {
             // defaults
             this.options = {
-                geocoder: new google.maps.Geocoder(),
-                defaultZoom: 7
+                geocoder: new google.maps.Geocoder()
             }; 
             for (var property in options) {
                 if (options.hasOwnProperty(property)) {
@@ -20,11 +19,9 @@ $(document).ready(function () {
             // so just use a closure
             if (this.options.mapWidget) {
                 var mapWidget = this.options.mapWidget;
-                var defaultZoom = this.options.defaultZoom;
 
                 var onPlaceChanged = function() {
                     var place = autocomplete.getPlace();
-                    console.log('place', place);
                     if (place.geometry) {
                         mapWidget.updateFromPlaceData(place);
                     }
