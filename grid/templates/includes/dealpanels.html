@@ -54,7 +54,7 @@
                             var id = $(this).attr('id');
                             var options = $(this).data('map-widget-options');
                             options['id'] = id;
-                            options['map_id'] = id + '-map';
+                            options['mapId'] = id + '-map';
                             options['name'] = form.find('.location :input').attr('name');
                             // if we are part of the location row, bind to fields
                             if ($(this).parents('.location').length) {
