@@ -24,7 +24,7 @@ from grid.forms.deal_spatial_form import PublicViewDealSpatialFormSet
 from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
-from grid.forms.deal_overall_comment_form import OperationalStakeholderForm
+from grid.forms.deal_overall_comment_form import DealOverallCommentForm
 from grid.views.view_aux_functions import render_to_string, render_to_response
 from grid.forms.country_specific_forms import get_country_specific_form_classes
 
