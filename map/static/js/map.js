@@ -518,15 +518,6 @@ function initMap(target) {
 
     }
 
-    // Set zoom and pan handlers
-    typeof mapDisableDeals === 'undefined' && map.on("moveend", function() {
-        getApiData();
-    });
-
-    typeof mapDisableDeals === 'undefined' && map.on("zoomend", function() {
-        getApiData();
-    });
-
     NProgress.configure(
         {
             trickleRate: 0.02,
@@ -560,14 +551,28 @@ function initMap(target) {
     });
 
     if (typeof mapDisableDeals === 'undefined') {
-        getApiData();
+        // Set zoom and pan handlers
+        // Delay here (and avoid multiple events) to stop postgres from
+        // melting
+        var updateKey;
+        var updateMarkers = function(event) {
+            if (updateKey) {
+                clearTimeout(updateKey);
+            }
+            updateKey = setTimeout(getApiData, 2000);
+        };
+        map.on("moveend", updateMarkers);
+        map.on("zoomend", updateMarkers);
+
+        // Not required, as moveend fires on load (maybe a bug?)
+        // getApiData();
     }
 };
 
 function getApiData() {
     NProgress.start();
     // TODO: (Later) initiate spinner before fetchin' stuff
-    console.log("Get API data");
+
     // If the zoom level is below the clustering threshold, show
     // country-based "clusters".
     if (view.getZoom() < countryThreshold) {
@@ -681,9 +686,10 @@ function handleFeatureClick (feature, layer) {
             content.innerHTML += '<span>Geospatial Accuracy:</span><span class="pull-right">' + accuracy + '</span><br />';
         }
         content.innerHTML += '<span><a href="/deal/' + id + '">More details</a></span></div>';
+
+        PopupOverlay.setPosition(feat.getGeometry().getCoordinates());
     }
 
-    PopupOverlay.setPosition(evt.coordinate);
     return features;
 };
 
@@ -750,6 +756,63 @@ function addData (data) {
     NProgress.done(true);
 };
 
+// Taken from the OL example here
+// http://openlayers.org/en/v3.9.0/examples/feature-animation.html
+function bounceFeature(feature, startRadius, maxRadius, endRadius, duration) {
+    var start = new Date().getTime();
+    // console.log(start, startRadius, endRadius);
+    var listenerKey;
+
+    function animate(event) {
+        var vectorContext = event.vectorContext;
+        var frameState = event.frameState;
+        var flashGeom = feature.getGeometry().clone();
+        var elapsed = frameState.time - start;
+        var elapsedRatio = elapsed / duration;
+        var radius;
+
+        if (elapsedRatio < 0.5) {
+            var easing = ol.easing.easeOut(elapsedRatio * 2)
+            radius = (easing * (maxRadius - startRadius)) + startRadius;
+        }
+        else {
+            if (elapsedRatio > 1) {
+                elapsedRatio = 1;
+            }
+            var easing = ol.easing.easeOut(1 - elapsedRatio);
+            radius = (easing * (maxRadius - endRadius)) + endRadius;
+        }
+
+        var flashStyle = new ol.style.Circle({
+            snapToPixel: false,
+            radius: radius,
+            // Stroke looks janky after animation finishes
+            // stroke: new ol.style.Stroke({
+            //     color: '#fff'
+            // }),
+            fill: new ol.style.Fill({
+                color: '#fc941f'
+            })
+        });
+        vectorContext.setImageStyle(flashStyle);
+        // According to the API docs should be drawPointGeometry...
+        vectorContext.drawPoint(flashGeom, null);
+        if (elapsed > duration) {
+            ol.Observable.unByKey(listenerKey);
+            return;
+        }
+        // tell OL3 to continue postcompose animation
+        frameState.animate = true;
+    }
+
+  listenerKey = map.on('postcompose', animate);
+}
+
+countriesSource.on('addfeature', function(event) {
+    var feature = event.feature;
+    bounceFeature(feature, 10, 30, 10, 1200);
+});
+
 function addCountrySummariesData (data) {
     countriesSource.clear();
     markerSource.clear();
@@ -760,11 +823,6 @@ function addCountrySummariesData (data) {
                 [country.lon, country.lat],
                 'EPSG:4326', 'EPSG:3857')
             )
-        });
-        feature.animate({r: radius}, 1000, "bounce", investor_target && function () {
-            // shrink so bubbles don't overlap
-            a.animate({r: 8}, 1000, "backIn");
-            a.caption.hide();
         });
         feature.attributes = country;
         countriesSource.addFeature(feature);

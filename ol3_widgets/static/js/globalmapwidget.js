@@ -115,10 +115,12 @@ $(document).ready(function () {
             })]
         };
 
-        function DealsMapWidget(options) {
+        function GlobalMapWidget(options) {
             var superOptions = {
                 disableDrawing: true,
-                geom_name: 'Collection'
+                enableFullscreen: true,
+                initialLayer: 'osm',
+                geomName: 'Collection'
             }
             for (var opt in options) {
                 superOptions[opt] = options[opt];
@@ -147,9 +149,9 @@ $(document).ready(function () {
 
             this.geoJSON = new ol.format.GeoJSON();
         }
-        ol.inherits(DealsMapWidget, MapWidget);
+        ol.inherits(GlobalMapWidget, MapWidget);
 
-        DealsMapWidget.prototype.initPopup = function() {
+        GlobalMapWidget.prototype.initPopup = function() {
             var container = jQuery('#' + this.options.popupId);
             // TODO: make this a class to allow multiples
             var content = container.children('#popup-content');
@@ -170,7 +172,7 @@ $(document).ready(function () {
             closer.on('click', closePopup);
         };
 
-        MapWidget.prototype.getLayers = function(baseLayers) {
+        GlobalMapWidget.prototype.getLayers = function(baseLayers) {
             var layers = baseLayers || this.getBaseLayers();
             var contextGroup = new ol.layer.Group({
                 title: 'Context Layers',
@@ -221,7 +223,7 @@ $(document).ready(function () {
             return layers;
         }
 
-        DealsMapWidget.prototype.getFeatureStyle = function(feature, resolution) {
+        GlobalMapWidget.prototype.getFeatureStyle = function(feature, resolution) {
             var geometryType = feature.getGeometry().getType();
             var styles = [];
 
@@ -244,7 +246,7 @@ $(document).ready(function () {
             return styles;
         };
 
-        DealsMapWidget.prototype.getClusterStyle = function (feature, resolution) {
+        GlobalMapWidget.prototype.getClusterStyle = function (feature, resolution) {
             var size = feature.get('features').length;
             //Give a color to each Intention of Investment, only for single points
             // PROBLEM : how to clustered the points by color?
@@ -317,32 +319,6 @@ $(document).ready(function () {
             return style;
         }
 
-        // DealsMapWidget.prototype.getBaseLayers = function() {
-        //     var baseLayers = [
-        //         new olgm.layer.Google({
-        //             title: 'Satellite',
-        //             type: 'base',
-        //             visible: true,
-        //             mapTypeId: google.maps.MapTypeId.SATELLITE
-        //         }),
-        //         new ol.layer.Tile({
-        //             title: 'OpenStreetMap',
-        //             type: 'base',
-        //             visible: false,
-        //             source: new ol.source.OSM(),
-        //         }),
-        //         new olgm.layer.Google({
-        //             title: 'Terrain',
-        //             type: 'base',
-        //             visible: false,
-        //             mapTypeId: google.maps.MapTypeId.TERRAIN
-        //         })
-        //     ];
-
-        //     return baseLayers;
-        // };
-
-
-        window.DealsMapWidget = DealsMapWidget;
+        window.GlobalMapWidget = GlobalMapWidget;
     })();
 });
