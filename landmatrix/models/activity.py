@@ -444,8 +444,11 @@ class HistoricalActivity(ActivityBase):
         # Historical activity already is the newest version of activity?
         #activity = Activity.objects.get(activity_identifier=self.activity_identifier)
         activity = Activity.objects.filter(activity_identifier=self.activity_identifier).order_by('-id').first()
-        if activity and self.id == activity.id:
-            return False
+        if activity:
+            if self.id == activity.id:
+                return False
+        else:
+            activity = Activity.objects.create(activity_identifier=self.activity_identifier)
         # Activity has been deleted?
         if self.fk_status_id == self.STATUS_DELETED:
             if activity:
