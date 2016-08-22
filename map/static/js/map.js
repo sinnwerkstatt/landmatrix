@@ -11,12 +11,13 @@ var map,
     olGM;
 
 var countryThreshold = 4;
+var clusterThreshold = 10;
 
 var currentVariable = 'Deal Intention';
 var markerSource = new ol.source.Vector();
 
 var clusterSource = new ol.source.Cluster({
-    distance: 50,
+    distance: 30,
     source: markerSource
 });
 
@@ -191,7 +192,15 @@ function initMap(target) {
         title: 'Markers',
         source: clusterSource,
         style: function (feature, resolution) {
-            var size = feature.get('features').length;
+            var size;
+            var features = feature.get('features');
+
+            if (features) {
+                size = feature.get('features').length;
+            }
+            else {
+                size = 1;
+            }
             //Give a color to each Intention of Investment, only for single points
             // PROBLEM : how to clustered the points by color?
 
@@ -235,9 +244,10 @@ function initMap(target) {
                 })];
 
             } else {
-                feature = feature.get('features')[0];
+                if (features) {
+                    feature = feature.get('features')[0];
+                }
                 var classifier = feature.attributes[fieldnames[currentVariable]];
-                //console.log(classifier)
 
                 if (classifier in detailviews[currentVariable]) {
                     color = detailviews[currentVariable][classifier];
@@ -637,20 +647,21 @@ function handleFeatureClick (feature, layer) {
     }
 
     var features = feature.getProperties().features;
-    if (!features) {
-        return;
-    }
     // A cluster was clicked.
-    if (features.length > 1) {
+    if (features && features.length > 1) {
         // var popup = '<div><span><strong>Cluster of ' + features.length + ' deals.</strong></span>';
         // popup += '<br><span>Zoom here for more details.</span></div>';
-        // console.log(popup);
         // content.innerHTML = popup;
         handleClusterClick(features);
         return;
-    } else {
-        var feat = features[0];
-        console.log("This is clicked: ", feat);
+    }
+    else {
+        if (features) {
+            var feat = features[0];
+        }
+        else {
+            var feat = feature;
+        }
 
         var id = feat.attributes.deal_id;
         var lat = feat.attributes.lat.toFixed(4);
@@ -688,9 +699,9 @@ function handleFeatureClick (feature, layer) {
         content.innerHTML += '<span><a href="/deal/' + id + '">More details</a></span></div>';
 
         PopupOverlay.setPosition(feat.getGeometry().getCoordinates());
-    }
 
-    return features;
+        return feat;
+    }
 };
 
 function handleCountryClick (feature) {
@@ -715,6 +726,15 @@ function addData (data) {
     NProgress.set(0.8);
     countriesSource.clear();
     markerSource.clear();
+
+    // Below clusterThreshold, don't cluster anything.
+    if (view.getZoom() < clusterThreshold) {
+        cluster.setSource(clusterSource);
+    }
+    else {
+        cluster.setSource(markerSource);
+    }
+
     if (data.length < 1) {
         $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
     } else {
@@ -730,7 +750,6 @@ function addData (data) {
             marker.lat = parseFloat(location.point_lat);
             marker.lon = parseFloat(location.point_lon);
 
-            //console.log(marker);
             addClusteredMarker(marker);
             //addClusteredMarkerNew(marker);
             lats[marker.lat] = marker;
@@ -751,7 +770,6 @@ function addData (data) {
             }
 
         }
-        console.log('Added deals: ', i, ', ', duplicates, ' duplicates.');
     }
     NProgress.done(true);
 };
@@ -760,7 +778,6 @@ function addData (data) {
 // http://openlayers.org/en/v3.9.0/examples/feature-animation.html
 function bounceFeature(feature, startRadius, maxRadius, endRadius, duration) {
     var start = new Date().getTime();
-    // console.log(start, startRadius, endRadius);
     var listenerKey;
 
     function animate(event) {
@@ -849,8 +866,6 @@ function addClusteredMarker(marker) { // dealid, longitude, latitude, intention,
 
         feature.attributes = marker;
 
-        //console.log('Adding:', feature);
-
         markerSource.addFeature(feature);
     } else {
         console.log("Faulty object: ", marker);
@@ -861,15 +876,12 @@ function addClusteredMarker(marker) { // dealid, longitude, latitude, intention,
 function fitBounds(geom) {
     var bounds = new ol.extent.boundingExtent([[geom.j.j, geom.R.R], [geom.j.R, geom.R.j]]);
 
-    //console.log(bounds);
     bounds = ol.proj.transformExtent(bounds, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
-    //console.log(bounds);
 
     map.getView().fit(bounds, map.getSize());
 }
 
 function initGeocoder(el) {
-    console.log("Running geocoder init");
 
     try {
         autocomplete = new google.maps.places.Autocomplete(el);
