@@ -13,14 +13,13 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class OperationalStakeholderForm(BaseForm):
-    STAKEHOLDER_QUERYSET = Investor.objects.existing_operational_stakeholders().order_by('name')
     form_title = _('Investor info')
 
     tg_operational_stakeholder = TitleField(
         required=False, label="", initial=_("Operational company"))
     operational_stakeholder = ModelChoiceField(
         required=False, label=_("Operational company"),
-        queryset=STAKEHOLDER_QUERYSET,
+        queryset=Investor.objects.none(),
         widget=Select(attrs={'class': 'form-control investorfield'}))
     actors = ActorsField(
         required=False,
@@ -41,6 +40,11 @@ class OperationalStakeholderForm(BaseForm):
             data['operational_stakeholder'] = op.fk_investor.id
 
         return data
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['operational_stakeholder'].queryset = Investor.objects.all()
+        self.fields['operational_stakeholder'].widget.choices = self.fields['operational_stakeholder'].choices
 
     class Meta:
         name = 'investor_info'

@@ -51,6 +51,7 @@ function dismissAddInvestorPopup(win, newId, newRepr) {
     if (elem) {
         if (elem[0].nodeName == 'SELECT') {
             elem.append($('<option></option>').val(newId).html(newRepr));
+            elem.find(':selected').removeAttr('selected');
             elem.val(newId);
             $(elem).select2("destroy").select2();
             // update list of secondary investors
