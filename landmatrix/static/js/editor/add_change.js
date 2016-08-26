@@ -58,6 +58,7 @@ function dismissAddInvestorPopup(win, newId, newRepr) {
             //  $("ul.form.empty .field.investor div").html(data);
             //  $(elem).change(); // trigger change
             //});
+            generateButtons(elem);
             loadInvestorNetwork(newId);
         }
     } else {
