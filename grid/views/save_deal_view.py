@@ -222,12 +222,13 @@ class SaveDealView(TemplateView):
         #    involvement = involvements.last()
         #    involvement.fk_investor = operational_stakeholder
         #else:
-        involvement = InvestorActivityInvolvement.objects.create(
-            fk_activity=activity,
-            fk_investor=operational_stakeholder,
-            fk_status_id=activity.STATUS_PENDING,
-        )
-        involvement.save()
+        if operational_stakeholder:
+            involvement = InvestorActivityInvolvement.objects.create(
+                fk_activity=activity,
+                fk_investor=operational_stakeholder,
+                fk_status_id=activity.STATUS_PENDING,
+            )
+            involvement.save()
 
     def get_form_by_type(self, forms, type):
         form = list(filter(lambda f: isinstance(f, type), forms))
