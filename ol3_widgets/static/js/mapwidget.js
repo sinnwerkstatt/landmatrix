@@ -527,9 +527,10 @@ $(document).ready(function () {
             var self = this;
             var callback = function(results, status) {
                 // update all bound fields
-                if (self.options.boundLocationField) {
-                    self.updateLocationField(results);
-                }
+                // Don't update location (#903)
+                //if (self.options.boundLocationField) {
+                //    self.updateLocationField(results);
+                //}
                 if (self.options.boundTargetCountryField) {
                     self.updateTargetCountryField(results);
                 }
