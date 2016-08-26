@@ -3,6 +3,8 @@ from django.db.models import Max
 from django.db import transaction
 from django.contrib import messages
 from django.forms.formsets import BaseFormSet
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
 from grid.views.save_deal_view import SaveDealView
 from landmatrix.models.activity import Activity, HistoricalActivity
@@ -54,7 +56,7 @@ class AddDealView(SaveDealView):
         else:
             self.create_activity_changeset(hactivity)
             messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
-
-        context = self.get_context_data(**self.kwargs)
-        context['forms'] = forms
-        return self.render_to_response(context)
+        return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier}))
+        #context = self.get_context_data(**self.kwargs)
+        #context['forms'] = forms
+        #return self.render_to_response(context)
