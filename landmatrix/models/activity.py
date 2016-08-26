@@ -93,6 +93,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         #if len(involvements) > 1:
         #    raise MultipleObjectsReturned('More than one OP for activity %s: %s' % (str(self), str(involvements)))
         if not involvement:
+            return
             raise ObjectDoesNotExist('No OP for activity %s: %s' % (str(self), str(involvement)))
         else:
             involvement = involvement.latest()
