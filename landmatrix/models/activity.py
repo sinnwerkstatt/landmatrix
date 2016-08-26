@@ -101,8 +101,12 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     @property
     def stakeholders(self):
-        stakeholder_involvements = InvestorVentureInvolvement.objects.filter(fk_venture=self.operational_stakeholder.pk)
-        return [Investor.objects.get(pk=involvement.fk_investor_id) for involvement in stakeholder_involvements]
+        operational_stakeholder = self.operational_stakeholder
+        if operational_stakeholder:
+            stakeholder_involvements = InvestorVentureInvolvement.objects.filter(fk_venture=operational_stakeholder.pk)
+            return [Investor.objects.get(pk=involvement.fk_investor_id) for involvement in stakeholder_involvements]
+        else:
+            return []
 
     @property
     def history(self):
