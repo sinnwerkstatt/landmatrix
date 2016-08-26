@@ -514,8 +514,8 @@ $(document).ready(function () {
         };
 
         MapWidget.prototype.updateLatLongFields = function(coordinates) {
-            this.options.boundLatField.val(coordinates[1]);
-            this.options.boundLonField.val(coordinates[0]);
+            this.options.boundLatField.val(coordinates[0]);
+            this.options.boundLonField.val(coordinates[1]);
         };
 
         MapWidget.prototype.geocodeCoordinates = function(coordinates) {
