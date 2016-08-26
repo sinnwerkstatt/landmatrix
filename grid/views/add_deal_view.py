@@ -41,7 +41,9 @@ class AddDealView(SaveDealView):
             activity_identifier=activity_identifier,
             history_user=self.request.user,
         )
-        if not self.request.user.has_perm('landmatrix.add_activity'):
+        if self.request.user.has_perm('landmatrix.add_activity'):
+            hactivity.fk_status_id = hactivity.STATUS_ACTIVE
+        else:
             hactivity.fk_status_id = hactivity.STATUS_PENDING
         hactivity.save()
         # Create new activity attributes
