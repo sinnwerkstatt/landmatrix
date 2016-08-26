@@ -19,7 +19,7 @@ class OperationalStakeholderForm(BaseForm):
     tg_operational_stakeholder = TitleField(
         required=False, label="", initial=_("Operational company"))
     operational_stakeholder = ModelChoiceField(
-        required=True, label=_("Operational company"),
+        required=False, label=_("Operational company"),
         queryset=STAKEHOLDER_QUERYSET,
         widget=Select(attrs={'class': 'form-control investorfield'}))
     actors = ActorsField(
