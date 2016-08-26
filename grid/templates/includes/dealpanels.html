@@ -36,14 +36,11 @@
                         });
                         // Init level of accuracy
                         form.find('.level_of_accuracy select').change(function () {
-                            if ($(this).val() == 'Exact location') {
-                                form.find('.point_lat :input,.point_lon :input').attr('readonly', 'readonly');
-                            } else {
-                                form.find('.point_lat :input,.point_lon :input').attr('readonly', null);
-                            }
                             if ($(this).val() == 'Coordinates') {
                                 form.find('.location :input').attr('readonly', 'readonly');
+                                form.find('.point_lat :input,.point_lon :input').attr('readonly', null);
                             } else {
+                                form.find('.point_lat :input,.point_lon :input').attr('readonly', 'readonly');
                                 form.find('.location :input').attr('readonly', null);
                             }
                         })
