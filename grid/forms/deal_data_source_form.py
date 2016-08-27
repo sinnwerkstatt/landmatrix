@@ -299,7 +299,7 @@ def error_could_not_upload(request, url, message=''):
     messages.error(
         request,
         _("Data source <a target='_blank' href='{0}'>URL</a> "
-          "could not be uploaded as a PDF file. {1} <br>"
-          "Please upload manually.").format(url, message)
+          "could not be uploaded as a PDF file."
+          "Please upload manually.").format(url)
     )
 
