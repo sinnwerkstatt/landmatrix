@@ -87,7 +87,10 @@ class RecoverDealView(SaveDealView):
                 raise Http404('Activity %s is already active' % deal_id)
         return activity 
 
-    @transaction.atomic
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier})) 
+
+    #@transaction.atomic
     def post(self, request, *args, **kwargs):
         if not self.request.user.has_perm('landmatrix.delete_activity'):
             return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier})) 

@@ -471,7 +471,7 @@ class HistoricalActivity(ActivityBase):
             activity.attributes.all().delete()
         for hattribute in self.attributes.all():
             attribute = ActivityAttribute.objects.create(
-                fk_activity_id = self.id,
+                fk_activity_id = activity.id,
                 fk_group_id = hattribute.fk_group_id,
                 fk_language_id = hattribute.fk_language_id,
                 name = hattribute.name,

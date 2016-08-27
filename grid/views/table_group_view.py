@@ -93,7 +93,6 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             },
             "name": self.group_value,
             "columns": self.columns_dict,
-            "status": self.status,
             "load_more": self._load_more_amount(),
             "group_slug": self.group,
             "group_value": self.group_value,
@@ -221,12 +220,6 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
         return self.get_formset_conditions(
             self._filter_set(data), data, self.group
         )
-
-    @property
-    def status(self):
-        if self.request.user.is_staff and "status" in self.request.GET:
-            return self.request.GET.getlist("status")
-        return ['2','3'] # FIXME: Use Activity.STATUS_ACTIVE + Activity.STATUS_OVERWRITTEN
 
     @print_execution_time_and_num_queries
     def _get_items(self, query_result):
