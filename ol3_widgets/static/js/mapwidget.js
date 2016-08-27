@@ -350,7 +350,7 @@ $(document).ready(function () {
             var contextLayers = [
                 // Global layers
                 new ol.layer.Tile({
-                    title: 'Accessibility<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
+                    title: 'Accessibility<a href="#accessability" data-toggle="modal" data-target="#map-legend"><i class="lm lm-question-circle"> </i></a>',
                     source: new ol.source.TileWMS({
                         url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
                         params: {
@@ -362,7 +362,7 @@ $(document).ready(function () {
                     opacity: 0.6
                 }),
                 new ol.layer.Tile({
-                    title: 'Global Land Cover 2009<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
+                    title: 'Global Land Cover 2009<a href="#globcover_2009" data-toggle="modal" data-target="#map-legend"><i class="lm lm-question-circle"> </i></a>',
                     source: new ol.source.TileWMS({
                         url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
                         params: {
@@ -374,7 +374,7 @@ $(document).ready(function () {
                     opacity: 0.6
                 }),
                 new ol.layer.Tile({
-                    title: 'Global Cropland<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
+                    title: 'Global Cropland<a href="#gl_cropland" data-toggle="modal" data-target="#map-legend"><i class="lm lm-question-circle"> </i></a>',
                     source: new ol.source.TileWMS({
                         url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
                         params: {
@@ -386,7 +386,7 @@ $(document).ready(function () {
                     opacity: 0.6
                 }),
                 new ol.layer.Tile({
-                    title: 'Global Pasture Land<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
+                    title: 'Global Pasture Land<a href="#gl_pasture" data-toggle="modal" data-target="#map-legend"><i class="lm lm-question-circle"> </i></a>',
                     source: new ol.source.TileWMS({
                         url: "http://sdi.cde.unibe.ch/geoserver/lo/wms",
                         params: {
@@ -399,12 +399,12 @@ $(document).ready(function () {
                 }),
                 // LAOS LOCAL LAYER! TODO!
                 new ol.layer.Tile({
-                    title: 'Incidence of poverty<a href="/maplayers#global_cropland" class="toggle-tooltip noul" title="LEGENDPOPUP"><i class="lm lm-question-circle"> </i></a>',
+                    title: 'Incidence of poverty<a href="#lo:laos_poverty_incidence" data-toggle="modal" data-target="#map-legend"><i class="lm lm-question-circle"> </i></a>',
                     source: new ol.source.TileWMS({
                         url: "http://sdi.cde.unibe.ch/geoserver/gwc/service/wms",
                         params: {
-                            "layers": "lo:laos_poverty_incidence",
-                            "srs": "EPSG%3A900913"
+                            'srs': 'EPSG%3A900913',
+                            'layers': 'lo:laos_poverty_incidence'
                         }
                     }),
                     extent: [10018755, 181, 12801601, 3482189],

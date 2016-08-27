@@ -637,6 +637,20 @@ function updateVariableSelection(variableName) {
 
         legend.appendChild(varItem);
     }
+
+    // Init layer legend modal
+    $('a[data-target="#map-legend"]').click(function () {
+        var modal = $($(this).data('target'));
+        // Set title
+        modal.find('.modal-title').text($(this).parent().text());
+        // Set legend
+        var img = $('<img>');
+        img.attr('src', 'http://sdi.cde.unibe.ch/geoserver/lo/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=30&HEIGHT=20&LAYER=' + $(this).attr('href').substr(1));
+        img.appendTo(modal.find('.modal-body').empty());
+
+        modal.modal('show');
+    });
+
 }
 
 function handleFeatureClick (feature, layer) {
