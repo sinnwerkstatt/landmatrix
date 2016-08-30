@@ -505,7 +505,7 @@ def _change_status_with_review(activity, status, user, review_decision, comment)
 #        )
 
 
-def _approve_activity_deletion(activity, changeset, cs_comment, request):
+def _approve_activity_deletion(activity, cs_comment, request):
     activity.fk_status = Status.objects.get(name="deleted")
     activity.save()
     #review_decision = ReviewDecision.objects.get(name="deleted")
