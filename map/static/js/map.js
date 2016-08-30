@@ -16,6 +16,20 @@ var clusterThreshold = 10;
 var currentVariable = 'Deal Intention';
 var markerSource = new ol.source.Vector();
 
+var intendedAreaFeatures = new ol.Collection();
+var productionAreaFeatures = new ol.Collection();
+var contractAreaFeatures = new ol.Collection();
+
+var intendedAreaSource = new ol.source.Vector({
+    features: intendedAreaFeatures
+});
+var productionAreaSource = new ol.source.Vector({
+    features: productionAreaFeatures
+});
+var contractAreaSource = new ol.source.Vector({
+    features: contractAreaFeatures
+});
+
 var clusterSource = new ol.source.Cluster({
     distance: 30,
     source: markerSource
@@ -375,32 +389,51 @@ function initMap(target) {
         })]
     };
 
-    var intendedAreaFeatures = new ol.Collection();
-    var productionAreaFeatures = new ol.Collection();
-    var intendedAreaSource = new ol.source.Vector({
-        features: intendedAreaFeatures
-    });
-    var productionAreaSource = new ol.source.Vector({
-        features: productionAreaFeatures
-    });
-
     var intendedAreaLayer = new ol.layer.Vector({
         title: 'Intended area (ha)',
         visible: true,
         source: intendedAreaSource,
-        style: function (feature, resolution) {
-            return styles[feature.getGeometry().getType()];
-        }
+        style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: GeoJSONColors['Intended area (ha)'][1],
+                width: 1
+            }),
+            fill: new ol.style.Fill({
+                color: GeoJSONColors['Intended area (ha)'][0]
+            })
+        })
     });
 
     var productionAreaLayer = new ol.layer.Vector({
         title: 'Current area in operation (ha)',
         visible: true,
         source: productionAreaSource,
-        style: function (feature, resolution) {
-            return styles[feature.getGeometry().getType()];
-        }
+        style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: GeoJSONColors['Current area in operation (ha)'][1],
+                width: 1
+            }),
+            fill: new ol.style.Fill({
+                color: GeoJSONColors['Current area in operation (ha)'][0]
+            })
+        })
     });
+
+    var contractAreaLayer = new ol.layer.Vector({
+        title: 'Contract area (ha)',
+        visible: true,
+        source: contractAreaSource,
+        style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: GeoJSONColors['Contract area (ha)'][1],
+                width: 1
+            }),
+            fill: new ol.style.Fill({
+                color: GeoJSONColors['Contract area (ha)'][0]
+            })
+        })
+    });
+
 
     layers = baseLayers;
     layers.push(
@@ -414,6 +447,7 @@ function initMap(target) {
             layers: [
                 intendedAreaLayer,
                 productionAreaLayer,
+                contractAreaLayer,
                 cluster,
                 countries
             ]
@@ -780,9 +814,15 @@ function addData (data) {
                     dataProjection: 'EPSG:4326',
                     featureProjection: 'EPSG:3857'
                 });
-                intendedAreaFeatures.push(new ol.Feature({'geometry': geometry}));
+                productionAreaFeatures.push(new ol.Feature({'geometry': geometry}));
             }
-
+            if (location.hasOwnProperty('contract_area') && location.contract_area != null) {
+                var geometry = geoJSONReader.readGeometry(location.contract_area, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:3857'
+                });
+                contractAreaFeatures.push(new ol.Feature({'geometry': geometry}));
+            }
         }
     }
     NProgress.done(true);
