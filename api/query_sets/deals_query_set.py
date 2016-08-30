@@ -43,6 +43,10 @@ class DealsQuerySet(FakeQuerySetFlat):
             'operational_stakeholder.name'
         ),
         (
+            'contract_area',
+            "ARRAY_TO_STRING(ARRAY_AGG(location.contract_area ORDER BY location.group_name),';')",
+        ),
+        (
             'intended_area',
             "ARRAY_TO_STRING(ARRAY_AGG(location.intended_area ORDER BY location.group_name),';')",
         ),
@@ -59,6 +63,7 @@ class DealsQuerySet(FakeQuerySetFlat):
             point_lat.fk_activity_id AS fk_activity_id,
             CAST(point_lat.value AS NUMERIC) AS point_lat,
             CAST(point_lon.value AS NUMERIC) AS point_lon,
+            contract_area.polygon AS contract_area,
             intended_area.polygon AS intended_area,
             production_area.polygon AS production_area
         FROM landmatrix_activityattributegroup AS aag
@@ -70,6 +75,11 @@ class DealsQuerySet(FakeQuerySetFlat):
                 ON (point_lon.name = 'point_lon'
                 AND point_lon.fk_group_id = aag.id
                 AND point_lon.fk_activity_id = point_lat.fk_activity_id)
+        LEFT JOIN landmatrix_activityattribute AS contract_area
+                ON (contract_area.name = 'contract_area'
+                AND contract_area.fk_group_id = aag.id
+                AND contract_area.fk_activity_id = point_lat.fk_activity_id
+                AND ST_IsValid(contract_area.polygon))
         LEFT JOIN landmatrix_activityattribute AS intended_area
                 ON (intended_area.name = 'intended_area'
                 AND intended_area.fk_group_id = aag.id

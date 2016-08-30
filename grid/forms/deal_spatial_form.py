@@ -31,6 +31,11 @@ class DealSpatialForm(BaseForm):
         'show_layer_switcher': True,
         'geom_type': 'MULTIPOLYGON',
     }
+    POLYGON_FIELDS = (
+        'contract_area',
+        'intended_area',
+        'production_area',
+    )
 
     form_title = _('Location')
     tg_location = TitleField(
@@ -56,6 +61,9 @@ class DealSpatialForm(BaseForm):
     location_description = forms.CharField(
         required=False, label=_("Location description"),
         widget=forms.TextInput, initial="")
+    contract_area = forms.MultiPolygonField(
+        required=False, label=_("Contract area"),
+        widget=SerializedMapWidget(attrs=AREA_WIDGET_ATTRS))
     intended_area = forms.MultiPolygonField(
         required=False, label=_("Intended area"),
         widget=SerializedMapWidget(attrs=AREA_WIDGET_ATTRS))
@@ -79,10 +87,9 @@ class DealSpatialForm(BaseForm):
         if lat_lon_attrs:
             area_widget_attrs = self.AREA_WIDGET_ATTRS.copy()
             area_widget_attrs.update(lat_lon_attrs)
-            self.fields['intended_area'].widget = SerializedMapWidget(
-                attrs=area_widget_attrs)
-            self.fields['production_area'].widget = SerializedMapWidget(
-                attrs=area_widget_attrs)
+            for polygon_field in self.POLYGON_FIELDS:
+                widget = SerializedMapWidget(attrs=area_widget_attrs)
+                self.fields[polygon_field].widget = widget
 
         location_attrs = self.get_location_map_widget_attrs(
             attrs=lat_lon_attrs)
@@ -148,7 +155,7 @@ class DealSpatialForm(BaseForm):
             attributes['target_country']['value'] = target_country.pk
 
         # For polygon fields, pass the value directly
-        for area_field_name in ('intended_area', 'production_area'):
+        for area_field_name in self.POLYGON_FIELDS:
             if area_field_name in attributes:
                 polygon_value = attributes[area_field_name]['value']
                 attributes[area_field_name] = {'polygon': polygon_value}
@@ -159,7 +166,7 @@ class DealSpatialForm(BaseForm):
     def get_data(cls, activity, group=None, prefix=""):
         data = super().get_data(activity, group=group, prefix=prefix)
 
-        for area_field_name in ('intended_area', 'production_area'):
+        for area_field_name in cls.POLYGON_FIELDS:
             area_attribute = activity.attributes.filter(
                 fk_group__name=group, name=area_field_name).first()
             if area_attribute:

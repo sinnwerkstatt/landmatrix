@@ -42,12 +42,14 @@ class BaseGeometryWidget(Widget):
         return value.wkt if value else ''
 
     def deserialize(self, value):
-        try:
-            return GEOSGeometry(value, self.map_srid)
-        except (GEOSException, ValueError) as err:
-            logger.error(
-                "Error creating geometry from value '%s' (%s)", value, err)
-        return None
+        if value:
+            try:
+                value = GEOSGeometry(value, self.map_srid)
+            except (GEOSException, ValueError) as err:
+                logger.error(
+                    "Error creating geometry from value '%s' (%s)", value, err)
+
+        return value or ''
 
     def get_context(self, name, value, attrs=None):
         # If a string reaches here (via a validation error on another

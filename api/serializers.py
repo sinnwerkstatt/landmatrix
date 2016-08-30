@@ -34,6 +34,7 @@ class UserSerializer(serializers.BaseSerializer):
 class DealLocationSerializer(serializers.Serializer):
     point_lat = serializers.DecimalField(max_digits=11, decimal_places=8)
     point_lon = serializers.DecimalField(max_digits=11, decimal_places=8)
+    contract_area = GeometryField()
     intended_area = GeometryField()
     production_area = GeometryField()
 
@@ -41,7 +42,8 @@ class DealLocationSerializer(serializers.Serializer):
         '''
         Convert our binary polygon representation to a GEOSGeometry.
         '''
-        for geo_field in ('intended_area', 'production_area'):
+        # TODO: DRY, we should have a model with a list of these fields
+        for geo_field in ('contract_area', 'intended_area', 'production_area'):
             if geo_field in obj and obj[geo_field]:
                 if not isinstance(obj[geo_field], GEOSGeometry):
                     obj[geo_field] = GEOSGeometry(obj[geo_field], srid=4326)
