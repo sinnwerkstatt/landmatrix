@@ -509,7 +509,7 @@ def _approve_activity_deletion(activity, cs_comment, request):
     activity.fk_status = Status.objects.get(name="deleted")
     activity.save()
     #review_decision = ReviewDecision.objects.get(name="deleted")
-    changeset = ActivityChangeset.objects.get_or_create(fk_activity=activity)
+    changeset, created = ActivityChangeset.objects.get_or_create(fk_activity=activity)
     changeset.fk_user = request.user
     changeset.fk_review_decision = None#review_decision
     changeset.comment = cs_comment
