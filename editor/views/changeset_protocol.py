@@ -129,8 +129,8 @@ class ChangesetProtocol(View):
                 _approve_activity_deletion(activity, activity_dict.get("comment"), request)
 
             investor = get_activity_investor(activity)
-            latest_investor = investor.get_latest_active_investor(investor.investor_identifier)
             if investor:
+                latest_investor = investor.get_latest_active_investor(investor.investor_identifier)
                 investor.fk_status_id = latest_investor and investor.STATUS_OVERWRITTEN or investor.STATUS_ACTIVE
                 investor.save()
 
