@@ -441,7 +441,10 @@ class BaseForm(forms.Form):
     def get_display_value_model_choice_field(self, field, field_name):
         value = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
         if value:
-            return str(field.queryset.get(pk=value))
+            try:
+                return str(field.queryset.get(pk=value))
+            except:
+                return ''
         else:
             return ''
 

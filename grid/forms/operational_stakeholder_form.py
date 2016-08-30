@@ -19,7 +19,7 @@ class OperationalStakeholderForm(BaseForm):
         required=False, label="", initial=_("Operational company"))
     operational_stakeholder = ModelChoiceField(
         required=False, label=_("Operational company"),
-        queryset=Investor.objects.none(),
+        queryset=Investor.objects.all(),
         widget=Select(attrs={'class': 'form-control investorfield'}))
     actors = ActorsField(
         required=False,
@@ -37,12 +37,12 @@ class OperationalStakeholderForm(BaseForm):
         op = InvestorActivityInvolvement.objects.filter(
             fk_activity_id=activity.id).first()
         if op:
-            data['operational_stakeholder'] = op.fk_investor.id
-
+            data['operational_stakeholder'] = str(op.fk_investor.id)
         return data
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        return super().__init__(*args, **kwargs)
+        # Set the queryset on runtime, because stakeholder can be added during during deal creation (popup)
         self.fields['operational_stakeholder'].queryset = Investor.objects.all()
         self.fields['operational_stakeholder'].widget.choices = self.fields['operational_stakeholder'].choices
 
