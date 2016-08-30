@@ -23,7 +23,7 @@ def get_stakeholder_id_for_stakeholder(involvement):
 
 
 def get_percentage(involvement):
-    return involvement['investment_ratio'] if involvement['investment_ratio'] else 0
+    return involvement['investment_ratio'] if involvement['investment_ratio'] else None
 
 
 def get_collective_status(pi_status, st_status):

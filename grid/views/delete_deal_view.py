@@ -88,13 +88,14 @@ class RecoverDealView(SaveDealView):
         return activity 
 
     def get(self, request, *args, **kwargs):
+        hactivity = self.get_object()
         return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier})) 
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
+        hactivity = self.get_object()
         if not self.request.user.has_perm('landmatrix.delete_activity'):
             return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier})) 
-        hactivity = self.get_object()
         attributes = hactivity.attributes.all()
         # Create new historical activity
         hactivity.pk = None
