@@ -13,7 +13,9 @@ import landmatrix.models
 
 from django.db import connections
 
+
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 def map_status_id(id):
     return id
@@ -56,24 +58,27 @@ class MapLOActivities(MapLOModel):
     ORDER BY activity_identifier
             """)
         return [id[0] for id in cursor.fetchall()]
-
+        
     tag_group_to_attribute_group_ids = {}
 
     @classmethod
     def save_activity_record(cls, new, save, imported=False):
         latest_historical_activity = None
         activity_identifier = cls.get_deal_id(new)
+
+        versions = cls.get_activity_versions(new)
+        if len(versions) > 0:
+            i = len(versions) -1
+        else:
+            i = 0
+
         if save:
             new.id = None  # Don't assume that ids line up
             new.activity_identifier = activity_identifier
             new.fk_status = landmatrix.models.Status.objects.get(
                 name="pending")
             new.save(using=V2)
-        versions = cls.get_activity_versions(new)
-        if len(versions) > 0:
-            i = len(versions) -1
-        else:
-            i = 0
+
         historical_activity = landmatrix.models.HistoricalActivity(
             id=new.id,
             activity_identifier=activity_identifier,
@@ -87,27 +92,6 @@ class MapLOActivities(MapLOModel):
             historical_activity.save(using=V2)
             changeset.save(using=V2)
 
-
-        #if not imported:
-        #versions = cls.get_activity_versions(new)
-        #for i, version in enumerate(versions):
-        #    # Only save newest version
-        #    if i+1 == len(version):
-        #        historical_activity = landmatrix.models.HistoricalActivity(
-        #            id=new.id,
-        #            activity_identifier=activity_identifier,
-        #            availability=version['reliability'],
-        #            fk_status_id=version['fk_status'],
-        #            fully_updated=False,
-        #            history_date=calculate_history_date(versions, i),
-        #            history_user=get_history_user(version))
-        #        changeset = landmatrix.models.ActivityChangeset(
-        #            comment='Imported from Land Observatory',
-        #            fk_activity=historical_activity)
-#
-        #        if save:
-        #            historical_activity.save(using=V2)
-        #            changeset.save(using=V2)
         return new
 
     @classmethod
@@ -138,22 +122,28 @@ class MapLOActivities(MapLOModel):
         )
 
         uuid = Activity.objects.using(cls.DB).filter(id=lo_record_id).values_list('activity_identifier', flat=True).first()
+        imported_attrs = {
+            'source': 'Land Observatory',
+            'id': str(uuid),
+            'timestamp': timezone.now().isoformat(),
+        }
+
         cls.write_activity_attribute_group(
-            new,
-            {'type': 'Other', 'tg_data_source_comment': str(uuid)},
-            group_proxy,
-            None,
-            'data_source_0',
-            None
-        )
+            new, imported_attrs, group_proxy, None, 'imported', None)
 
     @classmethod
     def write_standard_tag_groups(cls, new, tag_groups):
         location_set = False
+        data_source_counter = 0
         for tag_group in tag_groups:
             attrs = {}
             polygon = None
             group_name = cls.tag_group_name(tag_group)
+
+            # Add all data sources, not just the last one
+            if group_name == 'data_source':
+                group_name = 'data_source_{}'.format(data_source_counter)
+                data_source_counter += 1
 
             # set location - stored in activity in LO, but tag group in LM
             if group_name == 'location_0' and not location_set:
@@ -169,6 +159,7 @@ class MapLOActivities(MapLOModel):
                 key = tag.key.key
                 value = tag.value.value
 
+                # Not sure if this is required, but it doesn't hurt
                 if key in attrs and value != attrs[key]:
                     cls.write_activity_attribute_group_with_comments(new, attrs, tag_group,
                         None, group_name, polygon)
@@ -201,10 +192,10 @@ class MapLOActivities(MapLOModel):
             'Current Number of daily/seasonal workers': 'total_number_of_jobs_created',
             'Current number of employees': 'total_number_of_jobs_created',
             'Current total number of jobs': 'total_number_of_jobs_created',
-            'Data source': 'data_source_0',
+            'Data source': 'data_source',
             'Date': '',
             'Duration of Agreement (years)': 'agreement_duration',
-            'Files': 'data_source_0',
+            'Files': 'data_source',
             'Former predominant land cover': 'land_cover',
             'Former predominant land owner': 'land_owner',
             'Former predominant land use': 'land_use',
@@ -229,11 +220,11 @@ class MapLOActivities(MapLOModel):
             'Promised or received compensation': 'community_compensation',
             'Purchase price': 'purchase_price',
             'Purchase price area (ha)': 'purchase_price',
-            'Remark': 'data_source_0',
+            'Remark': 'data_source',
             'Scope of agriculture': '',
             'Scope of forestry': '',
             'Spatial Accuracy': 'location_0',
-            'URL / Web': 'data_source_0',
+            'URL / Web': 'data_source',
             'Use of produce': 'use_of_produce',
             'Water extraction': 'source_of_water_extraction',
             'Year': '',
@@ -243,7 +234,6 @@ class MapLOActivities(MapLOModel):
             for key, value in map_to_name.items():
                 if key in tag_group.tag.key.key:
                     return value
-            print(tag_group, tag_group.tag)
             return A_Value.objects.using(cls.DB).get(pk=tag_group.tag.fk_a_value).value
         except Exception:
             return None
@@ -271,16 +261,22 @@ class MapLOActivities(MapLOModel):
 
     @classmethod
     def write_activity_attribute_group(cls, activity, attrs, tag_group, year, name, polygon):
-        #activity_id = cls.matching_activity_id(tag_group)
         if 'YEAR' in attrs:
             year = attrs['YEAR']
             del attrs['YEAR']
 
-        save = cls._save# and cls.is_current_version(tag_group)
-        aag, created = landmatrix.models.ActivityAttributeGroup.objects.get_or_create(name=name)
+        save = cls._save
+        # I think aags should be distinct, but they aren't, so just go with it
+        try:
+            aag = landmatrix.models.ActivityAttributeGroup.objects.get(name=name)
+        except landmatrix.models.ActivityAttributeGroup.MultipleObjectsReturned:
+            aag = landmatrix.models.ActivityAttributeGroup.objects.filter(name=name).last()
+        except landmatrix.models.ActivityAttributeGroup.DoesNotExist:
+            aag = landmatrix.models.ActivityAttributeGroup(name=name)
+            if save:
+               aag.save(using=V2)
+
         english = landmatrix.models.Language.objects.get(pk=1)
-        #if save:
-        #    aag.save(using=V2)
 
         for key, value in attrs.items():
             if '#' in str(value):
@@ -309,20 +305,6 @@ class MapLOActivities(MapLOModel):
                 aa.save(using=V2)
                 haa.save(using=V2)
 
-        # No need to import LO history
-        #if cls._save:
-        #    if not cls.is_current_version(tag_group):
-        #        
-        #        aag = landmatrix.models.HistoricalActivityAttribute.objects.create(
-        #            history_date=cls.get_history_date(tag_group),
-        #            fk_activity_id=activity_id,
-        #            fk_language=landmatrix.models.Language.objects.get(pk=1),
-        #            date=year,
-        #            attributes=attrs,
-        #            name=name,
-        #            polygon=polygon
-        #        )
-#
         if hasattr(aag, 'id'):
             cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
 
@@ -383,62 +365,57 @@ def is_imported_deal_groups(groups):
 
 
 def transform_attributes(attrs):
-    try:
-        clean_attrs = {}
-        for key, value in attrs.items():
-            key, value = clean_attribute(key, value)
-            clean_attrs[key] = value
-        attrs = clean_attrs
-        if 'NUMBER_OF_FARMERS' in attrs:
-            if attrs.get('contract_farming', '') == 'On the lease':
-                attrs['on_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
-            else:
-                attrs['off_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
-            del attrs['NUMBER_OF_FARMERS']
-        if 'NAME' in attrs:
-            del attrs['NAME']
-        if 'YEAR' in attrs:
-            attrs = {
-                key: value+'#'+attrs['YEAR']+'-01-01' if isinstance(value, str) else value
-                for key, value in attrs.items()
-                if key != 'YEAR'
-            }
-            # don't delete from attrs, that is done in write_activity_attribute_group() above
-        if 'REMARK' in attrs:
-            if attrs.get('url') == 'http://www.landmatrix.org':
-                pass
-            elif 'implementation_status' in attrs:
-                attrs['tg_implementation_status_comment'] = attrs['REMARK']
-            elif 'data_source' in attrs:
-                attrs['tg_data_source_comment'] = attrs['REMARK']
-            elif 'intended_size' in attrs:
-                attrs['tg_land_area_comment'] = attrs['REMARK']
-            elif 'point_lat' in attrs:
-                attrs['tg_location_comment'] = attrs['REMARK']
-            elif 'community_consultation' in attrs:
-                attrs['tg_community_consultation_comment'] = attrs['REMARK']
-            elif 'community_reaction' in attrs:
-                attrs['tg_community_reaction_comment'] = attrs['REMARK']
-            elif 'contract_farming' in attrs:
-                attrs['tg_contract_farming_comment'] = attrs['REMARK']
-            elif 'annual_leasing_fee' in attrs:
-                attrs['tg_leasing_fees_comment'] = attrs['REMARK']
-            elif 'purchase_price' in attrs:
-                attrs['tg_purchase_price_comment'] = attrs['REMARK']
-            elif 'source_of_water_extraction' in attrs:
-                attrs['tg_source_of_water_extraction_comment'] = attrs['REMARK']
-            elif 'number_of_displaced_people' in attrs:
-                attrs['tg_number_of_displaced_people_comment'] = attrs['REMARK']
-            elif 'use_of_produce' in attrs or 'use_of_produce_comment' in attrs:
-                attrs['tg_use_of_produce_comment'] = attrs['REMARK']
-            elif 'benefits' in attrs['REMARK']:
-                attrs['tg_materialized_benefits_comment'] = attrs['REMARK']
+    clean_attrs = {}
+    for key, value in attrs.items():
+        key, value = clean_attribute(key, value)
+        clean_attrs[key] = value
+    attrs = clean_attrs
+    if 'NUMBER_OF_FARMERS' in attrs:
+        if attrs.get('contract_farming', '') == 'On the lease':
+            attrs['on_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
+        else:
+            attrs['off_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
+        del attrs['NUMBER_OF_FARMERS']
+    if 'NAME' in attrs:
+        del attrs['NAME']
+    if 'YEAR' in attrs:
+        attrs = {
+            key: value+'#'+attrs['YEAR']+'-01-01' if isinstance(value, str) else value
+            for key, value in attrs.items()
+            if key != 'YEAR'
+        }
+        # don't delete from attrs, that is done in write_activity_attribute_group() above
+    if 'REMARK' in attrs:
+        if attrs.get('url') == 'http://www.landmatrix.org':
+            pass
+        elif 'implementation_status' in attrs:
+            attrs['tg_implementation_status_comment'] = attrs['REMARK']
+        elif 'data_source' in attrs:
+            attrs['tg_data_source_comment'] = attrs['REMARK']
+        elif 'intended_size' in attrs:
+            attrs['tg_land_area_comment'] = attrs['REMARK']
+        elif 'point_lat' in attrs:
+            attrs['tg_location_comment'] = attrs['REMARK']
+        elif 'community_consultation' in attrs:
+            attrs['tg_community_consultation_comment'] = attrs['REMARK']
+        elif 'community_reaction' in attrs:
+            attrs['tg_community_reaction_comment'] = attrs['REMARK']
+        elif 'contract_farming' in attrs:
+            attrs['tg_contract_farming_comment'] = attrs['REMARK']
+        elif 'annual_leasing_fee' in attrs:
+            attrs['tg_leasing_fees_comment'] = attrs['REMARK']
+        elif 'purchase_price' in attrs:
+            attrs['tg_purchase_price_comment'] = attrs['REMARK']
+        elif 'source_of_water_extraction' in attrs:
+            attrs['tg_source_of_water_extraction_comment'] = attrs['REMARK']
+        elif 'number_of_displaced_people' in attrs:
+            attrs['tg_number_of_displaced_people_comment'] = attrs['REMARK']
+        elif 'use_of_produce' in attrs or 'use_of_produce_comment' in attrs:
+            attrs['tg_use_of_produce_comment'] = attrs['REMARK']
+        elif 'benefits' in attrs['REMARK']:
+            attrs['tg_materialized_benefits_comment'] = attrs['REMARK']
 
-            del attrs['REMARK']
-
-    except TypeError:
-        print(attrs)
-        raise Exception
+        del attrs['REMARK']
 
     return attrs
 
