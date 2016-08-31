@@ -1,5 +1,6 @@
 import time
 import re
+import operator
 
 from django.db.models.query import QuerySet
 from django.db import connection
@@ -59,6 +60,7 @@ class FakeQuerySet(QuerySet):
         self._limit = self.LIMIT
         self._filter_sql = self._get_filter(request)
         self.user = request.user
+        self._statuses = self._get_activity_statuses(request)
 
         is_public_condition = self.is_public_condition()
         if is_public_condition:
@@ -86,6 +88,32 @@ class FakeQuerySet(QuerySet):
         no_dups = self._uniquify_join_expressions(self._additional_joins)
         # print('additional joins:', no_dups)
         return "\n".join(no_dups)
+
+    def _get_activity_statuses(self, request):
+        # Parse activity statuses out of query params, and validate that they
+        # are real at least, and that only staff can access not public statuses
+        if 'status' in request.query_params:
+            statuses = []
+            if self.user.is_staff:
+                # Staff can view all statuses
+                allowed = set(map(
+                    operator.itemgetter(0), Activity.STATUS_CHOICES))
+            else:
+                allowed = set(Activity.PUBLIC_STATUSES)
+
+            for status in request.query_params.getlist('status'):
+                try:
+                    status = int(status)
+                except (ValueError, TypeError):
+                    continue
+
+                if status in allowed:
+                    statuses.append(status)
+
+        else:
+            statuses = Activity.PUBLIC_STATUSES
+
+        return statuses
 
     def _uniquify_join_expressions(self, joins):
         no_dups = []
@@ -216,4 +244,5 @@ class FakeQuerySet(QuerySet):
             return "a.is_public = 't'"
 
     def status_active_condition(self):
-        return "a.fk_status_id IN (%s)" % ', '.join((str(Activity.STATUS_ACTIVE), str(Activity.STATUS_OVERWRITTEN)))
+        statuses = ', '.join([str(status) for status in self._statuses])
+        return "a.fk_status_id IN ({})".format(statuses)

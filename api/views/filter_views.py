@@ -64,26 +64,8 @@ class FilterView(APIView):
 
         return Response(stored_filters)
 
-    #@staticmethod
-    #def _get_filter_label(variable):
-    #    # TODO: move label generation elsewhere, it shares code
-    #    # with FilterViewMixin
-    #    label = ''
-    #    # for formsets, we want form.form
-    #    deal_forms = [
-    #        form.form if hasattr(form, 'form') else form
-    #        for form in SaveDealView.FORMS
-    #    ]
-    #    for form in deal_forms:
-    #        if variable in form.base_fields:
-    #            label = str(form.base_fields[variable].label)
-    #            break
-    #    if not label and variable == 'activity_identifier':
-    #        label = _('Deal ID')
-    #    return label
-
     def get(self, request, *args, **kwargs):
-        if request.GET.get('clear', '') == '1':
+        if request.query_params.get('clear') == '1':
             request.session['filters'] = {}
 
         filters = self.get_object()

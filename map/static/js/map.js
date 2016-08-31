@@ -620,7 +620,12 @@ function getApiData() {
     // If the zoom level is below the clustering threshold, show
     // country-based "clusters".
     if (view.getZoom() < countryThreshold) {
-        $.get('/api/target_country_summaries.json', addCountrySummariesData);
+        var url = '/api/target_country_summaries.json';
+        // append any querystring params
+        if (window.location.search) {
+            url = url + window.location.search;
+        }
+        $.get(url, addCountrySummariesData);
     // Otherwise fetch individual deals for the current map viewport.
     } else {
         var limit = 500;
@@ -631,11 +636,12 @@ function getApiData() {
         // Window
         extent = map.getView().calculateExtent(map.getSize());
         extent = ol.extent.applyTransform(extent, ol.proj.getTransform("EPSG:3857", "EPSG:4326"));
-        $.get(
-            "/api/deals.json?" + query_params + '&window=' + extent.join(','),
-            //&investor_country=<country id>&investor_region=<region id>&target_country=<country id>&target_region=<region id>&window=<lat_min,lon_min,lat_max,lat_max>
-            addData
-        ).fail(function () {
+        var url = "/api/deals.json?" + query_params + '&window=' + extent.join(',');
+        // append any other querystring params
+        if (window.location.search) {
+            url = url + '&' + window.location.search.slice(1);
+        }
+        $.get(url, addData).fail(function () {
             NProgress.done();
         });
     }

@@ -8,22 +8,30 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.status import Status
-from landmatrix.models.activity_attribute_group import ActivityAttribute, HistoricalActivityAttribute
-from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
+from landmatrix.models.activity_attribute_group import (
+    ActivityAttribute, HistoricalActivityAttribute,
+)
+from landmatrix.models.investor import (
+    Investor, InvestorActivityInvolvement, InvestorVentureInvolvement,
+)
 from landmatrix.models.country import Country
+
 
 class ActivityQuerySet(models.QuerySet):
     def public(self):
-        return self.filter(fk_status_id__in=(ActivityBase.STATUS_ACTIVE, ActivityBase.STATUS_OVERWRITTEN))
+        return self.filter(fk_status_id__in=ActivityBase.PUBLIC_STATUSES)
 
     def public_or_deleted(self):
-        return self.filter(fk_status_id__in=(ActivityBase.STATUS_ACTIVE, ActivityBase.STATUS_OVERWRITTEN, ActivityBase.STATUS_DELETED))
+        statuses = ActivityBase.PUBLIC_STATUSES + (ActivityBase.STATUS_DELETED,)
+        return self.filter(fk_status_id__in=statuses)
 
     def public_or_pending(self):
-        return self.filter(fk_status_id__in=(ActivityBase.STATUS_ACTIVE, ActivityBase.STATUS_OVERWRITTEN, ActivityBase.STATUS_PENDING, ActivityBase.STATUS_TO_DELETE))
+        statuses = ActivityBase.PUBLIC_STATUSES + (ActivityBase.STATUS_PENDING,)
+        return self.filter(fk_status_id__in=status)
 
     def pending(self):
-        return self.filter(fk_status_id__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_TO_DELETE))
+        statuses = (ActivityBase.STATUS_PENDING, ActivityBase.STATUS_TO_DELETE)
+        return self.filter(fk_status_id__in=statuses)
 
 
 class NegotiationStatusManager(models.Manager):
@@ -54,13 +62,14 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     STATUS_DELETED = 4
     STATUS_REJECTED = 5
     STATUS_TO_DELETE = 6
+    PUBLIC_STATUSES = (STATUS_ACTIVE, STATUS_OVERWRITTEN)
     STATUS_CHOICES = (
-        STATUS_PENDING, _('Pending'),
-        STATUS_ACTIVE, _('Active'),
-        STATUS_OVERWRITTEN, _('Overwritten'),
-        STATUS_DELETED, _('Deleted'),
-        STATUS_REJECTED, _('Rejected'),
-        STATUS_TO_DELETE, _('To delete'),
+        (STATUS_PENDING, _('Pending')),
+        (STATUS_ACTIVE, _('Active')),
+        (STATUS_OVERWRITTEN, _('Overwritten')),
+        (STATUS_DELETED, _('Deleted')),
+        (STATUS_REJECTED, _('Rejected')),
+        (STATUS_TO_DELETE, _('To delete')),
     )
 
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
@@ -80,8 +89,11 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     @classmethod
     def get_latest_active_activity(cls, activity_identifier):
-        return cls.objects.filter(activity_identifier=activity_identifier).\
-            filter(fk_status__in=(cls.STATUS_ACTIVE, cls.STATUS_OVERWRITTEN, cls.STATUS_DELETED)).order_by('-id').first()
+        queryset = cls.objects.public_or_deleted()
+        queryset = queryset.filter(activity_identifier=activity_identifier)
+        item = queryset.order_by('-id').first()
+
+        return item
 
     @property
     def operational_stakeholder(self):
@@ -123,6 +135,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
                 return None
         else:
             return None
+
 
 class Activity(ActivityBase):
     """Just the most recent approved version of an activity (for simple queries in the public interface)"""
