@@ -5,7 +5,7 @@ from .land_observatory_objects.tags import A_Value
 from .land_observatory_objects.activity import Activity
 from .land_observatory_objects.tag_groups import A_Tag_Group
 from .map_lo_model import MapLOModel
-from .map_activity import calculate_history_date, get_history_user
+from .map_activity import calculate_history_date
 from django.utils import timezone
 from migrate import V2
 
@@ -41,7 +41,9 @@ class MapLOActivities(MapLOModel):
         deals = [
             deal
             for deal in all_deals
-            if get_deal_country(deal) not in ['China', 'Myanmar', 'Tanzania, United Republic of', 'Viet Nam']
+            if get_deal_country(deal) not in [
+                'China', 'Myanmar', 'Tanzania, United Republic of', 'Viet Nam'
+            ]
             if not is_unchanged_imported_deal(deal)
         ]
         cls._count = len(deals)
@@ -54,40 +56,43 @@ class MapLOActivities(MapLOModel):
         cursor.execute("""
     SELECT id
     FROM activities AS a
-    WHERE version = (SELECT MAX(version) FROM activities WHERE activity_identifier = a.activity_identifier)
+    WHERE version = (
+        SELECT MAX(version) FROM activities
+        WHERE activity_identifier = a.activity_identifier
+    )
     ORDER BY activity_identifier
             """)
         return [id[0] for id in cursor.fetchall()]
-        
+
     tag_group_to_attribute_group_ids = {}
 
     @classmethod
-    def save_activity_record(cls, new, save, imported=False):
-        latest_historical_activity = None
-        activity_identifier = cls.get_deal_id(new)
-
+    def save_activity_record(
+            cls, new, save, activity_identifier, imported=False):
         versions = cls.get_activity_versions(new)
         if len(versions) > 0:
-            i = len(versions) -1
+            i = len(versions) - 1
         else:
             i = 0
 
+        new.id = None
+        new.activity_identifier = activity_identifier
+        new.fk_status = landmatrix.models.Status.objects.using(V2).get(
+            name="pending")
+
         if save:
-            new.id = None  # Don't assume that ids line up
-            new.activity_identifier = activity_identifier
-            new.fk_status = landmatrix.models.Status.objects.get(
-                name="pending")
             new.save(using=V2)
 
         historical_activity = landmatrix.models.HistoricalActivity(
             id=new.id,
-            activity_identifier=activity_identifier,
+            activity_identifier=new.activity_identifier,
             fk_status_id=1,
             history_date=calculate_history_date(versions, i),
             history_user_id=75)
         changeset = landmatrix.models.ActivityChangeset(
             comment='Imported from Land Observatory',
             fk_activity=historical_activity)
+
         if save:
             historical_activity.save(using=V2)
             changeset.save(using=V2)
@@ -101,13 +106,14 @@ class MapLOActivities(MapLOModel):
         cls._save = save
         tag_groups = A_Tag_Group.objects.using(cls.DB).filter(fk_activity=lo_record_id)
 
+        activity_identifier = None
         imported = is_imported_deal_groups(tag_groups)
         if imported:
             # set activity identifier to Tag "Original reference number"
             original_refnos = get_group_tags(tag_groups, "Original reference number")
-            new.activity_identifier = original_refnos[0]
+            activity_identifier = original_refnos[0]
 
-        new = cls.save_activity_record(new, save, imported)
+        new = cls.save_activity_record(new, save, activity_identifier, imported)
 
         cls.write_standard_tag_groups(new, tag_groups)
 
@@ -122,14 +128,14 @@ class MapLOActivities(MapLOModel):
         )
 
         uuid = Activity.objects.using(cls.DB).filter(id=lo_record_id).values_list('activity_identifier', flat=True).first()
-        imported_attrs = {
-            'source': 'Land Observatory',
-            'id': str(uuid),
-            'timestamp': timezone.now().isoformat(),
-        }
-
         cls.write_activity_attribute_group(
-            new, imported_attrs, group_proxy, None, 'imported', None)
+            new,
+            {'type': 'Other', 'tg_data_source_comment': str(uuid)},
+            group_proxy,
+            None,
+            'data_source_0',
+            None
+        )
 
     @classmethod
     def write_standard_tag_groups(cls, new, tag_groups):
@@ -268,15 +274,15 @@ class MapLOActivities(MapLOModel):
         save = cls._save
         # I think aags should be distinct, but they aren't, so just go with it
         try:
-            aag = landmatrix.models.ActivityAttributeGroup.objects.get(name=name)
+            aag = landmatrix.models.ActivityAttributeGroup.objects.using(V2).get(name=name)
         except landmatrix.models.ActivityAttributeGroup.MultipleObjectsReturned:
-            aag = landmatrix.models.ActivityAttributeGroup.objects.filter(name=name).last()
+            aag = landmatrix.models.ActivityAttributeGroup.objects.using(V2).filter(name=name).last()
         except landmatrix.models.ActivityAttributeGroup.DoesNotExist:
             aag = landmatrix.models.ActivityAttributeGroup(name=name)
             if save:
                aag.save(using=V2)
 
-        english = landmatrix.models.Language.objects.get(pk=1)
+        english = landmatrix.models.Language.objects.using(V2).get(pk=1)
 
         for key, value in attrs.items():
             if '#' in str(value):
@@ -327,12 +333,6 @@ class MapLOActivities(MapLOModel):
         ).values_list('id', flat=True).distinct().first()
 
         return current_activity
-
-    @classmethod
-    def get_deal_id(cls, activity):
-        # if activity already in DB, return its ID
-        return landmatrix.models.Activity.objects.using(V2).values().\
-            aggregate(Max('activity_identifier'))['activity_identifier__max']+1
 
     @classmethod
     def get_activity_versions(cls, activity):
