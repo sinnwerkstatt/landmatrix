@@ -128,14 +128,13 @@ class MapLOActivities(MapLOModel):
         )
 
         uuid = Activity.objects.using(cls.DB).filter(id=lo_record_id).values_list('activity_identifier', flat=True).first()
+        imported_attrs = {
+            'source': 'Land Observatory',
+            'id': str(uuid),
+            'timestamp': timezone.now().isoformat(),
+        }
         cls.write_activity_attribute_group(
-            new,
-            {'type': 'Other', 'tg_data_source_comment': str(uuid)},
-            group_proxy,
-            None,
-            'data_source_0',
-            None
-        )
+            new, imported_attrs, group_proxy, None, 'imported', None)
 
     @classmethod
     def write_standard_tag_groups(cls, new, tag_groups):
