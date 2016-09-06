@@ -22,7 +22,9 @@ def map_status_id(id):
 
 
 class MapLOActivities(MapLOModel):
-
+    '''
+    Activities should be mapped to an existing record where there is one.
+    '''
     _save = False
 
     old_class = Activity
@@ -51,6 +53,15 @@ class MapLOActivities(MapLOModel):
         return Activity.objects.using(cls.DB).filter(pk__in=[deal.id for deal in deals]).values()
 
     @classmethod
+    def get_existing_record(cls, record):
+        already_imported = cls.new_class.objects.using(V2)
+        already_imported = already_imported.filter(
+            attributes__fk_group__name='imported', attributes__name='id',
+            attributes__value=record['activity_identifier']).first()
+
+        return already_imported
+
+    @classmethod
     def all_ids(cls):
         cursor = connections[cls.DB].cursor()
         cursor.execute("""
@@ -75,7 +86,6 @@ class MapLOActivities(MapLOModel):
         else:
             i = 0
 
-        new.id = None
         new.activity_identifier = activity_identifier
         new.fk_status = landmatrix.models.Status.objects.using(V2).get(
             name="pending")
@@ -100,10 +110,9 @@ class MapLOActivities(MapLOModel):
         return new
 
     @classmethod
-    def save_record(cls, new, save):
+    def save_record(cls, new, old, save):
         """Save all versions of an activity as HistoricalActivity records."""
-        lo_record_id = new.id
-        cls._save = save
+        lo_record_id = old['id']
         tag_groups = A_Tag_Group.objects.using(cls.DB).filter(fk_activity=lo_record_id)
 
         activity_identifier = None
@@ -115,7 +124,14 @@ class MapLOActivities(MapLOModel):
 
         new = cls.save_activity_record(new, save, activity_identifier, imported)
 
-        cls.write_standard_tag_groups(new, tag_groups)
+        # Clear any existing attrs for imported deals (we're going to write
+        # them again)
+        landmatrix.models.ActivityAttribute.objects.using(V2).filter(
+            fk_activity=new).delete()
+        landmatrix.models.HistoricalActivityAttribute.objects.using(V2).filter(
+            fk_activity_id=new.id).delete()
+
+        cls.write_standard_tag_groups(new, tag_groups, save=save)
 
         group_proxy = type('MockTagGroup', (object,), {"fk_activity": new.id, 'id': None})
         cls.write_activity_attribute_group(
@@ -124,20 +140,20 @@ class MapLOActivities(MapLOModel):
             group_proxy,
             None,
             'not_public',
-            None
-        )
+            None,
+            save=save)
 
-        uuid = Activity.objects.using(cls.DB).filter(id=lo_record_id).values_list('activity_identifier', flat=True).first()
+        old_record = cls.old_class.objects.using(cls.DB).get(id=lo_record_id)
         imported_attrs = {
             'source': 'Land Observatory',
-            'id': str(uuid),
+            'id': str(old_record.activity_identifier),
             'timestamp': timezone.now().isoformat(),
         }
         cls.write_activity_attribute_group(
-            new, imported_attrs, group_proxy, None, 'imported', None)
+            new, imported_attrs, group_proxy, None, 'imported', None, save=save)
 
     @classmethod
-    def write_standard_tag_groups(cls, new, tag_groups):
+    def write_standard_tag_groups(cls, new, tag_groups, save=False):
         location_set = False
         data_source_counter = 0
         for tag_group in tag_groups:
@@ -167,7 +183,7 @@ class MapLOActivities(MapLOModel):
                 # Not sure if this is required, but it doesn't hurt
                 if key in attrs and value != attrs[key]:
                     cls.write_activity_attribute_group_with_comments(new, attrs, tag_group,
-                        None, group_name, polygon)
+                        None, group_name, polygon, save=save)
                     attrs = {}
                     polygon = None
 
@@ -175,7 +191,7 @@ class MapLOActivities(MapLOModel):
 
             if attrs:
                 cls.write_activity_attribute_group_with_comments(new, attrs, tag_group,
-                    None, group_name, polygon)
+                    None, group_name, polygon, save=save)
 
     @classmethod
     def tag_group_name(cls, tag_group):
@@ -255,22 +271,20 @@ class MapLOActivities(MapLOModel):
         return tag_group.tags
 
     @classmethod
-    def write_activity_attribute_group_with_comments(cls, activity, attrs, tag_group, year, name, polygon):
+    def write_activity_attribute_group_with_comments(cls, activity, attrs, tag_group, year, name, polygon, save=False):
         if (len(attrs) == 1) and attrs.get('name'):
             return
 
         attrs = transform_attributes(attrs)
         aag = cls.write_activity_attribute_group(
-            activity, attrs, tag_group, year, name, polygon
-        )
+            activity, attrs, tag_group, year, name, polygon, save=save)
 
     @classmethod
-    def write_activity_attribute_group(cls, activity, attrs, tag_group, year, name, polygon):
+    def write_activity_attribute_group(cls, activity, attrs, tag_group, year, name, polygon, save=False):
         if 'YEAR' in attrs:
             year = attrs['YEAR']
             del attrs['YEAR']
 
-        save = cls._save
         # I think aags should be distinct, but they aren't, so just go with it
         try:
             aag = landmatrix.models.ActivityAttributeGroup.objects.using(V2).get(name=name)

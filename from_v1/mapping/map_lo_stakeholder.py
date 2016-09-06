@@ -11,7 +11,6 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapLOStakeholder(MapLOModel):
-
     old_class = Stakeholder
     new_class = landmatrix.models.Investor
     attributes = {
@@ -45,8 +44,19 @@ class MapLOStakeholder(MapLOModel):
         return set(existing_names)
 
     @classmethod
-    def save_record(cls, new, save):
-        old = cls.old_class.objects.using(cls.DB).get(pk=new.id)
+    def get_existing_record(cls, record):
+        uuid_match = 'UUID: {}'.format(record['stakeholder_identifier'])
+
+        already_imported = cls.new_class.objects.using(V2)
+        already_imported = already_imported.filter(
+            comment__contains=uuid_match).first()
+
+        return already_imported
+
+    @classmethod
+    def save_record(cls, new, old, save):
+        old = cls.old_class.objects.using(cls.DB).get(pk=old['id'])
+
         new.investor_identifier = new.id
         new.name = old.get_tag_value('Name') or ''
         new.fk_country = get_lm_country(
@@ -121,7 +131,7 @@ def get_lm_country(lo_country_name):
 
     if lo_country_name:
         try:
-            country = landmatrix.models.Country.objects.get(
+            country = landmatrix.models.Country.objects.using(V2).get(
                 name=lo_country_name)
         except landmatrix.models.Country.DoesNotExist:
             message = 'Country "{}" does not exist in land matrix DB'.format(

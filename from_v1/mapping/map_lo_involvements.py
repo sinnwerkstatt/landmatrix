@@ -17,6 +17,9 @@ class MapLOInvolvements(MapLOModel):
 
     @classmethod
     def all_records(cls):
+        # TODO: these aren't reliable (the all_records) results filter out
+        # some things.. We should get ALL records, and check if they've been
+        # imported.
         all_stakeholders = MapLOStakeholder.all_records()
         all_activities = MapLOActivities.all_records()
         all_activity_ids = [activity['id'] for activity in all_activities]
@@ -55,7 +58,7 @@ class MapLOInvolvements(MapLOModel):
                 new_record.fk_investor = new_investor
                 new_record.fk_status_id = cls.IMPORT_STATUS_ID
 
-                cls.save_record(new_record, save=save)
+                cls.save_record(new_record, record, save=save)
         else:
             print(
                 "Couldn't find an imported investor with a UUID matching",
@@ -68,7 +71,7 @@ class MapLOInvolvements(MapLOModel):
 
         attr_model = new_models.ActivityAttribute
         new_activity_attr_queryset = attr_model.objects.using(V2).filter(
-            name='tg_data_source_comment', value__contains=uuid)
+            fk_group__name='imported', name='id', value=uuid)
         new_activity_attr = new_activity_attr_queryset.first()
         if new_activity_attr:
             try:
