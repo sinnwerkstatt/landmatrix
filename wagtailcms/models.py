@@ -12,6 +12,7 @@ from django.conf import settings
 from django import forms
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.http import Http404
 
 from wagtail_modeltranslation.models import TranslationMixin
 from wagtail.wagtailcore import hooks
@@ -392,6 +393,10 @@ class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
     ]
     subpage_types = ['wagtailcms.RegionPage']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.region = None
+
     def get_context(self, request):
         context = super(RegionIndex, self).get_context(request)
         if self.region:
@@ -402,7 +407,10 @@ class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
         kwargs = request.resolver_match.kwargs
         region_slug = kwargs.get('region_slug', None)
         if region_slug:
-            self.region = DataRegion.objects.get(slug=region_slug)
+            try:
+                self.region = DataRegion.objects.get(slug=region_slug)
+            except DataRegion.DoesNotExist:
+                raise Http404('Region data not found.')
             for data in (DATA_BLOCKS + COLUMN_BLOCKS):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
         return super(RegionIndex, self).serve(request)
@@ -434,7 +442,9 @@ class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
     ]
     subpage_types = ['wagtailcms.CountryPage']
 
-    country = None
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.country = None
 
     def get_context(self, request):
         context = super(CountryIndex, self).get_context(request)
@@ -446,7 +456,10 @@ class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
         kwargs = request.resolver_match.kwargs
         country_slug = kwargs.get('country_slug', None)
         if country_slug:
-            self.country = DataCountry.objects.get(slug=country_slug)
+            try:
+                self.country = DataCountry.objects.get(slug=country_slug)
+            except DataCountry.DoesNotExist:
+                raise Http404('Country data not found.')
             for data in (DATA_BLOCKS + COLUMN_BLOCKS):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(country=self.country)
         return super(CountryIndex, self).serve(request)
