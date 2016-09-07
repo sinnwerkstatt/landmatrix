@@ -275,7 +275,7 @@ class MapLOActivities(MapLOModel):
         if (len(attrs) == 1) and attrs.get('name'):
             return
 
-        attrs = transform_attributes(attrs)
+        attrs = transform_attributes(attrs, group_name=name or '')
         aag = cls.write_activity_attribute_group(
             activity, attrs, tag_group, year, name, polygon, save=save)
 
@@ -377,7 +377,7 @@ def is_imported_deal_groups(groups):
     return False
 
 
-def transform_attributes(attrs):
+def transform_attributes(attrs, group_name=''):
     clean_attrs = {}
     for key, value in attrs.items():
         key, value = clean_attribute(key, value)
@@ -399,36 +399,36 @@ def transform_attributes(attrs):
         }
         # don't delete from attrs, that is done in write_activity_attribute_group() above
     if 'REMARK' in attrs:
+        remark = attrs.pop('REMARK')
+
         if attrs.get('url') == 'http://www.landmatrix.org':
             pass
         elif 'implementation_status' in attrs:
-            attrs['tg_implementation_status_comment'] = attrs['REMARK']
-        elif 'data_source' in attrs:
-            attrs['tg_data_source_comment'] = attrs['REMARK']
+            attrs['tg_implementation_status_comment'] = remark
+        elif group_name.startswith('data_source'):
+            attrs['tg_data_source_comment'] = remark
         elif 'intended_size' in attrs:
-            attrs['tg_land_area_comment'] = attrs['REMARK']
-        elif 'point_lat' in attrs:
-            attrs['tg_location_comment'] = attrs['REMARK']
+            attrs['tg_land_area_comment'] = remark
+        elif group_name.startswith('location') or 'point_lat' in attrs:
+            attrs['tg_location_comment'] = remark
         elif 'community_consultation' in attrs:
-            attrs['tg_community_consultation_comment'] = attrs['REMARK']
+            attrs['tg_community_consultation_comment'] = remark
         elif 'community_reaction' in attrs:
-            attrs['tg_community_reaction_comment'] = attrs['REMARK']
+            attrs['tg_community_reaction_comment'] = remark
         elif 'contract_farming' in attrs:
-            attrs['tg_contract_farming_comment'] = attrs['REMARK']
+            attrs['tg_contract_farming_comment'] = remark
         elif 'annual_leasing_fee' in attrs:
-            attrs['tg_leasing_fees_comment'] = attrs['REMARK']
+            attrs['tg_leasing_fees_comment'] = remark
         elif 'purchase_price' in attrs:
-            attrs['tg_purchase_price_comment'] = attrs['REMARK']
+            attrs['tg_purchase_price_comment'] = remark
         elif 'source_of_water_extraction' in attrs:
-            attrs['tg_source_of_water_extraction_comment'] = attrs['REMARK']
+            attrs['tg_source_of_water_extraction_comment'] = remark
         elif 'number_of_displaced_people' in attrs:
-            attrs['tg_number_of_displaced_people_comment'] = attrs['REMARK']
+            attrs['tg_number_of_displaced_people_comment'] = remark
         elif 'use_of_produce' in attrs or 'use_of_produce_comment' in attrs:
-            attrs['tg_use_of_produce_comment'] = attrs['REMARK']
-        elif 'benefits' in attrs['REMARK']:
-            attrs['tg_materialized_benefits_comment'] = attrs['REMARK']
-
-        del attrs['REMARK']
+            attrs['tg_use_of_produce_comment'] = remark
+        elif 'benefits' in remark:
+            attrs['tg_materialized_benefits_comment'] = remark
 
     return attrs
 
