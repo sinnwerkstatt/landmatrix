@@ -8,13 +8,9 @@ from wagtailcms.models import RegionIndex, RegionPage
 class RegionView(View):
 
     def get(self, *args, **kwargs):
-        region_slug = kwargs.get('region_slug')
-        if region_slug:
-            try:
-                region = RegionPage.objects.get(slug=region_slug)
-            except RegionPage.DoesNotExist:
-                raise Http404('Region not found.')
-        else:
+        try:
+            region = RegionPage.objects.get(slug=kwargs.get('region_slug'))
+        except RegionPage.DoesNotExist:
             try:
                 region = RegionIndex.objects.get(slug='region')
             except RegionIndex.DoesNotExist:

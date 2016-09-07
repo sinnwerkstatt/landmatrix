@@ -7,14 +7,9 @@ from wagtailcms.models import CountryIndex, CountryPage
 class CountryView(View):
 
     def get(self, *args, **kwargs):
-        country_slug = kwargs.get('country_slug')
-
-        if country_slug:
-            try:
-                country = CountryPage.objects.get(slug=country_slug)
-            except CountryPage.DoesNotExist:
-                raise Http404('Country not found.')
-        else:
+        try:
+            country = CountryPage.objects.get(slug=kwargs.get('country_slug'))
+        except CountryPage.DoesNotExist:
             try:
                 country = CountryIndex.objects.get(slug='country')
             except CountryIndex.DoesNotExist:
