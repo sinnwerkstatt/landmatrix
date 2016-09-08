@@ -430,6 +430,16 @@ def transform_attributes(attrs, group_name=''):
         elif 'benefits' in remark:
             attrs['tg_materialized_benefits_comment'] = remark
 
+    # If we got any jobs created attrs, also set the boolean for that
+    # section
+    jobs_created_attrs = {
+        'total_jobs_current_daily_workers', 'total_jobs_current_employees',
+        'total_jobs_current', 'total_jobs_planned_daily_workers',
+        'total_jobs_planned_employees', 'total_jobs_planned',
+    }
+    if jobs_created_attrs.intersection(set(attrs.keys())):
+        attrs['total_jobs_created'] = 'True'
+
     return attrs
 
 
