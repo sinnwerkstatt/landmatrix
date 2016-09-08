@@ -31,6 +31,14 @@ class UserSerializer(serializers.BaseSerializer):
         return [obj.id, obj.username, obj.get_full_name() or obj.username]
 
 
+class RegionSerializer(serializers.BaseSerializer):
+    '''
+    Returns a region as a list: [id, slug, title].
+    '''
+    def to_representation(self, obj):
+        return [obj.region.id, obj.region.slug, obj.title]
+
+
 class DealLocationSerializer(serializers.Serializer):
     point_lat = serializers.DecimalField(max_digits=11, decimal_places=8)
     point_lon = serializers.DecimalField(max_digits=11, decimal_places=8)
