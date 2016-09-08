@@ -92,7 +92,8 @@ class FakeQuerySet(QuerySet):
     def _get_activity_statuses(self, request):
         # Parse activity statuses out of query params, and validate that they
         # are real at least, and that only staff can access not public statuses
-        if 'status' in request.query_params:
+        # We can't use query_params here as some requests come from editor
+        if 'status' in request.GET:
             statuses = []
             if self.user.is_staff:
                 # Staff can view all statuses
