@@ -41,7 +41,9 @@ class AddDealView(SaveDealView):
             activity_identifier=activity_identifier,
             history_user=self.request.user,
         )
-        if self.request.user.has_perm('landmatrix.add_activity'):
+        can_add_activity = self.request.user.has_perm(
+            'landmatrix.add_activity')
+        if can_add_activity:
             hactivity.fk_status_id = hactivity.STATUS_ACTIVE
         else:
             hactivity.fk_status_id = hactivity.STATUS_PENDING
@@ -49,16 +51,24 @@ class AddDealView(SaveDealView):
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)
         hactivity.save()
-        if self.request.user.has_perm('landmatrix.add_activity'):
+        if can_add_activity:
             # Create new activity (required for involvement)
             hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
-        if self.request.user.has_perm('landmatrix.add_activity'):
-            messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
+        if can_add_activity:
+            messages.success(
+                self.request,
+                self.success_message_admin.format(hactivity.activity_identifier))
+            redirect_url = reverse(
+                'deal_detail', kwargs={'deal_id': hactivity.activity_identifier})
         else:
             self.create_activity_changeset(hactivity)
-            messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
-        return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier}))
-        #context = self.get_context_data(**self.kwargs)
-        #context['forms'] = forms
-        #return self.render_to_response(context)
+            messages.success(
+                self.request,
+                self.success_message.format(hactivity.activity_identifier))
+            # TODO: check that is is correct, but all deals seems like a
+            # reasonable place to redirect to, as these users can't see the
+            # deal yet
+            redirect_url = reverse('data')
+
+        return HttpResponseRedirect(redirect_url)
