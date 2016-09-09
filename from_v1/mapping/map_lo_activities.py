@@ -524,7 +524,16 @@ def clean_attribute(key, value):
     elif key == 'source_of_water_extraction':
         if value == 'Ground water':
             value = 'Groundwater'
+    # Crops, minerals and animals need to be converted to ids
+    elif key == 'crops':
+        value = get_crop_id(value) or ''
+    elif key == 'minerals':
+        value = get_mineral_id(value) or ''
+    elif key == 'animals':
+        value = get_animal_id(value) or ''
+
     return key, value
+
 
 LM_ATTRIBUTES = {
     'Animals':                          'animals',
@@ -662,6 +671,41 @@ LM_ATTRIBUTES = {
     "Remark (Negotiation Status)":  'tg_negotiation_status_comment',
     "Remark (Intention of Investment)": 'tg_intention_comment',
 }
+
+
+def get_crop_id(crop_name):
+    crop_name = crop_name.replace('(no specification)', '(unspecified)')
+    crop = _get_instance_with_name(crop_name, landmatrix.models.Crop)
+    return crop.id if crop else None
+
+
+def get_mineral_id(mineral_name):
+    mineral = _get_instance_with_name(mineral_name, landmatrix.models.Mineral)
+    return mineral.id if mineral else None
+
+
+def get_animal_id(animal_name):
+    animal = _get_instance_with_name(animal_name, landmatrix.models.Animal)
+    return animal.id if animal else None
+
+
+def _get_instance_with_name(name, model_class):
+    '''
+    Given a name, try to find the closest match or other.
+    Works with Crop, Animal, Mineral.
+    '''
+    try:
+        instance = model_class.objects.get(name=name)
+    except model_class.DoesNotExist:
+        try:
+            instance = model_class.objects.get(name__istartswith=name)
+        except (model_class.DoesNotExist, model_class.MultipleObjectsReturned):
+            try:
+                instance = model_class.objects.get(code='OTH')
+            except model_class.DoesNotExist:
+                instance = None
+
+    return instance
 
 
 def get_deal_country(deal):
