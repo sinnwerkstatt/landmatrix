@@ -1,6 +1,7 @@
 '''
 TODO: cleanup formset_factory handling.
 '''
+import re
 import urllib.request
 
 from django import forms
@@ -11,8 +12,8 @@ from django.forms.models import formset_factory
 from django.template.defaultfilters import slugify
 from django.core.files.base import ContentFile
 from django.contrib import messages
-from wkhtmltopdf import wkhtmltopdf
 from django.conf import settings
+from wkhtmltopdf import wkhtmltopdf
 
 from landmatrix.storage import data_source_storage
 from grid.forms.base_form import BaseForm
@@ -80,7 +81,7 @@ class DealDataSourceForm(BaseForm):
         date = self.cleaned_data["date"]
         try:
             return date and date.strftime("%Y-%m-%d") or ""
-        except:
+        except ValueError:
             raise forms.ValidationError(
                 _("Invalid date. Please enter a date in the format [YYYY-MM-DD]")
             )
@@ -148,51 +149,9 @@ class AddDealDataSourceFormSet(DealDataSourceBaseFormSet):
                     form_attributes['file'] = {'value': uploaded}
             if 'url' in form_attributes and form_attributes['url'] and 'file' not in form_attributes:
                 form_attributes = handle_url(form_attributes, request)
-            #else:
-            #    raise IOError("no")
 
             attributes.append(form_attributes)
         return attributes
-            #ds_url, ds_file = None, None
-            #for t in group["tags"]:
-            #    if t["key"] == "url":
-            #        ds_url = t["value"]
-            #    elif t["key"] == "file":
-            #        ds_file = t["value"]
-            #if ds_file:
-            #    group["tags"].append({
-            #            "key": "file",
-            #            "value": ds_file,
-            #        })
-            #if ds_url:
-            #    url_slug = "%s.pdf" % re.sub(r"http|https|ftp|www|", "", slugify(ds_url))
-            #    if not ds_file or url_slug != ds_file:
-            #        # Remove file from group
-            #        group["tags"] = filter(lambda o: o["key"] != "file", group["tags"])
-            #        # Create file for URL
-            #        if not default_storage.exists("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug)):
-            #            try:
-            #                # Check if URL changed and no file given
-            #                if ds_url.endswith(".pdf"):
-            #                    response = urllib.request.urlopen(ds_url)
-            #                    default_storage.save("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug), ContentFile(response.read()))
-            #                else:
-            #                    # Create PDF from URL
-            #                    wkhtmltopdf(ds_url, "%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug))
-            #                # Set file tag
-            #            except:
-            #                # skip possible html to pdf conversion errors
-            #                if request and not default_storage.exists("%s/%s/%s" % (os.path.join(settings.MEDIA_ROOT), "uploads", url_slug)):
-            #                    messages.error(request, "Data source <a target='_blank' href='%s'>URL</a> could not be uploaded as a PDF file. Please upload manually." % ds_url)
-            #        group["tags"].append({
-            #            "key": "file",
-            #            "value": url_slug,
-            #        })
-            #        # always add url, cause there is a problem with storing the file when deal get changed again
-            #        #group["tags"].append({
-            #        #    "key": "url",
-            #        #    "value": ds_url,
-            #        #})
 
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
@@ -281,15 +240,10 @@ def handle_url(form_data, request):
 
 
 def get_url_slug(request, url):
-    import re
-    from django.template.defaultfilters import slugify
-
     try:
         urllib.request.urlopen(url)
     except (urllib.error.HTTPError, urllib.error.URLError):
         error_could_not_upload(request, url)
-        return None
-    except:
         return None
 
     return "%s.pdf" % re.sub(r"https|http|ftp|www|", "", slugify(url))

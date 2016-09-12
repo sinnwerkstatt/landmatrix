@@ -495,7 +495,7 @@ def clean_attribute(key, value):
             value = 'Lao PDR'
         try:
             value = landmatrix.models.Country.objects.get(name=value).id
-        except:
+        except Country.DoesNotExist:
             pass
     elif key == 'type':
         if value == 'Research paper':

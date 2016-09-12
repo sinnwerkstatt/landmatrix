@@ -185,7 +185,7 @@ class ChangesetProtocol(View):
         if activity:
             try:
                 user = activity.history_user.username
-            except:
+            except AttributeError:
                 # User doesn't exist anymore
                 user = force_text(_("Deleted User"))
             history_date = timezone.localtime(activity.history_date, timezone.get_current_timezone())
@@ -319,7 +319,7 @@ class ChangesetProtocol(View):
 def get_activity_investor(activity):
     try:
         iai = InvestorActivityInvolvement.objects.get(fk_activity_id=activity.id)
-    except:
+    except InvestorActivityInvolvement.DoesNotExist:
         # FIXME: This should not happen (but it did: sentry #4889)
         return
     return iai.fk_investor

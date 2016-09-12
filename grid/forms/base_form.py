@@ -1,6 +1,7 @@
 from copy import copy, deepcopy
 import re
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.datastructures import SortedDict, MultiValueDict
 from django import forms
 from django.utils.html import conditional_escape
@@ -59,7 +60,7 @@ class BaseForm(forms.Form):
                     if v:
                         try:
                             value = str(dict([i[:2] for i in f.choices])[v])
-                        except:
+                        except (ValueError, TypeError):
                             value = None
                         if isinstance(f, NestedMultipleChoiceField) and not value:
                             for choice in f.choices:
@@ -67,7 +68,7 @@ class BaseForm(forms.Form):
                                     value = str(dict([i[:2] for i in choice[2]])[v])
                                     if value:
                                         break
-                                except:
+                                except (ValueError, TypeError):
                                     value = None
                         if not value:
                             value = v
@@ -93,7 +94,7 @@ class BaseForm(forms.Form):
                             value = str(dict(f.choices).get(value))
                             if value:  
                                 attributes[name] = {'value': value}
-                        except:
+                        except (ValueError, TypeError):
                             raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
             # Year based data?
             elif isinstance(f, forms.MultiValueField):
@@ -111,16 +112,6 @@ class BaseForm(forms.Form):
                         else:
                             year = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
                         if value or value2 or year:
-                            #if value and isinstance(f.fields[0], forms.ChoiceField):
-                            #    try:
-                            #        value = str(dict(f.fields[0].choices).get(value))
-                            #    except:
-                            #        raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
-                            #if value2 and isinstance(f.fields[0], forms.ChoiceField):
-                            #    try:
-                            #        value2 = str(dict(f.fields[0].choices).get(value2))
-                            #    except:
-                            #        raise IOError("Value '%s' for field %s (%s) not allowed." % (value2, n, type(self)))
                             values.append({
                                 'value': value,
                                 'value2': value2,
@@ -203,7 +194,7 @@ class BaseForm(forms.Form):
                 # reformat date values
                 try:
                     value = datetime.strptime(value, "%Y-%m-%d").strftime("%d:%m:%Y")
-                except:
+                except ValueError:
                     # catch invalid date formats from import
                     pass
                 
@@ -270,42 +261,6 @@ class BaseForm(forms.Form):
         else:
             values = [':'.join([a[0], a[1], d or '']) for d, a in attributes_by_date.items()]
         return '#'.join(values)
-
-#    @classmethod
-#    def get_tags(cls, field_name, deal, group):
-#        if not deal and not group:
-#            return [], None
-#
-#        if isinstance(deal, Deal):
-#            tags = deal.attributes
-#            if not group:
-#                group = list(deal.attribute_groups())
-#        # elif isinstance(group, SH_Tag_Group):
-#        #     tags = group.sh_tag_set.filter(fk_sh_key__key=str(field_name))
-#        elif group is None:
-#            return None, None
-#        else:
-#            tags = {str(field_name): group.attributes.get(str(field_name))}
-#        return tags, group
-
-#    @classmethod
-#    def get_data_for_tg_field(cls, data, field_name, deal, pn, group):
-#
-#        if field_name.endswith('_comment'):
-#
-#            groups = group if isinstance(group, list) else [group]
-#            comments = BaseForm.get_comments_from_groups(groups)
-#            cls.fill_comment_field(comments, data, field_name, pn)
-#
-#        elif not group:
-#            try:
-#                if isinstance(deal, Stakeholder):
-#                    group = deal.sh_tag_group_set.get(fk_sh_tag__fk_sh_value__value=field_name[3:])
-#                else:
-#                    group = deal.a_tag_group_set.get(fk_a_tag__fk_a_value__value=field_name[3:])
-#            except:
-#                group = None
-#        return group
 
     @classmethod
     def fill_comment_field(cls, comments, data, field_name, pn):
@@ -443,7 +398,7 @@ class BaseForm(forms.Form):
         if value:
             try:
                 return str(field.queryset.get(pk=value))
-            except:
+            except (ValueError, AttributeError, ObjectDoesNotExist):
                 return ''
         else:
             return ''

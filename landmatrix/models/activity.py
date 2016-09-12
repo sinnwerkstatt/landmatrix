@@ -131,7 +131,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
             country = country.first()
             try:
                 return Country.objects.get(id=country.value)
-            except:
+            except Country.DoesNotExist:
                 return None
         else:
             return None

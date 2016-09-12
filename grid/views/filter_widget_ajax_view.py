@@ -65,7 +65,7 @@ class FilterWidgetAjaxView(View):
             if value:
                 try:
                     value = datetime.strptime(value, "%Y-%m-%d")
-                except:
+                except ValueError:
                     value = ""
             widgetObject = DateTimePicker(options={
                 "format": "YYYY-MM-DD",

@@ -3,7 +3,7 @@ from datetime import datetime
 from django.views.generic import TemplateView
 from django.db import transaction
 from django.contrib import messages
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, Group
 from django.conf import settings
@@ -271,7 +271,7 @@ class SaveDealView(TemplateView):
         country = activity.target_country
         try:
             user = self.request.user.userregionalinfo.super_user
-        except:
+        except (AttributeError, ObjectDoesNotExist):
             user = None
         changeset = ActivityChangeset.objects.create(
             fk_activity=activity,
