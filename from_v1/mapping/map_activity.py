@@ -71,7 +71,7 @@ def calculate_history_date(versions, i):
 
 def get_changeset(activity_record):
     return old_editor.models.A_Changeset.objects.using(V1).filter(
-        fk_activity=activity_record['id']
+        fk_activity=activity_record.id
     ).last()
 
 

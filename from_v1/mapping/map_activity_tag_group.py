@@ -49,11 +49,11 @@ class MapActivityTagGroupBase:
     @classmethod
     @lru_cache(maxsize=128, typed=True)
     def matching_activity_id(cls, tag_group):
-        if Activity.objects.filter(pk=tag_group.fk_activity.pk).count() > 0:
-            return tag_group.fk_activity.pk
+        if Activity.objects.filter(pk=tag_group.fk_activity).count() > 0:
+            return tag_group.fk_activity
 
         activity_identifier = Activity.objects.filter(
-            id=tag_group.fk_activity.pk
+            id=tag_group.fk_activity
         ).values_list(
             'activity_identifier', flat=True
         ).distinct().first()
