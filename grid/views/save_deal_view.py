@@ -1,3 +1,22 @@
+from datetime import datetime
+
+from django.views.generic import TemplateView
+from django.db import transaction
+from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User, Group
+from django.conf import settings
+
+from landmatrix.models.activity_attribute_group import (
+    HistoricalActivityAttribute, ActivityAttributeGroup,
+)
+from landmatrix.models.activity import Activity
+from landmatrix.models.investor import InvestorActivityInvolvement
+from landmatrix.models.activity_changeset import ActivityChangeset
+from landmatrix.models.activity_feedback import ActivityFeedback
+from editor.models import UserRegionalInfo
+from grid.forms.public_user_information_form import PublicUserInformationForm
 from grid.forms.deal_employment_form import DealEmploymentForm
 from grid.forms.deal_general_form import DealGeneralForm
 from grid.forms.deal_overall_comment_form import DealOverallCommentForm
@@ -13,28 +32,6 @@ from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 
-from landmatrix.models.activity_attribute_group import ActivityAttribute, \
-    HistoricalActivityAttribute, ActivityAttributeGroup
-from landmatrix.models.activity import Activity
-from landmatrix.models.investor import InvestorActivityInvolvement
-from landmatrix.models.language import Language
-from landmatrix.models.status import Status
-from landmatrix.models.activity_changeset import ActivityChangeset
-from landmatrix.models.activity_feedback import ActivityFeedback
-from grid.forms.public_user_information_form import PublicUserInformationForm
-from editor.models import UserRegionalInfo
-
-from django.views.generic import TemplateView
-
-from django.db import transaction
-from django.contrib import messages
-from django.core.exceptions import MultipleObjectsReturned
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User, Group
-from django.utils.text import slugify
-from django.conf import settings
-
-from datetime import date, datetime
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -77,30 +74,48 @@ class SaveDealView(TemplateView):
         if all(form.is_valid() for form in forms):
             # Register user if not authenticated
             if not self.request.user.is_authenticated():
-                user_information = self.get_form_by_type(forms, PublicUserInformationForm)
-                if not user_information:
-                    raise IOError(_('User is not authenticated and not user information given.'))
-                data = user_information.cleaned_data
-                names = data.get('public_user_name', '').split(' ')
-                try:
-                    user = User.objects.get(email=data.get('public_user_email'))
-                except:
-                    user = User.objects.create(
-                        username=data.get('public_user_email'),
-                        email=data.get('public_user_email'),
-                        first_name=' '.join(names[:-1]),
-                        last_name=names[-1],
-                    )
-                    UserRegionalInfo.objects.create(
-                        user=user,
-                        phone=data.get('public_user_phone'),
-                    )
-                    group, created = Group.objects.get_or_create(name='Reporters')
-                    user.groups.add(group)
+                user_information_form = self.get_form_by_type(
+                    forms, PublicUserInformationForm)
+                user = self._get_or_create_user(user_information_form)
                 self.login_user(user)
             return self.form_valid(forms)
         else:
             return self.form_invalid(forms)
+
+    def _get_or_create_user(self, user_information_form):
+        # TODO: this is really bad practice. Why not a form that makes it
+        # clear to the user that they are creating an account?
+        if not user_information_form:
+            raise ValidationError(
+                _('User is not authenticated and no user information given.'))
+        data = user_information_form.cleaned_data
+        try:
+            user = User.objects.get(
+                email=data['public_user_email'])
+        except User.DoesNotExist:
+            names = data['public_user_name'].split(' ')
+            if len(names) > 1:
+                first_name = ' '.join(names[:-1])
+                last_name = names[-1]
+            else:
+                first_name = names[0]
+                last_name = ''
+
+            user = User.objects.create_user(
+                data['public_user_email'],
+                email=data['public_user_email'],
+                password=None,
+                first_name=first_name,
+                last_name=last_name,
+            )
+            UserRegionalInfo.objects.create(
+                user=user,
+                phone=data['public_user_phone'],
+            )
+            group, created = Group.objects.get_or_create(name='Reporters')
+            user.groups.add(group)
+
+        return user
 
     def form_valid(self, forms):
         hactivity = self.get_object()

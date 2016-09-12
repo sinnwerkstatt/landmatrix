@@ -20,7 +20,7 @@ class PublicUserInformationForm(BaseForm):
         help_text=_("Write something about yourself and your company. This won't be published."),
         widget=CommentInput)
     public_user_name = forms.CharField(required=False, label=_("Name"))
-    public_user_email = forms.EmailField(required=False, label=_("Email"))
+    public_user_email = forms.EmailField(required=True, label=_("Email"))
     public_user_phone = forms.CharField(required=False, label=_("Phone"))
     captcha = ReCaptchaField()
 
