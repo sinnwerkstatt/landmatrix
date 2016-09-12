@@ -43,7 +43,7 @@
                 {% endif %}
                 {% if perms.landmatrix.review_activity %}
                     <li><a href="#feedbacks"><i class="icon-chevron-down icon-white"></i>
-                        {% trans "Feedback" %}{% if feedbacks.feeds %} <small><span class="label label-default">{{ feedbacks.feeds|length }}){% endif %}</a></li>
+                        {% trans "Feedback" %}{% if feedbacks.feeds %} <small><span class="label label-default">{{ feedbacks.feeds|length }}</span></small>{% endif %}</a></li>
                     <li><a href="#updates"><i class="icon-chevron-down"></i>
                         {% trans "Pending updates" %}{% if updates %} <small><span class="label label-default">{{ updates|length }}</span></small>{% endif %}</a></li>
                     <li><a href="#deletions"><i class="icon-chevron-down"></i>
@@ -80,7 +80,7 @@
                     <tbody>
                     {% for feedback in feedbacks.feeds %}
                         <tr>
-                            <td class="deal"><a href="{% url 'deal_detail' deal_id=feedback_deal_id %}">#{{ feedback.deal_id }}</a></td>
+                            <td class="deal"><a href="{% url 'deal_detail' deal_id=feedback.deal_id %}">#{{ feedback.deal_id }}</a></td>
                             <td class="user">{{ feedback.from_user }}</td>
                             <td class="comment" title="{{ feedback.comment }}">{{ feedback.comment }}</td>
                             <td class="date">{{ feedback.timestamp|naturaltime_from_string }}</td>
