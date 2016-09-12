@@ -1,4 +1,5 @@
 from copy import copy, deepcopy
+import datetime
 import re
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -193,7 +194,8 @@ class BaseForm(forms.Form):
             elif isinstance(field, forms.DateField):
                 # reformat date values
                 try:
-                    value = datetime.strptime(value, "%Y-%m-%d").strftime("%d:%m:%Y")
+                    value = datetime.datetime.strptime(
+                        value, "%Y-%m-%d").strftime("%d:%m:%Y")
                 except ValueError:
                     # catch invalid date formats from import
                     pass
