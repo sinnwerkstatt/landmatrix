@@ -1,26 +1,21 @@
-from pprint import pprint
+import json
 
 from django.forms.fields import CharField
 from django.forms.widgets import Textarea
 from django.views.generic.edit import UpdateView
-
-from editor.views.changeset_protocol import ChangesetProtocol
-from grid.forms.base_form import BaseForm
-from grid.views.view_aux_functions import render_to_response
-
 from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
 from django.template.context import RequestContext
-from django.shortcuts import redirect
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 
-import json
-
-from grid.widgets.title_field import TitleField
 from landmatrix.models.activity import HistoricalActivity
 from landmatrix.models.investor import HistoricalInvestor
+from editor.views.changeset_protocol import ChangesetProtocol
+from grid.forms.base_form import BaseForm
+from grid.views.view_aux_functions import render_to_response
+from grid.widgets.title_field import TitleField
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -56,7 +51,8 @@ class ManageView(TemplateView):
         data.update({"feedbacks": response.get("feedbacks", [])})
         data.update({"rejected": response.get("rejected", [])})
 
-        return render_to_response(self.template_name, data, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name, data, context_instance=RequestContext(request))
 
 
 class CommentInput(Textarea):
@@ -87,7 +83,13 @@ class ManageContentView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ManageContentView, self).get_context_data(**kwargs)
-        context.update({"view": "manage_content_view", "id": self.item_id, "action": self.action, "type": self.type})
+        context.update({
+            "view": "manage_content_view",
+            "id": self.item_id,
+            "action": self.action,
+            "type": self.type,
+        })
+
         return context
 
     def get_object(self, queryset=None):
