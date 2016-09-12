@@ -117,21 +117,24 @@ class ChangesetProtocol(View):
     def approve(self, request, *args, **kwargs):
         res = {"errors": []}
         self._approve_activities(request)
-        #_approve_investor_changes(request)
         return HttpResponse(json.dumps(res), content_type="application/json")
 
     def _approve_activities(self, request):
         for activity_dict in self.data.get("activities", {}):
             activity = HistoricalActivity.objects.get(id=activity_dict.get("id"))
-            if activity.fk_status_id == activity.STATUS_PENDING:
+            if activity.fk_status_id == HistoricalActivity.STATUS_PENDING:
                 _approve_activity_change(activity, activity_dict.get("comment"), request)
-            elif activity.fk_status_id == activity.STATUS_TO_DELETE:
+            elif activity.fk_status_id == HistoricalActivity.STATUS_TO_DELETE:
                 _approve_activity_deletion(activity, activity_dict.get("comment"), request)
 
             investor = get_activity_investor(activity)
             if investor:
-                latest_investor = investor.get_latest_active_investor(investor.investor_identifier)
-                investor.fk_status_id = latest_investor and investor.STATUS_OVERWRITTEN or investor.STATUS_ACTIVE
+                latest_investor = investor.get_latest_active_investor(
+                    investor.investor_identifier)
+                if latest_investor:
+                    investor.fk_status_id = Investor.STATUS_OVERWRITTEN
+                else:
+                    investor.fk_status_id = Investor.STATUS_ACTIVE
                 investor.save()
 
     @transaction.atomic
@@ -143,12 +146,18 @@ class ChangesetProtocol(View):
     def _reject_activities(self, request):
         for activity_dict in self.data.get("activities", {}):
             activity = HistoricalActivity.objects.get(id=activity_dict.get("id"))
-            if activity.fk_status_id in (activity.STATUS_PENDING, activity.STATUS_TO_DELETE):
+
+            statuses = (
+                HistoricalActivity.STATUS_PENDING,
+                HistoricalActivity.STATUS_TO_DELETE,
+            )
+
+            if activity.fk_status_id in statuses:
                 _change_status_with_review(
                     activity,
-                    activity.STATUS_REJECTED,
+                    HistoricalActivity.STATUS_REJECTED,
                     request.user,
-                    None,#ReviewDecision.objects.get(name="rejected"),
+                    None,
                     activity_dict.get('comment'),
                 )
                 # FIXME
@@ -156,8 +165,9 @@ class ChangesetProtocol(View):
                 # As an intermediate solution another involvement is created for each historical activity
                 # which links to the public activity. Let's remove the new involvement.
                 investor = get_activity_investor(activity)
-                investor.fk_status_id = investor.STATUS_REJECTED
-                investor.save()
+                if investor:
+                    investor.fk_status_id = Investor.STATUS_REJECTED
+                    investor.save()
 
     def get_paged_results(self, records, page_number, per_page=10):
         paginator = Paginator(records, per_page)
@@ -206,11 +216,9 @@ class ChangesetProtocol(View):
         if not self.data:
             self.data = {
                 "activities": ["updates", "deletes", "inserts"],
-                #"investors": ["deletes"],
             }
         if "activities" in self.data:
             self.handle_activities(deletions_page, inserts_page, limit, my_deals_page, res, updates_page, user)
-        # print('_activity_to_json'); pprint(res)
         return res
 
     def filter_activities(self, activities, manage=False):
@@ -264,7 +272,6 @@ class ChangesetProtocol(View):
         for activity in activities_my_deals:
             my_deals.append(self.changeset_template_data(activity, {"status": activity.fk_status.name}))
         if my_deals:
-            #my_deals["pagination"] = _pagination_to_json(paginator, page)
             activities["my_deals"] = my_deals
 
     def handle_updates(self, activities, limit, updates_page):
@@ -279,7 +286,6 @@ class ChangesetProtocol(View):
             fields_changed = _find_changed_fields(activity)
             updates.append(self.changeset_template_data(activity, {"fields_changed": fields_changed}))
         if updates:
-            #updates["pagination"] = _pagination_to_json(paginator, page)
             activities["updates"] = updates
 
     def handle_inserts(self, activities, limit, inserts_page):
@@ -293,7 +299,6 @@ class ChangesetProtocol(View):
         for activity in activities_insert:
             inserts.append(self.changeset_template_data(activity))
         if inserts:
-            #inserts["pagination"] = _pagination_to_json(paginator, page)
             activities["inserts"] = inserts
 
     def handle_deletes(self, activities, limit, deletions_page):
@@ -306,14 +311,7 @@ class ChangesetProtocol(View):
         deletes = []
         for activity in activities_deletes:
             deletes.append(self.changeset_template_data(activity))
-            #comment = activity.comment and len(activity.comment) > 0 and activity.comment or "-"
-            #deletes.append({
-            #    "id": activity.id,
-            #    "deal_id": activity.activity_identifier,
-            #    "history_id": activity.id,
-            #    "user": activity.history_user,
-            #    "comment": comment
-            #})
+
         if deletes:
             #deletes["pagination"] = _pagination_to_json(paginator, page)
             activities["deletes"] = deletes
@@ -339,25 +337,6 @@ def _uniquify_activities_dict(activities):
             unique.append(cs)
             deals.append(cs['deal_id'])
     activities['updates'] = unique
-
-
-#def _uniquify_activities_by_deal(activities):
-#    unique, deals = [], []
-#    for activity in activities:
-#        if activity.activity_identifier not in deals:
-#            unique.append(activity)
-#            deals.append(activity.activity_identifier)
-#    return unique
-
-#def changeset_comment(changeset):
-#    if changeset is None:
-#        return 'changeset is None'
-#
-#    changeset = ActivityChangeset.objects.filter(id=changeset.id)
-#    if len(changeset) > 0:
-#        return changeset[0].comment
-#    else:
-#        return changeset.comment and len(changeset.comment) > 0 and changeset.comment or "-"
 
 
 def _find_changed_fields(changeset):
@@ -424,7 +403,7 @@ def _rejected_to_json(user, limit=None):
          } for activity in feed
     ]
     return rejected
-#        "pagination": _pagination_to_json(paginator, page),
+
 
 def _get_comment(historical_activity):
     changeset = ActivityChangeset.objects.filter(
@@ -471,14 +450,7 @@ def _approve_activity_change(activity, comment, request):
         comment
     )
     activity.update_public_activity()
-    #ap = ActivityProtocol()
-    #if len(activity.involvements) > 0:
-    #    _conditionally_update_stakeholders(activity, ap, involvements, request)
-    # FIXME
-    # Problem here: Involvements are not historical yet, but activity and investors are.
-    # As an intermediate solution another involvement is created for each historical activity
-    # which links to the public activity. Let's confirm the new and remove the old involvement.
-    #ap.prepare_deal_for_public_interface(activity.activity_identifier)
+
 
 def _change_status_with_review(activity, status, user, review_decision, comment):
     activity.fk_status_id = status
@@ -489,20 +461,6 @@ def _change_status_with_review(activity, status, user, review_decision, comment)
     changeset.comment = comment
     changeset.timestamp = datetime.now()
     changeset.save()
-
-#def _conditionally_update_stakeholders(activity, ap, involvements, request):
-#    operational_stakeholder = involvements[0].fk_investor
-#    if _any_investor_has_changed(operational_stakeholder, involvements):
-#        # TODO make sure this is correct: secondary investors changed
-#        involvement_stakeholders = [
-#            {"stakeholder": ivi.fk_stakeholder, "investment_ratio": ivi.investment_ratio}
-#            for iai in involvements
-#            for ivi in InvestorVentureInvolvement.objects.filter(fk_investor=iai.fk_investor)
-#        ]
-#
-#        ap.update_secondary_investors(
-#            activity, operational_stakeholder, involvement_stakeholders, request
-#        )
 
 
 def _approve_activity_deletion(activity, cs_comment, request):
@@ -515,10 +473,3 @@ def _approve_activity_deletion(activity, cs_comment, request):
     changeset.comment = cs_comment
     changeset.timestamp = datetime.now()
     activity.update_public_activity()
-
-
-#def _any_investor_has_changed(operational_stakeholder, involvements):
-#    op_subinvestor_ids = set(s.investor_identifier for s in operational_stakeholder.subinvestors.all())
-#    involvement_investor_ids = (i.fk_investor.investor_identifier for i in involvements)
-#    return any(op_subinvestor_ids.symmetric_difference(involvement_investor_ids))
-
