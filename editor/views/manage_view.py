@@ -40,7 +40,7 @@ class ManageView(TemplateView):
 
         data.update(response.get("activities", {}))
 
-        if "updates" in data and data["updates"] and data["updates"]:
+        if "updates" in data:
             changed = []
             for activity in data["updates"]:
                 for k in activity.get("fields_changed", []):

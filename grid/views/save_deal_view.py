@@ -11,7 +11,7 @@ from django.conf import settings
 from landmatrix.models.activity_attribute_group import (
     HistoricalActivityAttribute, ActivityAttributeGroup,
 )
-from landmatrix.models.activity import Activity
+from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.investor import InvestorActivityInvolvement
 from landmatrix.models.activity_changeset import ActivityChangeset
 from landmatrix.models.activity_feedback import ActivityFeedback
@@ -124,8 +124,12 @@ class SaveDealView(TemplateView):
         hactivity.pk = None
         hactivity.history_user = self.request.user
         hactivity.history_date = datetime.now()
-        if not self.request.user.has_perm('landmatrix.change_activity'):
-            hactivity.fk_status_id = hactivity.STATUS_PENDING
+
+        can_change_activity = self.request.user.has_perm(
+            'landmatrix.change_activity')
+
+        if not can_change_activity:
+            hactivity.fk_status_id = HistoricalActivity.STATUS_PENDING
         hactivity.save()
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)
@@ -135,7 +139,7 @@ class SaveDealView(TemplateView):
         else:
             hactivity.fully_updated = False
         hactivity.save()
-        if self.request.user.has_perm('landmatrix.change_activity'):
+        if can_change_activity:
             hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
 
@@ -145,7 +149,7 @@ class SaveDealView(TemplateView):
             self.create_activity_feedback(hactivity, form)
 
         # Create success message
-        if self.request.user.has_perm('landmatrix.change_activity'):
+        if can_change_activity:
             messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
         else:
             self.create_activity_changeset(hactivity)
@@ -280,7 +284,6 @@ class SaveDealView(TemplateView):
             fk_user=user,
         )
         return changeset
-
 
     def login_user(self, user):
         """

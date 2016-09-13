@@ -4,7 +4,7 @@ from django.db.models.fields import BLANK_CHOICE_DASH
 from django.db.models.functions import Coalesce
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import ObjectDoesNotExist
 
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.status import Status
@@ -22,12 +22,16 @@ class ActivityQuerySet(models.QuerySet):
         return self.filter(fk_status_id__in=ActivityBase.PUBLIC_STATUSES)
 
     def public_or_deleted(self):
-        statuses = ActivityBase.PUBLIC_STATUSES + (ActivityBase.STATUS_DELETED,)
+        statuses = ActivityBase.PUBLIC_STATUSES + (
+            ActivityBase.STATUS_DELETED,
+        )
         return self.filter(fk_status_id__in=statuses)
 
     def public_or_pending(self):
-        statuses = ActivityBase.PUBLIC_STATUSES + (ActivityBase.STATUS_PENDING,)
-        return self.filter(fk_status_id__in=status)
+        statuses = ActivityBase.PUBLIC_STATUSES + (
+            ActivityBase.STATUS_PENDING,
+        )
+        return self.filter(fk_status_id__in=statuses)
 
     def pending(self):
         statuses = (ActivityBase.STATUS_PENDING, ActivityBase.STATUS_TO_DELETE)
@@ -432,7 +436,22 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
     def get_my_deals(self, user):
         return self.filter(history_user=user).\
             filter(fk_status__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_REJECTED))
-        #return queryset.values_list('fk_activity_id', flat=True).distinct()
+
+    def new_activities(self):
+        '''
+        Get only new activities (without any other historical instances).
+        This query looks a bit strange, but the order of operations is required
+        in order to construct the group by correctly.
+        '''
+        subquery = self.all()
+        subquery = subquery.values('activity_identifier')
+        subquery = subquery.annotate(
+            revisions_count=models.Count('activity_identifier'))
+        subquery = subquery.order_by('activity_identifier')
+        subquery = subquery.exclude(revisions_count__gt=1)
+        subquery = subquery.values_list('activity_identifier', flat=True)
+
+        return self.filter(activity_identifier__in=subquery)
 
 
 class HistoricalActivity(ActivityBase):

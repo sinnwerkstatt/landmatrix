@@ -257,6 +257,7 @@ class ChangesetProtocol(View):
             self.handle_inserts(activities, limit, inserts_page)
         if "deletes" in self.data["activities"]:
             self.handle_deletes(activities, limit, deletions_page)
+
         if activities:
             _uniquify_activities_dict(activities)
             res["activities"] = activities
@@ -289,7 +290,7 @@ class ChangesetProtocol(View):
             activities["updates"] = updates
 
     def handle_inserts(self, activities, limit, inserts_page):
-        activities_insert = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_PENDING)
+        activities_insert = HistoricalActivity.objects.filter(fk_status_id=HistoricalActivity.STATUS_PENDING).new_activities()
         activities_insert = self.filter_activities(activities_insert, manage=True)
         activities_insert = limit and activities_insert[:limit] or activities_insert
         paginator = Paginator(activities_insert, 10)
@@ -323,6 +324,7 @@ def get_activity_investor(activity):
         # FIXME: This should not happen (but it did: sentry #4889)
         return
     return iai.fk_investor
+
 
 def _uniquify_activities_dict(activities):
     unique, deals = [], []
