@@ -381,7 +381,9 @@ def transform_attributes(attrs, group_name=''):
     clean_attrs = {}
     for key, value in attrs.items():
         key, value = clean_attribute(key, value)
-        clean_attrs[key] = value
+        # Don't use anything we couldn't clean
+        if key and str(value):
+            clean_attrs[key] = value
     attrs = clean_attrs
     if 'NUMBER_OF_FARMERS' in attrs:
         if attrs.get('contract_farming', '') == 'On the lease':
@@ -454,10 +456,6 @@ def clean_attribute(key, value):
             key = 'off_the_lease'
             value = 't'
 
-    # Check value
-    if isinstance(value, str):
-        # HSTORE attribute values can not take strings longer than that due to index constraints :-(
-        value = value[:3000]
     if key == 'nature':
         if 'Lease/Concession' in value:
             value = value.replace('Lease/Concession', 'Lease')
@@ -496,7 +494,7 @@ def clean_attribute(key, value):
         try:
             value = landmatrix.models.Country.objects.get(name=value).id
         except Country.DoesNotExist:
-            pass
+            value = ''
     elif key == 'type':
         if value == 'Research paper':
              value = 'Research Paper / Policy Report'
