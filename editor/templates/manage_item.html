@@ -6,27 +6,33 @@
 {% block head %}
 {{ block.super }}
 {{ wizard.form.media }}
-<script src="/media/js/editor/map.js" type="text/javascript" charset="utf-8"></script>
-<script src="/media/js/editor/csrf.js" type="text/javascript" charset="utf-8"></script>
-<script src="/media/js/editor/year-based-fields.js" type="text/javascript" charset="utf-8"></script>
-<script src="/media/js/editor/livesearch.js" type="text/javascript" charset="utf-8"></script>
-<script src="/media/js/editor/add_change.js" type="text/javascript" charset="utf-8"></script>
+
 {% endblock %}
 
-{% block page_title %}{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} #{{ id }}{% endblock %}
-{% block title %}{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} #{{ id }}{% endblock %}
+{% block page_title %}{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} #{{ activity.activity_identifier }}{% endblock %}
+{% block title %}{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} #{{ activity.activity_identifier }}{% endblock %}
 
 {% block breadcrumb_inner %}
 <li>{% trans "Add a deal" %}</li>
 {% endblock %}
 
 {% block content %}
-<form method="POST" action="./">{% csrf_token %}
-  <input type="hidden" name="action" value="{{ view }}"></input>
+<form method="POST" action="./">
+{% csrf_token %}
+
 <div class="forms">
 {% if form %}
   <ul class="form clearfix">
-  {{ form.as_ul }}
+    {% for hidden in form.hidden_fields %}
+      {{ hidden }}
+    {% endfor %}
+    <li> <h3>{% trans "Action comment" %}</h3></li>
+    {{ form.non_field_errors }}
+    <li>
+        {{ form.tg_action_comment }}
+        {{ form.tg_action_comment.errors }}
+    </li>
+
   </ul>
 {% endif %}
   <input class="btn btn-default" type="submit" name="{{ action }}" value="{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %}">

@@ -9,8 +9,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 class ActivityChangesetManager(models.Manager):
 
     def get_by_state(self, status):
-        return self.filter(
-            fk_activity__fk_status_id=status).order_by('-timestamp')
+        return self.filter(fk_activity__fk_status_id=status)
 
 
 class ReviewDecision(models.Model):
@@ -36,5 +35,5 @@ class ActivityChangeset(models.Model):
 
     objects = ActivityChangesetManager()
 
-    def __str__(self):
-        return str(self.fk_activity)
+    class Meta:
+        ordering = ('-timestamp',)

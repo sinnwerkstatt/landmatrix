@@ -19,6 +19,9 @@ from landmatrix.models.country import Country
 
 class ActivityQuerySet(models.QuerySet):
     def public(self):
+        '''
+        Status public, not to be confused with is_public.
+        '''
         return self.filter(fk_status_id__in=ActivityBase.PUBLIC_STATUSES)
 
     def public_or_deleted(self):
@@ -36,6 +39,33 @@ class ActivityQuerySet(models.QuerySet):
     def pending(self):
         statuses = (ActivityBase.STATUS_PENDING, ActivityBase.STATUS_TO_DELETE)
         return self.filter(fk_status_id__in=statuses)
+
+    def pending_only(self):
+        return self.filter(fk_status_id=ActivityBase.STATUS_PENDING)
+
+    def active(self):
+        return self.filter(fk_status_id=ActivityBase.STATUS_ACTIVE)
+
+    def overwritten(self):
+        return self.filter(fk_status_id=ActivityBase.STATUS_OVERWRITTEN)
+
+    def to_delete(self):
+        return self.filter(fk_status_id=ActivityBase.STATUS_TO_DELETE)
+
+    def deleted(self):
+        return self.filter(fk_status_id=ActivityBase.STATUS_DELETED)
+
+    def rejected(self):
+        return self.filter(fk_status_id=ActivityBase.STATUS_REJECTED)
+
+    def activity_identifier_count(self):
+        return self.values('activity_identifier').distinct().count()
+
+    def overall_activity_count(self):
+        return self.public().activity_identifier_count()
+
+    def public_activity_count(self):
+        return self.public().filter(is_public=True).activity_identifier_count()
 
 
 class NegotiationStatusManager(models.Manager):
@@ -437,20 +467,35 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         return self.filter(history_user=user).\
             filter(fk_status__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_REJECTED))
 
-    def new_activities(self):
+    def _single_revision_identifiers(self):
         '''
-        Get only new activities (without any other historical instances).
+        Get all activity identifiers (as values) that only have a single
+        revision.
+
         This query looks a bit strange, but the order of operations is required
         in order to construct the group by correctly.
         '''
-        subquery = self.all()
-        subquery = subquery.values('activity_identifier')
-        subquery = subquery.annotate(
+        queryset = self.values('activity_identifier')
+        queryset = queryset.annotate(
             revisions_count=models.Count('activity_identifier'))
-        subquery = subquery.order_by('activity_identifier')
-        subquery = subquery.exclude(revisions_count__gt=1)
-        subquery = subquery.values_list('activity_identifier', flat=True)
+        queryset = queryset.order_by('activity_identifier')
+        queryset = queryset.exclude(revisions_count__gt=1)
+        queryset = queryset.values_list('activity_identifier', flat=True)
 
+        return queryset
+
+    def with_multiple_revisions(self):
+        '''
+        Get only new activities (without any other historical instances).
+        '''
+        subquery = self._single_revision_identifiers()
+        return self.exclude(activity_identifier__in=subquery)
+
+    def without_multiple_revisions(self):
+        '''
+        Get only new activities (without any other historical instances).
+        '''
+        subquery = self._single_revision_identifiers()
         return self.filter(activity_identifier__in=subquery)
 
 
@@ -462,11 +507,83 @@ class HistoricalActivity(ActivityBase):
 
     objects = HistoricalActivityQuerySet.as_manager()
 
-    #@property
-    #def attributes(self):
-    #    return ActivityAttribute.history.filter(fk_activity_id=self.id).latest()
+    def approve_change(self, user=None, comment=None):
+        assert self.fk_status_id == HistoricalActivity.STATUS_PENDING
+        # TODO: this logic is taken from changeset protocol
+        # but it won't really work properly. We need to determine behaviour
+        # when updates happen out of order. There can easily be many edits,
+        # and not the latest one is approved.
+        latest_public_version = self.__class__.get_latest_active_activity(
+            self.activity_identifier)
+        if latest_public_version:
+            self.fk_status_id = HistoricalActivity.STATUS_OVERWRITTEN
+        else:
+            self.fk_status_id = HistoricalActivity.STATUS_ACTIVE
+        self.save(update_fields=['fk_status'])
 
-    def update_public_activity(self):#, user=None):
+        try:
+            investor = InvestorActivityInvolvement.objects.get(
+                fk_activity_id=self.pk).fk_investor
+        except InvestorActivityInvolvement.DoesNotExist:
+            pass
+        else:
+            investor.approve()
+
+        self.changesets.create(fk_user=user, comment=comment)
+
+        self.update_public_activity()
+
+    def reject_change(self, user=None, comment=None):
+        assert self.fk_status_id == HistoricalActivity.STATUS_PENDING
+        self.fk_status_id = HistoricalActivity.STATUS_REJECTED
+        self.save(update_fields=['fk_status'])
+
+        try:
+            investor = InvestorActivityInvolvement.objects.get(
+                fk_activity_id=self.pk).fk_investor
+        except InvestorActivityInvolvement.DoesNotExist:
+            pass
+        else:
+            investor.reject()
+
+        self.changesets.create(fk_user=user, comment=comment)
+
+    def approve_delete(self, user=None, comment=None):
+        assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
+        self.fk_status_id = HistoricalActivity.STATUS_DELETED
+        self.save(update_fields=['fk_status'])
+
+        # TODO: this seems wierd to me, but I just moved the logic over
+        # Wouldn't it make sense to delete here?
+        try:
+            investor = InvestorActivityInvolvement.objects.get(
+                fk_activity_id=self.pk).fk_investor
+        except InvestorActivityInvolvement.DoesNotExist:
+            pass
+        else:
+            investor.approve()
+
+        self.changesets.create(fk_user=user, comment=comment)
+
+        self.update_public_activity()
+
+    def reject_delete(self, user=None, comment=None):
+        assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
+        self.fk_status_id = HistoricalActivity.STATUS_REJECTED
+        self.save(update_fields=['fk_status'])
+
+        try:
+            investor = InvestorActivityInvolvement.objects.get(
+                fk_activity_id=self.pk).fk_investor
+        except InvestorActivityInvolvement.DoesNotExist:
+            pass
+        else:
+            investor.reject()
+
+
+        self.changesets.create(fk_user=user, comment=comment)
+
+    def update_public_activity(self):
         """Update public activity based upon newest confirmed historical activity"""
         #user = user or self.history_user
         #if not user.has_perm('landmatrix.change_activity'):
@@ -527,6 +644,22 @@ class HistoricalActivity(ActivityBase):
 
     def get_activity(self):
         return Activity.objects.filter(activity_identifier=self.activity_identifier).first()
+
+    @property
+    def changeset_comment(self):
+        '''
+        Previously in changeset protocol there was some voodoo around getting
+        a changeset with the same datetime as history_date. That doesn't work,
+        because history_date is set when the activity is revised, and the
+        changeset is timestamped when it is reviewed.
+
+        So, just grab the most recent one.
+        '''
+
+        changeset = self.changesets.first()
+        comment = changeset.comment if changeset else ''
+
+        return comment
 
     class Meta:
         verbose_name = _('Historical activity')

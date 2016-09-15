@@ -155,6 +155,32 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         return cls.objects.filter(investor_identifier=investor_identifier).\
             filter(fk_status__name__in=("active", "overwritten", "deleted")).order_by('-id').first()
 
+    def approve(self):
+        '''
+        This should go on HistoricalInvestor, but things are a bit messy
+        right now, and it seems expected behaviour is to update the Investor
+        status.
+        '''
+        # TODO: rethink. this is logic from changesetprotocol, and it looks
+        # broken
+        latest_version = HistoricalInvestor.get_latest_active_investor(
+            self.investor_identifier)
+        if latest_version:
+            self.fk_status_id = HistoricalInvestor.STATUS_OVERWRITTEN
+        else:
+            self.fk_status_id = HistoricalInvestor.STATUS_ACTIVE
+
+        self.save(update_fields=['fk_status'])
+
+    def reject(self):
+        '''
+        This should go on HistoricalInvestor, but things are a bit messy
+        right now, and it seems expected behaviour is to update the Investor
+        status.
+        '''
+        self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
+        self.save(update_fields=['fk_status'])
+
 
 class Investor(InvestorBase):
     subinvestors = models.ManyToManyField(

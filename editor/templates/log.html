@@ -37,13 +37,13 @@
     <div class="navbar navbar-default navbar-subnav" role="navigation">
         <div class="container-fluid">
             <ul class="manage nav navbar-nav" id="manage-sections">
-                    <li{% if action == 'latest_added' %} class="active"{% endif %}><a href="{% url 'log' action='latest_added' %}">
+                    <li{% if action == 'latest_added' %} class="active"{% endif %}><a href="{% url 'log_added' %}">
                         {% trans "Latest added" %}
                     </a></li>
-                    <li{% if action == 'latest_modified' %} class="active"{% endif %}><a href="{% url 'log' action='latest_modified' %}">
+                    <li{% if action == 'latest_modified' %} class="active"{% endif %}><a href="{% url 'log_modified' %}">
                         {% trans "Latest modified" %}
                     </a></li>
-                    <li{% if action == 'latest_deleted' %} class="active"{% endif %}><a href="{% url 'log' action='latest_deleted' %}">
+                    <li{% if action == 'latest_deleted' %} class="active"{% endif %}><a href="{% url 'log_deleted' %}">
                         {% trans "Latest deleted" %}
                     </a></li>
             </ul>
@@ -81,14 +81,16 @@
                     {% endfor %}
                     </tbody>
                 </table>
+                {% if is_paginated %}
                 <ul class="pager">
-                    {% if "previous" in pagination %}
-                        <li><a class="pull-left" href="?page={{ pagination.previous }}">{% trans "Previous" %}</a></li>
+                    {% if page_obj.has_previous %}
+                        <li><a class="pull-left" href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a></li>
                     {% endif %}
-                    {% if "next" in pagination %}
-                        <li><a class="pull-right" href="?page={{ pagination.next }}">{% trans "Next" %}</a></li>
+                    {% if page_obj.has_next %}
+                        <li><a class="pull-right" href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a></li>
                     {% endif %}
                 </ul>
+                {% endif %}
             </div>
     </div>
 {% endblock %}
