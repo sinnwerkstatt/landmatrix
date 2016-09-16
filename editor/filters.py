@@ -36,7 +36,7 @@ def filter_activity_queryset(request, queryset):
         queryset = queryset.filter(
             changesets__fk_country__in=filtered_countries)
     if filtered_regions:
-        queryset = queryset.filter.filter(
+        queryset = queryset.filter(
             changesets__fk_country__fk_region__in=filtered_regions)
     if filtered_user:
         queryset = queryset.filter(changesets__fk_user__in=filtered_user)
