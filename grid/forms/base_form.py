@@ -61,7 +61,7 @@ class BaseForm(forms.Form):
                     if v:
                         try:
                             value = str(dict([i[:2] for i in f.choices])[v])
-                        except (ValueError, TypeError):
+                        except (ValueError, TypeError, KeyError):
                             value = None
                         if isinstance(f, NestedMultipleChoiceField) and not value:
                             for choice in f.choices:
@@ -69,7 +69,7 @@ class BaseForm(forms.Form):
                                     value = str(dict([i[:2] for i in choice[2]])[v])
                                     if value:
                                         break
-                                except (ValueError, TypeError):
+                                except (ValueError, TypeError, KeyError):
                                     value = None
                         if not value:
                             value = v
