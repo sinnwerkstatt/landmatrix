@@ -172,7 +172,12 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
 
 class Activity(ActivityBase):
-    """Just the most recent approved version of an activity (for simple queries in the public interface)"""
+    """
+    Just the most recent approved version of an activity
+    (for simple queries in the public interface).
+
+    There should only be one activity per activity_identifier.
+    """
     DEAL_SCOPE_DOMESTIC = 'domestic'
     DEAL_SCOPE_TRANSNATIONAL = 'transnational'
     DEAL_SCOPE_CHOICES = (
@@ -500,7 +505,13 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
 
 
 class HistoricalActivity(ActivityBase):
-    """All versions (including the current) of activities"""
+    """
+    All versions (including the current) of activities
+    
+    Only the current historical activity should have a public version set.
+    """
+    public_version = models.OneToOneField(
+        Activity, blank=True, null=True, related_name='historical_version')
     history_date = models.DateTimeField(auto_now_add=True)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
     comment = models.TextField(_('Comment'), blank=True, null=True)
@@ -553,7 +564,7 @@ class HistoricalActivity(ActivityBase):
         self.fk_status_id = HistoricalActivity.STATUS_DELETED
         self.save(update_fields=['fk_status'])
 
-        # TODO: this seems wierd to me, but I just moved the logic over
+        # TODO: this seems weird to me, but I just moved the logic over
         # Wouldn't it make sense to delete here?
         try:
             investor = InvestorActivityInvolvement.objects.get(
@@ -580,7 +591,6 @@ class HistoricalActivity(ActivityBase):
         else:
             investor.reject()
 
-
         self.changesets.create(fk_user=user, comment=comment)
 
     def update_public_activity(self):
@@ -596,39 +606,42 @@ class HistoricalActivity(ActivityBase):
         self.save()
 
         # Historical activity already is the newest version of activity?
-        #activity = Activity.objects.get(activity_identifier=self.activity_identifier)
-        activity = Activity.objects.filter(activity_identifier=self.activity_identifier).order_by('-id').first()
-        if activity:
-            if self.id == activity.id:
-                return False
-        else:
-            activity = Activity.objects.create(activity_identifier=self.activity_identifier)
+        if self.public_version:
+            return False
+
+        activity = Activity.objects.filter(
+            activity_identifier=self.activity_identifier).order_by(
+            '-id').first()
+
         # Activity has been deleted?
         if self.fk_status_id == self.STATUS_DELETED:
             if activity:
                 activity.delete()
             return True
 
+        if not activity:
+            activity = Activity.objects.create(
+                activity_identifier=self.activity_identifier)
+
         # Update activity (keeping comments)
-        #activity.activity_identifier = self.activity_identifier
         activity.availability = self.availability
         activity.fully_updated = self.fully_updated
         activity.fk_status_id = self.fk_status_id
         activity.save()
+
         # Delete old and create new activity attributes
-        if activity:
-            activity.attributes.all().delete()
+        activity.attributes.all().delete()
+
         for hattribute in self.attributes.all():
-            attribute = ActivityAttribute.objects.create(
-                fk_activity_id = activity.id,
-                fk_group_id = hattribute.fk_group_id,
-                fk_language_id = hattribute.fk_language_id,
-                name = hattribute.name,
-                value = hattribute.value,
-                value2 = hattribute.value2,
-                date = hattribute.date,
-                polygon = hattribute.polygon,
-            )
+            ActivityAttribute.objects.create(
+                fk_activity_id=activity.id,
+                fk_group_id=hattribute.fk_group_id,
+                fk_language_id=hattribute.fk_language_id,
+                name=hattribute.name,
+                value=hattribute.value,
+                value2=hattribute.value2,
+                date=hattribute.date,
+                polygon=hattribute.polygon)
         # Confirm pending Investor activity involvement
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=activity.activity_identifier)
         if involvements.count() > 0:
@@ -640,10 +653,14 @@ class HistoricalActivity(ActivityBase):
             # Delete other involvments for activity, since we don't need a history of involvements
             involvements.exclude(id=latest.id).delete()
         activity.refresh_cached_attributes()
-        return True
 
-    def get_activity(self):
-        return Activity.objects.filter(activity_identifier=self.activity_identifier).first()
+        # Keep public version relation up to date
+        HistoricalActivity.objects.filter(public_version=activity).update(
+            public_version=None)
+        self.public_version = activity
+        self.save(update_fields=['public_version'])
+
+        return True
 
     @property
     def changeset_comment(self):

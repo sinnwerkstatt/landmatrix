@@ -118,19 +118,22 @@ class SaveDealView(TemplateView):
         return user
 
     def form_valid(self, forms):
-        hactivity = self.get_object()
+        old_hactivity = self.get_object()
         investor_form = list(filter(lambda f: isinstance(f, OperationalStakeholderForm), forms))[0]
+
         # Create new historical activity
-        hactivity.pk = None
-        hactivity.history_user = self.request.user
-        hactivity.history_date = datetime.now()
+        hactivity = HistoricalActivity(
+            activity_identifier=old_hactivity.activity_identifier,
+            fk_status_id=HistoricalActivity.STATUS_PENDING,
+            history_user=self.request.user)
 
         can_change_activity = self.request.user.has_perm(
             'landmatrix.change_activity')
 
-        if not can_change_activity:
-            hactivity.fk_status_id = HistoricalActivity.STATUS_PENDING
+        if can_change_activity:
+            hactivity.fk_status_id = old_hactivity.fk_status_id
         hactivity.save()
+
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)
         form = self.get_form_by_type(forms, DealActionCommentForm)
@@ -158,7 +161,6 @@ class SaveDealView(TemplateView):
         context = self.get_context_data(**self.kwargs)
         context['forms'] = forms
         return self.render_to_response(context)
-
 
     def form_invalid(self, forms):
         messages.error(self.request, _('Please correct the error below.'))
@@ -219,16 +221,20 @@ class SaveDealView(TemplateView):
 
         return action_comment
 
-    def create_involvement(self, activity, form):
+    def create_involvement(self, hactivity, form):
         # FIXME
         # Problem here: Involvements are not historical yet, but activity and investors are.
         # As an intermediate solution we'll just create another involvement which links
         # to the public activity, which will replace the current involvement when the
         # historical activity gets approved.
-        activity, created = Activity.objects.get_or_create(
-            id=activity.id,
-            activity_identifier=activity.activity_identifier
-        )
+        activity = hactivity.public_version
+
+        if not activity:
+            # Create a stub
+            activity = Activity.objects.create(
+                activity_identifier=hactivity.activity_identifier)
+            hactivity.public_version = activity
+            hactivity.save()
 
         operational_stakeholder = form.cleaned_data['operational_stakeholder']
         # Update operational stakeholder (involvement)
