@@ -89,7 +89,7 @@ def reverse_imported_activity_attributes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0088_auto_20160812_1524'),
+        ('landmatrix', '0092_populate_activity_rel'),
     ]
 
     operations = [
