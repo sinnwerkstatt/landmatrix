@@ -135,11 +135,13 @@ class Filter(BaseFilter):
 
 class PresetFilter(BaseFilter):
 
-    def __init__(self, preset_id, name=None, label=None):
-        self.preset_id = preset_id
-        # Store this obj during init, rather than doing seperate validation
-        # and a get method
-        self.filter = FilterPreset.objects.get(id=self.preset_id)
+    def __init__(self, preset, name=None, label=None):
+        if isinstance(preset, FilterPreset):
+            self.preset_id = preset.pk
+            self.filter = preset
+        else:
+            self.preset_id = preset
+            self.filter = FilterPreset.objects.get(id=self.preset_id)
 
         if label is None:
             label = self.filter.name

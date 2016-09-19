@@ -213,13 +213,17 @@ class FilterWidgetMixin:
             if values.get('variable', '') in ('target_country', 'target_region'):
                 # Use national presets
                 for preset in FilterPreset.objects.filter(is_default=True):
-                    stored_filters['default_preset_%i'%preset.id] = PresetFilter(preset.id)
+                    filter_name = 'default_preset_%i' % preset.id
+                    stored_filters[filter_name] = PresetFilter(
+                        preset, name=filter_name)
         elif len(stored_filters.items()) == 0:
             # Use global presets
             for preset in FilterPreset.objects.filter(overrides_default=True):
-                stored_filters['default_preset_%i'%preset.id] = PresetFilter(preset.id)
+                filter_name = 'default_preset_%i' % preset.id
+                stored_filters[filter_name] = PresetFilter(
+                    preset, name=filter_name)
         self.request.session['filters'] = stored_filters
-    
+  
     def remove_default_filters(self):
         stored_filters = self.request.session.get('filters', {})
         stored_filters = dict(filter(lambda i: 'default_preset' not in i[0], stored_filters.items()))
