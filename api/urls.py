@@ -9,8 +9,6 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 urlpatterns = [
     url(r'^filter\.json', FilterView.as_view(), {'format': 'json'},
         name='api_filter'),
-    url(r'^dashboard_filter\.json', DashboardFilterView.as_view(),
-        {'format': 'json'}, name='api_dashboard_filter'),
     url(r'^filter_preset\.json', FilterPresetView.as_view(),
         {'format': 'json'}, name='api_dashboard_filter_preset'),
     url(r'^deal_detail\.json', DealDetailView.as_view(), {'format': 'json'},

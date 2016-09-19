@@ -32,7 +32,7 @@
     <div class="dashboard">
         {% if perms.editor.editor_filter %}
         <div class="row">
-            <form method="POST" action="{% url 'api_dashboard_filter' %}" id="dashboard-filter">
+            <form method="POST" action="" id="dashboard-filter">
                 {% csrf_token %}
                 <div class="controls col-sm-2">
                     <select id="dashboard-filter-region" multiple="multiple">
@@ -43,7 +43,7 @@
                     </select>
                 </div>
                 <div class="controls col-sm-2">
-                    <a id="dashboard-filter-clear" class="btn" href="">{% trans 'Clear' %}</a>
+                    <a id="dashboard-filter-clear" class="btn" href="{% url 'editor' %}">{% trans 'Clear' %}</a>
                 </div>
                 {% if request.user.is_staff %}
                 <div class="controls col-sm-2">
@@ -56,61 +56,9 @@
                 {% endif %}
             </form>
             <script type="text/javascript">
-            function initDashboardFilters(data) {
-                if (data.length == 0) {
-                    return;
-                }
-                if ('region' in data) {
-                    $('#dashboard-filter-region').val(data.region).trigger('change');
-                }
-                if ('country' in data) {
-                    $('#dashboard-filter-country').val(data.country).trigger('change');
-                }
-                //if ('user' in data) {
-                //    $('#dashboard-filter-user').val(data.user).trigger('change');
-                //}
-                $('#dashboard-filter-region').change(function () {
-                    $.post({
-                      url: $('form#dashboard-filter').attr('action'),
-                      data: {
-                        'action': 'set',
-                        'region': $(this).val(),
-                      },
-                      success: function (data) {
-                        location.reload();
-                      }
-                    });
-                });
-                $('#dashboard-filter-country').change(function () {
-                    $.post({
-                      url: $('form#dashboard-filter').attr('action'),
-                      data: {
-                        'action': 'set',
-                        'country': $(this).val(),
-                      },
-                      success: function (data) {
-                        location.reload();
-                      }
-                    });
-                });
-                $('#dashboard-filter-clear').click(function (e) {
-                    e.preventDefault()
-                    $.post({
-                      url: $('form#dashboard-filter').attr('action'),
-                      data: {
-                        'action': 'clear',
-                      },
-                      success: function (data) {
-                        location.reload();
-                      }
-                    });
-                });
-                $('#impersonate').click(function (e) {
-                    e.preventDefault();
-                    location.href = '/impersonate/' + $('#impersonate-user').val() + '/';
-                    return false;
-                });
-            }
+            var selectedRegions = {{ filters.region_ids|safe }};
+            var selectedCountries = {{ filters.country_ids|safe }};
+
             $(document).ready(function () {
                 // Regions
                 var region_select = $('#dashboard-filter-region'),
@@ -120,7 +68,11 @@
                 region_request.then(function (data) {
                   for (var d = 0; d < data.length; d++) {
                     var item = data[d];
-                    var option = new Option(item[2], item[0], false, false);
+                    var selected = false;
+                    if (selectedRegions.indexOf(item[0].toString()) != -1) {
+                        selected = true;
+                    }
+                    var option = new Option(item[2], item[0], false, selected);
                     region_select.append(option);
                   };
                   region_select.select2({
@@ -142,7 +94,11 @@
                     opt_group = $('<optgroup label="' + group.text + '"></optgroup>');
                     for (var o = 0; o < group.children.length; o++) {
                         item = group.children[o];
-                        option = new Option(item[2], item[0], false, false);
+                        var selected = false;
+                        if (selectedCountries.indexOf(item[0].toString()) != -1) {
+                            selected = true;
+                        }
+                        option = new Option(item[2], item[0], false, selected);
                         opt_group.append(option);
                     }
                     country_select.append(opt_group);
@@ -167,12 +123,27 @@
                   });
                   //$element.trigger('change');
                 });
-                // Select current filters
-                $.get({
-                    url: $('#dashboard-filter').attr('action'),
-                    success: function (data) {
-                        initDashboardFilters(data);
+
+                $('#dashboard-filter-region').change(function () {
+                    var val = $(this).val()
+                    var url = '{% url 'editor' %}'
+                    if (val) {
+                        url = url + '?' + jQuery.param({'region': val});
                     }
+                    window.location = url
+                });
+                $('#dashboard-filter-country').change(function () {
+                    var val = $(this).val()
+                    var url = '{% url 'editor' %}'
+                    if (val) {
+                        url = url + '?' + jQuery.param({'country': val});
+                    }
+                    window.location = url
+                });
+                $('#impersonate').click(function (e) {
+                    e.preventDefault();
+                    location.href = '/impersonate/' + $('#impersonate-user').val() + '/';
+                    return false;
                 });
 
             });

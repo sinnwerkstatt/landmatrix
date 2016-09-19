@@ -9,57 +9,106 @@ from django.views.generic import (
 )
 
 from landmatrix.models import Activity, HistoricalActivity, ActivityFeedback
+from editor.models import UserRegionalInfo
 from editor.forms import ApproveRejectChangeForm
-from editor.filters import filter_activity_queryset, filter_managed_activities
 from editor.utils import activity_to_template, feedback_to_template
 
 
-class LatestActivitiesMixin:
+class FilteredQuerysetMixin:
+
+    def get_filtered_activity_queryset(self, queryset=None):
+        '''
+        Support for country and region filters.
+        '''
+        if queryset is None:
+            queryset = HistoricalActivity.objects.all()
+
+        try:
+            user_regional_info = UserRegionalInfo.objects.get(
+                user=self.request.user)
+        except UserRegionalInfo.DoesNotExist:
+            user_regional_info = None
+
+        if 'country' in self.request.GET:
+            country_ids = self.request.GET.getlist('country')
+            try:
+                country_ids = filter(
+                    None, [int(country_id) for country_id in country_ids])
+            except ValueError:
+                country_ids = []
+        elif user_regional_info:
+            country_ids = user_regional_info.country.values_list(
+                'id', flat=True)
+        else:
+            country_ids = []
+
+        if 'region' in self.request.GET:
+            region_ids = self.request.GET.getlist('region')
+            try:
+                region_ids = filter(
+                    None, [int(region_id) for region_id in region_ids])
+            except ValueError:
+                region_ids = []
+        elif user_regional_info:
+            region_ids = user_regional_info.region.values_list('id', flat=True)
+        else:
+            region_ids = []
+
+        if country_ids:
+            queryset = queryset.filter(
+                changesets__fk_country_id__in=country_ids)
+        if region_ids:
+            queryset = queryset.filter(
+                changesets__fk_country__fk_region_id__in=region_ids)
+
+        return queryset
+
+
+class LatestActivitiesMixin(FilteredQuerysetMixin):
 
     def get_latest_added_queryset(self):
-        latest_added = HistoricalActivity.objects.active()
-        latest_added = filter_activity_queryset(self.request, latest_added)
-
-        return latest_added
+        return self.get_filtered_activity_queryset().active()
 
     def get_latest_modified_queryset(self):
-        latest_modified = HistoricalActivity.objects.overwritten()
-        latest_modified = filter_activity_queryset(
-            self.request, latest_modified)
-
-        return latest_modified
+        return self.get_filtered_activity_queryset().overwritten()
 
     def get_latest_deleted_queryset(self):
-        latest_deleted = HistoricalActivity.objects.deleted()
-        latest_deleted = filter_activity_queryset(self.request, latest_deleted)
-
-        return latest_deleted
+        return self.get_filtered_activity_queryset().deleted()
 
 
-class PendingChangesMixin:
+class PendingChangesMixin(FilteredQuerysetMixin):
+
+    def get_permitted_activities(self, queryset=None):
+        if queryset is None:
+            queryset = HistoricalActivity.objects.all()
+
+        if not self.request.user.has_perm('landmatrix.review_activity'):
+            queryset = queryset.none()
+        # for editors, show only activites that have been added/changed by
+        # public users
+        elif not self.request.user.has_perm('landmatrix.change_activity'):
+            queryset = queryset.filter(history_user__groups__name='Reporters')
+
+        return queryset
 
     def get_pending_adds_queryset(self):
-        inserts = HistoricalActivity.objects.without_multiple_revisions()
+        inserts = self.get_filtered_activity_queryset(
+            queryset=self.get_permitted_activities())
+        inserts = inserts.without_multiple_revisions()
         inserts = inserts.pending_only()
-        inserts = filter_activity_queryset(self.request, inserts)
-        inserts = filter_managed_activities(self.request.user, inserts)
 
         return inserts
 
     def get_pending_updates_queryset(self):
-        updates = HistoricalActivity.objects.with_multiple_revisions()
+        updates = self.get_filtered_activity_queryset(
+            queryset=self.get_permitted_activities()).with_multiple_revisions()
         updates = updates.pending_only()
-        updates = filter_activity_queryset(self.request, updates)
-        updates = filter_managed_activities(self.request.user, updates)
 
         return updates
 
     def get_pending_deletes_queryset(self):
-        deletes = HistoricalActivity.objects.to_delete()
-        deletes = filter_activity_queryset(self.request, deletes)
-        deletes = filter_managed_activities(self.request.user, deletes)
-
-        return deletes
+        return self.get_filtered_activity_queryset(
+            queryset=self.get_permitted_activities()).to_delete()
 
     def get_feedback_queryset(self):
         feedback = ActivityFeedback.objects.active()
@@ -71,18 +120,17 @@ class PendingChangesMixin:
         raise NotImplementedError  # TODO: implement
 
     def get_rejected_queryset(self):
-        rejected = HistoricalActivity.objects.rejected()
+        rejected = self.get_filtered_activity_queryset(
+            queryset=self.get_permitted_activities())
+        rejected = rejected.rejected()
         rejected = rejected.filter(changesets__fk_user=self.request.user)
-        rejected = filter_activity_queryset(self.request, rejected)
-        rejected = filter_managed_activities(self.request.user, rejected)
 
         return rejected
 
     def get_my_deals_queryset(self):
-        my_deals = HistoricalActivity.objects.get_my_deals(
-            self.request.user.id)
-        my_deals = filter_activity_queryset(self.request, my_deals)
-        my_deals = filter_managed_activities(self.request.user, my_deals)
+        my_deals = self.get_filtered_activity_queryset(
+            queryset=self.get_permitted_activities())
+        my_deals = my_deals.get_my_deals(self.request.user.id)
 
         return my_deals
 
@@ -138,6 +186,10 @@ class DashboardView(LatestActivitiesMixin, PendingChangesMixin, TemplateView):
             'feedbacks': {
                 'feeds': map(feedback_to_template, feedback[:self.paginate_by])
             },
+            'filters': {
+                'country_ids': self.request.GET.getlist('country'),
+                'region_ids': self.request.GET.getlist('region'),
+            }
         })
 
         return context
