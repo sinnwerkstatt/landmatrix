@@ -157,12 +157,14 @@ class FilterToSQL:
                 print('_where_activity', index, tag, value)
 
             i = start_index + index
+
             # Multiple rules?
             if isinstance(value, dict):
-                sub_clauses = self._where_activity(
-                    taggroup=value, start_index=i)
-                where.append(sub_clauses)
-                start_index += len(value) - 1
+                if value:
+                    sub_clauses = self._where_activity(
+                        taggroup=value, start_index=i)
+                    where.append(sub_clauses)
+                    start_index += len(value)
                 continue
 
             try:
