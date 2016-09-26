@@ -5,7 +5,7 @@ from landmatrix.models.activity import Activity
 
 class StatisticsQuerySet(FakeQuerySetWithSubquery):
 
-    DEBUG = True
+    DEBUG = False
 
     FIELDS = [
         ('negotiation_status',  'sub.negotiation_status'),

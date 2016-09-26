@@ -1,4 +1,3 @@
-
 from django.utils.translation import ugettext_lazy as _
 
 from grid.forms.choices import intention_choices, get_choice_parent
@@ -188,7 +187,6 @@ class FilterToSQL:
             elif variable == 'deal_country':
                 table_name = 'ac{}'.format(i)
                 condition = WhereCondition(
-                    #table_name, 'id', operation, value)
                     table_name, key, operation, value)
                 where.append(condition)
             elif variable == 'type' and 'data_source_type' in self.columns:
@@ -281,25 +279,27 @@ class FilterToSQL:
 
     def _tables_activity(self, taggroup=None, last_index=0):
         tables_from = []
-        #if self.filters.get("activity", {}).get("tags"):
+
         tags = taggroup or self.filters.get("activity").get("tags")
         for index, (tag, value) in enumerate(tags.items()):
             i = last_index + index
             # Multiple rules?
             if isinstance(value, dict):
-                tables_from.append(self._tables_activity(taggroup=value, last_index=i))
-                last_index += len(value) - 1
+                if value:
+                    tables_from.append(
+                        self._tables_activity(taggroup=value, last_index=i))
+                    last_index += len(value)
                 continue
             variable_operation = tag.split("__")
             variable = variable_operation[0]
             key = variable_operation[1]
 
-            no_join_required = False
-            if variable == 'activity_identifier':
-                no_join_required = True
-            elif variable in ('negotiation_status', 'implementation_status') and key == 'value':
-                no_join_required = True
-            # join tag tables for each condition
+            no_join_required = (
+                variable == 'activity_identifier' or (
+                    variable in ('negotiation_status', 'implementation_status') and
+                    key == 'value')
+            )
+
             if no_join_required:
                 continue
             elif variable in ('target_region', 'deal_country'):

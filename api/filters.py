@@ -162,11 +162,14 @@ class PresetFilter(BaseFilter):
 def format_filters(filters):
     '''
     Format filters as expected by FilterToSQL and ActivityQueryset.
+
+    We use OrderedDicts here because FilterToSQL code seems to have been
+    written on the assumption that dicts are ordered.
     '''
     # TODO: cleanup and move to FilterToSQL
     formatted_filters = {
-        'activity': {'tags': {}},
-        'investor': {'tags': {}},
+        'activity': {'tags': OrderedDict()},
+        'investor': {'tags': OrderedDict()},
     }
 
     def _update_filters(filter_dict, filter, group=None):
@@ -175,13 +178,11 @@ def format_filters(filters):
         definition_key = list(definition.keys())[0]
         if group:
             if group not in filter_dict[name]['tags']:
-                filter_dict[name]['tags'][group] = {}
+                filter_dict[name]['tags'][group] = OrderedDict()
             tags = filter_dict[name]['tags'][group]
         else:
             tags = filter_dict[name]['tags']
-        # FIXME: It seems deal_scope can be handled as a normal tag by now
-        #if filter[1]['variable'] == 'deal_scope':
-        #    filter_dict['deal_scope'] = filter[1]['value']
+
         if filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
             tags[definition_key].extend(definition[definition_key])
         else:
@@ -212,9 +213,6 @@ def load_filters(request):
         else:
             filters[filter_name] = Filter.from_session(filter_dict)
     filters.update(load_filters_from_url(request))
-
-    # Global view?
-#    raise IOError(filters)
 
     formatted_filters = format_filters(filters)
 

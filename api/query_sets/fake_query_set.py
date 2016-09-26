@@ -167,7 +167,9 @@ class FakeQuerySet(QuerySet):
                 self._all_results.append(as_model)
 
     def _execute_query(self):
-        start_time = time.time()
+        if self.DEBUG:
+            start_time = time.time()
+
         query = self.sql_query()
 
         if self.DEBUG:
