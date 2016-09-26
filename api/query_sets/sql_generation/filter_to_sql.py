@@ -163,7 +163,7 @@ class FilterToSQL:
                     sub_clauses = self._where_activity(
                         taggroup=value, start_index=i)
                     where.append(sub_clauses)
-                    start_index += len(value)
+                    start_index += len(value) - 1
                 continue
 
             try:
@@ -288,7 +288,7 @@ class FilterToSQL:
                 if value:
                     tables_from.append(
                         self._tables_activity(taggroup=value, last_index=i))
-                    last_index += len(value)
+                    last_index += len(value) - 1
                 continue
             variable_operation = tag.split("__")
             variable = variable_operation[0]
