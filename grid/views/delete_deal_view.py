@@ -45,6 +45,7 @@ class DeleteDealView(SaveDealView):
             hactivity.fk_status_id = hactivity.STATUS_TO_DELETE
         hactivity.history_user = self.request.user
         hactivity.history_date = datetime.now()
+        hactivity.public_version = None
         hactivity.save()
         for hattribute in attributes:
             hattribute.pk = None
