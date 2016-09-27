@@ -22,6 +22,7 @@ def activity_to_template(activity):
         'history_id': activity.id,
         'user': username,
         'timestamp': history_date.strftime('%Y-%m-%d %H:%M:%S'),
+        'status': activity.fk_status,
         'comment': activity.comment,
     }
 

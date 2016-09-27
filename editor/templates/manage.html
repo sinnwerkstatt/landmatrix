@@ -116,7 +116,7 @@
                                 </td>
                                 <td class="user">{{ activity.timestamp|naturaltime_from_string }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="status" title="{{ activity.status }}">{{ activity.status }}</td>
+                                <td class="status" title="{{ activity.status.name|title }}">{{ activity.status.name|title }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

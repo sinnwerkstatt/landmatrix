@@ -128,8 +128,7 @@ class PendingChangesMixin(FilteredQuerysetMixin):
         return rejected
 
     def get_my_deals_queryset(self):
-        my_deals = self.get_filtered_activity_queryset(
-            queryset=self.get_permitted_activities())
+        my_deals = self.get_filtered_activity_queryset()
         my_deals = my_deals.get_my_deals(self.request.user.id)
 
         return my_deals
