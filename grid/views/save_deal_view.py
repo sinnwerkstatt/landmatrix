@@ -1,4 +1,4 @@
-from datetime import datetime
+#from datetime import datetime
 
 from django.views.generic import TemplateView
 from django.db import transaction
@@ -131,7 +131,7 @@ class SaveDealView(TemplateView):
             'landmatrix.change_activity')
 
         if can_change_activity:
-            hactivity.fk_status_id = old_hactivity.fk_status_id
+            hactivity.fk_status_id = hactivity.STATUS_OVERWRITTEN
         hactivity.save()
 
         # Create new activity attributes
