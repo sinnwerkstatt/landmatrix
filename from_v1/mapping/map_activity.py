@@ -56,33 +56,44 @@ ORDER BY activity_identifier
 
 
 def calculate_history_date(versions, i):
-    if i >= len(versions):
-        return datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
-    if versions[i].get('fully_updated'):
-        return versions[i]['fully_updated']
-    if versions[i].get('timestamp_review'):
-        return timezone.make_aware(versions[i]['timestamp_review'], timezone.get_current_timezone())
-    changeset = get_changeset(versions[i])
-    if changeset:
-        return changeset.timestamp
-    # could not find any time information. use next newer version and arbitrarily subtract 1 minute.
-    return calculate_history_date(versions, i+1) - timedelta(minutes=1)
+    history_date = None
+
+    try:
+        version = versions[i]
+    except IndexError:
+        # Give up
+        history_date = datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
+    else:
+        if version.get('fully_updated'):
+            history_date = version['fully_updated']
+        elif version.get('timestamp_review'):
+            history_date = version['timestamp_review']
+            history_date = timezone.make_aware(
+                history_date, timezone.get_current_timezone())
+        else:
+            changeset = get_changeset(version)
+            if changeset:
+                history_date = changeset.timestamp
+
+    # could not find any time information. use next newer version and
+    # arbitrarily subtract 1 minute.
+    if not history_date:
+        history_date = calculate_history_date(versions, i + 1) - timedelta(
+            minutes=1)
+
+    return history_date
 
 
 def get_changeset(activity_record):
     return old_editor.models.A_Changeset.objects.using(V1).filter(
-        fk_activity=activity_record.id
-    ).last()
+        fk_activity=activity_record['id']).last()
 
 
 def get_activity_versions(activity):
-    cursor = connections[V1].cursor()
-    cursor.execute(
-        """SELECT id FROM activities AS a WHERE activity_identifier = {}
-        ORDER BY version """.format(activity.activity_identifier)
-    )
-    ids = [id[0] for id in cursor.fetchall()]
-    return MapActivity.old_class.objects.using(V1).filter(pk__in=ids).values()
+    return MapActivity.old_class.objects.using(V1).filter(
+        activity_identifier=activity.activity_identifier).order_by(
+        'version').values()
+
 
 def get_history_user(activity_record):
     changeset = get_changeset(activity_record)

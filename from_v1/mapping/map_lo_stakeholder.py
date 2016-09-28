@@ -1,11 +1,10 @@
 from django.utils import timezone
 
+import landmatrix.models
 from .land_observatory_objects.stakeholder import Stakeholder
 from .map_lo_model import MapLOModel
-from .map_lo_activities import map_status_id
 from migrate import V2
 
-import landmatrix.models
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -14,7 +13,7 @@ class MapLOStakeholder(MapLOModel):
     old_class = Stakeholder
     new_class = landmatrix.models.Investor
     attributes = {
-        'fk_status': ('fk_status_id', map_status_id),
+        'fk_status': ('fk_status_id', lambda id: id),
     }
 
     @classmethod

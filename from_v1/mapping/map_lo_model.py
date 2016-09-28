@@ -17,7 +17,6 @@ class MapLOModel(MapModel):
         Overridden to try to make the import safe for multiple runs.
         If there is an existing record, map it to that one.
         '''
-
         already_imported = cls.get_existing_record(record)
 
         if already_imported:

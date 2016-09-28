@@ -1,24 +1,18 @@
-from django.db.models.aggregates import Max
 from functools import lru_cache
 
+from django.db import connections
+from django.utils import timezone
+
+import landmatrix.models
 from .land_observatory_objects.tags import A_Value
 from .land_observatory_objects.activity import Activity
 from .land_observatory_objects.tag_groups import A_Tag_Group
 from .map_lo_model import MapLOModel
 from .map_activity import calculate_history_date
-from django.utils import timezone
 from migrate import V2
-
-import landmatrix.models
-
-from django.db import connections
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-
-def map_status_id(id):
-    return id
 
 
 class MapLOActivities(MapLOModel):
@@ -30,27 +24,41 @@ class MapLOActivities(MapLOModel):
     old_class = Activity
     new_class = landmatrix.models.Activity
     attributes = {
-        'fk_status': ('fk_status_id', map_status_id),
+        'fk_status': ('fk_status_id', lambda id: id),
     }
 
     @classmethod
     def all_records(cls):
-        ids = cls.all_ids()
-        # exclude the deals that have been imported from landmatrix and not changed
-        # ...
+        latest_version_ids = cls.all_ids()
+        deals = Activity.objects.using(cls.DB).filter(
+            pk__in=latest_version_ids)
 
-        all_deals = Activity.objects.using(cls.DB).filter(pk__in=ids)
-        deals = [
-            deal
-            for deal in all_deals
-            if get_deal_country(deal) not in [
-                'China', 'Myanmar', 'Tanzania, United Republic of', 'Viet Nam'
-            ]
-            if not is_unchanged_imported_deal(deal)
-        ]
-        cls._count = len(deals)
+        # Exclude deleted and rejected deals
+        deals = deals.exclude(fk_status__in=(4, 5))
 
-        return Activity.objects.using(cls.DB).filter(pk__in=[deal.id for deal in deals]).values()
+        # exclude deals for various reasons
+        excluded_country_deal_ids = list([
+            deal.pk for deal in deals
+            if get_deal_country(deal) in (
+                'China', 'Myanmar', 'Tanzania, United Republic of', 'Viet Nam',
+            )
+        ])
+        excluded_lm_import_deal_ids = list([
+            deal.pk for deal in deals
+            if 'http://www.landmatrix.org' in get_deal_tags(deal, 'URL / Web')
+        ])
+        excluded_unreviewed_deal_ids = list([
+            deal.pk for deal in deals
+            if deal.timestamp_review is None
+        ])
+
+        deals = deals.exclude(pk__in=excluded_country_deal_ids)
+        deals = deals.exclude(pk__in=excluded_lm_import_deal_ids)
+        deals = deals.exclude(pk__in=excluded_unreviewed_deal_ids)
+
+        cls._count = deals.count()
+
+        return deals.values()
 
     @classmethod
     def get_existing_record(cls, record):
@@ -86,19 +94,24 @@ class MapLOActivities(MapLOModel):
         else:
             i = 0
 
+        if not hasattr(cls, '_pending_status'):
+            # Don't need to query this every time
+            cls._pending_status = landmatrix.models.Status.objects.using(V2).get(
+                name="pending")
+
         new.activity_identifier = activity_identifier
-        new.fk_status = landmatrix.models.Status.objects.using(V2).get(
-            name="pending")
+        new.fk_status = cls._pending_status
 
         if save:
             new.save(using=V2)
 
         historical_activity = landmatrix.models.HistoricalActivity(
-            id=new.id,
             activity_identifier=new.activity_identifier,
-            fk_status_id=1,
+            public_version=new,
+            fk_status=cls._pending_status,
             history_date=calculate_history_date(versions, i),
             history_user_id=75)
+
         changeset = landmatrix.models.ActivityChangeset(
             comment='Imported from Land Observatory',
             fk_activity=historical_activity)
@@ -107,7 +120,7 @@ class MapLOActivities(MapLOModel):
             historical_activity.save(using=V2)
             changeset.save(using=V2)
 
-        return new
+        return new, historical_activity
 
     @classmethod
     def save_record(cls, new, old, save):
@@ -122,38 +135,51 @@ class MapLOActivities(MapLOModel):
             original_refnos = get_group_tags(tag_groups, "Original reference number")
             activity_identifier = original_refnos[0]
 
-        new = cls.save_activity_record(new, save, activity_identifier, imported)
+        activity, historical_activity = cls.save_activity_record(
+            new, save, activity_identifier, imported)
 
         # Clear any existing attrs for imported deals (we're going to write
         # them again)
         landmatrix.models.ActivityAttribute.objects.using(V2).filter(
-            fk_activity=new).delete()
+            fk_activity=activity).delete()
         landmatrix.models.HistoricalActivityAttribute.objects.using(V2).filter(
-            fk_activity_id=new.id).delete()
+            fk_activity=historical_activity).delete()
 
-        cls.write_standard_tag_groups(new, tag_groups, save=save)
-
-        group_proxy = type('MockTagGroup', (object,), {"fk_activity": new.id, 'id': None})
-        cls.write_activity_attribute_group(
-            new,
-            {'not_public_reason': 'Land Observatory Import (new)' if not imported else 'Land Observatory Import (duplicate)'},
-            group_proxy,
-            None,
-            'not_public',
-            None,
-            save=save)
-
-        old_record = cls.old_class.objects.using(cls.DB).get(id=lo_record_id)
+        group_proxy = type(
+            'MockTagGroup', (object,),
+            {"fk_activity": activity.id, 'id': None})
+        historical_group_proxy = type(
+            'MockTagGroup', (object,),
+            {"fk_activity": historical_activity.id, 'id': None})
+        not_public_attrs = {
+            'not_public_reason': 'Land Observatory Import (new)' if not imported else 'Land Observatory Import (duplicate)',
+        }
         imported_attrs = {
             'source': 'Land Observatory',
-            'id': str(old_record.activity_identifier),
+            'id': str(old['activity_identifier']),
             'timestamp': timezone.now().isoformat(),
         }
+
+        # Write both new and historical
+        cls.write_standard_tag_groups(activity, new, tag_groups, save=save)
         cls.write_activity_attribute_group(
-            new, imported_attrs, group_proxy, None, 'imported', None, save=save)
+            activity, not_public_attrs, group_proxy, None, 'not_public', None,
+            save=save)
+        cls.write_activity_attribute_group(
+            activity, imported_attrs, group_proxy, None, 'imported', None,
+            save=save)
+
+        cls.write_standard_tag_groups(
+            historical_activity, new, tag_groups, save=save)
+        cls.write_activity_attribute_group(
+            historical_activity, not_public_attrs, historical_group_proxy,
+            None, 'not_public', None, save=save)
+        cls.write_activity_attribute_group(
+            historical_activity, imported_attrs, historical_group_proxy, None,
+            'imported', None, save=save)
 
     @classmethod
-    def write_standard_tag_groups(cls, new, tag_groups, save=False):
+    def write_standard_tag_groups(cls, new, old, tag_groups, save=False):
         location_set = False
         data_source_counter = 0
         for tag_group in tag_groups:
@@ -168,8 +194,8 @@ class MapLOActivities(MapLOModel):
 
             # set location - stored in activity in LO, but tag group in LM
             if group_name == 'location_0' and not location_set:
-                attrs['point_lat'] = new.point.get_y()
-                attrs['point_lon'] = new.point.get_x()
+                attrs['point_lat'] = old.point.get_y()
+                attrs['point_lon'] = old.point.get_x()
                 location_set = True
 
             # area boundaries.
@@ -182,16 +208,18 @@ class MapLOActivities(MapLOModel):
 
                 # Not sure if this is required, but it doesn't hurt
                 if key in attrs and value != attrs[key]:
-                    cls.write_activity_attribute_group_with_comments(new, attrs, tag_group,
-                        None, group_name, polygon, save=save)
+                    cls.write_activity_attribute_group_with_comments(
+                        new, attrs, tag_group, None, group_name, polygon,
+                        save=save)
                     attrs = {}
                     polygon = None
 
                 attrs[key] = value
 
             if attrs:
-                cls.write_activity_attribute_group_with_comments(new, attrs, tag_group,
-                    None, group_name, polygon, save=save)
+                cls.write_activity_attribute_group_with_comments(
+                    new, attrs, tag_group, None, group_name, polygon,
+                    save=save)
 
     @classmethod
     def tag_group_name(cls, tag_group):
@@ -256,14 +284,14 @@ class MapLOActivities(MapLOModel):
                 if key in tag_group.tag.key.key:
                     return value
             return A_Value.objects.using(cls.DB).get(pk=tag_group.tag.fk_a_value).value
-        except Exception:
+        except (AttributeError, A_Value.DoesNotExist):
             return None
 
     @classmethod
     def tag_group_key(cls, tag_group):
         try:
             return tag_group.tag.key.key
-        except Exception:
+        except AttributeError:
             return None
 
     @classmethod
@@ -281,48 +309,44 @@ class MapLOActivities(MapLOModel):
 
     @classmethod
     def write_activity_attribute_group(cls, activity, attrs, tag_group, year, name, polygon, save=False):
+        # Depending on the activity type, save the write kind of attrs
+        if type(activity) == landmatrix.models.HistoricalActivity:
+            attr_model = landmatrix.models.HistoricalActivityAttribute
+        else:
+            attr_model = landmatrix.models.ActivityAttribute
+
         if 'YEAR' in attrs:
             year = attrs['YEAR']
             del attrs['YEAR']
 
         # I think aags should be distinct, but they aren't, so just go with it
         try:
-            aag = landmatrix.models.ActivityAttributeGroup.objects.using(V2).get(name=name)
+            aag = landmatrix.models.ActivityAttributeGroup.objects.using(
+                V2).get(name=name)
         except landmatrix.models.ActivityAttributeGroup.MultipleObjectsReturned:
-            aag = landmatrix.models.ActivityAttributeGroup.objects.using(V2).filter(name=name).last()
+            aag = landmatrix.models.ActivityAttributeGroup.objects.using(
+                V2).filter(name=name).last()
         except landmatrix.models.ActivityAttributeGroup.DoesNotExist:
             aag = landmatrix.models.ActivityAttributeGroup(name=name)
             if save:
-               aag.save(using=V2)
-
-        english = landmatrix.models.Language.objects.using(V2).get(pk=1)
+                aag.save(using=V2)
 
         for key, value in attrs.items():
             if '#' in str(value):
                 values = value.split('#')
                 if len(values) == 2 and len(values[1]) <= 10:
                     value, year = values
-            aa = landmatrix.models.ActivityAttribute(
-                fk_activity_id=activity.id,
-                fk_language=english,
+            attr = attr_model(
+                fk_activity_id=activity.pk,
+                fk_language_id=1,
                 fk_group=aag,
                 name=key,
                 value=value,
                 date=year,
                 polygon=polygon
             )
-            haa = landmatrix.models.HistoricalActivityAttribute(
-                fk_activity_id=activity.id,
-                fk_language=english,
-                fk_group=aag,
-                name=key,
-                value=value,
-                date=year,
-                polygon=polygon,
-            )
             if save:
-                aa.save(using=V2)
-                haa.save(using=V2)
+                attr.save(using=V2)
 
         if hasattr(aag, 'id'):
             cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
@@ -349,24 +373,9 @@ class MapLOActivities(MapLOModel):
 
     @classmethod
     def get_activity_versions(cls, activity):
-        cursor = connections[cls.DB].cursor()
-        cursor.execute(
-            """SELECT id FROM activities AS a WHERE activity_identifier = '{}'
-            ORDER BY version """.format(activity.activity_identifier)
-        )
-        ids = [id[0] for id in cursor.fetchall()]
         return Activity.objects.using(cls.DB).filter(
-            pk__in=ids).order_by('pk').values()
-
-
-def is_unchanged_imported_deal(deal):
-    if not is_imported_deal(deal):
-        return False
-    return deal.timestamp_review is None
-
-
-def is_imported_deal(deal):
-    return 'http://www.landmatrix.org' in get_deal_tags(deal, 'URL / Web')
+            activity_identifier=activity.activity_identifier).order_by(
+            'version').values()
 
 
 def is_imported_deal_groups(groups):
@@ -714,8 +723,16 @@ def get_deal_country(deal):
 
 
 def get_deal_tags(deal, key):
-    return [tag.value.value for group in deal.tag_groups for tag in group.tags if tag.key.key == key]
+    return [
+        tag.value.value for group in deal.tag_groups
+        for tag in group.tags
+        if tag.key.key == key
+    ]
 
 
 def get_group_tags(groups, key):
-    return [tag.value.value for group in groups for tag in group.tags if tag.key.key == key]
+    return [
+        tag.value.value for group in groups
+        for tag in group.tags
+        if tag.key.key == key
+    ]
