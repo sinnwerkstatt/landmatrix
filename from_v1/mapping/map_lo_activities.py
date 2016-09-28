@@ -28,13 +28,43 @@ class MapLOActivities(MapLOModel):
     }
 
     @classmethod
+    def cleanup_previously_imported_rejected_deals(
+            cls, save=False, verbose=False):
+        '''
+        Previously, LO import would import deals that had only one, rejected
+        version. Clean these up.
+        '''
+        # use a list here so Django doesn't try to make a subquery
+        rejects = Activity.objects.using(cls.DB).filter(
+            fk_status__in=(4, 5), version=1)
+
+        rejected_ids = list(rejects.values_list(
+            'activity_identifier', flat=True))
+
+        previous_imports = landmatrix.models.HistoricalActivity.objects.using(
+            V2).filter(
+            attributes__fk_group__name='imported', attributes__name='id',
+            attributes__value__in=rejected_ids)
+
+        if verbose:
+            print('Found {} previous LO imports that were rejected.'.format(
+                previous_imports.count()))
+
+        for rejected_activity in previous_imports:
+            if verbose:
+                print('Deleting rejected deal with id {}'.format(
+                    rejected_activity.activity_identifier))
+            if rejected_activity.public_version:
+                if save:
+                    rejected_activity.public_version.delete()
+            if save:
+                rejected_activity.delete()
+
+    @classmethod
     def all_records(cls):
         latest_version_ids = cls.all_ids()
         deals = Activity.objects.using(cls.DB).filter(
             pk__in=latest_version_ids)
-
-        # Exclude deleted and rejected deals
-        deals = deals.exclude(fk_status__in=(4, 5))
 
         # exclude deals for various reasons
         excluded_country_deal_ids = list([
@@ -78,6 +108,7 @@ class MapLOActivities(MapLOModel):
     WHERE version = (
         SELECT MAX(version) FROM activities
         WHERE activity_identifier = a.activity_identifier
+        AND fk_status NOT IN (4, 5)
     )
     ORDER BY activity_identifier
             """)
