@@ -520,29 +520,32 @@ class HistoricalActivity(ActivityBase):
 
     def approve_change(self, user=None, comment=None):
         assert self.fk_status_id == HistoricalActivity.STATUS_PENDING
-        # TODO: this logic is taken from changeset protocol
-        # but it won't really work properly. We need to determine behaviour
-        # when updates happen out of order. There can easily be many edits,
-        # and not the latest one is approved.
-        latest_public_version = self.__class__.get_latest_active_activity(
-            self.activity_identifier)
-        if latest_public_version:
-            self.fk_status_id = HistoricalActivity.STATUS_OVERWRITTEN
-        else:
-            self.fk_status_id = HistoricalActivity.STATUS_ACTIVE
-        self.save(update_fields=['fk_status'])
 
-        try:
-            investor = InvestorActivityInvolvement.objects.get(
-                fk_activity_id=self.pk).fk_investor
-        except InvestorActivityInvolvement.DoesNotExist:
-            pass
-        else:
-            investor.approve()
+        # Only approvals of administrators should go public
+        if user.has_perm('landmatrix.change_activity'):
+            # TODO: this logic is taken from changeset protocol
+            # but it won't really work properly. We need to determine behaviour
+            # when updates happen out of order. There can easily be many edits,
+            # and not the latest one is approved.
+            latest_public_version = self.__class__.get_latest_active_activity(
+                self.activity_identifier)
+            if latest_public_version:
+                self.fk_status_id = HistoricalActivity.STATUS_OVERWRITTEN
+            else:
+                self.fk_status_id = HistoricalActivity.STATUS_ACTIVE
+            self.save(update_fields=['fk_status'])
+
+            try:
+                investor = InvestorActivityInvolvement.objects.get(
+                    fk_activity_id=self.pk).fk_investor
+            except InvestorActivityInvolvement.DoesNotExist:
+                pass
+            else:
+                investor.approve()
+
+            self.update_public_activity()
 
         self.changesets.create(fk_user=user, comment=comment)
-
-        self.update_public_activity()
 
     def reject_change(self, user=None, comment=None):
         assert self.fk_status_id == HistoricalActivity.STATUS_PENDING
@@ -561,22 +564,25 @@ class HistoricalActivity(ActivityBase):
 
     def approve_delete(self, user=None, comment=None):
         assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
-        self.fk_status_id = HistoricalActivity.STATUS_DELETED
-        self.save(update_fields=['fk_status'])
 
-        # TODO: this seems weird to me, but I just moved the logic over
-        # Wouldn't it make sense to delete here?
-        try:
-            investor = InvestorActivityInvolvement.objects.get(
-                fk_activity_id=self.pk).fk_investor
-        except InvestorActivityInvolvement.DoesNotExist:
-            pass
-        else:
-            investor.approve()
+        # Only approvals of administrators should go public
+        if user.has_perm('landmatrix.change_activity'):
+            self.fk_status_id = HistoricalActivity.STATUS_DELETED
+            self.save(update_fields=['fk_status'])
+
+            # TODO: this seems weird to me, but I just moved the logic over
+            # Wouldn't it make sense to delete here?
+            try:
+                investor = InvestorActivityInvolvement.objects.get(
+                    fk_activity_id=self.pk).fk_investor
+            except InvestorActivityInvolvement.DoesNotExist:
+                pass
+            else:
+                investor.approve()
+            self.update_public_activity()
 
         self.changesets.create(fk_user=user, comment=comment)
 
-        self.update_public_activity()
 
     def reject_delete(self, user=None, comment=None):
         assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
@@ -596,8 +602,6 @@ class HistoricalActivity(ActivityBase):
     def update_public_activity(self):
         """Update public activity based upon newest confirmed historical activity"""
         #user = user or self.history_user
-        #if not user.has_perm('landmatrix.change_activity'):
-        #    return False
         # Update status of historical activity
         if self.fk_status_id == self.STATUS_PENDING:
             self.fk_status_id = self.STATUS_OVERWRITTEN

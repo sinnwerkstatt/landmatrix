@@ -7,6 +7,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic import (
     TemplateView, RedirectView, ListView, DetailView, FormView,
 )
+from django.db.models import Q
 
 from landmatrix.models import Activity, HistoricalActivity, ActivityFeedback
 from editor.models import UserRegionalInfo
@@ -82,12 +83,20 @@ class PendingChangesMixin(FilteredQuerysetMixin):
         if queryset is None:
             queryset = HistoricalActivity.objects.all()
 
+        # for public users:
         if not self.request.user.has_perm('landmatrix.review_activity'):
             queryset = queryset.none()
-        # for editors, show only activites that have been added/changed by
-        # public users
+        # for editors:
+        # show only activites that have been added/changed by public users
+        # and not been reviewed by another editor yet
         elif not self.request.user.has_perm('landmatrix.change_activity'):
             queryset = queryset.filter(history_user__groups__name='Reporters')
+            queryset = queryset.exclude(changesets__fk_user__groups__name='Editors')
+        # for admins:
+        # show only activites that have been added/changed or reviewed by editors
+        else:
+            queryset = queryset.filter(Q(history_user__groups__name='Editors') |
+                Q(changesets__fk_user__groups__name='Editors'))
 
         return queryset
 
