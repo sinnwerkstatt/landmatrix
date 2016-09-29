@@ -127,8 +127,8 @@ class MapLOActivities(MapLOModel):
 
         if not hasattr(cls, '_pending_status'):
             # Don't need to query this every time
-            cls._pending_status = landmatrix.models.Status.objects.using(V2).get(
-                name="pending")
+            cls._pending_status = landmatrix.models.Status.objects.using(
+                V2).get(name="pending")
 
         new.activity_identifier = activity_identifier
         new.fk_status = cls._pending_status
@@ -136,19 +136,29 @@ class MapLOActivities(MapLOModel):
         if save:
             new.save(using=V2)
 
-        historical_activity = landmatrix.models.HistoricalActivity(
-            activity_identifier=new.activity_identifier,
-            public_version=new,
-            fk_status=cls._pending_status,
-            history_date=calculate_history_date(versions, i),
-            history_user_id=75)
+        # existing records already have a historical version
+        if new.historical_version:
+            historical_activity = new.historical_version
+        else:
+            historical_activity = landmatrix.models.HistoricalActivity(
+                public_version=new)
+
+        historical_activity.activity_identifier = new.activity_identifier
+        historical_activity.fk_status = cls._pending_status
+        historical_activity.history_date = calculate_history_date(versions, i)
+        historical_activity.history_user_id = 75
+
+        if save:
+            historical_activity.save(using=V2)
 
         changeset = landmatrix.models.ActivityChangeset(
             comment='Imported from Land Observatory',
             fk_activity=historical_activity)
 
         if save:
-            historical_activity.save(using=V2)
+            # Clear out old import changesets to reset the timestamp
+            historical_activity.changesets.filter(
+                comment='Imported from Land Observatory').delete()
             changeset.save(using=V2)
 
         return new, historical_activity
@@ -157,7 +167,23 @@ class MapLOActivities(MapLOModel):
     def save_record(cls, new, old, save):
         """Save all versions of an activity as HistoricalActivity records."""
         lo_record_id = old['id']
-        tag_groups = A_Tag_Group.objects.using(cls.DB).filter(fk_activity=lo_record_id)
+
+        # If the polygon is valid, use it, otherwise ask postgres to try
+        # and fix it.
+        tag_groups = A_Tag_Group.objects.using(cls.DB).raw('''
+            SELECT *,
+            CASE
+                WHEN a_tag_groups.geometry != '' THEN
+                    CASE
+                        WHEN ST_IsValid(a_tag_groups.geometry) = FALSE
+                            THEN ST_MakeValid(a_tag_groups.geometry)
+                        ELSE a_tag_groups.geometry
+                    END
+                ELSE NULL
+            END AS clean_geometry
+            FROM a_tag_groups
+            WHERE fk_activity = %s
+            ''', [lo_record_id])
 
         activity_identifier = None
         imported = is_imported_deal_groups(tag_groups)
@@ -166,19 +192,19 @@ class MapLOActivities(MapLOModel):
             original_refnos = get_group_tags(tag_groups, "Original reference number")
             activity_identifier = original_refnos[0]
 
-        activity, historical_activity = cls.save_activity_record(
+        new, historical_activity = cls.save_activity_record(
             new, save, activity_identifier, imported)
 
         # Clear any existing attrs for imported deals (we're going to write
         # them again)
         landmatrix.models.ActivityAttribute.objects.using(V2).filter(
-            fk_activity=activity).delete()
+            fk_activity=new).delete()
         landmatrix.models.HistoricalActivityAttribute.objects.using(V2).filter(
             fk_activity=historical_activity).delete()
 
         group_proxy = type(
             'MockTagGroup', (object,),
-            {"fk_activity": activity.id, 'id': None})
+            {"fk_activity": new.id, 'id': None})
         historical_group_proxy = type(
             'MockTagGroup', (object,),
             {"fk_activity": historical_activity.id, 'id': None})
@@ -192,16 +218,18 @@ class MapLOActivities(MapLOModel):
         }
 
         # Write both new and historical
-        cls.write_standard_tag_groups(activity, new, tag_groups, save=save)
+        cls.write_standard_tag_groups(
+            new, tag_groups, point=getattr(new, 'point'), save=save)
         cls.write_activity_attribute_group(
-            activity, not_public_attrs, group_proxy, None, 'not_public', None,
+            new, not_public_attrs, group_proxy, None, 'not_public', None,
             save=save)
         cls.write_activity_attribute_group(
-            activity, imported_attrs, group_proxy, None, 'imported', None,
+            new, imported_attrs, group_proxy, None, 'imported', None,
             save=save)
 
         cls.write_standard_tag_groups(
-            historical_activity, new, tag_groups, save=save)
+            historical_activity, tag_groups, point=getattr(new, 'point'),
+            save=save)
         cls.write_activity_attribute_group(
             historical_activity, not_public_attrs, historical_group_proxy,
             None, 'not_public', None, save=save)
@@ -210,7 +238,8 @@ class MapLOActivities(MapLOModel):
             'imported', None, save=save)
 
     @classmethod
-    def write_standard_tag_groups(cls, new, old, tag_groups, save=False):
+    def write_standard_tag_groups(
+        cls, activity, tag_groups, point=None, save=False):
         location_set = False
         data_source_counter = 0
         for tag_group in tag_groups:
@@ -225,13 +254,13 @@ class MapLOActivities(MapLOModel):
 
             # set location - stored in activity in LO, but tag group in LM
             if group_name == 'location_0' and not location_set:
-                attrs['point_lat'] = old.point.get_y()
-                attrs['point_lon'] = old.point.get_x()
+                attrs['point_lat'] = point.get_y()
+                attrs['point_lon'] = point.get_x()
                 location_set = True
 
             # area boundaries.
-            if tag_group.geometry is not None:
-                polygon = tag_group.geometry
+            if tag_group.clean_geometry is not None:
+                polygon = tag_group.clean_geometry
 
             for tag in cls.relevant_tags(tag_group):
                 key = tag.key.key
@@ -240,7 +269,7 @@ class MapLOActivities(MapLOModel):
                 # Not sure if this is required, but it doesn't hurt
                 if key in attrs and value != attrs[key]:
                     cls.write_activity_attribute_group_with_comments(
-                        new, attrs, tag_group, None, group_name, polygon,
+                        activity, attrs, tag_group, None, group_name, polygon,
                         save=save)
                     attrs = {}
                     polygon = None
@@ -249,7 +278,7 @@ class MapLOActivities(MapLOModel):
 
             if attrs:
                 cls.write_activity_attribute_group_with_comments(
-                    new, attrs, tag_group, None, group_name, polygon,
+                    activity, attrs, tag_group, None, group_name, polygon,
                     save=save)
 
     @classmethod
@@ -268,7 +297,7 @@ class MapLOActivities(MapLOModel):
             'Contract Number': 'contract_farming',
             'Country': 'location_0',
             'Crop': 'crop_animal_mineral',
-            'Current area in operation (ha)': 'production_size',
+            'Current area in operation (ha)': 'production_area',
             'Current Number of daily/seasonal workers': 'total_number_of_jobs_created',
             'Current number of employees': 'total_number_of_jobs_created',
             'Current total number of jobs': 'total_number_of_jobs_created',
@@ -283,7 +312,7 @@ class MapLOActivities(MapLOModel):
             'How much do investors pay for water': 'water_extraction_amount',
             'How much water is extracted (m3/year)': 'water_extraction_amount',
             'Implementation status': 'implementation_status',
-            'Intended area (ha)': 'land_area',
+            'Intended area (ha)': 'intended_area',
             'Intention of Investment': 'intention',
             'Leasing fee (per year)': 'leasing_fees',
             'Mineral': 'crop_animal_mineral',
@@ -449,8 +478,8 @@ def transform_attributes(attrs, group_name=''):
             attrs['tg_implementation_status_comment'] = remark
         elif group_name.startswith('data_source'):
             attrs['tg_data_source_comment'] = remark
-        elif 'intended_size' in attrs:
-            attrs['tg_land_area_comment'] = remark
+        elif 'intended_area' in attrs:
+            attrs['tg_intended_area_comment'] = remark
         elif group_name.startswith('location') or 'point_lat' in attrs:
             attrs['tg_location_comment'] = remark
         elif 'community_consultation' in attrs:
@@ -580,16 +609,16 @@ LM_ATTRIBUTES = {
     "Área de la cuota anual de arrendamiento (ha)":     'annual_leasing_fee_area',
     'Announced amount of investement':  'purchase_price_comment',
     'Announced amount of investment':   'purchase_price_comment',
-    'Area (ha)':                        'intended_size',
-    "Área pretendida (ha)":                        'intended_size',
+    'Area (ha)':                        'intended_area',
+    "Área pretendida (ha)":                        'intended_area',
     'Benefits for local communities':   'promised_benefits',
     'Consultation of local community':  'community_consultation',
     "Contreparties pour les populations locales":  'community_consultation',
     "Consulta a las comunidades locales":  'community_consultation',
     "Consultations tenues au niveau local ":  'community_consultation',
-    'Contract area (ha)':               'contract_size',
-    "Área del contrato (ha)":               'contract_size',
-    "Superficie sous contrat (ha)":               'contract_size',
+    'Contract area (ha)':               'contract_area',
+    "Área del contrato (ha)":               'contract_area',
+    "Superficie sous contrat (ha)":               'contract_area',
     'Contract date':                    'contract_date',
     "Date de signature du contrat":                    'contract_date',
     'Contract farming':                 'contract_farming',
@@ -603,9 +632,9 @@ LM_ATTRIBUTES = {
     'Crop':                             'crops',
     "Cultivo":                             'crops',
     "Cultures":                             'crops',
-    'Current area in operation (ha)':   'production_size',
-    "Área actual en operación (ha)":   'production_size',
-    "Superficie exploitée (ha) ":   'production_size',
+    'Current area in operation (ha)':   'production_area',
+    "Área actual en operación (ha)":   'production_area',
+    "Superficie exploitée (ha) ":   'production_area',
     'Current Number of daily/seasonal workers': 'total_jobs_current_daily_workers',
     "Emplois temporaires créés (nombre)": 'total_jobs_current_daily_workers',
     "Número actual de trabajadores por día o por temporada": 'total_jobs_current_daily_workers',
@@ -645,8 +674,8 @@ LM_ATTRIBUTES = {
     'Implementation status':            'implementation_status',
     "Estado de aplicación":            'implementation_status',
     "Etat d'avancement":            'implementation_status',
-    'Intended area (ha)':               'intended_size',
-    "Superficie visée (ha)":               'intended_size',
+    'Intended area (ha)':               'intended_area',
+    "Superficie visée (ha)":               'intended_area',
     'Intention of Investment':          'intention',
     "Intención de la inversión":          'intention',
     'Leasing fee (per year)':           'annual_leasing_fee',
