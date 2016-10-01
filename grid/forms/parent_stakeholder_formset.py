@@ -1,12 +1,11 @@
 from django.utils.translation import ugettext_lazy as _
 from django import forms
-from django.forms.widgets import Select, Textarea
+from django.forms.widgets import Select, Textarea, CheckboxSelectMultiple
 
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 from landmatrix.models.status import Status
 from grid.widgets import TitleField, CommentInput
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+from landmatrix.fields import CommaSeparatedSelectInteger
 
 
 investor_widget = Select(attrs={'class': 'form-control investorfield'})
@@ -22,6 +21,9 @@ class ParentStakeholderForm(forms.ModelForm):
     fk_investor = forms.ModelChoiceField(
         required=False, label=_("Existing parent company"),
         queryset=Investor.objects.all(), widget=investor_widget)
+    investment_type = forms.MultipleChoiceField(
+        required=False, choices=InvestorVentureInvolvement.INVESTMENT_TYPE_CHOICES,
+        label=_("Investment type"), widget=CheckboxSelectMultiple)
     percentage = forms.DecimalField(
         required=False, max_digits=5, decimal_places=2,
         label=_("Ownership share"), help_text=_("%"))
@@ -33,7 +35,7 @@ class ParentStakeholderForm(forms.ModelForm):
         name = 'parent-company'
         model = InvestorVentureInvolvement
         fields = [
-            'tg_parent_stakeholder', 'id', 'fk_investor', 'percentage', 'investment_type',
+            'tg_parent_stakeholder', 'id', 'fk_investor', 'investment_type', 'percentage', 
             'loans_amount', 'loans_currency', 'loans_date',
             'comment'
         ]
@@ -54,7 +56,7 @@ class ParentInvestorForm(ParentStakeholderForm):
         name = 'parent-investor'
         model = InvestorVentureInvolvement
         fields = [
-            'tg_parent_stakeholder', 'id', 'fk_investor', 'percentage', 'investment_type',
+            'tg_parent_stakeholder', 'id', 'fk_investor', 'investment_type', 'percentage', 
             'loans_amount', 'loans_currency', 'loans_date',
             'comment'
         ]

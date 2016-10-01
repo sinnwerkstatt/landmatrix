@@ -155,7 +155,7 @@ urlpatterns = patterns('',
         name='stakeholder_form'
     ),
     url(
-        r'^stakeholder/(?P<investor_id>\d+)/(?P<history_id>\d+)/$',
+        r'^stakeholder/(?P<investor_id>\d*)/(?P<history_id>\d+)/$',
         ChangeStakeholderView.as_view(),
         name='stakeholder_form'
     ),

@@ -742,7 +742,7 @@ function handleFeatureClick (feature, layer) {
             content.innerHTML += '<span>Contract size (ha):</span><span class="pull-right">' + parseInt(contract_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
         }
         content.innerHTML += '<span>Intention:</span><span class="pull-right">' + intention + '</span><br/>';
-        content.innerHTML += '<span>Investor:</span><span class="pull-right">' + investor + '</span><br />';
+        content.innerHTML += '<span>Operational company:</span><span class="pull-right">' + investor + '</span><br />';
         // TODO: Handle other possibly already known attributes from currentVariable
         if (status) {
             content.innerHTML += '<span>Negotiation Status:</span><span class="pull-right">' + status + '</span><br />';

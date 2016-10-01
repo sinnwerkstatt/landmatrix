@@ -96,7 +96,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     objects = InvestorQuerySet.as_manager()
 
     class Meta:
-        ordering = ('-name',)
+        ordering = ('name',)
         abstract = True
 
     def __str__(self):
@@ -181,13 +181,13 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
         self.save(update_fields=['fk_status'])
 
-
 class Investor(InvestorBase):
     subinvestors = models.ManyToManyField(
         "self", through='InvestorVentureInvolvement', symmetrical=False,
         through_fields=('fk_venture', 'fk_investor'))
 
     class Meta:
+        ordering = ('name',)
         verbose_name = _("Investor")
         verbose_name_plural = _("Investors")
 
@@ -215,7 +215,6 @@ class InvestorVentureQuerySet(models.QuerySet):
     def investors(self):
         return self.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
 
-
 class InvestorVentureInvolvement(models.Model):
     '''
     InvestorVentureInvolvement links investors to each other.
@@ -229,8 +228,8 @@ class InvestorVentureInvolvement(models.Model):
         (STAKEHOLDER_ROLE, _('Stakeholder')),
         (INVESTOR_ROLE, _('Investor')),
     )
-    EQUITY_INVESTMENT_TYPE = '10'
-    DEBT_FINANCING_INVESTMENT_TYPE = '20'
+    EQUITY_INVESTMENT_TYPE = 10
+    DEBT_FINANCING_INVESTMENT_TYPE = 20
     INVESTMENT_TYPE_CHOICES = (
         (EQUITY_INVESTMENT_TYPE, _('Shares/Equity')),
         (DEBT_FINANCING_INVESTMENT_TYPE, _('Debt financing')),
@@ -239,12 +238,13 @@ class InvestorVentureInvolvement(models.Model):
     fk_venture = models.ForeignKey(Investor, db_index=True,
                                    related_name='venture_involvements')
     fk_investor = models.ForeignKey(Investor, db_index=True, related_name='+')
+    investment_type = models.CommaSeparatedIntegerField(
+        max_length=255, choices=INVESTMENT_TYPE_CHOICES,
+        default='', blank=True, null=True)
     percentage = models.FloatField(
         _('Ownership share'), blank=True, null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
     role = models.CharField(max_length=2, choices=ROLE_CHOICES)
-    investment_type = models.CharField(
-        max_length=2, choices=INVESTMENT_TYPE_CHOICES, blank=True, null=True)
     loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
     loans_currency = models.ForeignKey(
         "Currency", verbose_name=_("Loan currency"), blank=True, null=True)

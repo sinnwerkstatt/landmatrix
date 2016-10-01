@@ -61,7 +61,7 @@ ORDER BY primary_investor_identifier
         landmatrix.models.HistoricalInvestor.objects.create(
             id=new.id,
             investor_identifier=new.investor_identifier,
-            name=new.name,
+            name=new.name.strip(),
             fk_country=new.fk_country,
             classification=new.classification,
             parent_relation=new.parent_relation,

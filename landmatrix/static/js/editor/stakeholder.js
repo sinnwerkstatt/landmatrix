@@ -53,16 +53,21 @@ function init_investor_form(form) {
 }
 
 function generateButtons(field) {
-    var investorId = field.val();
-    var addLink = '/stakeholder/add/';
+    var investorId = field.val(),
+      addLink = '/stakeholder/add/';
+      role = field.attr('name');
+    if (role.indexOf('-') > -1) {
+      role = role.split('-');
+      role = role[0] + '_' + role[1];
+    }
     //var parentId = $('#id_id').val();
     //if (parentId) {
     //    addLink = addLink + '?parent_id=' + parentId;
     //}
 
-    var buttons = '<a id="add_' + $(field).attr("id") + '" class="add-investor" href="' + addLink + '" class="noul"><i class="lm lm-plus"></i></a>';
+    var buttons = '<a id="add_' + $(field).attr("id") + '" class="add-investor" href="' + addLink + '?role=' + role + '" class="noul"><i class="lm lm-plus"></i></a>';
     if (field.val() !== '') {
-        buttons += '<a id="change_' + $(field).attr("id") + '" class="change-investor" href="/stakeholder/' + investorId + '/" class="noul"><i class="lm lm-pencil"></i></a>';
+        buttons += '<a id="change_' + $(field).attr("id") + '" class="change-investor" href="/stakeholder/0/' + investorId + '/?role=' + role + '" class="noul"><i class="lm lm-pencil"></i></a>';
     }
     var wrap = '<span class="investorops">' + buttons + '</span>';
 
