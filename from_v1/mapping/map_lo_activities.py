@@ -2,6 +2,9 @@ from functools import lru_cache
 
 from django.db import connections
 from django.utils import timezone
+from django.contrib.gis.geos import (
+    MultiPolygon, Polygon, GeometryCollection, GEOSGeometry,
+)
 
 import landmatrix.models
 from .land_observatory_objects.tags import A_Value
@@ -167,23 +170,8 @@ class MapLOActivities(MapLOModel):
     def save_record(cls, new, old, save):
         """Save all versions of an activity as HistoricalActivity records."""
         lo_record_id = old['id']
-
-        # If the polygon is valid, use it, otherwise ask postgres to try
-        # and fix it.
-        tag_groups = A_Tag_Group.objects.using(cls.DB).raw('''
-            SELECT *,
-            CASE
-                WHEN a_tag_groups.geometry != '' THEN
-                    CASE
-                        WHEN ST_IsValid(a_tag_groups.geometry) = FALSE
-                            THEN ST_MakeValid(a_tag_groups.geometry)
-                        ELSE a_tag_groups.geometry
-                    END
-                ELSE NULL
-            END AS clean_geometry
-            FROM a_tag_groups
-            WHERE fk_activity = %s
-            ''', [lo_record_id])
+        tag_groups = A_Tag_Group.objects.using(cls.DB).filter(
+            fk_activity=lo_record_id)
 
         activity_identifier = None
         imported = is_imported_deal_groups(tag_groups)
@@ -238,13 +226,50 @@ class MapLOActivities(MapLOModel):
             'imported', None, save=save)
 
     @classmethod
+    def _get_polygon(cls, tag_group):
+        polygon = tag_group.geometry
+
+        # Sometimes, we have invalid polygons. The only way that seems
+        # to fix them is ST_MakeValid.
+        if polygon and not polygon.valid:
+            with connections[V2].cursor() as cursor:
+                cursor.execute(
+                    'SELECT ST_MakeValid(%s)', [str(polygon)])
+                row = cursor.fetchone()
+                # GEOSGeometry magically changes class to the correct type
+                polygon = GEOSGeometry(row[0])
+
+        # Convert everything to multipolygon
+        if isinstance(polygon, Polygon):
+            polygon = MultiPolygon([polygon])
+        elif isinstance(polygon, MultiPolygon):
+            # MultiPolygon inherits from GeometryCollection, so skip that case
+            pass
+        elif isinstance(polygon, GeometryCollection):
+            polygons = []
+            for geometry in polygon:
+                if isinstance(geometry, Polygon):
+                    polygons.append(geometry)
+                elif isinstance(geometry, MultiPolygon):
+                    for subpolygon in geometry:
+                        polygons.append(subpolygon)
+                else:
+                    # Unfortunately it's pretty hard to deal with linestrings
+                    # here, just skip them
+                    continue
+
+            polygon = MultiPolygon(polygons)
+
+        return polygon
+
+    @classmethod
     def write_standard_tag_groups(
         cls, activity, tag_groups, point=None, save=False):
         location_set = False
         data_source_counter = 0
         for tag_group in tag_groups:
             attrs = {}
-            polygon = None
+            polygon = cls._get_polygon(tag_group) or None
             group_name = cls.tag_group_name(tag_group)
 
             # Add all data sources, not just the last one
@@ -257,10 +282,6 @@ class MapLOActivities(MapLOModel):
                 attrs['point_lat'] = point.get_y()
                 attrs['point_lon'] = point.get_x()
                 location_set = True
-
-            # area boundaries.
-            if tag_group.clean_geometry is not None:
-                polygon = tag_group.clean_geometry
 
             for tag in cls.relevant_tags(tag_group):
                 key = tag.key.key
