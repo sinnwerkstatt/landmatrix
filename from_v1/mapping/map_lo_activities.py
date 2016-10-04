@@ -98,9 +98,9 @@ class MapLOActivities(MapLOModel):
         already_imported = cls.new_class.objects.using(V2)
         already_imported = already_imported.filter(
             attributes__fk_group__name='imported', attributes__name='id',
-            attributes__value=record['activity_identifier']).first()
+            attributes__value=record['activity_identifier']).order_by('id')
 
-        return already_imported
+        return already_imported.first()
 
     @classmethod
     def all_ids(cls):
@@ -185,10 +185,11 @@ class MapLOActivities(MapLOModel):
 
         # Clear any existing attrs for imported deals (we're going to write
         # them again)
-        landmatrix.models.ActivityAttribute.objects.using(V2).filter(
-            fk_activity=new).delete()
-        landmatrix.models.HistoricalActivityAttribute.objects.using(V2).filter(
-            fk_activity=historical_activity).delete()
+        if save:
+            landmatrix.models.ActivityAttribute.objects.using(V2).filter(
+                fk_activity=new).delete()
+            landmatrix.models.HistoricalActivityAttribute.objects.using(V2).filter(
+                fk_activity=historical_activity).delete()
 
         group_proxy = type(
             'MockTagGroup', (object,),
@@ -214,6 +215,7 @@ class MapLOActivities(MapLOModel):
         cls.write_activity_attribute_group(
             new, imported_attrs, group_proxy, None, 'imported', None,
             save=save)
+        cls.consolidate_implementation_status_comments(new, save=save)
 
         cls.write_standard_tag_groups(
             historical_activity, tag_groups, point=getattr(new, 'point'),
@@ -224,6 +226,42 @@ class MapLOActivities(MapLOModel):
         cls.write_activity_attribute_group(
             historical_activity, imported_attrs, historical_group_proxy, None,
             'imported', None, save=save)
+        cls.consolidate_implementation_status_comments(
+            historical_activity, save=save)
+
+    @classmethod
+    def consolidate_implementation_status_comments(cls, activity, save=False):
+        '''
+        We have a data model problem, where we have year based handling for
+        many fields (in this case implementation status) but not the comments.
+
+        Rather than making the forms handle year based comments, as a quick
+        and dirty fix we just consolidate into one on import.
+        '''
+        # Filter on aag name rather than a specific instance, because there are
+        # many
+        comments = activity.attributes.filter(
+            name='tg_implementation_status_comment',
+            fk_group__name='implementation_status').order_by(
+            'date')
+
+        comments_count = comments.count()
+        if comments_count > 1:
+            aag = cls.get_or_create_attribute_group(
+                'implementation_status', save=save)
+
+            joined_comment = ''
+            for comment in comments:
+                if comment.date:
+                    joined_comment += '{}:'.format(comment.date)
+                joined_comment += '{}\n'.format(comment.value)
+
+            if save:
+                comments.delete()
+                activity.attributes.model.objects.create(
+                    fk_activity=activity, fk_group=aag,
+                    name='tg_implementation_status_comment', date=None,
+                    value=joined_comment)
 
     @classmethod
     def _get_polygon(cls, tag_group):
@@ -283,7 +321,7 @@ class MapLOActivities(MapLOModel):
                 attrs['point_lon'] = point.get_x()
                 location_set = True
 
-            for tag in cls.relevant_tags(tag_group):
+            for tag in tag_group.tags:
                 key = tag.key.key
                 value = tag.value.value
 
@@ -376,10 +414,6 @@ class MapLOActivities(MapLOModel):
             return None
 
     @classmethod
-    def relevant_tags(cls, tag_group):
-        return tag_group.tags
-
-    @classmethod
     def write_activity_attribute_group_with_comments(cls, activity, attrs, tag_group, year, name, polygon, save=False):
         if (len(attrs) == 1) and attrs.get('name'):
             return
@@ -389,17 +423,8 @@ class MapLOActivities(MapLOModel):
             activity, attrs, tag_group, year, name, polygon, save=save)
 
     @classmethod
-    def write_activity_attribute_group(cls, activity, attrs, tag_group, year, name, polygon, save=False):
-        # Depending on the activity type, save the write kind of attrs
-        if type(activity) == landmatrix.models.HistoricalActivity:
-            attr_model = landmatrix.models.HistoricalActivityAttribute
-        else:
-            attr_model = landmatrix.models.ActivityAttribute
-
-        if 'YEAR' in attrs:
-            year = attrs['YEAR']
-            del attrs['YEAR']
-
+    @lru_cache(maxsize=32, typed=True)
+    def get_or_create_attribute_group(cls, name, save=False):
         # I think aags should be distinct, but they aren't, so just go with it
         try:
             aag = landmatrix.models.ActivityAttributeGroup.objects.using(
@@ -412,12 +437,23 @@ class MapLOActivities(MapLOModel):
             if save:
                 aag.save(using=V2)
 
+        return aag
+
+    @classmethod
+    def write_activity_attribute_group(cls, activity, attrs, tag_group, year, name, polygon, save=False):
+        if 'YEAR' in attrs:
+            year = attrs['YEAR']
+            del attrs['YEAR']
+
+        aag = cls.get_or_create_attribute_group(name, save=save)
+
         for key, value in attrs.items():
             if '#' in str(value):
                 values = value.split('#')
                 if len(values) == 2 and len(values[1]) <= 10:
                     value, year = values
-            attr = attr_model(
+            # Get the attr model from the activity
+            attr = activity.attributes.model(
                 fk_activity_id=activity.pk,
                 fk_language_id=1,
                 fk_group=aag,
