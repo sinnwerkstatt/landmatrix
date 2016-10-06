@@ -62,6 +62,10 @@ class MapLOActivities(MapLOModel):
                 if save:
                     rejected_activity.public_version.delete()
             if save:
+                # Delete the FKs manually, try to save postgres some stress
+                rejected_activity.changesets.all().delete()
+                rejected_activity.activityfeedback_set.all().delete()
+                rejected_activity.attributes.all().delete()
                 rejected_activity.delete()
 
     @classmethod
