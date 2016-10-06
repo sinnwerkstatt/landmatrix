@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 
 from django.db import connections
@@ -568,6 +569,14 @@ def transform_attributes(attrs, group_name=''):
     if jobs_created_attrs.intersection(set(attrs.keys())):
         attrs['total_jobs_created'] = 'True'
 
+    # For file, check if we got a tuple of original and uuid
+    # and save them both if so
+    if 'file' in attrs and not isinstance(attrs['file'], str):
+        filename, original_filename = attrs['file']
+        attrs['file'] = filename
+        if original_filename:
+            attrs['original_filename'] = original_filename
+
     return attrs
 
 
@@ -655,6 +664,8 @@ def clean_attribute(key, value):
         value = get_mineral_id(value) or ''
     elif key == 'animals':
         value = get_animal_id(value) or ''
+    elif key == 'file':
+        value = clean_filename(value)
 
     return key, value
 
@@ -811,6 +822,19 @@ def get_mineral_id(mineral_name):
 def get_animal_id(animal_name):
     animal = _get_instance_with_name(animal_name, landmatrix.models.Animal)
     return animal.id if animal else None
+
+
+def clean_filename(filename):
+    try:
+        original, uuid = filename.split('|')
+    except ValueError:
+        original = None
+        clean_filename = filename
+    else:
+        basename, extension = os.path.splitext(original)
+        clean_filename = '{}{}'.format(uuid, extension)
+
+    return clean_filename, original
 
 
 def _get_instance_with_name(name, model_class):
