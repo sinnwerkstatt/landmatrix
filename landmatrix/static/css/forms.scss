@@ -219,14 +219,20 @@ a.remove-ybd:hover {
   display: inline-block;
 }
 
-.control-group .input-group .year-based,
+.control-group .input-group select.year-based,
 .control-group .input-group input,
 .control-group .input-group select {
   width: 200px;
 }
 
+.control-group .input-group input.year-based {
+  width: 80px;
+}
 .control-group .input-group .year-based-year {
   width: 120px;
+}
+.control-group .input-group .year-based-is-current {
+  width: 20px;
 }
 
 .input-group .select2 {

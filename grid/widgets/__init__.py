@@ -17,7 +17,7 @@ from .year_based_boolean_field import YearBasedBooleanField
 from .year_based_checkbox_input import YearBasedCheckboxInput
 from .year_based_choice_field import (
     YearBasedChoiceField, YearBasedModelMultipleChoiceIntegerField,
-    YearBasedNestedMultipleChoiceField
+    YearBasedMultipleChoiceIntegerField
 )
 from .year_based_integer_field import YearBasedIntegerField
 from .year_based_multiple_select import YearBasedMultipleSelect

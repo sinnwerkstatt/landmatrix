@@ -101,36 +101,46 @@ class YearBasedModelMultipleChoiceIntegerField(forms.MultiValueField):
                 forms.CharField(required=False)
             ]
 
-
-class YearBasedNestedCheckboxSelectMultiple(YearBasedWidget):
+class YearBasedMultipleChoiceIntegerField(forms.MultiValueField):
     def __init__(self, *args, **kwargs):
         self.choices = kwargs.pop("choices")
-        self.widget = NestedCheckboxSelectMultiple(choices=self.choices, attrs={"class": "year-based"})
-        super(YearBasedNestedCheckboxSelectMultiple, self).__init__(*args, **kwargs)
-
-class YearBasedNestedMultipleChoiceField(forms.MultiValueField):
-    def __init__(self, *args, **kwargs):
-        self.choices = kwargs.pop("choices")
-        kwargs["fields"] = [NestedMultipleChoiceField(choices=self.choices, required=False), forms.CharField(required=False)]
-        kwargs["widget"] = YearBasedNestedCheckboxSelectMultiple(choices=kwargs['fields'][0].choices, help_text=kwargs.pop("help_text", ""), attrs={})
-        super(YearBasedNestedMultipleChoiceField, self).__init__(*args, **kwargs)
+        kwargs["fields"] = [
+            forms.MultipleChoiceField(choices=self.choices, required=False),
+            forms.IntegerField(required=False),
+            forms.CharField(required=False),
+            forms.BooleanField(required=False),
+        ]
+        kwargs["widget"] = YearBasedSelectMultipleNumber(
+            choices=self.choices,
+            help_text=kwargs.pop("help_text", ""),
+            attrs={}
+        )
+        super(YearBasedMultipleChoiceIntegerField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
         # update fields
         if value:
             self.fields = []
-            for i in range(len(value)//2):
-                self.fields.extend([NestedMultipleChoiceField(choices=self.choices, required=False), forms.CharField(required=False)])
-        return super(YearBasedNestedMultipleChoiceField, self).clean(value)
+            for i in range(len(value)//4):
+                self.fields.extend([
+                    forms.MultipleChoiceField(choices=self.choices, required=False),
+                    forms.IntegerField(required=False),
+                    forms.CharField(required=False),
+                    forms.BooleanField(required=False),
+                ])
+        return super(YearBasedMultipleChoiceIntegerField, self).clean(value)
 
     def compress(self, data_list):
         if data_list:
             yb_data = []
-            for i in range(len(data_list)//2):
+            for i in range(len(data_list)//4):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1])))
+                    yb_data.append("%s:%s:%s" % (str(data_list[i]), str(data_list[i+1]), str(data_list[i+2])))
             return "#".join(yb_data)
         else:
-            self.fields = [NestedMultipleChoiceField(choices=self.choices, required=False), forms.CharField(required=False)]
-
-
+            self.fields = [
+                forms.MultipleChoiceField(choices=self.choices, required=False),
+                forms.IntegerField(required=False),
+                forms.CharField(required=False),
+                forms.BooleanField(required=False),
+            ]

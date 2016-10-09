@@ -32,5 +32,6 @@ class YearBasedSelectMultipleNumber(YearBasedWidget):
         return [
         	forms.SelectMultiple(choices=self.choices, attrs={"class": "year-based"}),
         	forms.NumberInput(attrs={"class": "year-based", "placeholder": _("Size")}),
-            forms.TextInput(attrs={"class": "year-based-year"})
+            forms.TextInput(attrs={"class": "year-based-year"}),
+            forms.CheckboxInput(attrs={"class": "year-based-is-current"})
         ]

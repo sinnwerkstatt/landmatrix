@@ -18,22 +18,22 @@ from django.utils.datastructures import SortedDict
 from django.template.defaultfilters import slugify
 
 INTENTION_MAP = {}
-for choice, value, choices in intention_choices:
+for choice, value in intention_choices:
     INTENTION_MAP[choice] = {
         'value': value,
         'slug': slugify(choice),
         'order_by': value,
-        'is_parent': choices and len(choices) > 0
+        #'is_parent': choices and len(choices) > 0
     }
-    if not choices:
-        continue
-    for schoice, svalue in choices:
-        INTENTION_MAP[schoice] = {
-            'value': svalue,
-            'slug': slugify(schoice),
-            'parent': value,
-            'order_by': '%s (%s)' % (value, svalue),
-        }
+    #if not choices:
+    #    continue
+    #for schoice, svalue in choices:
+    #    INTENTION_MAP[schoice] = {
+    #        'value': svalue,
+    #        'slug': slugify(schoice),
+    #        'parent': value,
+    #        'order_by': '%s (%s)' % (value, svalue),
+    #    }
 
 
 class TableGroupView(FilterWidgetMixin, TemplateView):

@@ -27,6 +27,7 @@ class ActivityAttributeBase(DefaultStringRepresentation, geomodels.Model):
     value = models.TextField(max_length=255, blank=True, null=True)
     value2 = models.TextField(max_length=255, blank=True, null=True)
     date = models.CharField(_("Year or Date"), max_length=10, blank=True, null=True, db_index=True)
+    is_current = models.BooleanField(_("Is current"), blank=True, default=False)
     polygon = geomodels.MultiPolygonField(dim=2, srid=4326, spatial_index=True, blank=True, null=True)
 
     #objects = hstore.HStoreManager()

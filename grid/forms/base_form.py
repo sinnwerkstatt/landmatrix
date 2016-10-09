@@ -107,16 +107,20 @@ class BaseForm(forms.Form):
                     if i % count == 0:
                         value = self.data.get(len(keys) > i and keys[i] or "-", "")
                         value2 = None
-                        if count > 2:
+                        is_current = False
+                        if count > 3:
                             value2 = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
                             year = self.data.get(len(keys) > i+2 and keys[i+2] or "-", "")
+                            is_current = self.data.get(len(keys) > i+3 and keys[i+3] or "-", "")
                         else:
                             year = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
+                            is_current = self.data.get(len(keys) > i+2 and keys[i+2] or "-", "")
                         if value or value2 or year:
                             values.append({
                                 'value': value,
                                 'value2': value2,
                                 'date': year,
+                                'is_current': is_current,
                             })
                 if values:
                     attributes[name] = values
@@ -250,18 +254,18 @@ class BaseForm(forms.Form):
             #            break
             if attribute.date in attributes_by_date:
                 if attribute.value:
-                    attributes_by_date[attribute.date][0] += ',' + attribute.value
-                if values_count > 1 and attribute.value2:
-                    attributes_by_date[attribute.date][1] += ',' + attribute.value2
+                    attributes_by_date[attribute.date][1] += ',' + attribute.value
+                if values_count > 2 and attribute.value2:
+                    attributes_by_date[attribute.date][2] += ',' + attribute.value2
             else:
-                if values_count == 1:
-                    attributes_by_date[attribute.date] = [attribute.value]
+                if values_count == 2:
+                    attributes_by_date[attribute.date] = [str(attribute.is_current), attribute.value]
                 else:
-                    attributes_by_date[attribute.date] = [attribute.value, attribute.value2 or '']  
-        if values_count == 1:
-            values = [':'.join([a[0], d or '']) for d, a in attributes_by_date.items()]
+                    attributes_by_date[attribute.date] = [str(attribute.is_current), attribute.value, attribute.value2 or '']  
+        if values_count == 2:
+            values = [':'.join([a[1], d or '', a[0]]) for d, a in attributes_by_date.items()]
         else:
-            values = [':'.join([a[0], a[1], d or '']) for d, a in attributes_by_date.items()]
+            values = [':'.join([a[1], a[2], d or '', a[0]]) for d, a in attributes_by_date.items()]
         return '#'.join(values)
 
     @classmethod

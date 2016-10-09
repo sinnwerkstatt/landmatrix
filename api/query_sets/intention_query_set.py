@@ -4,6 +4,7 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from api.query_sets.fake_query_set import FakeQuerySet
 from grid.forms.deal_general_form import DealGeneralForm
+from grid.forms.choices import intention_choices, intention_agriculture_choices
 
 
 class IntentionQuerySet(FakeQuerySetWithSubquery):
@@ -31,8 +32,8 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
         super().__init__(request)
         self.intention = request.GET.get("intention", "")
 
-    INTENTIONS = list(filter(lambda k: "Resource extraction" not in k, [str(i[1]) for i in DealGeneralForm().fields["intention"].choices]))
-    INTENTIONS_AGRICULTURE = [str(i[1]) for i in DealGeneralForm().fields["intention"].choices[0][2]]
+    INTENTIONS = list(filter(lambda k: "Resource extraction" not in k, [i[0] for i in intention_choices]))
+    INTENTIONS_AGRICULTURE = [i[0] for i in intention_agriculture_choices]
 
     def all(self):
         parent_intention = self.intention

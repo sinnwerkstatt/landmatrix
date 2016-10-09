@@ -8,28 +8,30 @@ from django.utils.translation import ugettext_lazy as _
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-intention_choices = (
-    ("Agriculture", _("Agriculture"), (
-        ("Biofuels", _("Biofuels")),
-        ("Food crops", _("Food crops")),
-        ("Fodder", _("Fodder")),
-        ("Livestock", _("Livestock")),
-        ("Non-food agricultural commodities", _("Non-food agricultural commodities")),
-        ("Agriculture unspecified", _("Unspecified")),
-    )),
-    ("Forestry", _("Forestry"), (
-        ("For wood and fibre", _("For wood and fibre")),
-        ("For carbon sequestration/REDD", _("For carbon sequestration/REDD")),
-        ("Forestry unspecified", _("Unspecified")),
-    )),
-    ("Logging", _("Logging"), None),
-    ("Resource extraction", _("Resource extraction (Oil, Gas, Minerals)"), None),
-    ("Tourism", _("Tourism"), None),
-    ("Industry", _("Industry"), None),
-    ("Conservation", _("Conservation"), None),
-    ("Land speculation", _("Land speculation"), None),
-    ("Renewable Energy", _("Renewable Energy"), None),
-    ("Other", _("Other (please specify)"), None),
+intention_agriculture_choices = (
+    ("Biofuels", _("Biofuels")),
+    ("Food crops", _("Food crops")),
+    ("Fodder", _("Fodder")),
+    ("Livestock", _("Livestock")),
+    ("Non-food agricultural commodities", _("Non-food agricultural commodities")),
+    ("Agriculture unspecified", _("Unspecified")),
+)
+
+intention_forestry_choices = (
+    ("For wood and fibre", _("For wood and fibre")),
+    ("For carbon sequestration/REDD", _("For carbon sequestration/REDD")),
+    ("Forestry unspecified", _("Unspecified")),
+)
+
+intention_choices = intention_agriculture_choices + intention_forestry_choices + (
+    ("Logging", _("Logging")),
+    ("Resource extraction", _("Resource extraction (Oil, Gas, Minerals)")),
+    ("Tourism", _("Tourism")),
+    ("Industry", _("Industry")),
+    ("Conservation", _("Conservation")),
+    ("Land speculation", _("Land speculation")),
+    ("Renewable Energy", _("Renewable Energy")),
+    ("Other", _("Other (please specify)")),
 )
 
 nature_choices = (

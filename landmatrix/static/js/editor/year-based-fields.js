@@ -1,12 +1,12 @@
 function cloneYBDfield(link) {
   var wrap = link.parents(".control-group").find(".input-group:last-child"),
-    input_data = wrap.children(':input').clone(),
+    input_data = wrap.children(':input,label').clone(),
     //input_year = wrap.find('.year-based-year').clone(),
     helptext = wrap.find(".helptext:last").clone(),
     remove_link = wrap.find("a.remove-ybd").clone(),
     prefix = input_data.attr("id");
   prefix = prefix.slice(0, prefix.lastIndexOf("_")+1);
-  input_data.each(function () {
+  input_data.filter(':input').each(function () {
     $(this)
       .attr("id", prefix + (parseInt($(this).attr("id").replace(prefix, "")) + input_data.size()))
       .attr("name", prefix.slice(3) + (parseInt($(this).attr("name").replace(prefix.slice(3), "")) + input_data.size()))
@@ -38,7 +38,7 @@ function removeYBDfield() {
 
 function update_year_based_history (el, id) {
   var field = el.attr("id");
-  $.get("/a ax/history/" + id, {field: field}, function (data) {
+  $.get("/ajax/history/" + id, {field: field}, function (data) {
     el.html(data);
   });
 };
@@ -51,6 +51,7 @@ $(document).ready(function () {
   });
   /* Overall: Quick placeholder for year-based data year field */
   $("input.year-based-year").prop("placeholder", "YYYY-MM-DD");
+  $("input.year-based-is-current").after($('<label>' + 'Current' + '</label>'));
 
   $(".add-ybd").click(function () { cloneYBDfield($(this)); });
   $(".remove-ybd").click(function () { removeYBDfield($(this)); });
