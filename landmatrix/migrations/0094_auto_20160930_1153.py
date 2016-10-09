@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0092_populate_activity_rel'),
+        ('landmatrix', '0093_update_imported_attr'),
     ]
 
     operations = [
