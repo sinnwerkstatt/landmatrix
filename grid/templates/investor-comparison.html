@@ -9,7 +9,7 @@
 {% block title %}{% trans "Stakeholder history comparison" %}{% endblock %}
 
 {% block breadcrumb_inner %}
-    <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
+    <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
     <li><a href="{% url 'stakeholder_form' investor_id=deal.activity_id %}">{% trans "Investor Details" %}</a></li>
   <li>{% trans "Compare investor history" %}</li>
 {% endblock %}

@@ -10,7 +10,6 @@
 {% block breadcrumb %}
     <ul class="breadcrumb">
         <li><a href="/">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
         {% if group == "all" %}
             <li>{% trans "All deals" %}</li>
         {% elif filters.group_value %}

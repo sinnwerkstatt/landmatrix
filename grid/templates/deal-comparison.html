@@ -9,7 +9,7 @@
 {% block title %}{% trans "Deal history comparison" %} #{{ deals.0.activity_identifier }}{% endblock %}
 
 {% block breadcrumb_inner %}
-    <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
+  <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
     <li><a href="{% url 'deal_details' deal_id=deal.activity_id %}">{% trans "Deal Details" %}</a></li>
     <li>{% trans "Compare deal history" %}</li>
 {% endblock %}
