@@ -89,6 +89,8 @@ class NegotiationStatusManager(models.Manager):
 
 
 class ActivityBase(DefaultStringRepresentation, models.Model):
+    ACTIVITY_IDENTIFIER_DEFAULT = 2147483647  # Max safe int
+
     # FIXME: Replace fk_status with Choice Field
     STATUS_PENDING = 1
     STATUS_ACTIVE = 2
@@ -116,6 +118,25 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     class Meta:
         abstract = True
+
+    def save(self, *args, **kwargs):
+        '''
+        If there's no identifier, set it to a default, and update it to the id
+        post save.
+
+        This is pretty much just for import, which keeps trying to get the
+        next id and getting it wrong.
+        '''
+        if self.activity_identifier is None:
+            self.activity_identifier = self.ACTIVITY_IDENTIFIER_DEFAULT
+
+        super().save(*args, **kwargs)
+
+        if self.activity_identifier == self.ACTIVITY_IDENTIFIER_DEFAULT:
+            kwargs['update_fields'] = ['activity_identifier']
+            self.activity_identifier = self.id
+            # re-save
+            self.save(*args, **kwargs)
 
     @classmethod
     def get_latest_activity(cls, activity_identifier):

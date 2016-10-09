@@ -1,50 +1,111 @@
-from django.db.models.aggregates import Max
+import os
 from functools import lru_cache
 
+from django.db import connections
+from django.utils import timezone
+from django.contrib.gis.geos import (
+    MultiPolygon, Polygon, GeometryCollection, GEOSGeometry,
+)
+
+import landmatrix.models
 from .land_observatory_objects.tags import A_Value
 from .land_observatory_objects.activity import Activity
 from .land_observatory_objects.tag_groups import A_Tag_Group
 from .map_lo_model import MapLOModel
-from .map_activity import calculate_history_date, get_history_user
-from django.utils import timezone
+from .map_activity import calculate_history_date
 from migrate import V2
 
-import landmatrix.models
-
-from django.db import connections
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
-def map_status_id(id):
-    return id
-
 
 class MapLOActivities(MapLOModel):
-
+    '''
+    Activities should be mapped to an existing record where there is one.
+    '''
     _save = False
 
     old_class = Activity
     new_class = landmatrix.models.Activity
     attributes = {
-        'fk_status': ('fk_status_id', map_status_id),
+        'fk_status': ('fk_status_id', lambda id: id),
     }
 
     @classmethod
+    def cleanup_previously_imported_rejected_deals(
+            cls, save=False, verbose=False):
+        '''
+        Previously, LO import would import deals that had only one, rejected
+        version. Clean these up.
+        '''
+        # use a list here so Django doesn't try to make a subquery
+        rejects = Activity.objects.using(cls.DB).filter(
+            fk_status__in=(4, 5), version=1)
+
+        rejected_ids = list(rejects.values_list(
+            'activity_identifier', flat=True))
+
+        previous_imports = landmatrix.models.HistoricalActivity.objects.using(
+            V2).filter(
+            attributes__fk_group__name='imported', attributes__name='id',
+            attributes__value__in=rejected_ids)
+
+        if verbose:
+            print('Found {} previous LO imports that were rejected.'.format(
+                previous_imports.count()))
+
+        for rejected_activity in previous_imports:
+            if verbose:
+                print('Deleting rejected deal with id {}'.format(
+                    rejected_activity.activity_identifier))
+            if rejected_activity.public_version:
+                if save:
+                    rejected_activity.public_version.delete()
+            if save:
+                # Delete the FKs manually, try to save postgres some stress
+                rejected_activity.changesets.all().delete()
+                rejected_activity.activityfeedback_set.all().delete()
+                rejected_activity.attributes.all().delete()
+                rejected_activity.delete()
+
+    @classmethod
     def all_records(cls):
-        ids = cls.all_ids()
-        # exclude the deals that have been imported from landmatrix and not changed
-        # ...
+        latest_version_ids = cls.all_ids()
+        deals = Activity.objects.using(cls.DB).filter(
+            pk__in=latest_version_ids)
 
-        all_deals = Activity.objects.using(cls.DB).filter(pk__in=ids)
-        deals = [
-            deal
-            for deal in all_deals
-            if get_deal_country(deal) not in ['China', 'Myanmar', 'Tanzania, United Republic of', 'Viet Nam']
-            if not is_unchanged_imported_deal(deal)
-        ]
-        cls._count = len(deals)
+        # exclude deals for various reasons
+        excluded_country_deal_ids = list([
+            deal.pk for deal in deals
+            if get_deal_country(deal) in (
+                'China', 'Myanmar', 'Tanzania, United Republic of', 'Viet Nam',
+            )
+        ])
+        excluded_lm_import_deal_ids = list([
+            deal.pk for deal in deals
+            if 'http://www.landmatrix.org' in get_deal_tags(deal, 'URL / Web')
+        ])
+        excluded_unreviewed_deal_ids = list([
+            deal.pk for deal in deals
+            if deal.timestamp_review is None
+        ])
 
-        return Activity.objects.using(cls.DB).filter(pk__in=[deal.id for deal in deals]).values()
+        deals = deals.exclude(pk__in=excluded_country_deal_ids)
+        deals = deals.exclude(pk__in=excluded_lm_import_deal_ids)
+        deals = deals.exclude(pk__in=excluded_unreviewed_deal_ids)
+
+        cls._count = deals.count()
+
+        return deals.values()
+
+    @classmethod
+    def get_existing_record(cls, record):
+        already_imported = cls.new_class.objects.using(V2)
+        already_imported = already_imported.filter(
+            attributes__fk_group__name='imported', attributes__name='id',
+            attributes__value=record['activity_identifier']).order_by('id')
+
+        return already_imported.first()
 
     @classmethod
     def all_ids(cls):
@@ -52,7 +113,11 @@ class MapLOActivities(MapLOModel):
         cursor.execute("""
     SELECT id
     FROM activities AS a
-    WHERE version = (SELECT MAX(version) FROM activities WHERE activity_identifier = a.activity_identifier)
+    WHERE version = (
+        SELECT MAX(version) FROM activities
+        WHERE activity_identifier = a.activity_identifier
+        AND fk_status NOT IN (4, 5)
+    )
     ORDER BY activity_identifier
             """)
         return [id[0] for id in cursor.fetchall()]
@@ -60,126 +125,225 @@ class MapLOActivities(MapLOModel):
     tag_group_to_attribute_group_ids = {}
 
     @classmethod
-    def save_activity_record(cls, new, save, imported=False):
-        latest_historical_activity = None
-        activity_identifier = cls.get_deal_id(new)
-        if save:
-            new.id = None  # Don't assume that ids line up
-            new.activity_identifier = activity_identifier
-            new.fk_status = landmatrix.models.Status.objects.get(
-                name="pending")
-            new.save(using=V2)
+    def save_activity_record(
+            cls, new, save, activity_identifier, imported=False):
         versions = cls.get_activity_versions(new)
         if len(versions) > 0:
-            i = len(versions) -1
+            i = len(versions) - 1
         else:
             i = 0
-        historical_activity = landmatrix.models.HistoricalActivity(
-            id=new.id,
-            activity_identifier=activity_identifier,
-            fk_status_id=1,
-            history_date=calculate_history_date(versions, i),
-            history_user_id=75)
+
+        if not hasattr(cls, '_pending_status'):
+            # Don't need to query this every time
+            cls._pending_status = landmatrix.models.Status.objects.using(
+                V2).get(name="pending")
+
+        new.activity_identifier = activity_identifier
+        new.fk_status = cls._pending_status
+
+        if save:
+            new.save(using=V2)
+
+        # existing records already have a historical version
+        if new.historical_version:
+            historical_activity = new.historical_version
+        else:
+            historical_activity = landmatrix.models.HistoricalActivity(
+                public_version=new)
+
+        historical_activity.activity_identifier = new.activity_identifier
+        historical_activity.fk_status = cls._pending_status
+        historical_activity.history_date = calculate_history_date(versions, i)
+        historical_activity.history_user_id = 75
+
+        if save:
+            historical_activity.save(using=V2)
+
         changeset = landmatrix.models.ActivityChangeset(
             comment='Imported from Land Observatory',
             fk_activity=historical_activity)
+
         if save:
-            historical_activity.save(using=V2)
+            # Clear out old import changesets to reset the timestamp
+            historical_activity.changesets.filter(
+                comment='Imported from Land Observatory').delete()
             changeset.save(using=V2)
 
-
-        #if not imported:
-        #versions = cls.get_activity_versions(new)
-        #for i, version in enumerate(versions):
-        #    # Only save newest version
-        #    if i+1 == len(version):
-        #        historical_activity = landmatrix.models.HistoricalActivity(
-        #            id=new.id,
-        #            activity_identifier=activity_identifier,
-        #            availability=version['reliability'],
-        #            fk_status_id=version['fk_status'],
-        #            fully_updated=False,
-        #            history_date=calculate_history_date(versions, i),
-        #            history_user=get_history_user(version))
-        #        changeset = landmatrix.models.ActivityChangeset(
-        #            comment='Imported from Land Observatory',
-        #            fk_activity=historical_activity)
-#
-        #        if save:
-        #            historical_activity.save(using=V2)
-        #            changeset.save(using=V2)
-        return new
+        return new, historical_activity
 
     @classmethod
-    def save_record(cls, new, save):
+    def save_record(cls, new, old, save):
         """Save all versions of an activity as HistoricalActivity records."""
-        lo_record_id = new.id
-        cls._save = save
-        tag_groups = A_Tag_Group.objects.using(cls.DB).filter(fk_activity=lo_record_id)
+        lo_record_id = old['id']
+        tag_groups = A_Tag_Group.objects.using(cls.DB).filter(
+            fk_activity=lo_record_id)
 
+        activity_identifier = None
         imported = is_imported_deal_groups(tag_groups)
         if imported:
             # set activity identifier to Tag "Original reference number"
             original_refnos = get_group_tags(tag_groups, "Original reference number")
-            new.activity_identifier = original_refnos[0]
+            activity_identifier = original_refnos[0]
 
-        new = cls.save_activity_record(new, save, imported)
+        new, historical_activity = cls.save_activity_record(
+            new, save, activity_identifier, imported)
 
-        cls.write_standard_tag_groups(new, tag_groups)
+        # Clear any existing attrs for imported deals (we're going to write
+        # them again)
+        if save:
+            landmatrix.models.ActivityAttribute.objects.using(V2).filter(
+                fk_activity=new).delete()
+            landmatrix.models.HistoricalActivityAttribute.objects.using(V2).filter(
+                fk_activity=historical_activity).delete()
 
-        group_proxy = type('MockTagGroup', (object,), {"fk_activity": new.id, 'id': None})
+        group_proxy = type(
+            'MockTagGroup', (object,),
+            {"fk_activity": new.id, 'id': None})
+        historical_group_proxy = type(
+            'MockTagGroup', (object,),
+            {"fk_activity": historical_activity.id, 'id': None})
+        not_public_attrs = {
+            'not_public_reason': 'Land Observatory Import (new)' if not imported else 'Land Observatory Import (duplicate)',
+        }
+        imported_attrs = {
+            'source': 'Land Observatory',
+            'id': str(old['activity_identifier']),
+            'timestamp': timezone.now().isoformat(),
+        }
+
+        # Write both new and historical
+        cls.write_standard_tag_groups(
+            new, tag_groups, point=getattr(new, 'point'), save=save)
         cls.write_activity_attribute_group(
-            new,
-            {'not_public_reason': 'Land Observatory Import (new)' if not imported else 'Land Observatory Import (duplicate)'},
-            group_proxy,
-            None,
-            'not_public',
-            None
-        )
-
-        uuid = Activity.objects.using(cls.DB).filter(id=lo_record_id).values_list('activity_identifier', flat=True).first()
+            new, not_public_attrs, group_proxy, None, 'not_public', None,
+            save=save)
         cls.write_activity_attribute_group(
-            new,
-            {'type': 'Other', 'tg_data_source_comment': str(uuid)},
-            group_proxy,
-            None,
-            'data_source_0',
-            None
-        )
+            new, imported_attrs, group_proxy, None, 'imported', None,
+            save=save)
+        cls.consolidate_implementation_status_comments(new, save=save)
+
+        cls.write_standard_tag_groups(
+            historical_activity, tag_groups, point=getattr(new, 'point'),
+            save=save)
+        cls.write_activity_attribute_group(
+            historical_activity, not_public_attrs, historical_group_proxy,
+            None, 'not_public', None, save=save)
+        cls.write_activity_attribute_group(
+            historical_activity, imported_attrs, historical_group_proxy, None,
+            'imported', None, save=save)
+        cls.consolidate_implementation_status_comments(
+            historical_activity, save=save)
 
     @classmethod
-    def write_standard_tag_groups(cls, new, tag_groups):
+    def consolidate_implementation_status_comments(cls, activity, save=False):
+        '''
+        We have a data model problem, where we have year based handling for
+        many fields (in this case implementation status) but not the comments.
+
+        Rather than making the forms handle year based comments, as a quick
+        and dirty fix we just consolidate into one on import.
+        '''
+        # Filter on aag name rather than a specific instance, because there are
+        # many
+        comments = activity.attributes.filter(
+            name='tg_implementation_status_comment',
+            fk_group__name='implementation_status').order_by(
+            'date')
+
+        comments_count = comments.count()
+        if comments_count > 1:
+            aag = cls.get_or_create_attribute_group(
+                'implementation_status', save=save)
+
+            joined_comment = ''
+            for comment in comments:
+                if comment.date:
+                    joined_comment += '{}:'.format(comment.date)
+                joined_comment += '{}\n'.format(comment.value)
+
+            if save:
+                comments.delete()
+                activity.attributes.model.objects.create(
+                    fk_activity=activity, fk_group=aag,
+                    name='tg_implementation_status_comment', date=None,
+                    value=joined_comment)
+
+    @classmethod
+    def _get_polygon(cls, tag_group):
+        polygon = tag_group.geometry
+
+        # Sometimes, we have invalid polygons. The only way that seems
+        # to fix them is ST_MakeValid.
+        if polygon and not polygon.valid:
+            with connections[V2].cursor() as cursor:
+                cursor.execute(
+                    'SELECT ST_MakeValid(%s)', [str(polygon)])
+                row = cursor.fetchone()
+                # GEOSGeometry magically changes class to the correct type
+                polygon = GEOSGeometry(row[0])
+
+        # Convert everything to multipolygon
+        if isinstance(polygon, Polygon):
+            polygon = MultiPolygon([polygon])
+        elif isinstance(polygon, MultiPolygon):
+            # MultiPolygon inherits from GeometryCollection, so skip that case
+            pass
+        elif isinstance(polygon, GeometryCollection):
+            polygons = []
+            for geometry in polygon:
+                if isinstance(geometry, Polygon):
+                    polygons.append(geometry)
+                elif isinstance(geometry, MultiPolygon):
+                    for subpolygon in geometry:
+                        polygons.append(subpolygon)
+                else:
+                    # Unfortunately it's pretty hard to deal with linestrings
+                    # here, just skip them
+                    continue
+
+            polygon = MultiPolygon(polygons)
+
+        return polygon
+
+    @classmethod
+    def write_standard_tag_groups(
+        cls, activity, tag_groups, point=None, save=False):
         location_set = False
+        data_source_counter = 0
         for tag_group in tag_groups:
             attrs = {}
-            polygon = None
+            polygon = cls._get_polygon(tag_group) or None
             group_name = cls.tag_group_name(tag_group)
+
+            # Add all data sources, not just the last one
+            if group_name == 'data_source':
+                group_name = 'data_source_{}'.format(data_source_counter)
+                data_source_counter += 1
 
             # set location - stored in activity in LO, but tag group in LM
             if group_name == 'location_0' and not location_set:
-                attrs['point_lat'] = new.point.get_y()
-                attrs['point_lon'] = new.point.get_x()
+                attrs['point_lat'] = point.get_y()
+                attrs['point_lon'] = point.get_x()
                 location_set = True
 
-            # area boundaries.
-            if tag_group.geometry is not None:
-                polygon = tag_group.geometry
-
-            for tag in cls.relevant_tags(tag_group):
+            for tag in tag_group.tags:
                 key = tag.key.key
                 value = tag.value.value
 
+                # Not sure if this is required, but it doesn't hurt
                 if key in attrs and value != attrs[key]:
-                    cls.write_activity_attribute_group_with_comments(new, attrs, tag_group,
-                        None, group_name, polygon)
+                    cls.write_activity_attribute_group_with_comments(
+                        activity, attrs, tag_group, None, group_name, polygon,
+                        save=save)
                     attrs = {}
                     polygon = None
 
                 attrs[key] = value
 
             if attrs:
-                cls.write_activity_attribute_group_with_comments(new, attrs, tag_group,
-                    None, group_name, polygon)
+                cls.write_activity_attribute_group_with_comments(
+                    activity, attrs, tag_group, None, group_name, polygon,
+                    save=save)
 
     @classmethod
     def tag_group_name(cls, tag_group):
@@ -197,14 +361,14 @@ class MapLOActivities(MapLOModel):
             'Contract Number': 'contract_farming',
             'Country': 'location_0',
             'Crop': 'crop_animal_mineral',
-            'Current area in operation (ha)': 'production_size',
+            'Current area in operation (ha)': 'production_area',
             'Current Number of daily/seasonal workers': 'total_number_of_jobs_created',
             'Current number of employees': 'total_number_of_jobs_created',
             'Current total number of jobs': 'total_number_of_jobs_created',
-            'Data source': 'data_source_0',
+            'Data source': 'data_source',
             'Date': '',
             'Duration of Agreement (years)': 'agreement_duration',
-            'Files': 'data_source_0',
+            'Files': 'data_source',
             'Former predominant land cover': 'land_cover',
             'Former predominant land owner': 'land_owner',
             'Former predominant land use': 'land_use',
@@ -212,7 +376,7 @@ class MapLOActivities(MapLOModel):
             'How much do investors pay for water': 'water_extraction_amount',
             'How much water is extracted (m3/year)': 'water_extraction_amount',
             'Implementation status': 'implementation_status',
-            'Intended area (ha)': 'land_area',
+            'Intended area (ha)': 'intended_area',
             'Intention of Investment': 'intention',
             'Leasing fee (per year)': 'leasing_fees',
             'Mineral': 'crop_animal_mineral',
@@ -229,11 +393,11 @@ class MapLOActivities(MapLOModel):
             'Promised or received compensation': 'community_compensation',
             'Purchase price': 'purchase_price',
             'Purchase price area (ha)': 'purchase_price',
-            'Remark': 'data_source_0',
+            'Remark': 'data_source',
             'Scope of agriculture': '',
             'Scope of forestry': '',
             'Spatial Accuracy': 'location_0',
-            'URL / Web': 'data_source_0',
+            'URL / Web': 'data_source',
             'Use of produce': 'use_of_produce',
             'Water extraction': 'source_of_water_extraction',
             'Year': '',
@@ -243,86 +407,69 @@ class MapLOActivities(MapLOModel):
             for key, value in map_to_name.items():
                 if key in tag_group.tag.key.key:
                     return value
-            print(tag_group, tag_group.tag)
             return A_Value.objects.using(cls.DB).get(pk=tag_group.tag.fk_a_value).value
-        except Exception:
+        except (AttributeError, A_Value.DoesNotExist):
             return None
 
     @classmethod
     def tag_group_key(cls, tag_group):
         try:
             return tag_group.tag.key.key
-        except Exception:
+        except AttributeError:
             return None
 
     @classmethod
-    def relevant_tags(cls, tag_group):
-        return tag_group.tags
-
-    @classmethod
-    def write_activity_attribute_group_with_comments(cls, activity, attrs, tag_group, year, name, polygon):
+    def write_activity_attribute_group_with_comments(cls, activity, attrs, tag_group, year, name, polygon, save=False):
         if (len(attrs) == 1) and attrs.get('name'):
             return
 
-        attrs = transform_attributes(attrs)
+        attrs = transform_attributes(attrs, group_name=name or '')
         aag = cls.write_activity_attribute_group(
-            activity, attrs, tag_group, year, name, polygon
-        )
+            activity, attrs, tag_group, year, name, polygon, save=save)
 
     @classmethod
-    def write_activity_attribute_group(cls, activity, attrs, tag_group, year, name, polygon):
-        #activity_id = cls.matching_activity_id(tag_group)
+    @lru_cache(maxsize=32, typed=True)
+    def get_or_create_attribute_group(cls, name, save=False):
+        # I think aags should be distinct, but they aren't, so just go with it
+        try:
+            aag = landmatrix.models.ActivityAttributeGroup.objects.using(
+                V2).get(name=name)
+        except landmatrix.models.ActivityAttributeGroup.MultipleObjectsReturned:
+            aag = landmatrix.models.ActivityAttributeGroup.objects.using(
+                V2).filter(name=name).last()
+        except landmatrix.models.ActivityAttributeGroup.DoesNotExist:
+            aag = landmatrix.models.ActivityAttributeGroup(name=name)
+            if save:
+                aag.save(using=V2)
+
+        return aag
+
+    @classmethod
+    def write_activity_attribute_group(cls, activity, attrs, tag_group, year, name, polygon, save=False):
         if 'YEAR' in attrs:
             year = attrs['YEAR']
             del attrs['YEAR']
 
-        save = cls._save# and cls.is_current_version(tag_group)
-        aag, created = landmatrix.models.ActivityAttributeGroup.objects.get_or_create(name=name)
-        english = landmatrix.models.Language.objects.get(pk=1)
-        #if save:
-        #    aag.save(using=V2)
+        aag = cls.get_or_create_attribute_group(name, save=save)
 
         for key, value in attrs.items():
             if '#' in str(value):
                 values = value.split('#')
                 if len(values) == 2 and len(values[1]) <= 10:
                     value, year = values
-            aa = landmatrix.models.ActivityAttribute(
-                fk_activity_id=activity.id,
-                fk_language=english,
+            # Get the attr model from the activity
+            attr = activity.attributes.model(
+                fk_activity_id=activity.pk,
+                fk_language_id=1,
                 fk_group=aag,
                 name=key,
                 value=value,
                 date=year,
                 polygon=polygon
             )
-            haa = landmatrix.models.HistoricalActivityAttribute(
-                fk_activity_id=activity.id,
-                fk_language=english,
-                fk_group=aag,
-                name=key,
-                value=value,
-                date=year,
-                polygon=polygon,
-            )
             if save:
-                aa.save(using=V2)
-                haa.save(using=V2)
+                attr.save(using=V2)
 
-        # No need to import LO history
-        #if cls._save:
-        #    if not cls.is_current_version(tag_group):
-        #        
-        #        aag = landmatrix.models.HistoricalActivityAttribute.objects.create(
-        #            history_date=cls.get_history_date(tag_group),
-        #            fk_activity_id=activity_id,
-        #            fk_language=landmatrix.models.Language.objects.get(pk=1),
-        #            date=year,
-        #            attributes=attrs,
-        #            name=name,
-        #            polygon=polygon
-        #        )
-#
         if hasattr(aag, 'id'):
             cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
 
@@ -347,31 +494,10 @@ class MapLOActivities(MapLOModel):
         return current_activity
 
     @classmethod
-    def get_deal_id(cls, activity):
-        # if activity already in DB, return its ID
-        return landmatrix.models.Activity.objects.using(V2).values().\
-            aggregate(Max('activity_identifier'))['activity_identifier__max']+1
-
-    @classmethod
     def get_activity_versions(cls, activity):
-        cursor = connections[cls.DB].cursor()
-        cursor.execute(
-            """SELECT id FROM activities AS a WHERE activity_identifier = '{}'
-            ORDER BY version """.format(activity.activity_identifier)
-        )
-        ids = [id[0] for id in cursor.fetchall()]
         return Activity.objects.using(cls.DB).filter(
-            pk__in=ids).order_by('pk').values()
-
-
-def is_unchanged_imported_deal(deal):
-    if not is_imported_deal(deal):
-        return False
-    return deal.timestamp_review is None
-
-
-def is_imported_deal(deal):
-    return 'http://www.landmatrix.org' in get_deal_tags(deal, 'URL / Web')
+            activity_identifier=activity.activity_identifier).order_by(
+            'version').values()
 
 
 def is_imported_deal_groups(groups):
@@ -382,63 +508,78 @@ def is_imported_deal_groups(groups):
     return False
 
 
-def transform_attributes(attrs):
-    try:
-        clean_attrs = {}
-        for key, value in attrs.items():
-            key, value = clean_attribute(key, value)
+def transform_attributes(attrs, group_name=''):
+    clean_attrs = {}
+    for key, value in attrs.items():
+        key, value = clean_attribute(key, value)
+        # Don't use anything we couldn't clean
+        if key and str(value):
             clean_attrs[key] = value
-        attrs = clean_attrs
-        if 'NUMBER_OF_FARMERS' in attrs:
-            if attrs.get('contract_farming', '') == 'On the lease':
-                attrs['on_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
-            else:
-                attrs['off_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
-            del attrs['NUMBER_OF_FARMERS']
-        if 'NAME' in attrs:
-            del attrs['NAME']
-        if 'YEAR' in attrs:
-            attrs = {
-                key: value+'#'+attrs['YEAR']+'-01-01' if isinstance(value, str) else value
-                for key, value in attrs.items()
-                if key != 'YEAR'
-            }
-            # don't delete from attrs, that is done in write_activity_attribute_group() above
-        if 'REMARK' in attrs:
-            if attrs.get('url') == 'http://www.landmatrix.org':
-                pass
-            elif 'implementation_status' in attrs:
-                attrs['tg_implementation_status_comment'] = attrs['REMARK']
-            elif 'data_source' in attrs:
-                attrs['tg_data_source_comment'] = attrs['REMARK']
-            elif 'intended_size' in attrs:
-                attrs['tg_land_area_comment'] = attrs['REMARK']
-            elif 'point_lat' in attrs:
-                attrs['tg_location_comment'] = attrs['REMARK']
-            elif 'community_consultation' in attrs:
-                attrs['tg_community_consultation_comment'] = attrs['REMARK']
-            elif 'community_reaction' in attrs:
-                attrs['tg_community_reaction_comment'] = attrs['REMARK']
-            elif 'contract_farming' in attrs:
-                attrs['tg_contract_farming_comment'] = attrs['REMARK']
-            elif 'annual_leasing_fee' in attrs:
-                attrs['tg_leasing_fees_comment'] = attrs['REMARK']
-            elif 'purchase_price' in attrs:
-                attrs['tg_purchase_price_comment'] = attrs['REMARK']
-            elif 'source_of_water_extraction' in attrs:
-                attrs['tg_source_of_water_extraction_comment'] = attrs['REMARK']
-            elif 'number_of_displaced_people' in attrs:
-                attrs['tg_number_of_displaced_people_comment'] = attrs['REMARK']
-            elif 'use_of_produce' in attrs or 'use_of_produce_comment' in attrs:
-                attrs['tg_use_of_produce_comment'] = attrs['REMARK']
-            elif 'benefits' in attrs['REMARK']:
-                attrs['tg_materialized_benefits_comment'] = attrs['REMARK']
+    attrs = clean_attrs
+    if 'NUMBER_OF_FARMERS' in attrs:
+        if attrs.get('contract_farming', '') == 'On the lease':
+            attrs['on_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
+        else:
+            attrs['off_the_lease_farmers'] = attrs['NUMBER_OF_FARMERS']
+        del attrs['NUMBER_OF_FARMERS']
+    if 'NAME' in attrs:
+        del attrs['NAME']
+    if 'YEAR' in attrs:
+        attrs = {
+            key: value+'#'+attrs['YEAR']+'-01-01' if isinstance(value, str) else value
+            for key, value in attrs.items()
+            if key != 'YEAR'
+        }
+        # don't delete from attrs, that is done in write_activity_attribute_group() above
+    if 'REMARK' in attrs:
+        remark = attrs.pop('REMARK')
 
-            del attrs['REMARK']
+        if attrs.get('url') == 'http://www.landmatrix.org':
+            pass
+        elif 'implementation_status' in attrs:
+            attrs['tg_implementation_status_comment'] = remark
+        elif group_name.startswith('data_source'):
+            attrs['tg_data_source_comment'] = remark
+        elif 'intended_area' in attrs:
+            attrs['tg_intended_area_comment'] = remark
+        elif group_name.startswith('location') or 'point_lat' in attrs:
+            attrs['tg_location_comment'] = remark
+        elif 'community_consultation' in attrs:
+            attrs['tg_community_consultation_comment'] = remark
+        elif 'community_reaction' in attrs:
+            attrs['tg_community_reaction_comment'] = remark
+        elif 'contract_farming' in attrs:
+            attrs['tg_contract_farming_comment'] = remark
+        elif 'annual_leasing_fee' in attrs:
+            attrs['tg_leasing_fees_comment'] = remark
+        elif 'purchase_price' in attrs:
+            attrs['tg_purchase_price_comment'] = remark
+        elif 'source_of_water_extraction' in attrs:
+            attrs['tg_source_of_water_extraction_comment'] = remark
+        elif 'number_of_displaced_people' in attrs:
+            attrs['tg_number_of_displaced_people_comment'] = remark
+        elif 'use_of_produce' in attrs or 'use_of_produce_comment' in attrs:
+            attrs['tg_use_of_produce_comment'] = remark
+        elif 'benefits' in remark:
+            attrs['tg_materialized_benefits_comment'] = remark
 
-    except TypeError:
-        print(attrs)
-        raise Exception
+    # If we got any jobs created attrs, also set the boolean for that
+    # section
+    jobs_created_attrs = {
+        'total_jobs_current_daily_workers', 'total_jobs_current_employees',
+        'total_jobs_current', 'total_jobs_planned_daily_workers',
+        'total_jobs_planned_employees', 'total_jobs_planned',
+    }
+    if jobs_created_attrs.intersection(set(attrs.keys())):
+        attrs['total_jobs_created'] = 'True'
+
+    # For file, check if we got a tuple of original and uuid
+    # and save them both if so
+    if 'file' in attrs and not isinstance(attrs['file'], str):
+        filename, original_filename = attrs['file']
+        attrs['file'] = filename
+        if original_filename:
+            attrs['original_filename'] = original_filename
 
     return attrs
 
@@ -454,10 +595,6 @@ def clean_attribute(key, value):
             key = 'off_the_lease'
             value = 't'
 
-    # Check value
-    if isinstance(value, str):
-        # HSTORE attribute values can not take strings longer than that due to index constraints :-(
-        value = value[:3000]
     if key == 'nature':
         if 'Lease/Concession' in value:
             value = value.replace('Lease/Concession', 'Lease')
@@ -496,7 +633,7 @@ def clean_attribute(key, value):
         try:
             value = landmatrix.models.Country.objects.get(name=value).id
         except Country.DoesNotExist:
-            pass
+            value = ''
     elif key == 'type':
         if value == 'Research paper':
              value = 'Research Paper / Policy Report'
@@ -524,7 +661,18 @@ def clean_attribute(key, value):
     elif key == 'source_of_water_extraction':
         if value == 'Ground water':
             value = 'Groundwater'
+    # Crops, minerals and animals need to be converted to ids
+    elif key == 'crops':
+        value = get_crop_id(value) or ''
+    elif key == 'minerals':
+        value = get_mineral_id(value) or ''
+    elif key == 'animals':
+        value = get_animal_id(value) or ''
+    elif key == 'file':
+        value = clean_filename(value)
+
     return key, value
+
 
 LM_ATTRIBUTES = {
     'Animals':                          'animals',
@@ -533,16 +681,16 @@ LM_ATTRIBUTES = {
     "Área de la cuota anual de arrendamiento (ha)":     'annual_leasing_fee_area',
     'Announced amount of investement':  'purchase_price_comment',
     'Announced amount of investment':   'purchase_price_comment',
-    'Area (ha)':                        'intended_size',
-    "Área pretendida (ha)":                        'intended_size',
+    'Area (ha)':                        'intended_area',
+    "Área pretendida (ha)":                        'intended_area',
     'Benefits for local communities':   'promised_benefits',
     'Consultation of local community':  'community_consultation',
     "Contreparties pour les populations locales":  'community_consultation',
     "Consulta a las comunidades locales":  'community_consultation',
     "Consultations tenues au niveau local ":  'community_consultation',
-    'Contract area (ha)':               'contract_size',
-    "Área del contrato (ha)":               'contract_size',
-    "Superficie sous contrat (ha)":               'contract_size',
+    'Contract area (ha)':               'contract_area',
+    "Área del contrato (ha)":               'contract_area',
+    "Superficie sous contrat (ha)":               'contract_area',
     'Contract date':                    'contract_date',
     "Date de signature du contrat":                    'contract_date',
     'Contract farming':                 'contract_farming',
@@ -556,9 +704,9 @@ LM_ATTRIBUTES = {
     'Crop':                             'crops',
     "Cultivo":                             'crops',
     "Cultures":                             'crops',
-    'Current area in operation (ha)':   'production_size',
-    "Área actual en operación (ha)":   'production_size',
-    "Superficie exploitée (ha) ":   'production_size',
+    'Current area in operation (ha)':   'production_area',
+    "Área actual en operación (ha)":   'production_area',
+    "Superficie exploitée (ha) ":   'production_area',
     'Current Number of daily/seasonal workers': 'total_jobs_current_daily_workers',
     "Emplois temporaires créés (nombre)": 'total_jobs_current_daily_workers',
     "Número actual de trabajadores por día o por temporada": 'total_jobs_current_daily_workers',
@@ -598,8 +746,8 @@ LM_ATTRIBUTES = {
     'Implementation status':            'implementation_status',
     "Estado de aplicación":            'implementation_status',
     "Etat d'avancement":            'implementation_status',
-    'Intended area (ha)':               'intended_size',
-    "Superficie visée (ha)":               'intended_size',
+    'Intended area (ha)':               'intended_area',
+    "Superficie visée (ha)":               'intended_area',
     'Intention of Investment':          'intention',
     "Intención de la inversión":          'intention',
     'Leasing fee (per year)':           'annual_leasing_fee',
@@ -664,6 +812,54 @@ LM_ATTRIBUTES = {
 }
 
 
+def get_crop_id(crop_name):
+    crop_name = crop_name.replace('(no specification)', '(unspecified)')
+    crop = _get_instance_with_name(crop_name, landmatrix.models.Crop)
+    return crop.id if crop else None
+
+
+def get_mineral_id(mineral_name):
+    mineral = _get_instance_with_name(mineral_name, landmatrix.models.Mineral)
+    return mineral.id if mineral else None
+
+
+def get_animal_id(animal_name):
+    animal = _get_instance_with_name(animal_name, landmatrix.models.Animal)
+    return animal.id if animal else None
+
+
+def clean_filename(filename):
+    try:
+        original, uuid = filename.split('|')
+    except ValueError:
+        original = None
+        clean_filename = filename
+    else:
+        basename, extension = os.path.splitext(original)
+        clean_filename = '{}{}'.format(uuid, extension)
+
+    return clean_filename, original
+
+
+def _get_instance_with_name(name, model_class):
+    '''
+    Given a name, try to find the closest match or other.
+    Works with Crop, Animal, Mineral.
+    '''
+    try:
+        instance = model_class.objects.get(name=name)
+    except model_class.DoesNotExist:
+        try:
+            instance = model_class.objects.get(name__istartswith=name)
+        except (model_class.DoesNotExist, model_class.MultipleObjectsReturned):
+            try:
+                instance = model_class.objects.get(code='OTH')
+            except model_class.DoesNotExist:
+                instance = None
+
+    return instance
+
+
 def get_deal_country(deal):
     for group in deal.tag_groups:
         for tag in group.tags:
@@ -672,8 +868,16 @@ def get_deal_country(deal):
 
 
 def get_deal_tags(deal, key):
-    return [tag.value.value for group in deal.tag_groups for tag in group.tags if tag.key.key == key]
+    return [
+        tag.value.value for group in deal.tag_groups
+        for tag in group.tags
+        if tag.key.key == key
+    ]
 
 
 def get_group_tags(groups, key):
-    return [tag.value.value for group in groups for tag in group.tags if tag.key.key == key]
+    return [
+        tag.value.value for group in groups
+        for tag in group.tags
+        if tag.key.key == key
+    ]
