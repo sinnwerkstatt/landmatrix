@@ -2,9 +2,10 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from multiselectfield import MultiSelectField
+
 from landmatrix.models.default_string_representation import \
     DefaultStringRepresentation
-
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
@@ -238,7 +239,7 @@ class InvestorVentureInvolvement(models.Model):
     fk_venture = models.ForeignKey(Investor, db_index=True,
                                    related_name='venture_involvements')
     fk_investor = models.ForeignKey(Investor, db_index=True, related_name='+')
-    investment_type = models.CommaSeparatedIntegerField(
+    investment_type = MultiSelectField(
         max_length=255, choices=INVESTMENT_TYPE_CHOICES,
         default='', blank=True, null=True)
     percentage = models.FloatField(

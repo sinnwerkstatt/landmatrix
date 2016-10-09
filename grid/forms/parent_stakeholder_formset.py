@@ -5,8 +5,6 @@ from django.forms.widgets import Select, Textarea, CheckboxSelectMultiple
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 from landmatrix.models.status import Status
 from grid.widgets import TitleField, CommentInput
-from landmatrix.fields import CommaSeparatedSelectInteger
-
 
 investor_widget = Select(attrs={'class': 'form-control investorfield'})
 
@@ -21,9 +19,6 @@ class ParentStakeholderForm(forms.ModelForm):
     fk_investor = forms.ModelChoiceField(
         required=False, label=_("Existing parent company"),
         queryset=Investor.objects.all(), widget=investor_widget)
-    investment_type = forms.MultipleChoiceField(
-        required=False, choices=InvestorVentureInvolvement.INVESTMENT_TYPE_CHOICES,
-        label=_("Investment type"), widget=CheckboxSelectMultiple)
     percentage = forms.DecimalField(
         required=False, max_digits=5, decimal_places=2,
         label=_("Ownership share"), help_text=_("%"))
