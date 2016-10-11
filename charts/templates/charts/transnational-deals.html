@@ -120,7 +120,6 @@
         });
 
         function get_top_10() {
-            console.error("get top 10");
             $(".top-10-countries .table").empty();
             var json_query = "/api/top-10-countries.json";
             jQuery.getJSON(json_query, function (data) {

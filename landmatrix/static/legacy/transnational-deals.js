@@ -63,7 +63,9 @@ function create_d3(diameter) {
     console.log("Beginning d3 setup.");
     d3.json(json_query, function (error, classes) {
         console.log("Setting up d3.");
-        if (error) throw error;
+        if (error) {
+            throw error;
+        }
 
         var nodes = cluster.nodes(packageHierarchy(classes)),
             links = packageImports(nodes);
@@ -218,6 +220,8 @@ function init_canvas() {
 
     create_d3(diameter);
 
+    $('.show-all').on('click', deselectCountry);
+
     //cluster = d3.layout.cluster()
     //    .size([360, ry - 120])
     //    .sort(function(a, b) { return d3.ascending(a.key, b.key); });
@@ -323,6 +327,22 @@ function mousemove() {
             dm = Math.atan2(cross(m0, m1), dot(m0, m1)) * 180 / Math.PI;
         div.style("-webkit-transform", "translate3d(0," + (ry - rx) + "px,0)rotate3d(0,0,0," + dm + "deg)translate3d(0," + (rx - ry) + "px,0)");
     }
+}
+
+function deselectCountry() {
+    $(".show-all").addClass("disabled");
+    $(".country-info").hide();
+
+    link.classed("link--target", false)
+        .classed("link--source", false)
+        .style('display', 'block');
+
+    node.classed("node--target", false)
+        .classed("node--source", false)
+        .each(function (n) {
+            n.target = n.source = false;
+        });
+    $(".top-10-countries").show();
 }
 
 function mouseup(d) {
