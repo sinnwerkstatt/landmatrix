@@ -14,7 +14,7 @@ intention_agriculture_choices = (
     ("Fodder", _("Fodder")),
     ("Livestock", _("Livestock")),
     ("Non-food agricultural commodities", _("Non-food agricultural commodities")),
-    ("Agriculture unspecified", _("Unspecified")),
+    ("Agriculture unspecified", _("Agriculture unspecified")),
 )
 
 INTENTION_AGRICULTURE_MAP = dict(intention_agriculture_choices)
@@ -22,7 +22,7 @@ INTENTION_AGRICULTURE_MAP = dict(intention_agriculture_choices)
 intention_forestry_choices = (
     ("For wood and fibre", _("For wood and fibre")),
     ("For carbon sequestration/REDD", _("For carbon sequestration/REDD")),
-    ("Forestry unspecified", _("Unspecified")),
+    ("Forestry unspecified", _("Forestry unspecified")),
 )
 
 INTENTION_FORESTRY_MAP = dict(intention_forestry_choices)

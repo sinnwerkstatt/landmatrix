@@ -256,7 +256,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
         if not isinstance(value, list):
             value = [value]
         intentions = [INTENTION_MAP.get(intention) for intention in value]
-        return filter(None, intentions)
+        return list(filter(None, intentions))
 
     def _process_value(self, column, value):
         if not value: return None
