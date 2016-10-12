@@ -604,7 +604,6 @@ class HistoricalActivity(ActivityBase):
 
         self.changesets.create(fk_user=user, comment=comment)
 
-
     def reject_delete(self, user=None, comment=None):
         assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
         self.fk_status_id = HistoricalActivity.STATUS_REJECTED
@@ -619,6 +618,40 @@ class HistoricalActivity(ActivityBase):
             investor.reject()
 
         self.changesets.create(fk_user=user, comment=comment)
+
+    def compare_attributes_to(self, version):
+        changed_attrs = []  # (group_id, key, current_val, other_val)
+
+        def get_lookup(attr):
+            return (attr.fk_group_id, attr.name)
+
+        current_attrs = list(self.attributes.all())
+        current_lookups = {
+            get_lookup(attr) for attr in current_attrs
+        }
+        # Build a dict of attrs for quick lookup with one query
+        other_attrs = {}
+        if version:
+            for attr in version.attributes.all():
+                other_attrs[get_lookup(attr)] = attr.value
+
+        for attr in current_attrs:
+            lookup = get_lookup(attr)
+            if lookup not in other_attrs:
+                changes = (attr.fk_group_id, attr.name, attr.value, None)
+                changed_attrs.append(changes)
+            elif lookup in other_attrs and attr.value != other_attrs[lookup]:
+                other_val = other_attrs[lookup]
+                changes = (attr.fk_group_id, attr.name, attr.value, other_val)
+                changed_attrs.append(changes)
+
+        # Check attributes that are not in this version
+        for lookup in set(other_attrs.keys()) - current_lookups:
+            group_id, key = lookup
+            changes = (group_id, key, None, other_attrs[lookup])
+            changed_attrs.append(changes)
+
+        return changed_attrs
 
     def update_public_activity(self):
         """Update public activity based upon newest confirmed historical activity"""

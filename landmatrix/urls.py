@@ -33,7 +33,7 @@ from grid.views import (
     RecoverDealView
 )
 from map.views import GlobalView
-from feeds.views import DealChangesFeed
+from feeds.views import ActivityChangesFeed
 from api import urls as api_urls
 from grid import urls as grid_urls
 from map import urls as map_urls
@@ -98,7 +98,7 @@ urlpatterns = patterns('',
     ),
     url(
         r'^deal/(?P<deal_id>\d+)/changes\.rss$',
-        DealChangesFeed(),
+        ActivityChangesFeed(),
         name='deal_changes_feed'
     ),
     url(
