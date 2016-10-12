@@ -18,7 +18,8 @@ class YearBasedWidget(forms.MultiWidget):
     def get_widgets(self):
         return [
             self.widget,
-            forms.TextInput(attrs={"class": "year-based-year"})
+            forms.TextInput(attrs={"class": "year-based-year"}),
+            forms.CheckboxInput(attrs={"class": "year-based-is-current"})
         ]
 
     def decompress(self, value):
@@ -57,7 +58,14 @@ class YearBasedWidget(forms.MultiWidget):
         multiple = self.get_multiple()
         #return [widget.value_from_datadict(data, files, name + '_%s' % i) for i, widget in enumerate(self.widgets)]
         value = []
-        for i, key in enumerate(sorted(filter(lambda o: re.match(r"%s_\d+"%name,o), data))):
+        # Grab last item and enumerate, since there can be gaps
+        # because of checkboxes not submitting data
+        keys = sorted([k for k in data.keys() if re.match(name + '_\d', k)])
+        count = len(keys) > 0 and int(keys[-1].replace(name+'_', ''))+1 or 0
+        if count % len(widgets) > 0:
+            count += 1
+        for i in range(count):
+            key = name + '_' + str(i)
             if multiple[i % len(widgets)]:
                 value.append(data.getlist(key))
             else:
@@ -99,12 +107,14 @@ class YearBasedWidget(forms.MultiWidget):
                 widget_value = None
             if id_:
                 final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))
+            # Append helptext before last widget (is current)
+            if ((i+1) % widgets_row_count) == 0:
+                output.append(helptext)
             attrs = dict(final_attrs)
             attrs['class'] = ' '.join([final_attrs.get('class', ''), hasattr(widget, 'attrs') and widget.attrs.get('class', '') or ''])
             output.append(widget.render(name + '_%s' % i, widget_value, attrs))
-            # Append helptext and close reopen div every n element
+            # Close reopen div every n element
             if ((i+1) % widgets_row_count) == 0:
-                output.append(helptext)
                 # Add "Add more" button to first row
                 if (i+1) == widgets_row_count:
                     output.append('<a href="javascript:;" class="btn add-ybd add-row"><i class="lm lm-plus"></i> Add more</a>')

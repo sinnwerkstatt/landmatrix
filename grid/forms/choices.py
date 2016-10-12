@@ -17,11 +17,15 @@ intention_agriculture_choices = (
     ("Agriculture unspecified", _("Unspecified")),
 )
 
+INTENTION_AGRICULTURE_MAP = dict(intention_agriculture_choices)
+
 intention_forestry_choices = (
     ("For wood and fibre", _("For wood and fibre")),
     ("For carbon sequestration/REDD", _("For carbon sequestration/REDD")),
     ("Forestry unspecified", _("Unspecified")),
 )
+
+INTENTION_FORESTRY_MAP = dict(intention_forestry_choices)
 
 intention_choices = intention_agriculture_choices + intention_forestry_choices + (
     ("Logging", _("Logging")),
@@ -33,6 +37,8 @@ intention_choices = intention_agriculture_choices + intention_forestry_choices +
     ("Renewable Energy", _("Renewable Energy")),
     ("Other", _("Other (please specify)")),
 )
+
+INTENTION_MAP = dict(intention_choices)
 
 nature_choices = (
     ("Outright Purchase", _("Outright Purchase")),

@@ -13,12 +13,25 @@ from grid.views.profiling_decorators import \
     print_execution_time_and_num_queries
 from grid.views.activity_protocol import ActivityProtocol
 from .view_aux_functions import render_to_response, get_field_label
-from grid.forms.choices import intention_choices
+from grid.forms.choices import intention_choices, \
+    INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 from django.utils.datastructures import SortedDict
 from django.template.defaultfilters import slugify
 
 INTENTION_MAP = {}
 for choice, value in intention_choices:
+    if choice in INTENTION_AGRICULTURE_MAP.keys():
+        INTENTION_MAP[choice] = {
+            'value': _('Agriculture'),
+            'slug': 'agriculture',
+            'order_by': _('Agriculture'),
+        }
+    elif choice in INTENTION_FORESTRY_MAP.keys():
+        INTENTION_MAP[choice] = {
+            'value': _('Forestry'),
+            'slug': 'forestry',
+            'order_by': _('Forestry'),
+        }
     INTENTION_MAP[choice] = {
         'value': value,
         'slug': slugify(choice),
@@ -243,7 +256,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
         if not isinstance(value, list):
             value = [value]
         intentions = [INTENTION_MAP.get(intention) for intention in value]
-        return intentions
+        return filter(None, intentions)
 
     def _process_value(self, column, value):
         if not value: return None

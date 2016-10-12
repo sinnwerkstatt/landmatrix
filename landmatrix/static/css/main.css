@@ -465,7 +465,9 @@ a.remove-ybd:hover {
   width: 120px; }
 
 .control-group .input-group .year-based-is-current {
-  width: 20px; }
+  width: 20px;
+  float: none;
+  height: 15px; }
 
 .input-group .select2 {
   width: 280px !important;
