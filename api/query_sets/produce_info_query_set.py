@@ -4,9 +4,11 @@ from api.query_sets.fake_query_set_with_subquery import FakeQuerySetFlat
 
 
 class AnimalsQuerySet(FakeQuerySetFlat):
+    # TODO: these queries are heinous. Fix the data, so we don't have to check
+    # for empty strings
     FIELDS = [
         ('name', 'animal.name'),
-        ('size', 'SUM(COALESCE(CAST(animals.value2 AS NUMERIC), a.deal_size))'),
+        ('size', 'SUM(COALESCE(CASE WHEN animals.value2 ~ E\'^\\d+$\' THEN animals.value2::integer ELSE 0 END, a.deal_size))'),
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattribute         AS animals          ON a.id = animals.fk_activity_id AND animals.name = 'animals'",
@@ -22,7 +24,7 @@ class AnimalsQuerySet(FakeQuerySetFlat):
 class MineralsQuerySet(FakeQuerySetFlat):
     FIELDS = [
         ('name', 'mineral.name'),
-        ('size', 'SUM(COALESCE(CAST(minerals.value2 AS NUMERIC), a.deal_size))'),
+        ('size', 'SUM(COALESCE(CASE WHEN minerals.value2 ~ E\'^\\d+$\' THEN minerals.value2::integer ELSE 0 END, a.deal_size))'),
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattribute         AS minerals         ON a.id = minerals.fk_activity_id AND minerals.name = 'minerals'",
@@ -38,7 +40,7 @@ class MineralsQuerySet(FakeQuerySetFlat):
 class CropsQuerySet(FakeQuerySetFlat):
     FIELDS = [
         ('name', 'crop.name'),
-        ('size', 'SUM(COALESCE(CAST(crops.value2 AS NUMERIC), a.deal_size))'),
+        ('size', 'SUM(COALESCE(CASE WHEN crops.value2 ~ E\'^\\d+$\' THEN crops.value2::integer ELSE 0 END, a.deal_size))'),
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattribute         AS crops            ON a.id = crops.fk_activity_id AND crops.name = 'crops'",
