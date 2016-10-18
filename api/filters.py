@@ -1,6 +1,16 @@
+'''
+Handle filtering of activities by various datapoints.
+
+Filtering is pretty complex and extends into api, grid, charts, and map views.
+We try to collect it here in api where possible....
+'''
 from collections import OrderedDict
+import operator
+
 from django.utils.translation import ugettext_lazy as _
 
+# We can't import from landmatrix.models as FilterCondition imports from here
+from landmatrix.models.activity import Activity
 from landmatrix.models.country import Country
 from landmatrix.models.filter_preset import FilterPreset
 
@@ -42,6 +52,8 @@ FILTER_VAR_INV = [
     "operational_stakeholder_country", "operational_stakeholder_region",
     "country",
 ]
+FILTER_VARIABLE_NAMES = FILTER_VAR_ACT + FILTER_NEW + FILTER_VAR_INV
+
 # operation => (numeric operand, character operand, description )
 # This is an ordered dict as the keys are used to generate model choices.
 # It is here in order to resolve circular imports
@@ -231,6 +243,31 @@ def load_filters_from_url(request):
     filters = {f[0]: Filter(f[0], f[1], f[2]) for f in combined}
 
     return filters
+
+
+def load_statuses_from_url(request):
+    if 'status' in request.GET:
+        statuses = []
+        if request.user.is_authenticated() and request.user.is_staff:
+            # Staff can view all statuses
+            allowed = set(map(
+                operator.itemgetter(0), Activity.STATUS_CHOICES))
+        else:
+            allowed = set(Activity.PUBLIC_STATUSES)
+
+        for status in request.GET.getlist('status'):
+            try:
+                status = int(status)
+            except (ValueError, TypeError):
+                continue
+
+            if status in allowed:
+                statuses.append(status)
+
+    else:
+        statuses = Activity.PUBLIC_STATUSES
+
+    return statuses
 
 
 def _parse_value(filter_value):

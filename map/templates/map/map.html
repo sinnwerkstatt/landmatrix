@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n custom_tags sass_tags %}
+{% load i18n custom_tags filter_tags sass_tags %}
 {% load humanize %}
 {% load static %}
 
@@ -20,10 +20,10 @@
     <li role="presentation" class="active"><span>
         <i class="lm lm-map-marker"></i>{% trans "Map" %}
     </span></li>
-    <li role="presentation"><a href="../data/">
+    <li role="presentation"><a href="{% url 'data' %}{% filter_query_params %}">
         <i class="lm lm-table"></i>{% trans "Data" %}
     </a></li>
-    <li role="presentation"><a href="../charts/">
+    <li role="presentation"><a href="{% url 'charts' %}{% filter_query_params %}">
         <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
     </a></li>
     <li class="divider"></li>
