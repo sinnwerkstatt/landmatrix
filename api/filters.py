@@ -8,6 +8,7 @@ from collections import OrderedDict
 import operator
 
 from django.utils.translation import ugettext_lazy as _
+from django.http import QueryDict
 
 # We can't import from landmatrix.models as FilterCondition imports from here
 from landmatrix.models.activity import Activity
@@ -52,7 +53,9 @@ FILTER_VAR_INV = [
     "operational_stakeholder_country", "operational_stakeholder_region",
     "country",
 ]
-FILTER_VARIABLE_NAMES = FILTER_VAR_ACT + FILTER_NEW + FILTER_VAR_INV
+# Anything in this set is allowed to be passed around in the URL.
+FILTER_VARIABLE_NAMES = set(
+    FILTER_VAR_ACT + FILTER_NEW + FILTER_VAR_INV + ['status'])
 
 # operation => (numeric operand, character operand, description )
 # This is an ordered dict as the keys are used to generate model choices.
@@ -268,6 +271,19 @@ def load_statuses_from_url(request):
         statuses = Activity.PUBLIC_STATUSES
 
     return statuses
+
+
+def clean_filter_query_string(request):
+    whitelist = QueryDict(mutable=True)
+    has_allowed_param = any(
+        key in request.GET for key in FILTER_VARIABLE_NAMES)
+
+    if request.GET and has_allowed_param:
+        for key in request.GET.keys():
+            if key in FILTER_VARIABLE_NAMES:
+                whitelist.setlist(key, request.GET.getlist(key))
+
+    return whitelist
 
 
 def _parse_value(filter_value):
