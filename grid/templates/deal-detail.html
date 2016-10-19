@@ -84,7 +84,7 @@
 
             {% include "includes/deal-history.html" %}
 
-            {% if deal.activity.fk_status_id != 4 %}
+            {% if activity.public_version %}
                 {% get_comment_count for activity.public_version as comment_count %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -118,9 +118,9 @@
                                 <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
                                 <a href="#c0" id="cancel-reply" style="display:none">{% trans "Cancel reply" %}</a>
                             </form>
-                            {% endif %}
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
