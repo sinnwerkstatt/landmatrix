@@ -84,9 +84,17 @@ class AnchorBlock(StructBlock):
 # Overwrite Stream block to disable wrapping DIVs
 class NoWrapsStreamBlock(StreamBlock):
     def render_basic(self, value):
+        def get_class(block):
+            if child.block_type != 'full_width_container':
+                return 'block-%s block'%child.block_type
+            else:
+                return ''
+
         return format_html_join(
             '\n', '<div class="{1}">{0}</div>',
-            [(force_text(child), child.block_type != 'full_width_container' and 'block-%s block'%child.block_type or '') for child in value]
+            [
+                (force_text(child), get_class(child)) for child in value
+            ]
         )
         #return format_html_join(
         #    '\n', '{0}',
