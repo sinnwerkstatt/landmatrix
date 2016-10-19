@@ -275,6 +275,7 @@
                                 <th class="deal">{% trans "Deal #" %}</th>
                                 <th class="user">{% trans "Last revision" %}</th>
                                 <th class="state">{% trans "State" %}</th>
+                                <th class="state">{% trans "Timestamp" %}</th>
                                 <th class="action">{% trans "Actions" %}</th>
                                 </thead>
                                 <tbody>
@@ -285,6 +286,7 @@
                                         </td>
                                         <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Update" %}</td>
+                                        <td class="state">{{ activity.timestamp|naturaltime_from_string }}</td>
                                         <td class="action">
                                             <a href="{% url 'manage_approve_change_deal' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
                                             <a href="{% url 'manage_reject_change_deal' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
@@ -298,6 +300,7 @@
                                         </td>
                                         <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Delete" %}</td>
+                                        <td class="state">{{ activity.timestamp|naturaltime_from_string }}</td>
                                         <td class="action">
                                             <a href="{% url 'manage_approve_delete_deal' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
                                             <a href="{% url 'manage_reject_delete_deal' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
@@ -311,6 +314,7 @@
                                         </td>
                                         <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Add" %}</td>
+                                        <td class="state">{{ activity.timestamp|naturaltime_from_string }}</td>
                                         <td class="action">
                                             <a href="{% url 'manage_approve_change_deal' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
                                             <a href="{% url 'manage_reject_change_deal' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
