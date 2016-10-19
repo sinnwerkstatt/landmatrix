@@ -166,16 +166,16 @@ class FilterWidgetMixin:
     def set_country_region_filter(self, data):
         filter_values = {}
         # Country or region filter set?
-        if 'country' in data or 'region' in data:
+        if data.get('country', None) or data.get('region', None):
             stored_filters = self.request.session.get('filters', {})
-            if data.get('country'):
+            if data.get('country', None):
                 filter_values['variable'] = 'target_country'
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('country')
                 filter_values['name'] = str(_('Target country'))
                 filter_values['label'] = str(_('Target country'))
                 data.pop('country')
-            elif data.get('region'):
+            elif data.get('region', None):
                 filter_values['variable'] = 'target_region'
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('region')
