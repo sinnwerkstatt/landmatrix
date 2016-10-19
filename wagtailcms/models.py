@@ -85,8 +85,8 @@ class AnchorBlock(StructBlock):
 class NoWrapsStreamBlock(StreamBlock):
     def render_basic(self, value):
         def get_class(block):
-            if child.block_type != 'full_width_container':
-                return 'block-%s block'%child.block_type
+            if block.block_type != 'full_width_container':
+                return 'block-%s block'%block.block_type
             else:
                 return ''
 
