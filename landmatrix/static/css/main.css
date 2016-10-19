@@ -887,6 +887,9 @@ div.fullwidth.fullwidth-lightgrey {
 .block.block-section_divider {
   padding: 0; }
 
+.block.block-link {
+  padding: 0; }
+
 .wrap > hr {
   padding: 0;
   margin: 0;
