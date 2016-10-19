@@ -814,7 +814,13 @@ footer {
 
 .whitecircle {
   font-size: 42px;
-  line-height: 80px; }
+  line-height: 80px;
+  background: white;
+  border-radius: 50%;
+  width: 80px;
+  display: inline-block;
+  height: 80px;
+  margin-bottom: 20px; }
 
 table td,
 table th {
