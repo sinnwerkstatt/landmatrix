@@ -54,6 +54,15 @@ class DealActionCommentForm(BaseForm):
     tg_not_public_comment = forms.CharField(
         required=False, label=_("Comment on Not Public"), widget=CommentInput)
 
+    tg_imported = TitleField(
+        required=False, label="", initial=_("Import history"))
+    source = forms.CharField(
+        required=False, label=_("Import source"),
+        widget=forms.TextInput(attrs={'readonly': True}))
+    id = forms.CharField(
+        required=False, label=_("Previous identifier"),
+        widget=forms.TextInput(attrs={'size': '64', 'readonly': True}))
+
     tg_feedback = TitleField(required=False, label="", initial=_("Feedback"))
     assign_to_user = UserModelChoiceField(
         required=False, label=_("Assign to"), queryset=ASSIGN_TO_USER_QUERYSET,
@@ -76,4 +85,5 @@ class DealActionCommentForm(BaseForm):
         data = super().get_data(activity, group, prefix)
         if 'tg_action_comment' in data:
             del data['tg_action_comment']
+
         return data

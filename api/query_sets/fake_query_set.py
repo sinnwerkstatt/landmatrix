@@ -1,6 +1,5 @@
 import time
 import re
-import operator
 
 from django.db.models.query import QuerySet
 from django.db import connection
@@ -11,7 +10,7 @@ from landmatrix.models.activity import Activity
 from grid.forms.browse_condition_form import ConditionFormset
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
-from api.filters import load_filters
+from api.filters import load_filters, load_statuses_from_url
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
@@ -93,28 +92,7 @@ class FakeQuerySet(QuerySet):
         # Parse activity statuses out of query params, and validate that they
         # are real at least, and that only staff can access not public statuses
         # We can't use query_params here as some requests come from editor
-        if 'status' in request.GET:
-            statuses = []
-            if self.user.is_staff:
-                # Staff can view all statuses
-                allowed = set(map(
-                    operator.itemgetter(0), Activity.STATUS_CHOICES))
-            else:
-                allowed = set(Activity.PUBLIC_STATUSES)
-
-            for status in request.query_params.getlist('status'):
-                try:
-                    status = int(status)
-                except (ValueError, TypeError):
-                    continue
-
-                if status in allowed:
-                    statuses.append(status)
-
-        else:
-            statuses = Activity.PUBLIC_STATUSES
-
-        return statuses
+        return load_statuses_from_url(request)
 
     def _uniquify_join_expressions(self, joins):
         no_dups = []

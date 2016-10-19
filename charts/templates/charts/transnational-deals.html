@@ -127,7 +127,7 @@
                 var i;
 
                 for (i = 0; i < data.investor_country.length; i++) {
-                    investor_countries.append('<tr><td><a href="/data/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + '</td></tr>');
+                    investor_countries.append('<tr><td><a href="/data/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + ' ha</td></tr>');
                 }
 
                 var target_countries = $(".top-10-countries #target-countries .table");

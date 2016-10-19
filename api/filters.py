@@ -1,6 +1,17 @@
-from collections import OrderedDict
-from django.utils.translation import ugettext_lazy as _
+'''
+Handle filtering of activities by various datapoints.
 
+Filtering is pretty complex and extends into api, grid, charts, and map views.
+We try to collect it here in api where possible....
+'''
+from collections import OrderedDict
+import operator
+
+from django.utils.translation import ugettext_lazy as _
+from django.http import QueryDict
+
+# We can't import from landmatrix.models as FilterCondition imports from here
+from landmatrix.models.activity import Activity
 from landmatrix.models.country import Country
 from landmatrix.models.filter_preset import FilterPreset
 
@@ -42,6 +53,10 @@ FILTER_VAR_INV = [
     "operational_stakeholder_country", "operational_stakeholder_region",
     "country",
 ]
+# Anything in this set is allowed to be passed around in the URL.
+FILTER_VARIABLE_NAMES = set(
+    FILTER_VAR_ACT + FILTER_NEW + FILTER_VAR_INV + ['status'])
+
 # operation => (numeric operand, character operand, description )
 # This is an ordered dict as the keys are used to generate model choices.
 # It is here in order to resolve circular imports
@@ -231,6 +246,44 @@ def load_filters_from_url(request):
     filters = {f[0]: Filter(f[0], f[1], f[2]) for f in combined}
 
     return filters
+
+
+def load_statuses_from_url(request):
+    if 'status' in request.GET:
+        statuses = []
+        if request.user.is_authenticated() and request.user.is_staff:
+            # Staff can view all statuses
+            allowed = set(map(
+                operator.itemgetter(0), Activity.STATUS_CHOICES))
+        else:
+            allowed = set(Activity.PUBLIC_STATUSES)
+
+        for status in request.GET.getlist('status'):
+            try:
+                status = int(status)
+            except (ValueError, TypeError):
+                continue
+
+            if status in allowed:
+                statuses.append(status)
+
+    else:
+        statuses = Activity.PUBLIC_STATUSES
+
+    return statuses
+
+
+def clean_filter_query_string(request):
+    whitelist = QueryDict(mutable=True)
+    has_allowed_param = any(
+        key in request.GET for key in FILTER_VARIABLE_NAMES)
+
+    if request.GET and has_allowed_param:
+        for key in request.GET.keys():
+            if key in FILTER_VARIABLE_NAMES:
+                whitelist.setlist(key, request.GET.getlist(key))
+
+    return whitelist
 
 
 def _parse_value(filter_value):

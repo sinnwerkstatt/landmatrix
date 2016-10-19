@@ -1,4 +1,4 @@
-{% load i18n static wagtailcore_tags sass_tags %}<!DOCTYPE html>
+{% load i18n static wagtailcore_tags sass_tags filter_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -166,13 +166,13 @@
                     {% block subnav %}
                         <ul class="subnav nav nav-pills pull-right">
                             {% block subnav_inner %}
-                            <li role="presentation"><a href="{% url 'map' %}">
+                            <li role="presentation"><a href="{% url 'map' %}{% filter_query_params %}">
                                 <i class="lm lm-map-marker"></i>{% trans "Map" %}
                             </a></li>
-                            <li role="presentation"><a href="{% url 'data' %}">
+                            <li role="presentation"><a href="{% url 'data' %}{% filter_query_params %}">
                                 <i class="lm lm-table"></i>{% trans "Data" %}
                             </a></li>
-                            <li role="presentation"><a href="{% url 'chart_transnational_deals' %}">
+                            <li role="presentation"><a href="{% url 'chart' %}{% filter_query_params %}">
                                 <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
                             </a></li>
                             <li class="divider"></li>

@@ -43,15 +43,19 @@ class ChartPDFView(PDFViewMixin, ChartView):
 
 
 class ChartRedirectView(RedirectView):
+    permanent = False
+
     def get_redirect_url(self, *args, **kwargs):
-        params = self.request.GET
-        if 'country' in params or 'region' in params:
-            return '%s?%s' % (
-                reverse('chart_overview'),
-                params.urlencode()
-            )
+        if 'country' in self.request.GET or 'region' in self.request.GET:
+            base_url = 'chart_overview'
         else:
-            return reverse('chart_transnational_deals')
+            base_url = 'chart_transnational_deals'
+
+        url = reverse(base_url)
+        if self.request.GET:
+            url += '?{}'.format(self.request.GET.urlencode())
+
+        return url
 
 
 class IntentionChartView(ChartPDFView):

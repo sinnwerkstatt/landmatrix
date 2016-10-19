@@ -1,5 +1,5 @@
 {% extends "global_base.html" %}
-{% load i18n custom_tags %}
+{% load i18n custom_tags filter_tags %}
 {% load humanize %}
 
 {% block page_title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}{% trans "By" %} {{ group }}{% endif %}{% endblock %}
@@ -21,13 +21,13 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation"><a href="{% url 'map' %}">
+    <li role="presentation"><a href="{% url 'map' %}{% filter_query_params %}">
         <i class="lm lm-map-marker"></i>{% trans "Map" %}
     </a></li>
     <li role="presentation" class="active"><span>
         <i class="lm lm-table"></i>{% trans "Data" %}
     </span></li>
-    <li role="presentation"><a href="{% url 'charts' %}">
+    <li role="presentation"><a href="{% url 'charts' %}{% filter_query_params %}">
         <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
     </a></li>
     <li class="divider"></li>
