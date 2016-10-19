@@ -31,7 +31,7 @@ def save_filter_query_params(session_id='filter_query_params'):
                 request.session[session_id] = clean.urlencode()
             else:
                 # if not, load whatever we have saved, and redirect to there.
-                saved_params = request.session[session_id]
+                saved_params = request.session.get(session_id, None)
                 if saved_params:
                     url = '{}?{}'.format(request.path_info, saved_params)
                     return HttpResponseRedirect(url)
