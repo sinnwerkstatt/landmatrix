@@ -1,0 +1,24 @@
+{% load i18n static sass_tags %}
+<link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
+
+<link rel="stylesheet" href="{% static "css/nprogress.css" %}"/>
+<link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
+<!-- <link rel="stylesheet" href="{% static "css/map.css" %}"/> -->
+<link href="{% sass_src 'css/map.scss' %}" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
+<script type="text/javascript" src="{% static "vendor/ol3-google-maps/ol3gm-debug.js" %}"></script>
+<script type="text/javascript" src="{% static "js/ol3-layerswitcher-custom.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
+<script type="text/javascript" src="{% static "js/mapwidget.js" %}"></script>
+<script type="text/javascript" src="{% static "js/main.js" %}"></script>
+
+
+{{ mapwidget|safe }}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var options = $('#{{ id }}').data('map-widget-options');
+        var mapWidget = new MapWidget(options);
+    });
+</script>
