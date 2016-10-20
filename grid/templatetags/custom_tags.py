@@ -9,6 +9,7 @@ from django.template.defaultfilters import stringfilter
 from django.contrib.humanize.templatetags.humanize import naturaltime, intcomma
 from django.utils.safestring import mark_safe
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 
 # from editor.views import get_display_value_by_field
@@ -130,6 +131,8 @@ def get_range(value):
 
 @register.filter
 def naturaltime_from_string(value):
+    if not value:
+        return ''
     time_format = "%Y-%m-%d %H:%M:%S"
     date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(value, time_format)))
     natural_time = naturaltime(date)
@@ -138,6 +141,7 @@ def naturaltime_from_string(value):
         return natural_time[0]
     else:
         return "%s ago" % natural_time[0]
+
 
 @register.filter
 def timestamp_from_epoch(timestamp):

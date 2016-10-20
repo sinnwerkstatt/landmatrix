@@ -16,6 +16,7 @@ def activity_to_template(activity):
 
     history_date = timezone.localtime(
         activity.history_date, timezone.get_current_timezone())
+
     template_data = {
         'id': activity.pk,
         'deal_id': activity.activity_identifier,

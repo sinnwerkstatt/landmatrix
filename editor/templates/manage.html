@@ -151,7 +151,7 @@
                                 </td>
                                 <td class="user">{{ activity.user }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="timestamp">{{ feedback.timestamp|naturaltime_from_string }}</td>
+                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
                                     <a href="{% url 'manage_approve_change_deal' id=activity.id %}"
                                        class="label label-default approve"><i
@@ -194,7 +194,7 @@
                                 </td>
                                 <td class="user">{{ activity.user }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="timestamp">{{ feedback.timestamp|naturaltime_from_string }}</td>
+                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
                                     <a href="{% url 'manage_approve_delete_deal' id=activity.id %}"
                                        class="label label-default approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
@@ -236,7 +236,7 @@
                                 </td>
                                 <td class="user">{{ activity.user }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="timestamp">{{ feedback.timestamp|naturaltime_from_string }}</td>
+                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
                                     <a href="{% url 'manage_approve_change_deal' id=activity.id %}"
                                        class="label label-default approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
@@ -280,7 +280,7 @@
                                 </td>
                                 <td class="user">{{ activity.user }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="timestamp">{{ feedback.timestamp|naturaltime_from_string }}</td>
+                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
                                     <a href="{% url 'manage_deal' type='investor' action='approve' id=activity.id %}"
                                        class="label label-default approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
@@ -321,7 +321,7 @@
                                 </td>
                                 <td class="user">{{ activity.user }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="timestamp">{{ feedback.timestamp|naturaltime_from_string }}</td>
+                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
