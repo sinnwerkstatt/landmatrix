@@ -97,7 +97,7 @@ class BaseForm(forms.Form):
                                 attributes[name] = {'value': value}
                         except (ValueError, TypeError):
                             raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
-            # Year based data?
+            # Year based data (or Actors field)?
             elif isinstance(f, forms.MultiValueField):
                 # Grab last item and enumerate, since there can be gaps
                 # because of checkboxes not submitting data
@@ -113,14 +113,20 @@ class BaseForm(forms.Form):
                     if i % widget_count == 0:
                         widget_values = self.data.getlist(key)
                         value2 = None
+                        year = None
                         is_current = False
+                        # Value / Value2 / Date / is current
                         if widget_count > 3:
                             value2 = self.data.get('%s_%i' % (prefix, i + 1))
                             year = self.data.get('%s_%i' % (prefix, i + 2))
                             is_current = '%s_%i' % (prefix, i + 3) in self.data
-                        else:
+                        # Value / Date / is current
+                        elif widget_count > 2:
                             year = self.data.get('%s_%i' % (prefix, i + 1))
                             is_current = '%s_%i' % (prefix, i + 2) in self.data
+                        # Value / Value2 (e.g. Actors field)
+                        elif widget_count == 2:
+                            value2 = self.data.get('%s_%i' % (prefix, i + 1))
                         if widget_values or value2 or year:
                             for value in widget_values:
                                 values.append({
@@ -192,7 +198,7 @@ class BaseForm(forms.Form):
             # Multiple choice?
             if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
                 value = cls.get_multiple_choice_data(field, field_name, attribute)
-            # Year based data?
+            # Year based data (or Actors field)?
             elif isinstance(field, forms.MultiValueField):
                 value = cls.get_year_based_data(field, field_name, attribute)
             # Choice field?
@@ -272,10 +278,15 @@ class BaseForm(forms.Form):
         else:
             for attribute in attributes:  
                 is_current = attribute.is_current and '1' or ''
+                # Value:Value2:Date:Is current
                 if values_count > 2:
                     values.append(':'.join([attribute.value, attribute.value2, attribute.date or '', is_current]))
-                else:
+                # Value:Date:Is current
+                elif values_count > 1:
                     values.append(':'.join([attribute.value, attribute.date or '', is_current]))
+                # Value:Value2 (e.g. Actors field)
+                else:
+                    values.append(':'.join([attribute.value, attribute.value2 or '']))
         return '#'.join(values)
 
     @classmethod
