@@ -342,7 +342,7 @@ $(document).ready(function(){
         $(".field.control-group.tg_feedback_comment ").slideUp("fast");
     }
 
-    $('.intention select,.crops select,.animals select,.minerals select,.contract_farming_crops select,.contract_farming_animals select,.assign_to_user select').select2();
+    $('.intention select,.crops select,.crops_yield select,.crops_export select,.animals select,.animals_yield select,.animals_export select,.minerals select,.minerals_yield select,.minerals_export select,.contract_farming_crops select,.contract_farming_animals select,.assign_to_user select').select2();
 
     $('.negotiation_status select').change(function () {
       var val = $(this).find('option:selected').val();
