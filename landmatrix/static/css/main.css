@@ -1399,7 +1399,7 @@ table th a {
   stroke: #44c42d;
   stroke-width: 2px; }
 
-#investor-network.investors .link {
+#investor-network .link.investor {
   stroke: #fc941f; }
 
 #investor-network .circle {
@@ -1407,7 +1407,7 @@ table th a {
   stroke: #ffffff;
   stroke-width: 2px; }
 
-#investor-network.investors .circle {
+#investor-network .circle.investor {
   fill: #fc941f; }
 
 #investor-network .circle:hover {

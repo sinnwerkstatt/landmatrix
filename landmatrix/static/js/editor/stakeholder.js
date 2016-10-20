@@ -1,7 +1,6 @@
 var tree_margin = {top: 0, right: 320, bottom: 0, left: 0},
     tree_width = 960 - tree_margin.left - tree_margin.right,
     tree_height = 500 - tree_margin.top - tree_margin.bottom,
-    parent_type = 'stakeholders',
     tree, tree_svg, tree_data;
 
 function init_investor_form(form) {
@@ -163,21 +162,6 @@ $(document).ready(function () {
         });
         loadInvestorNetwork(investorId);
     });
-    var dataSwitch = $("[name='parent_type']");
-    dataSwitch.bootstrapSwitch({
-        onText: 'Parent&nbsp;companies',
-        offText: 'Parent&nbsp;investors',
-        offColor: 'info',
-        onSwitchChange: function(event, state) {
-            if (state) {
-                parent_type = 'stakeholders';
-            } else {
-              console.log("investors");
-                parent_type = 'investors';
-            }
-            createInvestorNetwork();
-        }
-    });
 });
 
 
@@ -214,9 +198,8 @@ function loadInvestorNetwork(investorId) {
 function createInvestorNetwork() {
   tree = d3.layout.tree()
       .separation(function(a, b) { return a.parent === b.parent ? 1 : .5; })
-      .children(function(d) { return parent_type == 'investors' && d.parent_investors || d.parent_stakeholders; })
+      .children(function(d) { return d.stakeholders; })
       .size([tree_height, tree_width]);
-  $('#investor-network').removeClass().addClass(parent_type);
   d3.select("#investor-network").select("svg").remove();
   tree_svg = d3.select("#investor-network").append("svg")
       .attr("width", tree_width + tree_margin.left + tree_margin.right)
@@ -229,7 +212,9 @@ function createInvestorNetwork() {
   var link = tree_svg.selectAll(".link")
       .data(tree.links(nodes))
     .enter().append("path")
-      .attr("class", "link")
+      .attr("class", function (d) {
+        return 'link ' + d.target.parent_type;
+      })
       .attr("fill", "none")
       .attr("stroke-width", "#000000")
       .attr("stroke-opacity", "1")
@@ -256,26 +241,32 @@ function createInvestorNetwork() {
       .attr("class", "about type")
       .attr("font-size", "80%")
       .text(function(d) {
+        var text = "";
         if (d.involvement) {
           var inv = d.involvement;
-          return (parent_type == "investors" && "Parent investor" || "Parent company") + 
-            (inv.percentage && " ("+inv.percentage+"%"+(inv.investment_type && " "+inv.investment_type || "")+")" || "");
+          text = (d.parent_type == "investor" && "Parent investor" || "Parent company"); 
+          text += inv.percentage && " ("+inv.percentage+"%"+(inv.investment_type && " "+inv.investment_type || "")+")" || "";
+
         } else {
-          return "Operational company";
+          text = "Operational company";
         }
+        return text;
       });
 
   node.append("circle")
     .attr("cx", function (d) { if (d.involvement) { return 0; } else { return 9; } })
     .attr("cy", 0)
     .attr("r", 8)
-    .attr("class", "circle")
+    .attr("class", function (d) {
+      return 'circle ' + d.parent_type;
+    })
     .on("click", function (d) {
         var modal = $('#stakeholder');
         modal.find('.modal-header h4').text(d.name);
+        var inv = d.involvement;
         var data = [
-            d.country,
-            d.classification,
+            inv.loans_amount && inv.loans_amount + inv.loans_currency + (inv.loans_date && " ("+inv.loans_date+")"),
+            inv.comment,
             d.parent_relation,
             d.homepage && '<a target="_blank" href="'+d.homepage+'">'+d.homepage+'</a>',
             d.opencorporates_link && '<a target="_blank" href="'+d.opencorporates_link+'">'+d.opencorporates_link+'</a>',
@@ -294,10 +285,9 @@ function createInvestorNetwork() {
       .text(function(d) {
         if (d.involvement) {
           var inv = d.involvement;
-          return [
-            inv.loans_amount && inv.loans_amount + inv.loans_currency + (inv.loans_date && " ("+inv.loans_date+")"),
-            inv.comment
-          ].filter(function (val) {return val;}).join(', '); 
+          var text = d.classification && d.classification + ", " || '';
+          text += d.country;
+          return text
         }
       });
 };

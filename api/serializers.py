@@ -121,12 +121,13 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
         "homepage": "",
         "opencorporates_link": "",
         "comment": "",
-        "parent_stakeholders": [
+        "stakeholders": [
             {
                 "id": 345,
                 "name": "",
-                [...]
+                [...] 
                 "involvement": [
+                    "parent_type": "stakeholder" // or "investor"
                     "percentage": "",
                     "investment_type": "",
                     "loans_amount": "",
@@ -134,14 +135,10 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
                     "loans_date": "",
                     "comment": "",
                 ],
-                "parent_stakeholders": [],
-                "parent_investors": []
+                "stakeholders": [],
             },
             [...]
         ],
-        "parent_investors": [
-            [...]
-        ]
     }
     This is not REST, but it maintains compatibility with the existing API.
     '''
@@ -156,6 +153,7 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             "homepage": obj.homepage,
             "opencorporates_link": obj.opencorporates_link,
             "comment": obj.comment,
+            "stakeholders": [],
         }
         involvements = InvestorVentureInvolvement.objects.filter(fk_venture=obj)
         for parent_type in parent_types:
@@ -166,6 +164,7 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
                 parent_involvements = involvements.stakeholders()
             for i, involvement in enumerate(parent_involvements):
                 parent = self.to_representation(involvement.fk_investor, parent_types)
+                parent["parent_type"] = parent_type == 'parent_investors' and 'investor' or 'stakeholder'
                 parent["involvement"] = {
                     "percentage": involvement.percentage,
                     "investment_type": involvement.get_investment_type_display(),
@@ -175,7 +174,7 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
                     "comment": involvement.comment,
                 }
                 parents.append(parent)
-            response[parent_type] = parents
+            response['stakeholders'].extend(parents)
 
         return response
 
