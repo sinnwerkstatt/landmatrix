@@ -45,7 +45,7 @@ class SplitMultiLangTabsMixin(object):
         return object_lists 
     
     def __init__(self, *args, **kwargs):
-        super(SplitMultiLangTabsMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.__class__ in PAGE_EDIT_HANDLERS and not getattr(PAGE_EDIT_HANDLERS[self.__class__], '_MULTILANG_TABS_PATCHED', False):
             handler = PAGE_EDIT_HANDLERS[self.__class__]
             tabs = [tab_handler.bind_to_model(self.__class__) for tab_handler in self._split_i18n_wagtail_translated_panels(self.content_panels)]
@@ -105,7 +105,7 @@ class NoWrapsStreamBlock(StreamBlock):
 
 class NoWrapsStreamField(StreamField):
     def __init__(self, block_types, **kwargs):
-        super(NoWrapsStreamField, self).__init__(block_types, **kwargs)
+        super().__init__(block_types, **kwargs)
         if isinstance(block_types, Block):
             self.stream_block = block_types
         elif isinstance(block_types, type):
@@ -233,7 +233,7 @@ class CountryRegionStructBlock(StructBlock):
     def __init__(self, *args, **kwargs):
         self.country = kwargs.pop('country', None)
         self.region = kwargs.pop('region', None)
-        super(CountryRegionStructBlock, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_context(self, value):
         context = super().get_context(value)
@@ -460,7 +460,7 @@ class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
         self.region = None
 
     def get_context(self, request):
-        context = super(RegionIndex, self).get_context(request)
+        context = super().get_context(request)
         if self.region:
             context['region'] = self.region
         return context
@@ -475,7 +475,7 @@ class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
                 raise Http404('Region data not found.')
             for data in (DATA_BLOCKS + COLUMN_BLOCKS):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
-        return super(RegionIndex, self).serve(request)
+        return super().serve(request)
 
 class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     region = models.ForeignKey(DataRegion, null=True, blank=True, on_delete=models.SET_NULL)
@@ -493,7 +493,7 @@ class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
         if self.region:
             for data in (DATA_BLOCKS + COLUMN_BLOCKS):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
-        return super(RegionPage, self).serve(request)
+        return super().serve(request)
 
 class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
     template = 'wagtailcms/country_page.html'
@@ -509,7 +509,7 @@ class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
         self.country = None
 
     def get_context(self, request):
-        context = super(CountryIndex, self).get_context(request)
+        context = super().get_context(request)
         if self.country:
             context['country'] = self.country
         return context
@@ -524,7 +524,7 @@ class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
                 raise Http404('Country data not found.')
             for data in (DATA_BLOCKS + COLUMN_BLOCKS):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(country=self.country)
-        return super(CountryIndex, self).serve(request)
+        return super().serve(request)
 
 class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     country = models.ForeignKey(DataCountry, null=True, blank=True, on_delete=models.SET_NULL)
@@ -546,7 +546,7 @@ class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
         if self.country:
             for data in (DATA_BLOCKS + COLUMN_BLOCKS):
                 self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.country)
-        return super(CountryPage, self).serve(request)
+        return super().serve(request)
 
 
 #FIXME: Move hooks to wagtail_hooks.py
