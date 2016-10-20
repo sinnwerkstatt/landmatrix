@@ -450,10 +450,18 @@ $(document).ready(function () {
 
             if (this.options.initialBounds) {
                 var proj = this.map.getView().getProjection();
-                var extent = ol.extent.createEmpty();
-                var initialBounds = ol.extent.applyTransform(
-                    this.options.initialBounds, ol.proj.getTransform('EPSG:4326', proj));
-                ol.extent.extend(extent, initialBounds);
+                var extent = ol.extent.boundingExtent([
+                    [
+                        this.options.initialBounds.lonMin,
+                        this.options.initialBounds.latMin
+                    ],
+                    [
+                        this.options.initialBounds.lonMax,
+                        this.options.initialBounds.latMax
+                    ]
+                ]);
+                extent = ol.extent.applyTransform(
+                    extent, ol.proj.getTransform('EPSG:4326', proj));
             }
             else if (this.featureOverlay.getSource().getFeatures().length > 0) {
                 var extent = ol.extent.createEmpty();
