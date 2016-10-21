@@ -280,7 +280,7 @@ class MapDataChartsBlock(CountryRegionStructBlock):
 
 class LinkMapBlock(CountryRegionStructBlock):
     '''
-    Note that the map template used here is the one from ol3_widgets.
+    Note that the map template used here is NOT the one from ol3_widgets.
     '''
     class Meta:
         icon = 'fa fa-map-marker'

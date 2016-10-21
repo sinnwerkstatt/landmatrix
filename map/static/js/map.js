@@ -563,6 +563,10 @@ function initMap(target) {
 
         updateVariableSelection(currentVariable);
 
+        if (typeof mapHideControls !== 'undefined') {
+            $('#legendstuff').toggleClass('hidden');
+        }
+
     }
 
     NProgress.configure(

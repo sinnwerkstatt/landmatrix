@@ -16,7 +16,7 @@
 </div>
 
 <script type="text/javascript">
-var mapDisableControls = true,
+var mapHideControls = true,
     {% if country %}
     mapBounds = [
         [{{ country.point_lon_min|default_if_none:"null" }}, {{ country.point_lat_min|default_if_none:"null" }}],
