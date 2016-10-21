@@ -238,10 +238,10 @@ div.fullwidth.fullwidth-lightgrey {
   padding: 0;
 }
 
-.block.block-link {
-  padding-top: 0;
+.block-link {
+  padding-top: 0 !important;
   .btn-with-space {
-      margin-top: 30px;
+    margin-top: 30px;
   }
 }
 
