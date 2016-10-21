@@ -287,51 +287,12 @@ class LinkMapBlock(CountryRegionStructBlock):
         label = 'Map'
         template = 'widgets/link-map.html'
 
-    def get_mapwidget_context(self, context):
-        '''
-        Modify map attrs here.
-        '''
-        widget_context = context.copy()
-
-        bound_attrs = (
-            'point_lat_min', 'point_lat_max', 'point_lon_min', 'point_lon_max',
-        )
-        has_country_bounds = self.country and all(
-            [hasattr(self.country, attr) for attr in bound_attrs])
-        has_region_bounds = self.region and all(
-            [hasattr(self.region, attr) for attr in bound_attrs])
-
-        if has_country_bounds:
-            initial_bounds = [
-                getattr(self.country, attr) for attr in bound_attrs
-            ]
-        elif has_region_bounds:
-            initial_bounds = [
-                getattr(self.region, attr) for attr in bound_attrs
-            ]
-        else:
-            initial_bounds = None
-
-        widget_context.update({
-            'width': 800,
-            'height': 600,
-            'initial_bounds': initial_bounds,
-            'disable_drawing': True,
-        })
-
-        return widget_context
-
-    def render_mapwidget(self, value, context):
-        widget_context = self.get_mapwidget_context(context)
-        widget = MapWidget()
-        rendered = widget.render('map', value, attrs=widget_context)
-
-        return rendered
-
     def get_context(self, value):
         context = super().get_context(value)
-        context['id'] = 'map'
-        context['mapwidget'] = self.render_mapwidget(value, context)
+        context.update({
+            'country': self.country,
+            'region': self.region,
+        })
 
         return context
 
