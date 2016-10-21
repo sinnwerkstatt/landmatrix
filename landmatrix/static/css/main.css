@@ -893,9 +893,9 @@ div.fullwidth.fullwidth-lightgrey {
 .block.block-section_divider {
   padding: 0; }
 
-.block.block-link {
-  padding-top: 0; }
-  .block.block-link .btn-with-space {
+.block-link {
+  padding-top: 0 !important; }
+  .block-link .btn-with-space {
     margin-top: 30px; }
 
 .wrap > hr {
