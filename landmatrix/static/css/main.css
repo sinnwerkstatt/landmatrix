@@ -895,6 +895,8 @@ div.fullwidth.fullwidth-lightgrey {
 
 .block.block-link {
   padding-top: 0; }
+  .block.block-link .btn-with-space {
+    margin-top: 30px; }
 
 .wrap > hr {
   padding: 0;
