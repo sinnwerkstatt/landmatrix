@@ -47,7 +47,7 @@ class ChartRedirectView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         if 'country' in self.request.GET or 'region' in self.request.GET:
-            base_url = 'chart_overview'
+            base_url = 'chart_intention'
         else:
             base_url = 'chart_transnational_deals'
 
