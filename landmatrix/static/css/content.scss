@@ -240,9 +240,9 @@ div.fullwidth.fullwidth-lightgrey {
 
 .block-link {
   padding-top: 0 !important;
-  .btn-with-space {
+}
+.block-link .btn-with-space {
     margin-top: 30px;
-  }
 }
 
 .wrap > hr {
@@ -368,9 +368,9 @@ h3,
 
 .block-heading {
   padding-bottom: 0;
-  h3 {
-    margin-bottom: 0;
-  }
+  //h3 {
+  //  margin-bottom: 0;
+  //}
   + .block {
     padding-top: 0;
   }
