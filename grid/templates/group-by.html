@@ -7,8 +7,8 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-  <li><a href="/">{% trans 'Home' %}</a></li>
-  <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
+  <li><a href="{% url 'global' %}">{% trans 'Global' %}</a></li>
+  <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
   {% if group == "all" %}
   <li>{{ name|capfirst }}</li>
   {% elif filters.group_value %}

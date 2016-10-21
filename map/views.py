@@ -17,7 +17,7 @@ class GlobalView(FilterWidgetMixin, RedirectView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self):
-        return reverse('map')
+        return '/'
 
 class MapView(FilterWidgetMixin, TemplateView):
     template_name = 'map/map.html'

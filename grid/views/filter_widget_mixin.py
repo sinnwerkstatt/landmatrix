@@ -199,6 +199,9 @@ class FilterWidgetMixin:
         stored_filters = self.request.session.get('filters', {})
         stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
         self.request.session['filters'] = stored_filters
+        #stored_filters = self.request.session['filter_query_params']
+        #stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
+        self.request.session['filter_query_params'] = None
 
     def set_default_filters(self, data):
         self.remove_default_filters()
