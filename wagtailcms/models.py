@@ -55,7 +55,7 @@ class SplitMultiLangTabsMixin(object):
 class LinkBlock(StructBlock):
     cls = blocks.ChoiceBlock(choices=[
         ('btn', 'Button'),
-        ('btn btn-with-space', 'Button (without space)'),
+        ('btn btn-with-space', 'Button (with space)'),
     ], required=False, label='Type')
     url = blocks.URLBlock(label='URL')
     text = blocks.CharBlock()
