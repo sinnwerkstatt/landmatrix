@@ -5,7 +5,8 @@ from django.utils.translation import ugettext_lazy as _
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
 from ol3_widgets.widgets import LocationWidget, MapWidget, SerializedMapWidget
-from grid.widgets import TitleField, CountryField, CommentInput
+from grid.fields import FileFieldWithInitial,  TitleField, CountryField
+from grid.widgets import CommentInput
 from .base_form import BaseForm
 
 

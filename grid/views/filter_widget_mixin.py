@@ -11,7 +11,7 @@ from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.browse_condition import BrowseCondition
 from landmatrix.models.filter_preset import FilterPreset, FilterPresetGroup
 from api.filters import Filter, PresetFilter
-from grid.widgets import TitleField
+from grid.fields import TitleField
 from grid.forms.browse_condition_form import ConditionFormset
 from grid.views.save_deal_view import SaveDealView
 from grid.views.browse_filter_conditions import BrowseFilterConditions

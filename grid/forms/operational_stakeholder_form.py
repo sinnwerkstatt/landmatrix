@@ -3,10 +3,11 @@ from django.forms.widgets import Select
 from django.forms.models import ModelChoiceField
 from django.utils.translation import ugettext_lazy as _
 
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 from grid.forms.base_form import BaseForm
 from grid.forms.choices import actor_choices
-from grid.widgets import TitleField, CommentInput, ActorsField
-from landmatrix.models.investor import Investor, InvestorActivityInvolvement
+from grid.fields import TitleField, ActorsField
+from grid.widgets import CommentInput
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'

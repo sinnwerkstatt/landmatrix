@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.comment import Comment
-from grid.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
+from grid.fields import NestedMultipleChoiceField
 
 class BaseForm(forms.Form):
     DEBUG = False

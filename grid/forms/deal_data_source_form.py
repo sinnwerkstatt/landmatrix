@@ -17,8 +17,9 @@ from wkhtmltopdf import wkhtmltopdf
 
 from landmatrix.storage import data_source_storage
 from grid.forms.base_form import BaseForm
-from grid.forms.file_field_with_initial import FileFieldWithInitial
-from grid.widgets import TitleField, CommentInput
+from grid.fields import TitleField, FileFieldWithInitial
+from grid.widgets import CommentInput
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 

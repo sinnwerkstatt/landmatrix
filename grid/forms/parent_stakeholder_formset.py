@@ -4,7 +4,9 @@ from django.forms.widgets import Select, Textarea, CheckboxSelectMultiple
 
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 from landmatrix.models.status import Status
-from grid.widgets import TitleField, CommentInput
+from grid.fields import TitleField
+from grid.widgets import CommentInput
+
 
 investor_widget = Select(attrs={'class': 'form-control investorfield'})
 

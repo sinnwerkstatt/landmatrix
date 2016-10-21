@@ -5,10 +5,8 @@ from landmatrix.models.animal import Animal
 from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
 from landmatrix.models.mineral import Mineral
-from grid.widgets import (
-    TitleField, CommentInput, NumberInput,
-    YearBasedModelMultipleChoiceIntegerField,
-)
+from grid.fields import TitleField, YearBasedModelMultipleChoiceIntegerField
+from grid.widgets import CommentInput, NumberInput
 from .base_form import BaseForm
 
 
