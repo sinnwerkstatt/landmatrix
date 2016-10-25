@@ -504,7 +504,10 @@ function initMap(target) {
 
     // Set boundaries if given
     if (typeof mapBounds !== 'undefined') {
-        var extent = ol.extent.applyTransform(mapBounds, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+        var proj = map.getView().getProjection();
+        var extent = ol.extent.boundingExtent(mapBounds);
+        extent = ol.extent.applyTransform(
+            extent, ol.proj.getTransform('EPSG:4326', proj));
         map.getView().fit(extent, map.getSize());
     }
 
@@ -559,6 +562,10 @@ function initMap(target) {
         newlegendlabel = variableLabel.parentNode.replaceChild(dropdown, variableLabel);
 
         updateVariableSelection(currentVariable);
+
+        if (typeof mapHideControls !== 'undefined') {
+            $('#legendstuff').toggleClass('hidden');
+        }
 
     }
 

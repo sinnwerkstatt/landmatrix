@@ -2,7 +2,8 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
-from grid.widgets import CommentInput, TitleField, NestedMultipleChoiceField, NumberInput
+from grid.fields import TitleField, NestedMultipleChoiceField
+from grid.widgets import CommentInput, NumberInput
 from .base_form import BaseForm
 
 

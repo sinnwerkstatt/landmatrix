@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from landmatrix.models.browse_condition import BrowseCondition
 from api.filters import FILTER_OPERATION_MAP, FILTER_VAR_ACT, FILTER_VAR_INV
 from grid.forms.base_model_form import BaseModelForm
-from grid.widgets.browse_text_input import BrowseTextInput
+from grid.widgets import BrowseTextInput
 from grid.views.browse_filter_conditions import get_field_by_key, a_keys
 
 

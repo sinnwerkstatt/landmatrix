@@ -70,7 +70,8 @@ class SaveDealView(TemplateView):
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
-        forms = self.get_forms(self.request.POST, files=self.request.FILES)
+        forms = self.get_forms(
+            data=self.request.POST, files=self.request.FILES)
         if all(form.is_valid() for form in forms):
             # Register user if not authenticated
             if not self.request.user.is_authenticated():
@@ -176,7 +177,7 @@ class SaveDealView(TemplateView):
             if form.Meta.name in ('action_comment', 'user_information'):
                 action_comment = form.cleaned_data['tg_action_comment']
 
-            attributes = form.get_attributes(self.request)
+            attributes = form.get_attributes(request=self.request)
             if not attributes:
                 continue
             # Formset?

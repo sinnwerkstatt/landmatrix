@@ -6,7 +6,8 @@ from django.utils.dateformat import DateFormat
 from django.contrib.auth import get_user_model
 
 from landmatrix.models.activity import Activity
-from grid.widgets import TitleField, CommentInput, UserModelChoiceField
+from grid.fields import TitleField, UserModelChoiceField
+from grid.widgets import CommentInput
 from .base_form import BaseForm
 
 

@@ -12,12 +12,15 @@ __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class GlobalView(FilterWidgetMixin, RedirectView):
+    permanent = False
+
     def dispatch(self, request, *args, **kwargs):
         self.remove_country_region_filter()
         return super().dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self):
         return '/'
+
 
 class MapView(FilterWidgetMixin, TemplateView):
     template_name = 'map/map.html'

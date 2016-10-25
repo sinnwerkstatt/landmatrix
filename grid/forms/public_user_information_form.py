@@ -1,9 +1,10 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from captcha.fields import ReCaptchaField
 
 from grid.forms.base_form import BaseForm
-from grid.widgets import TitleField, CommentInput
-from captcha.fields import ReCaptchaField
+from grid.fields import TitleField
+from grid.widgets import CommentInput
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'

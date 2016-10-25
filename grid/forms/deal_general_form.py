@@ -3,10 +3,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.activity import Activity
 from landmatrix.models.currency import Currency
-from grid.widgets import (
-    TitleField, CommentInput, NumberInput, YearBasedMultipleChoiceIntegerField,
-    YearBasedChoiceField, YearBasedIntegerField
+from grid.fields import (
+    TitleField, YearBasedMultipleChoiceIntegerField, YearBasedChoiceField,
+    YearBasedIntegerField,
 )
+from grid.widgets import CommentInput, NumberInput
 from .choices import intention_choices, nature_choices, price_type_choices
 from .base_form import BaseForm
 

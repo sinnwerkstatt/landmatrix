@@ -17,7 +17,7 @@ from grid.forms.deal_action_comment_form import DealActionCommentForm
 from grid.forms.deal_overall_comment_form import DealOverallCommentForm
 from grid.forms.investor_form import InvestorForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
-from grid.widgets import NestedMultipleChoiceField
+from grid.fields import NestedMultipleChoiceField
 from grid.views.profiling_decorators import print_execution_time_and_num_queries
 from grid.views.profiling_decorators import print_func_execution_time, print_func_num_queries
 from grid.views.change_deal_view import ChangeDealView

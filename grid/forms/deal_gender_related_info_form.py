@@ -1,8 +1,11 @@
-from .base_form import BaseForm
-from grid.widgets import CommentInput, TitleField
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+
+from grid.fields import TitleField
+from grid.widgets import CommentInput
+from .base_form import BaseForm
+
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 

@@ -13,7 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 # from editor.views import get_display_value_by_field
-from grid.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
+from grid.fields import NestedMultipleChoiceField
 
 register = template.Library()
 
