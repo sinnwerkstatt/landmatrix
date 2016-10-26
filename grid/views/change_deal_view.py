@@ -2,7 +2,7 @@ from pprint import pprint
 
 from django.forms.formsets import BaseFormSet
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 
 from grid.forms.deal_general_form import DealGeneralForm
 from grid.forms.deal_contract_form import DealContractFormSet
@@ -95,6 +95,16 @@ class ChangeDealView(SaveDealView):
         prefix = issubclass(form_class, BaseFormSet) and form_class.Meta.name or None
         initial = form_class.get_data(self.get_object())
         return form_class(initial=initial, files=files, data=data, prefix=prefix)
+
+    def render_to_response(self, *args, **kwargs):
+        # If we have a shapefile upload, just reload the page so it displays
+        # correctly
+        # TODO: remove this hack, make the different area fields handle this
+        if any(['shapefile' in key for key in self.request.FILES.keys()]):
+            return HttpResponseRedirect(
+                self.request.META.get('HTTP_REFERER', '/'))
+
+        return super().render_to_response(*args, **kwargs)
 
 
 #def to_formset_data(data):
