@@ -84,6 +84,19 @@ class DealSerializer(serializers.Serializer):
 
             locations.append(location)
 
+        # For our intfields, we sometimes get unexpected floats. Round those.
+        for field in ('contract_size', 'intended_size', 'production_size'):
+            value = obj[field]
+            if isinstance(value, str):
+                try:
+                    value = int(value)
+                except ValueError:
+                    try:
+                        value = round(float(value))
+                    except ValueError:
+                        value = None
+                obj[field] = value
+
         obj['locations'] = locations
 
         return super().to_representation(obj)
