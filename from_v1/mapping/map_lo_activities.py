@@ -307,12 +307,12 @@ class MapLOActivities(MapLOModel):
 
     @classmethod
     def write_standard_tag_groups(
-        cls, activity, tag_groups, point=None, save=False):
-        location_set = False
+            cls, activity, tag_groups, point=None, save=False):
         data_source_counter = 0
+        points_saved = False
+
         for tag_group in tag_groups:
             attrs = {}
-            polygon = cls._get_polygon(tag_group) or None
             group_name = cls.tag_group_name(tag_group)
 
             # Add all data sources, not just the last one
@@ -321,10 +321,18 @@ class MapLOActivities(MapLOModel):
                 data_source_counter += 1
 
             # set location - stored in activity in LO, but tag group in LM
-            if group_name == 'location_0' and not location_set:
+            if group_name == 'location_0' and not points_saved:
                 attrs['point_lat'] = point.get_y()
                 attrs['point_lon'] = point.get_x()
-                location_set = True
+                points_saved = True
+
+            # Special handling for land area. Also save the geometry to a new
+            # attribute
+            if group_name == 'land_area':
+                polygon = cls._get_polygon(tag_group)
+                if polygon:
+                    cls.write_area_attribute_group(
+                        activity, tag_group, group_name, polygon, save=save)
 
             for tag in tag_group.tags:
                 key = tag.key.key
@@ -333,17 +341,38 @@ class MapLOActivities(MapLOModel):
                 # Not sure if this is required, but it doesn't hurt
                 if key in attrs and value != attrs[key]:
                     cls.write_activity_attribute_group_with_comments(
-                        activity, attrs, tag_group, None, group_name, polygon,
+                        activity, attrs, tag_group, None, group_name, None,
                         save=save)
                     attrs = {}
-                    polygon = None
 
                 attrs[key] = value
 
             if attrs:
                 cls.write_activity_attribute_group_with_comments(
-                    activity, attrs, tag_group, None, group_name, polygon,
+                    activity, attrs, tag_group, None, group_name, None,
                     save=save)
+
+    @classmethod
+    def write_area_attribute_group(
+            cls, activity, tag_group, group_name, polygon, save=False):
+        polygon_attrs = {}
+
+        group_attrs = {
+            tag.key.key: tag.value.value for tag in tag_group.tags
+        }
+        group_attrs = transform_attributes(
+            group_attrs, group_name=group_name)
+
+        for key, value in group_attrs.items():
+            key = key.replace('size', 'area')
+            if 'area' in key:
+                polygon_attrs[key] = None
+            else:
+                polygon_attrs[key] = value
+
+        cls.write_activity_attribute_group_with_comments(
+            activity, polygon_attrs, tag_group, None, 'location_0',
+            polygon, save=save)
 
     @classmethod
     def tag_group_name(cls, tag_group):
@@ -355,13 +384,13 @@ class MapLOActivities(MapLOModel):
             'Area (ha)': '',
             'Benefits for local communities': 'community_compensation',
             'Consultation of local community': 'community_reaction',
-            'Contract area (ha)': 'contract_farming',
+            'Contract area (ha)': 'land_area',
             'Contract date': 'contract_farming',
             'Contract farming': 'contract_farming',
             'Contract Number': 'contract_farming',
             'Country': 'location_0',
             'Crop': 'crop_animal_mineral',
-            'Current area in operation (ha)': 'production_area',
+            'Current area in operation (ha)': 'land_area',
             'Current Number of daily/seasonal workers': 'total_number_of_jobs_created',
             'Current number of employees': 'total_number_of_jobs_created',
             'Current total number of jobs': 'total_number_of_jobs_created',
@@ -376,7 +405,7 @@ class MapLOActivities(MapLOModel):
             'How much do investors pay for water': 'water_extraction_amount',
             'How much water is extracted (m3/year)': 'water_extraction_amount',
             'Implementation status': 'implementation_status',
-            'Intended area (ha)': 'intended_area',
+            'Intended area (ha)': 'land_area',
             'Intention of Investment': 'intention',
             'Leasing fee (per year)': 'leasing_fees',
             'Mineral': 'crop_animal_mineral',
@@ -419,13 +448,17 @@ class MapLOActivities(MapLOModel):
             return None
 
     @classmethod
-    def write_activity_attribute_group_with_comments(cls, activity, attrs, tag_group, year, name, polygon, save=False):
+    def write_activity_attribute_group_with_comments(
+            cls, activity, attrs, tag_group, year, name, polygon, save=False):
         if (len(attrs) == 1) and attrs.get('name'):
             return
 
         attrs = transform_attributes(attrs, group_name=name or '')
+
         aag = cls.write_activity_attribute_group(
             activity, attrs, tag_group, year, name, polygon, save=save)
+
+        return aag
 
     @classmethod
     @lru_cache(maxsize=32, typed=True)
@@ -445,7 +478,8 @@ class MapLOActivities(MapLOModel):
         return aag
 
     @classmethod
-    def write_activity_attribute_group(cls, activity, attrs, tag_group, year, name, polygon, save=False):
+    def write_activity_attribute_group(
+            cls, activity, attrs, tag_group, year, name, polygon, save=False):
         if 'YEAR' in attrs:
             year = attrs['YEAR']
             del attrs['YEAR']
@@ -458,22 +492,33 @@ class MapLOActivities(MapLOModel):
                 if len(values) == 2 and len(values[1]) <= 10:
                     value, year = values
             # Get the attr model from the activity
-            attr = activity.attributes.model(
-                fk_activity_id=activity.pk,
-                fk_language_id=1,
-                fk_group=aag,
-                name=key,
-                value=value,
-                date=year,
-                polygon=polygon
-            )
-            if save:
-                attr.save(using=V2)
+            cls._write_activity_attribute(
+                activity, aag, key, value, year, polygon, save=save)
 
         if hasattr(aag, 'id'):
             cls.tag_group_to_attribute_group_ids[tag_group.id] = aag.id
 
         return aag
+
+    @classmethod
+    def _write_activity_attribute(
+            cls, activity, group, key, value, year, polygon, save=False):
+        # Get the attr model from the activity
+        attr_class = activity.attributes.model
+        attr = attr_class(
+            fk_activity_id=activity.pk,
+            fk_language_id=1,
+            fk_group=group,
+            name=key,
+            value=value,
+            date=year,
+            polygon=polygon
+        )
+        if save:
+            attr.save(using=V2)
+
+        return attr
+
 
     @classmethod
     def is_current_version(cls, tag_group):
@@ -681,16 +726,16 @@ LM_ATTRIBUTES = {
     "Área de la cuota anual de arrendamiento (ha)":     'annual_leasing_fee_area',
     'Announced amount of investement':  'purchase_price_comment',
     'Announced amount of investment':   'purchase_price_comment',
-    'Area (ha)':                        'intended_area',
-    "Área pretendida (ha)":                        'intended_area',
+    'Area (ha)':                        'intended_size',
+    "Área pretendida (ha)":             'intended_size',
     'Benefits for local communities':   'promised_benefits',
     'Consultation of local community':  'community_consultation',
     "Contreparties pour les populations locales":  'community_consultation',
     "Consulta a las comunidades locales":  'community_consultation',
     "Consultations tenues au niveau local ":  'community_consultation',
-    'Contract area (ha)':               'contract_area',
-    "Área del contrato (ha)":               'contract_area',
-    "Superficie sous contrat (ha)":               'contract_area',
+    'Contract area (ha)':               'contract_size',
+    "Área del contrato (ha)":               'contract_size',
+    "Superficie sous contrat (ha)":               'contract_size',
     'Contract date':                    'contract_date',
     "Date de signature du contrat":                    'contract_date',
     'Contract farming':                 'contract_farming',
@@ -704,9 +749,9 @@ LM_ATTRIBUTES = {
     'Crop':                             'crops',
     "Cultivo":                             'crops',
     "Cultures":                             'crops',
-    'Current area in operation (ha)':   'production_area',
-    "Área actual en operación (ha)":   'production_area',
-    "Superficie exploitée (ha) ":   'production_area',
+    'Current area in operation (ha)':   'production_size',
+    "Área actual en operación (ha)":   'production_size',
+    "Superficie exploitée (ha) ":   'production_size',
     'Current Number of daily/seasonal workers': 'total_jobs_current_daily_workers',
     "Emplois temporaires créés (nombre)": 'total_jobs_current_daily_workers',
     "Número actual de trabajadores por día o por temporada": 'total_jobs_current_daily_workers',
@@ -746,8 +791,8 @@ LM_ATTRIBUTES = {
     'Implementation status':            'implementation_status',
     "Estado de aplicación":            'implementation_status',
     "Etat d'avancement":            'implementation_status',
-    'Intended area (ha)':               'intended_area',
-    "Superficie visée (ha)":               'intended_area',
+    'Intended area (ha)':               'intended_size',
+    "Superficie visée (ha)":               'intended_size',
     'Intention of Investment':          'intention',
     "Intención de la inversión":          'intention',
     'Leasing fee (per year)':           'annual_leasing_fee',
