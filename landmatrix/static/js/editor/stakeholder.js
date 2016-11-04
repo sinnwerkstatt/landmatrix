@@ -267,7 +267,8 @@ function createInvestorNetwork() {
           text = "Operational company";
         }
         return text;
-      });
+      })
+      .each(wrap);
 
   node.append("circle")
     .attr("cx", function (d) { if (d.involvement) { return 0; } else { return 9; } })
@@ -305,7 +306,8 @@ function createInvestorNetwork() {
           text += d.country;
           return text
         }
-      });
+      })
+      .each(wrap);
 //  node.selectAll("rect")
 ////    .attr("width", function(d) {return this.parentNode.getBBox().width;})
 //    .attr("width", tree_width)
