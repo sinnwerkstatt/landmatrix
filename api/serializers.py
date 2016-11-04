@@ -1,11 +1,15 @@
 from collections import OrderedDict
 
+from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry
 from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
 from landmatrix.models.filter_preset import FilterPreset
 from landmatrix.models.investor import InvestorVentureInvolvement
+
+
+User = get_user_model()
 
 
 class PassThruSerializer(serializers.BaseSerializer):
@@ -23,12 +27,15 @@ class FilterPresetSerializer(serializers.ModelSerializer):
         exclude = ('is_default', 'overrides_default')
 
 
-class UserSerializer(serializers.BaseSerializer):
-    '''
-    Returns a user as a list: [id, username, fullname].
-    '''
-    def to_representation(self, obj):
-        return [obj.id, obj.username, obj.get_full_name() or obj.username]
+class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+
+    def get_full_name(self, obj):
+        return obj.get_full_name()
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'full_name')
 
 
 class RegionSerializer(serializers.BaseSerializer):
