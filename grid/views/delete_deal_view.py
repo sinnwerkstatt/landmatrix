@@ -83,7 +83,7 @@ class RecoverDealView(SaveDealView):
                 activity = queryset.filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e))) 
-        if not self.request.user.has_perm('landmatrix.change_activity'):
+        if not self.request.user.has_perm('landmatrix.review_activity'):
             if activity.fk_status_id != activity.STATUS_DELETED:
                 raise Http404('Activity %s is already active' % deal_id)
         return activity 
@@ -95,7 +95,7 @@ class RecoverDealView(SaveDealView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         hactivity = self.get_object()
-        if not self.request.user.has_perm('landmatrix.delete_activity'):
+        if not self.request.user.has_perm('landmatrix.review_activity'):
             return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier})) 
         attributes = hactivity.attributes.all()
         # Create new historical activity
