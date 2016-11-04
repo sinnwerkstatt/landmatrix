@@ -6,8 +6,12 @@
 <div id="investor-network">
 </div>
 <script type="text/javascript">
-    $(document).ready(function () {
-        loadInvestorNetwork({{ form.initial.operational_stakeholder }});
-    });
+	$(document).ready(function () {
+		$('#accordion').on('show.bs.collapse', function (e) {
+		    if ($(e.target).parent().find(".panel-heading a").is("#investor-info")) {
+	        	loadInvestorNetwork({{ form.initial.operational_stakeholder }});
+	        };
+		});
+	});
 </script>
 {% include "modals/stakeholder.html" %}

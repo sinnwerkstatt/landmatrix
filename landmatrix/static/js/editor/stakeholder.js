@@ -225,14 +225,30 @@ function createInvestorNetwork() {
       .data(nodes)
     .enter().append("g")
       .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+  //node.append("rect");
+  var text_width = tree_svg.selectAll(".link")[0][0].getBBox().width,
+    text_padding = 10;
+  console.log(text_width);
+  function wrap() {
+      var self = d3.select(this),
+          textLength = self.node().getComputedTextLength(),
+          text = self.text();
+      console.log(textLength);
+      while (textLength > (text_width - 2 * text_padding) && text.length > 0) {
+          text = text.slice(0, -1);
+          self.text(text + '...');
+          textLength = self.node().getComputedTextLength();
+      }
+  } 
 
   node.append("text")
       .attr("class", "name")
       .attr("font-weight", "bold")
       .attr("x", function (d) { if (d.involvement) { return 8; } else { return 16; } })
       .attr("y", -6)
-      .text(function(d) { return d.name; });
+      .text(function(d) { return d.name; })
+      .each(wrap);
 
   node.append("text")
       .attr("x", function (d) { if (d.involvement) { return 8; } else { return 16; } })
@@ -290,6 +306,12 @@ function createInvestorNetwork() {
           return text
         }
       });
+//  node.selectAll("rect")
+////    .attr("width", function(d) {return this.parentNode.getBBox().width;})
+//    .attr("width", tree_width)
+//    .attr("height", "1.86em")
+//    .style("fill", "#ffffff")
+//    .style("fill-opacity", 1)
 };
 
 function elbow(d, i) {
