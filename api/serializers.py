@@ -5,8 +5,9 @@ from django.contrib.gis.geos import GEOSGeometry
 from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
-from landmatrix.models.filter_preset import FilterPreset
-from landmatrix.models.investor import InvestorVentureInvolvement
+from landmatrix.models import (
+    Activity, InvestorVentureInvolvement, FilterPreset,
+)
 
 
 User = get_user_model()
@@ -109,23 +110,22 @@ class DealSerializer(serializers.Serializer):
         return super().to_representation(obj)
 
 
-class DealDetailSerializer(serializers.BaseSerializer):
+class DealDetailSerializer(serializers.ModelSerializer):
     '''
-    Limits deal attributes in the response to the attributes requested.
+    Returns deal attributes.
     '''
+    attributes = serializers.SerializerMethodField()
 
-    def __init__(self, *args, **kwargs):
-        self._requested_fields = kwargs.pop('fields', ())
-        super().__init__(*args, **kwargs)
+    class Meta:
+        model = Activity
+        fields = (
+            'activity_identifier', 'fk_status', 'is_public',
+            'deal_scope', 'negotiation_status', 'implementation_status',
+            'deal_size', 'attributes'
+        )
 
-    def to_representation(self, obj):
-        obj_data = OrderedDict()
-
-        for field_name in self._requested_fields:
-            if field_name in obj.attributes.keys():
-                obj_data[field_name] = str(obj.attributes[field_name])
-
-        return obj_data
+    def get_attributes(self, obj):
+        return obj.attributes_as_dict
 
 
 class InvestorNetworkSerializer(serializers.BaseSerializer):
