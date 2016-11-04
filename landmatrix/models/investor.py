@@ -121,12 +121,28 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
             self.investor_identifier = self.pk
             update_fields.append('investor_identifier')
 
-        if not self.name:
-            self.name = _("Unknown (#%s)") % (self.pk,)
+        if not self.name or self.name == 'Unknown (#{})'.format(self.pk):
+            self.name = self._get_default_name()
             update_fields.append('name')
 
         if update_fields:
             super().save(update_fields=update_fields)
+
+    def _get_default_name(self):
+        '''
+        If we have an unknown (blank) name, get the correct generic text.
+        '''
+        if self.is_operational_company:
+            name = _("Unknown operational company (#%s)") % (self.pk,)
+        elif self.is_parent_company:
+            name = _("Unknown parent company (#%s)") % (self.pk,)
+        elif self.is_parent_investor:
+            name = _("Unknown tertiary investor/lender (#%s)") % (self.pk,)
+        else:
+            # Just stick with unknown if no relations
+            name = _("Unknown (#%s)") % (self.pk,)
+
+        return name
 
     @property
     def history(self):
@@ -146,6 +162,30 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         return (
             hasattr(self, 'investoractivityinvolvement_set') and
             self.investoractivityinvolvement_set.exists())
+
+    @property
+    def is_parent_company(self):
+        '''
+        Right now, this is determined based on if any relations exist.
+        It probably makes more sense to have this as a flag on the model.
+        '''
+        if hasattr(self, 'venture_involvements'):
+            queryset = self.venture_involvements.all()
+            queryset = queryset.filter(
+                role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
+            return queryset.exists()
+        else:
+            return False
+
+    @property
+    def is_parent_investor(self):
+        if hasattr(self, 'venture_involvements'):
+            queryset = self.venture_involvements.all()
+            queryset = queryset.filter(
+                role=InvestorVentureInvolvement.INVESTOR_ROLE)
+            return queryset.exists()
+        else:
+            return False
 
     @classmethod
     def get_latest_investor(cls, investor_identifier):
@@ -215,6 +255,7 @@ class InvestorVentureQuerySet(models.QuerySet):
 
     def investors(self):
         return self.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
+
 
 class InvestorVentureInvolvement(models.Model):
     '''
