@@ -36,9 +36,12 @@ class FilterView(APIView):
 
         if action == 'set':
             if 'preset' in request_data:
+                # Check for duplicates
+                for filter_name, stored_filter in stored_filters.items():
+                    if stored_filter['preset_id'] == request_data['preset']:
+                        return Response(stored_filters)
                 new_filter = PresetFilter(request_data['preset'], name=name)
             else:
-
                 try:
                     variable = request_data['variable']
                     operator = request_data['operator']
@@ -47,11 +50,16 @@ class FilterView(APIView):
                 except KeyError as err:
                     raise serializers.ValidationError(
                         {err.args[0]: _("This field is required.")})
+                # Check for duplicates
+                for filter_name, stored_filter in stored_filters.items():
+                    if (stored_filter.get('variable', '') == variable and
+                       stored_filter.get('operator', '') == operator and
+                       stored_filter.get('value', '') == value):
+                        return Response(stored_filters)
                 label = get_field_label(variable)
                 new_filter = Filter(
                     variable=variable, operator=operator, value=value,
                     label=label, name=name, display_value=display_value)
-
             stored_filters[new_filter.name] = new_filter
         elif action == 'remove':
             try:
