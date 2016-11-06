@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.db.models.functions import Coalesce
@@ -190,6 +191,17 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
                 return None
         else:
             return None
+
+    @property
+    def attributes_as_dict(self):
+        '''
+        Returns all attributes, *grouped* as a nested dict.
+        '''
+        attrs = defaultdict(dict)
+        for attr in self.attributes.select_related('fk_group'):
+            attrs[attr.fk_group.name][attr.name] = attr.value
+
+        return attrs
 
 
 class Activity(ActivityBase):

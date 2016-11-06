@@ -115,7 +115,8 @@
                 user_request.then(function (data) {
                   for (var d = 0; d < data.length; d++) {
                     var item = data[d];
-                    var option = new Option(item[2], item[0], false, false);
+                    var username = item['full_name'] || item['username'];
+                    var option = new Option(username, item['id'], false, false);
                     user_select.append(option);
                   };
                   user_select.select2({

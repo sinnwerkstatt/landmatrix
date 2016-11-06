@@ -210,7 +210,7 @@ function initMap(target) {
             var features = feature.get('features');
 
             if (features) {
-                size = feature.get('features').length;
+                size = features.length;
             }
             else {
                 size = 1;
@@ -261,11 +261,13 @@ function initMap(target) {
                 if (features) {
                     feature = feature.get('features')[0];
                 }
-                var classifier = feature.attributes[fieldnames[currentVariable]];
-
-                if (classifier in detailviews[currentVariable]) {
-                    color = detailviews[currentVariable][classifier];
-                } else {
+                if (feature && feature.get('dealData')) {
+                    var classifier = feature.get('dealData')[fieldnames[currentVariable]];
+                    if (classifier in detailviews[currentVariable]) {
+                        color = detailviews[currentVariable][classifier];
+                    }
+                }
+                if (color === '') {
                     color = '#000';
                 }
 
@@ -453,14 +455,18 @@ function initMap(target) {
             ]
         })
     );
-    //interactions = olgm.interaction.defaults();
+
+    var spiderInteraction = new ol.interaction.ClusterSpiderfier({
+        minRadius: 40
+    });
     interactions.push(
-        new ol.interaction.Select(),
+        // new ol.interaction.Select(),
         new ol.interaction.MouseWheelZoom(),
         new ol.interaction.PinchZoom(),
         new ol.interaction.DragZoom(),
         new ol.interaction.DoubleClickZoom(),
-        new ol.interaction.DragPan()
+        new ol.interaction.DragPan(),
+        spiderInteraction
     );
     controls = [];
 
@@ -495,6 +501,7 @@ function initMap(target) {
         controls: controls,
         interactions: interactions,
         overlays: [PopupOverlay],
+        renderer: 'canvas',
         // Set the map view : here it's set to see the all world.
         view: view
     });
@@ -577,9 +584,9 @@ function initMap(target) {
     );
 
     map.on('click', function (evt) {
-        var PopupFeature = map.forEachFeatureAtPixel(evt.pixel, handleFeatureClick);
-        if (PopupFeature) {
-        } else {
+        var popupFeature = map.forEachFeatureAtPixel(
+            evt.pixel, handleFeatureClick);
+        if (!popupFeature) {
             closePopup();
         }
     });
@@ -603,20 +610,41 @@ function initMap(target) {
 
     if (typeof mapDisableDeals === 'undefined') {
         // Set zoom and pan handlers
-        // Delay here (and avoid multiple events) to stop postgres from
-        // melting
-        var updateKey;
+        // Check here if we are just zooming in on the same deals
+        // if so, don't reload
+        var lastExtent;
+        var lastZoom;
         var updateMarkers = function(event) {
-            if (updateKey) {
-                clearTimeout(updateKey);
+            var currentZoom = event.map.getView().getZoom();
+            var currentExtent = event.frameState.extent;
+            var isContained = lastExtent !== undefined &&
+                ol.extent.containsExtent(lastExtent, currentExtent);
+            var movedIntoDeals = lastZoom !== undefined &&
+                currentZoom >= countryThreshold &&
+                lastZoom < countryThreshold;
+            var movedIntoCountries = lastZoom !== undefined &&
+                currentZoom < countryThreshold &&
+                lastZoom >= countryThreshold;
+            var passedThreshold = movedIntoDeals || movedIntoCountries;
+            var inDeals = currentZoom >= countryThreshold;
+
+            if (passedThreshold) {
+                getApiData();
             }
-            updateKey = setTimeout(getApiData, 2000);
+            // Only reload in deals if we pan, no need in countries or when
+            // zooming
+            else if (inDeals && !isContained) {
+                getApiData();
+            }
+
+            lastExtent = currentExtent;
+            lastZoom = currentZoom;
         };
         map.on("moveend", updateMarkers);
+        // zoomend never seems to actually get fired.
         map.on("zoomend", updateMarkers);
 
-        // Not required, as moveend fires on load (maybe a bug?)
-        // getApiData();
+        getApiData();
     }
 };
 
@@ -702,81 +730,70 @@ function updateVariableSelection(variableName) {
 
 function handleFeatureClick (feature, layer) {
     // A country feature was clicked.
-    if (feature && feature.attributes && feature.attributes.country) {
+    if (feature && feature.get('countryData')) {
         handleCountryClick(feature);
         return;
     }
 
-    var features = feature.getProperties().features;
-    // A cluster was clicked.
+    var features = feature.get('features');
+
     if (features && features.length > 1) {
-        // var popup = '<div><span><strong>Cluster of ' + features.length + ' deals.</strong></span>';
-        // popup += '<br><span>Zoom here for more details.</span></div>';
-        // content.innerHTML = popup;
-        handleClusterClick(features);
+        // Skip clusters, as they are handled elsewhere
         return;
     }
-    else {
-        if (features) {
-            var feat = features[0];
-        }
-        else {
-            var feat = feature;
-        }
 
-        var id = feat.attributes.deal_id;
-        var lat = feat.attributes.lat.toFixed(4);
-        var lon = feat.attributes.lon.toFixed(4);
-        var intention = feat.attributes.intention;
-        var intended_size = feat.attributes.intended_size;
-        var production_size = feat.attributes.production_size;
-        var contract_size = feat.attributes.contract_size;
-        var investor = feat.attributes.investor;
-        var status = feat.attributes.negotiation_status;
-        var accuracy = feat.attributes.geospatial_accuracy;
-
-        // TODO: Here, some javascript should be called to get the deal details from the API
-        // and render it inside the actual content popup, instead of getting this from the db for every marker!
-        content.innerHTML = '<div><span><a href="/deal/' + id + '"><strong>Deal #' + id + '</strong></a></span>';
-        //content.innerHTML += '<p>Coordinates:</p><code>' + lat + ' ' + lon + '</code>';
-        if (intended_size !== null) {
-            content.innerHTML += '<span>Intended area (ha):</span><span class="pull-right">' + parseInt(intended_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
-        }
-        if (production_size !== null) {
-            content.innerHTML += '<span>Production size (ha):</span><span class="pull-right">' + parseInt(production_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
-        }
-        if (contract_size !== null) {
-            content.innerHTML += '<span>Contract size (ha):</span><span class="pull-right">' + parseInt(contract_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
-        }
-        content.innerHTML += '<span>Intention:</span><span class="pull-right">' + intention + '</span><br/>';
-        content.innerHTML += '<span>Operational company:</span><span class="pull-right">' + investor + '</span><br />';
-        // TODO: Handle other possibly already known attributes from currentVariable
-        if (status) {
-            content.innerHTML += '<span>Negotiation Status:</span><span class="pull-right">' + status + '</span><br />';
-        }
-        if (accuracy) {
-            content.innerHTML += '<span>Geospatial Accuracy:</span><span class="pull-right">' + accuracy + '</span><br />';
-        }
-        content.innerHTML += '<span><a href="/deal/' + id + '">More details</a></span></div>';
-
-        PopupOverlay.setPosition(feat.getGeometry().getCoordinates());
-
-        return feat;
+    if (features) {
+        var feat = features[0];
     }
+    else {
+        var feat = feature;
+    }
+
+    var dealData = feat.get('dealData');
+    var id = dealData.deal_id;
+    var lat = dealData.lat.toFixed(4);
+    var lon = dealData.lon.toFixed(4);
+    var intention = dealData.intention;
+    var intended_size = dealData.intended_size;
+    var production_size = dealData.production_size;
+    var contract_size = dealData.contract_size;
+    var investor = dealData.investor;
+    var status = dealData.negotiation_status;
+    var accuracy = dealData.geospatial_accuracy;
+
+    // TODO: Here, some javascript should be called to get the deal details from the API
+    // and render it inside the actual content popup, instead of getting this from the db for every marker!
+    content.innerHTML = '<div><span><a href="/deal/' + id + '"><strong>Deal #' + id + '</strong></a></span>';
+    //content.innerHTML += '<p>Coordinates:</p><code>' + lat + ' ' + lon + '</code>';
+    if (intended_size !== null) {
+        content.innerHTML += '<span>Intended area (ha):</span><span class="pull-right">' + parseInt(intended_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
+    }
+    if (production_size !== null) {
+        content.innerHTML += '<span>Production size (ha):</span><span class="pull-right">' + parseInt(production_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
+    }
+    if (contract_size !== null) {
+        content.innerHTML += '<span>Contract size (ha):</span><span class="pull-right">' + parseInt(contract_size).toLocaleString(options = {useGrouping: true}) + '</span><br/>';
+    }
+    content.innerHTML += '<span>Intention:</span><span class="pull-right">' + intention + '</span><br/>';
+    content.innerHTML += '<span>Operational company:</span><span class="pull-right">' + investor + '</span><br />';
+    // TODO: Handle other possibly already known attributes from currentVariable
+    if (status) {
+        content.innerHTML += '<span>Negotiation Status:</span><span class="pull-right">' + status + '</span><br />';
+    }
+    if (accuracy) {
+        content.innerHTML += '<span>Geospatial Accuracy:</span><span class="pull-right">' + accuracy + '</span><br />';
+    }
+    content.innerHTML += '<span><a href="/deal/' + id + '">More details</a></span></div>';
+
+    PopupOverlay.setPosition(feat.getGeometry().getCoordinates());
+
+    return feat;
 };
 
 function handleCountryClick (feature) {
-    var a = feature.attributes;
+    var a = feature.get('countryData');
     var countryBounds = [a.lat_min, a.lon_min, a.lat_max, a.lon_max];
     var extent = ol.extent.applyTransform(countryBounds, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
-    map.getView().fit(extent, map.getSize());
-};
-
-function handleClusterClick (features) {
-    var extent = ol.extent.createEmpty();
-    $(features).each(function (index, feature) {
-        ol.extent.extend(extent, feature.getGeometry().getExtent());
-    });
     map.getView().fit(extent, map.getSize());
 };
 
@@ -787,14 +804,6 @@ function addData (data) {
     NProgress.set(0.8);
     countriesSource.clear();
     markerSource.clear();
-
-    // Below clusterThreshold, don't cluster anything.
-    if (view.getZoom() < clusterThreshold) {
-        cluster.setSource(clusterSource);
-    }
-    else {
-        cluster.setSource(markerSource);
-    }
 
     if (data.length < 1) {
         $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
@@ -908,7 +917,7 @@ function addCountrySummariesData (data) {
                 'EPSG:4326', 'EPSG:3857')
             )
         });
-        feature.attributes = country;
+        feature.set('countryData', country);
         countriesSource.addFeature(feature);
     });
     NProgress.done(true);
@@ -930,8 +939,7 @@ function addClusteredMarker(marker) { // dealid, longitude, latitude, intention,
         if (('intention' in marker) && (marker.intention) && (marker.intention.indexOf(',') > -1)) {
             marker.intention = marker.intention.split(',', 1)[0];
         }
-
-        feature.attributes = marker;
+        feature.set('dealData', marker);
 
         markerSource.addFeature(feature);
     } else {
