@@ -73,7 +73,7 @@ class ChangeDealView(SaveDealView):
                 activity = queryset.filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e))) 
-        if not self.request.user.has_perm('landmatrix.review_activity'):
+        if not self.request.user.has_perm('landmatrix.change_activity'):
             if activity.fk_status_id == activity.STATUS_DELETED:
                 raise Http404('Activity %s has been deleted' % deal_id)
         return activity 

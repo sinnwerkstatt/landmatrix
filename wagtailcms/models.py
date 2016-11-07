@@ -83,6 +83,30 @@ class AnchorBlock(StructBlock):
         context['slug'] = value.get('slug')
         return context
 
+class FAQBlock(StructBlock):
+    slug = blocks.CharBlock()
+    question = blocks.CharBlock()
+    answer = blocks.RichTextBlock()
+
+class FAQsBlock(StructBlock):
+    title = blocks.CharBlock()
+    faqs = blocks.ListBlock(FAQBlock())
+
+    class Meta:
+        icon = 'fa fa-medkit'
+        template = 'widgets/faq_block.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['titel'] = value.get('title')
+        context['list'] = []
+        for faq in value.get('faqs'):
+            context['list'].append({
+                'slug': faq.get('slug'),
+                'term': faq.get('question'),
+                'definition': faq.get('answer'),
+            })
+        return context
 
 # Overwrite Stream block to disable wrapping DIVs
 class NoWrapsStreamBlock(StreamBlock):
@@ -225,6 +249,7 @@ CONTENT_BLOCKS = [
     ('gallery', GalleryBlock()),
     ('slider', SliderBlock()),
     ('section_divider', SectionDivider()),
+    ('faqs_block', FAQsBlock())
 ]
 
 class CountryRegionStructBlock(StructBlock):
