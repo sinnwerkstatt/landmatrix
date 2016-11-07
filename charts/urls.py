@@ -86,38 +86,38 @@ urlpatterns = patterns(
         save_filter_query_params()(PerspectiveChartView.as_view()),
         {'format': 'PDF'}, name='chart_perspective_pdf'),
     url(
-        r'^agricultural-drivers/$',
+        r'^agricultural-drivers\.pdf$',
         save_filter_query_params()(AgriculturalDriversChartView.as_view()),
         {'format': 'PDF'}, name='chart_agricultural_drivers_pdf'),
     url(
-        r'^produce-info/$',
+        r'^produce-info\.pdf$',
         save_filter_query_params()(ProduceInfoChartView.as_view()),
         {'format': 'PDF'}, name='chart_produce_info_pdf'),
     url(
-        r'^resource-extraction/$',
+        r'^resource-extraction\.pdf$',
         save_filter_query_params()(ResourceExtractionChartView.as_view()),
         {'format': 'PDF'}, name='chart_resource_extraction_pdf'),
     url(
-        r'^logging/$', save_filter_query_params()(LoggingChartView.as_view()),
+        r'^logging\.pdf$', save_filter_query_params()(LoggingChartView.as_view()),
         {'format': 'PDF'}, name='chart_logging_pdf'),
     url(
-        r'^contract-farming/$',
+        r'^contract-farming\.pdf$',
         save_filter_query_params()(ContractFarmingChartView.as_view()),
         {'format': 'PDF'}, name='chart_contract_farming_pdf'),
     url(
-        r'^intention/$',
+        r'^intention\.pdf$',
         save_filter_query_params()(IntentionChartView.as_view()),
         {'format': 'PDF'}, name='chart_intention_pdf'),
     url(
-        r'^negotiation-status/$',
+        r'^negotiation-status\.pdf$',
         save_filter_query_params()(NegotiationStatusChartView.as_view()),
         {'format': 'PDF'}, name='chart_negotiation_status_pdf'),
     url(
-        r'^implementation-status/$',
+        r'^implementation-status\.pdf$',
         save_filter_query_params()(ImplementationStatusChartView.as_view()),
         {'format': 'PDF'}, name='chart_implementation_status_pdf'),
     url(
-        r'^intention-agriculture/$',
+        r'^intention-agriculture\.pdf$',
         save_filter_query_params()(IntentionAgricultureChartView.as_view()),
         {'format': 'PDF'}, name='chart_intention_agriculture_pdf'),
 )
