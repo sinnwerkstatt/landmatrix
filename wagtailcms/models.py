@@ -89,7 +89,6 @@ class FAQBlock(StructBlock):
     answer = blocks.RichTextBlock()
 
 class FAQsBlock(StructBlock):
-    title = blocks.CharBlock()
     faqs = blocks.ListBlock(FAQBlock())
 
     class Meta:
@@ -105,6 +104,7 @@ class FAQsBlock(StructBlock):
                 'slug': faq.get('slug'),
                 'term': faq.get('question'),
                 'definition': faq.get('answer'),
+                'current': if self.request.GET.get('slug')
             })
         return context
 
