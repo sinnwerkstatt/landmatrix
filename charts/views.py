@@ -97,7 +97,7 @@ class MapOfInvestmentsChartView(ChartPDFView):
     pdf_javascript_delay = 2000
 
 
-class PerspectiveChartView(ChartPDFView):
+class PerspectiveChartView(ChartView):
     template_name = "charts/perspective.html"
     chart = "chart_perspective"
 
