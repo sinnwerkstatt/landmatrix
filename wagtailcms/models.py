@@ -103,8 +103,7 @@ class FAQsBlock(StructBlock):
             context['list'].append({
                 'slug': faq.get('slug'),
                 'term': faq.get('question'),
-                'definition': faq.get('answer'),
-                'current': if self.request.GET.get('slug')
+                'definition': faq.get('answer')
             })
         return context
 
