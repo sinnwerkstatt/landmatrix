@@ -96,7 +96,10 @@ class FakeQuerySet(QuerySet):
 
     def _uniquify_join_expressions(self, joins):
         no_dups = []
-        [no_dups.append(i) for i in reversed(joins) if not self._contains_join(no_dups, i)]
+        for i in reversed(joins):
+            if not self._contains_join(no_dups, i):
+                no_dups.append(i)
+
         return reversed(no_dups)
 
     def _contains_join(self, joins, join):
@@ -219,11 +222,18 @@ class FakeQuerySet(QuerySet):
         return filter_sql
 
     def is_public_condition(self):
-        if self.user.is_staff:
-            return ''
+        if self.user.is_authenticated() and self.user.is_staff:
+            condition = ''
         else:
-            return "a.is_public = 't'"
+            condition = "a.is_public IS TRUE"
+
+        return condition
 
     def status_active_condition(self):
-        statuses = ', '.join([str(status) for status in self._statuses])
-        return "a.fk_status_id IN ({})".format(statuses)
+        if self._statuses:
+            condition = 'a.fk_status_id IN ({})'.format(
+                ', '.join([str(status) for status in self._statuses]))
+        else:
+            condition = ''
+
+        return condition
