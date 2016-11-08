@@ -5,7 +5,6 @@ from rest_framework.generics import ListAPIView
 
 from landmatrix.models.activity import Activity
 from api.query_sets.filter_query_set import FilterQuerySet
-from api.query_sets.deals_query_set import DealsQuerySet
 from api.query_sets.hectares_query_set import HectaresQuerySet
 from api.query_sets.implementation_status_query_set import \
     ImplementationStatusQuerySet
@@ -30,7 +29,7 @@ from api.query_sets.logging_query_set import \
     LoggingQuerySet
 from api.query_sets.contract_farming_query_set import \
     ContractFarmingQuerySet
-from api.serializers import DealSerializer, NegotiationStatusSerializer
+from api.serializers import NegotiationStatusSerializer
 from api.views.base import FakeQuerySetListView, FakeQuerySetRetrieveView
 
 
@@ -73,11 +72,6 @@ class NegotiationStatusListView(ListAPIView):
             })
 
         return response_data
-
-
-class DealListView(FakeQuerySetListView):
-    fake_queryset_class = DealsQuerySet
-    serializer_class = DealSerializer
 
 
 class ImplementationStatusListView(FakeQuerySetListView):
