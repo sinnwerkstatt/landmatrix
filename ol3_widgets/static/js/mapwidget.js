@@ -629,26 +629,6 @@ $(document).ready(function () {
 
 
         MapWidget.prototype.initLinkHandlers = function() {
-            var mapWidget = this;
-            var divMapId = this.options.id + '-div-map';
-            var divMap = jQuery('#' + divMapId);
-            var showLink = divMap.next('a.show-hide-map');
-            showLink.on('click', function (event) {
-                event.preventDefault();
-                var mapElement = jQuery('#' + divMapId);
-                mapElement.toggle();
-
-                var oldText = jQuery(this).text();
-                jQuery(this).text(jQuery(this).data('alternate'));
-                jQuery(this).data('alternate', oldText);
-
-                if (mapElement.is(':visible')) {
-                    mapWidget.map.updateSize();
-                    mapWidget.positionMap();
-                }
-
-            });
-
             var map = jQuery('#' + this.options.mapId);
             var clearFeatures = map.next('.clear_features').children('a');
             clearFeatures.on('click', function(event) {
