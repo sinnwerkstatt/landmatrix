@@ -14,7 +14,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.comment import Comment
-from grid.fields import NestedMultipleChoiceField
+from grid.fields import (
+    NestedMultipleChoiceField, YearBasedField, MultiCharField, ActorsField,
+)
 
 class BaseForm(forms.Form):
     DEBUG = False
@@ -98,7 +100,7 @@ class BaseForm(forms.Form):
                         except (ValueError, TypeError):
                             raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
             # Year based data (or Actors field)?
-            elif isinstance(f, forms.MultiValueField):
+            elif isinstance(f, (YearBasedField, ActorsField)):
                 # Grab last item and enumerate, since there can be gaps
                 # because of checkboxes not submitting data
                 prefix = self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n
@@ -198,8 +200,9 @@ class BaseForm(forms.Form):
             # Multiple choice?
             if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
                 value = cls.get_multiple_choice_data(field, field_name, attribute)
-            # Year based data (or Actors field)?
-            elif isinstance(field, forms.MultiValueField):
+            # Year based data (or Actors field/MultiCharField)?
+            # TODO: check if the other two should be included
+            elif isinstance(field, (YearBasedField, MultiCharField, ActorsField)):
                 value = cls.get_year_based_data(field, field_name, attribute)
             # Choice field?
             elif isinstance(field, forms.ChoiceField):

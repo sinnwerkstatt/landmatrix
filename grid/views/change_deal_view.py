@@ -97,10 +97,12 @@ class ChangeDealView(SaveDealView):
         return form_class(initial=initial, files=files, data=data, prefix=prefix)
 
     def render_to_response(self, *args, **kwargs):
-        # If we have a shapefile upload, just reload the page so it displays
-        # correctly
+        '''
+        If we have a shapefile upload, just reload the page so it displays
+        correctly
+        '''
         # TODO: remove this hack, make the different area fields handle this
-        if any(['shapefile' in key for key in self.request.FILES.keys()]):
+        if any(['_area' in key for key in self.request.FILES.keys()]):
             return HttpResponseRedirect(
                 self.request.META.get('HTTP_REFERER', '/'))
 

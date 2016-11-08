@@ -15,6 +15,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
 from django.utils.html import conditional_escape, escape
 
+from ol3_widgets.widgets import SerializedMapWidget
 from landmatrix.models import Country
 from landmatrix.storage import data_source_storage
 
@@ -242,6 +243,13 @@ class YearBasedIntegerField(forms.MultiValueField):
             return "#".join(yb_data)
         else:
             self.fields = [forms.IntegerField(required=False), forms.CharField(required=False)]
+
+
+class YearBasedCheckboxInput(forms.MultiWidget):
+    def __init__(self, *args, **kwargs):
+        self.widget = forms.CheckboxInput(attrs={"class": "year-based"})
+        super().__init__(*args, **kwargs)
+
 
 
 class TextChoiceInput(YearBasedWidget):
@@ -535,3 +543,117 @@ class BrowseTextInput(forms.TextInput):
                     ybd.append(year)
             value = ["|".join(ybd)]
         return value or []
+
+
+class AreaWidget(forms.MultiWidget):
+    '''
+    Area widget includes a map, and a shapefile upload field.
+    '''
+
+    MAP_WIDGET_ATTRS = {
+        'map_width': 600,
+        'map_height': 400,
+        'initial_zoom': 8,
+        'initial_center_lat': 0,
+        'initial_center_lon': 0,
+        'show_layer_switcher': True,
+        'geom_type': 'MULTIPOLYGON',
+    }
+    FILE_WIDGET_ATTRS = {
+        'multiple': True,
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.initially_hidden = kwargs.pop('initially_hidden', True)
+        map_attrs = self.MAP_WIDGET_ATTRS.copy()
+        map_attrs.update(kwargs.pop('map_attrs', {}))
+        file_attrs = self.FILE_WIDGET_ATTRS.copy()
+        file_attrs.update(kwargs.pop('file_attrs', {}))
+
+        widgets = [
+            SerializedMapWidget(attrs=map_attrs),
+            forms.ClearableFileInput(attrs=file_attrs),
+        ]
+        super().__init__(widgets, *args, **kwargs)
+
+    def render(self, name, value, attrs=None):
+        '''
+        Overridden to pass name to format_output, so we can do js things
+        with the map.
+        '''
+        if self.is_localized:
+            for widget in self.widgets:
+                widget.is_localized = self.is_localized
+        # value is a list of values, each corresponding to a widget
+        # in self.widgets.
+        if not isinstance(value, list):
+            value = self.decompress(value)
+        output = []
+        final_attrs = self.build_attrs(attrs)
+        id_ = final_attrs.get('id', None)
+        for i, widget in enumerate(self.widgets):
+            try:
+                widget_value = value[i]
+            except IndexError:
+                widget_value = None
+            if id_:
+                final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))
+            output.append(
+                widget.render(name + '_%s' % i, widget_value, final_attrs))
+        return mark_safe(self.format_output(name, output))
+
+    def decompress(self, value):
+        return [value, False]
+
+    def format_output(self, name, rendered_widgets):
+        if self.initially_hidden:
+            container_style = 'display: none;'
+            show_hide_link_text = _('Show area')
+            show_hide_link_alt_text = _('Hide area')
+        else:
+            container_style = ''
+            show_hide_link_text = _('Hide area')
+            show_hide_link_alt_text = _('Show area')
+
+        # TODO: move the JS into a static file
+        js = '''
+            var container = jQuery('#{name}-container');
+            var showLink = container.next('a.show-hide-area');
+
+            showLink.on('click', function (event) {{
+                event.preventDefault();
+                $this = jQuery(this);
+                var target = jQuery('#' + $this.data('divId'));
+                var oldText = $this.text();
+                var newText = $this.data('alternate');
+
+                target.toggle();
+                $this.text(newText);
+                $this.data('alternate', oldText);
+
+                if (target.is(':visible')) {{
+                    var mapWidget = jQuery('#id_{name}_0').data('mapWidget');
+                    mapWidget.map.updateSize();
+                    mapWidget.positionMap();
+                }}
+
+            }});
+        '''.format(name=name)
+        output = '''
+        <div id="{name}-container" style="{style}">
+            {map_widget}
+            <br>
+            {file_widget}
+        </div>
+        <a href="#" class="show-hide-area pull-right"
+            data-alternate="{link_alt_text}"
+            data-div-id="{name}-container">{link_text}</a>
+        <script>
+            {js}
+        </script>
+        '''.format(
+            name=name, style=container_style, map_widget=rendered_widgets[0],
+            file_widget=rendered_widgets[1], link_text=show_hide_link_text,
+            link_alt_text=show_hide_link_alt_text, js=js)
+
+        return output
