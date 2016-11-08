@@ -1,6 +1,4 @@
 from django.conf.urls import url, patterns
-from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_cookie
 
 from api.decorators import save_filter_query_params
 from grid.views import *

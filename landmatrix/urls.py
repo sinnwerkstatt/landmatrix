@@ -19,8 +19,6 @@ from django.conf.urls import include, url, patterns
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_cookie
 
 from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
@@ -86,7 +84,7 @@ urlpatterns = patterns('',
     ),
     url(
         r'^deal/(?P<deal_id>\d+)\.pdf$',
-        cache_page(CACHE_TIMEOUT)(DealDetailView.as_view()),
+        DealDetailView.as_view(),
         {'format': 'PDF'},
         name='deal_detail_pdf'
     ),
@@ -103,7 +101,7 @@ urlpatterns = patterns('',
     ),
     url(
         r'^deal/(?P<deal_id>\d+)\.(?P<format>(csv|xml|xls))/$',
-        vary_on_cookie(cache_page(CACHE_TIMEOUT)(DealDetailExportView.as_view())),
+        DealDetailExportView.as_view(),
         name='export'
     ),
 
@@ -133,12 +131,12 @@ urlpatterns = patterns('',
 
     url(
         r'^compare/(?P<activity_1>\d+)/(?P<activity_2>\d+)/$',
-        cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
+        DealComparisonView.as_view(),
         name='compare_deals'
     ),
     url(
         r'^compare/(?P<activity_1>\d+)/$',
-        cache_page(CACHE_TIMEOUT)(DealComparisonView.as_view()),
+        DealComparisonView.as_view(),
         name='compare_deals'
     ),
 
@@ -161,12 +159,12 @@ urlpatterns = patterns('',
     ),
     url(
         r'^stakeholders/compare/(?P<investor_1_id>\d+)/(?P<investor_2_id>\d+)/$',
-        cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
+        InvestorComparisonView.as_view(),
         name='compare_investors'
     ),
     url(
         r'^stakeholders/compare/(?P<investor_1>\d+)/$',
-        cache_page(CACHE_TIMEOUT)(InvestorComparisonView.as_view()),
+        InvestorComparisonView.as_view(),
         name='compare_investors'
     ),
 
