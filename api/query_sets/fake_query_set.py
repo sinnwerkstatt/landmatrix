@@ -51,11 +51,13 @@ class FakeQuerySet(QuerySet):
     def __init__(self, request):
         self._all_results = []
 
-        self._additional_joins = self.ADDITIONAL_JOINS
-        self._additional_wheres = self.ADDITIONAL_WHERES
-        self._fields = self.FIELDS
-        self._group_by = self.GROUP_BY
-        self._order_by = self.ORDER_BY
+        # Important to use list here, we need to be creating new lists, NOT
+        # referencing mutable, shared class data
+        self._additional_joins = list(self.ADDITIONAL_JOINS)
+        self._additional_wheres = list(self.ADDITIONAL_WHERES)
+        self._fields = list(self.FIELDS)
+        self._group_by = list(self.GROUP_BY)
+        self._order_by = list(self.ORDER_BY)
         self._limit = self.LIMIT
         self._filter_sql = self._get_filter(request)
         self.user = request.user
