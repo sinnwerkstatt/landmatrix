@@ -210,21 +210,25 @@ class FilterWidgetMixin:
             if not self.request.session.get('set_default_filters'):
                 return
         stored_filters = self.request.session.get('filters', {})
-        # Only target country or region set?
-        if len(stored_filters.items()) == 1:
-            values = list(stored_filters.values())[0]
-            if values.get('variable', '') in ('target_country', 'target_region'):
-                # Use national presets
-                for preset in FilterPreset.objects.filter(is_default=True):
-                    filter_name = 'default_preset_%i' % preset.id
-                    stored_filters[filter_name] = PresetFilter(
-                        preset, name=filter_name)
-        elif len(stored_filters.items()) == 0:
-            # Use global presets
-            for preset in FilterPreset.objects.filter(overrides_default=True):
+        # Target country or region set?
+        variables = [v.get('variable', '') for k, v in stored_filters.items()]
+        preset_ids = dict([(v.get('preset_id', ''), k) for k, v in stored_filters.items()])
+        if ('target_country' in variables) or ('target_region' in variables):
+            # Use national presets
+            for preset in FilterPreset.objects.filter(is_default_country_region=True):
+                if preset.id in preset_ids.keys():
+                    del stored_filters[preset_ids[preset.id]]
                 filter_name = 'default_preset_%i' % preset.id
                 stored_filters[filter_name] = PresetFilter(
-                    preset, name=filter_name)
+                    preset, name=filter_name, hidden=preset.is_hidden)
+        else:
+            # Use global presets
+            for preset in FilterPreset.objects.filter(is_default_global=True):
+                if preset.id in preset_ids.keys():
+                    del stored_filters[preset_ids[preset.id]]
+                filter_name = 'default_preset_%i' % preset.id
+                stored_filters[filter_name] = PresetFilter(
+                    preset, name=filter_name, hidden=preset.is_hidden)
         self.request.session['filters'] = stored_filters
   
     def remove_default_filters(self):

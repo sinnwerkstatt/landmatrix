@@ -64,6 +64,13 @@ class FilterView(APIView):
         elif action == 'remove':
             try:
                 del stored_filters[name]
+                # Default filter?
+                if 'default_preset' in name:
+                    # Convert default filters to custom filters
+                    stored_filters = dict((k.replace('default_', ''), v)
+                        for k, v in stored_filters.items())
+                    # Disable default filters
+                    request.session['set_default_filters'] = False
             except KeyError:
                 pass
         elif action == 'set_default_filters':

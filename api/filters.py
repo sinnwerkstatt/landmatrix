@@ -150,7 +150,7 @@ class Filter(BaseFilter):
 
 class PresetFilter(BaseFilter):
 
-    def __init__(self, preset, name=None, label=None):
+    def __init__(self, preset, name=None, label=None, hidden=False):
         if isinstance(preset, FilterPreset):
             self.preset_id = preset.pk
             self.filter = preset
@@ -161,7 +161,7 @@ class PresetFilter(BaseFilter):
         if label is None:
             label = self.filter.name
 
-        super().__init__(name=name, preset_id=self.preset_id, label=label)
+        super().__init__(name=name, preset_id=self.preset_id, label=label, hidden=hidden)
 
     @classmethod
     def from_session(cls, filter_dict):
@@ -171,7 +171,7 @@ class PresetFilter(BaseFilter):
         '''
         return cls(
             filter_dict['preset_id'], name=filter_dict.get('name'),
-            label=filter_dict.get('label'))
+            label=filter_dict.get('label'), hidden=filter_dict.get('hidden', False))
 
 
 def format_filters(filters):

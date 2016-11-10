@@ -1,6 +1,19 @@
 {% load i18n custom_tags static crispy_forms_tags %}
 {% load humanize %}
-
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form" method="POST" action="./">
+            <p class="alert alert-warning">
+                <input type="checkbox" id="id_set_default_filters" name="set_default_filters"{% if set_default_filters %} checked="checked"{% endif %} class="pull-right">
+                {% if set_default_filters %}
+                    <strong>{% trans "Default filters are enabled" %}</strong>. {% trans "The data is filtered by global or national filter presets. Please uncheck the checkbox to show all data." %} <a href="/about/#filters">{% trans "Read more" %}</a>
+                {% else %}
+                    <strong>{% trans "Default filters are disabled" %}</strong>. {% trans "You can see all data unfiltered. Please check the checkbox to use our global or national filter presets." %} <a href="/about/#filters">{% trans "Read more" %}</a>
+                {% endif %}
+            </p>
+        </form>
+    </div>
+</div>
 <div id="filters">
     {% csrf_token %}
     <div id="list-filters" class="row">
@@ -95,19 +108,6 @@
                 </div>
             </form>
         </div>
-        <form class="form" method="POST" action="./">
-            <div class="row">
-                <div class="col-sm-12">
-                    <label class="pull-right">
-                        <input type="checkbox" id="id_set_default_filters" name="set_default_filters"{% if set_default_filters %} checked="checked"{% endif %}>
-                        {% trans "Set default filters for global and national entry points" %}
-                        <a href="#" class="toggle-tooltip noul"
-               title="{% trans "Global: Concluded, Transnational deals only, Low income countries, Year <= 2000, Size > 200ha.<br>National: Concluded" %}">
-                <i class="lm lm-question-circle"> </i></a>
-                    </label>
-                </div>
-            </div>
-        </form>
         <form method="GET" action="./">
             {% if columns and group == 'all' %}
             <div id="columnsrow" class="row">

@@ -50,6 +50,9 @@ function updateFilters(data) {
 
     for (var item in data) {
         if ("preset_id" in data[item]) {
+            if (data[item].hidden) {
+                continue;
+            }
             var tag = data[item].name,
                 label = data[item].label,
                 finalHtml = '<a class="delete-row toggle-tooltip" href="javascript:removeFilter(\'' + tag + '\')" title="'
