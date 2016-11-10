@@ -24,14 +24,12 @@ class BaseGeometryWidget(Widget):
     display_raw = False
 
     supports_3d = False
-    toggle_map_display = False
     template_name = ''  # set on subclasses
 
     def __init__(self, attrs=None):
         self.attrs = {}
         defaults = (
             'geom_type', 'map_srid', 'map_width', 'map_height', 'display_raw',
-            'toggle_map_display',
         )
         for key in defaults:
             self.attrs[key] = getattr(self, key)

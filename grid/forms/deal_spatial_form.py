@@ -4,9 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
-from ol3_widgets.widgets import LocationWidget, MapWidget, SerializedMapWidget
-from grid.fields import TitleField, CountryField
-from grid.widgets import CommentInput
+from ol3_widgets.widgets import LocationWidget, MapWidget
+from grid.fields import TitleField, CountryField, AreaField
+from grid.widgets import CommentInput, AreaWidget
 from grid.gis import parse_shapefile
 from .base_form import BaseForm
 
@@ -23,17 +23,7 @@ class DealSpatialForm(BaseForm):
         ("Exact location", _("Exact location")),
         ("Coordinates", _("Coordinates")),
     )
-    AREA_WIDGET_ATTRS = {
-        'map_width': 600,
-        'map_height': 400,
-        'initial_zoom': 8,
-        'initial_center_lat': 0,
-        'initial_center_lon': 0,
-        'toggle_map_display': True,
-        'show_layer_switcher': True,
-        'geom_type': 'MULTIPOLYGON',
-    }
-    POLYGON_FIELDS = (
+    AREA_FIELDS = (
         'contract_area',
         'intended_area',
         'production_area',
@@ -63,24 +53,9 @@ class DealSpatialForm(BaseForm):
     location_description = forms.CharField(
         required=False, label=_("Location description"),
         widget=forms.TextInput, initial="")
-    contract_area = forms.MultiPolygonField(
-        required=False, label=_("Contract area"),
-        widget=SerializedMapWidget(attrs=AREA_WIDGET_ATTRS))
-    contract_area_shapefile = forms.FileField(
-        required=False, label=_("Contract area shapefile"),
-        widget=forms.ClearableFileInput(attrs={'multiple': True}))
-    intended_area = forms.MultiPolygonField(
-        required=False, label=_("Intended area"),
-        widget=SerializedMapWidget(attrs=AREA_WIDGET_ATTRS))
-    intended_area_shapefile = forms.FileField(
-        required=False, label=_("Intended area shapefile"),
-        widget=forms.ClearableFileInput(attrs={'multiple': True}))
-    production_area = forms.MultiPolygonField(
-        required=False, label=_("Area in operation"),
-        widget=SerializedMapWidget(attrs=AREA_WIDGET_ATTRS))
-    production_area_shapefile = forms.FileField(
-        required=False, label=_("Area in operation shapefile"),
-        widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    contract_area = AreaField(required=False, label=_("Contract area"))
+    intended_area = AreaField(required=False, label=_("Intended area"))
+    production_area = AreaField(required=False, label=_("Area in operation"))
 
     tg_location_comment = forms.CharField(
         required=False, label=_("Comment on Location"), widget=CommentInput)
@@ -96,10 +71,8 @@ class DealSpatialForm(BaseForm):
 
         lat_lon_attrs = self.get_default_lat_lon_attrs()
         if lat_lon_attrs:
-            area_widget_attrs = self.AREA_WIDGET_ATTRS.copy()
-            area_widget_attrs.update(lat_lon_attrs)
-            for polygon_field in self.POLYGON_FIELDS:
-                widget = SerializedMapWidget(attrs=area_widget_attrs)
+            for polygon_field in self.AREA_FIELDS:
+                widget = AreaWidget(map_attrs=lat_lon_attrs)
                 self.fields[polygon_field].widget = widget
 
         location_attrs = self.get_location_map_widget_attrs(
@@ -153,28 +126,38 @@ class DealSpatialForm(BaseForm):
 
         return attrs
 
-    def clean_area_shapefile(self, attr_name):
-        value = self.cleaned_data[attr_name]
+    def clean_area_field(self, field_name):
+        value = self.cleaned_data[field_name]
 
-        field = self[attr_name]
-        if field.html_name in self.files:
-            shapefile_data = self.files.getlist(field.html_name)
+        try:
+            # Check if we got a file here, as
+            value.name
+            value.size
+        except AttributeError:
+            value_is_file = False
+        else:
+            value_is_file = True
+
+        if value_is_file:
+            # Files are the second widget, so append _1
+            field_name = '{}_1'.format(self[field_name].html_name)
+            shapefile_data = self.files.getlist(field_name)
             try:
                 value = parse_shapefile(shapefile_data)
             except ValueError as err:
-                raise forms.ValidationError(
-                    _('Error parsing shapefile: %s') % err)
+                error_msg = _('Error parsing shapefile: %s') % err
+                raise forms.ValidationError(error_msg)
 
         return value
 
-    def clean_contract_area_shapefile(self):
-        return self.clean_area_shapefile('contract_area_shapefile')
+    def clean_contract_area(self):
+        return self.clean_area_field('contract_area')
 
-    def clean_intended_area_shapefile(self):
-        return self.clean_area_shapefile('intended_area_shapefile')
+    def clean_intended_area(self):
+        return self.clean_area_field('intended_area')
 
-    def clean_production_area_shapefile(self):
-        return self.clean_area_shapefile('production_area_shapefile')
+    def clean_production_area(self):
+        return self.clean_area_field('production_area')
 
     def get_attributes(self, request=None):
         attributes = super().get_attributes()
@@ -189,14 +172,9 @@ class DealSpatialForm(BaseForm):
             attributes['target_country']['value'] = target_country.pk
 
         # For polygon fields, pass the value directly
-        for field_name in self.POLYGON_FIELDS:
-            shapefile_field_name = '{}_shapefile'.format(field_name)
-            polygon_value = self.cleaned_data.get(shapefile_field_name)
-            if polygon_value is None:
-                polygon_value = attributes.get(field_name, {}).get('value')
-
-            if polygon_value is not None:
-                attributes[field_name] = {'polygon': polygon_value}
+        for field_name in self.AREA_FIELDS:
+            polygon_value = self.cleaned_data.get(field_name)
+            attributes[field_name] = {'polygon': polygon_value}
 
         return attributes
 
@@ -204,7 +182,7 @@ class DealSpatialForm(BaseForm):
     def get_data(cls, activity, group=None, prefix=""):
         data = super().get_data(activity, group=group, prefix=prefix)
 
-        for area_field_name in cls.POLYGON_FIELDS:
+        for area_field_name in cls.AREA_FIELDS:
             area_attribute = activity.attributes.filter(
                 fk_group__name=group, name=area_field_name).first()
             if area_attribute:
@@ -230,7 +208,6 @@ class PublicDealSpatialForm(DealSpatialForm):
         'default_zoom': 8,
         'default_lat': 0,
         'default_lon': 0,
-        'toggle_map_display': True,
         'geom_type': 'MULTIPOLYGON',
         'disable_drawing': True,
     }

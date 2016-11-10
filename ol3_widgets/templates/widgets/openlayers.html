@@ -6,15 +6,13 @@
     {% endblock %}
 </style>
 {% get_current_language_bidi as LANGUAGE_BIDI %}
-<div id="{{ id }}-div-map" class="geometry-{{ geom_type|lower }}"style="position: relative; vertical-align: top; float: {{ LANGUAGE_BIDI|yesno:"right,left" }};{% if toggle_map_display %} display: none;{% endif %}">
+<div id="{{ id }}-div-map" class="geometry-{{ geom_type|lower }}"style="position: relative; vertical-align: top; float: {{ LANGUAGE_BIDI|yesno:"right,left" }};">
     <div id="{{ id }}-map" style="width: {{ map_width }}px; height: {{ map_height }}px;"></div>
     {% if geom_type != 'Point' %}<span class="clear_features"><a href="#">{% trans "Delete all Features" %}</a></span>{% endif %}
     {% if display_raw %}<p>{% trans "Debugging window (serialized value)" %}</p>{% endif %}
     <textarea class="map-serialized-data" id="{{ id }}" class="vSerializedField required" cols="150" rows="10" name="{{ name }}" style="{% if not display_raw %}display: none;{% endif %}">{{ serialized }}</textarea>
 </div>
-{% if toggle_map_display %}
-<a href="#" class="show-hide-map pull-right" data-alternate="{% trans "Hide area" %}">{% trans "Show area" %}</a>
-{% endif %}
+
 
 <script type="text/javascript">
 $(document).ready(function () {

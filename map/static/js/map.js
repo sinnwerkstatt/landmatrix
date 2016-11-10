@@ -664,7 +664,7 @@ function getApiData() {
     // Otherwise fetch individual deals for the current map viewport.
     } else {
         var limit = 500;
-        var query_params = 'limit=' + limit + '&attributes=' + fieldnames[currentVariable];
+        var query_params = 'page_size=' + limit + '&attributes=' + fieldnames[currentVariable];
         if (typeof mapParams !== 'undefined') {
             query_params += mapParams;
         }
@@ -805,13 +805,13 @@ function addData (data) {
     countriesSource.clear();
     markerSource.clear();
 
-    if (data.length < 1) {
+    if (data.results.length < 1) {
         $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span>There are no deals in the currently displayed region.</span></div>')
     } else {
         $('#alert_placeholder').empty();
-        for (var i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.results.length; i++) {
             NProgress.inc();
-            var marker = data[i];
+            var marker = data.results[i];
             if (marker.locations.length == 0) {
                 // No locations, can't have markers
                 continue;

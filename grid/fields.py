@@ -2,28 +2,35 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_text
+from django.contrib.gis.forms import MultiPolygonField
 from django.conf import settings
 
 
 from landmatrix.models import Country
 from grid.widgets import (
-    YearBasedWidget, YearBasedSelect, YearBasedTextInput,
-    YearBasedSelectMultiple, YearBasedSelectMultipleNumber,
+    YearBasedSelect, YearBasedTextInput, YearBasedSelectMultiple,
+    YearBasedSelectMultipleNumber, YearBasedCheckboxInput,
     NestedCheckboxSelectMultiple, TitleWidget, PrimaryInvestorSelect,
     FileInputWithInitial, MultiTextInput, CountrySelect, TextChoiceInput,
+    AreaWidget,
 )
 
 
 __author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
-class YearBasedCheckboxInput(forms.MultiWidget):
-    def __init__(self, *args, **kwargs):
-        self.widget = forms.CheckboxInput(attrs={"class": "year-based"})
-        super().__init__(*args, **kwargs)
+class YearBasedField(forms.MultiValueField):
+    '''
+    Base class for year based fields, since there are some isinstance
+    checks to handle them.
+    TODO: remove those, use duck typing.
+    TODO: probably, some logic is shared among the year based fields.
+    move that here.
+    '''
+    pass
 
 
-class YearBasedBooleanField(forms.MultiValueField):
+class YearBasedBooleanField(YearBasedField):
     def __init__(self, *args, **kwargs):
         kwargs["fields"] = [forms.BooleanField(required=False), forms.CharField(required=False)]
         kwargs["widget"] = YearBasedCheckboxInput(help_text=kwargs.pop("help_text", ""))
@@ -56,7 +63,7 @@ class YearBasedBooleanField(forms.MultiValueField):
             ]
 
 
-class YearBasedIntegerField(forms.MultiValueField):
+class YearBasedIntegerField(YearBasedField):
 
     def __init__(self, *args, **kwargs):
         kwargs["fields"] = [
@@ -95,7 +102,7 @@ class YearBasedIntegerField(forms.MultiValueField):
             self.fields = [forms.IntegerField(required=False), forms.CharField(required=False)]
 
 
-class YearBasedChoiceField(forms.MultiValueField):
+class YearBasedChoiceField(YearBasedField):
     def __init__(self, *args, **kwargs):
         self.choices = kwargs["choices"]
         kwargs["fields"] = [forms.ChoiceField(choices=kwargs["choices"], required=False), forms.CharField(required=False)]
@@ -129,7 +136,7 @@ class YearBasedChoiceField(forms.MultiValueField):
             ]
 
 
-class YearBasedModelMultipleChoiceField(forms.MultiValueField):
+class YearBasedModelMultipleChoiceField(YearBasedField):
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop("queryset")
         kwargs["fields"] = [forms.ModelMultipleChoiceField(queryset=self.queryset, required=False), forms.CharField(required=False)]
@@ -163,7 +170,7 @@ class YearBasedModelMultipleChoiceField(forms.MultiValueField):
             ]
 
 
-class YearBasedModelMultipleChoiceIntegerField(forms.MultiValueField):
+class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop("queryset")
         kwargs["fields"] = [
@@ -208,7 +215,7 @@ class YearBasedModelMultipleChoiceIntegerField(forms.MultiValueField):
             ]
 
 
-class YearBasedMultipleChoiceIntegerField(forms.MultiValueField):
+class YearBasedMultipleChoiceIntegerField(YearBasedField):
     def __init__(self, *args, **kwargs):
         self.choices = kwargs.pop("choices")
         kwargs["fields"] = [
@@ -395,3 +402,35 @@ class ActorsField(forms.MultiValueField):
             return "#".join(yb_data)
         else:
             self.fields = [forms.CharField(required=False), forms.ChoiceField(choices=self.choices, required=False)]
+
+
+class AreaField(forms.MultiValueField):
+    '''
+    MultiValueField for area map with optional shapefile upload.
+
+    Note because of Django's handling of multiple files, compress here
+    doesn't do anything with shapefiles, it just returns one (of the several
+    required) if there was one.
+    '''
+
+    def __init__(self, *args, **kwargs):
+        fields = (
+            MultiPolygonField(required=False),
+            forms.FileField(required=False)
+        )
+        kwargs.update({
+            'fields': fields,
+            'require_all_fields': False,
+            'widget': AreaWidget,
+        })
+        super().__init__(*args, **kwargs)
+
+    def compress(self, data_list):
+        if data_list:
+            # Second value (file field) takes precedence
+            value = data_list[1] or data_list[0]
+        else:
+            value = None
+
+        return value
+
