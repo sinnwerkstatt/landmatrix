@@ -20,13 +20,13 @@ class DealContractForm(BaseForm):
     contract_number = forms.IntegerField(
         required=False, label=_("Contract number")
     )
-    contract_date = forms.DateField(
+    contract_date = forms.CharField(
         required=False, label=_("Contract date"), help_text="[YYYY-MM-DD]",
-        input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
+        #input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
-    contract_expiration_date = forms.DateField(
+    contract_expiration_date = forms.CharField(
         required=False, label=_("Contract expiration date"), help_text="[YYYY-MM-DD]",
-        input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
+        #input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
     sold_as_deal = forms.IntegerField(
         required=False, label=_("Sold as deal no.")

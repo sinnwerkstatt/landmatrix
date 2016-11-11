@@ -58,9 +58,9 @@ class DealDataSourceForm(BaseForm):
     publication_title = forms.CharField(
         required=False, label=_("Publication title")
     )
-    date = forms.DateField(
+    date = forms.CharField(
         required=False, label=_("Date"), help_text="[YYYY-MM-DD]",
-        input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
+    #    input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
 
     # Optional personal information for Crowdsourcing and Personal information
