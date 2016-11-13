@@ -240,9 +240,8 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
         items = [self._get_row(record, query_result) for record in query_result]
         # Reorder required for intention (because subcategories have been renamed in _process_intention)
         if self.group == 'intention':
-            items_by_intention = dict((str(i['intention'][0]['value']), i) for i in items)
-            # Add extra lines for agriculture and forestry
-            #sorted_items = sorted(items, key=lambda i: i['intention'] and i['intention'][0] and str(i['intention'][0]['order_by']) or '')
+            items_by_intention = dict((len(i['intention']) > 0 and str(i['intention'][0]['value'] or ''), i) for i in items)
+            # Add extra lines for groups (agriculture and forestry)
             items = []
             for group_name, choices in grouped_intention_choices:
                 group = SortedDict()
