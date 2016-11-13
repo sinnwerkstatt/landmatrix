@@ -68,7 +68,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
     COLUMN_GROUPS = {
         "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
         "target_region": ["target_region", "intention", "deal_count", "availability"],
-        "investor_name": ["investor_name", "parent_stakeholder_country", "intention", "deal_count", "availability"],
+        "investor_name": ["investor_id", "investor_name", "investor_country", "intention", "deal_count", "availability"],
         "investor_country": ["investor_country", "intention", "deal_count", "availability"],
         "investor_region": ["investor_region", "deal_count", "availability"],
         "intention": ["intention", "deal_count", "availability"],
@@ -188,6 +188,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             'operational_stakeholder': _('Operational company'),
             'investor_country': _('Investor country'),
             'investor_region': _('Investor region'),
+            'investor_id': _('Investor ID'),
             'investor_name': _('Investor name'),
             'operational_stakeholder_name': _('Operational company name'),
             'parent_stakeholder': _('Parent stakeholders'),
@@ -348,7 +349,6 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
                     gv.update({k: ""})
             output.append(format_string % gv)
         return output
-
 
     def _process_investor_name(self, value):
         if not isinstance(value, list):

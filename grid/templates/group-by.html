@@ -100,6 +100,12 @@
             {% else %}{% trans "Unknown" %}
             {% endif %}
             </td>
+          {% elif column == "investor_id" %}
+            <td class="{{ column }}">
+                {% for i in item.investor_id %}
+                <a href="{% if request.user.is_staff %}/stakeholder/{{ i }}{% else %}/data/by-investor-name/{{ i }}/?{% add_or_update_param request.GET 'order_by' '' %}{% endif %}" class="label label-default">{{ i }}</a>
+                {% endfor %}
+            </td>
           {% elif column == "investor_name" %}
             <td class="{{ column }}" style="width:183px">
             {% if item.investor_name %}

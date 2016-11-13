@@ -133,6 +133,10 @@ class SQLBuilderData:
             "ARRAY_AGG(DISTINCT CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier)) AS operational_stakeholder_name",
             "CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier) AS operational_stakeholder_name"
         ],
+        "investor_id": [
+            "ARRAY_AGG(DISTINCT stakeholders.investor_identifier) AS investor_id",
+            "stakeholders.investor_identifier AS investor_id"
+        ],
         "investor_name": [
             "ARRAY_AGG(DISTINCT CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier)) AS investor_name",
             "CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier) AS investor_name"
