@@ -1,9 +1,10 @@
+from django.utils.translation import ugettext_lazy as _
+
 from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery
-
-
 from api.query_sets.fake_query_set import FakeQuerySet
 from grid.forms.deal_general_form import DealGeneralForm
-from grid.forms.choices import intention_choices, intention_agriculture_choices
+from grid.forms.choices import intention_choices, intention_agriculture_choices, \
+    INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 
 
 class IntentionQuerySet(FakeQuerySetWithSubquery):
@@ -50,6 +51,13 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
 
         intentions = {}
 
+        def get_parent_intention(intention):
+            if intention in INTENTION_AGRICULTURE_MAP.values():
+                return _('Agriculture')
+            elif intention in INTENTION_FORESTRY_MAP.values():
+                return _('Forestry')
+            else:
+                return _('Other')
         for i in found:
              name = i['intention'] or ""
              name = (name == "Agriunspecified" and "Non-specified") or (name == "Other (please specify)" and "Other") or name
@@ -57,6 +65,7 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
                  "name": name,
                  "deals": i['deal_count'],
                  "hectares": i['deal_size'],
+                 "parent": get_parent_intention(name),
              }
 
         output = []

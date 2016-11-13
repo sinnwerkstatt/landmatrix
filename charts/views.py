@@ -71,6 +71,7 @@ class NegotiationStatusChartView(ChartPDFView):
     chart = "chart_negotiation_status"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
+    disabled_presets = [2,]
 
 
 class ImplementationStatusChartView(ChartPDFView):
