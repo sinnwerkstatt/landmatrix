@@ -340,7 +340,7 @@ class BaseForm(forms.Form):
             elif isinstance(field, forms.BooleanField):
                 value = self.get_display_value_boolean_field(field_name)
             else:
-                value = self.initial.get(field_name, '')#self.prefix and "%s-%s"%(self.prefix, field_name) or field_name)
+                value = self.initial.get(field_name, '')
 
             if value:
                 tg_items.append({

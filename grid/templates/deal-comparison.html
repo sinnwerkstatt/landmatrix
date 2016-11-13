@@ -30,7 +30,7 @@
         {% for comparison_forms in forms %}
         <div class="panel panel-default">
           <div class="panel-heading">
-            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ forloop.counter }}" class="{% if not comparison_forms.2 %}bg-warning{% endif %}">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ forloop.counter }}" class="{% if not comparison_forms.2 %}bg-warning{% endif %}" id="{{ comparison_forms.0.form_title|slugify }}">
               <h5 class="panel-title">
                   {{ comparison_forms.0.form_title }}
                   <small>({% if not comparison_forms.2 %}{% trans "changed" %}{% else %}{% trans "no changes" %}{% endif %})</small>
@@ -66,4 +66,27 @@
         {% endfor %}
       </div>
     </div>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "js/ol3-layerswitcher-custom.js" %}"></script>
+    <script src="{% static "js/mapwidget.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script>
+        $(document).ready(function () {
+            $('#accordion').on('show.bs.collapse', function (e) {
+                if ($(e.target).parent().find(".panel-heading a").is("#location")) {
+                  // Init maps
+                  var mapWidgets = {};
+                  $('.map-serialized-data').each(function(index) {
+                      var id = $(this).attr('id');
+                      var options = $(this).data('map-widget-options');
+                      options['id'] = id;
+                      options['map_id'] = id + '-map';
+                      mapWidgets[id] = new MapWidget(options);
+                  });
+                };
+            });
+        });
+    </script>
 {% endblock %}

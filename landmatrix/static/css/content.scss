@@ -462,12 +462,22 @@ p a {
   }
 }
 
-#comparison .investorfield {
-  background: hotpink;
-}
 
-#comparison .url {
-  overflow: hidden;
+#comparison {
+  .geometry-point {
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .alert-info,
+  #investor-network {
+    display:none;
+  }
+  .investorfield {
+    background: hotpink;
+  }
+  .url {
+    overflow: hidden;
+  }
 }
 
 .container .lm {

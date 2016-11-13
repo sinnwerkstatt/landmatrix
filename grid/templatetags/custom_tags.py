@@ -1,5 +1,6 @@
 import re
 import time, datetime
+from uuid import uuid4
 
 from django import template
 from django.forms.fields import MultiValueField, ChoiceField, BooleanField
@@ -255,3 +256,9 @@ def decimalgroupstring(obj):
 def addstr(arg1, arg2):
     """concatenate arg1 & arg2"""
     return str(arg1) + str(arg2)
+
+
+@register.filter
+def random_id(obj):
+    """Overwrite bound form field with random ID (workaround for location/map)"""
+    return obj.as_widget(attrs={'id': obj.auto_id + ('_%i' % uuid4())})

@@ -229,12 +229,10 @@ function createInvestorNetwork() {
   //node.append("rect");
   var text_width = tree_svg.selectAll(".link")[0][0].getBBox().width,
     text_padding = 10;
-  console.log(text_width);
   function wrap() {
       var self = d3.select(this),
           textLength = self.node().getComputedTextLength(),
           text = self.text();
-      console.log(textLength);
       while (textLength > (text_width - 2 * text_padding) && text.length > 0) {
           text = text.slice(0, -1);
           self.text(text + '...');

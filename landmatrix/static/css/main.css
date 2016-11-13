@@ -1091,6 +1091,14 @@ p a {
     min-width: 45% !important;
     max-width: 45% !important; }
 
+#comparison .geometry-point {
+  max-width: 100%;
+  overflow: hidden; }
+
+#comparison .alert-info,
+#comparison #investor-network {
+  display: none; }
+
 #comparison .investorfield {
   background: hotpink; }
 

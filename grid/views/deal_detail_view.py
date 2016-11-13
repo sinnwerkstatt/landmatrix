@@ -156,8 +156,8 @@ def display_invalid_forms(forms):
             print(form.__class__.__name__, 'INVALID:', form.errors)
 
 
-def get_forms(activity):
-    forms = [get_form(activity, form) for form in FORMS]
+def get_forms(activity, prefix=None):
+    forms = [get_form(activity, form, prefix) for form in FORMS]
     if activity:
         for form_class in get_country_specific_form_classes(activity):
             form_tuple = (form_class.Meta.name, form_class)
@@ -166,8 +166,8 @@ def get_forms(activity):
     return forms
 
 
-def get_form(activity, form_class):
-    prefix = hasattr(form_class[1], 'prefix') and form_class[1].prefix or None
+def get_form(activity, form_class, prefix=None):
+    prefix = hasattr(form_class[1], 'prefix') and (prefix + form_class[1].prefix) or prefix
     data = form_class[1].get_data(activity, prefix=prefix)
     return form_class[1](initial=data, prefix=prefix)
 
