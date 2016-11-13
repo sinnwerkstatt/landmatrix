@@ -27,6 +27,9 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
         super().__init__(request)
         self.country = request.GET.get('target_country')
         self.region = request.GET.get('target_region')
+        disable_filters = request.GET.get('disable_filters', False)
+        if disable_filters:
+            self._filter_sql = ''
 
     def all(self):
         self._filter_sql += self.regional_condition()

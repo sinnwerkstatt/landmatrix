@@ -11,6 +11,7 @@ from grid.views.filter_widget_mixin import FilterWidgetMixin
 
 class ChartView(FilterWidgetMixin, TemplateView):
     chart = ""
+    disabled_presets = []
 
     def get_context_data(self, **kwargs):
         context = super(ChartView, self).get_context_data(**kwargs)
@@ -146,7 +147,7 @@ class LoggingChartView(ChartPDFView):
     template_name = "charts/special-interest/logging.html"
     chart = "chart_logging"
     pdf_javascript_delay = 10000
-    disabled_preset_ids = [1,]
+    disabled_presets = [1,]
 
 class ContractFarmingChartView(ChartPDFView):
     template_name = "charts/special-interest/contract-farming.html"

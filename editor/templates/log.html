@@ -37,13 +37,13 @@
     <div class="navbar navbar-default navbar-subnav" role="navigation">
         <div class="container-fluid">
             <ul class="manage nav navbar-nav" id="manage-sections">
-                    <li{% if action == 'latest_added' %} class="active"{% endif %}><a href="{% url 'log_added' %}">
+                    <li{% if action == 'latest_added' %} class="active"{% endif %}><a href="{% url 'log_added' %}?{{ request.GET.urlencode }}">
                         {% trans "Latest added" %}
                     </a></li>
-                    <li{% if action == 'latest_modified' %} class="active"{% endif %}><a href="{% url 'log_modified' %}">
+                    <li{% if action == 'latest_modified' %} class="active"{% endif %}><a href="{% url 'log_modified' %}?{{ request.GET.urlencode }}">
                         {% trans "Latest modified" %}
                     </a></li>
-                    <li{% if action == 'latest_deleted' %} class="active"{% endif %}><a href="{% url 'log_deleted' %}">
+                    <li{% if action == 'latest_deleted' %} class="active"{% endif %}><a href="{% url 'log_deleted' %}?{{ request.GET.urlencode }}">
                         {% trans "Latest deleted" %}
                     </a></li>
             </ul>
