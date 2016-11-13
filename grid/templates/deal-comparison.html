@@ -45,19 +45,19 @@
               <div class="col-md-6">
               {% if comparison_forms.0.forms %}
                 {% for form in comparison_forms.0.forms %}
-                  {% include "includes/dealpanels-display.html" with form=form form_count=forloop.counter %}
+                  {% include "includes/dealpanels-comparison.html" with form=form form_count=forloop.counter %}
                 {% endfor %}
               {% else %}
-                {% include "includes/dealpanels-display.html" with form=comparison_forms.0 %}
+                {% include "includes/dealpanels-comparison.html" with form=comparison_forms.0 %}
               {% endif %}
               </div>
               <div class="col-md-6">
               {% if comparison_forms.1.forms %}
                 {% for form in comparison_forms.1.forms %}
-                  {% include "includes/dealpanels-display.html" with form=form form_count=forloop.counter %}
+                  {% include "includes/dealpanels-comparison.html" with form=form form_count=forloop.counter %}
                 {% endfor %}
               {% else %}
-                {% include "includes/dealpanels-display.html" with form=comparison_forms.1 %}
+                {% include "includes/dealpanels-comparison.html" with form=comparison_forms.1 %}
               {% endif %}
               </div>
             </div>
