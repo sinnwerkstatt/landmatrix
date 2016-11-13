@@ -11,7 +11,6 @@ from grid.widgets import CommentInput
 from .base_form import BaseForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 User = get_user_model()
 
 

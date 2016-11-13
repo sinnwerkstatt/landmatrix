@@ -16,7 +16,6 @@ from landmatrix.models.country import Country
 from landmatrix.models.filter_preset import FilterPreset
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 FILTER_VAR_ACT = [

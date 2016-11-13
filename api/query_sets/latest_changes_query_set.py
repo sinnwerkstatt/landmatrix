@@ -5,7 +5,6 @@ from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.country import Country
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class LatestChangesQuerySet:

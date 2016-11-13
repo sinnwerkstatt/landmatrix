@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class BrowseRule(models.Model):

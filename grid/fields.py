@@ -16,7 +16,6 @@ from grid.widgets import (
 )
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class YearBasedField(forms.MultiValueField):

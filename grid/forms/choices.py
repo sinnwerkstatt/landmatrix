@@ -5,7 +5,6 @@ choices from them.
 from django.utils.translation import ugettext_lazy as _
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 intention_agriculture_choices = (

@@ -10,7 +10,6 @@ from collections import OrderedDict
 from datetime import datetime, time, tzinfo
 from dateutil.tz import tzlocal
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealHistoryItem(Deal):

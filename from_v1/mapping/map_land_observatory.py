@@ -12,7 +12,6 @@ from migrate import V2
 
 from django.db import transaction
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapLandObservatory:

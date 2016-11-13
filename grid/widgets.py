@@ -20,7 +20,6 @@ from landmatrix.models import Country
 from landmatrix.storage import data_source_storage
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class TitleWidget(forms.TextInput):

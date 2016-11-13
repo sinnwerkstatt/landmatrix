@@ -23,7 +23,6 @@ from grid.views.profiling_decorators import print_func_execution_time, print_fun
 from grid.views.change_deal_view import ChangeDealView
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class BrowseFilterConditions:

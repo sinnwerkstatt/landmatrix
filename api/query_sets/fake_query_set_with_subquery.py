@@ -1,6 +1,5 @@
 from api.query_sets.fake_query_set import FakeQuerySet
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FakeQuerySetWithSubquery(FakeQuerySet):

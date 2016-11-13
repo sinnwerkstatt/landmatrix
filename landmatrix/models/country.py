@@ -1,5 +1,4 @@
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _

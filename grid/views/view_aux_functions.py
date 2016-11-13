@@ -9,7 +9,6 @@ from landmatrix.models.country import Country
 from grid.views.save_deal_view import SaveDealView
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def render_to_response(template_name, context, context_instance):

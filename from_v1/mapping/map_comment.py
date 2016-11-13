@@ -10,7 +10,6 @@ import old_editor.models
 
 from django.db import transaction
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 def map_tag_group_id(tag_group_id):
     id = MapActivityTagGroup.tag_group_to_attribute_group_ids.get(tag_group_id)

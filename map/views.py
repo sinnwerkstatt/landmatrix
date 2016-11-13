@@ -8,7 +8,6 @@ from landmatrix.models.country import Country
 from landmatrix.models.region import Region
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class GlobalView(FilterWidgetMixin, RedirectView):

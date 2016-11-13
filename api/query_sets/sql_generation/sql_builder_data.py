@@ -7,7 +7,6 @@ from landmatrix.models.investor import Investor, InvestorActivityInvolvement, In
 from landmatrix.models.crop import Crop
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DefaultDict(collections.defaultdict):

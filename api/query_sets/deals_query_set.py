@@ -3,7 +3,6 @@ import timeit
 from api.query_sets.fake_query_set_with_subquery import FakeQuerySetFlat
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealsQuerySet(FakeQuerySetFlat):

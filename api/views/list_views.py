@@ -11,7 +11,6 @@ from api.pagination import FakeQuerySetPagination
 from api.views.base import FakeQuerySetListView
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 User = get_user_model()
 
 

@@ -17,7 +17,6 @@ if V1 == 'v1_my':
 
 from django.db import transaction
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapActivityTagGroupBase:

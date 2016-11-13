@@ -11,7 +11,6 @@ from grid.gis import parse_shapefile
 from .base_form import BaseForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealSpatialForm(BaseForm):

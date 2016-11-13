@@ -2,7 +2,6 @@ from migrate import V1, V2
 
 from django.db import transaction
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapModel:

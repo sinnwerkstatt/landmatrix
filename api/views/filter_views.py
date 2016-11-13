@@ -11,7 +11,6 @@ from api.filters import Filter, PresetFilter
 from api.serializers import FilterPresetSerializer
 from grid.views.view_aux_functions import get_field_label
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FilterView(APIView):

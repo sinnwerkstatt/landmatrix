@@ -8,7 +8,6 @@ from migrate import V1
 from mapping.map_status import MapStatus
 from django.db import connections
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def get_country_for_primary_investor(pi_id):

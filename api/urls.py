@@ -3,7 +3,6 @@ from django.conf.urls import url
 from api.views import *
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 urlpatterns = [
     url(r'^filter\.json', FilterView.as_view(), {'format': 'json'},

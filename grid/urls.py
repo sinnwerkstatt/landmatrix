@@ -3,7 +3,6 @@ from django.conf.urls import url, patterns
 from api.decorators import save_filter_query_params
 from grid.views import *
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 CACHE_TIMEOUT = 24*3600
 

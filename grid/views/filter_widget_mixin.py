@@ -18,7 +18,6 @@ from grid.views.browse_filter_conditions import BrowseFilterConditions
 from api.serializers import FilterPresetSerializer
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def get_variable_table():

@@ -17,7 +17,6 @@ import xlwt
 from grid.views import AllDealsView, TableGroupView, DealDetailView
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class ExportView(TemplateView):

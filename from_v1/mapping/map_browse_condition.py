@@ -3,7 +3,6 @@ import landmatrix.models
 import old_editor.models
 from mapping.map_browse_rule import MapBrowseRule
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapBrowseCondition(MapModel):

@@ -4,7 +4,6 @@ from api.query_sets.simple_fake_query_set import SimpleFakeQuerySet
 from landmatrix.models.country import Country
 from wagtailcms.models import CountryPage
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class CountriesQuerySet(SimpleFakeQuerySet):

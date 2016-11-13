@@ -33,7 +33,6 @@ from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class SaveDealView(TemplateView):

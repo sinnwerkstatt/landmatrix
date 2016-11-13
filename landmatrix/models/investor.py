@@ -7,7 +7,6 @@ from multiselectfield import MultiSelectField
 from landmatrix.models.default_string_representation import \
     DefaultStringRepresentation
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class InvestorQuerySet(models.QuerySet):

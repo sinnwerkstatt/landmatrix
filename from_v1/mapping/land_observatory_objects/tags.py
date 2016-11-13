@@ -1,6 +1,5 @@
 from django.db import models
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class A_Tag(models.Model):

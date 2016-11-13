@@ -3,7 +3,6 @@ import landmatrix.models
 import old_editor.models
 from mapping.aux_functions import get_first_stakeholder_tag_value, get_country_id_for_stakeholder, get_now
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def get_name_for_stakeholder(stakeholder_id):

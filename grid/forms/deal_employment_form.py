@@ -6,7 +6,6 @@ from grid.fields import TitleField, YearBasedIntegerField
 from grid.widgets import CommentInput, NumberInput
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealEmploymentForm(BaseForm):

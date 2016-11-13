@@ -7,7 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 from django_hstore import hstore
 from django.contrib.gis.db import models as geomodels
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class ActivityAttributeGroup(models.Model):

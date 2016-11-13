@@ -9,7 +9,6 @@ from grid.widgets import BrowseTextInput
 from grid.views.browse_filter_conditions import get_field_by_key, a_keys
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class BrowseConditionForm(BaseModelForm):

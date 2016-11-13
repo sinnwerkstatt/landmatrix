@@ -11,7 +11,6 @@ from grid.views.view_aux_functions import render_to_response
 from landmatrix.models.investor import Investor
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class InvestorComparisonView(TemplateView):

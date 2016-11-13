@@ -28,7 +28,6 @@ from grid.forms.deal_overall_comment_form import DealOverallCommentForm
 from grid.views.view_aux_functions import render_to_string, render_to_response
 from grid.forms.country_specific_forms import get_country_specific_form_classes
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 FORMS = [

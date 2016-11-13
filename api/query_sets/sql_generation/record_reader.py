@@ -5,7 +5,6 @@ from grid.views.profiling_decorators import print_execution_time_and_num_queries
 from django.db import connection
 from django.conf import settings
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class RecordReader:

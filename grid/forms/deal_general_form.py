@@ -12,7 +12,6 @@ from .choices import grouped_intention_choices, intention_choices, nature_choice
 from .base_form import BaseForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealGeneralForm(BaseForm):

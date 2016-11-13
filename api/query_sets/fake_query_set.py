@@ -13,7 +13,6 @@ from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from api.filters import load_filters, load_statuses_from_url
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FakeModel(dict):

@@ -16,7 +16,6 @@ from .map_activity import calculate_history_date
 from migrate import V2
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapLOActivities(MapLOModel):

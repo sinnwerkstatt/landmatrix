@@ -7,7 +7,6 @@ from grid.widgets import CommentInput, NumberInput
 from .base_form import BaseForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealWaterForm(BaseForm):

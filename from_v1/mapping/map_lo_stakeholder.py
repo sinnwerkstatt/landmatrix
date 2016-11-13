@@ -6,7 +6,6 @@ from .map_lo_model import MapLOModel
 from migrate import V2
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapLOStakeholder(MapLOModel):

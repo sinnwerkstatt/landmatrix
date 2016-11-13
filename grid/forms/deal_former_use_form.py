@@ -6,7 +6,6 @@ from grid.fields import TitleField
 from grid.widgets import CommentInput
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealFormerUseForm(BaseForm):

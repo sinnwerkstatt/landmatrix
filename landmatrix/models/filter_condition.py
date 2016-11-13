@@ -4,7 +4,6 @@ from django.utils.translation import ugettext_lazy as _
 from api.filters import Filter, FILTER_OPERATION_MAP
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FilterCondition(models.Model):
