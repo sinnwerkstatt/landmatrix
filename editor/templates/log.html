@@ -24,16 +24,6 @@
 {% endblock %}
 
 {% block content %}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            {% if request.GET.selected %}
-                $('ul.manage.nav li i.icon-chevron-down').removeClass("icon-white");
-                $('ul.manage.nav li a[href="#{{ request.GET.selected }}"]').tab("show").find("i.icon-chevron-down").addClass("icon-white");
-            {% else %}
-                $('ul.manage.nav li:first-child a').tab("show");
-            {% endif %}
-        });
-    </script>
     <div class="navbar navbar-default navbar-subnav" role="navigation">
         <div class="container-fluid">
             <ul class="manage nav navbar-nav" id="manage-sections">
@@ -84,10 +74,10 @@
                 {% if is_paginated %}
                 <ul class="pager">
                     {% if page_obj.has_previous %}
-                        <li><a class="pull-left" href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a></li>
+                        <li><a class="pull-left" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">{% trans "Previous" %}</a></li>
                     {% endif %}
                     {% if page_obj.has_next %}
-                        <li><a class="pull-right" href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a></li>
+                        <li><a class="pull-right" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">{% trans "Next" %}</a></li>
                     {% endif %}
                 </ul>
                 {% endif %}

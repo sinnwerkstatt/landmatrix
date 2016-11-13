@@ -78,14 +78,14 @@ class DealDataSourceForm(BaseForm):
         required=False, label=_("Comment on Data source"), widget=CommentInput
     )
 
-    def clean_date(self):
-        date = self.cleaned_data["date"]
-        try:
-            return date and date.strftime("%Y-%m-%d") or ""
-        except ValueError:
-            raise forms.ValidationError(
-                _("Invalid date. Please enter a date in the format [YYYY-MM-DD]")
-            )
+    #def clean_date(self):
+    #    date = self.cleaned_data["date"]
+    #    try:
+    #        return date and date.strftime("%Y-%m-%d") or ""
+    #    except ValueError:
+    #        raise forms.ValidationError(
+    #            _("Invalid date. Please enter a date in the format [YYYY-MM-DD]")
+    #        )
 
     def clean_file(self):
         file = self.cleaned_data["file"]
