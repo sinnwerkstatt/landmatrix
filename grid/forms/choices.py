@@ -39,13 +39,13 @@ intention_other_choices = (
 
 intention_choices = intention_agriculture_choices + intention_forestry_choices + intention_other_choices
 
+INTENTION_MAP = dict(intention_choices)
+
 grouped_intention_choices = (
     ("Agriculture", intention_agriculture_choices),
     ("Forestry", intention_forestry_choices),
     ("Other", intention_other_choices),
 )
-
-INTENTION_MAP = dict(intention_choices)
 
 nature_choices = (
     ("Outright Purchase", _("Outright Purchase")),

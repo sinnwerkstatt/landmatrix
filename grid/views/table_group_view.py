@@ -14,7 +14,8 @@ from grid.views.profiling_decorators import \
 from grid.views.activity_protocol import ActivityProtocol
 from .view_aux_functions import render_to_response, get_field_label
 from grid.forms.choices import intention_choices, \
-    INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
+    INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP, \
+    grouped_intention_choices
 from django.utils.datastructures import SortedDict
 from django.template.defaultfilters import slugify
 
@@ -239,7 +240,36 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
         items = [self._get_row(record, query_result) for record in query_result]
         # Reorder required for intention (because subcategories have been renamed in _process_intention)
         if self.group == 'intention':
-            items = sorted(items, key=lambda i: i['intention'] and i['intention'][0] and str(i['intention'][0]['order_by']) or '')
+            items_by_intention = dict((str(i['intention'][0]['value']), i) for i in items)
+            # Add extra lines for agriculture and forestry
+            #sorted_items = sorted(items, key=lambda i: i['intention'] and i['intention'][0] and str(i['intention'][0]['order_by']) or '')
+            items = []
+            for group_name, choices in grouped_intention_choices:
+                group = SortedDict()
+                group['intention'] = [{'value': group_name, 'slug':slugify(group_name)},]
+                group['deal_count'] = 0
+                group['availability'] = 0
+                group['availability_count'] = 0
+                group_items = []
+                for choice_value, choice_label in choices:
+                    if choice_label in items_by_intention.keys():
+                        item = items_by_intention[choice_label]
+                        item['intention'][0]['parent'] = group
+                        group_items.append(item)
+                        group['deal_count'] += item['deal_count']
+                        group['availability'] += item['availability']
+                        group['availability_count'] += 1
+                    else:
+                        item = SortedDict()
+                        item['intention'] = [{'value': choice_label, 'slug':slugify(choice_label), 'parent': group},]
+                        item['deal_count'] = 0
+                        item['availability'] = 0
+                        group_items.append(item)
+                if group['availability']:
+                    group['availability'] = int(round(group['availability'] / group['availability_count']))
+                    del group['availability_count']
+                items.append(group)
+                items.extend(group_items)
         return items
 
     def _get_row(self, record, query_result):

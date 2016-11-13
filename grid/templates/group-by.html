@@ -54,7 +54,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for item in data.items  %}
+    {% for item in data.items %}
         <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
         {% for column, value in item.items %}
           {% if column == "deal_id" %}
@@ -63,7 +63,7 @@
             </td>
           {% elif column == "crop" %}
               <td class="{{ column }}" style="width:341px">
-              {% if  item.crop %}
+              {% if item.crop %}
               {% for c in item.crop %}
                 <a href="{% url 'table_list' group='by-crop' %}{{ c|slugify }}/">{{ c }}</a></br>
               {% endfor %}
@@ -76,7 +76,12 @@
                 <ul class="list-unstyled">
                   {% for i in item.intention %}
                     {% if group == 'intention' %}
-                      <li><a href="/data/by-intention/{{ i.slug }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if i.parent %}style="padding-left: 20px;"{% endif %}><span>{{ i.value }}</span></a></li>
+                      <li>
+                        {% if not i.parent %}
+                        <span>{{ i.value }}</span>
+                        {% else %}
+                        <a href="/data/by-intention/{{ i.slug }}/?{% add_or_update_param request.GET 'order_by' '' %}" style="padding-left: 20px;"><span>{{ i.value }}</span></a></li>
+                        {% endif %}
                     {% elif not i.parent %}
                     <li><a href="/data/by-intention/{{ i.slug }}/?{% add_or_update_param request.GET 'order_by' '' %}" class="toggle-tooltip intention-icon {{ i.slug }}" title="{{ i.value }}"><span>{{ i.value }}</span></a></li>
                     {% endif %}
