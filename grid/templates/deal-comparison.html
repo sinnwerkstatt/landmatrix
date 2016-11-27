@@ -4,6 +4,10 @@
 {% block global_head %}
 {% endblock %}
 
+{% block head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher-custom.css" %}"/>
+{% endblock %}
 
 {% block page_title %}{% trans "Deal history comparison" %} #{{ deals.0.activity_identifier }}{% endblock %}
 {% block title %}{% trans "Deal history comparison" %} #{{ deals.0.activity_identifier }}{% endblock %}
@@ -73,19 +77,38 @@
     <script type="text/javascript" src="{% static "js/ol3-layerswitcher-custom.js" %}"></script>
     <script src="{% static "js/mapwidget.js" %}" type="text/javascript" charset="utf-8"></script>
     <script>
+        var mapWidgets = {};
+        var initMapWidgets = function () {
+            $('.map-serialized-data').each(function(index) {
+                var id = $(this).attr('id');
+                var options = $(this).data('map-widget-options');
+                options['id'] = id;
+                options['map_id'] = id + '-map';
+                // Hack the width down for side by side display
+                $('#' + options['map_id']).css('width', '400');
+                mapWidgets[id] = new MapWidget(options);
+            });
+        };
+        var refreshMapWidgets = function () {
+            jQuery.each(mapWidgets, function(id, widget) {
+              widget.map.updateSize();
+              widget.positionMap();
+            });
+        };
+
         $(document).ready(function () {
             $('#accordion').on('show.bs.collapse', function (e) {
-                if ($(e.target).parent().find(".panel-heading a").is("#location")) {
+                var isLocationTarget = $(e.target).parent().find(".panel-heading a").is("#location");
+                if (isLocationTarget && jQuery.isEmptyObject(mapWidgets)) {
                   // Init maps
-                  var mapWidgets = {};
-                  $('.map-serialized-data').each(function(index) {
-                      var id = $(this).attr('id');
-                      var options = $(this).data('map-widget-options');
-                      options['id'] = id;
-                      options['map_id'] = id + '-map';
-                      mapWidgets[id] = new MapWidget(options);
-                  });
-                };
+                  initMapWidgets();
+                }
+            });
+            $('#accordion').on('shown.bs.collapse', function (e) {
+                var isLocationTarget = $(e.target).parent().find(".panel-heading a").is("#location");
+                if (isLocationTarget) {
+                  refreshMapWidgets();
+                }
             });
         });
     </script>
