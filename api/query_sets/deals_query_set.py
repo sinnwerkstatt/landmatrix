@@ -119,7 +119,7 @@ class DealsQuerySet(FakeQuerySetFlat):
         self._set_attributes(request.GET.getlist('attributes', []))
 
         window_set = False
-        if request.GET.get('window'):
+        if request.GET.get('window', None):
             lon_min, lat_min, lon_max, lat_max = request.GET.get('window').split(',')
             window_set = self._set_window(lat_min, lon_min, lat_max, lon_max)
 

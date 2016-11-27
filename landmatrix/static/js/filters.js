@@ -55,7 +55,7 @@ function updateFilters(data) {
             }
             var tag = data[item].name,
                 label = data[item].label,
-                finalHtml = '<a class="delete-row toggle-tooltip" href="javascript:removeFilter(\'' + tag + '\')" title="'
+                finalHtml = '<a class="delete-row toggle-tooltip" href="javascript:removeFilter(\'' + item + '\')" title="'
 
             finalHtml = finalHtml + '">' + label + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
@@ -67,7 +67,7 @@ function updateFilters(data) {
                 tag = data[item].variable + " " + data[item].operator;
             }
             filternames.push(tag);
-            var finalHtml = '<a class="delete-row toggle-tooltip" href="javascript:removeFilter(\'' + data[item].name + '\')" title="'
+            var finalHtml = '<a class="delete-row toggle-tooltip" href="javascript:removeFilter(\'' + item + '\')" title="'
             var filterPopup = data[item].label + " " + data[item].operator + " " + data[item].display_value;
             finalHtml = finalHtml + filterPopup + '">' + label + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
