@@ -313,7 +313,7 @@ class FilterToSQL:
                 tables_from.append(
                     """
                     LEFT JOIN landmatrix_country AS ac%(count)i
-                    ON CAST(NULLIF(attr_%(count)i.value, '') AS NUMERIC) = ac%(count)i.id
+                    ON attr_%(count)i.value = ac%(count)i.id::text
                     """ % {
                         'count': i,
                     })
