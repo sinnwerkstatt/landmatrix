@@ -71,7 +71,7 @@ class WhereCondition:
             operator_with_value = self.operator_sql % quoted_value
 
         if self.is_value_numeric and not self.is_id_column and not self.column_name == 'date':
-            column = "CAST({}.{} AS DECIMAL)".format(
+            column = "CAST(IFNULL({}.{}, 0) AS DECIMAL)".format(
                 self.table_name, self.column_name)
         else:
             column = "{}.{}".format(self.table_name, self.column_name)
@@ -313,7 +313,7 @@ class FilterToSQL:
                 tables_from.append(
                     """
                     LEFT JOIN landmatrix_country AS ac%(count)i
-                    ON attr_%(count)i.value = ac%(count)i.id::text
+                    ON CAST(attr_%(count)i.value AS NUMERIC) = ac%(count)i.id
                     """ % {
                         'count': i,
                     })
