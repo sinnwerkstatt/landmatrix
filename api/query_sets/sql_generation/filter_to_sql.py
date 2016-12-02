@@ -71,7 +71,7 @@ class WhereCondition:
             operator_with_value = self.operator_sql % quoted_value
 
         if self.is_value_numeric and not self.is_id_column and not self.column_name == 'date':
-            column = "CAST(IFNULL({}.{}, 0) AS DECIMAL)".format(
+            column = "CAST(IFNULL({}.{}, '0') AS DECIMAL)".format(
                 self.table_name, self.column_name)
         else:
             column = "{}.{}".format(self.table_name, self.column_name)
