@@ -63,14 +63,14 @@ def get_variable_table():
     if _('Operational company') in variable_table:
         stakeholder_extras = [
             {
-                'name': 'operational_stakeholder_country',
+                'name': 'investor_country',
                 'label': _(
-                    "Operational stakeholder country of registration/origin"),
+                    "Operational company country of registration/origin"),
             },
             {
-                'name': 'operational_stakeholder_region',
+                'name': 'investor_region',
                 'label': _(
-                    "Operational stakeholder region of registration/origin"),
+                    "Operational company region of registration/origin"),
             },
             {
                 'name': 'parent_investor',
