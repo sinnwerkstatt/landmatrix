@@ -51,7 +51,7 @@ class ActivityChangesFeed(Feed):
         timestamp, activity, changes = item
         deal_url_kwargs = {
             'deal_id': activity.activity_identifier,
-            'history_id': int(timestamp.timestamp()),
+            'history_id': activity.history_id,
         }
         url = reverse('deal_detail', kwargs=deal_url_kwargs)
 
