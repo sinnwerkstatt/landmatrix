@@ -16,6 +16,8 @@ from grid.forms.browse_condition_form import ConditionFormset
 from grid.views.save_deal_view import SaveDealView
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from api.serializers import FilterPresetSerializer
+from landmatrix.models.country import Country
+from landmatrix.models.region import Region
 
 
 
@@ -171,6 +173,11 @@ class FilterWidgetMixin:
                 filter_values['variable'] = 'target_country'
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('country')
+                try:
+                    country = Country.objects.get(pk=data.get('country'))
+                    filter_values['display_value'] = country.name
+                except:
+                    pass
                 filter_values['name'] = str(_('Target country'))
                 filter_values['label'] = str(_('Target country'))
                 data.pop('country')
@@ -178,6 +185,11 @@ class FilterWidgetMixin:
                 filter_values['variable'] = 'target_region'
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('region')
+                try:
+                    region = Region.objects.get(pk=data.get('region'))
+                    filter_values['display_value'] = region.name
+                except:
+                    pass
                 filter_values['name'] = str(_('Target region'))
                 filter_values['label'] = str(_('Target region'))
                 data.pop('region')
@@ -189,7 +201,7 @@ class FilterWidgetMixin:
             new_filter = Filter(
                 variable=filter_values['variable'], operator=filter_values['operator'],
                 value=filter_values['value'], name=filter_values.get('name', None),
-                label=filter_values['label']
+                label=filter_values['label'], display_value=filter_values.get('display_value', None)
             )
             stored_filters[new_filter.name] = new_filter
             self.request.session['filters'] = stored_filters

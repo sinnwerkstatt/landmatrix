@@ -71,6 +71,10 @@ function updateFilters(data) {
             var filterPopup = data[item].label + " " + data[item].operator + " " + data[item].display_value;
             finalHtml = finalHtml + filterPopup + '">' + label + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
+            // Update title for target country/region
+            if (tag == 'target_country' || tag == 'target_region') {
+                $('h1 span').text(data[item].display_value + ': ' + $('h1 span').text());
+            }
         }
         $(finalHtml).appendTo(tags);
     }
