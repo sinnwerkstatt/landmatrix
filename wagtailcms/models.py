@@ -21,7 +21,6 @@ from wagtail.wagtailadmin.edit_handlers import ObjectList
 from wagtail.wagtailadmin.views.pages import PAGE_EDIT_HANDLERS
 from blog.models import BlogPage
 
-from ol3_widgets.widgets import MapWidget
 from landmatrix.models.region import Region as DataRegion
 from landmatrix.models.country import Country as DataCountry
 
@@ -262,10 +261,11 @@ class CountryRegionStructBlock(StructBlock):
 
     def get_context(self, value):
         context = super().get_context(value)
-        if self.country:
-            context['country'] = self.country
-        if self.region:
-            context['region'] = self.region
+        context.update({
+            'country': self.country,
+            'region': self.region,
+        })
+
         return context
 
 class LatestNewsBlock(CountryRegionStructBlock):
@@ -311,15 +311,6 @@ class LinkMapBlock(CountryRegionStructBlock):
         label = 'Map'
         template = 'widgets/link-map.html'
 
-    def get_context(self, value):
-        context = super().get_context(value)
-        context.update({
-            'country': self.country,
-            'region': self.region,
-        })
-
-        return context
-
 
 class LatestDatabaseModificationsBlock(CountryRegionStructBlock):
     limit = blocks.CharBlock()
@@ -343,24 +334,16 @@ DATA_BLOCKS = [
     ('latest_database_modifications', LatestDatabaseModificationsBlock()),
 ]
 
-class ColumnsBlock(CountryRegionStructBlock):
+class ColumnsBlock(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
     def get_context(self, value):
         context = super().get_context(value)
-        
+
         for column in ['left_column', 'right_column']:
             context[column] = value.get(column)
-        country_or_region = {}
-        if hasattr(self, 'country') and self.country:
-            country_or_region['country'] = self.country
-        if hasattr(self, 'region') and self.region:
-            country_or_region['region'] = self.region
-        if country_or_region:
-            for column in ['left_column', 'right_column']:
-                for data in DATA_BLOCKS:
-                    context[column].stream_block.child_blocks[data[0]] = type(data[1])(**country_or_region)
+
         return context
 
     class Meta:
@@ -459,8 +442,10 @@ class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
                 self.region = DataRegion.objects.get(slug=region_slug)
             except DataRegion.DoesNotExist:
                 raise Http404('Region data not found.')
-            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
-                self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
+            else:
+                _update_country_region_structs(
+                    self.body.stream_block, region=self.region)
+
         return super().serve(request)
 
 class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
@@ -477,8 +462,9 @@ class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
 
     def serve(self, request):
         if self.region:
-            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
-                self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
+            _update_country_region_structs(
+                self.body.stream_block, region=self.region)
+
         return super().serve(request)
 
 class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
@@ -508,8 +494,10 @@ class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
                 self.country = DataCountry.objects.get(slug=country_slug)
             except DataCountry.DoesNotExist:
                 raise Http404('Country data not found.')
-            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
-                self.body.stream_block.child_blocks[data[0]] = type(data[1])(country=self.country)
+            else:
+                _update_country_region_structs(
+                    self.body.stream_block, country=self.country)
+
         return super().serve(request)
 
 class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
@@ -530,9 +518,29 @@ class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
 
     def serve(self, request):
         if self.country:
-            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
-                self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.country)
+            _update_country_region_structs(
+                self.body.stream_block, country=self.country)
+
         return super().serve(request)
+
+
+def _update_country_region_structs(parent_block, **kwargs):
+    def filter_blocks(block):
+        return isinstance(block, CountryRegionStructBlock)
+
+    _update_block_kwargs(parent_block, filter_blocks, **kwargs)
+
+
+def _update_block_kwargs(parent, filter_function, **kwargs):
+    """
+    Recursively update child blocks in place with the kwargs given.
+    """
+    for name, block in parent.child_blocks.items():
+        if filter_function(block):
+            new_block = type(block)(**kwargs)
+            parent.child_blocks[name] = new_block
+        elif hasattr(block, 'child_blocks'):
+            _update_block_kwargs(block, filter_function, **kwargs)
 
 
 #FIXME: Move hooks to wagtail_hooks.py
