@@ -387,7 +387,7 @@ class BaseForm(forms.Form):
                     if date:
                         value += '[%s] ' % date
                     else:
-                        value += '[]'
+                        value += '[] '
                     value += ', '.join(filter(None, date_values))
                 if value:
                     values.append(value)
