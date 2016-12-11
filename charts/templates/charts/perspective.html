@@ -79,7 +79,15 @@ $(document).ready(function () {
         document.getElementById("search"));
 
     var bigDealVectorLayer = new ol.layer.Vector({
-        source: bigDealVectorSource
+        source: bigDealVectorSource,
+        style: new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(237, 136, 27, 0.2)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'rgba(237, 136, 27, 1)'
+            }),
+        })
     });
     map.addLayer(bigDealVectorLayer);
 
