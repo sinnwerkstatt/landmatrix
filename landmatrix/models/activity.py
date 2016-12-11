@@ -513,7 +513,7 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         This query looks a bit strange, but the order of operations is required
         in order to construct the group by correctly.
         '''
-        queryset = self.values('activity_identifier')
+        queryset = HistoricalActivity.objects.values('activity_identifier') # don't use 'self' here
         queryset = queryset.annotate(
             revisions_count=models.Count('activity_identifier'))
         queryset = queryset.order_by('activity_identifier')
