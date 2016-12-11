@@ -149,6 +149,9 @@ class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
                 investor = Investor.objects.get(investor_identifier=investor_id)
         except Investor.DoesNotExist as e:
             raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
+        except Investor.MultipleObjectsReturned as e:
+            # Get latest (this shouldn't happen though)
+            investor = Investor.objects.filter(investor_identifier=investor_id).order_by('-id').first()
 
         can_change = self.request.user.has_perm('landmatrix.change_investor')
         if investor.is_deleted and not can_change:
