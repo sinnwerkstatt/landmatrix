@@ -83,10 +83,15 @@ class ExportView(TemplateView):
                     for lv in v:
                         if isinstance(lv, dict):
                             year = lv.get("year", None)
+                            current = lv.get("current", None)
                             name = lv.get("name", None)
                             value = lv.get("value", None)
                             if name:
-                                row_item.append("[%s] %s" % (year != "0" and year or "", name))
+                                row_item.append("[%s:%s] %s" % (
+                                    year != "0" and year or "",
+                                    current and "current" or "",
+                                    name,
+                                ))
                             # Required for intention
                             elif value and not lv.get("is_parent", False):
                                 row_item.append(str(value))
@@ -97,9 +102,14 @@ class ExportView(TemplateView):
                             # (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
                             if len(lv) > 0 and isinstance(lv[0], dict):
                                 year = lv.get("year", None)
+                                current = lv.get("current", None)
                                 name = lv.get("name", None)
                                 if name:
-                                    row_item.append("[%s] %s" % (year != "0" and year or "", name))
+                                    row_item.append("[%s:%s] %s" % (
+                                        year != "0" and year or "",
+                                        current and "current" or "",
+                                        name,
+                                    ))
                                 #else:
                                 #    row_item.append("[]")
                             else:

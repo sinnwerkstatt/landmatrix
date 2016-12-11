@@ -207,7 +207,7 @@ class SaveDealView(TemplateView):
                 )
                 # Loop fields
                 for name, attribute in attributes.items():
-                    if isinstance(attribute, dict):
+                    if not isinstance(attribute, (list, tuple)):
                         attribute = [attribute]
                     # Loop values (= attributes)
                     for kwargs in attribute:

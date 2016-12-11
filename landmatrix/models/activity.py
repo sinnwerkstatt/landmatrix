@@ -711,6 +711,7 @@ class HistoricalActivity(ActivityBase):
                 value=hattribute.value,
                 value2=hattribute.value2,
                 date=hattribute.date,
+                is_current=hattribute.is_current,
                 polygon=hattribute.polygon)
         # Confirm pending Investor activity involvement
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=activity.activity_identifier)

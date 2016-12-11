@@ -303,8 +303,8 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             'parent_stakeholder_region': self._process_stitched_together_field,
             'crop': self._process_stitched_together_field,
             'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
-            'negotiation_status': self._process_name_and_year,
-            'implementation_status': self._process_name_and_year,
+            'negotiation_status': self._process_year_based,
+            'implementation_status': self._process_year_based,
         }
         if column in process_functions:
             return process_functions[column](value)
@@ -383,11 +383,12 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             value = [value]
         return [field and field.split("#!#")[0] or "" for field in value]
 
-    def _process_name_and_year(self, value):
+    def _process_year_based(self, value):
         split_values = [
             {
                 "name": n.split("#!#")[0],
-                "year": int(n.split("#!#")[1]) if n.split("#!#")[1] else 0,
+                "year": n.split("#!#")[1],
+                "current": n.split("#!#")[2],
             } for n in value
         ]
 

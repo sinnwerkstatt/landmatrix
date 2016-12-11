@@ -378,16 +378,15 @@ class BaseForm(forms.Form):
         if data:
             for value in data.split('#'):
                 date_values = value.split(':')
+                current = date_values.pop()
                 date = date_values.pop()
                 if date_values:
                     if isinstance(field.fields[0], forms.ChoiceField):
                         selected = date_values[0].split(',')
                         date_values[0] = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) in selected])
                     value = ''
-                    if date:
-                        value += '[%s] ' % date
-                    else:
-                        value += '[] '
+                    if date or current:
+                        value += '[%s] ' % ', '.join(filter(None, [date, (current and 'current' or '')]))
                     value += ', '.join(filter(None, date_values))
                 if value:
                     values.append(value)

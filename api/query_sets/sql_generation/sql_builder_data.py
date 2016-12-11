@@ -229,7 +229,9 @@ class SQLBuilderData:
             """ARRAY_AGG(DISTINCT CONCAT(
                         negotiation_status.value,
                         '#!#',
-                        SUBSTR(negotiation_status.date, 1, 4)
+                        negotiation_status.date,
+                        '#!#',
+                        negotiation_status.is_current
                 )) AS negotiation_status"""
         ],
         "implementation_status": [
@@ -238,14 +240,18 @@ class SQLBuilderData:
                     DISTINCT CONCAT(
                         implementation_status.value,
                         '#!#',
-                        SUBSTR(implementation_status.date, 1, 4)
+                        implementation_status.date,
+                        '#!#',
+                        implementation_status.is_current
                     )
-                ) = '{#!#}') THEN NULL
+                ) = '{#!##!#}') THEN NULL
                 ELSE ARRAY_AGG(
                     DISTINCT CONCAT(
                         implementation_status.value,
                         '#!#',
-                        SUBSTR(implementation_status.date, 1, 4)
+                        implementation_status.date,
+                        '#!#',
+                        implementation_status.is_current
                     )
                 ) END AS implementation_status"""
         ],
