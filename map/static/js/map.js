@@ -502,6 +502,11 @@ function initMap(target) {
     if (typeof mapBounds !== 'undefined') {
         var proj = map.getView().getProjection();
         var extent = ol.extent.boundingExtent(mapBounds);
+
+        if (jQuery.inArray(NaN, extent) !== -1) {
+            return;  // Invalid map bounds set
+        }
+
         extent = ol.extent.applyTransform(
             extent, ol.proj.getTransform('EPSG:4326', proj));
         map.getView().fit(extent, map.getSize());
