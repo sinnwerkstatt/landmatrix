@@ -203,7 +203,12 @@ class SliderBlock(StructBlock):
                 rendition = image.get('image').get_rendition('max-1200x1200')
                 url = rendition.url
                 name = image.get('image').title
-                image_context = {'url': url, 'name': name, 'href': image.get('url')}
+                image_context = {
+                    'url': url,
+                    'name': name,
+                    'href': image.get('url'),
+                    'caption': image.get('caption')
+                }
                 images.append(image_context)
         context['images'] = images
         return context
