@@ -69,13 +69,21 @@ class DealSpatialForm(BaseForm):
         super().__init__(*args, **kwargs)
 
         lat_lon_attrs = self.get_default_lat_lon_attrs()
-        if lat_lon_attrs:
+
+        # Bind area maps to the main location map
+        area_attrs = {
+            'bound_map_field_id': '{}-map'.format(self['location'].html_name)
+        }
+        area_attrs.update(lat_lon_attrs)
+
+        location_attrs = self.get_location_map_widget_attrs()
+        location_attrs.update(lat_lon_attrs)
+
+        if area_attrs:
             for polygon_field in self.AREA_FIELDS:
-                widget = AreaWidget(map_attrs=lat_lon_attrs)
+                widget = AreaWidget(map_attrs=area_attrs)
                 self.fields[polygon_field].widget = widget
 
-        location_attrs = self.get_location_map_widget_attrs(
-            attrs=lat_lon_attrs)
         # Public field gets a mapwidget, so check for that
         if isinstance(self.fields['location'].widget, MapWidget):
             self.fields['location'].widget = MapWidget(attrs=location_attrs)
@@ -83,26 +91,25 @@ class DealSpatialForm(BaseForm):
             self.fields['location'].widget = LocationWidget(
                 map_attrs=location_attrs)
 
-    def get_location_map_widget_attrs(self, attrs=None):
-        map_widget_attrs = {
+    def get_location_map_widget_attrs(self):
+        attrs = {
             'show_layer_switcher': True,
         }
 
         bound_fields = (
             ('location', 'bound_location_field_id'),
-            ('point_lat', 'bound_lat_field_id'),
-            ('point_lon', 'bound_lon_field_id'),
             ('target_country', 'bound_target_country_field_id'),
             ('level_of_accuracy', 'bound_level_of_accuracy_field_id'),
+            ('point_lat', 'bound_lat_field_id'),
+            ('point_lon', 'bound_lon_field_id'),
         )
         for field, attr in bound_fields:
-            if field in self:
-                map_widget_attrs[attr] = self[field].auto_id
+            try:
+                attrs[attr] = self[field].auto_id
+            except KeyError:
+                pass
 
-        if attrs:
-            map_widget_attrs.update(attrs)
-
-        return map_widget_attrs
+        return attrs
 
     def get_default_lat_lon_attrs(self):
         attrs = {}

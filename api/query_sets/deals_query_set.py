@@ -77,18 +77,15 @@ class DealsQuerySet(FakeQuerySetFlat):
         LEFT JOIN landmatrix_activityattribute AS contract_area
                 ON (contract_area.name = 'contract_area'
                 AND contract_area.fk_group_id = aag.id
-                AND contract_area.fk_activity_id = point_lat.fk_activity_id
-                AND ST_IsValid(contract_area.polygon))
+                AND contract_area.fk_activity_id = point_lat.fk_activity_id)
         LEFT JOIN landmatrix_activityattribute AS intended_area
                 ON (intended_area.name = 'intended_area'
                 AND intended_area.fk_group_id = aag.id
-                AND intended_area.fk_activity_id = point_lat.fk_activity_id
-                AND ST_IsValid(intended_area.polygon))
+                AND intended_area.fk_activity_id = point_lat.fk_activity_id)
         LEFT JOIN landmatrix_activityattribute AS production_area
                 ON (production_area.name = 'production_area'
                 AND production_area.fk_group_id = aag.id
-                AND production_area.fk_activity_id = point_lat.fk_activity_id
-                AND ST_IsValid(production_area.polygon))
+                AND production_area.fk_activity_id = point_lat.fk_activity_id)
         WHERE aag.name LIKE 'location%%' AND
         %s
     ) location ON location.fk_activity_id = a.id

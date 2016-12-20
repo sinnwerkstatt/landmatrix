@@ -64,15 +64,19 @@ $(document).ready(function () {
                 boundLonField: null,
                 boundLocationField: null,
                 boundTargetCountryField: null,
-                boundLevelOfAccuracyField: null
+                boundLevelOfAccuracyField: null,
+                boundMapField: null
             };
-
             // Altering using user-provided options
             for (var property in options) {
                 if (options.hasOwnProperty(property)) {
                     this.options[property] = options[property];
                 }
             }
+
+          // Saved coordinates and zoom are used when show/hiding the map
+            this.savedCoordinates = null;
+            this.savedZoom = null;
 
             this.map = this.createMap();
 
@@ -141,12 +145,15 @@ $(document).ready(function () {
             var hasInteractions = (this.interactions.draw || this.interactions.modify);
 
             if (hasInteractions && hasBoundField) {
-                    this.interactions.draw.on('drawend', this.updateBoundFields, this);
-                    this.interactions.modify.on('modifyend', this.updateBoundFields, this);
+                this.interactions.draw.on('drawend', this.updateBoundFields, this);
+                this.interactions.modify.on('modifyend', this.updateBoundFields, this);
             }
 
             if (this.options.boundLonField && this.options.boundLatField) {
                 this.initLatLonChangeHandler();
+            }
+            if (this.options.boundMapField) {
+                this.initBoundMapChangeHandler();
             }
             this.initLinkHandlers();
 
@@ -446,36 +453,45 @@ $(document).ready(function () {
         };
 
         MapWidget.prototype.positionMap = function() {
-            var extent = null;
-
-            if (this.options.initialBounds) {
-                var proj = this.map.getView().getProjection();
-                var extent = ol.extent.boundingExtent([
-                    [
-                        this.options.initialBounds.lonMin,
-                        this.options.initialBounds.latMin
-                    ],
-                    [
-                        this.options.initialBounds.lonMax,
-                        this.options.initialBounds.latMax
-                    ]
-                ]);
-                extent = ol.extent.applyTransform(
-                    extent, ol.proj.getTransform('EPSG:4326', proj));
-            }
-            else if (this.featureOverlay.getSource().getFeatures().length > 0) {
-                var extent = ol.extent.createEmpty();
-                this.featureOverlay.getSource().forEachFeature(function (feature) {
-                    var featureExtent = feature.getGeometry().getExtent();
-                    ol.extent.extend(extent, featureExtent);
-                });
-            }
-
-            if (extent) {
-                this.map.getView().fit(extent, this.map.getSize(), {maxZoom: this.options.initialZoom});
+            if (this.savedCoordinates && this.savedZoom) {
+                this.map.getView().setCenter(this.savedCoordinates);
+                this.map.getView().setZoom(this.savedZoom);
             }
             else {
-                this.map.getView().setCenter(this.defaultCenter());
+                var extent = null;
+
+                if (this.options.initialBounds) {
+                    var proj = this.map.getView().getProjection();
+                    var extent = ol.extent.boundingExtent([
+                        [
+                            this.options.initialBounds.lonMin,
+                            this.options.initialBounds.latMin
+                        ],
+                        [
+                            this.options.initialBounds.lonMax,
+                            this.options.initialBounds.latMax
+                        ]
+                    ]);
+                    extent = ol.extent.applyTransform(
+                        extent, ol.proj.getTransform('EPSG:4326', proj));
+                }
+                else if (this.featureOverlay.getSource().getFeatures().length > 0) {
+                    var extent = ol.extent.createEmpty();
+                    this.featureOverlay.getSource().forEachFeature(function (feature) {
+                        var featureExtent = feature.getGeometry().getExtent();
+                        ol.extent.extend(extent, featureExtent);
+                    });
+                }
+
+                if (extent) {
+                    this.map.getView().fit(extent, this.map.getSize(), {maxZoom: this.options.initialZoom});
+                }
+                else {
+                    this.map.getView().setCenter(this.defaultCenter());
+                }
+                // Save for next time
+                this.savedCoordinates = this.map.getView().getCenter();
+                this.savedZoom = this.map.getView().getZoom();
             }
         };
 
@@ -606,11 +622,16 @@ $(document).ready(function () {
             return ol.proj.transform([lon, lat], 'EPSG:4326', proj);
         };
 
-        MapWidget.prototype.movePointToLatLong = function(lat, lon) {
+        MapWidget.prototype.moveMapToLatLong = function(lat, lon) {
             var coordinates = this.getCoordinates(lat, lon);
             this.map.getView().setCenter(coordinates);
             this.map.getView().setZoom(this.options.initialZoom);
+        };
 
+        MapWidget.prototype.movePointToLatLong = function(lat, lon) {
+            this.moveMapToLatLong(lat, lon);
+
+            var coordinates = this.getCoordinates(lat, lon);
             // We shouldn't have multiple features here. If so, just move them.
             this.featureOverlay.getSource().forEachFeature(function (feature) {
                 feature.getGeometry().setCoordinates(coordinates);
@@ -618,15 +639,13 @@ $(document).ready(function () {
         };
 
         MapWidget.prototype.createPointAtLatLong = function(lat, lon) {
+            this.moveMapToLatLong(lat, lon);
+
             var coordinates = this.getCoordinates(lat, lon);
-            this.map.getView().setCenter(coordinates);
-            this.map.getView().setZoom(this.options.initialZoom);
-            
             this.featureOverlay.getSource().addFeature(new ol.Feature({
                 geometry: new ol.geom.Point(coordinates)
             }));
         };
-
 
         MapWidget.prototype.initLinkHandlers = function() {
             var map = jQuery('#' + this.options.mapId);
@@ -648,9 +667,31 @@ $(document).ready(function () {
                     self.geocodeCoordinates([lon, lat]);
                 }
             };
+
+            // Change is manual editing by the user
             this.options.boundLonField.on('change', changeHandler);
             this.options.boundLatField.on('change', changeHandler);
         };
+
+        MapWidget.prototype.initBoundMapChangeHandler = function() {
+            // Bound map is the parent map that we mirror
+            var self = this;
+            var boundMap = this.options.boundMapField;
+            var boundMapWidget = boundMap.data('mapWidget');
+
+            var updateHandler = function (event) {
+                var coordinates = boundMapWidget.map.getView().getCenter();
+                var zoom = boundMapWidget.map.getView().getZoom();
+                self.savedCoordinates = coordinates;
+                self.savedZoom = zoom;
+                self.map.getView().setCenter(coordinates);
+                self.map.getView().setZoom(zoom);
+            };
+
+            if (boundMapWidget !== undefined) {
+                boundMapWidget.map.on('moveend', updateHandler);
+            }
+        }
 
         window.MapWidget = MapWidget;
     })();
