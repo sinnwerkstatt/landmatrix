@@ -176,6 +176,7 @@ class SectionDivider(StructBlock):
 class LinkedImageBlock(StructBlock):
     image = ImageChooserBlock()
     url = blocks.URLBlock(required=False, label='URL')
+    caption = blocks.RichTextBlock(required=False)
 
     class Meta:
         icon = 'image'
