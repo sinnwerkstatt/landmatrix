@@ -23,6 +23,7 @@ from blog.models import BlogPage
 
 from landmatrix.models.region import Region as DataRegion
 from landmatrix.models.country import Country as DataCountry
+from wagtailcms.twitter import TwitterTimeline
 
 
 class SplitMultiLangTabsMixin(object):
@@ -105,6 +106,26 @@ class FAQsBlock(StructBlock):
                 'definition': faq.get('answer')
             })
         return context
+
+class TwitterBlock(StructBlock):
+    username = blocks.CharBlock(required=True)
+    count = blocks.CharBlock(default=20)
+
+    # help_text='You will find username and widget_id @ https://twitter.com/settings/widgets/')
+    # widget_id = CharBlock(required=True)
+    # tweet_limit = CharBlock(required=True, max_length=2)
+
+    class Meta:
+        icon = 'fa fa-twitter'
+        template = 'widgets/twitter.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        twitte = TwitterTimeline(count=(value.get('count')))
+        context['timeline'] = twitte.get_timeline(value.get('username'))
+        context['username'] = value.get('username') #context['timeline'][0]['screen_name']
+        return context
+
 
 # Overwrite Stream block to disable wrapping DIVs
 class NoWrapsStreamBlock(StreamBlock):
@@ -247,7 +268,8 @@ CONTENT_BLOCKS = [
     ('gallery', GalleryBlock()),
     ('slider', SliderBlock()),
     ('section_divider', SectionDivider()),
-    ('faqs_block', FAQsBlock())
+    ('twitter', TwitterBlock()),
+    ('faqs_block', FAQsBlock()),
 ]
 
 class CountryRegionStructBlock(StructBlock):

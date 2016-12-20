@@ -36,3 +36,4 @@ unicodecsv==0.14.1
 django-impersonate==1.0.1
 django-multiselectfield==0.1.4
 country-bounding-boxes>=0.2.3
+tweepy

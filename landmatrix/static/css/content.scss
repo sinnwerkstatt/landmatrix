@@ -300,6 +300,12 @@ div.fullwidth.fullwidth-lightgrey {
     font-style: normal;
 }
 
+@font-face {
+  font-family: "OpenSansEmoji";
+  src: url(/static/fonts/OpenSansEmoji.ttf);
+  font-weight: 200;
+}
+
 body,
 p,
 a,
@@ -995,4 +1001,80 @@ table th a {
 
 .twitter-timeline {
   height: 500px !important;
+}
+
+.widget-twitter-timeline {
+  margin-bottom: 30px;
+  font-family: "OpenSansEmoji", serif;
+  font-size: 14px;
+  line-height: 1.3em;
+
+
+  .twitter-timeline-update {
+    //border: 1px solid #aaa;
+    //padding: 15px;
+    margin-bottom: 30px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .twitter-timeline-useravatar {
+    float: left;
+    width: 48px;
+    height: 48px;
+    display: block;
+  }
+
+
+  .twitter-timeline-meta {
+    margin-left: 63px;
+    margin-bottom: 5px;
+    color: #777;
+  }
+
+  .twitter-timeline-username {
+    color: black;
+    font-weight: bold;
+  }
+
+  .twitter-timeline-screenname {
+    color: inherit;
+    font-size: 90%;
+  }
+
+  .twitter-timeline-time {
+    color: inherit;
+    font-size: 90%;
+  }
+
+  .twitter-timeline-text {
+    margin-left: 63px;
+    font-size: 110%;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+  }
+
+  .twitter-timeline-media {
+    margin-left: 63px;
+  }
+
+  .twitter-timeline-imagecontainer {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .twitter-timeline-imagecontainer img {
+    display: block;
+    max-width: 100%;
+    max-height: 400px;
+  }
+
+  .twitter-timeline-quote {
+    margin-left: 63px;
+    border: 1px solid #777;
+    padding: 15px;
+    word-wrap: break-word;
+  }
 }

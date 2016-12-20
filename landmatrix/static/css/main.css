@@ -941,6 +941,11 @@ div.fullwidth.fullwidth-lightgrey {
   font-weight: normal;
   font-style: normal; }
 
+@font-face {
+  font-family: "OpenSansEmoji";
+  src: url(/static/fonts/OpenSansEmoji.ttf);
+  font-weight: 200; }
+
 body,
 p,
 a,
@@ -1519,6 +1524,53 @@ table th a {
 
 .twitter-timeline {
   height: 500px !important; }
+
+.widget-twitter-timeline {
+  margin-bottom: 30px;
+  font-family: "OpenSansEmoji", serif;
+  font-size: 14px;
+  line-height: 1.3em; }
+  .widget-twitter-timeline .twitter-timeline-update {
+    margin-bottom: 30px; }
+    .widget-twitter-timeline .twitter-timeline-update:last-child {
+      margin-bottom: 0; }
+  .widget-twitter-timeline .twitter-timeline-useravatar {
+    float: left;
+    width: 48px;
+    height: 48px;
+    display: block; }
+  .widget-twitter-timeline .twitter-timeline-meta {
+    margin-left: 63px;
+    margin-bottom: 5px;
+    color: #777; }
+  .widget-twitter-timeline .twitter-timeline-username {
+    color: black;
+    font-weight: bold; }
+  .widget-twitter-timeline .twitter-timeline-screenname {
+    color: inherit;
+    font-size: 90%; }
+  .widget-twitter-timeline .twitter-timeline-time {
+    color: inherit;
+    font-size: 90%; }
+  .widget-twitter-timeline .twitter-timeline-text {
+    margin-left: 63px;
+    font-size: 110%;
+    margin-bottom: 10px;
+    word-wrap: break-word; }
+  .widget-twitter-timeline .twitter-timeline-media {
+    margin-left: 63px; }
+  .widget-twitter-timeline .twitter-timeline-imagecontainer {
+    max-width: 400px;
+    margin: 0 auto; }
+  .widget-twitter-timeline .twitter-timeline-imagecontainer img {
+    display: block;
+    max-width: 100%;
+    max-height: 400px; }
+  .widget-twitter-timeline .twitter-timeline-quote {
+    margin-left: 63px;
+    border: 1px solid #777;
+    padding: 15px;
+    word-wrap: break-word; }
 
 /* ==========================================================================
  *    BUTTONS
