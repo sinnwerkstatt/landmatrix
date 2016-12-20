@@ -225,7 +225,7 @@
   list-style: none; }
 
 .subnav.nav > li > a > i {
-  vertical-align: middle; }
+  vertical-align: baseline; }
 
 .subnav.nav > li > span,
 .subnav.nav > li > a {
