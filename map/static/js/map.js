@@ -505,8 +505,7 @@ function initMap(target) {
         extent = ol.extent.applyTransform(
             extent, ol.proj.getTransform('EPSG:4326', proj));
 
-        var maxValidExtent = ol.proj.get("EPSG:3857").getExtent();
-        if (ol.extent.containsExtent(maxValidExtent, extent)) {
+        if (ol.extent.containsExtent(proj.getExtent(), extent)) {
             // Only fit to valid extents
             // (those within the boundries of our projection)
             map.getView().fit(extent, map.getSize());
