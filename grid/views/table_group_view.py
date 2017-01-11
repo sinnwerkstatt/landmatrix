@@ -203,6 +203,12 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             'parent_stakeholder_comment': _('Comment on parent stakeholder'),
             'crop': _('Crop'),
             'data_source_type': _('Data source type'),
+            'operational_company_country': _("Operational company country of registration/origin"),
+            'operational_company_region': _("Operational company region of registration/origin"),
+            'operational_company_classification': _("Operational company classification"),
+            'operational_company_homepage': _("Operational company homepage"),
+            'operational_company_opencorporates_link': _("Operational company Opencorporates link"),
+            'operational_company_comment': _("Additional comment on Operational company"),
         }
         columns = SortedDict()
         for name in self.columns:
@@ -291,20 +297,23 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
     def _process_value(self, column, value):
         if not value: return None
         process_functions = {
-            'intention': self._process_intention,
             'operational_stakeholder_name': self._process_investor_name,
-            #'operational_stakeholder_country': self._process_stitched_together_field,
-            #'operational_stakeholder_region': self._process_stitched_together_field,
+            'operational_company_country': self._process_stitched_together_field,
+            'operational_company_region': self._process_stitched_together_field,
+            'operational_company_classification': self._process_investor_classification,
+            # Parent stakeholder (= Parent companies and investors of Operational company)
             'investor_name': self._process_investor_name,
             'investor_country': self._process_stitched_together_field,
             'investor_region': self._process_stitched_together_field,
             'parent_stakeholder_classification': self._process_investor_classification,
             'parent_stakeholder_country': self._process_stitched_together_field,
             'parent_stakeholder_region': self._process_stitched_together_field,
+            # Deal variables
             'crop': self._process_stitched_together_field,
             'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
             'negotiation_status': self._process_year_based,
             'implementation_status': self._process_year_based,
+            'intention': self._process_intention,
         }
         if column in process_functions:
             return process_functions[column](value)

@@ -65,48 +65,30 @@ def get_variable_table():
     if _('Operational company') in variable_table:
         stakeholder_extras = [
             {
-                'name': 'investor_country',
+                'name': 'operational_company_country',
                 'label': _(
                     "Operational company country of registration/origin"),
             },
             {
-                'name': 'investor_region',
+                'name': 'operational_company_region',
                 'label': _(
                     "Operational company region of registration/origin"),
             },
             {
-                'name': 'parent_investor',
-                'label': _("Parent stakeholders"),
+                'name': 'operational_company_classification',
+                'label': _("Operational company classification"),
             },
             {
-                'name': 'parent_investor_country',
-                'label': _(
-                    "Parent stakeholder country of registration/origin"),
+                'name': 'operational_company_homepage',
+                'label': _("Operational company homepage"),
             },
             {
-                'name': 'parent_investor_region',
-                'label': _(
-                    "Parent stakeholder region of registration/origin"),
+                'name': 'operational_company_opencorporates_link',
+                'label': _("Operational company Opencorporates link"),
             },
             {
-                'name': 'parent_investor_percentage',
-                'label': _("Parent stakeholder percentages"),
-            },
-            {
-                'name': 'parent_investor_classification',
-                'label': _("Parent stakeholder classifications"),
-            },
-            {
-                'name': 'parent_investor_homepage',
-                'label': _("Parent stakeholder homepages"),
-            },
-            {
-                'name': 'parent_investor_opencorporates_link',
-                'label': _("Parent stakeholder Opencorporates links"),
-            },
-            {
-                'name': 'parent_investor_comment',
-                'label': _("Comment on parent stakeholder"),
+                'name': 'operational_company_comment',
+                'label': _("Additional comment on Operational company"),
             },
         ]
         variable_table[_('Operational company')].extend(stakeholder_extras)
