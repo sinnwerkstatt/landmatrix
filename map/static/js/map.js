@@ -502,14 +502,14 @@ function initMap(target) {
     if (typeof mapBounds !== 'undefined') {
         var proj = map.getView().getProjection();
         var extent = ol.extent.boundingExtent(mapBounds);
-
-        if (jQuery.inArray(NaN, extent) !== -1) {
-            return;  // Invalid map bounds set
-        }
-
         extent = ol.extent.applyTransform(
             extent, ol.proj.getTransform('EPSG:4326', proj));
-        map.getView().fit(extent, map.getSize());
+
+        if (ol.extent.containsExtent(proj.getExtent(), extent)) {
+            // Only fit to valid extents
+            // (those within the boundries of our projection)
+            map.getView().fit(extent, map.getSize());
+        }
     }
 
     // LayerSwitcher Control by https://github.com/walkermatt/ol3-layerswitcher
@@ -651,16 +651,26 @@ function getApiData() {
     if (view.getZoom() < countryThreshold) {
         var url = '/api/target_country_summaries.json';
         // append any querystring params
+        queryParams = '';
         if (window.location.search) {
-            url = url + window.location.search;
+            queryParams += window.location.search;
         }
+        if (typeof mapParams !== 'undefined') {
+            if (queryParams) {
+                queryParams += '&' + mapParams;
+            }
+            else {
+                queryParams = '?' + mapParams;
+            }
+        }
+        url += queryParams;
         $.get(url, addCountrySummariesData);
     // Otherwise fetch individual deals for the current map viewport.
     } else {
         var limit = 500;
         var query_params = 'page_size=' + limit + '&attributes=' + fieldnames[currentVariable];
         if (typeof mapParams !== 'undefined') {
-            query_params += mapParams;
+            query_params += '&' + mapParams;
         }
         // Window
         extent = map.getView().calculateExtent(map.getSize());
