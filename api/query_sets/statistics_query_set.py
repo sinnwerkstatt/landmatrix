@@ -37,7 +37,6 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
         self.country = request.GET.get('target_country')
         self.region = request.GET.get('target_region')
         self.request = request
-        raise IOError(self._filter_sql)
 
     def all(self):
         self._filter_sql += self.regional_condition()
