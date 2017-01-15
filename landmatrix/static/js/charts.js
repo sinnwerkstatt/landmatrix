@@ -459,7 +459,7 @@ function buildAgriculturalPies() {
             pie_data.push(data[i]["agricultural_produce"]["multiple_use"]);
 
             var pie = new RGraph.Pie('pie-' + data[i]["region"], pie_data);
-            pie.Set('chart.colors', ['#44c42d', '#4bbb87', '#179961', '#7c9a61']);
+            pie.Set('chart.colors', ['#44b7b6', '#4bbb87', '#179961', '#7c9a61']);
             pie.Set('chart.strokestyle', '#bbb');
             pie.Set('chart.text.font', 'Open Sans');
             pie.Set('chart.text.size', '9');
