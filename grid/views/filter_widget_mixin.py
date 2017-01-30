@@ -231,7 +231,8 @@ class FilterWidgetMixin:
   
     def remove_default_filters(self):
         stored_filters = self.request.session.get('filters', {})
-        stored_filters = dict(filter(lambda i: 'default_preset' not in i[0], stored_filters.items()))
+        if stored_filters:
+            stored_filters = dict(filter(lambda i: 'default_preset' not in i[0], stored_filters.items()))
         self.request.session['filters'] = stored_filters
 
     @print_execution_time_and_num_queries
