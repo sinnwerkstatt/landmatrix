@@ -402,6 +402,28 @@ COLUMN_BLOCKS = [
     ('columns_2_1', Columns2To1Block()),
     ('columns_1_2', Columns1To2Block())
 ]
+
+class TabBlock(StructBlock):
+    title = blocks.CharBlock()
+    content = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
+
+class TabsBlock(StructBlock):
+    tabs = blocks.ListBlock(TabBlock())
+
+    class Meta:
+        icon = 'fa fa-folder'
+        template = 'widgets/tabs_block.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['list'] = []
+        for tab in value.get('tabs'):
+            context['list'].append({
+                'title': tab.get('title'),
+                'content': tab.get('content')
+            })
+        return context
+
 class FullWidthContainerBlock(StructBlock):
     color = blocks.ChoiceBlock(choices=[
         ('white', 'White'),
@@ -421,6 +443,7 @@ class FullWidthContainerBlock(StructBlock):
         label = 'Full width container'
         template = 'widgets/full-width-container.html'
 CONTENT_BLOCKS += [
+    ('tabs_block', TabsBlock()),
     ('full_width_container', FullWidthContainerBlock(form_classname='')),
 ]
 

@@ -190,7 +190,8 @@ class FilterWidgetMixin:
 
     def remove_country_region_filter(self):
         stored_filters = self.request.session.get('filters', {})
-        stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
+        if stored_filters:
+            stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
         self.request.session['filters'] = stored_filters
         #stored_filters = self.request.session['filter_query_params']
         #stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
@@ -204,9 +205,12 @@ class FilterWidgetMixin:
                 return
         disabled_presets = hasattr(self, 'disabled_presets') and self.disabled_presets or []
         stored_filters = self.request.session.get('filters', {})
+        variables = []
+        preset_ids = []
         # Target country or region set?
-        variables = [v.get('variable', '') for k, v in stored_filters.items()]
-        preset_ids = dict([(v.get('preset_id', ''), k) for k, v in stored_filters.items()])
+        if stored_filters:
+            variables = [v.get('variable', '') for k, v in stored_filters.items()]
+            preset_ids = dict([(v.get('preset_id', ''), k) for k, v in stored_filters.items()])
         if ('target_country' in variables) or ('target_region' in variables):
             # Use national presets
             for preset in FilterPreset.objects.filter(is_default_country_region=True):
