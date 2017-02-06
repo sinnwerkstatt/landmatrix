@@ -2,10 +2,10 @@
 <div id="news" class="col-md-12">
     <h3 class="center">{% trans "Latest News" %}</h3>
 
-    <div class="row">
+    <div class="row row-flex row-flex-wrap">
         {% for item in news %}
-        <div class="col-sm-6 col-md-4">
-          <div class="thumbnail">
+        <div class="col-sm-6 col-md-4 ">
+          <div class="thumbnail flex-col">
             {% if item.header_image %}<img src="{{ item.header_image.file.url }}"/>{% endif %}
             <div class="caption">
               <h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h3>
