@@ -1,49 +1,60 @@
 {% extends "base.html" %}
 {% load wagtailcore_tags static i18n %}
 
-{% block page_title %}{{ self.title }}{% endblock %}
-{% block title %}{{ self.title }}{% endblock %}
+{% block page_title %}{{ self.title }}{% if category %}: {{ category }}{% endif %}{% if tag %}: {{ tag }}{% endif %}{% endblock %}
+{% block title %}{{ self.title }}{% if category %}: {{ category }}{% endif %}{% if tag %}: {{ tag }}{% endif %}{% endblock %}
 
 {% block content %}
-    {% if category %}
-    <h2>{{ category }}</h2>
-    {% endif %}
-    {% if tag %}
-    <h2>{% trans "Posts tagged with" %} '{{ tag }}'</h2>
-    {% endif %}
-
+<div class="row">
+    <div class="col-sm-10">
     {% for rl in self.related_links.all %}
         <p>{{ rl.title }}: <a href='{{ rl.link_page.url }}'>{{ rl.link_page }}</a></p>
     {% endfor %}
 
     {% if blogs %}
-    <div class="row row-flex row-flex-wrap">
+        <div class="row row-flex">
         {% for item in blogs %}
         <div class="col-sm-6 col-md-4">
-          <div class="thumbnail flex-col">
+          <div class="thumbnail">
             {% if item.header_image %}<img src="{{ item.header_image.file.url }}"/>{% endif %}
             <div class="caption">
               <h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h3>
               <p>{{ item.body|richtext|truncatewords_html:50 }}</p>
               <p>
-                <a href="{{ item.get_absolute_url }}" class="btn">{% trans "Read more" %}</a>
               </p>
             </div>
           </div>
         </div>
+        {% if forloop.last %}
+            {% if not forloop.counter|divisibleby:3 %}<div class="col-sm-6 col-md-4"></div>{% endif %}
+            {% if not forloop.counter|add:1|divisibleby:3 %}<div class="col-sm-6 col-md-4"></div>{% endif %}
+        {% else %}
+            {% if forloop.counter|divisibleby:3 %}</div><div class="row row-flex">{% endif %}
+        {% endif %}
         {% endfor %}
+        
         </div>
 
         <ul class="pager">
         {% if blogs.has_next %}
-          <li class="previous"><a href="?page={{ blogs.next_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">&larr; Older</a></li>
+          <li class="previous"><a href="?page={{ blogs.next_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">&larr; {% trans "Older" %}</a></li>
         {% endif %}
         {% if blogs.has_previous %}
-          <li class="next"><a href="?page={{ blogs.previous_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">Newer &rarr;</a></li>
+          <li class="next"><a href="?page={{ blogs.previous_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&amp;{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">{% trans "Newer" %} &rarr;</a></li>
         {% endif %}
         </ul>
 
     {% else %}
         <p>{% trans "There are currently no blog posts" %}</p>
     {% endif %}
+    </div>
+    <div class="col-sm-2">
+        <ul class="nav nav-pills nav-stacked">
+            <li role="presentation"{% if not category %} class="active"{% endif %}><a href="/news/">{% trans "All categories" %}</a></li>
+        {% for cat in all_categories %}
+            <li role="presentation"{% if category == cat %} class="active"{% endif %}><a href="{% url "news:category" category=cat.slug %}">{{ cat.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}
