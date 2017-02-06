@@ -205,12 +205,13 @@ class FilterWidgetMixin:
                 return
         disabled_presets = hasattr(self, 'disabled_presets') and self.disabled_presets or []
         stored_filters = self.request.session.get('filters', {})
+        if not stored_filters:
+            stored_filters = {}
         variables = []
         preset_ids = []
         # Target country or region set?
-        if stored_filters:
-            variables = [v.get('variable', '') for k, v in stored_filters.items()]
-            preset_ids = dict([(v.get('preset_id', ''), k) for k, v in stored_filters.items()])
+        variables = [v.get('variable', '') for k, v in stored_filters.items()]
+        preset_ids = dict([(v.get('preset_id', ''), k) for k, v in stored_filters.items()])
         if ('target_country' in variables) or ('target_region' in variables):
             # Use national presets
             for preset in FilterPreset.objects.filter(is_default_country_region=True):

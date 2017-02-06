@@ -507,7 +507,8 @@ small input {
 #filters {
   margin-bottom: 20px; }
 
-#manage-filters {
+#add-filter,
+#filter-settings {
   font-weight: 300;
   margin-top: 10px; }
 
