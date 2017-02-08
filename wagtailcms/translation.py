@@ -7,6 +7,9 @@ from .models import *
 class WagtailRootPageTR(TranslationOptions):
     fields = (
         'body',
+        'map_introduction',
+        'data_introduction',
+        #'charts_introduction',
         'footer_column_1',
     	'footer_column_2',
     	'footer_column_3',

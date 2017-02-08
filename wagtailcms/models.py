@@ -6,6 +6,7 @@ from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtailcore.blocks import StructBlock
 from wagtail.wagtailembeds.blocks import EmbedBlock
 from wagtail.wagtailcore.blocks import Block, URLBlock, RawHTMLBlock, StreamBlock
+from wagtail.wagtailsnippets.models import register_snippet
 
 from django.utils.html import format_html, format_html_join, force_text
 from django.conf import settings
@@ -24,7 +25,6 @@ from blog.models import BlogPage
 from landmatrix.models.region import Region as DataRegion
 from landmatrix.models.country import Country as DataCountry
 from wagtailcms.twitter import TwitterTimeline
-
 
 class SplitMultiLangTabsMixin(object):
     """ This mixin detects multi-language fields and splits them into seperate tabs per language """
@@ -353,6 +353,35 @@ class LatestDatabaseModificationsBlock(CountryRegionStructBlock):
         context['limit'] = value.get('limit')
         return context
 
+class RegionBlock(CountryRegionStructBlock):
+
+    class Meta:
+        icon = 'fa fa-map-marker'
+        label = 'Region'
+        template = 'widgets/region.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        if self.country:
+            context['region'] = self.country.fk_region
+        else:
+            context['region'] = None
+        return context
+
+class CountriesBlock(CountryRegionStructBlock):
+
+    class Meta:
+        icon = 'fa fa-flag'
+        label = 'Countries'
+        template = 'widgets/countries.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        if self.region:
+            context['countries'] = DataCountry.objects.filter(fk_region=self.region)
+        else:
+            context['countries'] = DataCountry.objects.all()
+        return context
 
 DATA_BLOCKS = [
     ('latest_news', LatestNewsBlock()),
@@ -360,6 +389,8 @@ DATA_BLOCKS = [
     ('statistics', StatisticsBlock()),
     ('map_data_charts', MapDataChartsBlock()),
     ('latest_database_modifications', LatestDatabaseModificationsBlock()),
+    ('countries', CountriesBlock()),
+    ('region', RegionBlock()),
 ]
 
 class ColumnsBlock(StructBlock):
@@ -449,6 +480,9 @@ CONTENT_BLOCKS += [
 
 class WagtailRootPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
+    map_introduction = RichTextField(blank=True)
+    data_introduction = RichTextField(blank=True)
+    #charts_introduction = RichTextField(blank=True)
     footer_column_1 = RichTextField(blank=True)
     footer_column_2 = RichTextField(blank=True)
     footer_column_3 = RichTextField(blank=True)
@@ -456,6 +490,9 @@ class WagtailRootPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
 
     content_panels = Page.content_panels + [
         StreamFieldPanel('body'),
+        FieldPanel('map_introduction'),
+        FieldPanel('data_introduction'),
+        #FieldPanel('charts_introduction'),
         FieldPanel('footer_column_1'),
         FieldPanel('footer_column_2'),
         FieldPanel('footer_column_3'),

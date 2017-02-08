@@ -38,6 +38,8 @@
 
 {% block content %}
 {% include "grid/subnav.html" %}
+{{ introduction|safe }}
+<p></p>
 {% include "filters.html" %}
 
 {% if data.items %}

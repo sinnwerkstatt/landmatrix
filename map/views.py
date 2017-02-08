@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from grid.views.filter_widget_mixin import FilterWidgetMixin
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
+from wagtailcms.models import WagtailRootPage
 
 
 
@@ -41,5 +42,8 @@ class MapView(FilterWidgetMixin, TemplateView):
                 context['region'] = Region.objects.get(pk=target_region_id)
             except (Region.DoesNotExist, ValueError):
                 pass
+        root = WagtailRootPage.objects.first()
+        if root.map_introduction:
+            context['introduction'] = root.map_introduction
 
         return context

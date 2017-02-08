@@ -18,6 +18,7 @@ from grid.forms.choices import intention_choices, \
     grouped_intention_choices
 from django.utils.datastructures import SortedDict
 from django.template.defaultfilters import slugify
+from wagtailcms.models import WagtailRootPage
 
 INTENTION_MAP = {}
 for choice, value in intention_choices:
@@ -95,6 +96,10 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
         self.group = self.group.replace("by-", "").replace("-", "_")
         self.group_value = group_value or ''
         context = super(TableGroupView, self).get_context_data()
+
+        root = WagtailRootPage.objects.first()
+        if root.data_introduction:
+            context['introduction'] = root.data_introduction
 
         query_result = self.get_records()
         items = self._get_items(query_result)

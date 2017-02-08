@@ -214,9 +214,11 @@ $(document).ready(function () {
      }
      return false;
      }).click();*/
-    $('.toggle-filters').click(function () {
-        var text = $(this).data('toggle-text');
-        $(this).data('toggle-text', $(this).text()).text(text);
+    $('.toggle-text').click(function () {
+        var html = $(this).data('toggle-text');
+        if (html) {
+            $(this).data('toggle-text', $(this).html()).html(html);
+        }
     })
 
 

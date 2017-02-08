@@ -33,6 +33,8 @@
 {% endblock %}
 
 {% block content %}
+    {{ introduction|safe }}
+    <p></p>
     {% include "filters.html" %}
 
     <div id="alert_placeholder"></div>
