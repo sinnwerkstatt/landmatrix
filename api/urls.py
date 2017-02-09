@@ -54,7 +54,7 @@ urlpatterns = [
         {'format': 'json'}, name='target_countries_for_investor_country_api'),
     url(r'^hectares\.json', HectaresView.as_view(),
         {'format': 'json'}, name='hectares_api'),
-    url(r'^deals\.json', DealListView.as_view(), {'format': 'json'},
+    url(r'^deals\.json', GlobalDealsView.as_view(), {'format': 'json'},
         name='deals_api'),
     url(r'^activities\.json', ActivityListView.as_view(),
         {'format': 'json'}, name='activities_api'),
