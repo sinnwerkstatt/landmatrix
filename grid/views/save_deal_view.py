@@ -33,7 +33,6 @@ from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class SaveDealView(TemplateView):
@@ -70,7 +69,8 @@ class SaveDealView(TemplateView):
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
-        forms = self.get_forms(self.request.POST, files=self.request.FILES)
+        forms = self.get_forms(
+            data=self.request.POST, files=self.request.FILES)
         if all(form.is_valid() for form in forms):
             # Register user if not authenticated
             if not self.request.user.is_authenticated():
@@ -176,7 +176,7 @@ class SaveDealView(TemplateView):
             if form.Meta.name in ('action_comment', 'user_information'):
                 action_comment = form.cleaned_data['tg_action_comment']
 
-            attributes = form.get_attributes(self.request)
+            attributes = form.get_attributes(request=self.request)
             if not attributes:
                 continue
             # Formset?
@@ -207,7 +207,7 @@ class SaveDealView(TemplateView):
                 )
                 # Loop fields
                 for name, attribute in attributes.items():
-                    if isinstance(attribute, dict):
+                    if not isinstance(attribute, (list, tuple)):
                         attribute = [attribute]
                     # Loop values (= attributes)
                     for kwargs in attribute:

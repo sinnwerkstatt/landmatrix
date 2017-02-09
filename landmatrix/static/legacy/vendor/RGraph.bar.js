@@ -1618,7 +1618,7 @@
                         RGraph.Text2(this, {'font': prop['chart.text.font'],
                                             'size': prop['chart.labels.above.size'] ? prop['chart.labels.above.size'] : prop['chart.text.size'],
                                             'x': coords[0] + (coords[2] / 2),
-                                            'y': (value >=0 && xaxispos != 'top') ? coords[1] - 5 : coords[1] + coords[3] + 3,
+                                            'y': this.gutterTop,//(value >=0 && xaxispos != 'top') ? coords[1] - 5 : coords[1] + coords[3] + 3,
                                             'text': String(labels[i]),
                                             'valign': valign,
                                             'halign': halign,

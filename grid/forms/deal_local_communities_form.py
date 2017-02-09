@@ -2,10 +2,10 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from grid.forms.base_form import BaseForm
-from grid.widgets import TitleField, CommentInput, NumberInput, MultiCharField
+from grid.fields import TitleField, MultiCharField
+from grid.widgets import CommentInput, NumberInput
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealLocalCommunitiesForm(BaseForm):

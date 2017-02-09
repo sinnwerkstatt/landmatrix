@@ -2,26 +2,19 @@
 <div id="news" class="col-md-12">
     <h3 class="center">{% trans "Latest News" %}</h3>
 
-    <div class="row">
-        {% for blog in news %}
-        <div class="col-md-6 newsitem">
-            <div class="row">
-                {% if blog.header_image %}
-                <div class="col-sm-4">
-                    <img src="{{ blog.header_image.file.url }}"/>
-                </div>
-                <div class="col-sm-8">
-                {% else %}
-                <div class="col-sm-12">
-                {% endif %}
-                    <h4><a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a></h4>
-                    <small>{% trans "Published on" %}: {{ blog.date|date:"d/m/Y" }}</small>
-                    {{ blog.body|richtext|truncatewords_html:70 }}
-                    <p>
-                        <a href="{{ blog.get_absolute_url }}">{% trans "Read more" %}</a>
-                    </p>
-                </div>
+    <div class="row row-eq-height">
+        {% for item in news %}
+        <div class="col-sm-6 col-md-4 ">
+          <div class="thumbnail flex-col">
+            {% if item.header_image %}<img src="{{ item.header_image.file.url }}"/>{% endif %}
+            <div class="caption">
+              <h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h3>
+              <p>{{ item.body|richtext|truncatewords_html:50 }}</p>
+              <p>
+                <a href="{{ item.get_absolute_url }}" class="btn">{% trans "Read more" %}</a>
+              </p>
             </div>
+          </div>
         </div>
         {% endfor %}
     </div>

@@ -1,6 +1,5 @@
 from django.db import models
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class A_Tag(models.Model):
@@ -12,11 +11,16 @@ class A_Tag(models.Model):
 
     @property
     def key(self):
-        return A_Key.objects.using('lo').get(id=self.fk_a_key)
+        if not hasattr(self, '_cached_key'):
+            self._cached_key = A_Key.objects.using('lo').get(id=self.fk_a_key)
+        return self._cached_key
 
     @property
     def value(self):
-        return A_Value.objects.using('lo').get(id=self.fk_a_value)
+        if not hasattr(self, '_cached_value'):
+            self._cached_value = A_Value.objects.using('lo').get(
+                id=self.fk_a_value)
+        return self._cached_value
 
     class Meta:
         app_label = 'from_v1'

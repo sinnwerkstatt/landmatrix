@@ -3,7 +3,6 @@ import landmatrix.models
 import old_editor.models
 from migrate import V1, V2
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def find_attached_activity(activity_id):

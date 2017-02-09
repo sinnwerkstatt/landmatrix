@@ -8,7 +8,6 @@ from landmatrix.models.country import Country
 if V1 == 'v1_my':
     from editor.models import Comment, SH_Tag_Group, SH_Tag
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapStakeholderTagGroup(MapTagGroups):

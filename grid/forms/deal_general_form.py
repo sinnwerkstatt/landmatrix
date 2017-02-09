@@ -3,16 +3,15 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.activity import Activity
 from landmatrix.models.currency import Currency
-from grid.widgets import (
-    TitleField, CommentInput, NumberInput, NestedMultipleChoiceField,
-    YearBasedChoiceField, YearBasedIntegerField, YearBasedNestedMultipleChoiceField
+from grid.fields import (
+    TitleField, YearBasedMultipleChoiceIntegerField, YearBasedChoiceField,
+    YearBasedIntegerField,
 )
-from .choices import intention_choices, nature_choices, price_type_choices
-
+from grid.widgets import CommentInput, NumberInput
+from .choices import grouped_intention_choices, intention_choices, nature_choices, price_type_choices
 from .base_form import BaseForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealGeneralForm(BaseForm):
@@ -43,9 +42,9 @@ class DealGeneralForm(BaseForm):
     # Intention of investment
     tg_intention = TitleField(
         required=False, label="", initial=_("Intention of investment"))
-    intention = NestedMultipleChoiceField(
+    intention = YearBasedMultipleChoiceIntegerField(
         required=False, label=_("Intention of the investment"),
-        choices=intention_choices)
+        choices=grouped_intention_choices)
     tg_intention_comment = forms.CharField(
         required=False, label=_("Comment on Intention of investment"),
         widget=CommentInput)

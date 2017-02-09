@@ -1,7 +1,6 @@
 from grid.views.table_group_view import TableGroupView
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class AllDealsView(TableGroupView):

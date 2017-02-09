@@ -4,7 +4,6 @@ from random import randint
 
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, InvestorVentureInvolvement
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models.activity import Activity
 from landmatrix.models.activity_attribute_group import ActivityAttribute

@@ -1,7 +1,6 @@
 from wagtailcms.models import WagtailRootPage
 from django.conf import settings
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def add_root_page(request):

@@ -1,6 +1,5 @@
 from api.query_sets.fake_query_set_with_subquery import FakeQuerySetFlat
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django.core.urlresolvers import reverse
 from itertools import groupby
@@ -49,8 +48,8 @@ class TargetCountrySummariesQuerySet(FakeQuerySetFlat):
 
     def __init__(self, request):
         super().__init__(request)
-        self.country = request.GET.get("country", None)
-        #self.region = request.GET.get("regions", None)
+        self.country = request.GET.get("target_country", None)
+        self.region = request.GET.get("target_region", None)
 
     #def all(self):
     #    if self.region:
@@ -61,10 +60,21 @@ class TargetCountrySummariesQuerySet(FakeQuerySetFlat):
     #    return [self.to_json_record(c) for c in countries_summary if c['country_id']]
 
     def all(self):
-        #if self.region:
-        #    self._filter_sql += "AND investor_region.id = %s " % self.region
+        if self.region:
+            try:
+                region = int(self.region)
+            except ValueError:
+                pass
+            else:
+                self._filter_sql += "AND deal_region.id = %s " % region
         if self.country:
-            self._filter_sql += "AND investor_country.id = '%s' " % self.country
+            try:
+                country = int(self.country)
+            except ValueError:
+                pass
+            else:
+                self._filter_sql += "AND deal_country.id = %s " % country
+
         countries_summary = super().all()
 
         countries = {}

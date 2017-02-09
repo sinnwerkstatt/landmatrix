@@ -2,7 +2,6 @@ from api.query_sets.sql_generation.join_functions import join, join_attributes
 from api.query_sets.sql_generation.list_sql_builder import ListSQLBuilder
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class SubqueryBuilder(ListSQLBuilder):

@@ -1,13 +1,17 @@
 {% load i18n %}
 <p>&nbsp;</p>
-<p>
-    {% trans "Show network of parent companies or investors" %}: <input type="checkbox" name="parent_type" checked>
+<p class="alert alert-info">
+    <strong>{% trans "Network of parent investors and companies" %}.</strong> {% trans "Please click the node next to a company to get more details." %}
 </p>
 <div id="investor-network">
 </div>
 <script type="text/javascript">
-    $(document).ready(function () {
-        loadInvestorNetwork({{ form.initial.operational_stakeholder }});
-    });
+	$(document).ready(function () {
+		$('#accordion').on('show.bs.collapse', function (e) {
+		    if ($(e.target).parent().find(".panel-heading a").is("#investor-info")) {
+	        	loadInvestorNetwork({{ form.initial.operational_stakeholder }});
+	        };
+		});
+	});
 </script>
 {% include "modals/stakeholder.html" %}

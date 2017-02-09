@@ -18,7 +18,7 @@
             </div>
         </div>
         {% if field.name == 'location' %}
-            {{ form.location }}
+            {{ form.location|random_id }}
             <br clear="left">
         {% endif %}
     {% endif %}

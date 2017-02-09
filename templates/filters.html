@@ -1,19 +1,39 @@
 {% load i18n custom_tags static crispy_forms_tags %}
 {% load humanize %}
-
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form" method="POST" action="./">
+            <p class="alert alert-warning">
+                <input type="checkbox" id="id_set_default_filters" name="set_default_filters"{% if set_default_filters %} checked="checked"{% endif %} class="pull-right">
+                {% if set_default_filters %}
+                    <strong>{% trans "Default filters are enabled" %}</strong>. {% trans "The data is filtered by global or national filter presets. Please uncheck the checkbox to show all data." %} <a href="/about/#filters">{% trans "Read more" %}</a>
+                {% else %}
+                    <strong>{% trans "Default filters are disabled" %}</strong>. {% trans "You can see all data unfiltered. Please check the checkbox to use our global or national filter presets." %} <a href="/about/#filters">{% trans "Read more" %}</a>
+                {% endif %}
+            </p>
+        </form>
+    </div>
+</div>
 <div id="filters">
     {% csrf_token %}
     <div id="list-filters" class="row">
         <form>
-            <div class="col-md-10 clearfix" id="filterlist">
-                <label>{% trans "No active filters" %}</label>
+            <div class="col-md-10 clearfix">
+                <span id="filterlist">
+                    <label>{% trans "No active filters" %}</label>
+                </span>
+                <a class="toggle-filters" role="button" data-toggle="collapse" href="#add-filter" aria-expanded="true"
+                   data-toggle-text="{% trans "Cancel add filter" %}"
+                   aria-controls="add-filter">
+                    <i class="fa fa-plus"></i> {% trans "Add a filter" %}
+                </a>
             </div>
         </form>
         <div class="col-md-2 text-right">
-            <a class="toggle-filters" role="button" data-toggle="collapse" href="#manage-filters" aria-expanded="true"
-               data-toggle-text="{% trans "Hide filters" %}"
-               aria-controls="manage-filters">
-                {% trans "Manage filters" %}
+            <a class="toggle-filters" role="button" data-toggle="collapse" href="#filter-settings" aria-expanded="true"
+               data-toggle-text="{% trans "Hide settings" %}"
+               aria-controls="filter-settings">
+                <i class="fa fa-cog"></i> {% trans "List settings" %}
             </a>
             <a href="#" class="toggle-tooltip noul"
                title="You can create custom filters here. Filters are kept when changing entry point.">
@@ -21,7 +41,7 @@
         </div>
     </div>
 
-    <div id="manage-filters" class="clearfix collapse">
+    <div id="add-filter" class="clearfix collapse">
         <div id="filterrow" class="row">
             <div class="col-md-3 filterbox presetbox no-pad">
                 <h6>{% trans "Select a filter preset" %}</h6>
@@ -95,19 +115,8 @@
                 </div>
             </form>
         </div>
-        <form class="form" method="POST" action="./">
-            <div class="row">
-                <div class="col-sm-12">
-                    <label class="pull-right">
-                        <input type="checkbox" id="id_set_default_filters" name="set_default_filters"{% if set_default_filters %} checked="checked"{% endif %}>
-                        {% trans "Set default filters for global and national entry points" %}
-                        <a href="#" class="toggle-tooltip noul"
-               title="{% trans "Global: Concluded, Transnational deals only, Low income countries, Year <= 2000, Size > 200ha.<br>National: Concluded" %}">
-                <i class="lm lm-question-circle"> </i></a>
-                    </label>
-                </div>
-            </div>
-        </form>
+    </div>
+    <div id="filter-settings" class="clearfix collapse">
         <form method="GET" action="./">
             {% if columns and group == 'all' %}
             <div id="columnsrow" class="row">

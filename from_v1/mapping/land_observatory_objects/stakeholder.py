@@ -1,7 +1,6 @@
 from .tag_groups import SH_Tag_Group
 from django.db import models
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class Stakeholder(models.Model):

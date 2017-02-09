@@ -2,11 +2,11 @@ from django import forms
 from django.forms.models import formset_factory
 from django.utils.translation import ugettext_lazy as _
 
-from grid.widgets import TitleField, CommentInput
+from grid.fields import TitleField
+from grid.widgets import CommentInput
 from .base_form import BaseForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealContractForm(BaseForm):
@@ -19,13 +19,13 @@ class DealContractForm(BaseForm):
     contract_number = forms.IntegerField(
         required=False, label=_("Contract number")
     )
-    contract_date = forms.DateField(
+    contract_date = forms.CharField(
         required=False, label=_("Contract date"), help_text="[YYYY-MM-DD]",
-        input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
+        #input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
-    contract_expiration_date = forms.DateField(
+    contract_expiration_date = forms.CharField(
         required=False, label=_("Contract expiration date"), help_text="[YYYY-MM-DD]",
-        input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
+        #input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
     sold_as_deal = forms.IntegerField(
         required=False, label=_("Sold as deal no.")

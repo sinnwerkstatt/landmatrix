@@ -2,8 +2,7 @@ from api.views.nav_views import (
     CountryListView, RegionListView, InvestorListView,
 )
 from api.views.chart_views import (
-    DealListView, HectaresView,
-    ImplementationStatusListView, InvestmentIntentionListView,
+    HectaresView, ImplementationStatusListView, InvestmentIntentionListView,
     InvestorCountrySummaryListView, NegotiationStatusListView,
     TargetCountrySummaryListView, Top10CountriesView,
     TransnationalDealListView, TransnationalDealsByCountryView,
@@ -12,6 +11,7 @@ from api.views.chart_views import (
 )
 from api.views.list_views import (
     ActivityListView, LatestChangesListView, StatisticsListView, UserListView,
+    DealListView,
 )
 from api.views.deal_detail_view import DealDetailView
 from api.views.investor_network_view import InvestorNetworkView

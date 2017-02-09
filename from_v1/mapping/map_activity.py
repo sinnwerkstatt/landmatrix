@@ -8,7 +8,6 @@ from django.db import connections
 from django.utils import timezone
 from datetime import timedelta, datetime
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapActivity(MapModel):

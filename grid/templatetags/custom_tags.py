@@ -1,5 +1,6 @@
 import re
 import time, datetime
+from uuid import uuid4
 
 from django import template
 from django.forms.fields import MultiValueField, ChoiceField, BooleanField
@@ -9,10 +10,11 @@ from django.template.defaultfilters import stringfilter
 from django.contrib.humanize.templatetags.humanize import naturaltime, intcomma
 from django.utils.safestring import mark_safe
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 
 # from editor.views import get_display_value_by_field
-from grid.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
+from grid.fields import NestedMultipleChoiceField
 
 register = template.Library()
 
@@ -130,6 +132,8 @@ def get_range(value):
 
 @register.filter
 def naturaltime_from_string(value):
+    if not value:
+        return ''
     time_format = "%Y-%m-%d %H:%M:%S"
     date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(value, time_format)))
     natural_time = naturaltime(date)
@@ -138,6 +142,7 @@ def naturaltime_from_string(value):
         return natural_time[0]
     else:
         return "%s ago" % natural_time[0]
+
 
 @register.filter
 def timestamp_from_epoch(timestamp):
@@ -251,3 +256,9 @@ def decimalgroupstring(obj):
 def addstr(arg1, arg2):
     """concatenate arg1 & arg2"""
     return str(arg1) + str(arg2)
+
+
+@register.filter
+def random_id(obj):
+    """Overwrite bound form field with random ID (workaround for location/map)"""
+    return obj.as_widget(attrs={'id': obj.auto_id + ('_%i' % uuid4())})

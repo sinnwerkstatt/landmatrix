@@ -4,12 +4,16 @@
 {% block global_head %}
 {% endblock %}
 
+{% block head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher-custom.css" %}"/>
+{% endblock %}
 
 {% block page_title %}{% trans "Deal history comparison" %} #{{ deals.0.activity_identifier }}{% endblock %}
 {% block title %}{% trans "Deal history comparison" %} #{{ deals.0.activity_identifier }}{% endblock %}
 
 {% block breadcrumb_inner %}
-    <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
+  <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
     <li><a href="{% url 'deal_details' deal_id=deal.activity_id %}">{% trans "Deal Details" %}</a></li>
     <li>{% trans "Compare deal history" %}</li>
 {% endblock %}
@@ -30,7 +34,7 @@
         {% for comparison_forms in forms %}
         <div class="panel panel-default">
           <div class="panel-heading">
-            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ forloop.counter }}" class="{% if not comparison_forms.2 %}bg-warning{% endif %}">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ forloop.counter }}" class="{% if not comparison_forms.2 %}bg-warning{% endif %}" id="{{ comparison_forms.0.form_title|slugify }}">
               <h5 class="panel-title">
                   {{ comparison_forms.0.form_title }}
                   <small>({% if not comparison_forms.2 %}{% trans "changed" %}{% else %}{% trans "no changes" %}{% endif %})</small>
@@ -45,19 +49,19 @@
               <div class="col-md-6">
               {% if comparison_forms.0.forms %}
                 {% for form in comparison_forms.0.forms %}
-                  {% include "includes/dealpanels-display.html" with form=form form_count=forloop.counter %}
+                  {% include "includes/dealpanels-comparison.html" with form=form form_count=forloop.counter %}
                 {% endfor %}
               {% else %}
-                {% include "includes/dealpanels-display.html" with form=comparison_forms.0 %}
+                {% include "includes/dealpanels-comparison.html" with form=comparison_forms.0 %}
               {% endif %}
               </div>
               <div class="col-md-6">
               {% if comparison_forms.1.forms %}
                 {% for form in comparison_forms.1.forms %}
-                  {% include "includes/dealpanels-display.html" with form=form form_count=forloop.counter %}
+                  {% include "includes/dealpanels-comparison.html" with form=form form_count=forloop.counter %}
                 {% endfor %}
               {% else %}
-                {% include "includes/dealpanels-display.html" with form=comparison_forms.1 %}
+                {% include "includes/dealpanels-comparison.html" with form=comparison_forms.1 %}
               {% endif %}
               </div>
             </div>
@@ -66,4 +70,46 @@
         {% endfor %}
       </div>
     </div>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "js/ol3-layerswitcher-custom.js" %}"></script>
+    <script src="{% static "js/mapwidget.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var mapWidgets = {};
+        var initMapWidgets = function () {
+            $('.map-serialized-data').each(function(index) {
+                var id = $(this).attr('id');
+                var options = $(this).data('map-widget-options');
+                options['id'] = id;
+                options['map_id'] = id + '-map';
+                // Hack the width down for side by side display
+                $('#' + options['map_id']).css('width', '400');
+                mapWidgets[id] = new MapWidget(options);
+            });
+        };
+        var refreshMapWidgets = function () {
+            jQuery.each(mapWidgets, function(id, widget) {
+              widget.map.updateSize();
+              widget.positionMap();
+            });
+        };
+
+        $(document).ready(function () {
+            $('#accordion').on('show.bs.collapse', function (e) {
+                var isLocationTarget = $(e.target).parent().find(".panel-heading a").is("#location");
+                if (isLocationTarget && jQuery.isEmptyObject(mapWidgets)) {
+                  // Init maps
+                  initMapWidgets();
+                }
+            });
+            $('#accordion').on('shown.bs.collapse', function (e) {
+                var isLocationTarget = $(e.target).parent().find(".panel-heading a").is("#location");
+                if (isLocationTarget) {
+                  refreshMapWidgets();
+                }
+            });
+        });
+    </script>
 {% endblock %}

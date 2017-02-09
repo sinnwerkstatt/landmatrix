@@ -47,11 +47,11 @@ body {
 /*
 .get-the-idea h1,
 .get-the-idea a:hover {
-    color: #44c42d;
+    color: #44b7b6;
 }
 */
 .get-the-idea ::selection {
-  background-color: #44c42d;
+  background-color: #44b7b6;
 }
 
 .get-the-detail h1,
@@ -141,6 +141,12 @@ footer {
 .whitecircle {
   font-size: 42px;
   line-height: 80px;
+  background: white;
+  border-radius: 50%;
+  width: 80px;
+  display: inline-block;
+  height: 80px;
+  margin-bottom: 20px;
 }
 
 table td,
@@ -232,6 +238,13 @@ div.fullwidth.fullwidth-lightgrey {
   padding: 0;
 }
 
+.block-link {
+  padding-top: 0 !important;
+}
+.block-link .btn-with-space {
+    margin-top: 30px;
+}
+
 .wrap > hr {
   padding: 0;
   margin: 0;
@@ -285,6 +298,12 @@ div.fullwidth.fullwidth-lightgrey {
          url('/static/fonts/unit-regular-webfont.svg#unit-regularregular') format('svg');
     font-weight: normal;
     font-style: normal;
+}
+
+@font-face {
+  font-family: "OpenSansEmoji";
+  src: url(/static/fonts/OpenSansEmoji.ttf);
+  font-weight: 200;
 }
 
 body,
@@ -355,9 +374,9 @@ h3,
 
 .block-heading {
   padding-bottom: 0;
-  h3 {
-    margin-bottom: 0;
-  }
+  //h3 {
+  //  margin-bottom: 0;
+  //}
   + .block {
     padding-top: 0;
   }
@@ -449,12 +468,22 @@ p a {
   }
 }
 
-#comparison .investorfield {
-  background: hotpink;
-}
 
-#comparison .url {
-  overflow: hidden;
+#comparison {
+  .geometry-point {
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .alert-info,
+  #investor-network {
+    display:none;
+  }
+  .investorfield {
+    background: hotpink;
+  }
+  .url {
+    overflow: hidden;
+  }
 }
 
 .container .lm {
@@ -830,21 +859,21 @@ table th a {
 
 #investor-network .link {
   fill: none;
-  stroke: #44c42d;
+  stroke: #44b7b6;
   stroke-width: 2px;
 }
 
-#investor-network.investors .link {
+#investor-network .link.investor {
   stroke: #fc941f;
 }
 
 #investor-network .circle {
-  fill: #44c42d;
+  fill: #44b7b6;
   stroke: #ffffff;
   stroke-width: 2px;
 }
 
-#investor-network.investors .circle {
+#investor-network .circle.investor {
   fill: #fc941f;
 }
 
@@ -968,4 +997,126 @@ table th a {
       }
     }
   }
+}
+
+.twitter-timeline {
+  height: 500px !important;
+}
+
+.widget-twitter-timeline {
+  margin-bottom: 30px;
+  font-family: "OpenSansEmoji", serif;
+  font-size: 14px;
+  line-height: 1.3em;
+
+
+  .twitter-timeline-update {
+    //border: 1px solid #aaa;
+    //padding: 15px;
+    margin-bottom: 30px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .twitter-timeline-useravatar {
+    float: left;
+    width: 48px;
+    height: 48px;
+    display: block;
+  }
+
+
+  .twitter-timeline-meta {
+    margin-left: 63px;
+    margin-bottom: 5px;
+    color: #777;
+  }
+
+  .twitter-timeline-username {
+    color: black;
+    font-weight: bold;
+  }
+
+  .twitter-timeline-screenname {
+    color: inherit;
+    font-size: 90%;
+  }
+
+  .twitter-timeline-time {
+    color: inherit;
+    font-size: 90%;
+  }
+
+  .twitter-timeline-text {
+    margin-left: 63px;
+    font-size: 110%;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+  }
+
+  .twitter-timeline-media {
+    margin-left: 63px;
+  }
+
+  .twitter-timeline-imagecontainer {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .twitter-timeline-imagecontainer img {
+    display: block;
+    max-width: 100%;
+    max-height: 400px;
+  }
+
+  .twitter-timeline-quote {
+    margin-left: 63px;
+    border: 1px solid #777;
+    padding: 15px;
+    word-wrap: break-word;
+  }
+}
+
+html,body {
+  height:100%;
+}
+
+/* EQUAL COLUMN HEIGHT */
+.row-flex, .row-flex > div[class*='col-'] {  
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    flex:1 1 auto;
+}
+
+.row-flex-wrap {
+  -webkit-flex-flow: row wrap;
+    align-content: flex-start;
+    flex:0;
+}
+
+.row-flex > div[class*='col-'], .container-flex > div[class*='col-'] {
+   margin:-.2px; /* hack adjust for wrapping */
+}
+
+.container-flex > div[class*='col-'] div,.row-flex > div[class*='col-'] div {
+  width:100%;
+}
+
+
+.flex-col {
+    display: flex;
+    display: -webkit-flex;
+    flex: 1 100%;
+  flex-flow: column nowrap;
+}
+
+.flex-grow {
+  display: flex;
+    -webkit-flex: 2;
+    flex: 2;
 }

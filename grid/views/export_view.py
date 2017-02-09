@@ -17,7 +17,6 @@ import xlwt
 from grid.views import AllDealsView, TableGroupView, DealDetailView
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class ExportView(TemplateView):
@@ -84,31 +83,42 @@ class ExportView(TemplateView):
                     for lv in v:
                         if isinstance(lv, dict):
                             year = lv.get("year", None)
+                            current = lv.get("current", None)
                             name = lv.get("name", None)
                             value = lv.get("value", None)
-                            if year and year != "0" and name:
-                                row_item.append("[%s] %s" % (year, name))
-                            elif name:
-                                row_item.append(name)
+                            if name:
+                                row_item.append("[%s:%s] %s" % (
+                                    year != "0" and year or "",
+                                    current and "current" or "",
+                                    name,
+                                ))
                             # Required for intention
                             elif value and not lv.get("is_parent", False):
                                 row_item.append(str(value))
+                            #else:
+                            #    row_item.append("[]")
                         elif isinstance(lv, (list, tuple)):
-            # Some vars take additional data for the template (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
+                            # Some vars take additional data for the template
+                            # (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
                             if len(lv) > 0 and isinstance(lv[0], dict):
                                 year = lv.get("year", None)
+                                current = lv.get("current", None)
                                 name = lv.get("name", None)
-                                if year and year != "0" and name:
-                                    row_item.append("[%s] %s" % (year, name))
-                                elif name:
-                                    row_item.append(name)
+                                if name:
+                                    row_item.append("[%s:%s] %s" % (
+                                        year != "0" and year or "",
+                                        current and "current" or "",
+                                        name,
+                                    ))
+                                #else:
+                                #    row_item.append("[]")
                             else:
-                                row_item.append(lv)
+                                row_item.append(lv or '')
                         else:
-                            row_item.append(lv)
+                            row_item.append(lv or '')
                     row.append(", ".join(filter(None, row_item)))
                 else:
-                    row.append(v)
+                    row.append(v or "")
             rows.append(row)
         return rows
 

@@ -1,5 +1,5 @@
 {% extends "global_base.html" %}
-{% load i18n custom_tags %}
+{% load i18n custom_tags filter_tags %}
 {% load humanize %}
 
 {% block page_title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}{% trans "By" %} {{ group }}{% endif %}{% endblock %}
@@ -7,8 +7,8 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-  <li><a href="/">{% trans 'Home' %}</a></li>
-  <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
+  <li><a href="{% url 'global' %}">{% trans 'Global' %}</a></li>
+  <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
   {% if group == "all" %}
   <li>{{ name|capfirst }}</li>
   {% elif filters.group_value %}
@@ -21,14 +21,14 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation"><a href="{% url 'map' %}">
-        <i class="lm lm-map-marker"></i>{% trans "Map" %}
+    <li role="presentation"><a href="{% url 'map' %}{% filter_query_params %}">
+        <i class="fa fa-map-marker"></i> {% trans "Map" %}
     </a></li>
     <li role="presentation" class="active"><span>
-        <i class="lm lm-table"></i>{% trans "Data" %}
+        <i class="fa fa-table"></i> {% trans "Data" %}
     </span></li>
-    <li role="presentation"><a href="{% url 'charts' %}">
-        <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+    <li role="presentation"><a href="{% url 'charts' %}{% filter_query_params %}">
+        <i class="fa fa-bar-chart"></i> {% trans "Charts" %}
     </a></li>
     <li class="divider"></li>
     <li role="presentation">
@@ -54,7 +54,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for item in data.items  %}
+    {% for item in data.items %}
         <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
         {% for column, value in item.items %}
           {% if column == "deal_id" %}
@@ -63,7 +63,7 @@
             </td>
           {% elif column == "crop" %}
               <td class="{{ column }}" style="width:341px">
-              {% if  item.crop %}
+              {% if item.crop %}
               {% for c in item.crop %}
                 <a href="{% url 'table_list' group='by-crop' %}{{ c|slugify }}/">{{ c }}</a></br>
               {% endfor %}
@@ -76,7 +76,12 @@
                 <ul class="list-unstyled">
                   {% for i in item.intention %}
                     {% if group == 'intention' %}
-                      <li><a href="/data/by-intention/{{ i.slug }}/?{% add_or_update_param request.GET 'order_by' '' %}" {% if i.parent %}style="padding-left: 20px;"{% endif %}><span>{{ i.value }}</span></a></li>
+                      <li>
+                        {% if not i.parent %}
+                        <span>{{ i.value }}</span>
+                        {% else %}
+                        <a href="/data/by-intention/{{ i.slug }}/?{% add_or_update_param request.GET 'order_by' '' %}" style="padding-left: 20px;"><span>{{ i.value }}</span></a></li>
+                        {% endif %}
                     {% elif not i.parent %}
                     <li><a href="/data/by-intention/{{ i.slug }}/?{% add_or_update_param request.GET 'order_by' '' %}" class="toggle-tooltip intention-icon {{ i.slug }}" title="{{ i.value }}"><span>{{ i.value }}</span></a></li>
                     {% endif %}
@@ -94,6 +99,12 @@
                 {% endfor %}
             {% else %}{% trans "Unknown" %}
             {% endif %}
+            </td>
+          {% elif column == "investor_id" %}
+            <td class="{{ column }}">
+                {% for i in item.investor_id %}
+                <a href="{% if request.user.is_staff %}/stakeholder/{{ i }}{% else %}/data/by-investor-name/{{ i }}/?{% add_or_update_param request.GET 'order_by' '' %}{% endif %}" class="label label-default">{{ i }}</a>
+                {% endfor %}
             </td>
           {% elif column == "investor_name" %}
             <td class="{{ column }}" style="width:183px">

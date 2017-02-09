@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.db.models.functions import Coalesce
@@ -190,6 +191,17 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
                 return None
         else:
             return None
+
+    @property
+    def attributes_as_dict(self):
+        '''
+        Returns all attributes, *grouped* as a nested dict.
+        '''
+        attrs = defaultdict(dict)
+        for attr in self.attributes.select_related('fk_group'):
+            attrs[attr.fk_group.name][attr.name] = attr.value
+
+        return attrs
 
 
 class Activity(ActivityBase):
@@ -501,7 +513,7 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         This query looks a bit strange, but the order of operations is required
         in order to construct the group by correctly.
         '''
-        queryset = self.values('activity_identifier')
+        queryset = HistoricalActivity.objects.values('activity_identifier') # don't use 'self' here
         queryset = queryset.annotate(
             revisions_count=models.Count('activity_identifier'))
         queryset = queryset.order_by('activity_identifier')
@@ -604,7 +616,6 @@ class HistoricalActivity(ActivityBase):
 
         self.changesets.create(fk_user=user, comment=comment)
 
-
     def reject_delete(self, user=None, comment=None):
         assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
         self.fk_status_id = HistoricalActivity.STATUS_REJECTED
@@ -619,6 +630,40 @@ class HistoricalActivity(ActivityBase):
             investor.reject()
 
         self.changesets.create(fk_user=user, comment=comment)
+
+    def compare_attributes_to(self, version):
+        changed_attrs = []  # (group_id, key, current_val, other_val)
+
+        def get_lookup(attr):
+            return (attr.fk_group_id, attr.name)
+
+        current_attrs = list(self.attributes.all())
+        current_lookups = {
+            get_lookup(attr) for attr in current_attrs
+        }
+        # Build a dict of attrs for quick lookup with one query
+        other_attrs = {}
+        if version:
+            for attr in version.attributes.all():
+                other_attrs[get_lookup(attr)] = attr.value
+
+        for attr in current_attrs:
+            lookup = get_lookup(attr)
+            if lookup not in other_attrs:
+                changes = (attr.fk_group_id, attr.name, attr.value, None)
+                changed_attrs.append(changes)
+            elif lookup in other_attrs and attr.value != other_attrs[lookup]:
+                other_val = other_attrs[lookup]
+                changes = (attr.fk_group_id, attr.name, attr.value, other_val)
+                changed_attrs.append(changes)
+
+        # Check attributes that are not in this version
+        for lookup in set(other_attrs.keys()) - current_lookups:
+            group_id, key = lookup
+            changes = (group_id, key, None, other_attrs[lookup])
+            changed_attrs.append(changes)
+
+        return changed_attrs
 
     def update_public_activity(self):
         """Update public activity based upon newest confirmed historical activity"""
@@ -666,6 +711,7 @@ class HistoricalActivity(ActivityBase):
                 value=hattribute.value,
                 value2=hattribute.value2,
                 date=hattribute.date,
+                is_current=hattribute.is_current,
                 polygon=hattribute.polygon)
         # Confirm pending Investor activity involvement
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=activity.activity_identifier)

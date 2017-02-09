@@ -2,12 +2,10 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from .base_form import BaseForm
-from grid.widgets import (
-    TitleField, CommentInput, NumberInput, YearBasedIntegerField,
-)
+from grid.fields import TitleField, YearBasedIntegerField
+from grid.widgets import CommentInput, NumberInput
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealEmploymentForm(BaseForm):

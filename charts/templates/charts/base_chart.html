@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n static sass_tags %}
+{% load i18n static filter_tags sass_tags %}
 
 {% block css %}
 <link href="{% sass_src 'css/charts.scss' %}" rel="stylesheet" type="text/css" />
@@ -10,19 +10,18 @@
 {% block title %}{% trans "Chart" %}{% endblock %}
 
 {% block breadcrumb_inner %}
-<li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
 <li><a href="{% url 'chart_transnational_deals' %}">{% trans 'Charts' %}</a></li>
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation"><a href="{% url 'map' %}">
-        <i class="lm lm-map-marker"></i>{% trans "Map" %}
+    <li role="presentation"><a href="{% url 'map' %}{% filter_query_params %}">
+        <i class="fa fa-map-marker"></i> {% trans "Map" %}
     </a></li>
-    <li role="presentation"><a href="{% url 'data' %}">
-        <i class="lm lm-table"></i>{% trans "Data" %}
+    <li role="presentation"><a href="{% url 'data' %}{% filter_query_params %}">
+        <i class="fa fa-table"></i> {% trans "Data" %}
     </a></li>
     <li role="presentation" class="active"><span>
-        <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+        <i class="fa fa-bar-chart"></i> {% trans "Charts" %}
     </span></li>
     <li class="divider"></li>
     <li role="presentation">

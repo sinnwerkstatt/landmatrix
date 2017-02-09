@@ -12,7 +12,6 @@ from migrate import V2
 
 from django.db import transaction
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapLandObservatory:
@@ -27,6 +26,8 @@ class MapLandObservatory:
     def map_all(cls, save=False, verbose=False):
         with transaction.atomic(using=V2):
             MapLOActivities.cleanup_previously_imported_rejected_deals(
+                save=save, verbose=verbose)
+            MapLOInvolvements.cleanup_previously_imported_involvements(
                 save=save, verbose=verbose)
             MapLOStakeholder.map_all(save, verbose)
             MapLOActivities.map_all(save, verbose)

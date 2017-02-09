@@ -5,7 +5,6 @@ from django.db.backends.base.base import BaseDatabaseWrapper
 
 from functools import wraps
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 PROFILING_DECORATORS_STFU = True

@@ -13,7 +13,6 @@ from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.forms.public_user_information_form import PublicUserInformationForm
 from grid.forms.deal_action_comment_form import DealActionCommentForm
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class AddDealView(SaveDealView):

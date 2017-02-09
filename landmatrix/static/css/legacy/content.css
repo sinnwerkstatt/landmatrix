@@ -62,23 +62,23 @@ h2.separator span:first-child {
 
 .get-the-idea h1,
 .get-the-idea a:hover {
-    color: #44c42d;
+    color: #44b7b6;
 }
 
 .get-the-idea ::selection {
-    background-color: #44c42d;
+    background-color: #44b7b6;
 }
 
 .get-the-detail h1,
 .get-the-detail a:hover,
 .get-the-detail strong {
-    color: #44c42d;
+    color: #44b7b6;
 
 }
 
 .get-the-detail ::selection,
 .get-the-detail .thumbnails .counter {
-    background-color: #44c42d;
+    background-color: #44b7b6;
 }
 
 .get-the-detail #add_id_primary_investor {
@@ -182,7 +182,7 @@ h2.separator span:first-child {
     color: #fff;
     border-top-color: #fff;
     border-left-color: #fff;
-    background: #44c42d none;
+    background: #44b7b6 none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
@@ -366,7 +366,7 @@ a:hover {
 .navbar-default .navbar-nav > .open > a:focus,
 .navbar-default .navbar-nav > .open > a:hover {
     background: #fff none;
-    color: #44c42d;
+    color: #44b7b6;
 }
 
 .navbar-default .navbar-nav > li > a:hover {
@@ -1180,7 +1180,7 @@ textarea {
 
 .nav.nav-tabs > li:hover > a,
 .deal-detail.nav.nav-list > li > button:hover {
-    color: #44c42d;
+    color: #44b7b6;
 }
 
 .nav.nav-tabs > li.active > a:hover,
@@ -1190,7 +1190,7 @@ textarea {
 
 .nav.nav-tabs > li.active > a,
 .deal-detail.nav.nav-list > li > button.active {
-    background: #44c42d;
+    background: #44b7b6;
     color: #fff;
 }
 

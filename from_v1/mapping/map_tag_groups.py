@@ -1,6 +1,5 @@
 from django.db import transaction
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from migrate import V1, V2, load_project, BASE_PATH
 from mapping.map_model import MapModel

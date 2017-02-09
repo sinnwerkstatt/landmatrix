@@ -1,7 +1,6 @@
 from api.query_sets.simple_fake_query_set import SimpleFakeQuerySet
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 # TODO: investors is a standard model, use a real queryset

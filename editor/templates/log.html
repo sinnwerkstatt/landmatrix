@@ -12,38 +12,28 @@
 {% block subnav %}
     <ul class="subnav nav nav-pills pull-right">
         <li role="presentation"><a href="{% url 'map' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
-            <i class="lm lm-map-marker"></i>{% trans "Map" %}
+            <i class="fa fa-map-marker"></i> {% trans "Map" %}
         </a></li>
         <li role="presentation"><a href="{% url 'data' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
-            <i class="lm lm-table"></i>{% trans "Data" %}
+            <i class="fa fa-table"></i> {% trans "Data" %}
         </a></li>
         <li role="presentation"><a href="{% url 'chart_transnational_deals' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
-            <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+            <i class="fa fa-bar-chart"></i> {% trans "Charts" %}
         </a></li>
     </ul>
 {% endblock %}
 
 {% block content %}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            {% if request.GET.selected %}
-                $('ul.manage.nav li i.icon-chevron-down').removeClass("icon-white");
-                $('ul.manage.nav li a[href="#{{ request.GET.selected }}"]').tab("show").find("i.icon-chevron-down").addClass("icon-white");
-            {% else %}
-                $('ul.manage.nav li:first-child a').tab("show");
-            {% endif %}
-        });
-    </script>
     <div class="navbar navbar-default navbar-subnav" role="navigation">
         <div class="container-fluid">
             <ul class="manage nav navbar-nav" id="manage-sections">
-                    <li{% if action == 'latest_added' %} class="active"{% endif %}><a href="{% url 'log_added' %}">
+                    <li{% if action == 'latest_added' %} class="active"{% endif %}><a href="{% url 'log_added' %}?{{ request.GET.urlencode }}">
                         {% trans "Latest added" %}
                     </a></li>
-                    <li{% if action == 'latest_modified' %} class="active"{% endif %}><a href="{% url 'log_modified' %}">
+                    <li{% if action == 'latest_modified' %} class="active"{% endif %}><a href="{% url 'log_modified' %}?{{ request.GET.urlencode }}">
                         {% trans "Latest modified" %}
                     </a></li>
-                    <li{% if action == 'latest_deleted' %} class="active"{% endif %}><a href="{% url 'log_deleted' %}">
+                    <li{% if action == 'latest_deleted' %} class="active"{% endif %}><a href="{% url 'log_deleted' %}?{{ request.GET.urlencode }}">
                         {% trans "Latest deleted" %}
                     </a></li>
             </ul>
@@ -84,10 +74,10 @@
                 {% if is_paginated %}
                 <ul class="pager">
                     {% if page_obj.has_previous %}
-                        <li><a class="pull-left" href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a></li>
+                        <li><a class="pull-left" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">{% trans "Previous" %}</a></li>
                     {% endif %}
                     {% if page_obj.has_next %}
-                        <li><a class="pull-right" href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a></li>
+                        <li><a class="pull-right" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">{% trans "Next" %}</a></li>
                     {% endif %}
                 </ul>
                 {% endif %}

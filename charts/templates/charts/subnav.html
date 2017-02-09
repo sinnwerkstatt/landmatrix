@@ -1,4 +1,4 @@
-{% load i18n custom_tags %}
+{% load i18n custom_tags filter_tags %}
 {% load humanize %}
         <div class="navbar navbar-default navbar-subnav" role="navigation">
             <div class="container-fluid">
@@ -24,15 +24,15 @@
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li{% if chart == "chart_overview" %} class="active"{% endif %}><a href="{% url "chart_intention" %}">{% trans "Intention of investment" %}</a></li>
-                                <li{% if chart == "chart_overview" %} class="active"{% endif %}><a href="{% url "chart_negotiation_status" %}">{% trans "Negotiation status" %}</a></li>
-                                <li{% if chart == "chart_overview" %} class="active"{% endif %}><a href="{% url "chart_implementation_status" %}">{% trans "Implementation status" %}</a></li>
-                                <li{% if chart == "chart_overview" %} class="active"{% endif %}><a href="{% url "chart_intention_agriculture" %}">{% trans "Investment in Agriculture" %}</a></li>
+                                <li{% if chart == "chart_intention" %} class="active"{% endif %}><a href="{% url "chart_intention" %}{% filter_query_params %}">{% trans "Intention of investment" %}</a></li>
+                                <li{% if chart == "chart_negotiation_status" %} class="active"{% endif %}><a href="{% url "chart_negotiation_status" %}{% filter_query_params %}">{% trans "Negotiation status" %}</a></li>
+                                <li{% if chart == "chart_implementation_status" %} class="active"{% endif %}><a href="{% url "chart_implementation_status" %}{% filter_query_params %}">{% trans "Implementation status" %}</a></li>
+                                <li{% if chart == "chart_intention_agriculture" %} class="active"{% endif %}><a href="{% url "chart_intention_agriculture" %}{% filter_query_params %}">{% trans "Investment in Agriculture" %}</a></li>
                             </ul>
                         </li>
                         {% if not request.GET.country and not request.GET.region %}
-                        <li{% if chart == "chart_map_of_investments" %} class="active"{% endif %}><a href="{% url "chart_map_of_investments" %}">{% trans "Global map of investments" %}</a></li>
-                        <li{% if chart == "chart_perspective" %} class="active"{% endif %}><a href="{% url "chart_perspective" %}">{% trans "It's a big deal" %}</a></li>
+                        <li{% if chart == "chart_map_of_investments" %} class="active"{% endif %}><a href="{% url "chart_map_of_investments" %}{% filter_query_params %}">{% trans "Global map of investments" %}</a></li>
+                        <li{% if chart == "chart_perspective" %} class="active"{% endif %}><a href="{% url "chart_perspective" %}{% filter_query_params %}">{% trans "It's a big deal" %}</a></li>
                         {% endif %}
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -41,12 +41,12 @@
                             </a>
                             <ul class="dropdown-menu">
                                 {% if not request.GET.country and not request.GET.region %}
-                                <li{% if chart == 'chart_agricultural_drivers' %} class="active"{% endif %}><a href="{% url "chart_agricultural_drivers" %}">{% trans "Agricultural Drivers" %}</a></li>
+                                <li{% if chart == 'chart_agricultural_drivers' %} class="active"{% endif %}><a href="{% url "chart_agricultural_drivers" %}{% filter_query_params %}">{% trans "Agricultural Drivers" %}</a></li>
                                 {% endif %}
-                                <li{% if chart == 'chart_produce_info' %} class="active"{% endif %}><a href="{% url "chart_produce_info" %}">{% trans "Produce Info" %}</a></li>
-                                <li{% if chart == 'chart_resource_extraction' %} class="active"{% endif %}><a href="{% url "chart_resource_extraction" %}">{% trans "Resource Extraction" %}</a></li>
-                                <li{% if chart == 'chart_logging' %} class="active"{% endif %}><a href="{% url "chart_logging" %}">{% trans "Logging" %}</a></li>
-                                <li{% if chart == 'chart_contract_farming' %} class="active"{% endif %}><a href="{% url "chart_contract_farming" %}">{% trans "Contract Farming" %}</a></li>
+                                <li{% if chart == 'chart_produce_info' %} class="active"{% endif %}><a href="{% url "chart_produce_info" %}{% filter_query_params %}">{% trans "Produce Info" %}</a></li>
+                                <li{% if chart == 'chart_resource_extraction' %} class="active"{% endif %}><a href="{% url "chart_resource_extraction" %}{% filter_query_params %}">{% trans "Resource Extraction" %}</a></li>
+                                <li{% if chart == 'chart_logging' %} class="active"{% endif %}><a href="{% url "chart_logging" %}{% filter_query_params %}">{% trans "Logging" %}</a></li>
+                                <li{% if chart == 'chart_contract_farming' %} class="active"{% endif %}><a href="{% url "chart_contract_farming" %}{% filter_query_params %}">{% trans "Contract Farming" %}</a></li>
                             </ul>
                         </li>
                     </ul>

@@ -1,49 +1,51 @@
 from django.http import Http404
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import ugettext as _
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import serializers
+from rest_framework.generics import RetrieveAPIView
 
-from landmatrix.models.deal import Deal
+from landmatrix.models import Activity
 from api.serializers import DealDetailSerializer
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
-
-
-class DealDetailView(APIView):
+class DealDetailView(RetrieveAPIView):
     '''
-    This view takes a get request with a deal_id and list of attributes
-    and returns those attributes for the deal given.
-
-    E.g.:
-    GET /api/deal?deal_id=1&attributes=foo&attributes=bar
-    {"foo":"FOO","bar":"BAR"}
-
-    This is not REST, but it maintains compatibility with the existing API.
+    This view returns all attributes related to a deal.
     '''
+    serializer_class = DealDetailSerializer
+    lookup_field = 'activity_identifier'
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated() and self.request.user.is_staff:
+            queryset = Activity.objects.all()
+        else:
+            queryset = Activity.objects.public()
+
+        return queryset
 
     def get_object(self):
-        try:
-            deal = Deal(int(self.request.query_params['deal_id']))
-        except KeyError:
-            raise serializers.ValidationError(
-                {'deal_id': _("This field is required.")})
-        except ValueError:
-            raise serializers.ValidationError(
-                {'deal_id': _("An integer is required.")})
-        except ObjectDoesNotExist:
+        '''
+        Handle our DB weirdness where there are often multiple versions -
+        just use the latest public one.
+
+        TODO: this could be removed if we add a 'latest' activity queryset.
+        '''
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        assert lookup_url_kwarg in self.kwargs, (
+            'Expected view %s to be called with a URL keyword argument '
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            'attribute on the view correctly.' %
+            (self.__class__.__name__, lookup_url_kwarg)
+        )
+
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+
+        obj = queryset.filter(**filter_kwargs).order_by('-id').first()
+        if obj is None:
             raise Http404
 
-        self.check_object_permissions(self.request, deal)
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
 
-        return deal
-
-    def get(self, request, format=None):
-        deal = self.get_object()
-
-        attributes = request.query_params.getlist('attributes', [])
-        serialized_deal = DealDetailSerializer(deal, fields=attributes)
-
-        return Response(serialized_deal.data)
+        return obj

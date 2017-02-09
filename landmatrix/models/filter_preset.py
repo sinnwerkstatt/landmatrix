@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FilterPresetGroup(models.Model):
@@ -30,8 +29,9 @@ class FilterPreset(models.Model):
                               null=True)
     relation = models.CharField(max_length=3, choices=RELATION_CHOICES,
                                 default=RELATION_AND)
-    is_default = models.BooleanField(_("Country/Region"), default=False)
-    overrides_default = models.BooleanField(_("Global"), default=False)
+    is_default_country_region = models.BooleanField(_("Country/Region"), default=False)
+    is_default_global = models.BooleanField(_("Global"), default=False)
+    is_hidden = models.BooleanField(_("Is hidden"), default=False)
 
     def __str__(self):
         return '{}: {}'.format(self.group, self.name)

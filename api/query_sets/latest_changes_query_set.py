@@ -5,7 +5,6 @@ from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.country import Country
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class LatestChangesQuerySet:
@@ -26,13 +25,13 @@ class LatestChangesQuerySet:
             deal_to_data(activity, comment.submit_date, 'comment')
             for activity, comment in (self.get_latest_commented())
         ]
-
+        
         deal_data = remove_duplicates(deal_data)
         deal_data = sorted(deal_data, key=lambda d: d['change_date'], reverse=True)
         return deal_data[:self.num_changes]
 
     def get_latest_commented(self):
-        latest_comments = Comment.objects.filter(is_public=True).order_by('-submit_date')[:self.num_changes]
+        latest_comments = Comment.objects.filter(is_public=True).order_by('-submit_date')[:self.num_changes*3]
         return [
             (Activity.objects.get(pk=comment.object_pk), comment)
             for comment in latest_comments
@@ -53,7 +52,7 @@ class LatestChangesQuerySet:
             all_activities = all_activities.filter(id__in=self.activity_ids_by_country())
         if self.region:
             all_activities = all_activities.filter(id__in=self.activity_ids_by_region())
-        return all_activities.order_by('-history_date')[:self.num_changes]
+        return all_activities.order_by('-history_date')[:self.num_changes*3]
 
     def activity_ids_by_country(self):
         return ActivityAttribute.objects.filter(

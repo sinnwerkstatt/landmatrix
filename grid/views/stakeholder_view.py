@@ -2,6 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse_lazy
 from django.utils.html import escape
+from django.utils.translation import ugettext_lazy as _
 
 from grid.forms.investor_form import InvestorForm, OperationalCompanyForm
 from grid.forms.parent_stakeholder_formset import (
@@ -16,7 +17,14 @@ class StakeholderFormsMixin:
     '''
     def get_form_class(self):
         investor = self.get_object()
-        if investor and investor.is_operational_company:
+        # Check current role of investor
+        role = self.request.GET.get('role', '')
+        if not role:
+            if investor and investor.is_operational_company:
+                role = 'operational_stakeholder'
+            else:
+                role = 'parent_investor'
+        if role == 'operational_stakeholder':
             form_class = OperationalCompanyForm
         else:
             form_class = InvestorForm
@@ -76,6 +84,20 @@ class StakeholderFormsMixin:
             context['parent_investors'] = ParentInvestorFormSet(
                 **investors_kwargs)
 
+        role = self.request.GET.get('role', None)
+        if not role:
+            # Guess role
+            investor = self.get_object()
+            if investor and investor.is_operational_company:
+                context['role'] = 'operational_stakeholder'
+            else:
+                context['role'] = 'parent_investor'
+        ROLE_MAP = {
+            'operational_stakeholder': _('Operational company'),
+            'parent_stakeholder': _('Parent company'),
+            'parent_investor': _('Parent investor'),
+        }
+        context['role'] = ROLE_MAP.get(role, _('Parent investor'))
         return context
 
     def form_invalid(self, investor_form, stakeholders_formset,
@@ -119,10 +141,17 @@ class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
     def get_object(self):
         # TODO: Cache result for user
         investor_id = self.kwargs.get('investor_id')
+        history_id = self.kwargs.get('history_id')
         try:
-            investor = Investor.objects.get(id=investor_id)
+            if history_id:
+                investor = Investor.objects.get(id=history_id)
+            else:
+                investor = Investor.objects.get(investor_identifier=investor_id)
         except Investor.DoesNotExist as e:
             raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
+        except Investor.MultipleObjectsReturned as e:
+            # Get latest (this shouldn't happen though)
+            investor = Investor.objects.filter(investor_identifier=investor_id).order_by('-id').first()
 
         can_change = self.request.user.has_perm('landmatrix.change_investor')
         if investor.is_deleted and not can_change:

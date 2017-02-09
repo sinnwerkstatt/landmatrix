@@ -1,4 +1,3 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from api.query_sets.sql_generation.sql_builder import SQLBuilder
 

@@ -4,12 +4,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
-from ol3_widgets.widgets import LocationWidget, MapWidget, SerializedMapWidget
-from grid.widgets import TitleField, CountryField, CommentInput
+from ol3_widgets.widgets import LocationWidget, MapWidget
+from grid.fields import TitleField, CountryField, AreaField
+from grid.widgets import CommentInput, AreaWidget
+from grid.gis import parse_shapefile
 from .base_form import BaseForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealSpatialForm(BaseForm):
@@ -21,17 +22,7 @@ class DealSpatialForm(BaseForm):
         ("Exact location", _("Exact location")),
         ("Coordinates", _("Coordinates")),
     )
-    AREA_WIDGET_ATTRS = {
-        'map_width': 600,
-        'map_height': 400,
-        'initial_zoom': 8,
-        'initial_center_lat': 0,
-        'initial_center_lon': 0,
-        'toggle_map_display': True,
-        'show_layer_switcher': True,
-        'geom_type': 'MULTIPOLYGON',
-    }
-    POLYGON_FIELDS = (
+    AREA_FIELDS = (
         'contract_area',
         'intended_area',
         'production_area',
@@ -61,15 +52,9 @@ class DealSpatialForm(BaseForm):
     location_description = forms.CharField(
         required=False, label=_("Location description"),
         widget=forms.TextInput, initial="")
-    contract_area = forms.MultiPolygonField(
-        required=False, label=_("Contract area"),
-        widget=SerializedMapWidget(attrs=AREA_WIDGET_ATTRS))
-    intended_area = forms.MultiPolygonField(
-        required=False, label=_("Intended area"),
-        widget=SerializedMapWidget(attrs=AREA_WIDGET_ATTRS))
-    production_area = forms.MultiPolygonField(
-        required=False, label=_("Area in operation"),
-        widget=SerializedMapWidget(attrs=AREA_WIDGET_ATTRS))
+    contract_area = AreaField(required=False, label=_("Contract area"))
+    intended_area = AreaField(required=False, label=_("Intended area"))
+    production_area = AreaField(required=False, label=_("Area in operation"))
 
     tg_location_comment = forms.CharField(
         required=False, label=_("Comment on Location"), widget=CommentInput)
@@ -84,15 +69,21 @@ class DealSpatialForm(BaseForm):
         super().__init__(*args, **kwargs)
 
         lat_lon_attrs = self.get_default_lat_lon_attrs()
-        if lat_lon_attrs:
-            area_widget_attrs = self.AREA_WIDGET_ATTRS.copy()
-            area_widget_attrs.update(lat_lon_attrs)
-            for polygon_field in self.POLYGON_FIELDS:
-                widget = SerializedMapWidget(attrs=area_widget_attrs)
+
+        # Bind area maps to the main location map
+        area_attrs = {
+            'bound_map_field_id': '{}-map'.format(self['location'].html_name)
+        }
+        area_attrs.update(lat_lon_attrs)
+
+        location_attrs = self.get_location_map_widget_attrs()
+        location_attrs.update(lat_lon_attrs)
+
+        if area_attrs:
+            for polygon_field in self.AREA_FIELDS:
+                widget = AreaWidget(map_attrs=area_attrs)
                 self.fields[polygon_field].widget = widget
 
-        location_attrs = self.get_location_map_widget_attrs(
-            attrs=lat_lon_attrs)
         # Public field gets a mapwidget, so check for that
         if isinstance(self.fields['location'].widget, MapWidget):
             self.fields['location'].widget = MapWidget(attrs=location_attrs)
@@ -100,26 +91,25 @@ class DealSpatialForm(BaseForm):
             self.fields['location'].widget = LocationWidget(
                 map_attrs=location_attrs)
 
-    def get_location_map_widget_attrs(self, attrs=None):
-        map_widget_attrs = {
+    def get_location_map_widget_attrs(self):
+        attrs = {
             'show_layer_switcher': True,
         }
 
         bound_fields = (
             ('location', 'bound_location_field_id'),
-            ('point_lat', 'bound_lat_field_id'),
-            ('point_lon', 'bound_lon_field_id'),
             ('target_country', 'bound_target_country_field_id'),
             ('level_of_accuracy', 'bound_level_of_accuracy_field_id'),
+            ('point_lat', 'bound_lat_field_id'),
+            ('point_lon', 'bound_lon_field_id'),
         )
         for field, attr in bound_fields:
-            if field in self:
-                map_widget_attrs[attr] = self[field].auto_id
+            try:
+                attrs[attr] = self[field].auto_id
+            except KeyError:
+                pass
 
-        if attrs:
-            map_widget_attrs.update(attrs)
-
-        return map_widget_attrs
+        return attrs
 
     def get_default_lat_lon_attrs(self):
         attrs = {}
@@ -142,6 +132,39 @@ class DealSpatialForm(BaseForm):
 
         return attrs
 
+    def clean_area_field(self, field_name):
+        value = self.cleaned_data[field_name]
+
+        try:
+            # Check if we got a file here, as
+            value.name
+            value.size
+        except AttributeError:
+            value_is_file = False
+        else:
+            value_is_file = True
+
+        if value_is_file:
+            # Files are the second widget, so append _1
+            field_name = '{}_1'.format(self[field_name].html_name)
+            shapefile_data = self.files.getlist(field_name)
+            try:
+                value = parse_shapefile(shapefile_data)
+            except ValueError as err:
+                error_msg = _('Error parsing shapefile: %s') % err
+                raise forms.ValidationError(error_msg)
+
+        return value
+
+    def clean_contract_area(self):
+        return self.clean_area_field('contract_area')
+
+    def clean_intended_area(self):
+        return self.clean_area_field('intended_area')
+
+    def clean_production_area(self):
+        return self.clean_area_field('production_area')
+
     def get_attributes(self, request=None):
         attributes = super().get_attributes()
         # Replace country name with pk
@@ -155,10 +178,9 @@ class DealSpatialForm(BaseForm):
             attributes['target_country']['value'] = target_country.pk
 
         # For polygon fields, pass the value directly
-        for area_field_name in self.POLYGON_FIELDS:
-            if area_field_name in attributes:
-                polygon_value = attributes[area_field_name]['value']
-                attributes[area_field_name] = {'polygon': polygon_value}
+        for field_name in self.AREA_FIELDS:
+            polygon_value = self.cleaned_data.get(field_name)
+            attributes[field_name] = {'polygon': polygon_value}
 
         return attributes
 
@@ -166,7 +188,7 @@ class DealSpatialForm(BaseForm):
     def get_data(cls, activity, group=None, prefix=""):
         data = super().get_data(activity, group=group, prefix=prefix)
 
-        for area_field_name in cls.POLYGON_FIELDS:
+        for area_field_name in cls.AREA_FIELDS:
             area_attribute = activity.attributes.filter(
                 fk_group__name=group, name=area_field_name).first()
             if area_attribute:
@@ -192,7 +214,6 @@ class PublicDealSpatialForm(DealSpatialForm):
         'default_zoom': 8,
         'default_lat': 0,
         'default_lon': 0,
-        'toggle_map_display': True,
         'geom_type': 'MULTIPOLYGON',
         'disable_drawing': True,
     }
@@ -225,7 +246,7 @@ class DealSpatialBaseFormSet(BaseFormSet):
         return data
 
     def get_attributes(self, request=None):
-        return [form.get_attributes(request) for form in self.forms]
+        return [form.get_attributes(request=request) for form in self.forms]
 
     class Meta:
         name = 'location'

@@ -11,6 +11,7 @@ from grid.views.filter_widget_mixin import FilterWidgetMixin
 
 class ChartView(FilterWidgetMixin, TemplateView):
     chart = ""
+    disabled_presets = []
 
     def get_context_data(self, **kwargs):
         context = super(ChartView, self).get_context_data(**kwargs)
@@ -43,15 +44,19 @@ class ChartPDFView(PDFViewMixin, ChartView):
 
 
 class ChartRedirectView(RedirectView):
+    permanent = False
+
     def get_redirect_url(self, *args, **kwargs):
-        params = self.request.GET
-        if 'country' in params or 'region' in params:
-            return '%s?%s' % (
-                reverse('chart_overview'),
-                params.urlencode()
-            )
+        if 'country' in self.request.GET or 'region' in self.request.GET:
+            base_url = 'chart_intention'
         else:
-            return reverse('chart_transnational_deals')
+            base_url = 'chart_transnational_deals'
+
+        url = reverse(base_url)
+        if self.request.GET:
+            url += '?{}'.format(self.request.GET.urlencode())
+
+        return url
 
 
 class IntentionChartView(ChartPDFView):
@@ -66,6 +71,7 @@ class NegotiationStatusChartView(ChartPDFView):
     chart = "chart_negotiation_status"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
+    disabled_presets = [2,]
 
 
 class ImplementationStatusChartView(ChartPDFView):
@@ -142,6 +148,7 @@ class LoggingChartView(ChartPDFView):
     template_name = "charts/special-interest/logging.html"
     chart = "chart_logging"
     pdf_javascript_delay = 10000
+    disabled_presets = [1,]
 
 class ContractFarmingChartView(ChartPDFView):
     template_name = "charts/special-interest/contract-farming.html"

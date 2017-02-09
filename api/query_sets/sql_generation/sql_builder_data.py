@@ -7,7 +7,6 @@ from landmatrix.models.investor import Investor, InvestorActivityInvolvement, In
 from landmatrix.models.crop import Crop
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DefaultDict(collections.defaultdict):
@@ -68,24 +67,39 @@ class SQLBuilderData:
         join(Investor, 'stakeholders', on='ivi.fk_investor_id = stakeholders.id'),
     ]
     COLUMNS = DefaultDict(default_column, {
-        'deal_count': [],
-        'availability': [],
-        'year': [ join_attributes('negotiation_status') ],
-        'crop':               [
-            join_attributes('akvl1', 'crops'),
-            join_expression(Crop, 'crop', "CAST(akvl1.value AS NUMERIC)")
-        ],
-        'crops':               [
-            join_attributes('akvl1', 'crops'),
-            join_expression(Crop, 'crops', "CAST(akvl1.value AS NUMERIC)")
-        ],
-        'target_country': TARGET_COUNTRY_COLUMNS,
-        'target_region': TARGET_COUNTRY_COLUMNS,
+        # Operational stakeholders (= Operational companies)
         'operational_stakeholder': [
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id')
         ],
-        'operational_stakeholder_name': INVESTOR_COLUMNS,
+        'operational_company_country': [
+            join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+            join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
+            join(Country, 'operational_stakeholder_country', on='operational_stakeholder_country.id = operational_stakeholder.fk_country_id'),
+        ],
+        'operational_company_region': [
+            join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+            join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
+            join(Country, 'operational_stakeholder_country', on='operational_stakeholder_country.id = operational_stakeholder.fk_country_id'),
+            join(Region, 'operational_stakeholder_region', on='operational_stakeholder_region.id = operational_stakeholder_country.fk_region_id')
+        ],
+        "operational_company_classification": [
+            join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+            join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
+        ],
+        "operational_company_homepage": [
+            join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+            join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
+        ],
+        "operational_company_opencorporates_link": [
+            join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+            join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
+        ],
+        "operational_company_comment": [
+            join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
+            join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
+        ],
+        # Parent stakeholders (= Parent companies and investors of Operational company)
         'investor_name': INVESTOR_COLUMNS,
         'investor_country': INVESTOR_COLUMNS + [
             join(Country, 'investor_country', on='investor_country.id = stakeholders.fk_country_id'),
@@ -111,6 +125,20 @@ class SQLBuilderData:
         'parent_stakeholder_homepage': INVESTOR_COLUMNS,
         'parent_stakeholder_opencorporates_link': INVESTOR_COLUMNS,
         'parent_stakeholder_comment': INVESTOR_COLUMNS,
+        # Deal variables
+        'deal_count': [],
+        'availability': [],
+        'year': [ join_attributes('negotiation_status') ],
+        'crop':               [
+            join_attributes('akvl1', 'crops'),
+            join_expression(Crop, 'crop', "CAST(akvl1.value AS NUMERIC)")
+        ],
+        'crops':               [
+            join_attributes('akvl1', 'crops'),
+            join_expression(Crop, 'crops', "CAST(akvl1.value AS NUMERIC)")
+        ],
+        'target_country': TARGET_COUNTRY_COLUMNS,
+        'target_region': TARGET_COUNTRY_COLUMNS,
         'data_source_type':   (
             'data_source',
             [join_attributes('data_source_type', 'type')],
@@ -130,9 +158,38 @@ class SQLBuilderData:
         ],
     })
     SQL_COLUMN_MAP = DefaultDict(default_column_map, {
+        # Operational stakeholder (= Operational company)
+        #"operational_stakeholder_name": [
+        #    "ARRAY_AGG(DISTINCT CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier)) AS operational_stakeholder_name",
+        #    "CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier) AS operational_stakeholder_name"
+        #],
         "operational_stakeholder_name": [
-            "ARRAY_AGG(DISTINCT CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier)) AS operational_stakeholder_name",
-            "CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier) AS operational_stakeholder_name"
+            "ARRAY_AGG(DISTINCT operational_stakeholder.name) AS operational_stakeholder_name",
+        ],
+        "operational_company_country": [
+            "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_country.name, '#!#', operational_stakeholder_country.code_alpha3)) AS operational_company_country",
+            "CONCAT(operational_stakeholder_country.name, '#!#', operational_stakeholder_country.code_alpha3) AS operational_company_country"
+        ],
+        "operational_company_region": [
+            "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id)) AS operational_company_region",
+            "CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id) AS operational_company_region"
+        ],
+        "operational_company_classification": [
+            "ARRAY_AGG(DISTINCT operational_stakeholder.classification) AS operational_company_classification",
+        ],
+        "operational_company_homepage": [
+            "ARRAY_AGG(DISTINCT operational_stakeholder.homepage) AS operational_company_homepage",
+        ],
+        "operational_company_opencorporates_link": [
+            "ARRAY_AGG(DISTINCT operational_stakeholder.opencorporates_link) AS operational_company_opencorporates_link",
+        ],
+        "operational_company_comment": [
+            "ARRAY_AGG(DISTINCT operational_stakeholder.comment) AS operational_company_comment",
+        ],
+        # Parent stakeholders (= Parent companies and investors of Operational company)
+        "investor_id": [
+            "ARRAY_AGG(DISTINCT stakeholders.investor_identifier) AS investor_id",
+            "stakeholders.investor_identifier AS investor_id"
         ],
         "investor_name": [
             "ARRAY_AGG(DISTINCT CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier)) AS investor_name",
@@ -178,6 +235,7 @@ class SQLBuilderData:
             "ARRAY_AGG(stakeholders.comment) AS parent_stakeholder_comment",
             "stakeholders.comment AS parent_stakeholder_comment",
         ],
+        # Deal variables
         "intention": [
             "ARRAY_AGG(DISTINCT intention.value ORDER BY intention.value) AS intention",
             "intention.value AS intention"
@@ -226,7 +284,9 @@ class SQLBuilderData:
             """ARRAY_AGG(DISTINCT CONCAT(
                         negotiation_status.value,
                         '#!#',
-                        SUBSTR(negotiation_status.date, 1, 4)
+                        negotiation_status.date,
+                        '#!#',
+                        negotiation_status.is_current
                 )) AS negotiation_status"""
         ],
         "implementation_status": [
@@ -235,14 +295,18 @@ class SQLBuilderData:
                     DISTINCT CONCAT(
                         implementation_status.value,
                         '#!#',
-                        SUBSTR(implementation_status.date, 1, 4)
+                        implementation_status.date,
+                        '#!#',
+                        implementation_status.is_current
                     )
-                ) = '{#!#}') THEN NULL
+                ) = '{#!##!#}') THEN NULL
                 ELSE ARRAY_AGG(
                     DISTINCT CONCAT(
                         implementation_status.value,
                         '#!#',
-                        SUBSTR(implementation_status.date, 1, 4)
+                        implementation_status.date,
+                        '#!#',
+                        implementation_status.is_current
                     )
                 ) END AS implementation_status"""
         ],

@@ -17,10 +17,10 @@ from wkhtmltopdf import wkhtmltopdf
 
 from landmatrix.storage import data_source_storage
 from grid.forms.base_form import BaseForm
-from grid.forms.file_field_with_initial import FileFieldWithInitial
-from grid.widgets import TitleField, CommentInput
+from grid.fields import TitleField, FileFieldWithInitial
+from grid.widgets import CommentInput
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
+
 
 
 class DealDataSourceForm(BaseForm):
@@ -57,9 +57,9 @@ class DealDataSourceForm(BaseForm):
     publication_title = forms.CharField(
         required=False, label=_("Publication title")
     )
-    date = forms.DateField(
+    date = forms.CharField(
         required=False, label=_("Date"), help_text="[YYYY-MM-DD]",
-        input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
+    #    input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )
 
     # Optional personal information for Crowdsourcing and Personal information
@@ -77,14 +77,14 @@ class DealDataSourceForm(BaseForm):
         required=False, label=_("Comment on Data source"), widget=CommentInput
     )
 
-    def clean_date(self):
-        date = self.cleaned_data["date"]
-        try:
-            return date and date.strftime("%Y-%m-%d") or ""
-        except ValueError:
-            raise forms.ValidationError(
-                _("Invalid date. Please enter a date in the format [YYYY-MM-DD]")
-            )
+    #def clean_date(self):
+    #    date = self.cleaned_data["date"]
+    #    try:
+    #        return date and date.strftime("%Y-%m-%d") or ""
+    #    except ValueError:
+    #        raise forms.ValidationError(
+    #            _("Invalid date. Please enter a date in the format [YYYY-MM-DD]")
+    #        )
 
     def clean_file(self):
         file = self.cleaned_data["file"]

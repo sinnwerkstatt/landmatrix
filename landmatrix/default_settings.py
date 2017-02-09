@@ -297,3 +297,10 @@ REST_FRAMEWORK = {
 LOGIN_REDIRECT_URL = '/editor/'
 IMPERSONATE_REQUIRE_SUPERUSER = True
 IMPERSONATE_ALLOW_SUPERUSER = True
+
+TWITTER_TIMELINE = {
+    'consumer_key': 'lDSsFwPuVqIvWNTVqYrkPgqVx',
+    'consumer_secret': 'zUXtLPCCyV6E1uskfNAOUDqLSeqeNY5ZQDtIHxaq1ZNCdj1YEv',
+    'access_token': '182320767-qDBHP42oBPyiLFPtP1IDQHiGhFLUu5eTofcTLfRW',
+    'access_token_secret': '5VJCSXUmuenivcm6Z1r23Na1TOwnQkRbcNws9LBg13nN7'
+}

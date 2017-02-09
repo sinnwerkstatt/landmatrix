@@ -10,7 +10,6 @@ from mapping.aux_functions import get_now
 
 from django.db import connections, models
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def get_status_for_investor(primary_investor_id):

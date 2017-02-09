@@ -45,69 +45,67 @@
 {% block after %}
 {{ block.super }}
 <script type="text/javascript">
-var mapDisableDeals = true,
-    mapDisableControls = true;
+var mapDisableDeals = true;
 </script>
 
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
 <script type="text/javascript" src="{% static "vendor/ol3-google-maps/ol3gm-debug.js" %}"></script>
 <script type="text/javascript" src="{% static "js/layers.js" %}"></script>
 <script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
+<script type="text/javascript" src="{% static "js/clusterspiderfier.js" %}"></script>
 <script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
 
 <script type="text/javascript" src="{% static "js/map.js" %}"></script>
 <script type="text/javascript">
-var bigdealVectorLayer = new ol.layer.Vector()
-    bigdealArea = 0;
+var bigDealVectorSource = new ol.source.Vector();
+var hectares = 0;
 
-const bigdealSphere = new ol.Sphere(6378137);
-//    bigdealStyle = new ol.style.Style({
-//        stroke: new ol.style.Stroke({
-//            color: '#fc941f',
-//            width: 2
-//        }),
-//        fill: new ol.style.Fill({
-//            color: 'rgba(252, 148, 31, 0.2)'
-//        })
-//    });
-//
-//bigdealVectorLayer.setStyle([bigdealStyle]);
+function drawCircleInMeters(map, coords, hectares) {
+    // coords is expected in EPSG:4326 (lat/lon)
+    var projection = map.getView().getProjection();
+    var meters = Math.sqrt((hectares * 10000) / Math.PI);
+    var sphere = new ol.Sphere(6378137);
+    var circle = new ol.geom.Polygon.circular(sphere, coords, meters, 64);
+    circle = circle.transform('EPSG:4326', projection);
+    var feature = new ol.Feature(circle);
 
-function drawCircleInMeter(coords, area) {
-    if (!coords) {
-        coords = map.getView().getCenter();
-    }
-    if (!area) {
-        area = bigdealArea;
-    }
-
-    // TODO: Clear up this projection transformation mess
-    var radius = Math.sqrt((area * 10000) / Math.PI),
-        vectorSource = new ol.source.Vector({projection: 'EPSG:3857'}),
-        circle = ol.geom.Polygon.circular(bigdealSphere, coords, radius, 64).transform('EPSG:4326', 'EPSG:3857');
-    vectorSource.addFeature(new ol.Feature(circle));
-
-    bigdealVectorLayer.setSource(vectorSource);
-    bigdealArea = area;
+    bigDealVectorSource.clear();
+    bigDealVectorSource.addFeature(feature);
 };
 
 $(document).ready(function () {
-    initGeocoder(document.getElementById("search"));
-    $.get("/api/hectares.json", function (data) {
-        var area = parseFloat(data["hectares"]);
-        $(".legend li .hectares").text(number_format(area, 0));
-        drawCircleInMeter(null, area);
-        map.addLayer(bigdealVectorLayer);
+    var autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById("search"));
+
+    var bigDealVectorLayer = new ol.layer.Vector({
+        source: bigDealVectorSource,
+        style: new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(237, 136, 27, 0.2)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'rgba(237, 136, 27, 1)'
+            }),
+        })
     });
-    map.on('click', function (evt) {
-        var point = new ol.geom.Point(evt.coordinate).transform('EPSG:3857', 'EPSG:4326');
-        drawCircleInMeter(point.flatCoordinates);
-        return;
+    map.addLayer(bigDealVectorLayer);
+
+    $.get("/api/hectares.json", function (data) {
+        hectares = parseFloat(data["hectares"]);
+        $(".legend li .hectares").text(number_format(hectares, 0));
+        drawCircleInMeters(map, [0, 0], hectares);
+    });
+    map.on('singleclick', function (evt) {
+        var point = new ol.geom.Point(evt.coordinate);
+        point = point.transform('EPSG:3857', 'EPSG:4326');
+        drawCircleInMeters(map, point.flatCoordinates, hectares);
     });
     autocomplete.addListener('place_changed', function () {
-        var place = autocomplete.getPlace(),
-            coords = [place.geometry.location.lng(), place.geometry.location.lat()];
-        drawCircleInMeter(coords);
+        var place = autocomplete.getPlace();
+        var coords = [
+            place.geometry.location.lng(), place.geometry.location.lat()
+        ];
+        drawCircleInMeters(map, coords, hectares);
     });
 });
 </script>

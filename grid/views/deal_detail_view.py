@@ -28,7 +28,6 @@ from grid.forms.deal_overall_comment_form import DealOverallCommentForm
 from grid.views.view_aux_functions import render_to_string, render_to_response
 from grid.forms.country_specific_forms import get_country_specific_form_classes
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 FORMS = [
@@ -71,7 +70,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
                 activity = queryset.filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e)))
-        if not self.request.user.has_perm('landmatrix.change_activity'):
+        if not self.request.user.has_perm('landmatrix.review_activity'):
             if activity.fk_status_id == activity.STATUS_DELETED:
                 raise Http404('Activity %s has been deleted' % deal_id)
         return activity 
@@ -157,8 +156,8 @@ def display_invalid_forms(forms):
             print(form.__class__.__name__, 'INVALID:', form.errors)
 
 
-def get_forms(activity):
-    forms = [get_form(activity, form) for form in FORMS]
+def get_forms(activity, prefix=None):
+    forms = [get_form(activity, form, prefix) for form in FORMS]
     if activity:
         for form_class in get_country_specific_form_classes(activity):
             form_tuple = (form_class.Meta.name, form_class)
@@ -167,8 +166,8 @@ def get_forms(activity):
     return forms
 
 
-def get_form(activity, form_class):
-    prefix = hasattr(form_class[1], 'prefix') and form_class[1].prefix or None
+def get_form(activity, form_class, prefix=None):
+    prefix = hasattr(form_class[1], 'prefix') and (prefix + form_class[1].prefix) or prefix
     data = form_class[1].get_data(activity, prefix=prefix)
     return form_class[1](initial=data, prefix=prefix)
 

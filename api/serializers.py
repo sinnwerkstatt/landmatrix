@@ -1,11 +1,16 @@
 from collections import OrderedDict
 
+from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry
 from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
-from landmatrix.models.filter_preset import FilterPreset
-from landmatrix.models.investor import InvestorVentureInvolvement
+from landmatrix.models import (
+    Activity, InvestorVentureInvolvement, FilterPreset,
+)
+
+
+User = get_user_model()
 
 
 class PassThruSerializer(serializers.BaseSerializer):
@@ -23,12 +28,15 @@ class FilterPresetSerializer(serializers.ModelSerializer):
         exclude = ('is_default', 'overrides_default')
 
 
-class UserSerializer(serializers.BaseSerializer):
-    '''
-    Returns a user as a list: [id, username, fullname].
-    '''
-    def to_representation(self, obj):
-        return [obj.id, obj.username, obj.get_full_name() or obj.username]
+class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+
+    def get_full_name(self, obj):
+        return obj.get_full_name()
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'full_name')
 
 
 class RegionSerializer(serializers.BaseSerializer):
@@ -84,28 +92,40 @@ class DealSerializer(serializers.Serializer):
 
             locations.append(location)
 
+        # For our intfields, we sometimes get unexpected floats. Round those.
+        for field in ('contract_size', 'intended_size', 'production_size'):
+            value = obj[field]
+            if isinstance(value, str):
+                try:
+                    value = int(value)
+                except ValueError:
+                    try:
+                        value = round(float(value))
+                    except ValueError:
+                        value = None
+                obj[field] = value
+
         obj['locations'] = locations
 
         return super().to_representation(obj)
 
 
-class DealDetailSerializer(serializers.BaseSerializer):
+class DealDetailSerializer(serializers.ModelSerializer):
     '''
-    Limits deal attributes in the response to the attributes requested.
+    Returns deal attributes.
     '''
+    attributes = serializers.SerializerMethodField()
 
-    def __init__(self, *args, **kwargs):
-        self._requested_fields = kwargs.pop('fields', ())
-        super().__init__(*args, **kwargs)
+    class Meta:
+        model = Activity
+        fields = (
+            'activity_identifier', 'fk_status', 'is_public',
+            'deal_scope', 'negotiation_status', 'implementation_status',
+            'deal_size', 'attributes'
+        )
 
-    def to_representation(self, obj):
-        obj_data = OrderedDict()
-
-        for field_name in self._requested_fields:
-            if field_name in obj.attributes.keys():
-                obj_data[field_name] = str(obj.attributes[field_name])
-
-        return obj_data
+    def get_attributes(self, obj):
+        return obj.attributes_as_dict
 
 
 class InvestorNetworkSerializer(serializers.BaseSerializer):
@@ -121,12 +141,13 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
         "homepage": "",
         "opencorporates_link": "",
         "comment": "",
-        "parent_stakeholders": [
+        "stakeholders": [
             {
                 "id": 345,
                 "name": "",
-                [...]
+                [...] 
                 "involvement": [
+                    "parent_type": "stakeholder" // or "investor"
                     "percentage": "",
                     "investment_type": "",
                     "loans_amount": "",
@@ -134,14 +155,10 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
                     "loans_date": "",
                     "comment": "",
                 ],
-                "parent_stakeholders": [],
-                "parent_investors": []
+                "stakeholders": [],
             },
             [...]
         ],
-        "parent_investors": [
-            [...]
-        ]
     }
     This is not REST, but it maintains compatibility with the existing API.
     '''
@@ -156,6 +173,7 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             "homepage": obj.homepage,
             "opencorporates_link": obj.opencorporates_link,
             "comment": obj.comment,
+            "stakeholders": [],
         }
         involvements = InvestorVentureInvolvement.objects.filter(fk_venture=obj)
         for parent_type in parent_types:
@@ -166,6 +184,7 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
                 parent_involvements = involvements.stakeholders()
             for i, involvement in enumerate(parent_involvements):
                 parent = self.to_representation(involvement.fk_investor, parent_types)
+                parent["parent_type"] = parent_type == 'parent_investors' and 'investor' or 'stakeholder'
                 parent["involvement"] = {
                     "percentage": involvement.percentage,
                     "investment_type": involvement.get_investment_type_display(),
@@ -175,7 +194,7 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
                     "comment": involvement.comment,
                 }
                 parents.append(parent)
-            response[parent_type] = parents
+            response['stakeholders'].extend(parents)
 
         return response
 

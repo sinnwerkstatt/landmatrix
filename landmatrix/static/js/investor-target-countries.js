@@ -44,7 +44,7 @@ m = Raphael("map", 960, svgheight, function () {
             box2 = target.getBBox(),
             start = {x: box1.x+(box1.width/2), y: box1.y+(box1.height/2)},
             end = {x: box2.x+(box2.width/2), y: box2.y+(box2.height/2)},
-            line = map.path('M' + start.x + ' ' + start.y + 'L' + end.x + ' ' + end.y).attr({'stroke': (investor_target == 'target' ? '#ed881b' : '#44c42d'), "stroke-width":2});
+            line = map.path('M' + start.x + ' ' + start.y + 'L' + end.x + ' ' + end.y).attr({'stroke': (investor_target == 'target' ? '#ed881b' : '#44b7b6'), "stroke-width":2});
 
         origin.lines.push(line);
     }
@@ -121,7 +121,7 @@ m = Raphael("map", 960, svgheight, function () {
             $(".views .show-all:not(:visible)").removeClass("disabled");
             // switch mode
             if (toggle) { investor_target = investor_target == 'investor' ? 'target' : 'investor'; };
-            bubble.attr({"fill": investor_target == 'target' ?  "#ed881b" : "#44c42d" });
+            bubble.attr({"fill": investor_target == 'target' ?  "#ed881b" : "#44b7b6" });
     	    map.clearBubbles(bubble);
             // get affected bubbles
             url = investor_target == 'target' ? URL_PREFIX + "api/investor_countries_for_target_country.json" : URL_PREFIX + "api/target_countries_for_investor_country.json";
@@ -157,7 +157,7 @@ m = Raphael("map", 960, svgheight, function () {
     		var cords = map.getXY(bubble.lon, bubble.lat);
     		var a = map.circle()
     			.attr({
-    				fill: investor_target ? (investor_target == 'target' ? "#ed881b" : "#44c42d") : "#ed881b",
+    				fill: investor_target ? (investor_target == 'target' ? "#ed881b" : "#44b7b6") : "#ed881b",
     				href: "#",
     				stroke: "#fff",
     				"stroke-width": 2,
@@ -239,7 +239,7 @@ m = Raphael("map", 960, svgheight, function () {
     		var cords = map.getXY(bubble.lon, bubble.lat);
     		var a = map.circle()
     			.attr({
-    				fill: investor_target == 'target' ? "#44c42d" : "#ed881b",
+    				fill: investor_target == 'target' ? "#44b7b6" : "#ed881b",
     				href: "#",
     				stroke: "#fff",
     				"stroke-width": 2,

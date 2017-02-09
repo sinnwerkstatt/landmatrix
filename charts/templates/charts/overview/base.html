@@ -63,7 +63,8 @@ $(document).ready(function () {
     });
     $(".views .btn.active").click();
 });
-var storage = {};
+var storage = {},
+    bar;
 
 function draw (callback, chart_data) {
 /* chart_data: optional */
@@ -73,7 +74,7 @@ function draw (callback, chart_data) {
     RGraph.ObjectRegistry.Clear();
     // Cached data?
     if (chart_data) {
-        var bar_labels = [], bar_labels_ingraph = [], bar_data = [];
+        var bar_labels = [], bar_labels_ingraph = [], bar_data = [], bar_above_labels = [];
 
         var show_deals = (datatype == "deals");
         for (var i = 0; i < chart_data.length; i++) {
@@ -90,18 +91,27 @@ function draw (callback, chart_data) {
 
                 bar_labels.push(label);
                 bar_data.push(show_deals && parseInt(chart_data[i]["deals"], 10) || parseInt(chart_data[i]["hectares"], 10));
+                if (typeof chart_data[i].parent !== undefined) {
+                    var parent = chart_data[i].parent;
+                    if (bar_above_labels.indexOf(parent) > -1) {
+                        bar_above_labels.push(null);
+                    } else {
+                        bar_above_labels.push(parent);
+                    }
+                }
             }
         }
         for (var i = 0; i < bar_data.length; i++) {
             bar_labels_ingraph.push("<p>" + (show_deals && (bar_data[i] + " deals") || (numberWithCommas(bar_data[i]) +  " ha")) + "</p>");
         }
-
-        var bar = new RGraph.Bar('chartcanvas', bar_data);
+        bar = new RGraph.Bar('chartcanvas', bar_data);
         bar.Set('chart.hmargin', 5);
         bar.Set('chart.gutter.bottom', 130);
-        bar.Set('chart.colors', [show_deals && '#fc941f' || '#44c42d']);
+        bar.Set('chart.colors', [show_deals && '#fc941f' || '#44b7b6']);
         bar.Set('chart.labels', bar_labels);
-        //bar.Set('chart.labels.above.specific', bar_labels_ingraph);
+        //bar.Set('chart.labels.ingraph', bar_labels_ingraph);
+        bar.Set('chart.labels.above.specific', bar_above_labels);
+        //bar.Set('chart.labels.above.size', '10');
         bar.Set('chart.strokestyle', '#bbb');
         bar.Set('chart.hmargin.grouped', 0);
         bar.Set('chart.background.barcolor1', '#e2e2e2');
@@ -149,6 +159,7 @@ function draw (callback, chart_data) {
         //RGraph.Effects.Fade.In(pie, {'duration': 250});
         //$("ul.legend li:first span").text(" (" + numberWithCommas(available) + (//show_deals && " deals" || " hectares") + ", " + available_per + "%)");
         //$("ul.legend li:last span").text(" (" + numberWithCommas(not_available) + (show_deals && " deals" || " hectares") + ", " + not_available_per + "%)");
+        {% block extra_draw %}{% endblock %}
         (typeof callback == "function") && callback();
     } else {
         var json_query = variable + ".json";

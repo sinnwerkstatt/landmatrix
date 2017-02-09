@@ -9,7 +9,6 @@ from migrate import V1, V2
 
 from django.utils.text import slugify
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 RENAMED_COUNTRIES = {

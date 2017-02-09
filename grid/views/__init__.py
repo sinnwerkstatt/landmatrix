@@ -1,4 +1,3 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from .activity_protocol import *
 from .add_deal_view import *

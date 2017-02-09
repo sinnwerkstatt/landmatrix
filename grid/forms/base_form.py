@@ -14,7 +14,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
 from landmatrix.models.comment import Comment
-from grid.widgets.nested_multiple_choice_field import NestedMultipleChoiceField
+from grid.fields import (
+    NestedMultipleChoiceField, YearBasedField, MultiCharField, ActorsField,
+)
 
 class BaseForm(forms.Form):
     DEBUG = False
@@ -97,27 +99,44 @@ class BaseForm(forms.Form):
                                 attributes[name] = {'value': value}
                         except (ValueError, TypeError):
                             raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
-            # Year based data?
-            elif isinstance(f, forms.MultiValueField):
-                keys = list(filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n), o), self.data.keys()))
-                keys.sort()
+            # Year based data (or Actors field)?
+            elif isinstance(f, (YearBasedField, ActorsField)):
+                # Grab last item and enumerate, since there can be gaps
+                # because of checkboxes not submitting data
+                prefix = self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n
+                keys = sorted([k for k in self.data.keys() if re.match('%s_\d' % prefix, k)])
+                count = len(keys) > 0 and int(keys[-1].replace(name+'_', ''))+1 or 0
+                widget_count = len(f.widget.get_widgets())
+                if count % widget_count > 0:
+                    count += 1
                 values = []
-                for i in range(len(keys)):
-                    count = len(f.widget.get_widgets())
-                    if i % count == 0:
-                        value = self.data.get(len(keys) > i and keys[i] or "-", "")
+                for i in range(count):
+                    key = '%s_%i' % (prefix, i)
+                    if i % widget_count == 0:
+                        widget_values = self.data.getlist(key)
                         value2 = None
-                        if count > 2:
-                            value2 = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
-                            year = self.data.get(len(keys) > i+2 and keys[i+2] or "-", "")
-                        else:
-                            year = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
-                        if value or value2 or year:
-                            values.append({
-                                'value': value,
-                                'value2': value2,
-                                'date': year,
-                            })
+                        year = None
+                        is_current = False
+                        # Value / Value2 / Date / is current
+                        if widget_count > 3:
+                            value2 = self.data.get('%s_%i' % (prefix, i + 1))
+                            year = self.data.get('%s_%i' % (prefix, i + 2))
+                            is_current = '%s_%i' % (prefix, i + 3) in self.data
+                        # Value / Date / is current
+                        elif widget_count > 2:
+                            year = self.data.get('%s_%i' % (prefix, i + 1))
+                            is_current = '%s_%i' % (prefix, i + 2) in self.data
+                        # Value / Value2 (e.g. Actors field)
+                        elif widget_count == 2:
+                            value2 = self.data.get('%s_%i' % (prefix, i + 1))
+                        if widget_values or value2 or year:
+                            for value in widget_values:
+                                values.append({
+                                    'value': value,
+                                    'value2': value2,
+                                    'date': year,
+                                    'is_current': is_current,
+                                })
                 if values:
                     attributes[name] = values
             elif isinstance(f, forms.FileField):
@@ -181,8 +200,9 @@ class BaseForm(forms.Form):
             # Multiple choice?
             if isinstance(field, (forms.MultipleChoiceField, forms.ModelMultipleChoiceField)):
                 value = cls.get_multiple_choice_data(field, field_name, attribute)
-            # Year based data?
-            elif isinstance(field, forms.MultiValueField):
+            # Year based data (or Actors field/MultiCharField)?
+            # TODO: check if the other two should be included
+            elif isinstance(field, (YearBasedField, MultiCharField, ActorsField)):
                 value = cls.get_year_based_data(field, field_name, attribute)
             # Choice field?
             elif isinstance(field, forms.ChoiceField):
@@ -240,28 +260,36 @@ class BaseForm(forms.Form):
         # Group all attributes by date
         attributes_by_date = dict()
         # Some year based fields take 2 values, e.g. crops and area
-        values_count = len(field.widget.get_widgets()) - 1
+        widgets = field.widget.get_widgets()
+        multiple = field.widget.get_multiple()
+        values_count = len(widgets) - 1
         values = []
-        for attribute in attributes:
-            #if isinstance(field.fields[0], forms.ChoiceField):
-            #    for k, v in field.fields[0].choices:
-            #        if v == value:
-            #            value = str(k)
-            #            break
-            if attribute.date in attributes_by_date:
-                if attribute.value:
-                    attributes_by_date[attribute.date][0] += ',' + attribute.value
-                if values_count > 1 and attribute.value2:
-                    attributes_by_date[attribute.date][1] += ',' + attribute.value2
-            else:
-                if values_count == 1:
-                    attributes_by_date[attribute.date] = [attribute.value]
+        # Collect all attributes for date (for multiple choice fields)
+        if multiple[0]:
+            for attribute in attributes:
+                key = '%s:%s' % (attribute.date, values_count > 2 and attribute.value2 or '')
+                if key in attributes_by_date:
+                    if attribute.value:
+                        attributes_by_date[key][1] += ',' + attribute.value
                 else:
-                    attributes_by_date[attribute.date] = [attribute.value, attribute.value2 or '']  
-        if values_count == 1:
-            values = [':'.join([a[0], d or '']) for d, a in attributes_by_date.items()]
+                    is_current = attribute.is_current and '1' or ''
+                    attributes_by_date[key] = [is_current, attribute.value] 
+            if values_count > 2:
+                values = [':'.join([a[1], d.split(':')[1], d.split(':')[0], a[0]]) for d, a in attributes_by_date.items()]
+            else:
+                values = [':'.join([a[1], d or '', a[0]]) for d, a in attributes_by_date.items()]
         else:
-            values = [':'.join([a[0], a[1], d or '']) for d, a in attributes_by_date.items()]
+            for attribute in attributes:  
+                is_current = attribute.is_current and '1' or ''
+                # Value:Value2:Date:Is current
+                if values_count > 2:
+                    values.append(':'.join([attribute.value, attribute.value2, attribute.date or '', is_current]))
+                # Value:Date:Is current
+                elif values_count > 1:
+                    values.append(':'.join([attribute.value, attribute.date or '', is_current]))
+                # Value:Value2 (e.g. Actors field)
+                else:
+                    values.append(':'.join([attribute.value, attribute.value2 or '']))
         return '#'.join(values)
 
     @classmethod
@@ -312,7 +340,7 @@ class BaseForm(forms.Form):
             elif isinstance(field, forms.BooleanField):
                 value = self.get_display_value_boolean_field(field_name)
             else:
-                value = self.initial.get(field_name, '')#self.prefix and "%s-%s"%(self.prefix, field_name) or field_name)
+                value = self.initial.get(field_name, '')
 
             if value:
                 tg_items.append({
@@ -350,14 +378,15 @@ class BaseForm(forms.Form):
         if data:
             for value in data.split('#'):
                 date_values = value.split(':')
+                current = date_values.pop()
                 date = date_values.pop()
                 if date_values:
                     if isinstance(field.fields[0], forms.ChoiceField):
                         selected = date_values[0].split(',')
                         date_values[0] = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) in selected])
                     value = ''
-                    if date:
-                        value += '[%s] ' % date
+                    if date or current:
+                        value += '[%s] ' % ', '.join(filter(None, [date, (current and 'current' or '')]))
                     value += ', '.join(filter(None, date_values))
                 if value:
                     values.append(value)
