@@ -16,6 +16,9 @@
 {% if bound_target_country_field_id %}
     options['boundTargetCountryField'] = $('#{{ bound_target_country_field_id }}');
 {% endif %}
+{% if bound_map_field_id %}
+    options['boundMapField'] = $('#{{ bound_map_field_id }}');
+{% endif %}
 {% if disable_drawing %}
     options['disableDrawing'] = true;
 {% endif %}

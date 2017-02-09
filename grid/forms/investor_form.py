@@ -8,11 +8,10 @@ from grid.forms.base_model_form import BaseModelForm
 from grid.widgets import CommentInput
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 INVESTOR_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
-    Investor.CLASSIFICATION_CHOICES)
+    Investor.INVESTOR_CLASSIFICATIONS)
 OPERATIONAL_STAKEHOLDER_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
     Investor.OPERATIONAL_COMPANY_CLASSIFICATIONS)
 

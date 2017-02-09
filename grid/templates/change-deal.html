@@ -46,7 +46,7 @@
         {% if perms.landmatrix.change_activity %}<a href="javascript:;" data-toggle="modal" data-target="#recover-deal" class="pull-right"><i class="fa fa-recycle"></i> {% trans "Recover this deal" %}</a>{% endif %}
         {% else %}
         <input type="submit" class="btn btn-primary" value="{% trans 'Submit' %}"/>
-        {% if perms.landmatrix.delete_activity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-deal" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this deal" %}</a>{% endif %}
+        {% if perms.landmatrix.review_activity or perms.landmatrix.delete_activity %}<a href="javascript:;" data-toggle="modal" data-target="#delete-deal" class="pull-right"><i class="fa fa-trash"></i> {% trans "Delete this deal" %}</a>{% endif %}
         {% endif %}
     </form>
     {% if activity.fk_status_id == 4 %}

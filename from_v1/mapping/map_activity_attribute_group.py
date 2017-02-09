@@ -11,7 +11,6 @@ from mapping.map_language import MapLanguage
 from mapping.aux_functions import year_to_date, replace_model_name_with_id, \
     replace_country_name_with_id, extract_value, is_number
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def clean_coordinates(key, value):

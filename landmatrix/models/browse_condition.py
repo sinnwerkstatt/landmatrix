@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from landmatrix.models.browse_rule import BrowseRule
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class BrowseCondition(models.Model):

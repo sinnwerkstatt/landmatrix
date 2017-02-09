@@ -13,27 +13,41 @@ from grid.views.profiling_decorators import \
     print_execution_time_and_num_queries
 from grid.views.activity_protocol import ActivityProtocol
 from .view_aux_functions import render_to_response, get_field_label
-from grid.forms.choices import intention_choices
+from grid.forms.choices import intention_choices, \
+    INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP, \
+    grouped_intention_choices
 from django.utils.datastructures import SortedDict
 from django.template.defaultfilters import slugify
 
 INTENTION_MAP = {}
-for choice, value, choices in intention_choices:
+for choice, value in intention_choices:
+    if choice in INTENTION_AGRICULTURE_MAP.keys():
+        INTENTION_MAP[choice] = {
+            'value': _('Agriculture'),
+            'slug': 'agriculture',
+            'order_by': _('Agriculture'),
+        }
+    elif choice in INTENTION_FORESTRY_MAP.keys():
+        INTENTION_MAP[choice] = {
+            'value': _('Forestry'),
+            'slug': 'forestry',
+            'order_by': _('Forestry'),
+        }
     INTENTION_MAP[choice] = {
         'value': value,
         'slug': slugify(choice),
         'order_by': value,
-        'is_parent': choices and len(choices) > 0
+        #'is_parent': choices and len(choices) > 0
     }
-    if not choices:
-        continue
-    for schoice, svalue in choices:
-        INTENTION_MAP[schoice] = {
-            'value': svalue,
-            'slug': slugify(schoice),
-            'parent': value,
-            'order_by': '%s (%s)' % (value, svalue),
-        }
+    #if not choices:
+    #    continue
+    #for schoice, svalue in choices:
+    #    INTENTION_MAP[schoice] = {
+    #        'value': svalue,
+    #        'slug': slugify(schoice),
+    #        'parent': value,
+    #        'order_by': '%s (%s)' % (value, svalue),
+    #    }
 
 
 class TableGroupView(FilterWidgetMixin, TemplateView):
@@ -54,7 +68,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
     COLUMN_GROUPS = {
         "target_country": ["target_country", "target_region", "intention", "deal_count", "availability"],
         "target_region": ["target_region", "intention", "deal_count", "availability"],
-        "investor_name": ["investor_name", "parent_stakeholder_country", "intention", "deal_count", "availability"],
+        "investor_name": ["investor_id", "investor_name", "investor_country", "intention", "deal_count", "availability"],
         "investor_country": ["investor_country", "intention", "deal_count", "availability"],
         "investor_region": ["investor_region", "deal_count", "availability"],
         "intention": ["intention", "deal_count", "availability"],
@@ -174,6 +188,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             'operational_stakeholder': _('Operational company'),
             'investor_country': _('Investor country'),
             'investor_region': _('Investor region'),
+            'investor_id': _('Investor ID'),
             'investor_name': _('Investor name'),
             'operational_stakeholder_name': _('Operational company name'),
             'parent_stakeholder': _('Parent stakeholders'),
@@ -188,6 +203,12 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             'parent_stakeholder_comment': _('Comment on parent stakeholder'),
             'crop': _('Crop'),
             'data_source_type': _('Data source type'),
+            'operational_company_country': _("Operational company country of registration/origin"),
+            'operational_company_region': _("Operational company region of registration/origin"),
+            'operational_company_classification': _("Operational company classification"),
+            'operational_company_homepage': _("Operational company homepage"),
+            'operational_company_opencorporates_link': _("Operational company Opencorporates link"),
+            'operational_company_comment': _("Additional comment on Operational company"),
         }
         columns = SortedDict()
         for name in self.columns:
@@ -226,7 +247,35 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
         items = [self._get_row(record, query_result) for record in query_result]
         # Reorder required for intention (because subcategories have been renamed in _process_intention)
         if self.group == 'intention':
-            items = sorted(items, key=lambda i: i['intention'] and i['intention'][0] and str(i['intention'][0]['order_by']) or '')
+            items_by_intention = dict((len(i['intention']) > 0 and str(i['intention'][0]['value'] or ''), i) for i in items)
+            # Add extra lines for groups (agriculture and forestry)
+            items = []
+            for group_name, choices in grouped_intention_choices:
+                group = SortedDict()
+                group['intention'] = [{'value': group_name, 'slug':slugify(group_name)},]
+                group['deal_count'] = 0
+                group['availability'] = 0
+                group['availability_count'] = 0
+                group_items = []
+                for choice_value, choice_label in choices:
+                    if choice_label in items_by_intention.keys():
+                        item = items_by_intention[choice_label]
+                        item['intention'][0]['parent'] = group
+                        group_items.append(item)
+                        group['deal_count'] += item['deal_count']
+                        group['availability'] += item['availability']
+                        group['availability_count'] += 1
+                    else:
+                        item = SortedDict()
+                        item['intention'] = [{'value': choice_label, 'slug':slugify(choice_label), 'parent': group},]
+                        item['deal_count'] = 0
+                        item['availability'] = 0
+                        group_items.append(item)
+                if group['availability']:
+                    group['availability'] = int(round(group['availability'] / group['availability_count']))
+                    del group['availability_count']
+                items.append(group)
+                items.extend(group_items)
         return items
 
     def _get_row(self, record, query_result):
@@ -243,25 +292,28 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
         if not isinstance(value, list):
             value = [value]
         intentions = [INTENTION_MAP.get(intention) for intention in value]
-        return intentions
+        return list(filter(None, intentions))
 
     def _process_value(self, column, value):
         if not value: return None
         process_functions = {
-            'intention': self._process_intention,
             'operational_stakeholder_name': self._process_investor_name,
-            #'operational_stakeholder_country': self._process_stitched_together_field,
-            #'operational_stakeholder_region': self._process_stitched_together_field,
+            'operational_company_country': self._process_stitched_together_field,
+            'operational_company_region': self._process_stitched_together_field,
+            'operational_company_classification': self._process_investor_classification,
+            # Parent stakeholder (= Parent companies and investors of Operational company)
             'investor_name': self._process_investor_name,
             'investor_country': self._process_stitched_together_field,
             'investor_region': self._process_stitched_together_field,
             'parent_stakeholder_classification': self._process_investor_classification,
             'parent_stakeholder_country': self._process_stitched_together_field,
             'parent_stakeholder_region': self._process_stitched_together_field,
+            # Deal variables
             'crop': self._process_stitched_together_field,
             'latlon': lambda v: ["%s/%s (%s)" % (n.split("#!#")[0], n.split("#!#")[1], n.split("#!#")[2]) for n in v],
-            'negotiation_status': self._process_name_and_year,
-            'implementation_status': self._process_name_and_year,
+            'negotiation_status': self._process_year_based,
+            'implementation_status': self._process_year_based,
+            'intention': self._process_intention,
         }
         if column in process_functions:
             return process_functions[column](value)
@@ -307,7 +359,6 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             output.append(format_string % gv)
         return output
 
-
     def _process_investor_name(self, value):
         if not isinstance(value, list):
             value = [value]
@@ -341,11 +392,12 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             value = [value]
         return [field and field.split("#!#")[0] or "" for field in value]
 
-    def _process_name_and_year(self, value):
+    def _process_year_based(self, value):
         split_values = [
             {
                 "name": n.split("#!#")[0],
-                "year": int(n.split("#!#")[1]) if n.split("#!#")[1] else 0,
+                "year": n.split("#!#")[1],
+                "current": n.split("#!#")[2],
             } for n in value
         ]
 

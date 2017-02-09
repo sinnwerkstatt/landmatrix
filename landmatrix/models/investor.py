@@ -2,11 +2,11 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from multiselectfield import MultiSelectField
+
 from landmatrix.models.default_string_representation import \
     DefaultStringRepresentation
 
-
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class InvestorQuerySet(models.QuerySet):
@@ -96,7 +96,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     objects = InvestorQuerySet.as_manager()
 
     class Meta:
-        ordering = ('-name',)
+        ordering = ('name',)
         abstract = True
 
     def __str__(self):
@@ -120,12 +120,28 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
             self.investor_identifier = self.pk
             update_fields.append('investor_identifier')
 
-        if not self.name:
-            self.name = _("Unknown (#%s)") % (self.pk,)
+        if not self.name or self.name == 'Unknown (#{})'.format(self.pk):
+            self.name = self._get_default_name()
             update_fields.append('name')
 
         if update_fields:
             super().save(update_fields=update_fields)
+
+    def _get_default_name(self):
+        '''
+        If we have an unknown (blank) name, get the correct generic text.
+        '''
+        if self.is_operational_company:
+            name = _("Unknown operational company (#%s)") % (self.pk,)
+        elif self.is_parent_company:
+            name = _("Unknown parent company (#%s)") % (self.pk,)
+        elif self.is_parent_investor:
+            name = _("Unknown tertiary investor/lender (#%s)") % (self.pk,)
+        else:
+            # Just stick with unknown if no relations
+            name = _("Unknown (#%s)") % (self.pk,)
+
+        return name
 
     @property
     def history(self):
@@ -145,6 +161,30 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         return (
             hasattr(self, 'investoractivityinvolvement_set') and
             self.investoractivityinvolvement_set.exists())
+
+    @property
+    def is_parent_company(self):
+        '''
+        Right now, this is determined based on if any relations exist.
+        It probably makes more sense to have this as a flag on the model.
+        '''
+        if hasattr(self, 'venture_involvements'):
+            queryset = self.venture_involvements.all()
+            queryset = queryset.filter(
+                role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
+            return queryset.exists()
+        else:
+            return False
+
+    @property
+    def is_parent_investor(self):
+        if hasattr(self, 'venture_involvements'):
+            queryset = self.venture_involvements.all()
+            queryset = queryset.filter(
+                role=InvestorVentureInvolvement.INVESTOR_ROLE)
+            return queryset.exists()
+        else:
+            return False
 
     @classmethod
     def get_latest_investor(cls, investor_identifier):
@@ -181,13 +221,13 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
         self.save(update_fields=['fk_status'])
 
-
 class Investor(InvestorBase):
     subinvestors = models.ManyToManyField(
         "self", through='InvestorVentureInvolvement', symmetrical=False,
         through_fields=('fk_venture', 'fk_investor'))
 
     class Meta:
+        ordering = ('name',)
         verbose_name = _("Investor")
         verbose_name_plural = _("Investors")
 
@@ -229,8 +269,8 @@ class InvestorVentureInvolvement(models.Model):
         (STAKEHOLDER_ROLE, _('Stakeholder')),
         (INVESTOR_ROLE, _('Investor')),
     )
-    EQUITY_INVESTMENT_TYPE = '10'
-    DEBT_FINANCING_INVESTMENT_TYPE = '20'
+    EQUITY_INVESTMENT_TYPE = 10
+    DEBT_FINANCING_INVESTMENT_TYPE = 20
     INVESTMENT_TYPE_CHOICES = (
         (EQUITY_INVESTMENT_TYPE, _('Shares/Equity')),
         (DEBT_FINANCING_INVESTMENT_TYPE, _('Debt financing')),
@@ -239,12 +279,13 @@ class InvestorVentureInvolvement(models.Model):
     fk_venture = models.ForeignKey(Investor, db_index=True,
                                    related_name='venture_involvements')
     fk_investor = models.ForeignKey(Investor, db_index=True, related_name='+')
+    investment_type = MultiSelectField(
+        max_length=255, choices=INVESTMENT_TYPE_CHOICES,
+        default='', blank=True, null=True)
     percentage = models.FloatField(
         _('Ownership share'), blank=True, null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
     role = models.CharField(max_length=2, choices=ROLE_CHOICES)
-    investment_type = models.CharField(
-        max_length=2, choices=INVESTMENT_TYPE_CHOICES, blank=True, null=True)
     loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
     loans_currency = models.ForeignKey(
         "Currency", verbose_name=_("Loan currency"), blank=True, null=True)

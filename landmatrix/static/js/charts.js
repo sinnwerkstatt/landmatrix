@@ -4,7 +4,6 @@
  */
 
 var datatype = 'size';
-var chartwidth = 800;
 
 var d3_lmcolors = [
     "#fc941f", "#b9d635", "#4bbb87", "#179961", "#7c9a61",
@@ -17,7 +16,8 @@ function LMColor() {
 }
 
 function buildTreeChart() {
-
+    var chartwidth = $('#chartarea').width(),
+        chartheight = $('#chartarea').height();
     var w = chartwidth - 80,
         h = 800 - 180,
         x = d3.scale.linear().range([0, w]),
@@ -92,22 +92,41 @@ function buildTreeChart() {
 
         cell.append("svg:rect")
             .attr("width", function (d) {
-                return d.dx - 1;
+                if (d.dx > 1) {
+                    return d.dx - 1;
+                }
+                else {
+                    return 0;
+                }
             })
             .attr("height", function (d) {
-                return d.dy - 1;
+                if (d.dy > 1) {
+                    return d.dy - 1;
+                }
+                else {
+                    return 0;
+                }
             })
             .style("fill", function (d) {
-                console.log("The colorbook says: ", d.parent.color);
                 return color(d.parent.color);
             });
 
         cell.append("svg:text")
             .attr("x", function (d) {
-                return d.dx / 2;
+                if (d.dx > 0) {
+                    return d.dx / 2;
+                }
+                else {
+                    return 0;
+                }
             })
             .attr("y", function (d) {
-                return d.dy / 2;
+                if (d.dy > 0) {
+                    return d.dy / 2;
+                }
+                else {
+                    return 0;
+                }
             })
             .attr("dy", ".35em")
             .attr("text-anchor", "middle")
@@ -181,6 +200,8 @@ function buildPieChart() {
         {label: 'None', value: 0.1}
     ];
 
+    var chartwidth = $('#chartarea').width(),
+        chartheight = $('#chartarea').height();
 
     if (chartwidth < 996) {
         var h = chartheight * 0.5;
@@ -268,6 +289,8 @@ function buildDotChart() {
 
     $("#DotChart").empty();
 
+    var chartwidth = $('#chartarea').width(),
+        chartheight = $('#chartarea').height();
     var margin = {top: 20, right: 150, bottom: 0, left: 50},
         width = chartwidth * 0.333,
         height;
@@ -276,7 +299,7 @@ function buildDotChart() {
         height = chartheight * 0.5;
     } else {
         margin.top = 100;
-        height = chartheight;                              //height
+        height = chartheight;
     }
 
     var x_start = 0,
@@ -436,7 +459,7 @@ function buildAgriculturalPies() {
             pie_data.push(data[i]["agricultural_produce"]["multiple_use"]);
 
             var pie = new RGraph.Pie('pie-' + data[i]["region"], pie_data);
-            pie.Set('chart.colors', ['#44c42d', '#4bbb87', '#179961', '#7c9a61']);
+            pie.Set('chart.colors', ['#44b7b6', '#4bbb87', '#179961', '#7c9a61']);
             pie.Set('chart.strokestyle', '#bbb');
             pie.Set('chart.text.font', 'Open Sans');
             pie.Set('chart.text.size', '9');
@@ -458,8 +481,3 @@ function buildAgriculturalPies() {
         }
     });
 }
-
-$(document).ready(function() {
-    chartwidth = $('#chartarea').width();
-    chartheight = $('#chartarea').height();
-});

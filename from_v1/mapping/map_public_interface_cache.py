@@ -7,7 +7,6 @@ from mapping.map_activity_attribute_group import MapActivityAttributeGroup
 
 from django.db import transaction, connections
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 #class MapPublicInterfaceCache(MapModel):

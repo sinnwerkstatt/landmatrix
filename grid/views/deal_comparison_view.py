@@ -9,7 +9,6 @@ from landmatrix.models.activity import HistoricalActivity
 from landmatrix.models.deal import Deal
 from landmatrix.models.deal_history import DealHistoryItem
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealComparisonView(TemplateView):

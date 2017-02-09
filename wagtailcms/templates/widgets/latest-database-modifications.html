@@ -13,7 +13,7 @@
 <script type="text/javascript">
 $(document).ready(function () {
     var count = {{ limit|default_if_none:5 }};
-    $.get('/api/latest_changes.json?n=' + count{% if country %} + '&target_country={{ country.id }}'{% else %}{% if country %} + '?target_region={{ region.id }}'{% endif %}{% endif %}, function (data) {
+    $.get('/api/latest_changes.json?n=' + count{% if country %} + '&target_country={{ country.id }}'{% else %}{% if region %} + '&target_region={{ region.id }}'{% endif %}{% endif %}, function (data) {
         var table = $('#latest-database-modifications');
         if (data.length > 0) {
             var tbody = table.find('tbody').empty(),

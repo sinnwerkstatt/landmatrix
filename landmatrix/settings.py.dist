@@ -1,4 +1,3 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 # whether to show SQL generated (is referenced below when configuring logging)
 LOG_DB_QUERIES = False

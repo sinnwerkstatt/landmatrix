@@ -17,7 +17,6 @@ from grid.widgets import (
 from grid.forms.choices import intention_choices, int_choice_to_string
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FilterWidgetAjaxView(View):

@@ -3,7 +3,6 @@ from migrate import V1
 from django.utils import timezone
 from django.db import connections
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def stakeholder_ids():

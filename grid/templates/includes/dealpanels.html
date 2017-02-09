@@ -61,7 +61,9 @@
                                 options['boundTargetCountryField'] = form.find('.target_country :input');
                                 options['boundLevelOfAccuracyField'] = form.find('.level_of_accuracy :input');
                             }
-                            mapWidgets[id] = new MapWidget(options);
+                            var mapWidget = new MapWidget(options);
+                            mapWidgets[id] = mapWidget;
+                            $('#' + id).data('mapWidget', mapWidget);
                         });
 
                         // init location widget autocomplete

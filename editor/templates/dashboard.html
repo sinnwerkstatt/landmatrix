@@ -115,7 +115,8 @@
                 user_request.then(function (data) {
                   for (var d = 0; d < data.length; d++) {
                     var item = data[d];
-                    var option = new Option(item[2], item[0], false, false);
+                    var username = item['full_name'] || item['username'];
+                    var option = new Option(username, item['id'], false, false);
                     user_select.append(option);
                   };
                   user_select.select2({
@@ -157,7 +158,7 @@
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>
                         {% trans "Latest added" %}
-                        <a class="" href="{% url 'log_added' %}"><small>{% trans "Show all" %}</small></a>
+                        <a class="" href="{% url 'log_added' %}?{{ request.GET.urlencode }}"><small>{% trans "Show all" %}</small></a>
                     </h3>
                     {% if latest_added %}
                         <table class="table table-condensed">
@@ -193,7 +194,7 @@
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>
                         {% trans "Latest modified" %}
-                        <a class="" href="{% url 'log_modified' %}"><small>{% trans "Show all" %}</small></a>
+                        <a class="" href="{% url 'log_modified' %}?{{ request.GET.urlencode }}"><small>{% trans "Show all" %}</small></a>
                     </h3>
                     {% if latest_modified %}
                         <table class="table table-condensed">
@@ -228,7 +229,7 @@
                 <div class="alert alert-danger">
                     <a class="close hidden" data-dismiss="alert">&times;</a>
                     <h3>{% trans "Latest deleted" %} 
-                        <a class="" href="{% url 'log_deleted' %}"><small>{% trans "Show all" %}</small></a>
+                        <a class="" href="{% url 'log_deleted' %}?{{ request.GET.urlencode }}"><small>{% trans "Show all" %}</small></a>
                     </h3>
                     {% if latest_deleted %}
                         <table class="table table-condensed">
@@ -275,6 +276,7 @@
                                 <th class="deal">{% trans "Deal #" %}</th>
                                 <th class="user">{% trans "Last revision" %}</th>
                                 <th class="state">{% trans "State" %}</th>
+                                <th class="state">{% trans "Timestamp" %}</th>
                                 <th class="action">{% trans "Actions" %}</th>
                                 </thead>
                                 <tbody>
@@ -285,6 +287,7 @@
                                         </td>
                                         <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Update" %}</td>
+                                        <td class="state">{{ activity.timestamp|naturaltime_from_string }}</td>
                                         <td class="action">
                                             <a href="{% url 'manage_approve_change_deal' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
                                             <a href="{% url 'manage_reject_change_deal' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
@@ -298,6 +301,7 @@
                                         </td>
                                         <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Delete" %}</td>
+                                        <td class="state">{{ activity.timestamp|naturaltime_from_string }}</td>
                                         <td class="action">
                                             <a href="{% url 'manage_approve_delete_deal' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
                                             <a href="{% url 'manage_reject_delete_deal' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
@@ -311,6 +315,7 @@
                                         </td>
                                         <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Add" %}</td>
+                                        <td class="state">{{ activity.timestamp|naturaltime_from_string }}</td>
                                         <td class="action">
                                             <a href="{% url 'manage_approve_change_deal' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
                                             <a href="{% url 'manage_reject_change_deal' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>

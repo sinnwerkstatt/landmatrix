@@ -3,7 +3,6 @@ from .tags import A_Tag, SH_Tag
 from django.db import models
 from django.contrib.gis.db import models as gismodels
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class A_Tag_Group(models.Model):

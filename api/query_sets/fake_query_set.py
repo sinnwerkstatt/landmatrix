@@ -1,6 +1,5 @@
 import time
 import re
-import operator
 
 from django.db.models.query import QuerySet
 from django.db import connection
@@ -11,10 +10,9 @@ from landmatrix.models.activity import Activity
 from grid.forms.browse_condition_form import ConditionFormset
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
-from api.filters import load_filters
+from api.filters import load_filters, load_statuses_from_url
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class FakeModel(dict):
@@ -52,11 +50,13 @@ class FakeQuerySet(QuerySet):
     def __init__(self, request):
         self._all_results = []
 
-        self._additional_joins = self.ADDITIONAL_JOINS
-        self._additional_wheres = self.ADDITIONAL_WHERES
-        self._fields = self.FIELDS
-        self._group_by = self.GROUP_BY
-        self._order_by = self.ORDER_BY
+        # Important to use list here, we need to be creating new lists, NOT
+        # referencing mutable, shared class data
+        self._additional_joins = list(self.ADDITIONAL_JOINS)
+        self._additional_wheres = list(self.ADDITIONAL_WHERES)
+        self._fields = list(self.FIELDS)
+        self._group_by = list(self.GROUP_BY)
+        self._order_by = list(self.ORDER_BY)
         self._limit = self.LIMIT
         self._filter_sql = self._get_filter(request)
         self.user = request.user
@@ -93,32 +93,14 @@ class FakeQuerySet(QuerySet):
         # Parse activity statuses out of query params, and validate that they
         # are real at least, and that only staff can access not public statuses
         # We can't use query_params here as some requests come from editor
-        if 'status' in request.GET:
-            statuses = []
-            if self.user.is_staff:
-                # Staff can view all statuses
-                allowed = set(map(
-                    operator.itemgetter(0), Activity.STATUS_CHOICES))
-            else:
-                allowed = set(Activity.PUBLIC_STATUSES)
-
-            for status in request.query_params.getlist('status'):
-                try:
-                    status = int(status)
-                except (ValueError, TypeError):
-                    continue
-
-                if status in allowed:
-                    statuses.append(status)
-
-        else:
-            statuses = Activity.PUBLIC_STATUSES
-
-        return statuses
+        return load_statuses_from_url(request)
 
     def _uniquify_join_expressions(self, joins):
         no_dups = []
-        [no_dups.append(i) for i in reversed(joins) if not self._contains_join(no_dups, i)]
+        for i in reversed(joins):
+            if not self._contains_join(no_dups, i):
+                no_dups.append(i)
+
         return reversed(no_dups)
 
     def _contains_join(self, joins, join):
@@ -241,11 +223,18 @@ class FakeQuerySet(QuerySet):
         return filter_sql
 
     def is_public_condition(self):
-        if self.user.is_staff:
-            return ''
+        if self.user.is_authenticated() and self.user.is_staff:
+            condition = ''
         else:
-            return "a.is_public = 't'"
+            condition = "a.is_public IS TRUE"
+
+        return condition
 
     def status_active_condition(self):
-        statuses = ', '.join([str(status) for status in self._statuses])
-        return "a.fk_status_id IN ({})".format(statuses)
+        if self._statuses:
+            condition = 'a.fk_status_id IN ({})'.format(
+                ', '.join([str(status) for status in self._statuses]))
+        else:
+            condition = ''
+
+        return condition

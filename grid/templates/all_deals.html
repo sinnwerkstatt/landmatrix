@@ -1,5 +1,5 @@
 {% extends "global_base.html" %}
-{% load i18n custom_tags wagtailcore_tags %}
+{% load i18n custom_tags filter_tags wagtailcore_tags %}
 {% load humanize %}
 
 {% block page_title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}
@@ -10,7 +10,6 @@
 {% block breadcrumb %}
     <ul class="breadcrumb">
         <li><a href="/">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
         {% if group == "all" %}
             <li>{% trans "All deals" %}</li>
         {% elif filters.group_value %}
@@ -24,14 +23,14 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation"><a href="{% url 'map' %}">
-        <i class="lm lm-map-marker"></i>{% trans "Map" %}
+    <li role="presentation"><a href="{% url 'map' %}{% filter_query_params %}">
+        <i class="fa fa-map-marker"></i> {% trans "Map" %}
     </a></li>
     <li role="presentation" class="active"><span>
-        <i class="lm lm-table"></i>{% trans "Data" %}
+        <i class="fa fa-table"></i> {% trans "Data" %}
     </span></li>
-    <li role="presentation"><a href="{% url 'charts' %}">
-        <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+    <li role="presentation"><a href="{% url 'charts' %}{% filter_query_params %}">
+        <i class="fa fa-bar-chart"></i> {% trans "Charts" %}
     </a></li>
     <li class="divider"></li>
     <li role="presentation">

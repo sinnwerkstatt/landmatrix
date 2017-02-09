@@ -19,7 +19,7 @@
   fill: #fc941f; }
 
 .node--target {
-  fill: #44c42d; }
+  fill: #fc941f; }
 
 .link--source,
 .link--target {
@@ -27,7 +27,7 @@
   stroke-width: 2px; }
 
 .link--source {
-  stroke: #44c42d; }
+  stroke: #fc941f; }
 
 .link--target {
   stroke: #fc941f; }

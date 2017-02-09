@@ -11,7 +11,6 @@ from landmatrix.models.country import Country
 from grid.forms.investor_form import InvestorForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 BaseInvestorFormSet = formset_factory(InvestorForm, extra=1)

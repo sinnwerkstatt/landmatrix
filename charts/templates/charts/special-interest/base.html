@@ -55,13 +55,17 @@ or {% include "filters.html" %}, if the downloads are removed from filters.html
 		                var c_self = this;
 		                $(".views .active").removeClass("active");
 		                $(c_self).addClass("active");
-		                draw();
-		                return false;
+                        if (typeof draw !== 'undefined') {
+                            draw();
+                        }
 		            });
 		            // Init chart
-			        draw();
+                    // On some pages draw is defined, on others it's not.
+                    // TODO: rethink this.
+                    if (typeof draw != 'undefined') {
+                        draw();
+                    }
 		        });
-
 		    </script>
         </div>
     </div>

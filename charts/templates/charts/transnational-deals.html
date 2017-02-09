@@ -16,7 +16,7 @@
 
 {% block legend %}
     <ul class="media-list legend">
-        <li><i class="icon icon-none" style="background-color: #44c42d;"></i> {% trans "Investor Countries" %}</li>
+        <li><i class="icon icon-none" style="background-color: #44b7b6;"></i> {% trans "Investor Countries" %}</li>
         <li><i class="icon icon-none" style="background-color: #ed881b;"></i> {% trans "Target Countries" %}</li>
     </ul>
 {% endblock %}
@@ -29,8 +29,8 @@
         </ul>
     <![endif]-->
         <div class="canvas-container transnational-deals">
-            <div id="chartarea" class="col-md-12 canvas" align="center"></div>
-            <div class="chart-box col-md-4 well top-10-countries" align="center">
+            <div id="chartarea" class="col-md-8 col-md-offset-2 canvas" align="center"></div>
+            <div class="chart-box col-md-4 col-md-offset-2 well top-10-countries" align="center">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h3>{% trans "Top Countries" %}</h3>
@@ -38,7 +38,7 @@
                 <div class="row">
                     <div class="chart-box-content">
                         <ul class="nav nav-tabs">
-                            <li class="active"><a style="color: #44c42d"
+                            <li class="active"><a style="color: #44b7b6"
                                                   href="#investor-countries">{% trans "Investor countries" %}</a></li>
                             <li><a style="color: #ed881b" href="#target-countries">{% trans "Target countries" %}</a>
                             </li>
@@ -56,7 +56,7 @@
                     </div>
                 </div>
             </div>
-            <div class="chart-box col-md-4 well country-info" style="display: none">
+            <div class="chart-box col-md-4 col-md-offset-2 well country-info" style="display: none">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h3 class="country">{% trans "Country" %}</h3>
@@ -65,7 +65,7 @@
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active">
                             <a href="#inbound" aria-controls="inbound" role="tab" data-toggle="tab">
-                                <div style="color: #44c42d">{% trans "Regions investing in " %}
+                                <div style="color: #44b7b6">{% trans "Regions investing in " %}
                                     <span class="country">{% trans "Country" %}</span>
                                 </div>
                             </a>
@@ -120,7 +120,6 @@
         });
 
         function get_top_10() {
-            console.error("get top 10");
             $(".top-10-countries .table").empty();
             var json_query = "/api/top-10-countries.json";
             jQuery.getJSON(json_query, function (data) {
@@ -128,7 +127,7 @@
                 var i;
 
                 for (i = 0; i < data.investor_country.length; i++) {
-                    investor_countries.append('<tr><td><a href="/data/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + '</td></tr>');
+                    investor_countries.append('<tr><td><a href="/data/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + ' ha</td></tr>');
                 }
 
                 var target_countries = $(".top-10-countries #target-countries .table");

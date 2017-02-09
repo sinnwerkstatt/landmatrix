@@ -11,14 +11,15 @@ from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.browse_condition import BrowseCondition
 from landmatrix.models.filter_preset import FilterPreset, FilterPresetGroup
 from api.filters import Filter, PresetFilter
-from grid.widgets import TitleField
+from grid.fields import TitleField
 from grid.forms.browse_condition_form import ConditionFormset
 from grid.views.save_deal_view import SaveDealView
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from api.serializers import FilterPresetSerializer
+from landmatrix.models.country import Country
+from landmatrix.models.region import Region
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def get_variable_table():
@@ -64,48 +65,30 @@ def get_variable_table():
     if _('Operational company') in variable_table:
         stakeholder_extras = [
             {
-                'name': 'operational_stakeholder_country',
+                'name': 'operational_company_country',
                 'label': _(
-                    "Operational stakeholder country of registration/origin"),
+                    "Operational company country of registration/origin"),
             },
             {
-                'name': 'operational_stakeholder_region',
+                'name': 'operational_company_region',
                 'label': _(
-                    "Operational stakeholder region of registration/origin"),
+                    "Operational company region of registration/origin"),
             },
             {
-                'name': 'parent_investor',
-                'label': _("Parent stakeholders"),
+                'name': 'operational_company_classification',
+                'label': _("Operational company classification"),
             },
             {
-                'name': 'parent_investor_country',
-                'label': _(
-                    "Parent stakeholder country of registration/origin"),
+                'name': 'operational_company_homepage',
+                'label': _("Operational company homepage"),
             },
             {
-                'name': 'parent_investor_region',
-                'label': _(
-                    "Parent stakeholder region of registration/origin"),
+                'name': 'operational_company_opencorporates_link',
+                'label': _("Operational company Opencorporates link"),
             },
             {
-                'name': 'parent_investor_percentage',
-                'label': _("Parent stakeholder percentages"),
-            },
-            {
-                'name': 'parent_investor_classification',
-                'label': _("Parent stakeholder classifications"),
-            },
-            {
-                'name': 'parent_investor_homepage',
-                'label': _("Parent stakeholder homepages"),
-            },
-            {
-                'name': 'parent_investor_opencorporates_link',
-                'label': _("Parent stakeholder Opencorporates links"),
-            },
-            {
-                'name': 'parent_investor_comment',
-                'label': _("Comment on parent stakeholder"),
+                'name': 'operational_company_comment',
+                'label': _("Additional comment on Operational company"),
             },
         ]
         variable_table[_('Operational company')].extend(stakeholder_extras)
@@ -166,19 +149,29 @@ class FilterWidgetMixin:
     def set_country_region_filter(self, data):
         filter_values = {}
         # Country or region filter set?
-        if 'country' in data or 'region' in data:
+        if data.get('country', None) or data.get('region', None):
             stored_filters = self.request.session.get('filters', {})
-            if data.get('country'):
+            if data.get('country', None):
                 filter_values['variable'] = 'target_country'
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('country')
+                try:
+                    country = Country.objects.get(pk=data.get('country'))
+                    filter_values['display_value'] = country.name
+                except:
+                    pass
                 filter_values['name'] = str(_('Target country'))
                 filter_values['label'] = str(_('Target country'))
                 data.pop('country')
-            elif data.get('region'):
+            elif data.get('region', None):
                 filter_values['variable'] = 'target_region'
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('region')
+                try:
+                    region = Region.objects.get(pk=data.get('region'))
+                    filter_values['display_value'] = region.name
+                except:
+                    pass
                 filter_values['name'] = str(_('Target region'))
                 filter_values['label'] = str(_('Target region'))
                 data.pop('region')
@@ -190,15 +183,19 @@ class FilterWidgetMixin:
             new_filter = Filter(
                 variable=filter_values['variable'], operator=filter_values['operator'],
                 value=filter_values['value'], name=filter_values.get('name', None),
-                label=filter_values['label']
+                label=filter_values['label'], display_value=filter_values.get('display_value', None)
             )
             stored_filters[new_filter.name] = new_filter
             self.request.session['filters'] = stored_filters
 
     def remove_country_region_filter(self):
         stored_filters = self.request.session.get('filters', {})
-        stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
+        if stored_filters:
+            stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
         self.request.session['filters'] = stored_filters
+        #stored_filters = self.request.session['filter_query_params']
+        #stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
+        self.request.session['filter_query_params'] = None
 
     def set_default_filters(self, data):
         self.remove_default_filters()
@@ -206,27 +203,41 @@ class FilterWidgetMixin:
         if 'set_default_filters' in self.request.session:
             if not self.request.session.get('set_default_filters'):
                 return
+        disabled_presets = hasattr(self, 'disabled_presets') and self.disabled_presets or []
         stored_filters = self.request.session.get('filters', {})
-        # Only target country or region set?
-        if len(stored_filters.items()) == 1:
-            values = list(stored_filters.values())[0]
-            if values.get('variable', '') in ('target_country', 'target_region'):
-                # Use national presets
-                for preset in FilterPreset.objects.filter(is_default=True):
-                    filter_name = 'default_preset_%i' % preset.id
-                    stored_filters[filter_name] = PresetFilter(
-                        preset, name=filter_name)
-        elif len(stored_filters.items()) == 0:
-            # Use global presets
-            for preset in FilterPreset.objects.filter(overrides_default=True):
+        if not stored_filters:
+            stored_filters = {}
+        variables = []
+        preset_ids = []
+        # Target country or region set?
+        variables = [v.get('variable', '') for k, v in stored_filters.items()]
+        preset_ids = dict([(v.get('preset_id', ''), k) for k, v in stored_filters.items()])
+        if ('target_country' in variables) or ('target_region' in variables):
+            # Use national presets
+            for preset in FilterPreset.objects.filter(is_default_country_region=True):
+                if preset.id in preset_ids.keys():
+                    del stored_filters[preset_ids[preset.id]]
+                if preset.id in disabled_presets:
+                    continue
                 filter_name = 'default_preset_%i' % preset.id
                 stored_filters[filter_name] = PresetFilter(
-                    preset, name=filter_name)
+                    preset, name=filter_name, hidden=preset.is_hidden)
+        else:
+            # Use global presets
+            for preset in FilterPreset.objects.filter(is_default_global=True):
+                if preset.id in preset_ids.keys():
+                    del stored_filters[preset_ids[preset.id]]
+                if preset.id in disabled_presets:
+                    continue
+                filter_name = 'default_preset_%i' % preset.id
+                stored_filters[filter_name] = PresetFilter(
+                    preset, name=filter_name, hidden=preset.is_hidden)
         self.request.session['filters'] = stored_filters
   
     def remove_default_filters(self):
         stored_filters = self.request.session.get('filters', {})
-        stored_filters = dict(filter(lambda i: 'default_preset' not in i[0], stored_filters.items()))
+        if stored_filters:
+            stored_filters = dict(filter(lambda i: 'default_preset' not in i[0], stored_filters.items()))
         self.request.session['filters'] = stored_filters
 
     @print_execution_time_and_num_queries

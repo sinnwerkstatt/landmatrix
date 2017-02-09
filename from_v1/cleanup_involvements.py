@@ -1,4 +1,3 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 def load_project(proj_path, app_name):
 

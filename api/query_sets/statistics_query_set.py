@@ -2,6 +2,7 @@ from django.db import connection
 
 from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery, FakeQuerySetFlat
 from landmatrix.models.activity import Activity
+from grid.views.filter_widget_mixin import FilterWidgetMixin
 
 class StatisticsQuerySet(FakeQuerySetWithSubquery):
 
@@ -24,13 +25,26 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
     ]
 
     def __init__(self, request):
+        self.disable_filters = request.GET.get('disable_filters', False)
+        if self.disable_filters:
+            self.disabled_filters = request.session.get('filters')
+            request.session['filters'] = {}
+            # TODO: This is ugly, move set_default_filters to somewhere else
+            f = FilterWidgetMixin()
+            f.request = request
+            f.set_default_filters(None)
         super().__init__(request)
         self.country = request.GET.get('target_country')
         self.region = request.GET.get('target_region')
+        self.request = request
 
     def all(self):
         self._filter_sql += self.regional_condition()
-        return [[r['negotiation_status'], r['deals'], r['deal_size']] for r in super().all()]
+        output = [[r['negotiation_status'], r['deals'], r['deal_size']] for r in super().all()]
+        if self.disable_filters:
+            # Reenable original filters
+            self.request.session['filters'] = self.disabled_filters
+        return output
 
     def regional_condition(self):
         if self.country:

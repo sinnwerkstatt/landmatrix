@@ -5,7 +5,6 @@ from grid.forms.choices import int_choice_to_string
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.activity import Activity
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 #class PublicInterfaceCache(DefaultStringRepresentation, models.Model):

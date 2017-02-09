@@ -1,4 +1,3 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from django import forms
 from django.utils.html import conditional_escape

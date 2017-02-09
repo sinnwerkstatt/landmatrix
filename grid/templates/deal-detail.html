@@ -11,14 +11,17 @@
 
 
 {% block breadcrumb_inner %}
-    <li><a href="{% url 'data' %}">{% trans 'Global' %}</a></li>
+    <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
     <li>{% trans "Deal" %} #{{ deal.activity_identifier }}</li>
 {% endblock %}
 
 {% block subnav_inner %}
+    {% if deal.activity.fk_status_id == 4 and not perms.landmatrix.change_activity %}
+    {% else %}
     <li role="presentation">
         <a href="{% url "change_deal" deal.activity_identifier %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
     </li>
+    {% endif %}
     <li role="presentation"><a href="#history">
         <i class="fa fa-history"></i> {% trans "History" %}
     </a></li>
@@ -55,8 +58,8 @@
 
                             <div class="panel-heading">
 
-                                <a id="#{{ form.form_title|slugify }}" data-toggle="collapse" data-parent="#accordion"
-                                   href="#collapse_{{ forloop.counter }}">
+                                <a id="{{ form.form_title|slugify }}" data-toggle="collapse" data-parent="#accordion"
+                                   href="#collapse_{{ forloop.counter }}" id="{{ form.form_title|slugify }}">
                                     <h5 class="panel-title">
                                         {{ form.form_title }}
                                     <span id="collapsebtn_{{ forloop.counter }}"
@@ -84,7 +87,7 @@
 
             {% include "includes/deal-history.html" %}
 
-            {% if deal.activity.fk_status_id != 4 %}
+            {% if activity.public_version %}
                 {% get_comment_count for activity.public_version as comment_count %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -118,9 +121,9 @@
                                 <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
                                 <a href="#c0" id="cancel-reply" style="display:none">{% trans "Cancel reply" %}</a>
                             </form>
-                            {% endif %}
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>

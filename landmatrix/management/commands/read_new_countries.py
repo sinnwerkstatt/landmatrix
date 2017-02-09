@@ -10,7 +10,6 @@ import csv
 
 from landmatrix.models.investor import Investor
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class Command(BaseCommand):

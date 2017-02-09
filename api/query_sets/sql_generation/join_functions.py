@@ -1,4 +1,3 @@
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 from landmatrix.models.activity_attribute_group import ActivityAttribute
 

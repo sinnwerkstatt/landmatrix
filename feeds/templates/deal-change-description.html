@@ -3,15 +3,15 @@
 {% block content %}
     {% if changes %}
         <ul>
-        {% for attribute, values in changes.items %}
+        {% for group_id, attribute, later_value, earlier_value in changes %}
             <li>
-            {% if values.1 and not values.0 %}{# attribute added #}
-                {{ attribute }} {% trans "added" %} ({{ values.1 }}).
-            {% elif values.0 and not values.1 %}{# attribute removed #}
+            {% if later_value and not earlier_value %}{# attribute added #}
+                {{ attribute }} {% trans "added" %} ({{ later_value }}).
+            {% elif earlier_value and not later_value %}{# attribute removed #}
                 {{ attribute }} {% trans "removed" %}.
             {% else %}{# attribute changed #}
                 {{ attribute }} {% trans "changed from" %}
-                {{ values.0 }} {% trans "to" %} {{ values.1 }}.
+                {{ earlier_value }} {% trans "to" %} {{ later_value }}.
             {% endif %}
             </li>
         {% endfor %}

@@ -5,7 +5,6 @@ from api.query_sets.sql_generation.record_reader import RecordReader
 from api.filters import load_filters
 from grid.views.profiling_decorators import print_execution_time_and_num_queries
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class ActivityQuerySet:

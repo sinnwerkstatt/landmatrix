@@ -5,7 +5,6 @@ from landmatrix.models.activity import Activity, HistoricalActivity
 from django_comments.models import Comment
 from threadedcomments.models import ThreadedComment
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class MapDjangoComments(MapModel):

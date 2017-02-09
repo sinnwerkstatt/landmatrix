@@ -129,8 +129,7 @@ class PendingChangesMixin(FilteredQuerysetMixin):
         raise NotImplementedError  # TODO: implement
 
     def get_rejected_queryset(self):
-        rejected = self.get_filtered_activity_queryset(
-            queryset=self.get_permitted_activities())
+        rejected = self.get_filtered_activity_queryset()
         rejected = rejected.rejected()
         rejected = rejected.filter(changesets__fk_user=self.request.user)
 

@@ -7,7 +7,6 @@ from rest_framework import serializers
 from landmatrix.models.investor import Investor
 from api.serializers import InvestorNetworkSerializer
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class InvestorNetworkView(APIView):

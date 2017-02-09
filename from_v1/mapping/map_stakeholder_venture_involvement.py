@@ -9,7 +9,6 @@ from migrate import V1, V2
 
 from datetime import datetime
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 def get_venture_for_primary_investor(involvement):

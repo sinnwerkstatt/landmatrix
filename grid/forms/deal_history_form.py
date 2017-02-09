@@ -3,7 +3,6 @@ from django.utils.translation import ugettext_lazy as _
 from .base_form import BaseForm
 
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class DealHistoryForm(BaseForm):

@@ -23,6 +23,8 @@ from blog.models import BlogPage
 
 from landmatrix.models.region import Region as DataRegion
 from landmatrix.models.country import Country as DataCountry
+from wagtailcms.twitter import TwitterTimeline
+
 
 class SplitMultiLangTabsMixin(object):
     """ This mixin detects multi-language fields and splits them into seperate tabs per language """
@@ -43,7 +45,7 @@ class SplitMultiLangTabsMixin(object):
         return object_lists 
     
     def __init__(self, *args, **kwargs):
-        super(SplitMultiLangTabsMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.__class__ in PAGE_EDIT_HANDLERS and not getattr(PAGE_EDIT_HANDLERS[self.__class__], '_MULTILANG_TABS_PATCHED', False):
             handler = PAGE_EDIT_HANDLERS[self.__class__]
             tabs = [tab_handler.bind_to_model(self.__class__) for tab_handler in self._split_i18n_wagtail_translated_panels(self.content_panels)]
@@ -53,6 +55,7 @@ class SplitMultiLangTabsMixin(object):
 class LinkBlock(StructBlock):
     cls = blocks.ChoiceBlock(choices=[
         ('btn', 'Button'),
+        ('btn btn-with-space', 'Button (with space)'),
     ], required=False, label='Type')
     url = blocks.URLBlock(label='URL')
     text = blocks.CharBlock()
@@ -80,13 +83,64 @@ class AnchorBlock(StructBlock):
         context['slug'] = value.get('slug')
         return context
 
+class FAQBlock(StructBlock):
+    slug = blocks.CharBlock()
+    question = blocks.CharBlock()
+    answer = blocks.RichTextBlock()
+
+class FAQsBlock(StructBlock):
+    faqs = blocks.ListBlock(FAQBlock())
+
+    class Meta:
+        icon = 'fa fa-medkit'
+        template = 'widgets/faq_block.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['titel'] = value.get('title')
+        context['list'] = []
+        for faq in value.get('faqs'):
+            context['list'].append({
+                'slug': faq.get('slug'),
+                'term': faq.get('question'),
+                'definition': faq.get('answer')
+            })
+        return context
+
+class TwitterBlock(StructBlock):
+    username = blocks.CharBlock(required=True)
+    count = blocks.CharBlock(default=20)
+
+    # help_text='You will find username and widget_id @ https://twitter.com/settings/widgets/')
+    # widget_id = CharBlock(required=True)
+    # tweet_limit = CharBlock(required=True, max_length=2)
+
+    class Meta:
+        icon = 'fa fa-twitter'
+        template = 'widgets/twitter.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        twitte = TwitterTimeline(count=(value.get('count')))
+        context['timeline'] = twitte.get_timeline(value.get('username'))
+        context['username'] = value.get('username') #context['timeline'][0]['screen_name']
+        return context
+
 
 # Overwrite Stream block to disable wrapping DIVs
 class NoWrapsStreamBlock(StreamBlock):
     def render_basic(self, value):
+        def get_class(block):
+            if block.block_type != 'full_width_container':
+                return 'block-%s block'%block.block_type
+            else:
+                return ''
+
         return format_html_join(
             '\n', '<div class="{1}">{0}</div>',
-            [(force_text(child), child.block_type != 'full_width_container' and 'block-%s block'%child.block_type or '') for child in value]
+            [
+                (force_text(child), get_class(child)) for child in value
+            ]
         )
         #return format_html_join(
         #    '\n', '{0}',
@@ -95,7 +149,7 @@ class NoWrapsStreamBlock(StreamBlock):
 
 class NoWrapsStreamField(StreamField):
     def __init__(self, block_types, **kwargs):
-        super(NoWrapsStreamField, self).__init__(block_types, **kwargs)
+        super().__init__(block_types, **kwargs)
         if isinstance(block_types, Block):
             self.stream_block = block_types
         elif isinstance(block_types, type):
@@ -122,6 +176,7 @@ class SectionDivider(StructBlock):
 class LinkedImageBlock(StructBlock):
     image = ImageChooserBlock()
     url = blocks.URLBlock(required=False, label='URL')
+    caption = blocks.RichTextBlock(required=False)
 
     class Meta:
         icon = 'image'
@@ -148,7 +203,12 @@ class SliderBlock(StructBlock):
                 rendition = image.get('image').get_rendition('max-1200x1200')
                 url = rendition.url
                 name = image.get('image').title
-                image_context = {'url': url, 'name': name, 'href': image.get('url')}
+                image_context = {
+                    'url': url,
+                    'name': name,
+                    'href': image.get('url'),
+                    'caption': image.get('caption')
+                }
                 images.append(image_context)
         context['images'] = images
         return context
@@ -214,6 +274,8 @@ CONTENT_BLOCKS = [
     ('gallery', GalleryBlock()),
     ('slider', SliderBlock()),
     ('section_divider', SectionDivider()),
+    ('twitter', TwitterBlock()),
+    ('faqs_block', FAQsBlock()),
 ]
 
 class CountryRegionStructBlock(StructBlock):
@@ -223,14 +285,15 @@ class CountryRegionStructBlock(StructBlock):
     def __init__(self, *args, **kwargs):
         self.country = kwargs.pop('country', None)
         self.region = kwargs.pop('region', None)
-        super(CountryRegionStructBlock, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_context(self, value):
         context = super().get_context(value)
-        if self.country:
-            context['country'] = self.country
-        if self.region:
-            context['region'] = self.region
+        context.update({
+            'country': self.country,
+            'region': self.region,
+        })
+
         return context
 
 class LatestNewsBlock(CountryRegionStructBlock):
@@ -245,7 +308,7 @@ class LatestNewsBlock(CountryRegionStructBlock):
         context = super().get_context(value)
         queryset = BlogPage.objects.order_by('-date')
         if self.country or self.region:
-            tag = self.country.slug or self.region.slug
+            tag = (self.country and self.country.slug) or (self.region and self.region.slug)
             filter_queryset = queryset.filter(tags__slug=tag)
             if filter_queryset.count() > 0:
                 queryset = filter_queryset
@@ -268,10 +331,14 @@ class MapDataChartsBlock(CountryRegionStructBlock):
         template = 'widgets/map-data-charts.html'
 
 class LinkMapBlock(CountryRegionStructBlock):
+    '''
+    Note that the map template used here is NOT the one from ol3_widgets.
+    '''
     class Meta:
         icon = 'fa fa-map-marker'
         label = 'Map'
-        template = 'widgets/map.html'
+        template = 'widgets/link-map.html'
+
 
 class LatestDatabaseModificationsBlock(CountryRegionStructBlock):
     limit = blocks.CharBlock()
@@ -295,24 +362,16 @@ DATA_BLOCKS = [
     ('latest_database_modifications', LatestDatabaseModificationsBlock()),
 ]
 
-class ColumnsBlock(CountryRegionStructBlock):
+class ColumnsBlock(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
     def get_context(self, value):
         context = super().get_context(value)
-        
+
         for column in ['left_column', 'right_column']:
             context[column] = value.get(column)
-        country_or_region = {}
-        if hasattr(self, 'country') and self.country:
-            country_or_region['country'] = self.country
-        if hasattr(self, 'region') and self.region:
-            country_or_region['region'] = self.region
-        if country_or_region:
-            for column in ['left_column', 'right_column']:
-                for data in DATA_BLOCKS:
-                    context[column].stream_block.child_blocks[data[0]] = type(data[1])(**country_or_region)
+
         return context
 
     class Meta:
@@ -343,6 +402,28 @@ COLUMN_BLOCKS = [
     ('columns_2_1', Columns2To1Block()),
     ('columns_1_2', Columns1To2Block())
 ]
+
+class TabBlock(StructBlock):
+    title = blocks.CharBlock()
+    content = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
+
+class TabsBlock(StructBlock):
+    tabs = blocks.ListBlock(TabBlock())
+
+    class Meta:
+        icon = 'fa fa-folder'
+        template = 'widgets/tabs_block.html'
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['list'] = []
+        for tab in value.get('tabs'):
+            context['list'].append({
+                'title': tab.get('title'),
+                'content': tab.get('content')
+            })
+        return context
+
 class FullWidthContainerBlock(StructBlock):
     color = blocks.ChoiceBlock(choices=[
         ('white', 'White'),
@@ -362,6 +443,7 @@ class FullWidthContainerBlock(StructBlock):
         label = 'Full width container'
         template = 'widgets/full-width-container.html'
 CONTENT_BLOCKS += [
+    ('tabs_block', TabsBlock()),
     ('full_width_container', FullWidthContainerBlock(form_classname='')),
 ]
 
@@ -398,7 +480,7 @@ class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
         self.region = None
 
     def get_context(self, request):
-        context = super(RegionIndex, self).get_context(request)
+        context = super().get_context(request)
         if self.region:
             context['region'] = self.region
         return context
@@ -411,9 +493,11 @@ class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
                 self.region = DataRegion.objects.get(slug=region_slug)
             except DataRegion.DoesNotExist:
                 raise Http404('Region data not found.')
-            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
-                self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
-        return super(RegionIndex, self).serve(request)
+            else:
+                _update_country_region_structs(
+                    self.body.stream_block, region=self.region)
+
+        return super().serve(request)
 
 class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     region = models.ForeignKey(DataRegion, null=True, blank=True, on_delete=models.SET_NULL)
@@ -429,9 +513,10 @@ class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
 
     def serve(self, request):
         if self.region:
-            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
-                self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.region)
-        return super(RegionPage, self).serve(request)
+            _update_country_region_structs(
+                self.body.stream_block, region=self.region)
+
+        return super().serve(request)
 
 class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
     template = 'wagtailcms/country_page.html'
@@ -447,7 +532,7 @@ class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
         self.country = None
 
     def get_context(self, request):
-        context = super(CountryIndex, self).get_context(request)
+        context = super().get_context(request)
         if self.country:
             context['country'] = self.country
         return context
@@ -460,9 +545,11 @@ class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
                 self.country = DataCountry.objects.get(slug=country_slug)
             except DataCountry.DoesNotExist:
                 raise Http404('Country data not found.')
-            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
-                self.body.stream_block.child_blocks[data[0]] = type(data[1])(country=self.country)
-        return super(CountryIndex, self).serve(request)
+            else:
+                _update_country_region_structs(
+                    self.body.stream_block, country=self.country)
+
+        return super().serve(request)
 
 class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     country = models.ForeignKey(DataCountry, null=True, blank=True, on_delete=models.SET_NULL)
@@ -482,9 +569,29 @@ class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
 
     def serve(self, request):
         if self.country:
-            for data in (DATA_BLOCKS + COLUMN_BLOCKS):
-                self.body.stream_block.child_blocks[data[0]] = type(data[1])(region=self.country)
-        return super(CountryPage, self).serve(request)
+            _update_country_region_structs(
+                self.body.stream_block, country=self.country)
+
+        return super().serve(request)
+
+
+def _update_country_region_structs(parent_block, **kwargs):
+    def filter_blocks(block):
+        return isinstance(block, CountryRegionStructBlock)
+
+    _update_block_kwargs(parent_block, filter_blocks, **kwargs)
+
+
+def _update_block_kwargs(parent, filter_function, **kwargs):
+    """
+    Recursively update child blocks in place with the kwargs given.
+    """
+    for name, block in parent.child_blocks.items():
+        if filter_function(block):
+            new_block = type(block)(**kwargs)
+            parent.child_blocks[name] = new_block
+        elif hasattr(block, 'child_blocks'):
+            _update_block_kwargs(block, filter_function, **kwargs)
 
 
 #FIXME: Move hooks to wagtail_hooks.py

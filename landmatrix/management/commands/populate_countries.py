@@ -1,60 +1,45 @@
 #!/usr/bin/env python
-import os
-import sys
 from django.core.management import BaseCommand
+from django.contrib.gis.geos import Polygon, GeometryCollection
+from country_bounding_boxes import country_subunits_by_iso_code
+
+from landmatrix.models.country import Country
+
+
+def find_bounds(country_obj):
+    bounding_boxes = [
+        c.bbox for c in country_subunits_by_iso_code(country_obj.code_alpha3)]
+
+    if not bounding_boxes:
+        message = 'No data found for country code {}'.format(
+            country_obj.code_alpha3)
+        raise ValueError(message)
+
+    polygons = []
+    for box in bounding_boxes:
+        x1, y1, x2, y2 = box
+        polygon = Polygon.from_bbox((x1, y1, x2, y2))
+        polygons.append(polygon)
+
+    collection = GeometryCollection(*polygons)
+    return collection.extent
 
 
 class Command(BaseCommand):
     help = 'Populates the country bounding boxes for zooming in the map'
 
     def handle(self, *args, **options):
-        from landmatrix.models.country import Country
-        from country_bounding_boxes import country_subunits_by_iso_code
-
-        def findBounds(boxes, counter, country):
-            if len(boxes) > 100:
-                counter += 1
-                min_lat = 180
-                min_lon = 90
-                max_lat = -180
-                max_lon = -90
-                for bb in boxes:
-                    if bb[0] < min_lat:
-                        min_lat = bb[0]
-                    if bb[1] < min_lon:
-                        min_lon = bb[1]
-                    if bb[2] > max_lat:
-                        max_lat = bb[2]
-                    if bb[3] > max_lon:
-                        max_lon = bb[3]
-            else:
-                try:
-                    bb = boxes[0]
-                    min_lat = bb[0]
-                    min_lon = bb[1]
-                    max_lat = bb[2]
-                    max_lon = bb[3]
-                except:
-                    print(country, "..is bad.")
-
-            try:
-
-                country.point_lat_max = max_lat
-                country.point_lon_max = max_lon
-                country.point_lat_min = min_lat
-                country.point_lon_min = min_lon
-                country.save()
-            except:
-                print(country, "..is bad, too.")
-                counter += 1
-
-            return counter
-
-        counter = 0
-        whole = 0
         for country in Country.objects.all():
-            whole += 1
-            boxes = [c.bbox for c in country_subunits_by_iso_code(country.code_alpha3)]
-            counter = findBounds(boxes, counter, country)
+            try:
+                bounds = find_bounds(country)
+            except ValueError as exc:
+                print(str(exc))
+            country.point_lon_min = bounds[0]
+            country.point_lat_min = bounds[1]
+            country.point_lon_max = bounds[2]
+            country.point_lat_max = bounds[3]
 
-        print("%i of %i countries with borked borders." % (counter, whole))
+            country.save()
+
+            message = "Updated bounds for country {country.name}: ({country.point_lon_min}, {country.point_lat_min}), ({country.point_lon_max}, {country.point_lat_max})".format(country=country)
+            print(message)

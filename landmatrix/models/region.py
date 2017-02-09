@@ -3,7 +3,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 
-__author__ = 'Lene Preuss <lp@sinnwerkstatt.com>'
 
 
 class RegionManager(models.Manager):
