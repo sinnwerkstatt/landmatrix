@@ -18,9 +18,8 @@
 {% endblock %}
 
 {% block subnav_inner %}
-  <li role="presentation" class="active"><span>
-        <i class="lm lm-map-marker"></i>{% trans "Map" %}
-    </span></li>
+  <li role="presentation" class="active">
+    <span><i class="lm lm-map-marker"></i>{% trans "Map" %}</span></li>
   <li role="presentation"><a href="../data/">
     <i class="lm lm-table"></i>{% trans "Data" %}
   </a></li>
@@ -37,13 +36,11 @@
 
   <link rel="stylesheet" href="{% static "map/css/map.css" %}">
   <div class="map-container">
-
-    <div id="map" class="map" title="{% trans "All Deals" %}" style="height: 100%">
+    <div id="map" class="map" title="{% trans "All Deals" %}">
       <img src="{% static "map/images/map-default.png" %}" alt="{% trans "Map with all deals" %}" id="map-placeholder">
     </div>
 
     <div class="map-progress row">
-
       <div class="col-md-3">
         <div class="status">
           <div class="glyphicon glyphicon-picture" aria-hidden="true"></div>
@@ -51,7 +48,6 @@
         </div>
         <div class="line right"></div>
       </div>
-
       <div class="col-md-3">
         <div class="line left"></div>
         <div class="status">
@@ -60,7 +56,6 @@
         </div>
         <div class="line right"></div>
       </div>
-
       <div class="col-md-3">
         <div class="line left"></div>
         <div class="status">
@@ -69,7 +64,6 @@
         </div>
         <div class="line right"></div>
       </div>
-
       <div class="col-md-3">
         <div class="line left"></div>
         <div class="status">
@@ -107,7 +101,6 @@
               <select>
                 <option selected="selected">{% trans "Intention of investment" %}</option>
               </select>
-
               <h4><span>{% trans "Legend" %}</span></h4>
             </div>
             <div class="tab-content">
@@ -123,9 +116,7 @@
         </div>
       </div>
     </div>
-
   </div>
-
 {% endblock %}
 
 {% block js %}
