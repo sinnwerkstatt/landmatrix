@@ -4,70 +4,172 @@
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/nprogress.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/map.css" %}"/>
+  <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
+  <link rel="stylesheet" href="{% static "css/nprogress.css" %}"/>
+  <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
+  <link rel="stylesheet" href="{% static "css/map.css" %}"/>
 {% endblock %}
 
 {% block page_title %}{% trans "Map" %}{% endblock %}
 {% block title %}{% trans "Map" %}{% endblock %}
 {% block breadcrumb_inner %}
-    <li><a href="{% url 'data' %}">{% trans "Global" %}</a></li>
-    <li>{% trans "Map" %}</li>
+  <li><a href="{% url 'data' %}">{% trans "Global" %}</a></li>
+  <li>{% trans "Map" %}</li>
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation" class="active"><span>
+  <li role="presentation" class="active"><span>
         <i class="lm lm-map-marker"></i>{% trans "Map" %}
     </span></li>
-    <li role="presentation"><a href="../data/">
-        <i class="lm lm-table"></i>{% trans "Data" %}
-    </a></li>
-    <li role="presentation"><a href="../charts/">
-        <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
-    </a></li>
-    <li class="divider"></li>
-    <li role="presentation">
-        {% include "export.html" %}
-    </li>
+  <li role="presentation"><a href="../data/">
+    <i class="lm lm-table"></i>{% trans "Data" %}
+  </a></li>
+  <li role="presentation"><a href="../charts/">
+    <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+  </a></li>
+  <li class="divider"></li>
+  <li role="presentation">
+    {% include "export.html" %}
+  </li>
 {% endblock %}
 
 {% block content %}
-    {% include "filters.html" %}
 
-    <div id="alert_placeholder"></div>
+  <link rel="stylesheet" href="{% static "map/css/map.css" %}">
+  <div class="map-container">
 
-    <div id="map" class="map" title='{% trans "All Deals" %}'></div>
-
-    <div id="popup" class="ol-popup">
-        <a href="#" id="popup-closer" class="noul ol-popup-closer"></a>
-        <div id="popup-content"></div>
+    <div id="map" class="map" title="{% trans "All Deals" %}" style="height: 100%">
+      <img src="{% static "map/images/map-default.png" %}" alt="{% trans "Map with all deals" %}" id="map-placeholder">
     </div>
-    {% include "map/modals/legend.html" %}
+
+    <div class="map-progress row">
+
+      <div class="col-md-3">
+        <div class="status">
+          <div class="glyphicon glyphicon-picture" aria-hidden="true"></div>
+          {% trans "Map" %}
+        </div>
+        <div class="line right"></div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="line left"></div>
+        <div class="status">
+          <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
+          {% trans "Countries" %}
+        </div>
+        <div class="line right"></div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="line left"></div>
+        <div class="status">
+          <span class="glyphicon glyphicon-map-marker"
+                aria-hidden="true"></span>
+          {% trans "Deals" %}
+        </div>
+        <div class="line right"></div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="line left"></div>
+        <div class="status">
+          <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+          {% trans "Finished" %}
+        </div>
+      </div>
+    </div>
+
+    <div class="map-panel">
+      <div class="row">
+        <div class="col-md-12 tab-container">
+          <div class="col-md-4 tab-menu">
+            <div class="list-group">
+              <a href="#" class="list-group-item active text-center">
+                <h4 class="glyphicon glyphicon-cog"></h4><br/>{% trans "Deals" %}
+              </a>
+              <a href="#" class="list-group-item text-center">
+                <h4 class="glyphicon glyphicon-search"></h4><br/>{% trans "Search" %}
+              </a>
+              <a href="#" class="list-group-item text-center">
+                <h4 class="glyphicon glyphicon-filter"></h4><br/>{% trans "Context" %}
+              </a>
+              <a href="#" class="list-group-item text-center">
+                <h4 class="glyphicon glyphicon-road"></h4><br/>{% trans "Base" %}
+              </a>
+              <a href="#" class="list-group-item text-center">
+                <h4 class="glyphicon glyphicon-menu-right"></h4><br/>{% trans "Hide" %}
+              </a>
+            </div>
+          </div>
+          <div class="col-md-8 tab">
+            <div class="tab-content active">
+              <h4><span>{% trans "Deal type" %}</span></h4>
+              <select>
+                <option selected="selected">{% trans "Intention of investment" %}</option>
+              </select>
+
+              <h4><span>{% trans "Legend" %}</span></h4>
+            </div>
+            <div class="tab-content">
+                search
+            </div>
+            <div class="tab-content">
+              context
+            </div>
+            <div class="tab-content">
+                base layer
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
-<script type="text/javascript" src="{% static "vendor/ol3-google-maps/ol3gm-debug.js" %}"></script>
-<script type="text/javascript" src="{% static "js/layers.js" %}"></script>
-<script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
-<script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
+  <script src="https://openlayers.org/en/v3.20.1/build/ol.js"
+          type="text/javascript"></script>
+  <script>
+      $(function () {
+          var mapProgress = $('.map-progress');
+          var success = 'finished';
+          var mapPlaceholder = $('#map-placeholder');
 
-<script type="text/javascript">
-{% if country %}
-var mapBounds = [
-    {{ country.point_lat_min|default_if_none:"null" }}, {{ country.point_lon_min|default_if_none:"null" }},
-    {{ country.point_lat_max|default_if_none:"null" }}, {{ country.point_lon_max|default_if_none:"null" }},
-];
-{% elif region %}
-var mapBounds = [
-    {{ region.point_lat_min|default_if_none:"null" }}, {{ region.point_lon_min|default_if_none:"null" }},
-    {{ region.point_lat_max|default_if_none:"null" }}, {{ region.point_lon_max|default_if_none:"null" }},
-];
-{% endif %}
-</script>   
-<script type="text/javascript" src="{% static "js/map.js" %}"></script>
-<script type="text/javascript" src="{% static "js/main.js" %}"></script>
+          setTimeout(function () {
+              var map = new ol.Map({
+                  target: 'map',
+                  layers: [
+                      new ol.layer.Tile({
+                          source: new ol.source.OSM()
+                      })
+                  ],
+                  view: new ol.View({
+                      center: ol.proj.fromLonLat([37.41, 8.82]),
+                      zoom: 4
+                  })
+              });
+              mapPlaceholder.remove();
+              var first = $(mapProgress).find('div.status:first');
+              first.addClass(success);
+              first.next().addClass(success);
+          }, 500);
+
+
+
+      });
+
+{#      $(document).ready(function() {#}
+{#        $("div.tab-menu>div.list-group>a").click(function(e) {#}
+{#            e.preventDefault();#}
+{#            $(this).siblings('a.active').removeClass("active");#}
+{#            $(this).addClass("active");#}
+{#            var index = $(this).index();#}
+{#            $("div.tab>div.tab-content").removeClass("active");#}
+{#            $("div.tab>div.tab-content").eq(index).addClass("active");#}
+{#        });#}
+{#      });#}
+  </script>
 {% endblock %}

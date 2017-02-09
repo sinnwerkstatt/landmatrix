@@ -1,0 +1,64 @@
+.map-container {
+  position: relative;
+  height: 75vh; }
+  .map-container #map {
+    display: block;
+    margin-left: auto;
+    margin-right: auto; }
+  .map-container .map-progress {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.6);
+    bottom: 0;
+    width: 100%;
+    padding-top: 2em; }
+    .map-container .map-progress .status {
+      text-align: center; }
+      .map-container .map-progress .status .glyphicon {
+        font-size: 32px;
+        display: block; }
+    .map-container .map-progress .finished {
+      color: #fc941f; }
+    .map-container .map-progress .line {
+      position: absolute;
+      top: 50%;
+      border-bottom: 3px solid #919191;
+      width: 35%; }
+      .map-container .map-progress .line.finished {
+        border-bottom-color: #fc941f; }
+    .map-container .map-progress .right {
+      right: 0; }
+    .map-container .map-progress .left {
+      left: 0; }
+  .map-container .map-panel {
+    position: absolute;
+    top: 5vh;
+    right: 0; }
+    .map-container .map-panel h1 {
+      text-align: left; }
+    .map-container .map-panel .list-group-item {
+      padding: 0; }
+    .map-container .map-panel div.tab-container {
+      z-index: 10;
+      background-color: #ffffff;
+      padding: 0 !important; }
+    .map-container .map-panel div.tab-menu {
+      padding: 0; }
+    .map-container .map-panel div.tab-menu div.list-group {
+      margin-bottom: 0; }
+    .map-container .map-panel div.tab-menu div.list-group > a {
+      margin-bottom: 0; }
+    .map-container .map-panel div.tab-menu div.list-group > a .glyphicon,
+    .map-container .map-panel div.tab-menu div.list-group > a .fa {
+      color: #fc941f; }
+    .map-container .map-panel div.tab-menu div.list-group > a.active,
+    .map-container .map-panel div.tab-menu div.list-group > a.active .glyphicon,
+    .map-container .map-panel div.tab-menu div.list-group > a.active .fa {
+      background-color: #fc941f;
+      color: #ffffff;
+      border-color: inherit; }
+    .map-container .map-panel div.tab-content {
+      background-color: #ffffff; }
+    .map-container .map-panel div.tab div.tab-content:not(.active) {
+      display: none; }
+
+/*# sourceMappingURL=map.css.map */

@@ -1,0 +1,97 @@
+@import '../../../../landmatrix/static/css/colors';
+
+
+.map-container {
+  position: relative;
+  height: 75vh;
+
+  #map {
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+  }
+
+  .map-progress {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.6);
+    bottom: 0;
+    width: 100%;
+    padding-top: 2em;
+
+    .status {
+      .glyphicon {
+        font-size: 32px;
+        display: block;
+      }
+      text-align: center;
+    }
+    .finished {
+      color: $lm_orange;
+    }
+    .line {
+      position: absolute;
+      top: 50%;
+      border-bottom: 3px solid $lm_medium2;
+      width: 35%;
+
+      &.finished {
+        border-bottom-color: $lm_orange;
+      }
+    }
+    .right {
+      right: 0;
+    }
+    .left {
+      left: 0;
+    }
+  }
+
+  .map-panel {
+    position: absolute;
+    top: 5vh;
+    right: 0;
+
+    h1 {
+      text-align: left;
+    }
+
+    .list-group-item {
+      padding: 0;
+    }
+
+    div.tab-container {
+      z-index: 10;
+      background-color: #ffffff;
+      padding: 0 !important;
+    }
+    div.tab-menu {
+      padding: 0;
+    }
+    div.tab-menu div.list-group{
+      margin-bottom: 0;
+    }
+    div.tab-menu div.list-group>a{
+      margin-bottom: 0;
+    }
+    div.tab-menu div.list-group>a .glyphicon,
+    div.tab-menu div.list-group>a .fa {
+      color: $lm_orange;
+    }
+
+    div.tab-menu div.list-group>a.active,
+    div.tab-menu div.list-group>a.active .glyphicon,
+    div.tab-menu div.list-group>a.active .fa{
+      background-color: $lm_orange;
+      color: #ffffff;
+      border-color: inherit;
+    }
+
+    div.tab-content{
+      background-color: #ffffff;
+    }
+
+    div.tab div.tab-content:not(.active){
+      display: none;
+    }
+  }
+}
