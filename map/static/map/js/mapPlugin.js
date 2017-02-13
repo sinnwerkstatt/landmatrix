@@ -4,7 +4,7 @@
             // Default settings.
             var settings = $.extend({
                 target: "map",
-                zoom: 3,
+                zoom: 2,
                 centerTo: [30, 30]
             }, options);
 
