@@ -41,14 +41,14 @@
             });
             map.addLayer(countryLayer);
 
-            var drawCountryInformation = function (features, clusterSource) {
+            var drawCountryInformation = function (features, dealsSource) {
                 $.each(features, function (key, country) {
                     // extent.getCenter() returns undefined with ol 3.20, so
                     // calculate it manually.
                     var extent = country.getGeometry().getExtent();
                     var lat = extent[0] + (extent[2] - extent[0]) / 2;
                     var lon = extent[1] + (extent[3] - extent[1]) / 2;
-                    clusterSource.addFeature(
+                    dealsSource.addFeature(
                         new ol.Feature(new ol.geom.Point(
                             ol.proj.fromLonLat([lat, lon], "EPSG:4326")
                             )
@@ -69,23 +69,41 @@
                 });
             };
 
-            // Layer and source for the detailed deals - all deals are clustered
-            // and represented as a Point.
+            // Layer and source for the deals per country. All deals are
+            // clustered and displayed in the 'centre' of the country.
             var dealsSource = new ol.source.Vector();
-            var dealsLayer = new ol.layer.Vector({
+            var dealsCluster = new ol.source.Cluster({
                 source: dealsSource,
-                style: new ol.style.Style({
-                    image: new ol.style.Circle({
-                        fill: new ol.style.Fill({
-                            color: 'rgba(55, 200, 150, 0.5)'
+                distance: 50
+            });
+            var dealsLayer = new ol.layer.Vector({
+                source: dealsCluster,
+                style: function (feature) {
+                    var size = feature.get('features').length;
+                    var radius = size * 3;
+                    // a simple example, but the svg is created depending on
+                    // some properties from the features.
+                    var svg = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve">' +
+                          '<circle class="donut-hole" cx="21" cy="21" r="' + radius + '" fill="#fff"></circle>' +
+                          '<circle class="donut-ring" cx="21" cy="21" r="' + radius + '" fill="transparent" stroke="#d2d3d4" stroke-width="3"></circle>' +
+                          '<circle class="donut-segment" cx="21" cy="21" r="' + radius + '" fill="transparent" stroke="#ce4b99" stroke-width="3" stroke-dasharray="85 15" stroke-dashoffset="0"></circle>' +
+                        '</svg>';
+                    var clusterSVG = new Image();
+                    clusterSVG.src = 'data:image/svg+xml,' + escape(svg);
+
+                    return new ol.style.Style({
+                        image: new ol.style.Icon({
+                            img: clusterSVG,
+                            imgSize:[30,30]
                         }),
-                        stroke: new ol.style.Stroke({
-                            width: 1,
-                            color: 'rgba(55, 200, 150, 0.8)'
-                        }),
-                        radius: 7
-                    })
-                })
+                        text: new ol.style.Text({
+                            text: size.toString(),
+                            fill: new ol.style.Fill({
+                                color: '#000'
+                            })
+                        })
+                    });
+                }
             });
             map.addLayer(dealsLayer);
 
