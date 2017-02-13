@@ -54,12 +54,16 @@
                         var lat = extent[0] + (extent[2] - extent[0]) / 2;
                         var lon = extent[1] + (extent[3] - extent[1]) / 2;
                     }
-                    dealsSource.addFeature(
-                        new ol.Feature(new ol.geom.Point(
-                            ol.proj.fromLonLat([lat, lon], "EPSG:4326")
-                            )
-                        )
-                    )
+
+                    // Copy the properties of the country, except the geometry
+                    var properties = country.getProperties();
+                    delete properties.geometry;
+
+                    var newFeature = new ol.Feature(new ol.geom.Point(
+                            ol.proj.fromLonLat([lat, lon], "EPSG:4326")));
+                    newFeature.setProperties(properties);
+
+                    dealsSource.addFeature(newFeature);
                 });
             };
 
@@ -75,6 +79,58 @@
                 });
             };
 
+            /**
+             * Prepare a data array based on the feature properties.
+             *
+             * @param features: A list of features (in the current cluster)
+             * @returns {Array}
+             */
+            var prepareData = function(features) {
+                var currentProperty = 'intention';
+
+                var data = [];
+                $.each(features, function(index, f) {
+                    var properties = f.getProperties();
+                    var dataProperties = properties[currentProperty];
+                    if (!dataProperties) return;
+                    
+                    var entriesTotal = properties['deals'];
+                    var entriesWithProperties = 0;
+                    for (var k in dataProperties) {
+                        if (dataProperties.hasOwnProperty(k)) {
+                            var searchProp = $.grep(data, function(e){ return e.keyword == k; });
+                            var propEl = {keyword: k, count: 0};
+                            if (searchProp.length == 0) {
+                                data.push(propEl);
+                            } else {
+                                propEl = searchProp[0];
+                            }
+                            propEl.count += dataProperties[k];
+                        
+                            entriesWithProperties += dataProperties[k];
+                        }
+                    }
+
+                    // Add unknown
+                    var searchUnknown = $.grep(data, function(e){ return e.keyword == 'unknown'; });
+                    var unknownEl = {keyword: 'unknown', count: 0};
+                    if (searchUnknown.length == 0) {
+                        data.push(unknownEl);
+                    } else {
+                        unknownEl = searchUnknown[0];
+                    }
+                    unknownEl.count += entriesTotal - entriesWithProperties;
+                });
+
+                // Sort by count
+                data.sort(function(a, b) {
+                    return a.count - b.count;
+                });
+                data.reverse();
+
+                return data;
+            };
+
             // Layer and source for the deals per country. All deals are
             // clustered and displayed in the 'centre' of the country.
             var dealsSource = new ol.source.Vector();
@@ -85,17 +141,56 @@
             var dealsLayer = new ol.layer.Vector({
                 source: dealsCluster,
                 style: function (feature) {
+                    
+                    var data = prepareData(feature.get('features'));
+
+                    // Calculate total
+                    var total = 0;
+                    $.each(data, function(i, d) {
+                        total += d.count;
+                    });
+
+                    // TODO: How to proceed with coloring?
+                    var colors = {
+                        // accuracy
+                        '1km': "#008000",
+                        '10km': "#0000ff",
+                        // intention
+                        'tourism': "#ce4b99",
+                        'agriculture': "#377bbc",
+                        // unknown
+                        'unknown': 'silver'
+                    };
+
                     var size = feature.get('features').length;
-                    var radius = size * 3;
-                    // a simple example, but the svg is created depending on
-                    // some properties from the features.
-                    var svg = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve">' +
-                          '<circle class="donut-hole" cx="21" cy="21" r="' + radius + '" fill="#fff"></circle>' +
-                          '<circle class="donut-ring" cx="21" cy="21" r="' + radius + '" fill="transparent" stroke="#d2d3d4" stroke-width="3"></circle>' +
-                          '<circle class="donut-segment" cx="21" cy="21" r="' + radius + '" fill="transparent" stroke="#ce4b99" stroke-width="3" stroke-dasharray="85 15" stroke-dashoffset="0"></circle>' +
-                        '</svg>';
+
+                    // TODO: Using a fix radius for now
+                    var radius = 3;
+
+                    // SVG and basic circle
+                    var svg = [
+                        '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 42 42" enable-background="new 0 0 30 30" xml:space="preserve">',
+                        // Basic circle
+                        '<circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#fff"></circle>',
+                        '<circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d2d3d4" stroke-width="3"></circle>'
+                    ];
+
+                    var defaultOffset = 25; // To make chart start at top (12:00), not right (3:00).
+                    var totalOffsets = 0;
+                    $.each(data, function(i, d) {
+                        var offset = 100 - totalOffsets + defaultOffset;
+                        var currValue = d.count / total * 100;
+
+                        var currRemainder = 100 - currValue;
+
+                        totalOffsets += currValue;
+                        var currColor = colors[d.keyword];
+
+                        svg.push('<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="' + currColor + '" stroke-width="3" stroke-dasharray="' + currValue + ' ' + currRemainder + '" stroke-dashoffset="' + offset + '"></circle>');
+                    });
+                    svg.push('</svg>');
                     var clusterSVG = new Image();
-                    clusterSVG.src = 'data:image/svg+xml,' + escape(svg);
+                    clusterSVG.src = 'data:image/svg+xml,' + escape(svg.join(''));
 
                     return new ol.style.Style({
                         image: new ol.style.Icon({

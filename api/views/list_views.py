@@ -70,8 +70,8 @@ class GlobalDealsView(APIView):
                             "deals": 126,
                             "url": "/en/mali",
                             "intention": {
-                                "agricultutre": 1,
-                                "tourism": 8
+                                "agriculture": 99,
+                                "tourism": 18
                             },
                             "accuracy": {
                                 "1km": 6,
@@ -136,8 +136,8 @@ class GlobalDealsView(APIView):
                             "deals": 126,
                             "url": "/en/bfa",
                             "intention": {
-                                "agricultutre": 1,
-                                "tourism": 8
+                                "agriculture": 72,
+                                "tourism": 40
                             },
                             "accuracy": {
                                 "1km": 6,
@@ -162,8 +162,8 @@ class GlobalDealsView(APIView):
                             "deals": 121,
                             "url": "/en/civ",
                             "intention": {
-                                "agricultutre": 1,
-                                "tourism": 8
+                                "agriculture": 30,
+                                "tourism": 90
                             },
                             "accuracy": {
                                 "1km": 6,
@@ -188,8 +188,8 @@ class GlobalDealsView(APIView):
                             "deals": 121,
                             "url": "/en/ghana",
                             "intention": {
-                                "agricultutre": 1,
-                                "tourism": 8
+                                "agriculture": 46,
+                                "tourism": 66
                             },
                             "accuracy": {
                                 "1km": 6,
@@ -213,8 +213,8 @@ class GlobalDealsView(APIView):
                             "deals": 121,
                             "url": "/en/togo",
                             "intention": {
-                                "agricultutre": 1,
-                                "tourism": 8
+                                "agriculture": 10,
+                                "tourism": 105
                             },
                             "accuracy": {
                                 "1km": 6,
