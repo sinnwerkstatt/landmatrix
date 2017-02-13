@@ -43,11 +43,17 @@
 
             var drawCountryInformation = function (features, dealsSource) {
                 $.each(features, function (key, country) {
-                    // extent.getCenter() returns undefined with ol 3.20, so
+                    // extent.getCenter() returns undefined with ol 4.0, so
                     // calculate it manually.
-                    var extent = country.getGeometry().getExtent();
-                    var lat = extent[0] + (extent[2] - extent[0]) / 2;
-                    var lon = extent[1] + (extent[3] - extent[1]) / 2;
+                    var definedCentre = country.get('centre_coordinates');
+                    if (definedCentre) {
+                        var lat = definedCentre[0];
+                        var lon = definedCentre[1];
+                    } else {
+                        var extent = country.getGeometry().getExtent();
+                        var lat = extent[0] + (extent[2] - extent[0]) / 2;
+                        var lon = extent[1] + (extent[3] - extent[1]) / 2;
+                    }
                     dealsSource.addFeature(
                         new ol.Feature(new ol.geom.Point(
                             ol.proj.fromLonLat([lat, lon], "EPSG:4326")

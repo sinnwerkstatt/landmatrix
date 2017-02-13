@@ -81,6 +81,9 @@ class GlobalDealsView(APIView):
                                 "completed": 4,
                                 "failed": 1
                             },
+                            # this is a voluntary field, as override for the
+                            # 'calculated' centre where the info is displayed.
+                            "centre_coordinates": [-439000, 2000000]
                         },
                         "geometry": {
                             "type": "Polygon",
