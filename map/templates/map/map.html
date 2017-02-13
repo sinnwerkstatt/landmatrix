@@ -73,10 +73,10 @@
       </div>
     </div>
 
-    <div class="map-panel">
-      <div class="row">
-        <div class="col-md-12 tab-container">
-          <div class="col-md-4 tab-menu">
+    <div class="map-panel row">
+      <div class="col-md-12 tab-container">
+        <div class="flex-row">
+          <div class="col-md-2 tab-menu flex-col">
             <div class="list-group">
               <a href="#" class="list-group-item active text-center">
                 <h4 class="glyphicon glyphicon-cog"></h4><br/>{% trans "Deals" %}
@@ -88,29 +88,77 @@
                 <h4 class="glyphicon glyphicon-filter"></h4><br/>{% trans "Context" %}
               </a>
               <a href="#" class="list-group-item text-center">
-                <h4 class="glyphicon glyphicon-road"></h4><br/>{% trans "Base" %}
+                <h4 class="glyphicon glyphicon-unchecked"></h4><br/>{% trans "Base" %}
               </a>
-              <a href="#" class="list-group-item text-center">
-                <h4 class="glyphicon glyphicon-menu-right"></h4><br/>{% trans "Hide" %}
+              <a href="#" class="list-group-item text-center show-hide-content">
+                <h4 class="glyphicon glyphicon-menu-right"></h4>
               </a>
             </div>
           </div>
-          <div class="col-md-8 tab">
+          <div class="col-md-10 tab flex-col">
             <div class="tab-content active">
-              <h4><span>{% trans "Deal type" %}</span></h4>
-              <select>
-                <option selected="selected">{% trans "Intention of investment" %}</option>
+              <h4><span>{% trans "Show info about" %}</span></h4>
+              <select class="legend-select">
+                <option selected="selected" value="intention">{% trans "Intention of investment" %}</option>
+                <option value="accuracy">{% trans "Geospatial Accuracy" %}</option>
+                <option value="status">{% trans "Negotiation Status" %}</option>
               </select>
               <h4><span>{% trans "Legend" %}</span></h4>
+              <div class="intention legend active">
+                <ul>
+                  <li>{% trans "Agriculture" %}</li>
+                  <li>{% trans "Forestry" %}</li>
+                  <li>{% trans "Conservation" %}</li>
+                  <li>{% trans "Industry" %}</li>
+                  <li>{% trans "Renewable Energy" %}</li>
+                  <li>{% trans "Tourism" %}</li>
+                  <li>{% trans "Other" %}</li>
+                  <li>{% trans "Resource extraction" %}</li>
+                  <li>{% trans "Undefined" %}</li>
+                </ul>
+              </div>
+              <div class="accuracy legend">
+                <ul>
+                  <li>{% trans "better than 100m" %}</li>
+                  <li>{% trans "100m to 1km" %}</li>
+                  <li>{% trans "1km to 10km" %}</li>
+                  <li>{% trans "10km to 100km" %}</li>
+                  <li>{% trans "worse than 100km" %}</li>
+                </ul>
+              </div>
+              <div class="status legend">
+                <ul>
+                  <li>{% trans "Contract canceled" %}</li>
+                  <li>{% trans "Negotiations failed" %}</li>
+                  <li>{% trans "Contract signed" %}</li>
+                  <li>{% trans "Oral agreement" %}</li>
+                  <li>{% trans "Expression of interest" %}</li>
+                  <li>{% trans "Under negotiation" %}</li>
+                </ul>
+              </div>
             </div>
             <div class="tab-content">
-                search
+              <h4><span>{% trans "Search" %}</span></h4>
+              <input type="text" placeholder="{% trans "Search location" %}">
+              <button>{% trans "Search" %}</button>
             </div>
             <div class="tab-content">
-              context
+              <h4><span>{% trans "Context" %}</span></h4>
+              <ul>
+                <li>{% trans "Incidence of poverty" %}</li>
+                <li>{% trans "Global Pasture Land" %}</li>
+                <li>{% trans "Global Cropland" %}</li>
+                <li>{% trans "Global Land Cover 2009" %}</li>
+                <li>{% trans "Accessibility" %}</li>
+              </ul>
             </div>
             <div class="tab-content">
-                base layer
+              <h4><span>{% trans "Base" %}</span></h4>
+              <ul>
+                <li>{% trans "OpenStreetMap" %}</li>
+                <li>{% trans "Satellite" %}</li>
+                <li>{% trans "Terrain" %}</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -127,6 +175,8 @@
       var mapProgress = $(".map-progress");
       var success = "finished";
       var mapPlaceholder = $("#map-placeholder");
+      var showIcon = "glyphicon-menu-left";
+      var hideIcon = "glyphicon-menu-right";
       var advanceProgressLine = function() {
         var currentProgressLine = mapProgress.find(".line:not(." + success + "):first");
         currentProgressLine.addClass(success);
@@ -148,17 +198,31 @@
       // load country-data and cluster deals.
       advanceProgress();
       map.loadCountries();
+
+      $("div.tab-menu > div.list-group > a:not(.show-hide-content)").click(function(e) {
+        e.preventDefault();
+        $(this).siblings("a.active").removeClass("active");
+        $(this).addClass("active");
+        $("div.tab > div.tab-content").removeClass("active").eq($(this).index()).addClass("active");
+      });
+
+      // display legend according to type.
+      $(".legend-select").on("change", function() {
+         $(".legend").removeClass("active");
+         $(".legend." + $(this).val()).addClass("active");
+      });
+
+      // show-hide the content box
+      $(".show-hide-content").on("click", function() {
+          $(".tab").toggleClass("hidden");
+          var content = $(this).children("h4:first");
+          if(content.hasClass(hideIcon)) {
+              content.removeClass(hideIcon).addClass(showIcon);
+          } else {
+              content.removeClass(showIcon).addClass(hideIcon);
+          }
+      });
     });
 
-{#      $(document).ready(function() {#}
-{#        $("div.tab-menu>div.list-group>a").click(function(e) {#}
-{#            e.preventDefault();#}
-{#            $(this).siblings("a.active").removeClass("active");#}
-{#            $(this).addClass("active");#}
-{#            var index = $(this).index();#}
-{#            $("div.tab>div.tab-content").removeClass("active");#}
-{#            $("div.tab>div.tab-content").eq(index).addClass("active");#}
-{#        });#}
-{#      });#}
   </script>
 {% endblock %}

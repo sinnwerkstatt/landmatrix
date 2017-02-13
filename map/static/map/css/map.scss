@@ -51,17 +51,29 @@
     top: 5vh;
     right: 0;
 
+    .tab-menu h4 {
+      margin-bottom: 0;
+    }
+
     h1 {
       text-align: left;
     }
 
     .list-group-item {
       padding: 0;
+      font-size: 12px;
+    }
+
+    .flex-row {
+      display: flex;
+    }
+
+    .flex-col {
+      flex: 1;
     }
 
     div.tab-container {
       z-index: 10;
-      background-color: #ffffff;
       padding: 0 !important;
     }
     div.tab-menu {
@@ -86,8 +98,16 @@
       border-color: inherit;
     }
 
-    div.tab-content{
+    div.tab-content, .tab {
       background-color: #ffffff;
+      width: 250px;
+
+      .legend {
+        display: none;
+      }
+      .active {
+        display: block;
+      }
     }
 
     div.tab div.tab-content:not(.active){
