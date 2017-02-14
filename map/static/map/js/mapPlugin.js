@@ -57,7 +57,7 @@
             var dealsPerCountrySource = new ol.source.Vector();
             var dealsPerCountryCluster = new ol.source.Cluster({
                 source: dealsPerCountrySource,
-                distance: 50
+                distance: chartSize / 2
             });
 
             // Overly for the popover
