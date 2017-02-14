@@ -89,25 +89,28 @@
              */
             var prepareData = function(features) {
 
+                // Collect all possible values
                 var data = [];
-                $.each(features, function(index, f) {
-                    var properties = f.getProperties();
-                    var dataProperties = properties[currentProperty];
-                    if (!dataProperties) return;
+                $.each(options.legend[currentProperty].attributes, function(i, d) {
+                    data.push({
+                        color: d.color,
+                        id: d.id,
+                        count: 0
+                    });
+                });
+
+                // Update "count" of each value based on the feature's values.
+                $.each(features, function(i, f) {
+                    var properties = f.getProperties()[currentProperty];
+                    if (!properties) return;
                     
-                    var entriesWithProperties = 0;
-                    for (var k in dataProperties) {
-                        if (dataProperties.hasOwnProperty(k)) {
-                            var searchProp = $.grep(data, function(e){ return e.keyword == k; });
-                            var propEl = {keyword: k, count: 0};
-                            if (searchProp.length == 0) {
-                                data.push(propEl);
-                            } else {
-                                propEl = searchProp[0];
+                    for (var prop in properties) {
+                        if (properties.hasOwnProperty(prop)) {
+                            var searchProp = $.grep(data, function(e) { return e.id == prop; });
+                            if (searchProp.length != 1) {
+                                break;
                             }
-                            propEl.count += dataProperties[k];
-                        
-                            entriesWithProperties += dataProperties[k];
+                            searchProp[0].count += properties[prop];
                         }
                     }
                 });
@@ -122,27 +125,6 @@
                 distance: 50
             });
 
-            var mapCategories = {
-                'implementation': {
-                    'startup': {},
-                    'not_started': {},
-                    'abandoned': {
-                        // It is possible to overwrite colors
-                        'color': 'yellow'
-                    },
-                    'in_operation': {},
-                    'unknown': {}
-                },
-                'intention': {
-                    'agriculture': {},
-                    'renewable': {},
-                    'forestry': {},
-                    'conservation': {},
-                    'tourism': {},
-                    'other': {}
-                }
-            };
-            
             var dealsLayer = new ol.layer.Vector({
                 source: dealsCluster,
                 style: function (feature) {
@@ -178,9 +160,14 @@
 
                         totalOffsets += currValue;
 
-                        var currColor = mapCategories[currentProperty][d.keyword].color;
+                        var currAttr = $.grep(options.legend[currentProperty].attributes, function(e){ return e.id == d.id; });
 
-                        svg.push('<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="' + currColor + '" stroke-width="3" stroke-dasharray="' + currValue + ' ' + currRemainder + '" stroke-dashoffset="' + offset + '"></circle>');
+                        var currColor = 'silver';
+                        if (currAttr.length == 1) {
+                            currColor = currAttr[0].color;
+                        }
+
+                        svg.push('<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="' + currColor + '" stroke-width="5" stroke-dasharray="' + currValue + ' ' + currRemainder + '" stroke-dashoffset="' + offset + '"></circle>');
                     });
                     svg.push('</svg>');
                     var clusterSVG = new Image();
