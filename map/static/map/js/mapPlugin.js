@@ -123,70 +123,77 @@
                 return data;
             };
 
+            // Chart settings. Also needed to adjust clustering sensibility.
+            var chartSize = 100;
+            var donutWidth = 7;
+            var fontSize = 1.25;
+
             // Draw a clustered layer with the properties from the current
             // legend as 'svg-doghnut' surrounding the cluster point.
             function getCountryClusterLayer() {
                 return new ol.layer.Vector({
                     source: dealsPerCountryCluster,
                     style: function (feature) {
+                        var clusteredFeatures = feature.get('features');
 
-                        var data = prepareData(feature.get('features'));
-
-                        // Calculate total
-                        var total = 0;
-                        $.each(data, function (i, d) {
-                            total += d.count;
-                        });
-
-                        var size = feature.get('features').length;
-
-                        // TODO: Using a fix radius for now
-                        var radius = 3;
-
-                        // SVG and basic circle
-                        var svg = [
-                            '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 42 42" enable-background="new 0 0 30 30" xml:space="preserve">',
-                            // Basic circle
-                            '<circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#fff"></circle>',
-                            '<circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d2d3d4" stroke-width="3"></circle>'
-                        ];
-
-                        var defaultOffset = 25; // To make chart start at top (12:00), not right (3:00).
-                        var totalOffsets = 0;
-                        $.each(data, function (index, data) {
-                            var offset = 100 - totalOffsets + defaultOffset;
-                            var currValue = data.count / total * 100;
-                            var currRemainder = 100 - currValue;
-                            var currAttr = $.grep(options.legend[mapInstance.legendKey].attributes, function (e) {
-                                return e.id == data.id;
-                            });
-                            var currColor = 'silver';
-                            if (currAttr.length == 1) {
-                                currColor = currAttr[0].color;
-                            }
-                            totalOffsets += currValue;
-
-                            svg.push('<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="' + currColor + '" stroke-width="5" stroke-dasharray="' + currValue + ' ' + currRemainder + '" stroke-dashoffset="' + offset + '"></circle>');
-                        });
-                        svg.push('</svg>');
                         var clusterSVG = new Image();
-                        clusterSVG.src = 'data:image/svg+xml,' + escape(svg.join(''));
+                        var clusterData = prepareData(clusteredFeatures);
+                        clusterSVG.src = 'data:image/svg+xml,' + escape(mapInstance.getSvgChart(clusterData));
 
                         return new ol.style.Style({
                             image: new ol.style.Icon({
                                 img: clusterSVG,
-                                imgSize: [30, 30]
+                                imgSize: [chartSize, chartSize]
                             }),
                             text: new ol.style.Text({
-                                text: size.toString(),
+                                text: clusteredFeatures.length.toString(),
+                                scale: fontSize,
                                 fill: new ol.style.Fill({
-                                    color: '#000'
+                                    color: '#222'
                                 })
                             })
                         });
                     }
                 });
             }
+
+            // Return a SVG donut chart based on the feature's data.
+            this.getSvgChart = function(data) {
+                // Calculate total
+                var total = 0;
+                $.each(data, function (i, d) {
+                    total += d.count;
+                });
+
+                // SVG and basic circle
+                var radius = chartSize / (2 * Math.PI);
+                var svg = [
+                    '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="' + chartSize + 'px" height="' + chartSize + 'px" viewBox="0 0 ' + chartSize + ' ' + chartSize + '" enable-background="new 0 0 ' + chartSize + ' ' + chartSize + '" xml:space="preserve">',
+                    // Basic circle
+                    '<circle class="donut-hole" cx="' + chartSize/2 + '" cy="' + chartSize/2 + '" r="' + radius + '" fill="#fff"></circle>',
+                    '<circle class="donut-ring" cx="' + chartSize/2 + '" cy="' + chartSize/2 + '" r="' + radius + '" fill="transparent" stroke="#d2d3d4" stroke-width="' + donutWidth + '"></circle>'
+                ];
+
+                var defaultOffset = chartSize / 4; // To make chart start at top (12:00), not right (3:00).
+                var totalOffsets = 0;
+                $.each(data, function (index, data) {
+                    var offset = chartSize - totalOffsets + defaultOffset;
+                    var currValue = data.count / total * chartSize;
+                    var currRemainder = chartSize - currValue;
+                    var currAttr = $.grep(options.legend[mapInstance.legendKey].attributes, function (e) {
+                        return e.id == data.id;
+                    });
+                    var currColor = 'silver';
+                    if (currAttr.length == 1) {
+                        currColor = currAttr[0].color;
+                    }
+                    totalOffsets += currValue;
+
+                    svg.push('<circle class="donut-segment" cx="' + chartSize/2 + '" cy="' + chartSize/2 + '" r="' + radius + '" fill="transparent" stroke="' + currColor + '" stroke-width="' + donutWidth + '" stroke-dasharray="' + currValue + ' ' + currRemainder + '" stroke-dashoffset="' + offset + '"></circle>');
+                });
+                svg.push('</svg>');
+                return svg.join('');
+            };
 
             function showPopover(event, features) {
                 var element = popup.getElement();

@@ -36,7 +36,7 @@
 
   <link rel="stylesheet" href="{% static "map/css/map.css" %}">
   <div class="map-container">
-    <div id="map" class="map" title="{% trans "All Deals" %}">
+    <div id="map" class="map">
       <img src="{% static "map/images/map-default.png" %}" alt="{% trans "Map with all deals" %}" id="map-placeholder">
       <div id="popover"></div>
     </div>
@@ -100,7 +100,7 @@
             <div class="tab-content active">
               <h4><span>{% trans "Group by country" %}</span></h4>
               <label class="switch">
-                <input type="checkbox">
+                <input type="checkbox" checked="checked">
                 <div class="slider round"></div>
               </label>
 
