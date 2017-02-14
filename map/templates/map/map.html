@@ -152,12 +152,12 @@
 
 {% block js %}
   <script src="https://openlayers.org/en/v4.0.0/build/ol-debug.js" type="text/javascript"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.2.2/chroma.min.js" type="text/javascript"></script>
   <script src="{% static "map/js/mapPlugin.js" %}"></script>
   <script>
     $(function () {
       var mapProgress = $(".map-progress");
       var success = "finished";
+      var active = "active";
       var mapPlaceholder = $("#map-placeholder");
       var showIcon = "glyphicon-menu-left";
       var hideIcon = "glyphicon-menu-right";
@@ -186,15 +186,15 @@
 
       $("div.tab-menu > div.list-group > a:not(.show-hide-content)").click(function(e) {
         e.preventDefault();
-        $(this).siblings("a.active").removeClass("active");
-        $(this).addClass("active");
-        $("div.tab > div.tab-content").removeClass("active").eq($(this).index()).addClass("active");
+        $(this).siblings("a." + active).removeClass(active);
+        $(this).addClass(active);
+        $(".tab > .tab-content").removeClass(active).eq($(this).index()).addClass(active);
       });
 
       // display legend according to type.
       $(".legend-select").on("change", function() {
-         $(".map-legend").removeClass("active");
-         $(".map-legend." + $(this).val()).addClass("active");
+         $(".map-legend").removeClass(active);
+         $(".map-legend." + $(this).val()).addClass(active);
       });
 
       // show-hide the content box
