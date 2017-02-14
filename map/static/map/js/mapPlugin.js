@@ -14,7 +14,7 @@
 
             // use this.setLegendKey() to switch currently active legend.
             mapInstance.legendKey = options.legendKey;
-            mapInstance.countryLayer = null;
+            mapInstance.dealsPerCountryLayer = null;
 
             // initialize map
             var map = new ol.Map({
@@ -46,6 +46,19 @@
                 })
             });
             map.addLayer(countryLayer);
+
+            // Layer and source for the deals per country. All deals are
+            // clustered and displayed in the 'centre' of the country.
+            var dealsPerCountrySource = new ol.source.Vector();
+            var dealsPerCountryCluster = new ol.source.Cluster({
+                source: dealsPerCountrySource,
+                distance: 50
+            });
+
+            // Overly for the popover
+            var popup = new ol.Overlay({
+                element: document.getElementById(settings.popOverElement)
+            });
 
             // Draw deals per country with all properties in the geojson.
             var drawCountryInformation = function (features, dealsSource) {
@@ -109,14 +122,6 @@
                 });
                 return data;
             };
-
-            // Layer and source for the deals per country. All deals are
-            // clustered and displayed in the 'centre' of the country.
-            var dealsPerCountrySource = new ol.source.Vector();
-            var dealsPerCountryCluster = new ol.source.Cluster({
-                source: dealsPerCountrySource,
-                distance: 50
-            });
 
             // Draw a clustered layer with the properties from the current
             // legend as 'svg-doghnut' surrounding the cluster point.
@@ -183,14 +188,53 @@
                 });
             }
 
+            function showPopover(event, features) {
+                var element = popup.getElement();
+                var coordinate = event.coordinate;
+                $(element).popover('destroy');
+                popup.setPosition(coordinate);
+                // the keys are quoted to prevent renaming in ADVANCED mode.
+                $(element).popover({
+                  'placement': 'top',
+                  'animation': false,
+                  'html': true,
+                  'title': features.get('name')
+                });
+                $(element).popover('show');
+            }
+
+            map.addOverlay(popup);
+            // Display popover on click. Doubleclick should still zoom in.
+            map.on('singleclick', function (event) {
+                var feature = map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+                    // use 'active' layer (dealsPerCountry or allDeals) only.
+                    // todo: get currently active layer.
+                    if (layer == mapInstance.dealsPerCountryLayer) {
+                        return feature;
+                    }
+                });
+                if (feature) {
+                    var features = feature.get('features');
+                    if (features.length === 1) {
+                        // popover for single country.
+                        showPopover(event, features[0])
+                    } else {
+                        // popover for cluster.
+                        $.each(features, function(index, feature) {
+                            console.log(feature.getProperties());
+                        });
+                    }
+                }
+            });
+
             // Redraw the layer with the deals per country, with the current
             // legend as properties.
             this.setDealsPerCountryLayer = function() {
-                if (this.countryLayer) {
-                    map.removeLayer(this.countryLayer);
+                if (this.dealsPerCountryLayer) {
+                    map.removeLayer(this.dealsPerCountryLayer);
                 }
-                this.countryLayer = getCountryClusterLayer();
-                map.addLayer(this.countryLayer);
+                this.dealsPerCountryLayer = getCountryClusterLayer();
+                map.addLayer(this.dealsPerCountryLayer);
             };
 
             // Load geojson from countries-api and display data.

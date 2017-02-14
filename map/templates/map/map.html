@@ -38,6 +38,7 @@
   <div class="map-container">
     <div id="map" class="map" title="{% trans "All Deals" %}">
       <img src="{% static "map/images/map-default.png" %}" alt="{% trans "Map with all deals" %}" id="map-placeholder">
+      <div id="popover"></div>
     </div>
 
     <div class="map-progress row">
@@ -183,7 +184,8 @@
       var map = $.setMap({
         deals_url: "{% url "deals_api" %}",
         legend: {{ legend_json|safe }},
-        legendKey: legendSelect.val()
+        legendKey: legendSelect.val(),
+        popOverElement: 'popover'
       });
       mapPlaceholder.remove();
       advanceProgressLine();
