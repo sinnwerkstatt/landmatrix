@@ -182,7 +182,7 @@
       // first step: replace static image with map.
       advanceProgress();
       var map = $.setMap({
-        deals_url: "{% url "deals_api" %}",
+        deals_url: "{% url "country_deals_api" %}",
         legend: {{ legend_json|safe }},
         legendKey: legendSelect.val(),
         popOverElement: 'popover'
