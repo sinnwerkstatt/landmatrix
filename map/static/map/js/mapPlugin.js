@@ -212,9 +212,6 @@
                 this.setDealsPerCountryLayer();
             };
 
-            // initialize layer with deals.
-            this.setDealsPerCountryLayer();
-
             return this;
         }
     });

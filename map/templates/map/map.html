@@ -172,6 +172,11 @@
         currentIcon.addClass(successClass);
         advanceProgressLine();
       };
+      var finishProgress = function() {
+        mapProgress.find('.line').addClass(successClass);
+        advanceProgress();
+        mapProgress.fadeOut();
+      };
 
       // first step: replace static image with map.
       advanceProgress();
@@ -186,6 +191,12 @@
       // load country-data and cluster deals.
       advanceProgress();
       map.loadCountries();
+
+      // load clustered deals per country.
+      advanceProgress();
+      map.setDealsPerCountryLayer();
+
+      finishProgress();
 
       $("div.tab-menu > div.list-group > a:not(.show-hide-content)").click(function(e) {
         e.preventDefault();
