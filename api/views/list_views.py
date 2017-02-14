@@ -70,6 +70,10 @@ class CountryDealsView(APIView):
     Mock required response
     """
     def get(self, request, *args, **kwargs):
+        """
+        Label keywords (intention, agriculture etc.) must match IDs of
+        MapSettingsMixin.get_legend().
+        """
         return Response(
             {
                 "type": "FeatureCollection",
@@ -79,11 +83,16 @@ class CountryDealsView(APIView):
                         "id": "MLI",
                         "properties": {
                             "name": "Mali",
-                            "deals": 8,
+                            "deals": 12,
                             "url": "/en/mali",
                             "intention": {
-                                "agriculture": 8,
-                                "renewable": 2,
+                                "agriculture": 4,
+                                "renewable_energy": 2,
+                                "mining": 1,
+                                "forestry": 1,
+                                "tourism": 1,
+                                "industry": 1,
+                                "conservation": 1,
                                 "other": 1
                             },
                             "accuracy": {
@@ -91,6 +100,8 @@ class CountryDealsView(APIView):
                                 "10km": 2
                             },
                             "implementation": {
+                                "not_started": 1,
+                                "startup": 1,
                                 "in_operation": 3,
                                 "abandoned": 3,
                                 "unknown": 2
@@ -160,7 +171,7 @@ class CountryDealsView(APIView):
                             "url": "/en/bfa",
                             "intention": {
                                 "agriculture": 3,
-                                "renewable": 1
+                                "renewable_energy": 1
                             },
                             "accuracy": {
                                 "1km": 6,
@@ -210,7 +221,7 @@ class CountryDealsView(APIView):
                             "url": "/en/civ",
                             "intention": {
                                 "agriculture": 9,
-                                "renewable": 1,
+                                "renewable_energy": 1,
                                 "forestry": 1
                             },
                             "accuracy": {
@@ -260,7 +271,7 @@ class CountryDealsView(APIView):
                             "url": "/en/ghana",
                             "intention": {
                                 "agriculture": 37,
-                                "renewable": 3,
+                                "renewable_energy": 3,
                                 "conservation": 1,
                                 "forestry": 6
                             },

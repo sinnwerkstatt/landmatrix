@@ -5,10 +5,15 @@
             // Default settings.
             var settings = $.extend({
                 target: "map",
-                zoom: 2,
-                centerTo: [30, 30],
+                zoom: 6,
+                centerTo: [10, 20],
                 legendKey: 'intention'
             }, options);
+
+            // Chart settings. Also needed to adjust clustering sensibility.
+            var chartSize = 100;
+            var donutWidth = 7;
+            var fontSize = 1.25;
 
             var mapInstance = this;
 
@@ -122,11 +127,6 @@
                 });
                 return data;
             };
-
-            // Chart settings. Also needed to adjust clustering sensibility.
-            var chartSize = 100;
-            var donutWidth = 7;
-            var fontSize = 1.25;
 
             // Draw a clustered layer with the properties from the current
             // legend as 'svg-doghnut' surrounding the cluster point.
