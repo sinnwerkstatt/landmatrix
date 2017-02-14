@@ -156,18 +156,20 @@
   <script>
     $(function () {
       var mapProgress = $(".map-progress");
-      var success = "finished";
-      var active = "active";
+      var successClass = "finished";
+      var activeClass = "active";
       var mapPlaceholder = $("#map-placeholder");
       var showIcon = "glyphicon-menu-left";
       var hideIcon = "glyphicon-menu-right";
+      var legendSelect = $(".legend-select");
+      var mapLegendClass = ".map-legend";
       var advanceProgressLine = function() {
-        var currentProgressLine = mapProgress.find(".line:not(." + success + "):first");
-        currentProgressLine.addClass(success);
+        var currentProgressLine = mapProgress.find(".line:not(." + successClass + "):first");
+        currentProgressLine.addClass(successClass);
       };
       var advanceProgress = function() {
-        var currentIcon = mapProgress.find(".status:not(." + success + "):first");
-        currentIcon.addClass(success);
+        var currentIcon = mapProgress.find(".status:not(." + successClass + "):first");
+        currentIcon.addClass(successClass);
         advanceProgressLine();
       };
 
@@ -175,7 +177,8 @@
       advanceProgress();
       var map = $.setMap({
         deals_url: "{% url "deals_api" %}",
-        legend: {{ legend_json|safe }}
+        legend: {{ legend_json|safe }},
+        legendKey: legendSelect.val()
       });
       mapPlaceholder.remove();
       advanceProgressLine();
@@ -186,15 +189,17 @@
 
       $("div.tab-menu > div.list-group > a:not(.show-hide-content)").click(function(e) {
         e.preventDefault();
-        $(this).siblings("a." + active).removeClass(active);
-        $(this).addClass(active);
-        $(".tab > .tab-content").removeClass(active).eq($(this).index()).addClass(active);
+        $(this).siblings("a." + activeClass).removeClass(activeClass);
+        $(this).addClass(activeClass);
+        $(".tab > .tab-content").removeClass(activeClass).eq($(this).index()).addClass(activeClass);
       });
 
       // display legend according to type.
-      $(".legend-select").on("change", function() {
-         $(".map-legend").removeClass(active);
-         $(".map-legend." + $(this).val()).addClass(active);
+      legendSelect.on("change", function() {
+         var selected = $(this).val();
+         map.setLegendKey(selected);
+         $(mapLegendClass).removeClass(activeClass);
+         $(mapLegendClass + "." + selected).addClass(activeClass);
       });
 
       // show-hide the content box

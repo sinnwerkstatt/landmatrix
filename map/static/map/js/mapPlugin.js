@@ -1,12 +1,20 @@
 (function ($) {
     $.extend({
         setMap: function (options) {
+
             // Default settings.
             var settings = $.extend({
                 target: "map",
                 zoom: 2,
-                centerTo: [30, 30]
+                centerTo: [30, 30],
+                legendKey: 'intention'
             }, options);
+
+            var mapInstance = this;
+
+            // use this.setLegendKey() to switch currently active legend.
+            mapInstance.legendKey = options.legendKey;
+            mapInstance.countryLayer = null;
 
             // initialize map
             var map = new ol.Map({
@@ -22,9 +30,7 @@
                 })
             });
 
-            // Layer and source holding countries, including aggregated deals.
-            // These deals are clustered and shown in the middle of each
-            // country.
+            // Layer and source holding countries.
             var countrySource = new ol.source.Vector();
             var countryLayer = new ol.layer.Vector({
                 source: countrySource,
@@ -41,6 +47,7 @@
             });
             map.addLayer(countryLayer);
 
+            // Draw deals per country with all properties in the geojson.
             var drawCountryInformation = function (features, dealsSource) {
                 $.each(features, function (key, country) {
                     // extent.getCenter() returns undefined with ol 4.0, so
@@ -67,20 +74,6 @@
                 });
             };
 
-            // Load geojson from countries-api and display data.
-            this.loadCountries = function() {
-                $.ajax(settings.deals_url).then(function (response) {
-                    var geojsonFormat = new ol.format.GeoJSON();
-                    var features = geojsonFormat.readFeatures(response,
-                        {featureProjection: "EPSG:3857"}
-                    );
-                    countrySource.addFeatures(features);
-                    drawCountryInformation(features, dealsSource);
-                });
-            };
-
-            var currentProperty = 'implementation';
-
             /**
              * Prepare a data array based on the feature properties.
              *
@@ -91,7 +84,7 @@
 
                 // Collect all possible values
                 var data = [];
-                $.each(options.legend[currentProperty].attributes, function(i, d) {
+                $.each(options.legend[mapInstance.legendKey].attributes, function(i, d) {
                     data.push({
                         color: d.color,
                         id: d.id,
@@ -100,10 +93,10 @@
                 });
 
                 // Update "count" of each value based on the feature's values.
-                $.each(features, function(i, f) {
-                    var properties = f.getProperties()[currentProperty];
+                $.each(features, function(index, feature) {
+                    var properties = feature.getProperties()[mapInstance.legendKey];
                     if (!properties) return;
-                    
+
                     for (var prop in properties) {
                         if (properties.hasOwnProperty(prop)) {
                             var searchProp = $.grep(data, function(e) { return e.id == prop; });
@@ -119,75 +112,108 @@
 
             // Layer and source for the deals per country. All deals are
             // clustered and displayed in the 'centre' of the country.
-            var dealsSource = new ol.source.Vector();
-            var dealsCluster = new ol.source.Cluster({
-                source: dealsSource,
+            var dealsPerCountrySource = new ol.source.Vector();
+            var dealsPerCountryCluster = new ol.source.Cluster({
+                source: dealsPerCountrySource,
                 distance: 50
             });
 
-            var dealsLayer = new ol.layer.Vector({
-                source: dealsCluster,
-                style: function (feature) {
-                    
-                    var data = prepareData(feature.get('features'));
+            // Draw a clustered layer with the properties from the current
+            // legend as 'svg-doghnut' surrounding the cluster point.
+            function getCountryClusterLayer() {
+                return new ol.layer.Vector({
+                    source: dealsPerCountryCluster,
+                    style: function (feature) {
 
-                    // Calculate total
-                    var total = 0;
-                    $.each(data, function(i, d) {
-                        total += d.count;
-                    });
+                        var data = prepareData(feature.get('features'));
 
-                    var size = feature.get('features').length;
+                        // Calculate total
+                        var total = 0;
+                        $.each(data, function (i, d) {
+                            total += d.count;
+                        });
 
-                    // TODO: Using a fix radius for now
-                    var radius = 3;
+                        var size = feature.get('features').length;
 
-                    // SVG and basic circle
-                    var svg = [
-                        '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 42 42" enable-background="new 0 0 30 30" xml:space="preserve">',
-                        // Basic circle
-                        '<circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#fff"></circle>',
-                        '<circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d2d3d4" stroke-width="3"></circle>'
-                    ];
+                        // TODO: Using a fix radius for now
+                        var radius = 3;
 
-                    var defaultOffset = 25; // To make chart start at top (12:00), not right (3:00).
-                    var totalOffsets = 0;
-                    $.each(data, function(i, d) {
-                        var offset = 100 - totalOffsets + defaultOffset;
-                        var currValue = d.count / total * 100;
+                        // SVG and basic circle
+                        var svg = [
+                            '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 42 42" enable-background="new 0 0 30 30" xml:space="preserve">',
+                            // Basic circle
+                            '<circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#fff"></circle>',
+                            '<circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d2d3d4" stroke-width="3"></circle>'
+                        ];
 
-                        var currRemainder = 100 - currValue;
+                        var defaultOffset = 25; // To make chart start at top (12:00), not right (3:00).
+                        var totalOffsets = 0;
+                        $.each(data, function (index, data) {
+                            var offset = 100 - totalOffsets + defaultOffset;
+                            var currValue = data.count / total * 100;
+                            var currRemainder = 100 - currValue;
+                            var currAttr = $.grep(options.legend[mapInstance.legendKey].attributes, function (e) {
+                                return e.id == data.id;
+                            });
+                            var currColor = 'silver';
+                            if (currAttr.length == 1) {
+                                currColor = currAttr[0].color;
+                            }
+                            totalOffsets += currValue;
 
-                        totalOffsets += currValue;
+                            svg.push('<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="' + currColor + '" stroke-width="5" stroke-dasharray="' + currValue + ' ' + currRemainder + '" stroke-dashoffset="' + offset + '"></circle>');
+                        });
+                        svg.push('</svg>');
+                        var clusterSVG = new Image();
+                        clusterSVG.src = 'data:image/svg+xml,' + escape(svg.join(''));
 
-                        var currAttr = $.grep(options.legend[currentProperty].attributes, function(e){ return e.id == d.id; });
-
-                        var currColor = 'silver';
-                        if (currAttr.length == 1) {
-                            currColor = currAttr[0].color;
-                        }
-
-                        svg.push('<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="' + currColor + '" stroke-width="5" stroke-dasharray="' + currValue + ' ' + currRemainder + '" stroke-dashoffset="' + offset + '"></circle>');
-                    });
-                    svg.push('</svg>');
-                    var clusterSVG = new Image();
-                    clusterSVG.src = 'data:image/svg+xml,' + escape(svg.join(''));
-
-                    return new ol.style.Style({
-                        image: new ol.style.Icon({
-                            img: clusterSVG,
-                            imgSize:[30,30]
-                        }),
-                        text: new ol.style.Text({
-                            text: size.toString(),
-                            fill: new ol.style.Fill({
-                                color: '#000'
+                        return new ol.style.Style({
+                            image: new ol.style.Icon({
+                                img: clusterSVG,
+                                imgSize: [30, 30]
+                            }),
+                            text: new ol.style.Text({
+                                text: size.toString(),
+                                fill: new ol.style.Fill({
+                                    color: '#000'
+                                })
                             })
-                        })
-                    });
+                        });
+                    }
+                });
+            }
+
+            // Redraw the layer with the deals per country, with the current
+            // legend as properties.
+            this.setDealsPerCountryLayer = function() {
+                if (this.countryLayer) {
+                    map.removeLayer(this.countryLayer);
                 }
-            });
-            map.addLayer(dealsLayer);
+                this.countryLayer = getCountryClusterLayer();
+                map.addLayer(this.countryLayer);
+            };
+
+            // Load geojson from countries-api and display data.
+            this.loadCountries = function() {
+                $.ajax(settings.deals_url).then(function (response) {
+                    var geojsonFormat = new ol.format.GeoJSON();
+                    var features = geojsonFormat.readFeatures(response,
+                        {featureProjection: "EPSG:3857"}
+                    );
+                    countrySource.addFeatures(features);
+                    drawCountryInformation(features, dealsPerCountrySource);
+                });
+            };
+
+            // change the legend and reload the layer with deals.
+            this.setLegendKey = function(legendKey) {
+                this.legendKey = legendKey;
+                // maybe: cache layers in an object.
+                this.setDealsPerCountryLayer();
+            };
+
+            // initialize layer with deals.
+            this.setDealsPerCountryLayer();
 
             return this;
         }
