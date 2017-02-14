@@ -66,20 +66,22 @@ class GlobalDealsView(APIView):
                         "type": "Feature",
                         "id": "MLI",
                         "properties": {
-                            "name": "Mail",
-                            "deals": 126,
+                            "name": "Mali",
+                            "deals": 8,
                             "url": "/en/mali",
                             "intention": {
-                                "agriculture": 99,
-                                "tourism": 18
+                                "agriculture": 8,
+                                "renewable": 2,
+                                "other": 1
                             },
                             "accuracy": {
                                 "1km": 6,
                                 "10km": 2
                             },
-                            "status": {
-                                "completed": 4,
-                                "failed": 1
+                            "implementation": {
+                                "in_operation": 3,
+                                "abandoned": 3,
+                                "unknown": 2
                             },
                             # this is a voluntary field, as override for the
                             # 'calculated' centre where the info is displayed.
@@ -133,19 +135,19 @@ class GlobalDealsView(APIView):
                         "id": "BFA",
                         "properties": {
                             "name": "Burkina Faso",
-                            "deals": 126,
+                            "deals": 3,
                             "url": "/en/bfa",
                             "intention": {
-                                "agriculture": 72,
-                                "tourism": 40
+                                "agriculture": 3,
+                                "renewable": 1
                             },
                             "accuracy": {
                                 "1km": 6,
                                 "10km": 2
                             },
-                            "status": {
-                                "completed": 4,
-                                "failed": 1
+                            "implementation": {
+                                "in_operation": 2,
+                                "unknown": 1
                             },
                         },
                         "geometry":{
@@ -159,19 +161,21 @@ class GlobalDealsView(APIView):
                         "id": "CIV",
                         "properties": {
                             "name": "Ivory Coast",
-                            "deals": 121,
+                            "deals": 9,
                             "url": "/en/civ",
                             "intention": {
-                                "agriculture": 30,
-                                "tourism": 90
+                                "agriculture": 9,
+                                "renewable": 1,
+                                "forestry": 1
                             },
                             "accuracy": {
                                 "1km": 6,
                                 "10km": 2
                             },
-                            "status": {
-                                "completed": 4,
-                                "failed": 1
+                            "implementation": {
+                                "in_operation": 6,
+                                "not_started": 2,
+                                "unknown": 1
                             },
                         },
                         "geometry": {
@@ -185,19 +189,24 @@ class GlobalDealsView(APIView):
                         "id": "GHA",
                         "properties": {
                             "name": "Ghana",
-                            "deals": 121,
+                            "deals": 41,
                             "url": "/en/ghana",
                             "intention": {
-                                "agriculture": 46,
-                                "tourism": 66
+                                "agriculture": 37,
+                                "renewable": 3,
+                                "conservation": 1,
+                                "forestry": 6
                             },
                             "accuracy": {
                                 "1km": 6,
                                 "10km": 2
                             },
-                            "status": {
-                                "completed": 4,
-                                "failed": 1
+                            "implementation": {
+                                "startup": 7,
+                                "not_started": 4,
+                                "abandoned": 3,
+                                "in_operation": 20,
+                                "unknown": 7
                             },
                         },
                         "geometry":{
@@ -210,19 +219,19 @@ class GlobalDealsView(APIView):
                         "id": "TGO",
                         "properties": {
                             "name": "Togo",
-                            "deals": 121,
+                            "deals": 10,
                             "url": "/en/togo",
                             "intention": {
-                                "agriculture": 10,
-                                "tourism": 105
+                                "agriculture": 9,
+                                "tourism": 4
                             },
                             "accuracy": {
                                 "1km": 6,
                                 "10km": 2
                             },
-                            "status": {
-                                "completed": 4,
-                                "failed": 1
+                            "implementation": {
+                                "startup": 4,
+                                "in_operation": 6
                             },
                         },
                         "geometry": {

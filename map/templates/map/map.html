@@ -107,7 +107,8 @@
               <select class="legend-select">
                 <option selected="selected" value="intention">{% trans "Intention of investment" %}</option>
                 <option value="accuracy">{% trans "Geospatial Accuracy" %}</option>
-                <option value="status">{% trans "Negotiation Status" %}</option>
+                <option value="negotiation">{% trans "Negotiation Status" %}</option>
+                <option value="implementation">{% trans "Implementation Status" %}</option>
               </select>
               <h4><span>{% trans "Legend" %}</span></h4>
               <div class="intention legend active">
@@ -132,7 +133,7 @@
                   <li>{% trans "worse than 100km" %}</li>
                 </ul>
               </div>
-              <div class="status legend">
+              <div class="negotiation legend">
                 <ul>
                   <li>{% trans "Contract canceled" %}</li>
                   <li>{% trans "Negotiations failed" %}</li>
@@ -140,6 +141,14 @@
                   <li>{% trans "Oral agreement" %}</li>
                   <li>{% trans "Expression of interest" %}</li>
                   <li>{% trans "Under negotiation" %}</li>
+                </ul>
+              </div>
+              <div class="implementation legend">
+                <ul>
+                  <li>{% trans "Project not started" %}</li>
+                  <li>{% trans "Startup phase (no production)" %}</li>
+                  <li>{% trans "In operation (production)" %}</li>
+                  <li>{% trans "Project abandoned" %}</li>
                 </ul>
               </div>
             </div>
@@ -175,6 +184,7 @@
 
 {% block js %}
   <script src="https://openlayers.org/en/v4.0.0/build/ol-debug.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.2.2/chroma.min.js" type="text/javascript"></script>
   <script src="{% static "map/js/mapPlugin.js" %}"></script>
   <script>
     $(function () {

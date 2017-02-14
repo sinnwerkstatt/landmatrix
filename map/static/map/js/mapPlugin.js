@@ -59,11 +59,11 @@
                     var properties = country.getProperties();
                     delete properties.geometry;
 
-                    var newFeature = new ol.Feature(new ol.geom.Point(
+                    var countryInfoPoint = new ol.Feature(new ol.geom.Point(
                             ol.proj.fromLonLat([lat, lon], "EPSG:4326")));
-                    newFeature.setProperties(properties);
+                    countryInfoPoint.setProperties(properties);
 
-                    dealsSource.addFeature(newFeature);
+                    dealsSource.addFeature(countryInfoPoint);
                 });
             };
 
@@ -79,6 +79,8 @@
                 });
             };
 
+            var currentProperty = 'implementation';
+
             /**
              * Prepare a data array based on the feature properties.
              *
@@ -86,7 +88,6 @@
              * @returns {Array}
              */
             var prepareData = function(features) {
-                var currentProperty = 'intention';
 
                 var data = [];
                 $.each(features, function(index, f) {
@@ -94,7 +95,6 @@
                     var dataProperties = properties[currentProperty];
                     if (!dataProperties) return;
                     
-                    var entriesTotal = properties['deals'];
                     var entriesWithProperties = 0;
                     for (var k in dataProperties) {
                         if (dataProperties.hasOwnProperty(k)) {
@@ -110,24 +110,7 @@
                             entriesWithProperties += dataProperties[k];
                         }
                     }
-
-                    // Add unknown
-                    var searchUnknown = $.grep(data, function(e){ return e.keyword == 'unknown'; });
-                    var unknownEl = {keyword: 'unknown', count: 0};
-                    if (searchUnknown.length == 0) {
-                        data.push(unknownEl);
-                    } else {
-                        unknownEl = searchUnknown[0];
-                    }
-                    unknownEl.count += entriesTotal - entriesWithProperties;
                 });
-
-                // Sort by count
-                data.sort(function(a, b) {
-                    return a.count - b.count;
-                });
-                data.reverse();
-
                 return data;
             };
 
@@ -138,6 +121,28 @@
                 source: dealsSource,
                 distance: 50
             });
+
+            var mapCategories = {
+                'implementation': {
+                    'startup': {},
+                    'not_started': {},
+                    'abandoned': {
+                        // It is possible to overwrite colors
+                        'color': 'yellow'
+                    },
+                    'in_operation': {},
+                    'unknown': {}
+                },
+                'intention': {
+                    'agriculture': {},
+                    'renewable': {},
+                    'forestry': {},
+                    'conservation': {},
+                    'tourism': {},
+                    'other': {}
+                }
+            };
+            
             var dealsLayer = new ol.layer.Vector({
                 source: dealsCluster,
                 style: function (feature) {
@@ -149,18 +154,6 @@
                     $.each(data, function(i, d) {
                         total += d.count;
                     });
-
-                    // TODO: How to proceed with coloring?
-                    var colors = {
-                        // accuracy
-                        '1km': "#008000",
-                        '10km': "#0000ff",
-                        // intention
-                        'tourism': "#ce4b99",
-                        'agriculture': "#377bbc",
-                        // unknown
-                        'unknown': 'silver'
-                    };
 
                     var size = feature.get('features').length;
 
@@ -184,7 +177,8 @@
                         var currRemainder = 100 - currValue;
 
                         totalOffsets += currValue;
-                        var currColor = colors[d.keyword];
+
+                        var currColor = mapCategories[currentProperty][d.keyword].color;
 
                         svg.push('<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="' + currColor + '" stroke-width="3" stroke-dasharray="' + currValue + ' ' + currRemainder + '" stroke-dashoffset="' + offset + '"></circle>');
                     });
