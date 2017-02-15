@@ -183,6 +183,10 @@ $map-height: 75vh;
     overflow-x: hidden;
     overflow-y: scroll;
   }
+
+  td {
+    padding: 2px 0;
+  }
 }
 
 // the legend in the tabbed menu panel

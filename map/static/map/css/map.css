@@ -118,6 +118,8 @@
   height: 75vh;
   overflow-x: hidden;
   overflow-y: scroll; }
+#details-overlay td {
+  padding: 2px 0; }
 
 .map-legend {
   display: none; }

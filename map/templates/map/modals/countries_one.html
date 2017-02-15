@@ -6,38 +6,15 @@
 {% endcomment %}
 
 
-<h1><span>{{ legend.label }}: One Country</span></h1>
+<h1><span>{{ legend.label }}: {{ countries.0 }}</span></h1>
 
 <div class="row">
     <canvas id="chart" width="100%"></canvas>
 </div>
-<div class="row">
-  <h2>{{ legend.title }}</h2>
-  <table>
-    <thead>
-      <td></td>
-      {% for country in countries %}
-        <td>{{ country }}</td>
-      {% endfor %}
-    </thead>
-    {% for item in legend.attributes %}
-      <tr>
-        <td>
-          <span class="legend-symbol" style="background-color:{{ item.color }};"></span>
-          {{ item.label }}
-        </td>
-        {% for country in countries %}
-          <td>{{ country }}</td>
-        {% endfor %}
-      </tr>
-    {% endfor %}
-  </table>
-</div>
 
-<div>
-    <h1><span>{% trans "Country detail" %}</span></h1>
-    <a href="">{{ country }} - {% trans "visit detail page" %}</a>
-</div>
+{% include 'map/modals/includes/table.html' %}
+
+{% include 'map/modals/includes/country_links.html' %}
 
 <script src="{% static "map/js/Chart.min.js" %}"></script>
 <script>

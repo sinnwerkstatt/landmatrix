@@ -1,0 +1,10 @@
+{% load i18n %}
+
+<div>
+  <h1><span>{% trans "Country details" %}</span></h1>
+  <ul>
+  {% for country in countries %}
+    <li><a href="">{{ country }} - {% trans "visit detail page" %}</a></li>
+  {% endfor %}
+  </ul>
+</div>

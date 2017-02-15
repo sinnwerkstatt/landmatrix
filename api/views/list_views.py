@@ -644,6 +644,7 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         context['legend'] = self.get_legend_for_key(
             key=self.post['legendKey']
         )
-        context['countries'] = ['Mail', 'Togo', 'Ivory Coast']
-        # context.update(**post['features'])
+        context['countries'] = [
+            feature['properties']['name'] for feature in self.post['features']['features']
+        ]
         return context
