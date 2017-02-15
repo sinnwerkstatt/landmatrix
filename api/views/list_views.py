@@ -65,9 +65,260 @@ class GlobalDealsView(APIView):
     def get(self, request, *args, **kwargs):
         return Response(
             {
-                "coming": "soon"
-            }
-        )
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        # Corresponds to deal_id in api/deals.json
+                        "id": 3790,
+                        "properties": {
+                            "url": "/en/deal/3790/",
+                            "intention": [
+                                # Only top categories (eg. no "biofuels")
+                                "agriculture"
+                            ],
+                            "implementation": 'in_operation',
+                            "intended_size": 30000,
+                            "contract_size": 30000,
+                            "production_size": None,
+                            "investor": "Unknown (Agro Energy Développement)"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -4.82596920,
+                                14.49680350
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "id": 1480,
+                        "properties": {
+                            "url": "/en/deal/1480/",
+                            "intention": [
+                                "agriculture"
+                            ],
+                            "implementation": 'in_operation',
+                            "intended_size": 30000,
+                            "contract_size": 30000,
+                            "production_size": None,
+                            "investor": "Unknown (Southern Global Inc.)"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -4.82596920,
+                                14.49680350
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "id": 1474,
+                        "properties": {
+                            "url": "/en/deal/1474/",
+                            "intention": [
+                                "agriculture"
+                            ],
+                            "implementation": 'abandoned',
+                            "intended_size": 100000,
+                            "contract_size": 25000,
+                            "production_size": None,
+                            "investor": "Unknown (Libyan African Investment Portfolio, Unnamed investor 212)"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -5.16607226,
+                                14.17691062
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "id": 3326,
+                        "properties": {
+                            "url": "/en/deal/3326/",
+                            "intention": [
+                                "mining"
+                            ],
+                            "implementation": 'unknown',
+                            "intended_size": None,
+                            "contract_size": None,
+                            "production_size": None,
+                            "investor": "Unknown (AngloGold Ashanti , Government, Randgold Resources)"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -6.28333300,
+                                11.91666700
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "id": 1470,
+                        "properties": {
+                            "url": "/en/deal/1470/",
+                            "intention": [
+                                "agriculture"
+                            ],
+                            "implementation": 'unknown',
+                            "intended_size": 1000,
+                            "contract_size": 1000,
+                            "production_size": None,
+                            "investor": "Mali Folkcenter"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -7.43700000,
+                                10.99000000
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "id": 1467,
+                        "properties": {
+                            "url": "/en/deal/1467/",
+                            "intention": [
+                                "agriculture",
+                                "renewable_energy"
+                            ],
+                            "implementation": 'in_operation',
+                            "intended_size": 20000,
+                            "contract_size": 20000,
+                            "production_size": None,
+                            "investor": "N'Sukula"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -6.10233000,
+                                14.03790000
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "id": 1508,
+                        "properties": {
+                            "url": "/en/deal/1508/",
+                            "intention": [
+                                "agriculture",
+                                "forestry"
+                            ],
+                            "implementation": 'unknown',
+                            "intended_size": None,
+                            "contract_size": None,
+                            "production_size": None,
+                            "investor": "Jatropha Mali Initiative JMI"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -9.48472300,
+                                13.04114000
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "id": 1486,
+                        "properties": {
+                            "url": "/en/deal/1486/",
+                            "intention": [
+                                "agriculture",
+                                "conservation",
+                                "forestry"
+                            ],
+                            "implementation": 'in_operation',
+                            "intended_size": 205700,
+                            "contract_size": 205700,
+                            "production_size": None,
+                            "investor": "Agro Industrie Développement SA (AID-SA)"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -8.15000000,
+                                11.18333330
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "id": 1478,
+                        "properties": {
+                            "url": "/en/deal/1478/",
+                            "intention": [
+                                "agriculture"
+                            ],
+                            "implementation": 'in_operation',
+                            "intended_size": 160000,
+                            "contract_size": 10000,
+                            "production_size": None,
+                            "investor": "PETROTECH – ffn AGRO MALI SA"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -7.56666670,
+                                12.86666670
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "id": 1481,
+                        "properties": {
+                            "url": "/en/deal/1481/",
+                            "intention": [
+                                "agriculture",
+                                "other"
+                            ],
+                            "implementation": 'abandoned',
+                            "intended_size": 22441,
+                            "contract_size": 22441,
+                            "production_size": None,
+                            "investor": "Unknown (Millenium Challenge Corporation)"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -4.82596920,
+                                14.49680350
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "id": 1501,
+                        "properties": {
+                            "url": "/en/deal/1501/",
+                            "intention": [
+                                "agriculture",
+                                "forestry"
+                            ],
+                            "implementation": 'unknown',
+                            "intended_size": None,
+                            "contract_size": None,
+                            "production_size": None,
+                            "investor": "Koulikoro Biocarburant SA"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -7.56666670,
+                                12.86666670
+                            ]
+                        }
+                    }
+                ]
+            })
 
 
 class CountryDealsView(APIView):
