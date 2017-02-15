@@ -271,6 +271,12 @@
             }
 
             function showFeatureDetails(event, features) {
+                // show empty tab and spinner
+                settings.featureDetailsCallback(
+                    featureDetailsElement.parent()
+                );
+                featureDetailsElement.html("<i class='fa fa-spinner fa-spin' aria-hidden='true'></i>");
+
                 // load data from MapInfoDetailView
                 $.ajax(settings.featureDetailsUrl, {
                     type: "POST",
@@ -281,10 +287,6 @@
                     contentType: "application/json; charset=utf-8"
                 }).then(function(response) {
                     featureDetailsElement.html(response);
-                    // update tabbed menu
-                    settings.featureDetailsCallback(
-                        featureDetailsElement.parent()
-                    );
                 });
             }
 

@@ -1,5 +1,5 @@
 @import '../../../../landmatrix/static/css/colors';
-
+$map-height: 75vh;
 
 // move zoom controls
 .ol-zoom {
@@ -11,7 +11,7 @@
 
 .map-container {
   position: relative;
-  height: 75vh;
+  height: $map-height;
 
   #map {
     display: block;
@@ -56,10 +56,10 @@
 
   .map-panel {
     position: absolute;
-    top: 1vh;
+    top: 0;
 
-    &.row {
-      margin: 0;
+    &.row, .row {
+      margin-left: 0 !important;
     }
 
     .list-group-item {
@@ -169,12 +169,22 @@
   }
 }
 
+// styles for the feature details, after clicking on a cluster or such
 #details-overlay {
+
+  .legend-symbol {
+    margin-top: 3px;
+  }
+
   .tab-content & {
     width: 500px;
+    height: $map-height;
+    overflow-x: hidden;
+    overflow-y: scroll;
   }
 }
 
+// the legend in the tabbed menu panel
 .map-legend {
   display: none;
 

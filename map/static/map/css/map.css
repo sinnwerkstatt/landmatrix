@@ -37,9 +37,9 @@
       left: 0; }
   .map-container .map-panel {
     position: absolute;
-    top: 1vh; }
-    .map-container .map-panel.row {
-      margin: 0; }
+    top: 0; }
+    .map-container .map-panel.row, .map-container .map-panel .row {
+      margin-left: 0 !important; }
     .map-container .map-panel .list-group-item {
       padding: 0;
       font-size: 12px; }
@@ -110,8 +110,13 @@
     .map-container .map-panel .tab .tab-content:not(.active) {
       display: none; }
 
+#details-overlay .legend-symbol {
+  margin-top: 3px; }
 .tab-content #details-overlay {
-  width: 500px; }
+  width: 500px;
+  height: 75vh;
+  overflow-x: hidden;
+  overflow-y: scroll; }
 
 .map-legend {
   display: none; }

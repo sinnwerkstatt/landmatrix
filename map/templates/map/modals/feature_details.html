@@ -6,40 +6,48 @@
 {% endcomment %}
 
 
-<h1>{% trans "Details" %}: {{ countries|join:", " }}</h1>
+<h1><span>{{ legend.label }}: {{ countries|join:", " }}</span></h1>
 
-<div>
-  {% for country in countries %}
-    {{ country }} - <a href="">{% trans "see all details" %}</a>
-  {% endfor %}
+<div class="row">
+    <canvas id="chart" width="100%"></canvas>
 </div>
 <div class="row">
-  <div class="col-md-6">
-    <canvas id="chart" width="100%"></canvas>
-  </div>
-  <div class="col-md-6">
-    <h2>{{ legend.title }}</h2>
-    <table>
-      <thead>
-        <td>{% trans "Label" %}</td>
-        {% for country in countries %}
-          {{ country }}
-        {% endfor %}
-      </thead>
-      {% for item in legend.attributes %}
-        <tr>
-          <td>
-            <span class="legend-symbol" style="background-color:{{ item.color }};"></span>
-            {{ item.label }}: 64
-          </td>
-          {% for country in countries %}
-            <td>{{ country }}</td>
-          {% endfor %}
-        </tr>
+  <h2>{{ legend.title }}</h2>
+  <table>
+    <thead>
+      <td></td>
+      {% for country in countries %}
+        <td>{{ country }}</td>
       {% endfor %}
-    </table>
-  </div>
+    </thead>
+    {% for item in legend.attributes %}
+      <tr>
+        <td>
+          <span class="legend-symbol" style="background-color:{{ item.color }};"></span>
+          {{ item.label }}
+        </td>
+        {% for country in countries %}
+          <td>{{ country }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </table>
 </div>
+
+<div>
+  {% if countries|length == 1 %}
+    <h1><span>{% trans "Country detail" %}</span></h1>
+    <a href="">{{ country }} - {% trans "visit detail page" %}</a>
+  {% else %}
+    <h1><span>{% trans "Country details" %}</span></h1>
+    <ul>
+    {% for country in countries %}
+      <li><a href="">{{ country }} - {% trans "visit detail page" %}</a></li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+
 <script src="{% static "map/js/Chart.min.js" %}"></script>
 <script>
     var ctx = document.getElementById("chart");
