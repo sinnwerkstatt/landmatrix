@@ -630,11 +630,10 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         if not request.is_ajax():
             raise Http404()
         self.post = json.loads(self.request.body.decode("utf-8"))
-        context = self.get_context_data(**kwargs)
         return TemplateResponse(
             request=self.request,
             template=self.get_template_names(),
-            context=context
+            context=self.get_context_data(**kwargs)
         )
 
     def get_legend_for_key(self, key):
@@ -645,8 +644,9 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
 
     def get_countries_data(self):
         """
-        Get a list of countries and extend the legend with all values, ordered
-        by country.
+        - Get a list of countries .
+        - Extend the legend with all values, ordered by country.
+        - Prepare data as required for charts.js
         """
         countries = []
         chart_data = []
@@ -654,13 +654,13 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         # Set attribute-id as dict-index for easier access.
         legend['attributes'] = {
             feature['id']: feature for feature in legend['attributes']
-            }
+        }
         for feature in self.post['features']['features']:
             countries.append({
                 'name': feature['properties']['name'],
                 'url': feature['properties']['url']
             })
-            # fill in value from feature or '-' as value for the legend-table.
+            # fill in value from feature or '0' as value for the legend-table.
             for index, legend_key in enumerate(legend['attributes'].keys()):
                 value = feature['properties'][self.post['legendKey']].get(legend_key, 0)
                 legend['attributes'][legend_key].setdefault('values', []).append(value)
