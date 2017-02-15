@@ -54,6 +54,7 @@ urlpatterns = [
         {'format': 'json'}, name='hectares_api'),
     url(r'^deals\.json', GlobalDealsView.as_view(), {'format': 'json'},
         name='deals_api'),
+    url(r'^map-popover/$', MapInfoDetailView.as_view(), name='map_overlay'),
     url(r'^country_deals\.json', CountryDealsView.as_view(), {'format': 'json'},
         name='country_deals_api'),
     url(r'^activities\.json', ActivityListView.as_view(),

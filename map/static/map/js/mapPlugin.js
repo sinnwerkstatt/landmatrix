@@ -60,10 +60,8 @@
                 distance: chartSize / 2
             });
 
-            // Overly for the popover
-            var popup = new ol.Overlay({
-                element: document.getElementById(settings.popOverElement)
-            });
+            // Overly for the container with detailed information after a click
+            var featureDetailsElement = $("#" + settings.featureDetailsElement);
 
             // Draw deals per country with all properties in the geojson.
             var drawCountryInformation = function (features, dealsSource) {
@@ -183,7 +181,7 @@
                     var currAttr = $.grep(options.legend[mapInstance.legendKey].attributes, function (e) {
                         return e.id == data.id;
                     });
-                    var currColor = 'silver';
+                    var currColor = "silver";
                     if (currAttr.length == 1) {
                         currColor = currAttr[0].color;
                     }
@@ -195,24 +193,24 @@
                 return svg.join('');
             };
 
-            function showPopover(event, features) {
-                var element = popup.getElement();
-                var coordinate = event.coordinate;
-                $(element).popover('destroy');
-                popup.setPosition(coordinate);
-                // the keys are quoted to prevent renaming in ADVANCED mode.
-                $(element).popover({
-                  'placement': 'top',
-                  'animation': false,
-                  'html': true,
-                  'title': features.get('name')
+            function showFeatureDetails(event, features) {
+                // load data from MapInfoDetailView
+                $.ajax(settings.featureDetailsUrl, {
+                    type: "POST",
+                    data: JSON.stringify({
+                        "features": new ol.format.GeoJSON().writeFeaturesObject(features),
+                        "legendKey": mapInstance.legendKey
+                    }),
+                    contentType: "application/json; charset=utf-8"
+                }).then(function(data) {
+                    featureDetailsElement.html(data);
                 });
-                $(element).popover('show');
+
+
             }
 
-            map.addOverlay(popup);
             // Display popover on click. Doubleclick should still zoom in.
-            map.on('singleclick', function (event) {
+            map.on("singleclick", function (event) {
                 var feature = map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
                     // use 'active' layer (dealsPerCountry or allDeals) only.
                     // todo: get currently active layer.
@@ -221,16 +219,8 @@
                     }
                 });
                 if (feature) {
-                    var features = feature.get('features');
-                    if (features.length === 1) {
-                        // popover for single country.
-                        showPopover(event, features[0])
-                    } else {
-                        // popover for cluster.
-                        $.each(features, function(index, feature) {
-                            console.log(feature.getProperties());
-                        });
-                    }
+                    var features = feature.get("features");
+                    showFeatureDetails(event, features[0])
                 }
             });
 
@@ -246,7 +236,7 @@
 
             // Load geojson from countries-api and display data.
             this.loadCountries = function() {
-                $.ajax(settings.deals_url).then(function (response) {
+                $.ajax(settings.dealsUrl).then(function (response) {
                     var geojsonFormat = new ol.format.GeoJSON();
                     var features = geojsonFormat.readFeatures(response,
                         {featureProjection: "EPSG:3857"}

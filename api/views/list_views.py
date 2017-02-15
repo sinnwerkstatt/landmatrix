@@ -1,4 +1,9 @@
+import json
+
 from django.contrib.auth import get_user_model
+from django.http import Http404
+from django.views.generic import View
+from django.views.generic.base import ContextMixin, TemplateResponseMixin
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -11,7 +16,7 @@ from api.query_sets.statistics_query_set import StatisticsQuerySet
 from api.serializers import DealSerializer, UserSerializer
 from api.pagination import FakeQuerySetPagination
 from api.views.base import FakeQuerySetListView
-
+from map.views import MapSettingsMixin
 
 User = get_user_model()
 
@@ -343,3 +348,40 @@ class CountryDealsView(APIView):
                 ]
             }
         )
+
+
+class MapInfoDetailView(MapSettingsMixin, ContextMixin, TemplateResponseMixin, View):
+    """
+    Return rendered template with all details for a click on the map. Allow post
+    only, as data from post is put into the template.
+
+    This is not a proper list-view, and is placed here for the lack of a better
+    file.
+    """
+    http_method_names = ['post']
+
+    # maybe: template according to length of features. will be decided after
+    # deals layer is ready.
+    template_name = 'map/modals/feature_details.html'
+
+    def post(self, request, *args, **kwargs):
+        if not request.is_ajax():
+            raise Http404()
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
+    def get_legend_for_key(self, key):
+        try:
+            return self.get_legend()[key]
+        except IndexError:
+            raise Http404()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = json.loads(self.request.body.decode("utf-8"))
+        context['legend'] = self.get_legend_for_key(
+            key=post['legendKey']
+        )
+        context['countries'] = ['Mail', 'Togo', 'Ivory Coast']
+        # context.update(**post['features'])
+        return context

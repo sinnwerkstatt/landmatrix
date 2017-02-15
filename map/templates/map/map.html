@@ -97,7 +97,7 @@
             </div>
           </div>
           <div class="col-md-10 tab flex-col">
-            <div class="tab-content active">
+            <div class="tab-content">
               <h4><span>{% trans "Group by country" %}</span></h4>
               <label class="switch">
                 <input type="checkbox" checked="checked">
@@ -144,6 +144,7 @@
                 <li>{% trans "Terrain" %}</li>
               </ul>
             </div>
+            <div id="details-overlay" class="active"></div>
           </div>
         </div>
       </div>
@@ -182,10 +183,11 @@
       // first step: replace static image with map.
       advanceProgress();
       var map = $.setMap({
-        deals_url: "{% url "country_deals_api" %}",
+        dealsUrl: "{% url "country_deals_api" %}",
         legend: {{ legend_json|safe }},
         legendKey: legendSelect.val(),
-        popOverElement: 'popover'
+        featureDetailsElement: "details-overlay",
+        featureDetailsUrl: "{% url "map_overlay" %}"
       });
       mapPlaceholder.remove();
       advanceProgressLine();
