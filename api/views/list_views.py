@@ -651,7 +651,10 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
             feature['id']: feature for feature in legend['attributes']
             }
         for feature in self.post['features']['features']:
-            countries.append(feature['properties']['name'])
+            countries.append({
+                'name': feature['properties']['name'],
+                'url': feature['properties']['url']
+            })
             # fill in value from feature or '-' as value for the legend-table.
             for legend_key in legend['attributes'].keys():
                 value = feature['properties'][self.post['legendKey']].get(legend_key, '-')
@@ -659,7 +662,8 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
 
         return {
             'countries': countries,
-            'legend': legend
+            'legend': legend,
+            'title': ', '.join([country['name'] for country in countries])
         }
 
     def get_context_data(self, **kwargs):
