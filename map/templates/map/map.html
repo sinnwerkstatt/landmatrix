@@ -167,6 +167,7 @@
       var successClass = "finished";
       var activeClass = "active";
       var mapPlaceholder = $("#map-placeholder");
+      var showHideContent = $(".show-hide-content");
       var showIcon = "glyphicon-menu-right";
       var hideIcon = "glyphicon-menu-left";
       var legendSelect = $(".legend-select");
@@ -189,7 +190,7 @@
 
       function showHideTabContent() {
         tabContainer.toggleClass("hidden");
-        var content = $(this).children("h4:first");
+        var content = showHideContent.children("h4:first");
         if(content.hasClass(hideIcon)) {
           content.removeClass(hideIcon).addClass(showIcon);
         } else {
@@ -261,7 +262,7 @@
       });
 
       // show-hide the content box
-      $(".show-hide-content").on("click", function() {
+      showHideContent.on("click", function() {
         showHideTabContent();
       });
 
