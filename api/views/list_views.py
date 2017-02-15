@@ -615,11 +615,15 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
     def get_template_names(self):
         """
         Avoid too much logic in templates by providing a distinct template for
-        all four use cases: one deal, many deals, one country, many countries.
+        all use cases: one or many countries / one deal / many deals.
         """
-        return 'map/modals/{layer}_{count}.html'.format(
+        if self.post['layer'] == 'countries':
+            count = ''
+        else:
+            count = '_one' if len(self.post['features']['features']) == 1 else '_many'
+        return 'map/modals/{layer}{count}.html'.format(
             layer=self.post['layer'],
-            count='one' if len(self.post['features']['features']) == 1 else 'many'
+            count=count
         )
 
     def post(self, request, *args, **kwargs):
@@ -645,6 +649,7 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         by country.
         """
         countries = []
+        chart_data = []
         legend = self.get_legend_for_key(key=self.post['legendKey'])
         # Set attribute-id as dict-index for easier access.
         legend['attributes'] = {
@@ -656,13 +661,22 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
                 'url': feature['properties']['url']
             })
             # fill in value from feature or '-' as value for the legend-table.
-            for legend_key in legend['attributes'].keys():
-                value = feature['properties'][self.post['legendKey']].get(legend_key, '-')
+            for index, legend_key in enumerate(legend['attributes'].keys()):
+                value = feature['properties'][self.post['legendKey']].get(legend_key, 0)
                 legend['attributes'][legend_key].setdefault('values', []).append(value)
+                try:
+                    chart_data[index] += value
+                except IndexError:
+                    chart_data.insert(index, value)
 
         return {
             'countries': countries,
             'legend': legend,
+            'chart': {
+                'labels': [item['label'] for item in legend['attributes'].values()],
+                'colors': [item['color'] for item in legend['attributes'].values()],
+                'data': chart_data
+            },
             'title': ', '.join([country['name'] for country in countries])
         }
 
