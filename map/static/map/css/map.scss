@@ -1,6 +1,14 @@
 @import '../../../../landmatrix/static/css/colors';
 
 
+// move zoom controls
+.ol-zoom {
+  right: 8px;
+  bottom: 40px;
+  top: auto;
+  left: auto;
+}
+
 .map-container {
   position: relative;
   height: 75vh;
@@ -48,12 +56,12 @@
 
   .map-panel {
     position: absolute;
-    top: 5vh;
-    right: 0;
+    top: 1vh;
 
-    .tab-menu h4 {
-      margin-bottom: 0;
+    &.row {
+      margin: 0;
     }
+
     .list-group-item {
       padding: 0;
       font-size: 12px;
@@ -66,11 +74,12 @@
     }
     .tab-container {
       z-index: 10;
-      padding: 0 !important;
     }
     .tab-menu {
-      padding: 0;
 
+      h4 {
+        margin-bottom: 0;
+      }
       .list-group {
         margin-bottom: 0;
 
@@ -150,9 +159,7 @@
         -ms-transform: translateX(20px);
         transform: translateX(20px);
       }
-
     }
-
     .tab .tab-content:not(.active){
       display: none;
     }

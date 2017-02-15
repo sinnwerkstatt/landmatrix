@@ -1,3 +1,9 @@
+.ol-zoom {
+  right: 8px;
+  bottom: 40px;
+  top: auto;
+  left: auto; }
+
 .map-container {
   position: relative;
   height: 75vh; }
@@ -31,10 +37,9 @@
       left: 0; }
   .map-container .map-panel {
     position: absolute;
-    top: 5vh;
-    right: 0; }
-    .map-container .map-panel .tab-menu h4 {
-      margin-bottom: 0; }
+    top: 1vh; }
+    .map-container .map-panel.row {
+      margin: 0; }
     .map-container .map-panel .list-group-item {
       padding: 0;
       font-size: 12px; }
@@ -43,22 +48,21 @@
     .map-container .map-panel .flex-col {
       flex: 1; }
     .map-container .map-panel .tab-container {
-      z-index: 10;
-      padding: 0 !important; }
-    .map-container .map-panel .tab-menu {
-      padding: 0; }
-      .map-container .map-panel .tab-menu .list-group {
-        margin-bottom: 0; }
-        .map-container .map-panel .tab-menu .list-group a {
-          padding: 0 0.5em; }
-          .map-container .map-panel .tab-menu .list-group a .glyphicon {
-            color: #c6c6c6; }
-          .map-container .map-panel .tab-menu .list-group a.active {
-            background-color: #fc941f;
-            color: #fff;
-            border-color: inherit; }
-            .map-container .map-panel .tab-menu .list-group a.active .glyphicon {
-              color: #fff; }
+      z-index: 10; }
+    .map-container .map-panel .tab-menu h4 {
+      margin-bottom: 0; }
+    .map-container .map-panel .tab-menu .list-group {
+      margin-bottom: 0; }
+      .map-container .map-panel .tab-menu .list-group a {
+        padding: 0 0.5em; }
+        .map-container .map-panel .tab-menu .list-group a .glyphicon {
+          color: #c6c6c6; }
+        .map-container .map-panel .tab-menu .list-group a.active {
+          background-color: #fc941f;
+          color: #fff;
+          border-color: inherit; }
+          .map-container .map-panel .tab-menu .list-group a.active .glyphicon {
+            color: #fff; }
     .map-container .map-panel .tab-content, .map-container .map-panel .tab {
       background-color: #ffffff;
       width: 250px; }

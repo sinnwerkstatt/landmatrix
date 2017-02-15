@@ -76,34 +76,14 @@
 
     <div class="map-panel row">
       <div class="col-md-12 tab-container">
-        <div class="flex-row">
-          <div class="col-md-2 tab-menu flex-col">
-            <div class="list-group">
-              <a href="#" class="list-group-item active text-center">
-                <h4 class="glyphicon glyphicon-cog"></h4><br/>{% trans "Deals" %}
-              </a>
-              <a href="#" class="list-group-item text-center">
-                <h4 class="glyphicon glyphicon-search"></h4><br/>{% trans "Search" %}
-              </a>
-              <a href="#" class="list-group-item text-center">
-                <h4 class="glyphicon glyphicon-filter"></h4><br/>{% trans "Context" %}
-              </a>
-              <a href="#" class="list-group-item text-center">
-                <h4 class="glyphicon glyphicon-unchecked"></h4><br/>{% trans "Base" %}
-              </a>
-              <a href="#" class="list-group-item text-center show-hide-content">
-                <h4 class="glyphicon glyphicon-menu-right"></h4>
-              </a>
-            </div>
-          </div>
+        <div class="row flex-row">
           <div class="col-md-10 tab flex-col">
-            <div class="tab-content">
+            <div class="tab-content active">
               <h4><span>{% trans "Group by country" %}</span></h4>
               <label class="switch">
                 <input type="checkbox" checked="checked">
                 <div class="slider round"></div>
               </label>
-
               <h4><span>{% trans "Show info about" %}</span></h4>
               <select class="legend-select">
                 {% for key, data in legend.items %}
@@ -146,6 +126,25 @@
             </div>
             <div id="details-overlay" class="active"></div>
           </div>
+        <div class="col-md-2 tab-menu flex-col">
+          <div class="list-group panel-menu">
+            <a href="#" class="list-group-item text-center show-hide-content">
+              <h4 class="glyphicon glyphicon-menu-left"></h4>
+            </a>
+            <a href="#" class="list-group-item active text-center">
+              <h4 class="glyphicon glyphicon-cog"></h4><br/>{% trans "Deals" %}
+            </a>
+            <a href="#" class="list-group-item text-center">
+              <h4 class="glyphicon glyphicon-search"></h4><br/>{% trans "Search" %}
+            </a>
+            <a href="#" class="list-group-item text-center">
+              <h4 class="glyphicon glyphicon-filter"></h4><br/>{% trans "Context" %}
+            </a>
+            <a href="#" class="list-group-item text-center">
+              <h4 class="glyphicon glyphicon-unchecked"></h4><br/>{% trans "Base" %}
+            </a>
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -161,8 +160,8 @@
       var successClass = "finished";
       var activeClass = "active";
       var mapPlaceholder = $("#map-placeholder");
-      var showIcon = "glyphicon-menu-left";
-      var hideIcon = "glyphicon-menu-right";
+      var showIcon = "glyphicon-menu-right";
+      var hideIcon = "glyphicon-menu-left";
       var legendSelect = $(".legend-select");
       var mapLegendClass = ".map-legend";
       var advanceProgressLine = function() {
@@ -202,11 +201,12 @@
 
       finishProgress();
 
-      $("div.tab-menu > div.list-group > a:not(.show-hide-content)").click(function(e) {
+      $(".panel-menu a:not(.show-hide-content)").click(function(e) {
         e.preventDefault();
         $(this).siblings("a." + activeClass).removeClass(activeClass);
         $(this).addClass(activeClass);
-        $(".tab > .tab-content").removeClass(activeClass).eq($(this).index()).addClass(activeClass);
+        var index = $(this).index() - 1; // add offset for show-hide
+        $(".tab > .tab-content").removeClass(activeClass).eq(index).addClass(activeClass);
       });
 
       // display legend according to type.
