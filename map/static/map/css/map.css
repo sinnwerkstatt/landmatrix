@@ -73,7 +73,8 @@
         position: relative;
         display: inline-block;
         width: 40px;
-        height: 20px; }
+        height: 20px;
+        margin-right: 5px; }
       .map-container .map-panel .tab-content .switch input, .map-container .map-panel .tab .switch input {
         display: none; }
       .map-container .map-panel .tab-content .slider, .map-container .map-panel .tab .slider {
@@ -128,8 +129,5 @@
   .map-legend ul {
     list-style-type: none;
     padding-left: 0; }
-
-.switch-auto-cb {
-  margin-left: 1.5rem; }
 
 /*# sourceMappingURL=map.css.map */

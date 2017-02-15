@@ -114,6 +114,7 @@ $map-height: 75vh;
         display: inline-block;
         width: 40px;
         height: 20px;
+        margin-right: 5px;
       }
 
       .switch input {
@@ -201,8 +202,4 @@ $map-height: 75vh;
     list-style-type: none;
     padding-left: 0;
   }
-}
-
-.switch-auto-cb {
-  margin-left: 1.5rem;
 }
