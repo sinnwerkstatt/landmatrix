@@ -656,18 +656,21 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
             feature['id']: feature for feature in legend['attributes']
         }
         for feature in self.post['features']['features']:
-            countries.append({
-                'name': feature['properties']['name'],
-                'url': feature['properties']['url']
-            })
+            country_total = 0
             # fill in value from feature or '0' as value for the legend-table.
             for index, legend_key in enumerate(legend['attributes'].keys()):
                 value = feature['properties'][self.post['legendKey']].get(legend_key, 0)
+                country_total += value
                 legend['attributes'][legend_key].setdefault('values', []).append(value)
                 try:
                     chart_data[index] += value
                 except IndexError:
                     chart_data.insert(index, value)
+            countries.append({
+                'name': feature['properties']['name'],
+                'url': feature['properties']['url'],
+                'total': country_total
+            })
 
         return {
             'countries': countries,
