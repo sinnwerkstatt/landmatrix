@@ -124,14 +124,16 @@
                 <li>{% trans "Terrain" %}</li>
               </ul>
             </div>
-            <div id="details-overlay" class="active"></div>
+            <div class="tab-content">
+              <div id="details-overlay"></div>
+            </div>
           </div>
         <div class="col-md-2 tab-menu flex-col">
           <div class="list-group panel-menu">
             <a href="#" class="list-group-item text-center show-hide-content">
               <h4 class="glyphicon glyphicon-menu-left"></h4>
             </a>
-            <a href="#" class="list-group-item active text-center">
+            <a href="#" class="list-group-item text-center active">
               <h4 class="glyphicon glyphicon-cog"></h4><br/>{% trans "Deals" %}
             </a>
             <a href="#" class="list-group-item text-center">
@@ -179,6 +181,17 @@
         mapProgress.fadeOut();
       };
 
+      // show only one tab, and reset 'menu'
+      function activateTabContent(element) {
+          $('.panel-menu').children("a." + activeClass).removeClass(activeClass);
+          $('.tab-content').removeClass(activeClass);
+          element.addClass(activeClass);
+      }
+
+      /**
+       *  Map loading progress
+       */
+
       // first step: replace static image with map.
       advanceProgress();
       var map = $.setMap({
@@ -186,46 +199,50 @@
         legend: {{ legend_json|safe }},
         legendKey: legendSelect.val(),
         featureDetailsElement: "details-overlay",
-        featureDetailsUrl: "{% url "map_overlay" %}"
+        featureDetailsUrl: "{% url "map_overlay" %}",
+        featureDetailsCallback: activateTabContent
       });
       mapPlaceholder.remove();
       advanceProgressLine();
-
       // load country-data and cluster deals.
       advanceProgress();
       map.loadCountries();
-
       // load clustered deals per country.
       advanceProgress();
       map.setDealsPerCountryLayer();
-
       finishProgress();
 
+      /**
+       *  Handling of panel, tabs, etc.
+       */
+
+      // handle tabs for info-panel
       $(".panel-menu a:not(.show-hide-content)").click(function(e) {
         e.preventDefault();
-        $(this).siblings("a." + activeClass).removeClass(activeClass);
-        $(this).addClass(activeClass);
+        // load content of clicked tab
         var index = $(this).index() - 1; // add offset for show-hide
-        $(".tab > .tab-content").removeClass(activeClass).eq(index).addClass(activeClass);
+        activateTabContent($(".tab-content").eq(index));
+        // update menu
+        $(this).addClass(activeClass);
       });
 
       // display legend according to type.
       legendSelect.on("change", function() {
-         var selected = $(this).val();
-         map.setLegendKey(selected);
-         $(mapLegendClass).removeClass(activeClass);
-         $(mapLegendClass + "." + selected).addClass(activeClass);
+        var selected = $(this).val();
+        map.setLegendKey(selected);
+        $(mapLegendClass).removeClass(activeClass);
+        $(mapLegendClass + "." + selected).addClass(activeClass);
       });
 
       // show-hide the content box
       $(".show-hide-content").on("click", function() {
-          $(".tab").toggleClass("hidden");
-          var content = $(this).children("h4:first");
-          if(content.hasClass(hideIcon)) {
-              content.removeClass(hideIcon).addClass(showIcon);
-          } else {
-              content.removeClass(showIcon).addClass(hideIcon);
-          }
+        $(".tab").toggleClass("hidden");
+        var content = $(this).children("h4:first");
+        if(content.hasClass(hideIcon)) {
+          content.removeClass(hideIcon).addClass(showIcon);
+        } else {
+          content.removeClass(showIcon).addClass(hideIcon);
+        }
       });
     });
 

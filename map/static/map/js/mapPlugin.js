@@ -6,7 +6,7 @@
             var settings = $.extend({
                 target: "map",
                 zoom: 6,
-                centerTo: [10, 20],
+                centerTo: [-5, 20],
                 legendKey: 'intention'
             }, options);
 
@@ -204,9 +204,11 @@
                     contentType: "application/json; charset=utf-8"
                 }).then(function(data) {
                     featureDetailsElement.html(data);
+                    // update tabbed menu
+                    settings.featureDetailsCallback(
+                        featureDetailsElement.parent()
+                    );
                 });
-
-
             }
 
             // Display popover on click. Doubleclick should still zoom in.
