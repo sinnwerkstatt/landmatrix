@@ -166,6 +166,7 @@
       var hideIcon = "glyphicon-menu-left";
       var legendSelect = $(".legend-select");
       var mapLegendClass = ".map-legend";
+      var tabContainer = $(".tab");
       var advanceProgressLine = function() {
         var currentProgressLine = mapProgress.find(".line:not(." + successClass + "):first");
         currentProgressLine.addClass(successClass);
@@ -181,12 +182,26 @@
         mapProgress.fadeOut();
       };
 
+      function showHideTabContent() {
+        tabContainer.toggleClass("hidden");
+        var content = $(this).children("h4:first");
+        if(content.hasClass(hideIcon)) {
+          content.removeClass(hideIcon).addClass(showIcon);
+        } else {
+          content.removeClass(showIcon).addClass(hideIcon);
+        }
+      }
+
       // show only one tab, and reset 'menu'
       function activateTabContent(element) {
+          if (tabContainer.hasClass("hidden")) {
+              showHideTabContent();
+          }
           $('.panel-menu').children("a." + activeClass).removeClass(activeClass);
           $('.tab-content').removeClass(activeClass);
           element.addClass(activeClass);
       }
+
 
       /**
        *  Map loading progress
@@ -240,13 +255,7 @@
 
       // show-hide the content box
       $(".show-hide-content").on("click", function() {
-        $(".tab").toggleClass("hidden");
-        var content = $(this).children("h4:first");
-        if(content.hasClass(hideIcon)) {
-          content.removeClass(hideIcon).addClass(showIcon);
-        } else {
-          content.removeClass(showIcon).addClass(hideIcon);
-        }
+        showHideTabContent();
       });
     });
 
