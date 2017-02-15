@@ -60,11 +60,18 @@
                 distance: chartSize / 2
             });
 
+            // Layer and source for the deals. All deals are clustered.
+            var dealsSource = new ol.source.Vector();
+            var dealsCluster = new ol.source.Cluster({
+                source: dealsSource,
+                distance: chartSize / 2
+            });
+            
             // Overly for the container with detailed information after a click
             var featureDetailsElement = $("#" + settings.featureDetailsElement);
 
             // Draw deals per country with all properties in the geojson.
-            var drawCountryInformation = function (features, dealsSource) {
+            var drawCountryInformation = function (features, countryDealsSource) {
                 $.each(features, function (key, country) {
                     // extent.getCenter() returns undefined with ol 4.0, so
                     // calculate it manually.
@@ -86,27 +93,19 @@
                             ol.proj.fromLonLat([lat, lon], "EPSG:4326")));
                     countryInfoPoint.setProperties(properties);
 
-                    dealsSource.addFeature(countryInfoPoint);
+                    countryDealsSource.addFeature(countryInfoPoint);
                 });
             };
 
             /**
-             * Prepare a data array based on the feature properties.
+             * Prepare a data array based on the country feature properties.
              *
-             * @param features: A list of features (in the current cluster)
+             * @param features: A list of country features (in the current cluster)
              * @returns {Array}
              */
-            var prepareData = function(features) {
+            function prepareCountryClusterData(features) {
 
-                // Collect all possible values
-                var data = [];
-                $.each(options.legend[mapInstance.legendKey].attributes, function(i, d) {
-                    data.push({
-                        color: d.color,
-                        id: d.id,
-                        count: 0
-                    });
-                });
+                var data = getBasicClusterData();
 
                 // Update "count" of each value based on the feature's values.
                 $.each(features, function(index, feature) {
@@ -124,7 +123,56 @@
                     }
                 });
                 return data;
-            };
+            }
+
+            /**
+             * Prepare a data array based on the deal feature properties.
+             *
+             * @param features: A list of deal features (in the current cluster)
+             * @returns {Array}
+             */
+            function prepareDealClusterData(features) {
+
+                var data = getBasicClusterData();
+                
+                // Update "count" of each value based on the feature's values.
+                $.each(features, function(index, feature) {
+                    var properties = feature.getProperties()[mapInstance.legendKey];
+                    if (!properties) return;
+                    
+                    if (typeof properties === 'string') {
+                        properties = [properties];
+                    }
+
+                    $.each(properties, function(i, prop) {
+                        var searchProp = $.grep(data, function(e) { return e.id == prop; });
+                        if (searchProp.length != 1) {
+                            return;
+                        }
+                        searchProp[0].count += 1;
+                    });
+                });
+                return data;
+            }
+
+            /**
+             * Return an array with an object for each of the current legend
+             * attributes. Count is set to 0.
+             *
+             * @returns {Array}
+             */
+            function getBasicClusterData() {
+                // Collect all possible values
+                var data = [];
+                $.each(options.legend[mapInstance.legendKey].attributes, function(i, d) {
+                    data.push({
+                        color: d.color,
+                        id: d.id,
+                        count: 0
+                    });
+                });
+                return data;
+            }
 
             // Draw a clustered layer with the properties from the current
             // legend as 'svg-doghnut' surrounding the cluster point.
@@ -135,8 +183,8 @@
                         var clusteredFeatures = feature.get('features');
 
                         var clusterSVG = new Image();
-                        var clusterData = prepareData(clusteredFeatures);
-                        clusterSVG.src = 'data:image/svg+xml,' + escape(mapInstance.getSvgChart(clusterData));
+                        var clusterData = prepareCountryClusterData(clusteredFeatures);
+                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'country'));
 
                         return new ol.style.Style({
                             image: new ol.style.Icon({
@@ -155,20 +203,51 @@
                 });
             }
 
+            // Draw a clustered layer with the properties from the current
+            // legend as donut surrounding the cluster point.
+            function getDealsClusterLayer() {
+                return new ol.layer.Vector({
+                    source: dealsCluster,
+                    style: function(feature) {
+                        var clusteredFeatures = feature.get('features');
+
+                        var clusterSVG = new Image();
+                        var clusterData = prepareDealClusterData(clusteredFeatures);
+                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deal'));
+
+                        return new ol.style.Style({
+                            image: new ol.style.Icon({
+                                img: clusterSVG,
+                                imgSize: [chartSize, chartSize]
+                            }),
+                            text: new ol.style.Text({
+                                text: clusteredFeatures.length.toString(),
+                                scale: fontSize,
+                                fill: new ol.style.Fill({
+                                    color: '#222'
+                                })
+                            })
+                        });
+                    }
+                })
+            }
+
             // Return a SVG donut chart based on the feature's data.
-            this.getSvgChart = function(data) {
+            function getSvgChart(data, clusterType) {
                 // Calculate total
                 var total = 0;
                 $.each(data, function (i, d) {
                     total += d.count;
                 });
 
+                var backgroundColor = clusterType == 'country' ? '#f9de98' : '#fff';
+
                 // SVG and basic circle
                 var radius = chartSize / (2 * Math.PI);
                 var svg = [
                     '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="' + chartSize + 'px" height="' + chartSize + 'px" viewBox="0 0 ' + chartSize + ' ' + chartSize + '" enable-background="new 0 0 ' + chartSize + ' ' + chartSize + '" xml:space="preserve">',
                     // Basic circle
-                    '<circle class="donut-hole" cx="' + chartSize/2 + '" cy="' + chartSize/2 + '" r="' + radius + '" fill="#fff"></circle>',
+                    '<circle class="donut-hole" cx="' + chartSize/2 + '" cy="' + chartSize/2 + '" r="' + radius + '" fill="' + backgroundColor + '"></circle>',
                     '<circle class="donut-ring" cx="' + chartSize/2 + '" cy="' + chartSize/2 + '" r="' + radius + '" fill="transparent" stroke="#d2d3d4" stroke-width="' + donutWidth + '"></circle>'
                 ];
 
@@ -191,7 +270,7 @@
                 });
                 svg.push('</svg>');
                 return svg.join('');
-            };
+            }
 
             function showFeatureDetails(event, features) {
                 // load data from MapInfoDetailView
@@ -234,9 +313,19 @@
                 map.addLayer(this.dealsPerCountryLayer);
             };
 
+            // Redraw the layer with the deals, with the current legend as
+            // properties.
+            this.setDealsLayer = function() {
+                if (this.dealsLayer) {
+                    map.removeLayer(this.dealsLayer);
+                }
+                this.dealsLayer = getDealsClusterLayer();
+                map.addLayer(this.dealsLayer);
+            };
+
             // Load geojson from countries-api and display data.
             this.loadCountries = function() {
-                $.ajax(settings.dealsUrl).then(function (response) {
+                $.ajax(settings.countriesUrl).then(function (response) {
                     var geojsonFormat = new ol.format.GeoJSON();
                     var features = geojsonFormat.readFeatures(response,
                         {featureProjection: "EPSG:3857"}
@@ -246,11 +335,22 @@
                 });
             };
 
+            this.loadDeals = function() {
+                $.ajax(settings.dealsUrl).then(function(response) {
+                    var geojsonFormat = new ol.format.GeoJSON();
+                    var features = geojsonFormat.readFeatures(response,
+                        {featureProjection: "EPSG:3857"}
+                    );
+                    dealsSource.addFeatures(features);
+                });
+            };
+
             // change the legend and reload the layer with deals.
             this.setLegendKey = function(legendKey) {
                 this.legendKey = legendKey;
                 // maybe: cache layers in an object.
                 this.setDealsPerCountryLayer();
+                this.setDealsLayer();
             };
 
             return this;

@@ -182,7 +182,8 @@
       // first step: replace static image with map.
       advanceProgress();
       var map = $.setMap({
-        dealsUrl: "{% url "country_deals_api" %}",
+        countriesUrl: "{% url "country_deals_api" %}",
+        dealsUrl: "{% url "deals_api" %}",
         legend: {{ legend_json|safe }},
         legendKey: legendSelect.val(),
         featureDetailsElement: "details-overlay",
@@ -196,8 +197,15 @@
       map.loadCountries();
 
       // load clustered deals per country.
-      advanceProgress();
       map.setDealsPerCountryLayer();
+
+      map.loadDeals();
+
+      advanceProgress();
+
+      map.setDealsLayer();
+
+      advanceProgress();
 
       finishProgress();
 
