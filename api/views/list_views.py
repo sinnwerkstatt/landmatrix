@@ -639,12 +639,17 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         except IndexError:
             raise Http404()
 
+    def get_countries_data(self):
+        return {
+            'countries': [feature['properties']['name'] for feature in
+                          self.post['features']['features']]
+        }
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['legend'] = self.get_legend_for_key(
             key=self.post['legendKey']
         )
-        context['countries'] = [
-            feature['properties']['name'] for feature in self.post['features']['features']
-        ]
+        if self.post['layer'] == 'countries':
+            context.update(**self.get_countries_data())
         return context
