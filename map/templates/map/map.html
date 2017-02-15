@@ -81,7 +81,7 @@
             <div class="tab-content active">
               <h4><span>{% trans "Group by country" %}</span></h4>
               <label class="switch">
-                <input type="checkbox" checked="checked">
+                <input type="checkbox" checked="checked" class="js-toggle-cluster-layer">
                 <div class="slider round"></div>
               </label>
               <h4><span>{% trans "Show info about" %}</span></h4>
@@ -216,7 +216,8 @@
         legendKey: legendSelect.val(),
         featureDetailsElement: "details-overlay",
         featureDetailsUrl: "{% url "map_overlay" %}",
-        featureDetailsCallback: activateTabContent
+        featureDetailsCallback: activateTabContent,
+        visibleLayer: "countries"  // Either "countries" (default) or "deals". Should correspond to switch position.
       });
       mapPlaceholder.remove();
       advanceProgressLine();
@@ -256,6 +257,12 @@
       // show-hide the content box
       $(".show-hide-content").on("click", function() {
         showHideTabContent();
+      });
+
+      // Toggle to group by countries
+      $(".js-toggle-cluster-layer").on("change", function() {
+          var visibleLayer = this.checked ? 'countries' : 'deals';
+          map.toggleVisibleLayer(visibleLayer);
       });
     });
 

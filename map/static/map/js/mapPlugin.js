@@ -7,7 +7,8 @@
                 target: "map",
                 zoom: 6,
                 centerTo: [-5, 20],
-                legendKey: 'intention'
+                legendKey: 'intention',
+                visibleLayer: 'countries'
             }, options);
 
             // Chart settings. Also needed to adjust clustering sensibility.
@@ -48,7 +49,8 @@
                         width: 2,
                         lineCap: "round"
                     })
-                })
+                }),
+                visible: settings.visibleLayer == 'countries'
             });
             map.addLayer(countryLayer);
 
@@ -184,22 +186,11 @@
 
                         var clusterSVG = new Image();
                         var clusterData = prepareCountryClusterData(clusteredFeatures);
-                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'country'));
+                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'countries'));
 
-                        return new ol.style.Style({
-                            image: new ol.style.Icon({
-                                img: clusterSVG,
-                                imgSize: [chartSize, chartSize]
-                            }),
-                            text: new ol.style.Text({
-                                text: clusteredFeatures.length.toString(),
-                                scale: fontSize,
-                                fill: new ol.style.Fill({
-                                    color: '#222'
-                                })
-                            })
-                        });
-                    }
+                        return getChartStyle(clusterSVG, clusteredFeatures);
+                    },
+                    visible: settings.visibleLayer == 'countries'
                 });
             }
 
@@ -213,23 +204,30 @@
 
                         var clusterSVG = new Image();
                         var clusterData = prepareDealClusterData(clusteredFeatures);
-                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deal'));
+                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals'));
 
-                        return new ol.style.Style({
-                            image: new ol.style.Icon({
-                                img: clusterSVG,
-                                imgSize: [chartSize, chartSize]
-                            }),
-                            text: new ol.style.Text({
-                                text: clusteredFeatures.length.toString(),
-                                scale: fontSize,
-                                fill: new ol.style.Fill({
-                                    color: '#222'
-                                })
-                            })
-                        });
-                    }
+                        return getChartStyle(clusterSVG, clusteredFeatures);
+                    },
+                    visible: settings.visibleLayer == 'deals'
                 })
+            }
+
+            // Return the basic chart style for cluster: Use a SVG image icon 
+            // and display number of features as text.
+            function getChartStyle(clusterSVG, clusteredFeatures) {
+                return new ol.style.Style({
+                    image: new ol.style.Icon({
+                        img: clusterSVG,
+                        imgSize: [chartSize, chartSize]
+                    }),
+                    text: new ol.style.Text({
+                        text: clusteredFeatures.length.toString(),
+                        scale: fontSize,
+                        fill: new ol.style.Fill({
+                            color: '#222'
+                        })
+                    })
+                });
             }
 
             // Return a SVG donut chart based on the feature's data.
@@ -240,7 +238,7 @@
                     total += d.count;
                 });
 
-                var backgroundColor = clusterType == 'country' ? '#f9de98' : '#fff';
+                var backgroundColor = clusterType == 'countries' ? '#f9de98' : '#fff';
 
                 // SVG and basic circle
                 var radius = chartSize / (2 * Math.PI);
@@ -353,6 +351,19 @@
                 // maybe: cache layers in an object.
                 this.setDealsPerCountryLayer();
                 this.setDealsLayer();
+            };
+
+            /**
+             * Change the currently visible layer.
+             *
+             * @param visibleLayer: str. Either "countries" or "deals".
+             */
+            this.toggleVisibleLayer = function(visibleLayer) {
+                settings.visibleLayer = visibleLayer;
+                var countriesVisible = visibleLayer == 'countries';
+                this.dealsLayer.setVisible(!countriesVisible);
+                countryLayer.setVisible(countriesVisible);
+                this.dealsPerCountryLayer.setVisible(countriesVisible);
             };
 
             return this;
