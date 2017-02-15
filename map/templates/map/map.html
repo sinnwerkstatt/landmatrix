@@ -84,6 +84,10 @@
                 <input type="checkbox" checked="checked" class="js-toggle-cluster-layer">
                 <div class="slider round"></div>
               </label>
+              <label class="switch-auto-cb">
+                <input type="checkbox" checked="checked" class="js-toggle-cluster-auto">
+                {% trans "auto" %}
+              </label>
               <h4><span>{% trans "Show info about" %}</span></h4>
               <select class="legend-select">
                 {% for key, data in legend.items %}
@@ -218,7 +222,8 @@
         featureDetailsElement: "details-overlay",
         featureDetailsUrl: "{% url "map_overlay" %}",
         featureDetailsCallback: activateTabContent,
-        visibleLayer: "countries"  // Either "countries" (default) or "deals". Should correspond to switch position.
+        visibleLayer: "countries",  // Either "countries" (default) or "deals". Should correspond to state of switch position.
+        autoToggle: true  // Defaults to true. Should correspond to state of checkbox next to switch.
       });
       mapPlaceholder.remove();
       advanceProgressLine();
@@ -262,8 +267,16 @@
 
       // Toggle to group by countries
       $(".js-toggle-cluster-layer").on("change", function() {
-          var visibleLayer = this.checked ? 'countries' : 'deals';
-          map.toggleVisibleLayer(visibleLayer);
+        var visibleLayer = this.checked ? 'countries' : 'deals';
+        map.toggleVisibleLayer(visibleLayer);
+
+        // If the toggle is clicked manually, "auto" checkbox is automatically
+        // unchecked.
+        $('.js-toggle-cluster-auto').prop('checked', false);
+      });
+
+      $(".js-toggle-cluster-auto").on("change", function() {
+        map.setAutoToggle(this.checked);
       });
     });
   </script>

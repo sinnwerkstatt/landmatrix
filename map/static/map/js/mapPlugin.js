@@ -8,13 +8,17 @@
                 zoom: 6,
                 centerTo: [-5, 20],
                 legendKey: 'intention',
-                visibleLayer: 'countries'
+                visibleLayer: 'countries',
+                autoToggle: true
             }, options);
 
             // Chart settings. Also needed to adjust clustering sensibility.
             var chartSize = 100;
             var donutWidth = 7;
             var fontSize = 1.25;
+
+            // The resolution for which to toggle the layers automatically.
+            var autoToggleResolution = 2000;
 
             var mapInstance = this;
 
@@ -305,6 +309,13 @@
                 }
             });
 
+            // Listen to zoom events. If autoToggle is active, toggle layers.
+            map.getView().on("change:resolution", function() {
+                if (settings.autoToggle) {
+                    toggleLayerByResolution();
+                }
+            });
+
             // Redraw the layer with the deals per country, with the current
             // legend as properties.
             this.setDealsPerCountryLayer = function() {
@@ -355,6 +366,15 @@
                 this.setDealsLayer();
             };
 
+            // Set the value of the autoToggle setting. If true, toggle layers
+            // automatically by resolution.
+            this.setAutoToggle = function(autoToggle) {
+                settings.autoToggle = autoToggle;
+                if (autoToggle) {
+                    toggleLayerByResolution();
+                }
+            };
+
             /**
              * Change the currently visible layer.
              *
@@ -363,10 +383,25 @@
             this.toggleVisibleLayer = function(visibleLayer) {
                 settings.visibleLayer = visibleLayer;
                 var countriesVisible = visibleLayer == 'countries';
+
+                // Toggle the checkbox
+                $('.js-toggle-cluster-layer').prop('checked', countriesVisible);
+
                 this.dealsLayer.setVisible(!countriesVisible);
                 countryLayer.setVisible(countriesVisible);
                 this.dealsPerCountryLayer.setVisible(countriesVisible);
             };
+
+            // Toggle the layer (country and deals) based on the map's
+            // resolution.
+            function toggleLayerByResolution() {
+                var resolution = map.getView().getResolution();
+                var visibleLayer = 'countries';
+                if (resolution < autoToggleResolution) {
+                    visibleLayer = 'deals';
+                }
+                mapInstance.toggleVisibleLayer(visibleLayer);
+            }
 
             return this;
         }

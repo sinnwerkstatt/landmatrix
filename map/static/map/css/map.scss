@@ -109,6 +109,7 @@ $map-height: 75vh;
       background-color: #ffffff;
 
       .switch {
+        float: left;
         position: relative;
         display: inline-block;
         width: 40px;
@@ -192,4 +193,8 @@ $map-height: 75vh;
     list-style-type: none;
     padding-left: 0;
   }
+}
+
+.switch-auto-cb {
+  margin-left: 1.5rem;
 }
