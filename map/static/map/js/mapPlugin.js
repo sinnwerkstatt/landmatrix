@@ -185,6 +185,7 @@
             function getCountryClusterLayer() {
                 return new ol.layer.Vector({
                     source: dealsPerCountryCluster,
+                    name: "countries",
                     style: function (feature) {
                         var clusteredFeatures = feature.get('features');
 
@@ -202,6 +203,7 @@
             // legend as donut surrounding the cluster point.
             function getDealsClusterLayer() {
                 return new ol.layer.Vector({
+                    name: "deals",
                     source: dealsCluster,
                     style: function(feature) {
                         var clusteredFeatures = feature.get('features');
@@ -286,7 +288,8 @@
                     type: "POST",
                     data: JSON.stringify({
                         "features": new ol.format.GeoJSON().writeFeaturesObject(features),
-                        "legendKey": mapInstance.legendKey
+                        "legendKey": mapInstance.legendKey,
+                        "layer": settings.visibleLayer
                     }),
                     contentType: "application/json; charset=utf-8"
                 }).then(function(response) {
@@ -298,14 +301,12 @@
             map.on("singleclick", function (event) {
                 var feature = map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
                     // use 'active' layer (dealsPerCountry or allDeals) only.
-                    // todo: get currently active layer.
-                    if (layer == mapInstance.dealsPerCountryLayer) {
+                    if (layer.get('name') == settings.visibleLayer) {
                         return feature;
                     }
                 });
                 if (feature) {
-                    var features = feature.get("features");
-                    showFeatureDetails(event, features[0])
+                    showFeatureDetails(event, feature.get("features"))
                 }
             });
 

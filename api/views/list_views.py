@@ -2,8 +2,9 @@ import json
 
 from django.contrib.auth import get_user_model
 from django.http import Http404
+from django.template.response import TemplateResponse
 from django.views.generic import View
-from django.views.generic.base import ContextMixin, TemplateResponseMixin
+from django.views.generic.base import ContextMixin
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -601,7 +602,7 @@ class CountryDealsView(APIView):
         )
 
 
-class MapInfoDetailView(MapSettingsMixin, ContextMixin, TemplateResponseMixin, View):
+class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
     """
     Return rendered template with all details for a click on the map. Allow post
     only, as data from post is put into the template.
@@ -611,15 +612,26 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, TemplateResponseMixin, V
     """
     http_method_names = ['post']
 
-    # maybe: template according to length of features. will be decided after
-    # deals layer is ready.
-    template_name = 'map/modals/feature_details.html'
+    def get_template_names(self):
+        """
+        Avoid too much logic in templates by providing a distinct template for
+        all four use cases: one deal, many deals, one country, many countries.
+        """
+        return 'map/modals/{layer}_{count}.html'.format(
+            layer=self.post['layer'],
+            count='one' if len(self.post['features']['features']) == 1 else 'many'
+        )
 
     def post(self, request, *args, **kwargs):
         if not request.is_ajax():
             raise Http404()
+        self.post = json.loads(self.request.body.decode("utf-8"))
         context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
+        return TemplateResponse(
+            request=self.request,
+            template=self.get_template_names(),
+            context=context
+        )
 
     def get_legend_for_key(self, key):
         try:
@@ -629,9 +641,8 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, TemplateResponseMixin, V
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post = json.loads(self.request.body.decode("utf-8"))
         context['legend'] = self.get_legend_for_key(
-            key=post['legendKey']
+            key=self.post['legendKey']
         )
         context['countries'] = ['Mail', 'Togo', 'Ivory Coast']
         # context.update(**post['features'])

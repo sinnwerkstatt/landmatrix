@@ -35,17 +35,12 @@
 </div>
 
 <div>
-  {% if countries|length == 1 %}
-    <h1><span>{% trans "Country detail" %}</span></h1>
-    <a href="">{{ country }} - {% trans "visit detail page" %}</a>
-  {% else %}
     <h1><span>{% trans "Country details" %}</span></h1>
     <ul>
     {% for country in countries %}
       <li><a href="">{{ country }} - {% trans "visit detail page" %}</a></li>
     {% endfor %}
     </ul>
-  {% endif %}
 </div>
 
 <script src="{% static "map/js/Chart.min.js" %}"></script>
