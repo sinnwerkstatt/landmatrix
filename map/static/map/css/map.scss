@@ -177,6 +177,10 @@ $map-height: 75vh;
     margin-top: 3px;
   }
 
+  td:not(:first-child) {
+    text-align: center;
+  }
+
   .tab-content & {
     width: 500px;
     height: $map-height;

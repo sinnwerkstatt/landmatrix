@@ -640,16 +640,30 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
             raise Http404()
 
     def get_countries_data(self):
+        """
+        Get a list of countries and extend the legend with all values, ordered
+        by country.
+        """
+        countries = []
+        legend = self.get_legend_for_key(key=self.post['legendKey'])
+        # Set attribute-id as dict-index for easier access.
+        legend['attributes'] = {
+            feature['id']: feature for feature in legend['attributes']
+            }
+        for feature in self.post['features']['features']:
+            countries.append(feature['properties']['name'])
+            # fill in value from feature or '-' as value for the legend-table.
+            for legend_key in legend['attributes'].keys():
+                value = feature['properties'][self.post['legendKey']].get(legend_key, '-')
+                legend['attributes'][legend_key].setdefault('values', []).append(value)
+
         return {
-            'countries': [feature['properties']['name'] for feature in
-                          self.post['features']['features']]
+            'countries': countries,
+            'legend': legend
         }
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['legend'] = self.get_legend_for_key(
-            key=self.post['legendKey']
-        )
         if self.post['layer'] == 'countries':
             context.update(**self.get_countries_data())
         return context

@@ -7,14 +7,14 @@
         <td>{{ country }}</td>
       {% endfor %}
     </thead>
-    {% for item in legend.attributes %}
+    {% for item in legend.attributes.values %}
       <tr>
         <td>
           <span class="legend-symbol" style="background-color:{{ item.color }};"></span>
           {{ item.label }}
         </td>
-        {% for country in countries %}
-          <td>{{ country }}</td>
+        {% for value in item.values %}
+          <td>{{ value }}</td>
         {% endfor %}
       </tr>
     {% endfor %}

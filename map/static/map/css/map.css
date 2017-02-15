@@ -113,6 +113,8 @@
 
 #details-overlay .legend-symbol {
   margin-top: 3px; }
+#details-overlay td:not(:first-child) {
+  text-align: center; }
 .tab-content #details-overlay {
   width: 500px;
   height: 75vh;
