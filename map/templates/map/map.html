@@ -75,9 +75,9 @@
     </div>
 
     <div class="map-panel row">
-      <div class="col-md-12 tab-container">
+      <div class="tab-container">
         <div class="row flex-row">
-          <div class="col-md-10 tab flex-col">
+          <div class="tab flex-col">
             <div class="tab-content active">
               <h4><span>{% trans "Group by country" %}</span></h4>
               <label class="switch">
@@ -103,7 +103,8 @@
             </div>
             <div class="tab-content">
               <h4><span>{% trans "Search" %}</span></h4>
-              <input type="text" placeholder="{% trans "Search location" %}">
+              <input type="text" placeholder="{% trans "Search location" %}" size="20">
+              <br/>
               <button>{% trans "Search" %}</button>
             </div>
             <div class="tab-content">
@@ -128,7 +129,7 @@
               <div id="details-overlay"></div>
             </div>
           </div>
-        <div class="col-md-2 tab-menu flex-col">
+        <div class="tab-menu flex-col">
           <div class="list-group panel-menu">
             <a href="#" class="list-group-item text-center show-hide-content">
               <h4 class="glyphicon glyphicon-menu-left"></h4>
@@ -265,6 +266,5 @@
           map.toggleVisibleLayer(visibleLayer);
       });
     });
-
   </script>
 {% endblock %}

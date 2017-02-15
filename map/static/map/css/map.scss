@@ -71,6 +71,7 @@
     }
     .flex-col {
       flex: 1;
+      padding: 0;
     }
     .tab-container {
       z-index: 10;
@@ -100,10 +101,12 @@
         }
       }
     }
+    .tab-content {
+      min-width: 250px;
+    }
 
     .tab-content, .tab {
       background-color: #ffffff;
-      width: 250px;
 
       .switch {
         position: relative;
@@ -163,6 +166,12 @@
     .tab .tab-content:not(.active){
       display: none;
     }
+  }
+}
+
+#details-overlay {
+  .tab-content & {
+    width: 500px;
   }
 }
 

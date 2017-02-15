@@ -279,8 +279,8 @@
                         "legendKey": mapInstance.legendKey
                     }),
                     contentType: "application/json; charset=utf-8"
-                }).then(function(data) {
-                    featureDetailsElement.html(data);
+                }).then(function(response) {
+                    featureDetailsElement.html(response);
                     // update tabbed menu
                     settings.featureDetailsCallback(
                         featureDetailsElement.parent()
