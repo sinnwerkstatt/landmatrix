@@ -148,6 +148,11 @@
     display: inline-block;
 }
 
+.navbar-main li > span > i {
+    font-size: 18px;
+    line-height: 36px;
+}
+
 .navbar-main .select2 {
     width: auto !important;
 }
