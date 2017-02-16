@@ -733,7 +733,6 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         """
         this is not DRY, as it will soon be refactored to js anyhow.
         """
-        deals = []
         legend = self.get_legend_for_key(key=self.post['legendKey'])
         # Set attribute-id as dict-index for easier access.
         legend['attributes'] = collections.OrderedDict(
@@ -743,9 +742,12 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
             (key, 0) for key in legend['attributes'].keys()
         )
         total = 0
+        has_multiple_attributes = False
         for feature in self.post['features']['features']:
             selected = feature['properties'][self.post['legendKey']]
             if isinstance(selected, list):
+                if len(selected) > 1:
+                    has_multiple_attributes = True
                 for value in selected:
                     self.increment_value(legend, value)
                     chart_data[value] += 1
@@ -756,14 +758,15 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
                 total += 1
 
         return {
-            'deals': deals,
             'legend': legend,
             'chart': {
                 'labels': [item['label'] for item in legend['attributes'].values()],
                 'colors': [item['color'] for item in legend['attributes'].values()],
                 'data': list(chart_data.values()),
             },
-            'total': total
+            'total': total,
+            'count': len(self.post['features']['features']),
+            'has_multiple_attributes': has_multiple_attributes
         }
 
     @staticmethod

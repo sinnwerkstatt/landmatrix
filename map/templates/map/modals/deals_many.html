@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load static %}
 
-<h1><span>{{ legend.label }}: {{ total }} {% trans "Deals" %}</span></h1>
+<h1><span>{{ legend.label }}: {{ count }} {% trans "Deals" %}</span></h1>
 
 <div class="row">
     <canvas id="chart" width="100%"></canvas>
@@ -21,21 +21,15 @@
     {% endfor %}
     <tfoot>
       <td>{% trans "Total" %}</td>
-      <td>{{ total }}</td>
+      <td>{{ total }}{% if has_multiple_attributes %}*{% endif %}</td>
     </tfoot>
   </table>
+  {% if has_multiple_attributes %}
+    <div class="panel panel-default">
+    {% trans "*Some attributes are selected multiple times for the same deal." %}
+    </div>
+  {% endif %}
 </div>
-
-
-<div>
-  <h1><span>{% trans "Deal details" %}</span></h1>
-  <ul>
-  {% for deal in deals %}
-    <li>{{ deals }}</li>
-  {% endfor %}
-  </ul>
-</div>
-
 
 <script src="{% static "map/js/Chart.min.js" %}"></script>
 <script>
