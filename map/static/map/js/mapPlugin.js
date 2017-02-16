@@ -77,7 +77,7 @@
             var featureDetailsElement = $("#" + settings.featureDetailsElement);
 
             // Draw deals per country with all properties in the geojson.
-            var drawCountryInformation = function (features, countryDealsSource) {
+            function drawCountryInformation(features, countryDealsSource) {
                 $.each(features, function (key, country) {
                     // extent.getCenter() returns undefined with ol 4.0, so
                     // calculate it manually.
@@ -101,7 +101,7 @@
 
                     countryDealsSource.addFeature(countryInfoPoint);
                 });
-            };
+            }
 
             /**
              * Prepare a data array based on the country feature properties.
