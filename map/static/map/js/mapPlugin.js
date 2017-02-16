@@ -16,11 +16,17 @@
             var chartSize = 100;
             var donutWidth = 7;
             var fontSize = 1.25;
+            var minClusterRadius = 100;
+            var maxClusterRadius = 300;
 
             // The resolution for which to toggle the layers automatically.
             var autoToggleResolution = 2000;
 
             var mapInstance = this;
+
+            // Variables needed to calculate the size of the clusters.
+            var currentResolution;
+            var maxFeatureCount;
 
             // use this.setLegendKey() to switch currently active legend.
             mapInstance.legendKey = options.legendKey;
@@ -64,14 +70,14 @@
             var dealsPerCountrySource = new ol.source.Vector();
             var dealsPerCountryCluster = new ol.source.Cluster({
                 source: dealsPerCountrySource,
-                distance: chartSize / 2
+                distance: maxClusterRadius / 2
             });
 
             // Layer and source for the deals. All deals are clustered.
             var dealsSource = new ol.source.Vector();
             var dealsCluster = new ol.source.Cluster({
                 source: dealsSource,
-                distance: chartSize / 2
+                distance: maxClusterRadius / 2
             });
             
             // Overly for the container with detailed information after a click
@@ -113,9 +119,12 @@
             function prepareCountryClusterData(features) {
 
                 var data = getBasicClusterData();
+                var count = 0;
 
                 // Update "count" of each value based on the feature's values.
                 $.each(features, function(index, feature) {
+                    // Also update count of features
+                    count += feature.getProperties()['deals'];
                     var properties = feature.getProperties()[mapInstance.legendKey];
                     if (!properties) return;
 
@@ -129,7 +138,10 @@
                         }
                     }
                 });
-                return data;
+                return {
+                    cluster: data,
+                    count: count
+                };
             }
 
             /**
@@ -141,7 +153,8 @@
             function prepareDealClusterData(features) {
 
                 var data = getBasicClusterData();
-                
+                var count = features.length;
+
                 // Update "count" of each value based on the feature's values.
                 $.each(features, function(index, feature) {
                     var properties = feature.getProperties()[mapInstance.legendKey];
@@ -159,7 +172,10 @@
                         searchProp[0].count += 1;
                     });
                 });
-                return data;
+                return {
+                    cluster: data,
+                    count: count
+                };
             }
 
             /**
@@ -181,6 +197,29 @@
                 return data;
             }
 
+            // Calculate the feature count (maxFeatureCount) in the biggest
+            // cluster visible on the map. No need to calculate this if the
+            // resolution did not change.
+            function calculateClusterInfo(clusterLayerSource, countProperty) {
+                if (currentResolution == map.getView().getResolution()) {
+                    return;
+                }
+                currentResolution = map.getView().getResolution();
+                maxFeatureCount = 0;
+                $.each(clusterLayerSource.getFeatures(), function(i, feature) {
+                    var clusteredFeatures = feature.get('features');
+                    if (countProperty) {
+                        var c = 0;
+                        $.each(clusteredFeatures, function(j, f) {
+                            c += f.getProperties()[countProperty];
+                        });
+                        maxFeatureCount = Math.max(maxFeatureCount, c);
+                    } else {
+                        maxFeatureCount = Math.max(maxFeatureCount, clusteredFeatures.length);
+                    }
+                });
+            }
+
             // Draw a clustered layer with the properties from the current
             // legend as 'svg-doghnut' surrounding the cluster point.
             function getCountryClusterLayer() {
@@ -188,13 +227,15 @@
                     source: dealsPerCountryCluster,
                     name: "countries",
                     style: function (feature) {
+                        calculateClusterInfo(dealsPerCountryCluster, 'deals');
+
                         var clusteredFeatures = feature.get('features');
 
                         var clusterSVG = new Image();
                         var clusterData = prepareCountryClusterData(clusteredFeatures);
                         clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'countries'));
 
-                        return getChartStyle(clusterSVG, clusteredFeatures);
+                        return getChartStyle(clusterSVG, clusterData.count.toString());
                     },
                     visible: settings.visibleLayer == 'countries'
                 });
@@ -207,13 +248,15 @@
                     name: "deals",
                     source: dealsCluster,
                     style: function(feature) {
+                        calculateClusterInfo(dealsCluster);
+
                         var clusteredFeatures = feature.get('features');
 
                         var clusterSVG = new Image();
                         var clusterData = prepareDealClusterData(clusteredFeatures);
                         clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals'));
 
-                        return getChartStyle(clusterSVG, clusteredFeatures);
+                        return getChartStyle(clusterSVG, clusterData.count.toString());
                     },
                     visible: settings.visibleLayer == 'deals'
                 })
@@ -221,14 +264,14 @@
 
             // Return the basic chart style for cluster: Use a SVG image icon 
             // and display number of features as text.
-            function getChartStyle(clusterSVG, clusteredFeatures) {
+            function getChartStyle(clusterSVG, clusterText) {
                 return new ol.style.Style({
                     image: new ol.style.Icon({
                         img: clusterSVG,
                         imgSize: [chartSize, chartSize]
                     }),
                     text: new ol.style.Text({
-                        text: clusteredFeatures.length.toString(),
+                        text: clusterText,
                         scale: fontSize,
                         fill: new ol.style.Fill({
                             color: '#222'
@@ -241,9 +284,13 @@
             function getSvgChart(data, clusterType) {
                 // Calculate total
                 var total = 0;
-                $.each(data, function (i, d) {
+                $.each(data.cluster, function (i, d) {
                     total += d.count;
                 });
+
+                var minValue = 1;
+                var scaleFactor = (data.count - minValue) / (maxFeatureCount - minValue);
+                chartSize = scaleFactor * (maxClusterRadius - minClusterRadius) + minClusterRadius;
 
                 var backgroundColor = clusterType == 'countries' ? '#f9de98' : '#fff';
 
@@ -258,12 +305,12 @@
 
                 var defaultOffset = chartSize / 4; // To make chart start at top (12:00), not right (3:00).
                 var totalOffsets = 0;
-                $.each(data, function (index, data) {
+                $.each(data.cluster, function (i, d) {
                     var offset = chartSize - totalOffsets + defaultOffset;
-                    var currValue = data.count / total * chartSize;
+                    var currValue = d.count / total * chartSize;
                     var currRemainder = chartSize - currValue;
                     var currAttr = $.grep(options.legend[mapInstance.legendKey].attributes, function (e) {
-                        return e.id == data.id;
+                        return e.id == d.id;
                     });
                     var currColor = "silver";
                     if (currAttr.length == 1) {
