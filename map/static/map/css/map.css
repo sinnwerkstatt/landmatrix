@@ -123,6 +123,13 @@
   overflow-y: scroll; }
 #details-overlay td {
   padding: 2px 0; }
+#details-overlay .attribute-title:not(:first-of-type) {
+  margin-top: 1.5rem; }
+#details-overlay .link-view-deal {
+  margin-top: 1.5rem; }
+  #details-overlay .link-view-deal a {
+    text-decoration: underline;
+    color: inherit; }
 
 .map-legend {
   display: none; }

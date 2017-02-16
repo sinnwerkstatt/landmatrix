@@ -192,6 +192,19 @@ $map-height: 75vh;
   td {
     padding: 2px 0;
   }
+
+  .attribute-title:not(:first-of-type) {
+    margin-top: 1.5rem;
+  }
+
+  .link-view-deal {
+    margin-top: 1.5rem;
+
+    a {
+      text-decoration: underline;
+      color: inherit;
+    }
+  }
 }
 
 // the legend in the tabbed menu panel

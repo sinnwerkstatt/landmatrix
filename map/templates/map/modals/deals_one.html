@@ -1,1 +1,29 @@
-one deal
+{% load i18n %}
+{% load humanize %}
+
+
+<h1><span>{% trans "Deal #" %}{{ deals.0.id }}</span></h1>
+
+<h5 class="attribute-title">{% trans "Intention of investment" %}</h5>
+<ul>
+  {% for intention in deals.0.intention %}
+    <li>{{ intention }}</li>
+  {% endfor %}
+</ul>
+
+<h5 class="attribute-title">{% trans "Implementation status" %}</h5>
+<p>{{ deals.0.implementation }}</p>
+
+<h5 class="attribute-title">{% trans "Operational company" %}</h5>
+<p>{{ deals.0.investor }}</p>
+
+<h5 class="attribute-title">{% trans "Intended area (ha)" %}</h5>
+<p>{{ deals.0.intended_size|intcomma|default:"-" }}</p>
+
+<h5 class="attribute-title">{% trans "Contract size (ha)" %}</h5>
+<p>{{ deals.0.contract_size|intcomma|default:"-" }}</p>
+
+<p class="link-view-deal">
+  <a href="{{ deals.0.url }}">{% trans "More details" %}</a>
+</p>
+

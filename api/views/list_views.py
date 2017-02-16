@@ -643,6 +643,47 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         except IndexError:
             raise Http404()
 
+    def get_deals_data(self):
+        """
+        Return a list of deals, which contain the (translated) "properties"
+        attributes of the features.
+        """
+
+        # Prepare labelled legend entries in a more accessible form
+        legend_labelled = {}
+        for key, value in self.get_legend().items():
+            values_labelled = {}
+            for attr in value.get('attributes', []):
+                values_labelled[attr['id']] = attr['label']
+            legend_labelled[key] = values_labelled
+
+        # Create an object for each feature that has the properties translated
+        # (if available in the legend).
+        deals = []
+        for feature in self.post['features']['features']:
+            deal_feature = {
+                'id': feature['id'],
+            }
+            for key, value in feature.get('properties', {}).items():
+                if key in legend_labelled.keys():
+                    legend_values_labelled = legend_labelled[key]
+                    if isinstance(value, list):
+                        labelled_values = []
+                        for v in value:
+                            labelled_values.append(
+                                legend_values_labelled.get(v, v))
+                        deal_feature[key] = labelled_values
+                    else:
+                        deal_feature[key] = legend_values_labelled.get(
+                            value, value)
+                else:
+                    deal_feature[key] = value
+            deals.append(deal_feature)
+
+        return {
+            'deals': deals,
+        }
+
     def get_countries_data(self):
         """
         - Get a list of countries .
@@ -688,4 +729,6 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         context = super().get_context_data(**kwargs)
         if self.post['layer'] == 'countries':
             context.update(**self.get_countries_data())
+        elif self.post['layer'] == 'deals':
+            context.update(**self.get_deals_data())
         return context
