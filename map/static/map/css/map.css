@@ -68,6 +68,29 @@
       min-width: 250px; }
     .map-container .map-panel .tab-content, .map-container .map-panel .tab {
       background-color: #ffffff; }
+      .map-container .map-panel .tab-content .js-layer-switch, .map-container .map-panel .tab .js-layer-switch {
+        width: 95%;
+        padding: 5px !important; }
+        .map-container .map-panel .tab-content .js-layer-switch svg, .map-container .map-panel .tab .js-layer-switch svg {
+          margin: 0 auto; }
+        .map-container .map-panel .tab-content .js-layer-switch > div, .map-container .map-panel .tab .js-layer-switch > div {
+          background-color: #fff;
+          border: 2px solid #fc941f;
+          border-radius: 5px;
+          opacity: 1;
+          text-align: center; }
+        .map-container .map-panel .tab-content .js-layer-switch span, .map-container .map-panel .tab .js-layer-switch span {
+          background-color: #fc941f;
+          color: #fff; }
+        .map-container .map-panel .tab-content .js-layer-switch .disabled, .map-container .map-panel .tab .js-layer-switch .disabled {
+          background-color: inherit;
+          border: none;
+          opacity: 0.6; }
+          .map-container .map-panel .tab-content .js-layer-switch .disabled span, .map-container .map-panel .tab .js-layer-switch .disabled span {
+            background-color: inherit;
+            color: #4a4a4a; }
+        .map-container .map-panel .tab-content .js-layer-switch :hover, .map-container .map-panel .tab .js-layer-switch :hover {
+          cursor: pointer; }
       .map-container .map-panel .tab-content .switch, .map-container .map-panel .tab .switch {
         float: left;
         position: relative;

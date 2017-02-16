@@ -108,6 +108,40 @@ $map-height: 75vh;
     .tab-content, .tab {
       background-color: #ffffff;
 
+      .js-layer-switch {
+        width: 95%;
+        padding: 5px !important;
+
+        svg {
+          margin: 0 auto;
+        }
+        > div {
+          background-color: #fff;
+          border: 2px solid $lm_orange;
+          border-radius: 5px;
+          opacity: 1;
+          text-align: center;
+        }
+        span {
+          background-color: $lm_orange;
+          color: #fff;
+        }
+
+        .disabled {
+          background-color: inherit;
+          border: none;
+          opacity: 0.6;
+
+          span {
+            background-color: inherit;
+            color: $lm_dark;
+          }
+        }
+        :hover {
+          cursor: pointer;
+        }
+      }
+
       .switch {
         float: left;
         position: relative;

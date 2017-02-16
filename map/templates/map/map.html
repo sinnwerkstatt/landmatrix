@@ -80,12 +80,15 @@
           <div class="tab flex-col">
             <div class="tab-content active" data-content="deals">
               <h4><span>{% trans "Display" %}</span></h4>
-              <div class="row">
-                <label class="switch">
-                  <input type="checkbox" checked="checked" class="js-toggle-cluster-layer">
-                  <div class="slider round"></div>
-                </label>
-                {% trans "Group deals by country" %}
+              <div class="row js-layer-switch flex-row well">
+                <div class="flex-col" data-show-layer="countries">
+                  <svg version="1.1" id="countries" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="70px" height="70px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve"><circle class="donut-hole" cx="50" cy="50" r="15.915494309189533" fill="#f9de98"></circle><circle class="donut-ring" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#d2d3d4" stroke-width="7"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#1D6914" stroke-width="7" stroke-dasharray="69.23076923076923 30.769230769230774" stroke-dashoffset="125"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#2A4BD7" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="55.769230769230774"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#814A19" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="55.769230769230774"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#9DAFFF" stroke-width="7" stroke-dasharray="30.76923076923077 69.23076923076923" stroke-dashoffset="55.769230769230774"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#AD2323" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#575757" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#81C57A" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#8126C0" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle></svg>
+                  <span>{% trans "Group by country" %}</span>
+                </div>
+                <div class="flex-col disabled" data-show-layer="deals">
+                  <svg version="1.1" id="deals" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="70px" height="70px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve"><circle class="donut-hole" cx="50" cy="50" r="15.915494309189533" fill="#fff"></circle><circle class="donut-ring" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#d2d3d4" stroke-width="7"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#1D6914" stroke-width="7" stroke-dasharray="50 50" stroke-dashoffset="125"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#2A4BD7" stroke-width="7" stroke-dasharray="50 50" stroke-dashoffset="75"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#814A19" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#9DAFFF" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#AD2323" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#575757" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#81C57A" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#8126C0" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle></svg>
+                  <span>{% trans "Individual deals" %}</span>
+                </div>
               </div>
               <div class="row">
                 <label class="switch switch-auto-cb">
@@ -183,6 +186,8 @@
       var mapLegendClass = ".map-legend";
       var tabContainer = $(".tab");
       var menuContainer = $(".panel-menu");
+      var layerSwitch = $(".js-layer-switch");
+
       var advanceProgressLine = function() {
         var currentProgressLine = mapProgress.find(".line:not(." + successClass + "):first");
         currentProgressLine.addClass(successClass);
@@ -221,6 +226,11 @@
           menuContainer.find("a[data-tab='" + element.data('content') + "']").addClass(activeClass);
       }
 
+      // custom input element: switch map layers (grouped or deals)
+      function switchLayerTo(element) {
+        layerSwitch.children("div").addClass("disabled");
+        element.removeClass("disabled");
+      }
 
       /**
        *  Map loading progress
@@ -237,7 +247,8 @@
         featureDetailsUrl: "{% url "map_overlay" %}",
         featureDetailsCallback: activateTabContent,
         visibleLayer: "countries",  // Either "countries" (default) or "deals". Should correspond to state of switch position.
-        autoToggle: true  // Defaults to true. Should correspond to state of checkbox next to switch.
+        autoToggle: true,  // Defaults to true. Should correspond to state of checkbox next to switch.
+        switchLayerCallback: switchLayerTo
       });
       mapPlaceholder.remove();
       advanceProgressLine();
@@ -280,10 +291,9 @@
       });
 
       // Toggle to group by countries
-      $(".js-toggle-cluster-layer").on("change", function() {
-        var visibleLayer = this.checked ? 'countries' : 'deals';
-        map.toggleVisibleLayer(visibleLayer);
-
+      layerSwitch.children("div").on("click", function() {
+        switchLayerTo($(this));
+        map.toggleVisibleLayer($(this).data("show-layer"));
         // If the toggle is clicked manually, "auto" checkbox is automatically
         // unchecked.
         $('.js-toggle-cluster-auto').prop('checked', false);

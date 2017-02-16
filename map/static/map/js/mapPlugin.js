@@ -455,7 +455,7 @@
                 var countriesVisible = visibleLayer == 'countries';
 
                 // Toggle the checkbox
-                $('.js-toggle-cluster-layer').prop('checked', countriesVisible);
+                settings.switchLayerCallback($("[data-show-layer='" + visibleLayer + "'"));
 
                 this.dealsLayer.setVisible(!countriesVisible);
                 countryLayer.setVisible(countriesVisible);
