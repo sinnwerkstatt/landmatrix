@@ -1,5 +1,6 @@
 import json
 
+import collections
 from django.contrib.auth import get_user_model
 from django.http import Http404
 from django.template.response import TemplateResponse
@@ -652,9 +653,9 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         chart_data = []
         legend = self.get_legend_for_key(key=self.post['legendKey'])
         # Set attribute-id as dict-index for easier access.
-        legend['attributes'] = {
-            feature['id']: feature for feature in legend['attributes']
-        }
+        legend['attributes'] = collections.OrderedDict(
+            (feature['id'], feature) for feature in legend['attributes']
+        )
         for feature in self.post['features']['features']:
             country_total = 0
             # fill in value from feature or '0' as value for the legend-table.
