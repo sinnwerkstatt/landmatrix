@@ -55,13 +55,13 @@ function buildTreeChart() {
             },
             {
                 "name": "Minerals",
-                "color": "#4bbb87",
+                "color": "#44b7b6",
                 "children": [
                 ]
             },
             {
                 "name": "Crops",
-                "color": "#b9d635",
+                "color": "#1f7bfc",
                 "children": [
                 ]
             }
@@ -193,11 +193,11 @@ function buildTreeChart() {
 
 function buildPieChart() {
     var demodata = [
-        {label: 'On The Lease', value: 0.3},
-        {label: 'Off The Lease', value: 0.35},
-        {label: 'Pure Contract Farming', value: 0.1},
-        {label: 'Both', value: 0.15},
-        {label: 'None', value: 0.1}
+        {label: 'On The Lease', value: 0.3, col: '#fc941f'},
+        {label: 'Off The Lease', value: 0.35, col: '#44b7b6'},
+        {label: 'Pure Contract Farming', value: 0.1, col: '#1f7bfc'},
+        {label: 'Both', value: 0.15, col: '#ad1ffc'},
+        {label: 'None', value: 0.1, col: '#fcd41f'}
     ];
 
     var chartwidth = $('#chartarea').width(),
@@ -245,7 +245,7 @@ function buildPieChart() {
 
         arcs.append("svg:path")
             .attr("fill", function (d, i) {
-                return color(i);
+                return d.data.col;
             }) //set the color for each slice to be chosen from the color function defined above
             .attr("d", arc);                                    //this creates the actual SVG path using the associated data (pie) with the arc drawing function
 
@@ -334,19 +334,23 @@ function buildDotChart() {
     var demodata = [{
         "intentions": [[0, 10], [1, 6], [2, 4]],
         "total": 20,
-        "name": "Agriculture"
+        "name": "Agriculture",
+        "color": '#fc941f',
     }, {
         "intentions": [[0, 5], [1, 6], [2, 1]],
         "total": 12,
-        "name": "Forestry"
+        "name": "Forestry",
+        "color": '#44b7b6',
     }, {
         "intentions": [[0, 4], [1, 5], [2, 1]],
         "total": 10,
-        "name": "Mining"
+        "name": "Mining",
+        "color": '#1f7bfc',
     }, {
         "intentions": [[0, 4], [1, 8], [2, 3]],
         "total": 15,
-        "name": "Tourism"
+        "name": "Tourism",
+        "color": '#ad1ffc',
     }];
 
     d3.json('', function (data) {
@@ -390,8 +394,8 @@ function buildDotChart() {
                 .attr("r", function (d) {
                     return rScale(d[1]);
                 })
-                .style("fill", function (d) {
-                    return c(j);
+                .style("fill", function (d, i) {
+                    return demodata[i].color;
                 });
 
             text
@@ -403,8 +407,8 @@ function buildDotChart() {
                 .text(function (d) {
                     return d[1];
                 })
-                .style("fill", function (d) {
-                    return c(j);
+                .style("fill", function (d, i) {
+                    return demodata[i].color;
                 })
                 .style("display", "none");
 
@@ -413,9 +417,6 @@ function buildDotChart() {
                 .attr("x", width + 20)
                 .attr("class", "label")
                 .text(truncate(data[j]['name'], 30, "..."))
-                .style("fill", function (d) {
-                    return c(j);
-                })
                 .on("mouseover", mouseover)
                 .on("mouseout", mouseout);
         }
@@ -459,7 +460,7 @@ function buildAgriculturalPies() {
             pie_data.push(data[i]["agricultural_produce"]["multiple_use"]);
 
             var pie = new RGraph.Pie('pie-' + data[i]["region"], pie_data);
-            pie.Set('chart.colors', ['#44b7b6', '#4bbb87', '#179961', '#7c9a61']);
+            pie.Set('chart.colors', ['#fc941f', '#44b7b6', '#1f7bfc', '#ad1ffc']);
             pie.Set('chart.strokestyle', '#bbb');
             pie.Set('chart.text.font', 'Open Sans');
             pie.Set('chart.text.size', '9');
