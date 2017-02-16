@@ -434,6 +434,7 @@ COLUMN_BLOCKS = [
     ('columns_1_2', Columns1To2Block())
 ]
 
+
 class TabBlock(StructBlock):
     title = blocks.CharBlock()
     content = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
@@ -454,6 +455,9 @@ class TabsBlock(StructBlock):
                 'content': tab.get('content')
             })
         return context
+CONTENT_BLOCKS += [
+    ('tabs_block', TabsBlock()),
+]
 
 class FullWidthContainerBlock(StructBlock):
     color = blocks.ChoiceBlock(choices=[
@@ -474,9 +478,9 @@ class FullWidthContainerBlock(StructBlock):
         label = 'Full width container'
         template = 'widgets/full-width-container.html'
 CONTENT_BLOCKS += [
-    ('tabs_block', TabsBlock()),
     ('full_width_container', FullWidthContainerBlock(form_classname='')),
 ]
+
 
 class WagtailRootPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
