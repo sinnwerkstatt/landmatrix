@@ -437,6 +437,7 @@ COLUMN_BLOCKS = [
 
 class TabBlock(StructBlock):
     title = blocks.CharBlock()
+    fa_icon = blocks.CharBlock()
     content = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
 
 class TabsBlock(StructBlock):
@@ -452,6 +453,7 @@ class TabsBlock(StructBlock):
         for tab in value.get('tabs'):
             context['list'].append({
                 'title': tab.get('title'),
+                'fa_icon': tab.get('fa_icon'),
                 'content': tab.get('content')
             })
         return context

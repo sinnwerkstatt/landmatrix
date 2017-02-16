@@ -96,26 +96,32 @@
 
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="/global/"><i class="lm-nav lm-globe"></i><span class="nav-text">{% trans 'Global' %}</span></a>
+                        <a href="/global/">
+                            <i class="fa fa-globe"></i>&nbsp;
+                            <span class="nav-text">{% trans 'Global' %}</span>
+                        </a>
                     </li>
                     <li class="dropdown">
                         <span>
-                            <i class="lm-nav lm-regions"></i>
+                            <i class="fa fa-map-marker"></i>&nbsp;
                             <select class="nav-select" id="nav-region-select" style="display:none">
                             </select>
                         </span>
                     </li>
                     <li class="dropdown">
                         <span>
-                            <i class="lm-nav lm-flag"></i>
+                            <i class="fa fa-flag"></i>&nbsp;
                             <select class="nav-select" id="nav-country-select" style="display:none">
                             </select>
                         </span>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><i class="lm-nav lm-plus-circle"></i><span class="nav-text">{% trans "Get Involved" %}<span
-                                class="caret"></span></span></a>
+                           aria-expanded="false">
+                           <i class="fa fa-plus-circle"></i>&nbsp;
+                           <span class="nav-text">{% trans "Get Involved" %}<span
+                                class="caret"></span></span>
+                        </a>
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a></li>
                             <li><a href="/get-touch/">{% trans "Get in touch" %}</a></li>

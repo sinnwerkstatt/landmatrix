@@ -1,7 +1,7 @@
 {% load wagtailcore_tags %}
 <ul class="nav nav-tabs">
   {% for listitem in list %}
-  <li{% if forloop.first %} class="active"{% endif %}><a data-toggle="tab" href="#{{ forloop.counter }}">{{ listitem.title }}</a></li>
+  <li{% if forloop.first %} class="active"{% endif %} style="width:33%;text-align:center;"><a style="padding:0;" data-toggle="tab" href="#{{ forloop.counter }}"><h3>{% if listitem.fa_icon %}<i class="fa fa-{{ listitem.fa_icon }}"></i>&nbsp;{% endif %}{{ listitem.title }}</h3></a></li>
   {% endfor %}
 </ul>
 <div class="tab-content">

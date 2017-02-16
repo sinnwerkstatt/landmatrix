@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="widget-twitter-timeline">
 	{% if not timeline %}
 		<div class="twitter-timeline-empty">
@@ -48,4 +49,5 @@
 		</div>
 	{% endfor %}
 	{% endif %}
+	<a href="https://twitter.com/{{ username }}" target="_blank" class="btn">{% trans "Tweets by" %} @{{ username }}</a>
 </div><!-- widget-twitter-timeline -->
