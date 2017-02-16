@@ -58,7 +58,7 @@ urlpatterns = patterns('',
     url(r'^documents/', include(wagtaildocs_urls)),
 
 
-    url(r'^global/', GlobalView.as_view(), name='global'),
+    #url(r'^global/', GlobalView.as_view(), name='global'),
 
     url(r'^data/', include(grid_urls)),
     url(r'^map/', include(map_urls)),

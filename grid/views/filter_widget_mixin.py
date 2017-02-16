@@ -187,6 +187,8 @@ class FilterWidgetMixin:
             )
             stored_filters[new_filter.name] = new_filter
             self.request.session['filters'] = stored_filters
+        else:
+            self.remove_country_region_filter()
 
     def remove_country_region_filter(self):
         stored_filters = self.request.session.get('filters', {})
