@@ -78,7 +78,7 @@
       <div class="tab-container">
         <div class="row flex-row">
           <div class="tab flex-col">
-            <div class="tab-content active">
+            <div class="tab-content active" data-content="deals">
               <h4><span>{% trans "Display" %}</span></h4>
               <div class="row">
                 <label class="switch">
@@ -111,13 +111,13 @@
                 </div>
               {% endfor %}
             </div>
-            <div class="tab-content">
+            <div class="tab-content" data-content="search">
               <h4><span>{% trans "Search" %}</span></h4>
               <input type="text" placeholder="{% trans "Search location" %}" size="20">
               <br/>
               <button>{% trans "Search" %}</button>
             </div>
-            <div class="tab-content">
+            <div class="tab-content" data-content="context">
               <h4><span>{% trans "Context" %}</span></h4>
               <ul>
                 <li>{% trans "Incidence of poverty" %}</li>
@@ -127,7 +127,7 @@
                 <li>{% trans "Accessibility" %}</li>
               </ul>
             </div>
-            <div class="tab-content">
+            <div class="tab-content" data-content="base">
               <h4><span>{% trans "Base" %}</span></h4>
               <ul>
                 <li>{% trans "OpenStreetMap" %}</li>
@@ -135,8 +135,8 @@
                 <li>{% trans "Terrain" %}</li>
               </ul>
             </div>
-            <div class="tab-content">
-              <div id="details-overlay"></div>
+            <div class="tab-content" data-content="details">
+              <div id="details-overlay">{% trans "Please click on a deal or country on the map to select details." %}</div>
             </div>
           </div>
         <div class="tab-menu flex-col">
@@ -144,17 +144,20 @@
             <a href="#" class="list-group-item text-center show-hide-content">
               <h4 class="glyphicon glyphicon-menu-left"></h4>
             </a>
-            <a href="#" class="list-group-item text-center active">
+            <a href="#" class="list-group-item text-center active" data-tab="deals">
               <h4 class="glyphicon glyphicon-cog"></h4><br/>{% trans "Deals" %}
             </a>
-            <a href="#" class="list-group-item text-center">
+            <a href="#" class="list-group-item text-center" data-tab="search">
               <h4 class="glyphicon glyphicon-search"></h4><br/>{% trans "Search" %}
             </a>
-            <a href="#" class="list-group-item text-center">
+            <a href="#" class="list-group-item text-center" data-tab="context">
               <h4 class="glyphicon glyphicon-filter"></h4><br/>{% trans "Context" %}
             </a>
-            <a href="#" class="list-group-item text-center">
+            <a href="#" class="list-group-item text-center" data-tab="base">
               <h4 class="glyphicon glyphicon-unchecked"></h4><br/>{% trans "Base" %}
+            </a>
+            <a href="#" class="list-group-item text-center" data-tab="details">
+              <h4 class="glyphicon glyphicon-info-sign"></h4><br/>{% trans "Details" %}
             </a>
           </div>
         </div>
@@ -179,6 +182,7 @@
       var legendSelect = $(".legend-select");
       var mapLegendClass = ".map-legend";
       var tabContainer = $(".tab");
+      var menuContainer = $(".panel-menu");
       var advanceProgressLine = function() {
         var currentProgressLine = mapProgress.find(".line:not(." + successClass + "):first");
         currentProgressLine.addClass(successClass);
@@ -209,9 +213,12 @@
           if (tabContainer.hasClass("hidden")) {
               showHideTabContent();
           }
-          $('.panel-menu').children("a." + activeClass).removeClass(activeClass);
-          $('.tab-content').removeClass(activeClass);
+          // activate selected content-div
+          tabContainer.children("div").removeClass(activeClass);
           element.addClass(activeClass);
+          // update tab-menu
+          menuContainer.children('a').removeClass(activeClass);
+          menuContainer.find("a[data-tab='" + element.data('content') + "']").addClass(activeClass);
       }
 
 
@@ -253,10 +260,10 @@
       $(".panel-menu a:not(.show-hide-content)").click(function(e) {
         e.preventDefault();
         // load content of clicked tab
-        var index = $(this).index() - 1; // add offset for show-hide
-        activateTabContent($(".tab-content").eq(index));
-        // update menu
-        $(this).addClass(activeClass);
+        var containerElement = tabContainer.children(
+            "div[data-content='" + $(this).data('tab') + "']"
+        );
+        activateTabContent(containerElement);
       });
 
       // display legend according to type.
