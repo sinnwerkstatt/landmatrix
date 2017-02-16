@@ -224,7 +224,7 @@ $map-height: 75vh;
     width: 500px;
     height: $map-height;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 
   tr:nth-child(2n) {

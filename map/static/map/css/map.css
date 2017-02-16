@@ -145,7 +145,7 @@
   width: 500px;
   height: 75vh;
   overflow-x: hidden;
-  overflow-y: scroll; }
+  overflow-y: auto; }
 #details-overlay tr:nth-child(2n) {
   background-color: #ebebeb; }
 #details-overlay tfoot td {

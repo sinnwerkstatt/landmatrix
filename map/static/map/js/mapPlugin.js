@@ -13,9 +13,8 @@
             }, options);
 
             // Chart settings. Also needed to adjust clustering sensibility.
-            var chartSize = 100;
             var donutWidth = 7;
-            var fontSize = 1.25;
+            var minFontSize = 1.25;  // Font size is usually clusterRadius / 100
             var minClusterRadius = 100;
             var maxClusterRadius = 300;
 
@@ -233,9 +232,10 @@
 
                         var clusterSVG = new Image();
                         var clusterData = prepareCountryClusterData(clusteredFeatures);
-                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'countries'));
+                        var sizeVariables = getChartSizeVariables(clusterData.count);
+                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'countries', sizeVariables.chartSize));
 
-                        return getChartStyle(clusterSVG, clusterData.count.toString());
+                        return getChartStyle(clusterSVG, clusterData.count.toString(), sizeVariables.chartSize, sizeVariables.fontSize);
                     },
                     visible: settings.visibleLayer == 'countries'
                 });
@@ -254,17 +254,43 @@
 
                         var clusterSVG = new Image();
                         var clusterData = prepareDealClusterData(clusteredFeatures);
-                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals'));
+                        var sizeVariables = getChartSizeVariables(clusterData.count);
+                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals', sizeVariables.chartSize));
 
-                        return getChartStyle(clusterSVG, clusterData.count.toString());
+                        return getChartStyle(clusterSVG, clusterData.count.toString(), sizeVariables.chartSize, sizeVariables.fontSize);
                     },
                     visible: settings.visibleLayer == 'deals'
                 })
             }
 
+            // Determine the chart size and font size based on the current
+            // feature count. Also do some ugly manual tweaking when zoomed out
+            // really far.
+            function getChartSizeVariables(featureCount) {
+                var currMaxClusterRadius = maxClusterRadius;
+                if (currentResolution > 10000) {
+                    currMaxClusterRadius = 250;
+                }
+                if (currentResolution > 20000) {
+                    currMaxClusterRadius = 200;
+                }
+                if (currentResolution > 40000) {
+                    currMaxClusterRadius = 150;
+                }
+                var currMaxFontSize = currMaxClusterRadius / 100;
+                var minValue = 1;
+                var scaleFactor = (featureCount - minValue) / (maxFeatureCount - minValue);
+                var chartSize = scaleFactor * (currMaxClusterRadius - minClusterRadius) + minClusterRadius;
+                var fontSize = scaleFactor * (currMaxFontSize - minFontSize) + minFontSize;
+                return {
+                    chartSize: chartSize,
+                    fontSize: fontSize
+                };
+            }
+
             // Return the basic chart style for cluster: Use a SVG image icon 
             // and display number of features as text.
-            function getChartStyle(clusterSVG, clusterText) {
+            function getChartStyle(clusterSVG, clusterText, chartSize, fontSize) {
                 return new ol.style.Style({
                     image: new ol.style.Icon({
                         img: clusterSVG,
@@ -281,16 +307,12 @@
             }
 
             // Return a SVG donut chart based on the feature's data.
-            function getSvgChart(data, clusterType) {
+            function getSvgChart(data, clusterType, chartSize) {
                 // Calculate total
                 var total = 0;
                 $.each(data.cluster, function (i, d) {
                     total += d.count;
                 });
-
-                var minValue = 1;
-                var scaleFactor = (data.count - minValue) / (maxFeatureCount - minValue);
-                chartSize = scaleFactor * (maxClusterRadius - minClusterRadius) + minClusterRadius;
 
                 var backgroundColor = clusterType == 'countries' ? '#f9de98' : '#fff';
 
