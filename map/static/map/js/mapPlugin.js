@@ -44,6 +44,7 @@
             var countrySource = new ol.source.Vector();
             var countryLayer = new ol.layer.Vector({
                 source: countrySource,
+                name: "highlightedCountries",
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
                         color: [252, 148, 31, 0.2]
@@ -299,14 +300,35 @@
 
             // Display popover on click. Doubleclick should still zoom in.
             map.on("singleclick", function (event) {
-                var feature = map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
-                    // use 'active' layer (dealsPerCountry or allDeals) only.
+                var dealFeature = null;
+                var countryFeature = null;
+                map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+                    // use 'active' layer (deals per country or all deals) only.
                     if (layer.get('name') == settings.visibleLayer) {
-                        return feature;
+                        dealFeature = feature;
+                    }
+                    if (layer.get('name') == "highlightedCountries") {
+                        countryFeature = feature;
                     }
                 });
-                if (feature) {
-                    showFeatureDetails(event, feature.get("features"))
+                // catch click on 'cluster' first, on countries second.
+                if (dealFeature) {
+                    showFeatureDetails(event, dealFeature.get("features"))
+                }
+                else if (countryFeature) {
+                    showFeatureDetails(event, [countryFeature])
+                }
+            });
+
+            // change pointer on hover
+            map.on("pointermove", function (evt) {
+                var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+                    return true;
+                });
+                if (hit) {
+                    this.getTargetElement().style.cursor = 'pointer';
+                } else {
+                    this.getTargetElement().style.cursor = '';
                 }
             });
 
