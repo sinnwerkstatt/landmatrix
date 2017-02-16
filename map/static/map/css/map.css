@@ -114,6 +114,8 @@
 
 #details-overlay .legend-symbol {
   margin-top: 3px; }
+#details-overlay table {
+  width: 95%; }
 #details-overlay td:not(:first-child) {
   text-align: center; }
 .tab-content #details-overlay {
@@ -121,6 +123,10 @@
   height: 75vh;
   overflow-x: hidden;
   overflow-y: scroll; }
+#details-overlay tr:nth-child(2n) {
+  background-color: #ebebeb; }
+#details-overlay tfoot td {
+  font-weight: bold; }
 #details-overlay td {
   padding: 2px 0; }
 #details-overlay .attribute-title:not(:first-of-type) {

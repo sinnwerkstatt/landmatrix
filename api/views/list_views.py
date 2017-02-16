@@ -621,7 +621,7 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         if self.post['layer'] == 'countries':
             count = ''
         else:
-            count = '_one' if len(self.post['features']['features']) == 1 else '_many'
+            count = '_many' if self.has_many_features else '_one'
         return 'map/modals/{layer}{count}.html'.format(
             layer=self.post['layer'],
             count=count
@@ -637,13 +637,17 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
             context=self.get_context_data(**kwargs)
         )
 
+    @property
+    def has_many_features(self):
+        return len(self.post['features']['features']) > 1
+
     def get_legend_for_key(self, key):
         try:
             return self.get_legend()[key]
         except IndexError:
             raise Http404()
 
-    def get_deals_data(self):
+    def get_deal_data(self):
         """
         Return a list of deals, which contain the (translated) "properties"
         attributes of the features.
@@ -725,10 +729,58 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
             'title': ', '.join([country['name'] for country in countries])
         }
 
+    def get_deals_data(self):
+        """
+        this is not DRY, as it will soon be refactored to js anyhow.
+        """
+        deals = []
+        legend = self.get_legend_for_key(key=self.post['legendKey'])
+        # Set attribute-id as dict-index for easier access.
+        legend['attributes'] = collections.OrderedDict(
+            (feature['id'], feature) for feature in legend['attributes']
+        )
+        chart_data = collections.OrderedDict(
+            (key, 0) for key in legend['attributes'].keys()
+        )
+        total = 0
+        for feature in self.post['features']['features']:
+            selected = feature['properties'][self.post['legendKey']]
+            if isinstance(selected, list):
+                for value in selected:
+                    self.increment_value(legend, value)
+                    chart_data[value] += 1
+                    total += 1
+            else:
+                self.increment_value(legend, selected)
+                chart_data[selected] += 1
+                total += 1
+
+        return {
+            'deals': deals,
+            'legend': legend,
+            'chart': {
+                'labels': [item['label'] for item in legend['attributes'].values()],
+                'colors': [item['color'] for item in legend['attributes'].values()],
+                'data': list(chart_data.values()),
+            },
+            'total': total
+        }
+
+    @staticmethod
+    def increment_value(legend, value):
+        # passing a mutable (legend) is a desired side-effect... should be ok
+        # for proof of concept, the view needs refactor to js.
+        try:
+            legend['attributes'][value]['count'] += 1
+        except KeyError:
+            legend['attributes'][value]['count'] = 1
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.post['layer'] == 'countries':
             context.update(**self.get_countries_data())
-        elif self.post['layer'] == 'deals':
+        elif self.post['layer'] == 'deals' and not self.has_many_features:
+            context.update(**self.get_deal_data())
+        else:
             context.update(**self.get_deals_data())
         return context

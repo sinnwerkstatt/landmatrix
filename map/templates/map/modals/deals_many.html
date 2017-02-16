@@ -1,1 +1,55 @@
-many deals
+{% load i18n %}
+{% load static %}
+
+<h1><span>{{ legend.label }}: {{ deals.count }} {% trans "Deals" %}</span></h1>
+
+<div class="row">
+    <canvas id="chart" width="100%"></canvas>
+</div>
+
+<div class="row">
+  <h2>{{ legend.title }}</h2>
+  <table>
+    {% for item in legend.attributes.values %}
+      <tr>
+        <td>
+          <span class="legend-symbol" style="background-color:{{ item.color }};"></span>
+          {{ item.label }}
+        </td>
+        <td>{{ item.count}}</td>
+      </tr>
+    {% endfor %}
+    <tfoot>
+      <td>{% trans "Total" %}</td>
+      <td>{{ total }}</td>
+    </tfoot>
+  </table>
+</div>
+
+
+<div>
+  <h1><span>{% trans "Deal details" %}</span></h1>
+  <ul>
+  {% for deal in deals %}
+    <li>{{ deals }}</li>
+  {% endfor %}
+  </ul>
+</div>
+
+
+<script src="{% static "map/js/Chart.min.js" %}"></script>
+<script>
+    var ctx = document.getElementById("chart");
+    var doughnutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+      labels: {{ chart.labels|safe }},
+      datasets: [
+        {
+          data: {{ chart.data|safe }},
+          backgroundColor: {{ chart.colors|safe }}
+        }
+      ]
+    }
+  });
+</script>

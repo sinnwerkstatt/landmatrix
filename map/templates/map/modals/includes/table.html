@@ -21,13 +21,13 @@
         {% endfor %}
       </tr>
     {% endfor %}
-    <tr>
+    <tfoot>
       <td>
         {% trans "Total" %}
       </td>
       {% for country in countries %}
         <td>{{ country.total }}</td>
       {% endfor %}
-    </tr>
+    </tfoot>
   </table>
 </div>
