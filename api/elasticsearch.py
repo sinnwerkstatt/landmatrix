@@ -25,6 +25,8 @@ class ElasticSearch(object):
     def get_properties(self):
         # Get field type mappings
         properties = {
+            'id': {'type': 'integer'},
+            'activity_identifier': {'type': 'integer'},
             'geo_point': {'type': 'geo_point'},
             'status': {'type': 'integer'},
         }
@@ -72,7 +74,8 @@ class ElasticSearch(object):
         spatial_names = self.get_spatial_properties()
         spatial_attrs = {}
         attrs = {
-            'id': activity.activity_identifier,
+            'id': activity.id,
+            'activity_identifier': activity.activity_identifier,
             'status': activity.fk_status_id,
         }
         # FIXME: Only use current values? .filter(is_current=True)

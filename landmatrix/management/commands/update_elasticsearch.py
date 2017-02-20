@@ -17,7 +17,9 @@ class Command(BaseCommand):
         es = ElasticSearch()
         es.create_index()
         try:
-            es.index_documents(queryset=HistoricalActivity.objects.all())
+            es.index_documents(queryset=HistoricalActivity.objects.filter(fk_status__in=(
+                HistoricalActivity.STATUS_ACTIVE, HistoricalActivity.STATUS_PENDING, 
+                HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED)))
         except BulkError as e:
             for err in e.errors:
                 self.stderr.write('%s: %s (ID: %s)' % (

@@ -17,7 +17,6 @@ from landmatrix.models.investor import (
 )
 from landmatrix.models.country import Country
 
-
 class ActivityQuerySet(models.QuerySet):
     def public(self):
         '''
@@ -754,3 +753,4 @@ class HistoricalActivity(ActivityBase):
         verbose_name_plural = _('Historical activities')
         get_latest_by = 'history_date'
         ordering = ('-history_date',)
+
