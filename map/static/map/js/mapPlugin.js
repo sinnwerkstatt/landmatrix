@@ -13,7 +13,6 @@
             }, options);
 
             // Chart settings. Also needed to adjust clustering sensibility.
-            var donutWidth = 7;
             var minFontSize = 1.25;  // Font size is usually clusterRadius / 100
             var minClusterRadius = 100;
             var maxClusterRadius = 300;
@@ -315,6 +314,7 @@
                 });
 
                 var backgroundColor = clusterType == 'countries' ? '#f9de98' : '#fff';
+                var donutWidth = chartSize / 20;
 
                 // SVG and basic circle
                 var radius = chartSize / (2 * Math.PI);
