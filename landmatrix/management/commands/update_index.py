@@ -8,12 +8,9 @@ from pyelasticsearch import BulkError
 from landmatrix.models.activity import Activity
 from api.elasticsearch import ElasticSearch
 
-import http.client
-http.client._MAXHEADERS = 1000
-
 
 class Command(BaseCommand):
-    help = 'Index deals for elasticsearch'
+    help = 'Update deal index for elasticsearch'
     es = None
 
     def handle(self, *args, **options):

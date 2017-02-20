@@ -11,6 +11,7 @@ from grid.views.change_deal_view import ChangeDealView
 FIELD_TYPE_MAPPING = {
     'IntegerField': 'integer',
     'CharField': 'string',
+    'AreaField': 'geo_shape',
 }
 
 class ElasticSearch(object):
@@ -38,7 +39,6 @@ class ElasticSearch(object):
                 self.conn.delete_index('landmatrix')
             except ElasticHttpNotFoundError as e:
                 pass 
-        # Create index
         deal_mapping = {
             'deal': {
                 'properties': self.get_properties()
@@ -47,7 +47,6 @@ class ElasticSearch(object):
         self.conn.create_index('landmatrix', settings={'mappings': deal_mapping})
 
     def index_documents(self, queryset):
-        # Index documents
         docs = []
         for activity in queryset:
             doc = {'id': activity.activity_identifier}
@@ -55,7 +54,7 @@ class ElasticSearch(object):
             if 'point_lat' in doc and 'point_lon' in doc:
                 doc['geo_point'] = '%s,%s' % (doc.get('point_lat', None), doc.get('point_lon', None))
             docs.append(doc)
-        self.conn.bulk((self.conn.index_op(doc, id=d.pop('id')) for doc in docs),
+        self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id')) for doc in docs),
             index='landmatrix',
             doc_type='deal')
 
@@ -67,5 +66,4 @@ class ElasticSearch(object):
         self.conn.index(index='landmatrix', doc_type='deal', doc=doc, id=doc.pop('id'))
 
     def refresh_index(self):
-        # Refresh index
         self.conn.refresh('landmatrix')
