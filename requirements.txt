@@ -38,3 +38,4 @@ django-multiselectfield==0.1.4
 country-bounding-boxes>=0.2.3
 tweepy
 pyelasticsearch
+celery[redis]

@@ -100,3 +100,7 @@ class ElasticSearch(object):
 
     def refresh_index(self):
         self.conn.refresh('landmatrix')
+
+# Init two connections
+es_search = ElasticSearch()
+es_save = ElasticSearch()

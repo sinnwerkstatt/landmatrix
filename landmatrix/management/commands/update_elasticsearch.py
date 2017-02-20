@@ -6,7 +6,7 @@ from django.core.management import BaseCommand
 from pyelasticsearch import BulkError
 
 from landmatrix.models.activity import HistoricalActivity
-from api.elasticsearch import ElasticSearch
+from api.elasticsearch import es_save
 
 
 class Command(BaseCommand):
@@ -14,7 +14,7 @@ class Command(BaseCommand):
     es = None
 
     def handle(self, *args, **options):
-        es = ElasticSearch()
+        es = es_save
         es.create_index()
         try:
             es.index_documents(queryset=HistoricalActivity.objects.filter(fk_status__in=(
