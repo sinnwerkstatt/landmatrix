@@ -3,9 +3,10 @@ from pyelasticsearch.exceptions import ElasticHttpNotFoundError, ElasticHttpErro
 import http.client
 http.client._MAXHEADERS = 1000
 from django.conf import settings
+from django.utils.datastructures import MultiValueDict
 
 from grid.views.change_deal_view import ChangeDealView
-
+from grid.forms.deal_spatial_form import DealSpatialForm
 
 
 FIELD_TYPE_MAPPING = {
@@ -23,7 +24,9 @@ class ElasticSearch(object):
 
     def get_properties(self):
         # Get field type mappings
-        properties = {'geo_point': {'type': 'geo_point'}}
+        properties = {
+            'geo_point': {'type': 'geo_point'},
+        }
         for form in ChangeDealView.FORMS:
             form = hasattr(form, "form") and form.form or form
             for name, field in form.base_fields.items():
@@ -32,6 +35,9 @@ class ElasticSearch(object):
                     continue
                 properties[name] = {'type': FIELD_TYPE_MAPPING.get(field.__class__.__name__, 'string')}
         return properties
+
+    def get_spatial_properties(self):
+        return DealSpatialForm.base_fields.keys()
 
     def create_index(self, delete=True):
         if delete:
@@ -49,21 +55,40 @@ class ElasticSearch(object):
     def index_documents(self, queryset):
         docs = []
         for activity in queryset:
-            doc = {'id': activity.activity_identifier}
-            doc.update(dict([a.name, a.value] for a in activity.attributes.all()))
-            if 'point_lat' in doc and 'point_lon' in doc:
-                doc['geo_point'] = '%s,%s' % (doc.get('point_lat', None), doc.get('point_lon', None))
-            docs.append(doc)
+            for doc in self.get_documents(activity):
+                docs.append(doc)
         self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id')) for doc in docs),
             index='landmatrix',
             doc_type='deal')
 
     def index_document(self, activity):
-        doc = {'id': activity.activity_identifier}
-        doc.update(dict([a.name, a.value] for a in activity.attributes.all()))
-        if 'point_lat' in doc and 'point_lon' in doc:
-            doc['geo_point'] = '%s,%s' % (doc.get('point_lat', None), doc.get('point_lon', None))
-        self.conn.index(index='landmatrix', doc_type='deal', doc=doc, id=doc.pop('id'))
+        for doc in self.get_documents(activity):
+            self.conn.index(index='landmatrix', doc_type='deal', doc=doc, id=doc.pop('id'))
+
+    def get_documents(self, activity):
+        docs = []
+        spatial_names = self.get_spatial_properties()
+        spatial_attrs = {}
+        attrs = {'id': activity.activity_identifier}
+        # FIXME: Only use current values? .filter(is_current=True)
+        for a in activity.attributes.all():
+            value = 'area' in a.name if a.polygon else a.value
+            if a.name in spatial_names:
+                if a.fk_group.name in spatial_attrs:
+                    spatial_attrs[a.fk_group.name][a.name] = value
+                else:
+                    spatial_attrs[a.fk_group.name] = {a.name: value}
+            elif a.name in attrs:
+                attrs[a.name] += '#%s' % value
+            else:
+                attrs[a.name] = value
+        for group, group_attrs in spatial_attrs.items():
+            doc = attrs.copy()
+            doc.update(group_attrs)
+            if 'point_lat' in group_attrs and 'point_lon' in group_attrs:
+                doc['geo_point'] = '%s,%s' % (group_attrs.get('point_lat'), group_attrs.get('point_lon'))
+            docs.append(doc)
+        return docs
 
     def refresh_index(self):
         self.conn.refresh('landmatrix')
