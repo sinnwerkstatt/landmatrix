@@ -5,7 +5,7 @@ import sys
 from django.core.management import BaseCommand
 from pyelasticsearch import BulkError
 
-from landmatrix.models.activity import Activity
+from landmatrix.models.activity import HistoricalActivity
 from api.elasticsearch import ElasticSearch
 
 
@@ -17,7 +17,7 @@ class Command(BaseCommand):
         es = ElasticSearch()
         es.create_index()
         try:
-            es.index_documents(queryset=Activity.objects.all())
+            es.index_documents(queryset=HistoricalActivity.objects.all())
         except BulkError as e:
             for err in e.errors:
                 self.stderr.write('%s: %s (ID: %s)' % (

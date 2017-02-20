@@ -26,6 +26,7 @@ class ElasticSearch(object):
         # Get field type mappings
         properties = {
             'geo_point': {'type': 'geo_point'},
+            'status': {'type': 'integer'},
         }
         for form in ChangeDealView.FORMS:
             form = hasattr(form, "form") and form.form or form
@@ -34,6 +35,7 @@ class ElasticSearch(object):
                 if name.startswith('tg_') and not name.endswith('_comment'):
                     continue
                 properties[name] = {'type': FIELD_TYPE_MAPPING.get(field.__class__.__name__, 'string')}
+        print(str(properties))
         return properties
 
     def get_spatial_properties(self):
@@ -69,7 +71,10 @@ class ElasticSearch(object):
         docs = []
         spatial_names = self.get_spatial_properties()
         spatial_attrs = {}
-        attrs = {'id': activity.activity_identifier}
+        attrs = {
+            'id': activity.activity_identifier,
+            'status': activity.fk_status_id,
+        }
         # FIXME: Only use current values? .filter(is_current=True)
         for a in activity.attributes.all():
             value = 'area' in a.name if a.polygon else a.value
@@ -79,9 +84,9 @@ class ElasticSearch(object):
                 else:
                     spatial_attrs[a.fk_group.name] = {a.name: value}
             elif a.name in attrs:
-                attrs[a.name] += '#%s' % value
+                attrs[a.name].append(value)
             else:
-                attrs[a.name] = value
+                attrs[a.name] = [value,]
         for group, group_attrs in spatial_attrs.items():
             doc = attrs.copy()
             doc.update(group_attrs)
