@@ -304,3 +304,5 @@ TWITTER_TIMELINE = {
     'access_token': '182320767-qDBHP42oBPyiLFPtP1IDQHiGhFLUu5eTofcTLfRW',
     'access_token_secret': '5VJCSXUmuenivcm6Z1r23Na1TOwnQkRbcNws9LBg13nN7'
 }
+
+ELASTICSEARCH_URL = 'http://localhost:9200/'
