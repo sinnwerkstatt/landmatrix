@@ -160,6 +160,10 @@
     text-decoration: underline;
     color: inherit; }
 
+.layer-list {
+  padding-left: 1rem;
+  list-style: none; }
+
 .map-legend {
   display: none; }
   .map-legend ul {

@@ -30,14 +30,12 @@
             mapInstance.legendKey = options.legendKey;
             mapInstance.dealsPerCountryLayer = null;
 
+            var baseLayers = getBaseLayers();
+
             // initialize map
             var map = new ol.Map({
                 target: settings.target,
-                layers: [
-                    new ol.layer.Tile({
-                        source: new ol.source.OSM()
-                    })
-                ],
+                layers: baseLayers,
                 view: new ol.View({
                     center: ol.proj.fromLonLat(settings.centerTo),
                     zoom: settings.zoom
@@ -260,6 +258,32 @@
                     },
                     visible: settings.visibleLayer == 'deals'
                 })
+            }
+
+            function getBaseLayers() {
+                return [
+                    new ol.layer.Tile({
+                        name: 'osm',
+                        visible: true,
+                        source: new ol.source.OSM()
+                    }),
+                    new ol.layer.Tile({
+                        name: 'esri_satellite',
+                        visible: false,
+                        source: new ol.source.XYZ({
+                            attributions: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+                            url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+                        })
+                    }),
+                    new ol.layer.Tile({
+                        name: 'mapquest_satellite',
+                        visible: false,
+                        source: new ol.source.BingMaps({
+                            key: 'AlP-ATiag3_dWlbAC1mQChWw_SM61c6iDv_NLJexfsE-YeAVJjIL7sgeotE3i8a2',
+                            imagerySet: 'aerial'
+                        })
+                    })
+                ];
             }
 
             // Determine the chart size and font size based on the current
@@ -494,6 +518,13 @@
                 }
                 mapInstance.toggleVisibleLayer(visibleLayer);
             }
+
+            // Toggle a base layer based on its name.
+            this.toggleBaseLayer = function(layer_name) {
+                $.each(baseLayers, function(i, layer) {
+                    layer.setVisible(layer.get('name') == layer_name);
+                });
+            };
 
             return this;
         }

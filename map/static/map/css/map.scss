@@ -253,6 +253,11 @@ $map-height: 75vh;
   }
 }
 
+.layer-list {
+  padding-left: 1rem;
+  list-style: none;
+}
+
 // the legend in the tabbed menu panel
 .map-legend {
   display: none;
