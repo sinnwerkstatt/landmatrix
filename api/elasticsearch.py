@@ -25,7 +25,8 @@ class ElasticSearch(object):
     def get_properties(self):
         # Get field type mappings
         properties = {
-            'id': {'type': 'integer'},
+            'id': {'type': 'string'},
+            'historical_activity_id': {'type': 'integer'},
             'activity_identifier': {'type': 'integer'},
             'geo_point': {'type': 'geo_point'},
             'status': {'type': 'integer'},
@@ -74,18 +75,20 @@ class ElasticSearch(object):
         spatial_names = self.get_spatial_properties()
         spatial_attrs = {}
         attrs = {
-            'id': activity.id,
+            'historical_activity_id': activity.id,
             'activity_identifier': activity.activity_identifier,
             'status': activity.fk_status_id,
         }
         # FIXME: Only use current values? .filter(is_current=True)
         for a in activity.attributes.all():
+            if a.name == 'id': 
+                continue
             value = 'area' in a.name if a.polygon else a.value
             if a.name in spatial_names:
                 if a.fk_group.name in spatial_attrs:
-                    spatial_attrs[a.fk_group.name][a.name] = value
+                    spatial_attrs[a.fk_group_id][a.name] = value
                 else:
-                    spatial_attrs[a.fk_group.name] = {a.name: value}
+                    spatial_attrs[a.fk_group_id] = {a.name: value}
             elif a.name in attrs:
                 attrs[a.name].append(value)
             else:
@@ -93,6 +96,8 @@ class ElasticSearch(object):
         for group, group_attrs in spatial_attrs.items():
             doc = attrs.copy()
             doc.update(group_attrs)
+            # Set unique ID for location (deals can have multiple locations)
+            doc['id'] = '%s_%s' % (doc['id'], group)
             if 'point_lat' in group_attrs and 'point_lon' in group_attrs:
                 doc['geo_point'] = '%s,%s' % (group_attrs.get('point_lat'), group_attrs.get('point_lon'))
             docs.append(doc)
