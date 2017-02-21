@@ -81,7 +81,7 @@ class ElasticSearch(object):
         # FIXME: Only use current values? .filter(is_current=True)
         for a in activity.attributes.all():
             if a.name == 'id': 
-+                continue
+                continue
             value = 'area' in a.name if a.polygon else a.value
             if a.name in spatial_names:
                 if a.fk_group.name in spatial_attrs:
