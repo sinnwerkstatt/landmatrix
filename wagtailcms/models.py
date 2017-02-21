@@ -393,7 +393,7 @@ DATA_BLOCKS = [
     ('region', RegionBlock()),
 ]
 
-class Columns1To1Block(ColumnsBlock):
+class Columns1To1Block(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
@@ -410,7 +410,7 @@ class Columns1To1Block(ColumnsBlock):
         template = 'widgets/two-columns.html'
         icon = 'fa fa-columns'
 
-class ThreeColumnsBlock(ColumnsBlock):
+class ThreeColumnsBlock(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     middle_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
