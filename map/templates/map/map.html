@@ -34,6 +34,10 @@
 
 {% block content %}
 
+  {{ introduction|safe }}
+  <p></p>
+  {% include "filters.html" %}
+
   <link rel="stylesheet" href="{% static "map/css/map.css" %}">
   <div class="map-container">
     <div id="map" class="map">
