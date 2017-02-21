@@ -436,7 +436,7 @@ COLUMN_BLOCKS = [
 
 class TabBlock(StructBlock):
     title = blocks.CharBlock()
-    fa_icon = blocks.CharBlock()
+    fa_icon = blocks.CharBlock(required=False)
     content = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
 
 class TabsBlock(StructBlock):
