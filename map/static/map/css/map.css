@@ -1,0 +1,169 @@
+.ol-zoom {
+  right: 8px;
+  bottom: 40px;
+  top: auto;
+  left: auto; }
+
+.map-container {
+  position: relative;
+  height: 75vh; }
+  .map-container #map {
+    display: block;
+    margin-left: auto;
+    margin-right: auto; }
+  .map-container .map-progress {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.6);
+    bottom: 0;
+    width: 100%;
+    padding-top: 2em; }
+    .map-container .map-progress .status {
+      text-align: center; }
+      .map-container .map-progress .status .glyphicon {
+        font-size: 32px;
+        display: block; }
+    .map-container .map-progress .finished {
+      color: #fc941f; }
+    .map-container .map-progress .line {
+      position: absolute;
+      top: 50%;
+      border-bottom: 3px solid #919191;
+      width: 35%; }
+      .map-container .map-progress .line.finished {
+        border-bottom-color: #fc941f; }
+    .map-container .map-progress .right {
+      right: 0; }
+    .map-container .map-progress .left {
+      left: 0; }
+  .map-container .map-panel {
+    position: absolute;
+    top: 0; }
+    .map-container .map-panel.row, .map-container .map-panel .row {
+      margin-left: 0 !important; }
+    .map-container .map-panel .list-group-item {
+      padding: 0;
+      font-size: 12px; }
+    .map-container .map-panel .flex-row {
+      display: flex; }
+    .map-container .map-panel .flex-col {
+      flex: 1;
+      padding: 0; }
+    .map-container .map-panel .tab-container {
+      z-index: 10; }
+    .map-container .map-panel .tab-menu h4 {
+      margin-bottom: 0; }
+    .map-container .map-panel .tab-menu .list-group {
+      margin-bottom: 0; }
+      .map-container .map-panel .tab-menu .list-group a {
+        padding: 0 0.5em; }
+        .map-container .map-panel .tab-menu .list-group a .glyphicon {
+          color: #c6c6c6; }
+        .map-container .map-panel .tab-menu .list-group a.active {
+          background-color: #fc941f;
+          color: #fff;
+          border-color: inherit; }
+          .map-container .map-panel .tab-menu .list-group a.active .glyphicon {
+            color: #fff; }
+    .map-container .map-panel .tab-content {
+      min-width: 250px; }
+    .map-container .map-panel .tab-content, .map-container .map-panel .tab {
+      background-color: #ffffff; }
+      .map-container .map-panel .tab-content .js-layer-switch, .map-container .map-panel .tab .js-layer-switch {
+        width: 95%;
+        padding: 5px !important; }
+        .map-container .map-panel .tab-content .js-layer-switch svg, .map-container .map-panel .tab .js-layer-switch svg {
+          margin: 0 auto; }
+        .map-container .map-panel .tab-content .js-layer-switch > div, .map-container .map-panel .tab .js-layer-switch > div {
+          background-color: #fff;
+          border: 2px solid #fc941f;
+          border-radius: 5px;
+          opacity: 1;
+          text-align: center; }
+        .map-container .map-panel .tab-content .js-layer-switch span, .map-container .map-panel .tab .js-layer-switch span {
+          background-color: #fc941f;
+          color: #fff; }
+        .map-container .map-panel .tab-content .js-layer-switch .disabled, .map-container .map-panel .tab .js-layer-switch .disabled {
+          background-color: inherit;
+          border: none;
+          opacity: 0.6; }
+          .map-container .map-panel .tab-content .js-layer-switch .disabled span, .map-container .map-panel .tab .js-layer-switch .disabled span {
+            background-color: inherit;
+            color: #4a4a4a; }
+        .map-container .map-panel .tab-content .js-layer-switch :hover, .map-container .map-panel .tab .js-layer-switch :hover {
+          cursor: pointer; }
+      .map-container .map-panel .tab-content .switch, .map-container .map-panel .tab .switch {
+        float: left;
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+        margin-right: 5px; }
+      .map-container .map-panel .tab-content .switch input, .map-container .map-panel .tab .switch input {
+        display: none; }
+      .map-container .map-panel .tab-content .slider, .map-container .map-panel .tab .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s; }
+        .map-container .map-panel .tab-content .slider:before, .map-container .map-panel .tab .slider:before {
+          position: absolute;
+          content: "";
+          height: 12px;
+          width: 12px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          -webkit-transition: .4s;
+          transition: .4s; }
+        .map-container .map-panel .tab-content .slider.round, .map-container .map-panel .tab .slider.round {
+          border-radius: 20px; }
+        .map-container .map-panel .tab-content .slider.round:before, .map-container .map-panel .tab .slider.round:before {
+          border-radius: 50%; }
+      .map-container .map-panel .tab-content input:checked + .slider, .map-container .map-panel .tab input:checked + .slider {
+        background-color: #fc941f; }
+      .map-container .map-panel .tab-content input:focus + .slider, .map-container .map-panel .tab input:focus + .slider {
+        box-shadow: 0 0 1px #fc941f; }
+      .map-container .map-panel .tab-content input:checked + .slider:before, .map-container .map-panel .tab input:checked + .slider:before {
+        -webkit-transform: translateX(20px);
+        -ms-transform: translateX(20px);
+        transform: translateX(20px); }
+    .map-container .map-panel .tab .tab-content:not(.active) {
+      display: none; }
+
+#details-overlay .legend-symbol {
+  margin-top: 3px; }
+#details-overlay table {
+  width: 95%; }
+#details-overlay td:not(:first-child) {
+  text-align: center; }
+.tab-content #details-overlay {
+  width: 500px;
+  height: 75vh;
+  overflow-x: hidden;
+  overflow-y: auto; }
+#details-overlay tr:nth-child(2n) {
+  background-color: #ebebeb; }
+#details-overlay tfoot td {
+  font-weight: bold; }
+#details-overlay td {
+  padding: 2px 0; }
+#details-overlay .attribute-title:not(:first-of-type) {
+  margin-top: 1.5rem; }
+#details-overlay .link-view-deal {
+  margin-top: 1.5rem; }
+  #details-overlay .link-view-deal a {
+    text-decoration: underline;
+    color: inherit; }
+
+.map-legend {
+  display: none; }
+  .map-legend ul {
+    list-style-type: none;
+    padding-left: 0; }
+
+/*# sourceMappingURL=map.css.map */
