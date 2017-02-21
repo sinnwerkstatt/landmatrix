@@ -285,7 +285,7 @@ class CountryRegionStructBlock(StructBlock):
     def __init__(self, *args, **kwargs):
         self.country = kwargs.pop('country', None)
         self.region = kwargs.pop('region', None)
-        super().__init__(*args, **panel_kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_context(self, value):
         context = super().get_context(value)
