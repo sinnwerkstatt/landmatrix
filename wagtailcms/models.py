@@ -393,7 +393,7 @@ DATA_BLOCKS = [
     ('region', RegionBlock()),
 ]
 
-class ColumnsBlock(StructBlock):
+class Columns1To1Block(ColumnsBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
@@ -406,32 +406,31 @@ class ColumnsBlock(StructBlock):
         return context
 
     class Meta:
+        label = 'Two Columns'
+        template = 'widgets/two-columns.html'
         icon = 'fa fa-columns'
-        label = 'Columns 1-1'
-        template = None
 
+class ThreeColumnsBlock(ColumnsBlock):
+    left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
+    middle_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
+    right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
-class Columns1To1Block(ColumnsBlock):
+    def get_context(self, value):
+        context = super().get_context(value)
+
+        for column in ['left_column', 'middle_column', 'right_column']:
+            context[column] = value.get(column)
+
+        return context
+
     class Meta:
-        label = 'Columns 1:1'
-        template = 'widgets/columns-1-1.html'
-
-
-class Columns2To1Block(ColumnsBlock):
-    class Meta:
-        label = 'Columns 2:1'
-        template = 'widgets/columns-2-1.html'
-
-
-class Columns1To2Block(ColumnsBlock):
-    class Meta:
-        label = 'Columns 1:2'
-        template = 'widgets/columns-1-2.html'
+        label = 'Three Columns'
+        template = 'widgets/three-columns.html'
+        icon = 'fa fa-columns'
 
 COLUMN_BLOCKS = [
     ('columns_1_1', Columns1To1Block()),
-    ('columns_2_1', Columns2To1Block()),
-    ('columns_1_2', Columns1To2Block())
+    ('columns_3', ThreeColumnsBlock()),
 ]
 
 
@@ -598,8 +597,7 @@ class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     country = models.ForeignKey(DataCountry, null=True, blank=True, on_delete=models.SET_NULL)
     body = NoWrapsStreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
-            ('columns_2_1', Columns2To1Block()),
-            ('columns_1_2', Columns1To2Block())
+            ('columns_3', ThreeColumnsBlock()),
         ]
     )
     content_panels = Page.content_panels + [
