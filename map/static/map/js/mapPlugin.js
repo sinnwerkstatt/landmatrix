@@ -31,11 +31,12 @@
             mapInstance.dealsPerCountryLayer = null;
 
             var baseLayers = getBaseLayers();
+            var contextLayers = getContextLayers();
 
             // initialize map
             var map = new ol.Map({
                 target: settings.target,
-                layers: baseLayers,
+                layers: baseLayers.concat(contextLayers),
                 view: new ol.View({
                     center: ol.proj.fromLonLat(settings.centerTo),
                     zoom: settings.zoom
@@ -286,6 +287,47 @@
                 ];
             }
 
+            function getContextLayers() {
+                return [
+                    new ol.layer.Image({
+                        name: 'land_cover',
+                        visible: false,
+                        opacity: 0.8,
+                        source: new ol.source.ImageWMS({
+                            url: 'http://sdi.cde.unibe.ch/geoserver/lo/wms',
+                            params: {
+                                LAYERS: 'globcover_2009'
+                            }
+                        })
+                    }),
+                    new ol.layer.Image({
+                        name: 'cropland',
+                        visible: false,
+                        opacity: 0.8,
+                        source: new ol.source.ImageWMS({
+                            url: 'http://sdi.cde.unibe.ch/geoserver/lo/wms',
+                            params: {
+                                LAYERS: 'gl_cropland'
+                            }
+                        })
+                    }),
+                    new ol.layer.Tile({
+                        name: 'community_lands',
+                        visible: false,
+                        source: new ol.source.TileArcGISRest({
+                            url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_comm_LandMatrix/MapServer/'
+                        })
+                    }),
+                    new ol.layer.Tile({
+                        name: 'indigenous_lands',
+                        visible: false,
+                        source: new ol.source.TileArcGISRest({
+                            url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_ind_LandMatrix/MapServer/'
+                        })
+                    })
+                ];
+            }
+
             // Determine the chart size and font size based on the current
             // feature count. Also do some ugly manual tweaking when zoomed out
             // really far.
@@ -523,6 +565,14 @@
             this.toggleBaseLayer = function(layer_name) {
                 $.each(baseLayers, function(i, layer) {
                     layer.setVisible(layer.get('name') == layer_name);
+                });
+            };
+
+            this.toggleContextLayer = function(layer_name, visible) {
+                $.each(contextLayers, function(i, layer) {
+                    if (layer.get('name') == layer_name) {
+                        layer.setVisible(visible);
+                    }
                 });
             };
 

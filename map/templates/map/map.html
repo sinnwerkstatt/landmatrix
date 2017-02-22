@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="{% static "map/css/map.css" %}">
   <div class="map-container">
     <div id="map" class="map">
-      <img src="{% static "map/images/map-default.png" %}" alt="{% trans "Map with all deals" %}" id="map-placeholder">
+      <img src="{% static "map/images/map-default.png" %}" alt="{% trans "Map with all deals" %}" id="map-placeholder" style="width: 100%;">
       <div id="popover"></div>
     </div>
 
@@ -121,13 +121,24 @@
               <button>{% trans "Search" %}</button>
             </div>
             <div class="tab-content" data-content="context">
-              <h4><span>{% trans "Context" %}</span></h4>
-              <ul>
-                <li>{% trans "Incidence of poverty" %}</li>
-                <li>{% trans "Global Pasture Land" %}</li>
-                <li>{% trans "Global Cropland" %}</li>
-                <li>{% trans "Global Land Cover 2009" %}</li>
-                <li>{% trans "Accessibility" %}</li>
+              <h4><span>{% trans "Context layers" %}</span></h4>
+              <ul class="layer-list">
+                <li>
+                  <input type="checkbox" id="context-layer-land_cover" name="context-layer" value="land_cover">
+                  <label for="context-layer-land_cover">{% trans "Land Cover" %}</label>
+                </li>
+                <li>
+                  <input type="checkbox" id="context-layer-cropland" name="context-layer" value="cropland">
+                  <label for="context-layer-cropland">{% trans "Global Cropland" %}</label>
+                </li>
+                <li>
+                  <input type="checkbox" id="context-layer-indigenous_lands" name="context-layer" value="indigenous_lands">
+                  <label for="context-layer-indigenous_lands">{% trans "Indigenous Lands" %}</label>
+                </li>
+                <li>
+                  <input type="checkbox" id="context-layer-community_lands" name="context-layer" value="community_lands">
+                  <label for="context-layer-community_lands">{% trans "Community Lands" %}</label>
+                </li>
               </ul>
             </div>
             <div class="tab-content" data-content="base">
@@ -180,7 +191,7 @@
 {% endblock %}
 
 {% block js %}
-  <script src="https://openlayers.org/en/v4.0.0/build/ol-debug.js" type="text/javascript"></script>
+  <script src="https://openlayers.org/en/v4.0.0/build/ol.js" type="text/javascript"></script>
   <script src="{% static "map/js/mapPlugin.js" %}"></script>
   <script>
     $(function () {
@@ -295,7 +306,8 @@
       });
 
       // show-hide the content box
-      showHideContent.on("click", function() {
+      showHideContent.on("click", function(e) {
+        e.preventDefault();
         showHideTabContent();
       });
 
@@ -314,6 +326,10 @@
 
       $("input[name='base-layer']").on("change", function() {
         map.toggleBaseLayer(this.value);
+      });
+      
+      $("input[name='context-layer']").on("change", function() {
+        map.toggleContextLayer(this.value, this.checked);
       });
     });
   </script>
