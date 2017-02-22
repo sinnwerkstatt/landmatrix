@@ -20,6 +20,10 @@ from api.pagination import FakeQuerySetPagination
 from api.views.base import FakeQuerySetListView
 from map.views import MapSettingsMixin
 
+from geojson import FeatureCollection, Feature, Point, MultiPoint
+from api.filters import load_filters, FILTER_FORMATS_ELASTICSEARCH,\
+    FILTER_FORMATS_SQL
+
 User = get_user_model()
 
 
@@ -74,6 +78,7 @@ class GlobalDealsView(APIView):
         return self.fake_queryset_class(self.request)
     
     def prepare_filters(self):
+        request = self.request
         window = None
         if self.request.GET.get('window', None):
             lon_min, lat_min, lon_max, lat_max = self.request.GET.get('window').split(',')
@@ -88,10 +93,31 @@ class GlobalDealsView(APIView):
                 window = (lat_min, lon_min, lat_max, lon_max)
             except ValueError:
                 pass
+        request_filters = {
+            'window': window,
+            'deal_scope': request.GET.getlist('deal_scope', ['domestic', 'transnational']),
+            'limit': request.GET.get('limit'),
+            'investor_country': request.GET.get('investor_country'),
+            'investor_region': request.GET.get('investor_region'),
+            'target_country': request.GET.get('target_country'),
+            'target_region': request.GET.get('target_region'),
+            'attributes': request.GET.getlist('attributes', []),
+        }
+        
+        session_filters = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
+        #session_filters = load_filters(self.request, filter_format=FILTER_FORMATS_SQL)
+        
+        
+        from pprint import pprint
+        print('>> request_filters:')
+        pprint(request_filters)
+        print('>> session_filters:')
+        pprint(session_filters)
+        
         
     def get(self, request, *args, **kwargs):
-        from geojson import FeatureCollection, Feature, Point, MultiPoint
         # https://pypi.python.org/pypi/geojson
+        self.prepare_filters()
         
         """
         {

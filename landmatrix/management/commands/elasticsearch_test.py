@@ -21,6 +21,26 @@ class Command(BaseCommand):
         query = {
             'query': {
                 "bool": {
+                    "should": [ # OR
+                        {"bool": {'must': [ # AND
+                            {'match': {'status': 2}},
+                            {'match': {'target_country': 276}},
+                        ]}},
+                        {"bool": {'must': [ # AND
+                            {'match': {'status': 3}},
+                            {'match': {'target_country': 356}},
+                        ]}},
+                    ]
+                }
+                
+                #
+            }
+        }
+        
+        """
+        query = {
+            'query': {
+                "bool": {
                     "must": {
                         "match_all": {}
                     },
@@ -45,7 +65,7 @@ class Command(BaseCommand):
                 #
             }
         }
-        
+        """
         
         print('>>> searching for query')
         pprint(query)

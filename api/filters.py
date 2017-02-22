@@ -16,6 +16,8 @@ from landmatrix.models.country import Country
 from landmatrix.models.filter_preset import FilterPreset
 
 
+FILTER_FORMATS_SQL = 0
+FILTER_FORMATS_ELASTICSEARCH = 1
 
 
 FILTER_VAR_ACT = [
@@ -145,7 +147,15 @@ class Filter(BaseFilter):
         }
 
         return formatted_filter
-
+    
+    def to_elasticsearch_format(self):
+        key = self['key'] or 'value'
+        definition_key = '__'.join((self['variable'], key, self['operator']))
+        value = 'value_placeholder'
+        if 'in' in self['operator'] and not isinstance(value, list):
+            value = [value]
+        return {definition_key: value}
+    
 
 class PresetFilter(BaseFilter):
 
@@ -173,7 +183,7 @@ class PresetFilter(BaseFilter):
             label=filter_dict.get('label'), hidden=filter_dict.get('hidden', False))
 
 
-def format_filters(filters):
+def format_filters(filters, filter_format=FILTER_FORMATS_SQL):
     '''
     Format filters as expected by FilterToSQL and ActivityQueryset.
 
@@ -188,7 +198,10 @@ def format_filters(filters):
 
     def _update_filters(filter_dict, filter, group=None):
         name = filter[1].type
-        definition = filter[1].to_sql_format()
+        if filter_format == FILTER_FORMATS_ELASTICSEARCH:
+            definition = filter[1].to_elasticsearch_format()
+        else:
+            definition = filter[1].to_sql_format()
         definition_key = list(definition.keys())[0]
         if group:
             if group not in filter_dict[name]['tags']:
@@ -219,7 +232,7 @@ def format_filters(filters):
     return formatted_filters
 
 
-def load_filters(request):
+def load_filters(request, filter_format=FILTER_FORMATS_SQL):
     filters = {}
     for filter_name, filter_dict in request.session.get('filters', {}).items():
         if 'preset_id' in filter_dict:
@@ -228,7 +241,7 @@ def load_filters(request):
             filters[filter_name] = Filter.from_session(filter_dict)
     filters.update(load_filters_from_url(request))
 
-    formatted_filters = format_filters(filters)
+    formatted_filters = format_filters(filters, filter_format=filter_format)
 
     return formatted_filters
 

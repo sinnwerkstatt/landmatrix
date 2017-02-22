@@ -88,6 +88,8 @@ class ElasticSearch(object):
             if a.name == 'id': 
                 continue
             value = 'area' in a.name if a.polygon else a.value
+            # TODO: are polygons used at all for searching?
+            
             # do not include empty values
             if value is None or value == '':
                 continue
