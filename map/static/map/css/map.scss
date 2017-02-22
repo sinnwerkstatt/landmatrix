@@ -103,6 +103,9 @@ $map-height: 75vh;
     }
     .tab-content {
       min-width: 250px;
+      height: $map-height;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     .tab-content, .tab {
@@ -222,9 +225,9 @@ $map-height: 75vh;
 
   .tab-content & {
     width: 500px;
-    height: $map-height;
-    overflow-x: hidden;
-    overflow-y: auto;
+    //height: $map-height;
+    //overflow-x: hidden;
+    //overflow-y: auto;
   }
 
   tr:nth-child(2n) {
@@ -256,6 +259,10 @@ $map-height: 75vh;
 .layer-list {
   padding-left: 1rem;
   list-style: none;
+}
+
+.context-layer-legend {
+  margin-left: 1.5rem;
 }
 
 // the legend in the tabbed menu panel

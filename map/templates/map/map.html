@@ -126,10 +126,12 @@
                 <li>
                   <input type="checkbox" id="context-layer-land_cover" name="context-layer" value="land_cover">
                   <label for="context-layer-land_cover">{% trans "Land Cover" %}</label>
+                  <div class="context-layer-legend"></div>
                 </li>
                 <li>
                   <input type="checkbox" id="context-layer-cropland" name="context-layer" value="cropland">
                   <label for="context-layer-cropland">{% trans "Global Cropland" %}</label>
+                  <div class="context-layer-legend"></div>
                 </li>
                 <li>
                   <input type="checkbox" id="context-layer-indigenous_lands" name="context-layer" value="indigenous_lands">
@@ -329,7 +331,7 @@
       });
       
       $("input[name='context-layer']").on("change", function() {
-        map.toggleContextLayer(this.value, this.checked);
+        map.toggleContextLayer(this);
       });
     });
   </script>

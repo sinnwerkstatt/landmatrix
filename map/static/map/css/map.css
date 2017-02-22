@@ -65,7 +65,10 @@
           .map-container .map-panel .tab-menu .list-group a.active .glyphicon {
             color: #fff; }
     .map-container .map-panel .tab-content {
-      min-width: 250px; }
+      min-width: 250px;
+      height: 75vh;
+      overflow-x: hidden;
+      overflow-y: auto; }
     .map-container .map-panel .tab-content, .map-container .map-panel .tab {
       background-color: #ffffff; }
       .map-container .map-panel .tab-content .js-layer-switch, .map-container .map-panel .tab .js-layer-switch {
@@ -142,10 +145,7 @@
 #details-overlay td:not(:first-child) {
   text-align: center; }
 .tab-content #details-overlay {
-  width: 500px;
-  height: 75vh;
-  overflow-x: hidden;
-  overflow-y: auto; }
+  width: 500px; }
 #details-overlay tr:nth-child(2n) {
   background-color: #ebebeb; }
 #details-overlay tfoot td {
@@ -163,6 +163,9 @@
 .layer-list {
   padding-left: 1rem;
   list-style: none; }
+
+.context-layer-legend {
+  margin-left: 1.5rem; }
 
 .map-legend {
   display: none; }

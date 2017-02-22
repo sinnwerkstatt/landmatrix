@@ -298,7 +298,20 @@
                             params: {
                                 LAYERS: 'globcover_2009'
                             }
-                        })
+                        }),
+                        // Can also be defined as property "legendUrl"
+                        legendUrlFunction: function() {
+                            var imgParams = {
+                                request: 'GetLegendGraphic',
+                                service: 'WMS',
+                                layer: 'globcover_2009',
+                                format: 'image/png',
+                                width: 25,
+                                height: 25,
+                                legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
+                            };
+                            return 'http://sdi.cde.unibe.ch/geoserver/lo/wms' + '?' + $.param(imgParams);
+                        }
                     }),
                     new ol.layer.Image({
                         name: 'cropland',
@@ -309,7 +322,19 @@
                             params: {
                                 LAYERS: 'gl_cropland'
                             }
-                        })
+                        }),
+                        legendUrlFunction: function() {
+                            var imgParams = {
+                                request: 'GetLegendGraphic',
+                                service: 'WMS',
+                                layer: 'gl_cropland',
+                                format: 'image/png',
+                                width: 25,
+                                height: 25,
+                                legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
+                            };
+                            return 'http://sdi.cde.unibe.ch/geoserver/lo/wms' + '?' + $.param(imgParams);
+                        }
                     }),
                     new ol.layer.Tile({
                         name: 'community_lands',
@@ -562,18 +587,38 @@
             }
 
             // Toggle a base layer based on its name.
-            this.toggleBaseLayer = function(layer_name) {
+            this.toggleBaseLayer = function(layerName) {
                 $.each(baseLayers, function(i, layer) {
-                    layer.setVisible(layer.get('name') == layer_name);
+                    layer.setVisible(layer.get('name') == layerName);
                 });
             };
 
-            this.toggleContextLayer = function(layer_name, visible) {
+            this.toggleContextLayer = function(checkboxEl) {
+                var selectedLayer;
                 $.each(contextLayers, function(i, layer) {
-                    if (layer.get('name') == layer_name) {
-                        layer.setVisible(visible);
+                    if (layer.get('name') == checkboxEl.value) {
+                        selectedLayer = layer;
+                        layer.setVisible(checkboxEl.checked);
                     }
                 });
+                // Toggle legend if available
+                if (!selectedLayer) {
+                    return;
+                }
+                var legendUrl = selectedLayer.get('legendUrl');
+                var legendUrlFunction = selectedLayer.get('legendUrlFunction');
+                if (legendUrlFunction) {
+                    legendUrl = legendUrlFunction();
+                }
+                if (!legendUrl) {
+                    return;
+                }
+                var legendDiv = $(checkboxEl).siblings('.context-layer-legend');
+                if (checkboxEl.checked) {
+                    legendDiv.html('<img src="' + legendUrl + '"/>');
+                } else {
+                    legendDiv.html('');
+                }
             };
 
             return this;
