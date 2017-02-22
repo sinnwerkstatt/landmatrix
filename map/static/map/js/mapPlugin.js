@@ -13,7 +13,6 @@
             }, options);
 
             // Chart settings. Also needed to adjust clustering sensibility.
-            var donutWidth = 7;
             var minFontSize = 1.25;  // Font size is usually clusterRadius / 100
             var minClusterRadius = 100;
             var maxClusterRadius = 300;
@@ -27,18 +26,21 @@
             var currentResolution;
             var maxFeatureCount;
 
+            // Variable used to trigger cluster update even though resolution
+            // did not change (after changing displayed layer)
+            var layerChanged = false;
+
             // use this.setLegendKey() to switch currently active legend.
             mapInstance.legendKey = options.legendKey;
             mapInstance.dealsPerCountryLayer = null;
 
+            var baseLayers = getBaseLayers();
+            var contextLayers = getContextLayers();
+
             // initialize map
             var map = new ol.Map({
                 target: settings.target,
-                layers: [
-                    new ol.layer.Tile({
-                        source: new ol.source.OSM()
-                    })
-                ],
+                layers: baseLayers.concat(contextLayers),
                 view: new ol.View({
                     center: ol.proj.fromLonLat(settings.centerTo),
                     zoom: settings.zoom
@@ -200,9 +202,10 @@
             // cluster visible on the map. No need to calculate this if the
             // resolution did not change.
             function calculateClusterInfo(clusterLayerSource, countProperty) {
-                if (currentResolution == map.getView().getResolution()) {
+                if (currentResolution == map.getView().getResolution() && !layerChanged) {
                     return;
                 }
+                layerChanged = false;
                 currentResolution = map.getView().getResolution();
                 maxFeatureCount = 0;
                 $.each(clusterLayerSource.getFeatures(), function(i, feature) {
@@ -263,6 +266,98 @@
                 })
             }
 
+            function getBaseLayers() {
+                return [
+                    new ol.layer.Tile({
+                        name: 'osm',
+                        visible: true,
+                        source: new ol.source.OSM()
+                    }),
+                    new ol.layer.Tile({
+                        name: 'esri_satellite',
+                        visible: false,
+                        source: new ol.source.XYZ({
+                            attributions: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+                            url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+                        })
+                    }),
+                    new ol.layer.Tile({
+                        name: 'mapquest_satellite',
+                        visible: false,
+                        source: new ol.source.BingMaps({
+                            key: 'AlP-ATiag3_dWlbAC1mQChWw_SM61c6iDv_NLJexfsE-YeAVJjIL7sgeotE3i8a2',
+                            imagerySet: 'aerial'
+                        })
+                    })
+                ];
+            }
+
+            function getContextLayers() {
+                return [
+                    new ol.layer.Image({
+                        name: 'land_cover',
+                        visible: false,
+                        opacity: 0.8,
+                        source: new ol.source.ImageWMS({
+                            url: 'http://sdi.cde.unibe.ch/geoserver/lo/wms',
+                            params: {
+                                LAYERS: 'globcover_2009'
+                            }
+                        }),
+                        // Can also be defined as property "legendUrl"
+                        legendUrlFunction: function() {
+                            var imgParams = {
+                                request: 'GetLegendGraphic',
+                                service: 'WMS',
+                                layer: 'globcover_2009',
+                                format: 'image/png',
+                                width: 25,
+                                height: 25,
+                                legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
+                            };
+                            return 'http://sdi.cde.unibe.ch/geoserver/lo/wms' + '?' + $.param(imgParams);
+                        }
+                    }),
+                    new ol.layer.Image({
+                        name: 'cropland',
+                        visible: false,
+                        opacity: 0.8,
+                        source: new ol.source.ImageWMS({
+                            url: 'http://sdi.cde.unibe.ch/geoserver/lo/wms',
+                            params: {
+                                LAYERS: 'gl_cropland'
+                            }
+                        }),
+                        legendUrlFunction: function() {
+                            var imgParams = {
+                                request: 'GetLegendGraphic',
+                                service: 'WMS',
+                                layer: 'gl_cropland',
+                                format: 'image/png',
+                                width: 25,
+                                height: 25,
+                                legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
+                            };
+                            return 'http://sdi.cde.unibe.ch/geoserver/lo/wms' + '?' + $.param(imgParams);
+                        }
+                    }),
+                    new ol.layer.Tile({
+                        name: 'community_lands',
+                        visible: false,
+                        source: new ol.source.TileArcGISRest({
+                            url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_comm_LandMatrix/MapServer/'
+                        })
+                    }),
+                    new ol.layer.Tile({
+                        name: 'indigenous_lands',
+                        visible: false,
+                        source: new ol.source.TileArcGISRest({
+                            url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_ind_LandMatrix/MapServer/'
+                        })
+                    })
+                ];
+            }
+
             // Determine the chart size and font size based on the current
             // feature count. Also do some ugly manual tweaking when zoomed out
             // really far.
@@ -315,6 +410,7 @@
                 });
 
                 var backgroundColor = clusterType == 'countries' ? '#f9de98' : '#fff';
+                var donutWidth = chartSize / 20;
 
                 // SVG and basic circle
                 var radius = chartSize / (2 * Math.PI);
@@ -479,6 +575,15 @@
                 // Toggle the checkbox
                 settings.switchLayerCallback($("[data-show-layer='" + visibleLayer + "'"));
 
+                // Manually refresh the clustering (layerChanged is needed to
+                // refresh clustering even though resolution did not change).
+                layerChanged = true;
+                if (visibleLayer == 'countries') {
+                    dealsPerCountryCluster.refresh();
+                } else {
+                    dealsCluster.refresh();
+                }
+
                 this.dealsLayer.setVisible(!countriesVisible);
                 countryLayer.setVisible(countriesVisible);
                 this.dealsPerCountryLayer.setVisible(countriesVisible);
@@ -492,8 +597,47 @@
                 if (resolution < autoToggleResolution) {
                     visibleLayer = 'deals';
                 }
-                mapInstance.toggleVisibleLayer(visibleLayer);
+                if (settings.visibleLayer != visibleLayer) {
+                    // Prevent toggling layer (and refreshing clustering) if the
+                    // layer did not change.
+                    mapInstance.toggleVisibleLayer(visibleLayer);
+                }
             }
+
+            // Toggle a base layer based on its name.
+            this.toggleBaseLayer = function(layerName) {
+                $.each(baseLayers, function(i, layer) {
+                    layer.setVisible(layer.get('name') == layerName);
+                });
+            };
+
+            this.toggleContextLayer = function(checkboxEl) {
+                var selectedLayer;
+                $.each(contextLayers, function(i, layer) {
+                    if (layer.get('name') == checkboxEl.value) {
+                        selectedLayer = layer;
+                        layer.setVisible(checkboxEl.checked);
+                    }
+                });
+                // Toggle legend if available
+                if (!selectedLayer) {
+                    return;
+                }
+                var legendUrl = selectedLayer.get('legendUrl');
+                var legendUrlFunction = selectedLayer.get('legendUrlFunction');
+                if (legendUrlFunction) {
+                    legendUrl = legendUrlFunction();
+                }
+                if (!legendUrl) {
+                    return;
+                }
+                var legendDiv = $(checkboxEl).siblings('.context-layer-legend');
+                if (checkboxEl.checked) {
+                    legendDiv.html('<img src="' + legendUrl + '"/>');
+                } else {
+                    legendDiv.html('');
+                }
+            };
 
             return this;
         }
