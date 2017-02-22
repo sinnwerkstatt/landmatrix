@@ -61,6 +61,103 @@ class DealListView(FakeQuerySetListView):
 
 
 class GlobalDealsView(APIView):
+    
+    fake_queryset_class = DealsQuerySet
+    serializer_class = DealSerializer
+    pagination_class = FakeQuerySetPagination
+
+    def get_queryset(self):
+        '''
+        Don't call all on the queryset, so that it is passed to the paginator
+        before evaluation.
+        '''
+        return self.fake_queryset_class(self.request)
+    
+    def prepare_filters(self):
+        window = None
+        if self.request.GET.get('window', None):
+            lon_min, lat_min, lon_max, lat_max = self.request.GET.get('window').split(',')
+            try:
+                lat_min, lat_max = float(lat_min), float(lat_max)
+                lon_min, lon_max = float(lon_min), float(lon_max)
+                # respect the 180th meridian
+                if lon_min > lon_max:
+                    lon_max, lon_min = lon_min, lon_max
+                if lat_min > lat_max:
+                    lat_max, lat_min = lat_min, lat_max
+                window = (lat_min, lon_min, lat_max, lon_max)
+            except ValueError:
+                pass
+        
+    def get(self, request, *args, **kwargs):
+        from geojson import FeatureCollection, Feature, Point, MultiPoint
+        # https://pypi.python.org/pypi/geojson
+        
+        """
+        {
+                        "type": "Feature",
+                        "id": 1467,
+                        "properties": {
+                            "url": "/en/deal/1467/",
+                            "intention": [
+                                "agriculture",
+                                "renewable_energy"
+                            ],
+                            "implementation": 'in_operation',
+                            "intended_size": 20000,
+                            "contract_size": 20000,
+                            "production_size": None,
+                            "investor": "N'Sukula"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -6.10233000,
+                                14.03790000
+                            ]
+                        }
+                    },
+        """
+        
+        return Response(
+            FeatureCollection([
+                Feature(
+                    id=1467,
+                    geometry=Point((-6.10233000, 14.03790000)),
+                    properties={
+                        "url": "/en/deal/1467/",
+                        "intention": [
+                            "agriculture",
+                            "renewable_energy"
+                        ],
+                        "implementation": 'in_operation',
+                        "intended_size": 20000,
+                        "contract_size": 20000,
+                        "production_size": None,
+                        "investor": "N'Sukula",
+                    },
+                ),
+               Feature(
+                    id=1462,
+                    geometry=Point((-6.10233000, 14.23790000)),
+                    properties={
+                        "url": "/en/deal/1467/",
+                        "intention": [
+                            "agriculture",
+                            "renewable_energy"
+                        ],
+                        "implementation": 'in_operation',
+                        "intended_size": 20000,
+                        "contract_size": 20000,
+                        "production_size": None,
+                        "investor": "N'Sukula",
+                    },
+                ),
+            ])
+        )
+
+
+class _Mock_GlobalDealsView(APIView):
     """
     Mock required response
     """

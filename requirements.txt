@@ -39,3 +39,4 @@ country-bounding-boxes>=0.2.3
 tweepy
 pyelasticsearch
 celery[redis]
+geojson==1.3.4
