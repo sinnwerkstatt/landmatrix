@@ -319,7 +319,7 @@
         map.toggleVisibleLayer($(this).data("show-layer"));
         // If the toggle is clicked manually, "auto" checkbox is automatically
         // unchecked.
-        $('.js-toggle-cluster-auto').prop('checked', false);
+        $('.js-toggle-cluster-auto').prop('checked', false).change();
       });
 
       $(".js-toggle-cluster-auto").on("change", function() {

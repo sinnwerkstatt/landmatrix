@@ -26,6 +26,10 @@
             var currentResolution;
             var maxFeatureCount;
 
+            // Variable used to trigger cluster update even though resolution
+            // did not change (after changing displayed layer)
+            var layerChanged = false;
+
             // use this.setLegendKey() to switch currently active legend.
             mapInstance.legendKey = options.legendKey;
             mapInstance.dealsPerCountryLayer = null;
@@ -198,9 +202,10 @@
             // cluster visible on the map. No need to calculate this if the
             // resolution did not change.
             function calculateClusterInfo(clusterLayerSource, countProperty) {
-                if (currentResolution == map.getView().getResolution()) {
+                if (currentResolution == map.getView().getResolution() && !layerChanged) {
                     return;
                 }
+                layerChanged = false;
                 currentResolution = map.getView().getResolution();
                 maxFeatureCount = 0;
                 $.each(clusterLayerSource.getFeatures(), function(i, feature) {
@@ -570,6 +575,15 @@
                 // Toggle the checkbox
                 settings.switchLayerCallback($("[data-show-layer='" + visibleLayer + "'"));
 
+                // Manually refresh the clustering (layerChanged is needed to
+                // refresh clustering even though resolution did not change).
+                layerChanged = true;
+                if (visibleLayer == 'countries') {
+                    dealsPerCountryCluster.refresh();
+                } else {
+                    dealsCluster.refresh();
+                }
+
                 this.dealsLayer.setVisible(!countriesVisible);
                 countryLayer.setVisible(countriesVisible);
                 this.dealsPerCountryLayer.setVisible(countriesVisible);
@@ -583,7 +597,11 @@
                 if (resolution < autoToggleResolution) {
                     visibleLayer = 'deals';
                 }
-                mapInstance.toggleVisibleLayer(visibleLayer);
+                if (settings.visibleLayer != visibleLayer) {
+                    // Prevent toggling layer (and refreshing clustering) if the
+                    // layer did not change.
+                    mapInstance.toggleVisibleLayer(visibleLayer);
+                }
             }
 
             // Toggle a base layer based on its name.
