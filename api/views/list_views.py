@@ -90,17 +90,34 @@ class GlobalDealsView(APIView):
                     lon_max, lon_min = lon_min, lon_max
                 if lat_min > lat_max:
                     lat_max, lat_min = lat_min, lat_max
-                window = (lat_min, lon_min, lat_max, lon_max)
+                window = (lon_min, lat_min, lon_max, lat_max)
             except ValueError:
                 pass
             
         # load filters from session
         elasticsearch_query = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
-        query = {'bool': elasticsearch_query}
+        print(window)
+        
+        # add geo_point window match:
+        if window:
+            elasticsearch_query['filter'].append({
+                "geo_bounding_box" : {
+                    "geo_point" : {
+                        "top_left" : {
+                            "lat" : float(window[3]),
+                            "lon" : float(window[0])
+                        },
+                        "bottom_right" : {
+                            "lat" : float(window[1]),
+                            "lon" : float(window[2])
+                        }
+                    }
+                }
+            })
+            
         
         # TODO: add these manually as elasticsearch queries!
         request_filters = {
-            'window': window,
             'deal_scope': request.GET.getlist('deal_scope', ['domestic', 'transnational']),
             'limit': request.GET.get('limit'),
             'investor_country': request.GET.get('investor_country'),
@@ -119,6 +136,8 @@ class GlobalDealsView(APIView):
         print('>> elasticsearch_query (non-pretty):')
         print(query)
         """ 
+        
+        query = {'bool': elasticsearch_query}
         return query
         
         
@@ -169,6 +188,10 @@ class GlobalDealsView(APIView):
         features = []
         for result in result_list:
             feature = self.create_feature_from_result(result)
+            
+            # TODO: here we should agglomerate results which are not complete deals!
+            # depending on 'activity_id' and status!
+            
             if feature is not None:
                 features.append(feature)
         

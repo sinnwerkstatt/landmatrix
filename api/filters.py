@@ -285,7 +285,7 @@ def format_filters_elasticsearch(filters, initial_query=None):
     proto_filters = {
         '_filter_name': None,
         'must' : [], # AND
-        #'filter': [], # EXCLUDE
+        'filter': [], # EXCLUDE
         'must_not': [], # AND NOT
         'should': [], # OR
     }
