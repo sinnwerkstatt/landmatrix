@@ -15,19 +15,16 @@ FIELD_TYPE_MAPPING = {
     'AreaField': 'geo_shape',
 }
 
-class ElasticSearch(object):
-    conn = None
-    url = settings.ELASTICSEARCH_URL
-    index_name = None
+
+_landmatrix_properties = None
+def get_elasticsearch_properties():
+    """ Generates a list of elasticsearch document properties from all filter fields in the
+        Deal attribute model Forms """
+    global _landmatrix_properties
     
-
-    def __init__(self, index_name='landmatrix'):
-        self.conn = PyElasticSearch()
-        self.index_name = index_name
-
-    def get_properties(self):
+    if _landmatrix_properties is None:
         # Get field type mappings
-        properties = {
+        _landmatrix_properties = {
             'id': {'type': 'string'}, # use 'exact_value' instead of string??
             'historical_activity_id': {'type': 'integer'},
             'activity_identifier': {'type': 'integer'},
@@ -40,9 +37,20 @@ class ElasticSearch(object):
                 # Title field?
                 if name.startswith('tg_') and not name.endswith('_comment'):
                     continue
-                properties[name] = {'type': FIELD_TYPE_MAPPING.get(field.__class__.__name__, 'string')}
-        print(str(properties))
-        return properties
+                _landmatrix_properties[name] = {'type': FIELD_TYPE_MAPPING.get(field.__class__.__name__, 'string')}
+    #print(str(_landmatrix_properties))
+    return _landmatrix_properties
+
+
+class ElasticSearch(object):
+    conn = None
+    url = settings.ELASTICSEARCH_URL
+    index_name = None
+    
+
+    def __init__(self, index_name='landmatrix'):
+        self.conn = PyElasticSearch()
+        self.index_name = index_name
 
     def get_spatial_properties(self):
         return DealSpatialForm.base_fields.keys()
@@ -55,7 +63,7 @@ class ElasticSearch(object):
                 pass 
         deal_mapping = {
             'deal': {
-                'properties': self.get_properties()
+                'properties': get_elasticsearch_properties()
             }
         }
         self.conn.create_index(self.index_name, settings={'mappings': deal_mapping})

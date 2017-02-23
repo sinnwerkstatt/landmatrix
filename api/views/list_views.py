@@ -104,15 +104,19 @@ class GlobalDealsView(APIView):
             'attributes': request.GET.getlist('attributes', []),
         }
         
-        session_filters = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
-        #session_filters = load_filters(self.request, filter_format=FILTER_FORMATS_SQL)
+        # load filters from session
+        elasticsearch_query = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
+        query = {'bool': elasticsearch_query}
         
         
         from pprint import pprint
         print('>> request_filters:')
         pprint(request_filters)
-        print('>> session_filters:')
-        pprint(session_filters)
+        print('>> elasticsearch_query:')
+        pprint(query)
+        print('>> elasticsearch_query (non-pretty):')
+        print(query)
+        
         
         
     def get(self, request, *args, **kwargs):

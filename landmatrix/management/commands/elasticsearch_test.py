@@ -30,7 +30,8 @@ class Command(BaseCommand):
                             {'match': {'status': 3}},
                             {'match': {'target_country': 356}},
                         ]}},
-                    ]
+                    ],
+                    'must_not': {},
                 }
                 
                 #
