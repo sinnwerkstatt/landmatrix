@@ -77,7 +77,7 @@ class GlobalDealsView(APIView):
         '''
         return self.fake_queryset_class(self.request)
     
-    def prepare_filters(self):
+    def create_query_from_filters(self):
         request = self.request
         window = None
         if self.request.GET.get('window', None):
@@ -93,6 +93,12 @@ class GlobalDealsView(APIView):
                 window = (lat_min, lon_min, lat_max, lon_max)
             except ValueError:
                 pass
+            
+        # load filters from session
+        elasticsearch_query = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
+        query = {'bool': elasticsearch_query}
+        
+        # TODO: add these manually as elasticsearch queries!
         request_filters = {
             'window': window,
             'deal_scope': request.GET.getlist('deal_scope', ['domestic', 'transnational']),
@@ -104,11 +110,7 @@ class GlobalDealsView(APIView):
             'attributes': request.GET.getlist('attributes', []),
         }
         
-        # load filters from session
-        elasticsearch_query = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
-        query = {'bool': elasticsearch_query}
-        
-        
+        """
         from pprint import pprint
         print('>> request_filters:')
         pprint(request_filters)
@@ -116,76 +118,92 @@ class GlobalDealsView(APIView):
         pprint(query)
         print('>> elasticsearch_query (non-pretty):')
         print(query)
-        
+        """ 
+        return query
         
         
     def get(self, request, *args, **kwargs):
-        # https://pypi.python.org/pypi/geojson
-        self.prepare_filters()
+        from api.elasticsearch import es_search
+        es = es_search
+        es.refresh_index()
         
-        """
-        {
-                        "type": "Feature",
-                        "id": 1467,
-                        "properties": {
-                            "url": "/en/deal/1467/",
-                            "intention": [
-                                "agriculture",
-                                "renewable_energy"
-                            ],
-                            "implementation": 'in_operation',
-                            "intended_size": 20000,
-                            "contract_size": 20000,
-                            "production_size": None,
-                            "investor": "N'Sukula"
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [
-                                -6.10233000,
-                                14.03790000
-                            ]
-                        }
-                    },
-        """
+        query = {
+            'query': self.create_query_from_filters(),
+        } 
+        options = {
+            'from': 0,
+            'size': 10000,
+        } 
+        query.update(options)
+            
+        print('\n\n\n>>>>               This is the executed query:\n')
+        from pprint import pprint
+        pprint(query)
         
-        return Response(
-            FeatureCollection([
-                Feature(
-                    id=1467,
-                    geometry=Point((-6.10233000, 14.03790000)),
-                    properties={
-                        "url": "/en/deal/1467/",
-                        "intention": [
-                            "agriculture",
-                            "renewable_energy"
-                        ],
-                        "implementation": 'in_operation',
-                        "intended_size": 20000,
-                        "contract_size": 20000,
-                        "production_size": None,
-                        "investor": "N'Sukula",
-                    },
-                ),
-               Feature(
-                    id=1462,
-                    geometry=Point((-6.10233000, 14.23790000)),
-                    properties={
-                        "url": "/en/deal/1467/",
-                        "intention": [
-                            "agriculture",
-                            "renewable_energy"
-                        ],
-                        "implementation": 'in_operation',
-                        "intended_size": 20000,
-                        "contract_size": 20000,
-                        "production_size": None,
-                        "investor": "N'Sukula",
-                    },
-                ),
-            ])
+        try:
+            result = es.search(query)
+            if result['hits']['total'] == 0:
+                raise(Exception('NoResultsForQuery-DebugException! I am raising this because the query got no results and was probably malformed.'))
+        except Exception as e:
+            print('\n\n>>>>>>> Error! There was an error when querying elasticsearch with the current filters!')
+            print('               Falling back to a match-all query.')
+            print('               WARNING: YOUR RESULTS ARE NOT THOSE OF A FILTERED QUERY!\n\n')
+            print('               Exception was:\n')
+            print(e)
+            print('\n\n')
+            
+            match_all_query = {
+                "query": {
+                    "match_all": {}
+                }
+            }
+            match_all_query.update(options)
+            result = es.search(match_all_query)
+            
+        result_list = result['hits']['hits']
+        results_total = result['hits']['total']
+        results_returned = len(result_list)
+        print('\n>> returned', results_returned, 'results from a total of', results_total, '\n\n')
+        
+        # parse results
+        features = []
+        for result in result_list:
+            feature = self.create_feature_from_result(result)
+            if feature is not None:
+                features.append(feature)
+        
+        response = Response(FeatureCollection(features))
+        return response
+    
+    
+    def create_feature_from_result(self, raw_result):
+        result = raw_result['_source']
+        if not raw_result['_type'] == 'deal':
+            return None
+        if not 'point_lat' in result or not 'point_lon' in result:
+            return None
+        if not result.get('intention', None): # TODO: still show them?
+            return None
+        
+        intended_size = result.get('intended_size', None)
+        intended_size = intended_size and intended_size[0] # saved as an array currently?
+        contract_size = result.get('contract_size', None)
+        contract_size = contract_size and contract_size[0] # saved as an array currently?
+        feature = Feature(
+            id=result['historical_activity_id'],
+            geometry=Point((float(result['point_lon']), float(result['point_lat']))), # could lat/lon be the other way around?   #Point((-6.10233000, 14.03790000)),
+            properties={
+                "url": "/en/deal/%s/" % result['historical_activity_id'],
+                "intention": result.get('intention'),
+                "implementation": 'in_operation', # TODO: where to get this from?
+                "intended_size": intended_size,
+                "contract_size": contract_size,
+                "production_size": None,
+                "investor": "Investor-Name-Where-Do-I-Get-This",
+            },
         )
-
+        return feature
+    
 
 class _Mock_GlobalDealsView(APIView):
     """
@@ -903,7 +921,7 @@ class MapInfoDetailView(MapSettingsMixin, ContextMixin, View):
         try:
             legend['attributes'][value]['count'] += 1
         except KeyError:
-            legend['attributes'][value]['count'] = 1
+                legend['attributes'][value]['count'] = 1
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

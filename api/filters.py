@@ -87,8 +87,8 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
     if operator == 'lte': return ('must', {'range': {variable_name: {'lte': value}}})
     if operator == 'lt': return ('must', {'range': {variable_name: {'lt': value}}})
     if operator == 'contains': return ('must', {'match': {variable_name: value}})
-    if operator == 'is_empty': return ('must_not', {'exists': {'field': variable_name}}) # the 's' in 'exists' is not a typo
-    
+    #if operator == 'is_empty': return ('must_not', {'exists': {'field': variable_name}}) # the 's' in 'exists' is not a typo
+    if operator == 'is_empty': return ('must', {'match_phrase': {variable_name: value}})
 
 # TODO: this counter is shared by all users, and is per thread.
 # It should probably be moved to the session
@@ -196,7 +196,6 @@ class Filter(BaseFilter):
             elastic_operator, match = get_elasticsearch_match_operation(self['operator'], self['variable'], value)
             match.update({'_filter_name': definition_key})
         
-        print('returning', elastic_operator, match)
         return (elastic_operator, match)
 
 
@@ -300,11 +299,12 @@ def format_filters_elasticsearch(filters, initial_query=None):
             if filter_obj.filter.relation == filter_obj.filter.RELATION_OR:
                 # for OR relations we build a new subquery that is ORed and add it to the must matches
                 preset_name = filter_obj.filter.name
+                # we are constructing a regular query, but because this is an OR order, we will take 
+                # all the matches in the 'must' slot and add them to the 'should' list
+                or_query = format_filters_elasticsearch(preset_filters)
                 query['must'].append({
                     'bool': {
-                        'should': {
-                            'bool': format_filters_elasticsearch(preset_filters)
-                        } 
+                        'should': or_query['must'] + or_query['should']
                     },
                     '_filter_name': preset_name
                 })
@@ -324,8 +324,6 @@ def format_filters_elasticsearch(filters, initial_query=None):
             branch_list = query[elastic_operator]
             current_filter_name = elastic_match['_filter_name']
             existing_match_phrase, existing_i = get_list_element_by_key(branch_list, '_filter_name', current_filter_name)
-            print(">> exi", existing_match_phrase)
-            print('     by', current_filter_name, branch_list)
             # if no filter exists for this yet, add it
             if existing_match_phrase is None:
                 branch_list.append(elastic_match)

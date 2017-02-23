@@ -18,6 +18,9 @@ class Command(BaseCommand):
         es = es_search
         es.refresh_index()
         
+        
+        
+        
         query = {
             'query': {
                 "bool": {
@@ -73,3 +76,4 @@ class Command(BaseCommand):
         result = es.search(query)
         print('>>> received')
         pprint(result)
+        
