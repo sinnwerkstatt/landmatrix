@@ -173,8 +173,32 @@ class ElasticSearch(object):
     def refresh_index(self):
         self.conn.refresh(self.index_name)
         
-    def search(self, query):
-        return self.conn.search(query, index=self.index_name)
+    def search(self, elasticsearch_query):
+        """ Executes paginated queries until all results have been retrieved. 
+            @return: The full list of hits. """
+        start = 0
+        size = 10000 # 10000 is the default elasticsearch max_window_size (pagination is cheap, so more is not necessarily better)
+        raw_result_list = []
+        
+        done = False
+        while not done:
+            query = {
+                'query': elasticsearch_query,
+                'from': start,
+                'size': size
+            }
+            query_result = self.conn.search(query, index=self.index_name)
+            raw_result_list.extend(query_result['hits']['hits'])
+            results_total = query_result['hits']['total']
+            
+            if len(raw_result_list) >= results_total:
+                done = True
+            else:
+                start = len(raw_result_list)
+        
+        print('\n>> Elasticsearch returned', len(raw_result_list), 'documents from a total of', query_result['hits']['total'], '\n\n')
+        
+        return raw_result_list
 
 # Init two connections
 es_search = ElasticSearch()

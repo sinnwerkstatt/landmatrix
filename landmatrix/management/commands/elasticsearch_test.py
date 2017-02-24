@@ -19,7 +19,6 @@ class Command(BaseCommand):
         es.refresh_index()
         
         query = {
-            'query': {
                 "bool": {
                     "should": [ # OR
                         {"bool": {'must': [ # AND
@@ -32,43 +31,40 @@ class Command(BaseCommand):
                     'must_not': {},
                     'filter': [
                         {"bool": {'should': [ # AND
-                            {'match': {'status': 1}},
-                            {'match': {'status': 3}}
+                            {'match': {'status': 1234}},
+                            {'match': {'status': 3234}}
                         ]}},
                     ]
                 }
                 
                 #
             }
-        }
         
         """
         query = {
-            'query': {
-                "bool": {
-                    "must": {
-                        "match_all": {}
-                    },
-                    "filter": [
-                        {"geo_bounding_box" : {
-                            "geo_point" : {
-                                "top_left" : {
-                                    "lat" : 80.73,
-                                    "lon" : -84.1
-                                },
-                                "bottom_right" : {
-                                    "lat" : 20.01,
-                                    "lon" : -11.12
-                                }
+            "bool": {
+                "must": {
+                    "match_all": {}
+                },
+                "filter": [
+                    {"geo_bounding_box" : {
+                        "geo_point" : {
+                            "top_left" : {
+                                "lat" : 80.73,
+                                "lon" : -84.1
+                            },
+                            "bottom_right" : {
+                                "lat" : 20.01,
+                                "lon" : -11.12
                             }
-                        }},
-                        {'exists': {'field': 'geo_point'}
-                        },
-                    ]
-                }
-                
-                #
+                        }
+                    }},
+                    {'exists': {'field': 'geo_point'}
+                    },
+                ]
             }
+            
+            #
         }
         """
         

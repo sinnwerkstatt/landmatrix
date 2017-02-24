@@ -130,8 +130,6 @@ class GlobalDealsView(APIView):
             if status_list_get:
                 self.status_list = status_list_get
                 
-        print('> status list:',self.status_list)
-        
         elasticsearch_query['filter'].append({
             "bool": {
                 'should': [
@@ -154,11 +152,7 @@ class GlobalDealsView(APIView):
         return elasticsearch_query
         
     def get(self, request, *args, **kwargs):
-        query = {
-            'query': self.create_query_from_filters(),
-            'from': 0,
-            'size': 10000,
-        } 
+        query = self.create_query_from_filters()
         raw_result_list = self.execute_elasticsearch_query(query)    
         
         # filter results
@@ -180,8 +174,8 @@ class GlobalDealsView(APIView):
         pprint(query)
         
         try:
-            query_result = es.search(query)
-            if settings.DEBUG and query_result['hits']['total'] == 0:
+            raw_result_list = es.search(query)
+            if settings.DEBUG and len(raw_result_list) == 0:
                 raise(Exception('NoResultsForQuery-DebugException! I am raising this because the query got no results and was probably malformed.'))
         except Exception as e:
             if settings.DEBUG:
@@ -192,21 +186,11 @@ class GlobalDealsView(APIView):
                 print(e)
                 print('\n\n')
                 
-                match_all_query = {
-                    "query": {
-                        "match_all": {},
-                        'from': 0,
-                        'size': 100000,
-                    }
-                }
-                query_result = es.search(match_all_query)
+                match_all_query = { "match_all": {} }
+                raw_result_list = es.search(match_all_query)
             else:
                 raise
             
-        raw_result_list = query_result['hits']['hits']
-        results_total = query_result['hits']['total']
-        results_returned = len(raw_result_list)
-        print('\n>> Elasticsearch returned', results_returned, 'documents from a total of', results_total, '\n\n')
         return raw_result_list
     
     def filter_returned_results(self, raw_result_list):
@@ -255,6 +239,8 @@ class GlobalDealsView(APIView):
         return result_list
     
     def create_feature_from_result(self, result):
+        """ Create a GeoJSON-conform result. """
+        
         intended_size = result.get('intended_size', None)
         intended_size = intended_size and intended_size[0] # saved as an array currently?
         contract_size = result.get('contract_size', None)
