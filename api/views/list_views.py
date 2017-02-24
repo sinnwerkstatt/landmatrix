@@ -19,6 +19,9 @@ from api.serializers import DealSerializer, UserSerializer
 from api.pagination import FakeQuerySetPagination
 from api.views.base import FakeQuerySetListView
 from map.views import MapSettingsMixin
+from landmatrix.models.activity import ActivityBase
+
+from django.conf import settings
 
 from geojson import FeatureCollection, Feature, Point, MultiPoint
 from api.filters import load_filters, FILTER_FORMATS_ELASTICSEARCH,\
@@ -66,10 +69,9 @@ class DealListView(FakeQuerySetListView):
 
 class GlobalDealsView(APIView):
     
-    fake_queryset_class = DealsQuerySet
-    serializer_class = DealSerializer
-    pagination_class = FakeQuerySetPagination
-
+    # default status are the public ones. will only get replaced if well formed and allowed
+    status_list = ActivityBase.PUBLIC_STATUSES
+    
     def get_queryset(self):
         '''
         Don't call all on the queryset, so that it is passed to the paginator
@@ -78,7 +80,17 @@ class GlobalDealsView(APIView):
         return self.fake_queryset_class(self.request)
     
     def create_query_from_filters(self):
+        # load filters from session
+        elasticsearch_query = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
+        # add filters from request
+        elasticsearch_query = self.add_request_filters_to_elasticsearch_query(elasticsearch_query)
+        
+        query = {'bool': elasticsearch_query}
+        return query
+    
+    def add_request_filters_to_elasticsearch_query(self, elasticsearch_query):
         request = self.request
+        
         window = None
         if self.request.GET.get('window', None):
             lon_min, lat_min, lon_max, lat_max = self.request.GET.get('window').split(',')
@@ -93,10 +105,6 @@ class GlobalDealsView(APIView):
                 window = (lon_min, lat_min, lon_max, lat_max)
             except ValueError:
                 pass
-            
-        # load filters from session
-        elasticsearch_query = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
-        print(window)
         
         # add geo_point window match:
         if window:
@@ -114,9 +122,25 @@ class GlobalDealsView(APIView):
                     }
                 }
             })
-            
         
-        # TODO: add these manually as elasticsearch queries!
+        # collect a proper and authorized-for-that-user status list from the requet paramert
+        request_status_list = self.request.GET.getlist('status', []) 
+        if self.request.user.is_staff:
+            status_list_get = [int(status) for status in request_status_list if (status.isnumeric() and int(status) in dict(ActivityBase.STATUS_CHOICES).keys())]
+            if status_list_get:
+                self.status_list = status_list_get
+                
+        print('> status list:',self.status_list)
+        
+        elasticsearch_query['filter'].append({
+            "bool": {
+                'should': [
+                    {'match': {'status': status}} for status in self.status_list
+                ]
+            }
+        })
+        
+        # TODO: these were at some point in the UI. add the missing filters!
         request_filters = {
             'deal_scope': request.GET.getlist('deal_scope', ['domestic', 'transnational']),
             'limit': request.GET.get('limit'),
@@ -127,94 +151,124 @@ class GlobalDealsView(APIView):
             'attributes': request.GET.getlist('attributes', []),
         }
         
-        """
-        from pprint import pprint
-        print('>> request_filters:')
-        pprint(request_filters)
-        print('>> elasticsearch_query:')
-        pprint(query)
-        print('>> elasticsearch_query (non-pretty):')
-        print(query)
-        """ 
-        
-        query = {'bool': elasticsearch_query}
-        return query
-        
+        return elasticsearch_query
         
     def get(self, request, *args, **kwargs):
-        from api.elasticsearch import es_search
-        es = es_search
-        es.refresh_index()
-        
         query = {
             'query': self.create_query_from_filters(),
-        } 
-        options = {
             'from': 0,
             'size': 10000,
         } 
-        query.update(options)
-            
-        print('\n\n\n>>>>               This is the executed query:\n')
-        from pprint import pprint
-        pprint(query)
+        raw_result_list = self.execute_elasticsearch_query(query)    
         
-        try:
-            result = es.search(query)
-            if result['hits']['total'] == 0:
-                raise(Exception('NoResultsForQuery-DebugException! I am raising this because the query got no results and was probably malformed.'))
-        except Exception as e:
-            print('\n\n>>>>>>> Error! There was an error when querying elasticsearch with the current filters!')
-            print('               Falling back to a match-all query.')
-            print('               WARNING: YOUR RESULTS ARE NOT THOSE OF A FILTERED QUERY!\n\n')
-            print('               Exception was:\n')
-            print(e)
-            print('\n\n')
-            
-            match_all_query = {
-                "query": {
-                    "match_all": {}
-                }
-            }
-            match_all_query.update(options)
-            result = es.search(match_all_query)
-            
-        result_list = result['hits']['hits']
-        results_total = result['hits']['total']
-        results_returned = len(result_list)
-        print('\n>> returned', results_returned, 'results from a total of', results_total, '\n\n')
-        
+        # filter results
+        result_list = self.filter_returned_results(raw_result_list)
+        # merge multipoints and prepare location data for results
+        result_list = self.format_result_location_data(result_list)
         # parse results
-        features = []
-        for result in result_list:
-            feature = self.create_feature_from_result(result)
-            
-            # TODO: here we should agglomerate results which are not complete deals!
-            # depending on 'activity_id' and status!
-            
-            if feature is not None:
-                features.append(feature)
+        features = [self.create_feature_from_result(result) for result in result_list]
         
         response = Response(FeatureCollection(features))
         return response
     
-    
-    def create_feature_from_result(self, raw_result):
-        result = raw_result['_source']
-        if not raw_result['_type'] == 'deal':
-            return None
-        if not 'point_lat' in result or not 'point_lon' in result:
-            return None
-        if not result.get('intention', None): # TODO: still show them?
-            return None
+    def execute_elasticsearch_query(self, query):
+        from api.elasticsearch import es_search as es
+        es.refresh_index()
         
+        print('\n\n\n>> This is the executed elasticsearch query:\n')
+        from pprint import pprint
+        pprint(query)
+        
+        try:
+            query_result = es.search(query)
+            if settings.DEBUG and query_result['hits']['total'] == 0:
+                raise(Exception('NoResultsForQuery-DebugException! I am raising this because the query got no results and was probably malformed.'))
+        except Exception as e:
+            if settings.DEBUG:
+                print('\n\n>>>>>>> Error! There was an error when querying elasticsearch with the current filters!')
+                print('               Falling back to a match-all query.')
+                print('               WARNING: YOUR RESULTS ARE NOT THOSE OF A FILTERED QUERY!\n\n')
+                print('               Exception was:\n')
+                print(e)
+                print('\n\n')
+                
+                match_all_query = {
+                    "query": {
+                        "match_all": {},
+                        'from': 0,
+                        'size': 100000,
+                    }
+                }
+                query_result = es.search(match_all_query)
+            else:
+                raise
+            
+        raw_result_list = query_result['hits']['hits']
+        results_total = query_result['hits']['total']
+        results_returned = len(raw_result_list)
+        print('\n>> Elasticsearch returned', results_returned, 'documents from a total of', results_total, '\n\n')
+        return raw_result_list
+    
+    def filter_returned_results(self, raw_result_list):
+        """ Additional filtering and exclusion of unwanted results """
+        result_list = []
+        for raw_result in raw_result_list:
+            result = raw_result['_source']
+            if not raw_result['_type'] == 'deal':
+                continue
+            if not 'point_lat' in result or not 'point_lon' in result:
+                continue
+            if not result.get('intention', None): # TODO: should we hide results with no intention field value?
+                continue
+            result_list.append(result)
+        
+        # we have a special filter mode for status=STATUS_PENDING type searches, 
+        # if pending deals are to be shown, matched deals with status PENDING hide all other deals
+        # with the same activity_identifier that are not PENDING
+        if ActivityBase.STATUS_PENDING in self.status_list:
+            pending_act_ids = [res['activity_identifier'] for res in result_list if res['status'] == ActivityBase.STATUS_PENDING]
+            for i in reversed(range(len(result_list))):
+                res = result_list[i]
+                if not res['status'] == ActivityBase.STATUS_PENDING:
+                    actitvity_identifier = res['activity_identifier']
+                    # this match might be hidden if there is a pending match of PENDING status
+                    if actitvity_identifier in pending_act_ids:
+                        print('removed ', res)
+                        result_list = result_list[:-1]
+        
+        return result_list
+    
+    def format_result_location_data(self, result_list):
+        """ Merges matched results that are really the same result with multiple location points,
+            which are put into the index as multiple documents. Also adds a 'geometry' attribute
+            to the results with a list of location tuples, as needed by GeoJSON. """
+        historic_activities = {}
+        for result in result_list:
+            unique_id = "%s_%s" % (result['activity_identifier'], result['historical_activity_id']) 
+            geometry = (float(result['point_lon']), float(result['point_lat']))
+            if unique_id in historic_activities:
+                historic_activities[unique_id]['geometry'].append(geometry)
+            else:
+                result['geometry'] = [ geometry ]
+                historic_activities[unique_id] = result
+        result_list = historic_activities.values()
+        return result_list
+    
+    def create_feature_from_result(self, result):
         intended_size = result.get('intended_size', None)
         intended_size = intended_size and intended_size[0] # saved as an array currently?
         contract_size = result.get('contract_size', None)
         contract_size = contract_size and contract_size[0] # saved as an array currently?
+
+        # unwrap single points and use a Point, for lists of points with MultiPoints        
+        if len(result['geometry']) == 1:
+            geometry = Point(result['geometry'][0])
+        else:
+            geometry = MultiPoint(result['geometry'])
+        
         feature = Feature(
             id=result['historical_activity_id'],
-            geometry=Point((float(result['point_lon']), float(result['point_lat']))), # could lat/lon be the other way around?   #Point((-6.10233000, 14.03790000)),
+            geometry=geometry, # could lat/lon be the other way around?   #Point((-6.10233000, 14.03790000)),
             properties={
                 "url": "/en/deal/%s/" % result['historical_activity_id'],
                 "intention": result.get('intention'),

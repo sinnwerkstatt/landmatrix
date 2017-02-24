@@ -18,23 +18,24 @@ class Command(BaseCommand):
         es = es_search
         es.refresh_index()
         
-        
-        
-        
         query = {
             'query': {
                 "bool": {
                     "should": [ # OR
                         {"bool": {'must': [ # AND
-                            {'match': {'status': 2}},
                             {'match': {'target_country': 276}},
                         ]}},
                         {"bool": {'must': [ # AND
-                            {'match': {'status': 3}},
                             {'match': {'target_country': 356}},
                         ]}},
                     ],
                     'must_not': {},
+                    'filter': [
+                        {"bool": {'should': [ # AND
+                            {'match': {'status': 1}},
+                            {'match': {'status': 3}}
+                        ]}},
+                    ]
                 }
                 
                 #

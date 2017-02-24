@@ -87,8 +87,7 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
     if operator == 'lte': return ('must', {'range': {variable_name: {'lte': value}}})
     if operator == 'lt': return ('must', {'range': {variable_name: {'lt': value}}})
     if operator == 'contains': return ('must', {'match': {variable_name: value}})
-    #if operator == 'is_empty': return ('must_not', {'exists': {'field': variable_name}}) # the 's' in 'exists' is not a typo
-    if operator == 'is_empty': return ('must', {'match_phrase': {variable_name: value}})
+    if operator == 'is_empty': return ('must', {'match_phrase': {variable_name: ''}})
 
 # TODO: this counter is shared by all users, and is per thread.
 # It should probably be moved to the session
@@ -285,7 +284,7 @@ def format_filters_elasticsearch(filters, initial_query=None):
     proto_filters = {
         '_filter_name': None,
         'must' : [], # AND
-        'filter': [], # EXCLUDE
+        'filter': [], # EXCLUDE ALL OTHERS
         'must_not': [], # AND NOT
         'should': [], # OR
     }
@@ -348,6 +347,7 @@ def format_filters_elasticsearch(filters, initial_query=None):
                         matches = [existing_single_match, elastic_match]
                         query['must'].append({'bool': {elastic_operator: matches}, '_filter_name': current_filter_name})
     
+    # remove our meta attribute so the query is elaticsearch-conform
     if initial_query is None:
         remove_all_dict_keys_from_mixed_dict(query, '_filter_name')
     return query

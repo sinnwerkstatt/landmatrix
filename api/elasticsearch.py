@@ -9,6 +9,9 @@ from grid.views.change_deal_view import ChangeDealView
 from grid.forms.deal_spatial_form import DealSpatialForm
 
 
+from landmatrix.models.activity import HistoricalActivity
+
+
 FIELD_TYPE_MAPPING = {
     'IntegerField': 'integer',
     'CharField': 'string', # use 'exact_value' instead of string??
@@ -67,7 +70,7 @@ class ElasticSearch(object):
             }
         }
         self.conn.create_index(self.index_name, settings={'mappings': deal_mapping})
-
+    """
     def index_documents(self, queryset):
         docs = []
         for activity in queryset:
@@ -76,11 +79,55 @@ class ElasticSearch(object):
         self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id')) for doc in docs),
             index=self.index_name,
             doc_type='deal')
-
+    """
     def index_document(self, activity):
         for doc in self.get_documents(activity):
             self.conn.index(index=self.index_name, doc_type='deal', doc=doc, id=doc.pop('id'))
-
+    
+    def index_documents_by_version(self, activity_identifiers=[], drop_index=True):
+        activity_identifiers = activity_identifiers or HistoricalActivity.objects.filter(fk_status__in=(
+                HistoricalActivity.STATUS_ACTIVE, HistoricalActivity.STATUS_PENDING, 
+                HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED
+            )).distinct().values_list('activity_identifier', flat=True).distinct()
+        docs = []
+        print('>> Collecting documents for', len(activity_identifiers), 'deal entries...')
+        for activity_identifier in activity_identifiers:
+            for doc in self.get_documents_for_activity_version(activity_identifier):
+                docs.append(doc)
+        
+        if drop_index:
+            print ('>> Dropping index...')
+            self.create_index()
+        
+        print('>> Indexing', len(docs), 'documents...')
+        self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id')) for doc in docs),
+            index=self.index_name,
+            doc_type='deal')
+    
+    def index_document_by_version(self, activity_identifier):
+        for doc in self.get_documents_for_activity_version(activity_identifier):
+            self.conn.index(index=self.index_name, doc_type='deal', doc=doc, id=doc.pop('id'))
+    
+    def get_documents_for_activity_version(self, activity_identifier):
+        docs = []
+        #print('>>> for act', activity_identifier)
+        # get the newes non-pending, readable historic version:
+        try:
+            newest = HistoricalActivity.objects.filter(activity_identifier=activity_identifier, fk_status__in=(
+                HistoricalActivity.STATUS_ACTIVE, HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED)).distinct().latest()
+            #print('           newest', newest.activity_identifier, newest.fk_status_id, newest.id)
+            docs.extend(self.get_documents(newest))
+        except HistoricalActivity.DoesNotExist:
+            newest = None
+            
+        # get all pendings
+        pendings = HistoricalActivity.objects.filter(activity_identifier=activity_identifier, fk_status_id=HistoricalActivity.STATUS_PENDING).distinct()
+        for pending in pendings:
+            #print('           pending', pending.activity_identifier, pending.fk_status_id, pending.id)
+            docs.extend(self.get_documents(pending))
+        
+        return docs
+    
     def get_documents(self, activity):
         docs = []
         spatial_names = self.get_spatial_properties()

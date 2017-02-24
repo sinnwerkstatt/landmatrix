@@ -15,11 +15,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         es = es_save
-        es.create_index()
         try:
-            es.index_documents(queryset=HistoricalActivity.objects.filter(fk_status__in=(
-                HistoricalActivity.STATUS_ACTIVE, HistoricalActivity.STATUS_PENDING, 
-                HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED)))
+            es.index_documents_by_version(drop_index=True)
         except BulkError as e:
             for err in e.errors:
                 self.stderr.write('%s: %s (ID: %s)' % (
@@ -31,3 +28,4 @@ class Command(BaseCommand):
 
         #self.stdout.write(str(self.es.get_mapping('landmatrix')))
         #self.stdout.write('Indexed %i deals' % len(activities))
+        
