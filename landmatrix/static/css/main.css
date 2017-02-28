@@ -928,6 +928,9 @@ div.fullwidth.fullwidth-lightgrey {
 .block-link .btn-with-space {
   margin-top: 30px; }
 
+.block-image {
+  margin-bottom: 20px; }
+
 .wrap > hr {
   padding: 0;
   margin: 0;
