@@ -1,3 +1,5 @@
+import json
+
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import RichTextField, StreamField
@@ -330,6 +332,7 @@ class MapDataChartsBlock(CountryRegionStructBlock):
         label = 'Map / Grid / Charts'
         template = 'widgets/map-data-charts.html'
 
+
 class LinkMapBlock(CountryRegionStructBlock):
     '''
     Note that the map template used here is NOT the one from ol3_widgets.
@@ -338,6 +341,16 @@ class LinkMapBlock(CountryRegionStructBlock):
         icon = 'fa fa-map-marker'
         label = 'Map'
         template = 'widgets/link-map.html'
+
+    def get_context(self, value):
+        from map.views import MapSettingsMixin
+        legend = MapSettingsMixin().get_legend()
+        context = super().get_context(value)
+        context.update({
+            'legend': legend,
+            'legend_json': json.dumps(legend)
+        })
+        return context
 
 
 class LatestDatabaseModificationsBlock(CountryRegionStructBlock):
