@@ -160,8 +160,9 @@ class GlobalDealsView(APIView):
         # merge multipoints and prepare location data for results
         result_list = self.format_result_location_data(result_list)
         # parse results
-        features = [self.create_feature_from_result(result) for result in result_list]
-
+        features = []
+        for result in result_list:
+            features.extend(self.create_feature_from_result(result))
         response = Response(FeatureCollection(features))
         return response
     
@@ -246,26 +247,23 @@ class GlobalDealsView(APIView):
         contract_size = result.get('contract_size', None)
         contract_size = contract_size and contract_size[0] # saved as an array currently?
 
-        # unwrap single points and use a Point, for lists of points with MultiPoints        
-        if len(result['geometry']) == 1:
-            geometry = Point(result['geometry'][0])
-        else:
-            geometry = MultiPoint(result['geometry'])
-        
-        feature = Feature(
-            id=result['historical_activity_id'],
-            geometry=geometry, # could lat/lon be the other way around?   #Point((-6.10233000, 14.03790000)),
-            properties={
-                "url": "/en/deal/%s/" % result['historical_activity_id'],
-                "intention": result.get('intention'),
-                "implementation": 'in_operation', # TODO: where to get this from?
-                "intended_size": intended_size,
-                "contract_size": contract_size,
-                "production_size": None,
-                "investor": "Investor-Name-Where-Do-I-Get-This",
-            },
-        )
-        return feature
+        features = []
+        for geometry in result['geometry']:
+            features.append(Feature(
+                id=result['historical_activity_id'],
+                geometry=Point(geometry),
+                properties={
+                    "url": "/en/deal/%s/" % result['historical_activity_id'],
+                    "intention": result.get('intention'),
+                    "implementation": 'in_operation', # TODO: where to get this from?
+                    "intended_size": intended_size,
+                    "contract_size": contract_size,
+                    "production_size": None,
+                    "investor": "Investor-Name-Where-Do-I-Get-This",
+                    "multipoint": len(result['geometry']) > 1
+                },
+            ))
+        return features
     
 
 class _Mock_GlobalDealsView(APIView):

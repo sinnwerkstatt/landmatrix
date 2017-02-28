@@ -78,22 +78,7 @@
             var dealsSource = new ol.source.Vector();
             var dealsCluster = new ol.source.Cluster({
                 source: dealsSource,
-                distance: maxClusterRadius / 2,
-                geometryFunction: function(feature) {
-                    var geom = feature.getGeometry();
-                    
-                    // dealsCluster.removeFeature(feature);
-                    // $.each(geom.getPoints(), function(i, p) {
-                    //     dealsCluster.addFeature(p);
-                    // });
-
-                    // if (geom.getPoints().length == 1) {
-                    //     return null;
-                    // }
-
-                    // TODO: Better handling of multipoints.
-                    return new ol.geom.Point(ol.extent.getCenter(feature.getGeometry().getExtent()));
-                }
+                distance: maxClusterRadius / 2
             });
             
             // Overly for the container with detailed information after a click

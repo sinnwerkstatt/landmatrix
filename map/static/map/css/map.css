@@ -154,6 +154,8 @@
   padding: 2px 0; }
 #details-overlay .attribute-title:not(:first-of-type) {
   margin-top: 1.5rem; }
+#details-overlay .attribute-multipoint {
+  margin-right: 1rem; }
 #details-overlay .link-view-deal {
   margin-top: 1.5rem; }
   #details-overlay .link-view-deal a {
