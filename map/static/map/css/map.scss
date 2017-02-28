@@ -14,6 +14,7 @@ $map-height: 75vh;
   height: $map-height;
 
   #map {
+    height: $map-height;
     display: block;
     margin-left: auto;
     margin-right: auto

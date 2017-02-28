@@ -79,6 +79,7 @@ INSTALLED_APPS += (
     'taggit',
 
     'sass_processor',
+    'sekizai',
 
     'bootstrap3_datetime',
 

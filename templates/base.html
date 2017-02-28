@@ -1,4 +1,4 @@
-{% load i18n static wagtailcore_tags sass_tags filter_tags %}<!DOCTYPE html>
+{% load filter_tags i18n sass_tags sekizai_tags static wagtailcore_tags %}<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -36,6 +36,7 @@
     {% endblock %}
     {% block css %}
     {% endblock %}
+    {% render_block "css" %}
 
 </head>
 <body class="{% if popup %}popup {% endif %}{% block body_class %}{% endblock %}">
@@ -370,5 +371,6 @@ ur.src = ('https:' == document.location.protocol ? 'https://cdn.userreport.com/u
 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ur, s);
 })();
 </script>
+{% render_block "js" %}
 </body>
 </html>

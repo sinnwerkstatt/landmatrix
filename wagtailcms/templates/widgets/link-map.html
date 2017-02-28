@@ -1,41 +1,12 @@
-{% load i18n static sass_tags %}
-<link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
+{% load static %}
 
-<link rel="stylesheet" href="{% static "css/nprogress.css" %}"/>
-<link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
-<!-- <link rel="stylesheet" href="{% static "css/map.css" %}"/> -->
-<link href="{% sass_src 'css/map.scss' %}" rel="stylesheet" type="text/css" />
+{#{{ country }}#}
+{#{{ region }}#}
+{% comment %}
+  There is no 'block' context available, so sekizais addtoblock tags can't be
+  used.
+{% endcomment %}
+<link rel="stylesheet" href="{% static "map/css/map.css" %}">
 
-
-<div id="alert_placeholder"></div>
-
-<div id="map" class="map" title='{% trans "All Deals" %}'></div>
-<div id="popup" class="ol-popup">
-    <a href="#" id="popup-closer" class="noul ol-popup-closer"></a>
-    <div id="popup-content"></div>
-</div>
-
-<script type="text/javascript">
-var mapHideControls = true,
-    {% if country %}
-    mapBounds = [
-        [{{ country.point_lon_min|default_if_none:"null" }}, {{ country.point_lat_min|default_if_none:"null" }}],
-        [{{ country.point_lon_max|default_if_none:"null" }}, {{ country.point_lat_max|default_if_none:"null" }}]
-    ],
-    {% elif region %}
-    mapBounds = [
-        [{{ region.point_lon_min|default_if_none:"null" }}, {{ region.point_lat_min|default_if_none:"null" }}],
-        [{{ region.point_lon_max|default_if_none:"null" }}, {{ region.point_lat_max|default_if_none:"null" }}]
-    ],
-    {% endif %}
-    mapParams = '{% if country %}target_country={{ country.id }}{% elif region %}target_region={{ region.id }}{% endif %}';
-</script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
-<script type="text/javascript" src="{% static "vendor/ol3-google-maps/ol3gm-debug.js" %}"></script>
-<script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
-<script type="text/javascript" src="{% static "js/clusterspiderfier.js" %}"></script>
-<script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
-
-<script type="text/javascript" src="{% static "js/map.js" %}"></script>
-<script type="text/javascript" src="{% static "js/layers.js" %}"></script>
-<script type="text/javascript" src="{% static "js/main.js" %}"></script>
+{% include "map/includes/markup.html" %}
+{% include "map/includes/script.html" %}
