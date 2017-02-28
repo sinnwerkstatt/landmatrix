@@ -2,8 +2,6 @@ from django.conf.urls import url
 
 from api.views import *
 
-
-
 urlpatterns = [
     url(r'^filter\.json', FilterView.as_view(), {'format': 'json'},
         name='api_filter'),
@@ -54,7 +52,6 @@ urlpatterns = [
         {'format': 'json'}, name='hectares_api'),
     url(r'^deals\.json', GlobalDealsView.as_view(), {'format': 'json'},
         name='deals_api'),
-    url(r'^map-popover/$', MapInfoDetailView.as_view(), name='map_overlay'),
     url(r'^country_deals\.json', CountryDealsView.as_view(), {'format': 'json'},
         name='country_deals_api'),
     url(r'^activities\.json', ActivityListView.as_view(),

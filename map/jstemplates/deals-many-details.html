@@ -1,0 +1,33 @@
+<h1><span>{{ legend.label }}: {{ count }} {{#_}}Deals{{/_}}</span></h1>
+
+<div class="row">
+  <canvas id="chart" width="100%"></canvas>
+</div>
+
+<div class="row">
+  <h2>{{ legend.title }}</h2>
+  <table>
+    <tbody>
+      {{# each legend.attributes }}
+        <tr>
+          <td>
+            <span class="legend-symbol" style="background-color:{{ this.color }};"></span>
+            {{ this.label }}
+          </td>
+          <td>{{ this.count}}</td>
+        </tr>
+      {{/ each }}
+    </tbody>
+    <tfoot>
+      <td>{{#_}}Total{{/_}}</td>
+      <td>
+        {{ total }}{{# if hasMultipleAttributes }}*{{/ if }}
+      </td>
+    </tfoot>
+  </table>
+  {{# if hasMultipleAttributes }}
+    <div class="panel panel-default">
+      {{#_}}* Some attributes are selected multiple times for the same deal.{{/_}}
+    </div>
+  {{/ if }}
+</div>

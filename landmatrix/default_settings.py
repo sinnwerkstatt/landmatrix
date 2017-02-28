@@ -84,6 +84,8 @@ INSTALLED_APPS += (
 
     'treebeard',
 
+    'jstemplate',
+
 #   to check test coverage
     'coverage',
     #'simple_history',
