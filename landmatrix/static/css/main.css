@@ -713,7 +713,7 @@ small input {
 
 .label-filter a:hover {
   top: 2px;
-  color: #fc941f;
+  color: white;
   text-decoration: none; }
 
 .toggle-filters {
@@ -855,7 +855,9 @@ table th {
   text-shadow: none !important; }
   .carousel-caption p {
     background-color: #fc941f;
-    color: white; }
+    color: white;
+    display: inline-block;
+    padding: .2em .6em .3em; }
 
 .checkboxes input[type=checkbox]:checked + label:before {
   font-size: 12px;
