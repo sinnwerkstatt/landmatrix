@@ -490,11 +490,19 @@
                     total += c.count;
                 });
 
+                var deals = features.map(function(f) {
+                    return {
+                        id: f.getId(),
+                        url: f.getProperties().url
+                    };
+                });
+
                 featureDetailsElement.html(Handlebars.templates['deals-many-details']({
                     legend: legend,
                     count: count,
                     total: total,
-                    hasMultipleAttributes: count != total
+                    hasMultipleAttributes: count != total,
+                    deals: deals
                 }));
 
                 // Chart

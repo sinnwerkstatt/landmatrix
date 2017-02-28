@@ -250,7 +250,7 @@ class GlobalDealsView(APIView):
         features = []
         for geometry in result['geometry']:
             features.append(Feature(
-                id=result['historical_activity_id'],
+                id=result['historical_activity_id'],  # TODO: Shouldn't result['activity_identifier'] be used?
                 geometry=Point(geometry),
                 properties={
                     "url": "/en/deal/%s/" % result['historical_activity_id'],

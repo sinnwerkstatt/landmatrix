@@ -30,4 +30,13 @@
       {{#_}}* Some attributes are selected multiple times for the same deal.{{/_}}
     </div>
   {{/ if }}
+
+  <div>
+    <h1><span>{{#_}}Deals{{/_}}</span></h1>
+    <ul>
+      {{# each deals }}
+        <li><a href="{{ url }}">{{#_}}Deal #{{/_}}{{ id }} - {{#_}}visit detail page{{/_}}</a></li>
+      {{/ each }}
+    </ul>
+  </div>
 </div>
