@@ -1,5 +1,9 @@
 <h1><span>{{#_}}Deal #{{/_}}{{ id }}</span></h1>
 
+{{# if properties.multipoint }}
+  <p class="alert alert-warning attribute-multipoint">{{#_}}This deal has multiple locations.{{/_}}</p>
+{{/ if }}
+
 <h5 class="attribute-title">{{#_}}Intention of investment{{/_}}</h5>
 <ul>
   {{# each intentions }}
