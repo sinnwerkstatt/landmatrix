@@ -283,11 +283,13 @@ class CountryRegionStructBlock(StructBlock):
     region = None
 
     def __init__(self, *args, **kwargs):
+        print("OOOKKK")
         self.country = kwargs.pop('country', None)
         self.region = kwargs.pop('region', None)
         super().__init__(*args, **kwargs)
 
     def get_context(self, value):
+        print("OOOKKK")
         context = super().get_context(value)
         context.update({
             'country': self.country,
