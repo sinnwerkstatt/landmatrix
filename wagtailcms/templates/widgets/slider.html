@@ -13,7 +13,9 @@
             <div class="item{% if forloop.first %} active{% endif %}">
 				{% include 'widgets/image.html' with url=image.url name=image.name href=image.href %}
                 <div class="carousel-caption">
+                    {% if image.href %}<a href="{{ image.href }}">{% endif %}
                     {{ image.caption|richtext }}
+                    {% if image.href %}</a>{% endif %}
                 </div>
 			</div>
 			{% endfor %}

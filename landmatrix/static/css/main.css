@@ -851,10 +851,21 @@ table th {
   width: 60px !important;
   height: 60px !important; }
 
+.carousel-control.right {
+  right: 0 !important; }
+
+.widget-columns-2 .carousel-control {
+  font-size: 30px;
+  line-height: 15px;
+  width: 30px !important;
+  height: 30px !important; }
+
 .carousel-caption {
+  bottom: 0;
+  padding: 0 !important;
   text-shadow: none !important; }
   .carousel-caption p {
-    background-color: #fc941f;
+    background-color: rgba(0, 0, 0, 0.75);
     color: white;
     display: inline-block;
     padding: .2em .6em .3em; }
