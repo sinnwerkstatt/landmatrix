@@ -186,9 +186,9 @@ class LinkedImageBlock(StructBlock):
 
     def get_context(self, value):
         context = super().get_context(value)
-        context['href'] = value.url
+        context['href'] = value.get('url')
         context['url'] = value.get_rendition('max-1200x1200').url
-        context['name'] = value.title
+        context['name'] = value.get('caption')
         return context
 
 
