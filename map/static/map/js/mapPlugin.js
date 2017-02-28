@@ -8,8 +8,8 @@
                 zoom: 6,
                 centerTo: [-5, 20],
                 legendKey: 'intention',
-                visibleLayer: 'countries',
-                autoToggle: true
+                visibleLayer: 'countries',  // Either "countries" (default) or "deals". Should correspond to state of switch position.
+                autoToggle: true  // Defaults to true. Should correspond to state of checkbox next to switch.
             }, options);
 
             // Chart settings. Also needed to adjust clustering sensibility.
