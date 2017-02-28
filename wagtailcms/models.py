@@ -158,6 +158,8 @@ class NoWrapsStreamField(StreamField):
             self.stream_block = NoWrapsStreamBlock(block_types)
 
 class ImageBlock(ImageChooserBlock):
+    url = blocks.URLBlock(required=False, label='URL')
+
     class Meta:
         icon = 'image'
         template = 'widgets/image.html'
@@ -266,7 +268,7 @@ class TitleBlock(blocks.CharBlock):
 CONTENT_BLOCKS = [
     ('heading', TitleBlock()),
     ('paragraph', blocks.RichTextBlock()),
-    ('image', ImageChooserBlock(icon="image")),
+    ('image', LinkedImageBlock()),
     ('media', EmbedBlock(icon="media")),
     ('html', RawHTMLBlock(icon="code")),
     ('link', LinkBlock(icon="link")),
