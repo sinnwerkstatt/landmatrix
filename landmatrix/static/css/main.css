@@ -847,7 +847,15 @@ table th {
 
 .carousel-control {
   font-size: 60px;
-  line-height: 30px; }
+  line-height: 30px;
+  width: 60px !important;
+  height: 60px !important; }
+
+.carousel-caption {
+  text-shadow: none !important; }
+  .carousel-caption p {
+    background-color: #fc941f;
+    color: white; }
 
 .checkboxes input[type=checkbox]:checked + label:before {
   font-size: 12px;
