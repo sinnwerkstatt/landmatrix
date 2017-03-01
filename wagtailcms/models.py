@@ -268,7 +268,7 @@ class TitleBlock(blocks.CharBlock):
 CONTENT_BLOCKS = [
     ('heading', TitleBlock()),
     ('paragraph', blocks.RichTextBlock()),
-    ('image', LinkedImageBlock()),
+    ('image', ImageBlock()),
     ('media', EmbedBlock(icon="media")),
     ('html', RawHTMLBlock(icon="code")),
     ('link', LinkBlock(icon="link")),
