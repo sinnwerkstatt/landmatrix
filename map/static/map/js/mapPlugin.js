@@ -786,6 +786,12 @@
                 });
             }
 
+            this.zoomToExtent = function(extent) {
+                // this doesn't work; extent should be: [minx, miny, maxx, maxy]
+                var boundingExtent = new ol.extent.boundingExtent(extent);
+                // map.getView().fit(boundingExtent, map.getSize());
+            };
+
             return this;
         }
     });

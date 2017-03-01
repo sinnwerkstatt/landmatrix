@@ -28,20 +28,20 @@
     var tabContainer = $(".tab");
     var menuContainer = $(".panel-menu");
     var layerSwitch = $(".js-layer-switch");
-    var advanceProgressLine = function() {
+    function advanceProgressLine() {
       var currentProgressLine = mapProgress.find(".line:not(." + successClass + "):first");
       currentProgressLine.addClass(successClass);
-    };
-    var advanceProgress = function() {
+    }
+    function advanceProgress() {
       var currentIcon = mapProgress.find(".status:not(." + successClass + "):first");
       currentIcon.addClass(successClass);
       advanceProgressLine();
-    };
-    var finishProgress = function() {
+    }
+    function finishProgress() {
       mapProgress.find('.line').addClass(successClass);
       advanceProgress();
       mapProgress.fadeOut();
-    };
+    }
     function showHideTabContent() {
       tabContainer.toggleClass("hidden");
       var content = showHideContent.children("h4:first");
@@ -74,7 +74,7 @@
     // first step: replace static image with map.
     advanceProgress();
     var map = $.setMap({
-      countriesUrl: "{% url "country_deals_api" %}",
+      countriesUrl: "{% url "country_deals_api" %}{% if country %}?country={{ country.id }}{% endif %}",
       dealsUrl: "{% url "deals_api" %}",
       legend: {{ legend_json|safe }},
       legendKey: legendSelect.val(),
@@ -84,6 +84,13 @@
       autoToggle: true,  // Defaults to true. Should correspond to state of checkbox next to switch.
       switchLayerCallback: switchLayerTo
     });
+    {% if map_object %}
+      map.zoomToExtent([
+        {{ map_object.point_lon_min }}, {{ map_object.point_lat_min }},
+        {{ map_object.point_lon_max }}, {{ map_object.point_lat_max }}
+      ]);
+    {% endif %}
+
     mapPlaceholder.remove();
     advanceProgressLine();
     // load country-data and cluster deals.

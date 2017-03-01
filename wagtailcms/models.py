@@ -343,12 +343,14 @@ class LinkMapBlock(CountryRegionStructBlock):
         template = 'widgets/link-map.html'
 
     def get_context(self, value):
+        # prevent circular import
         from map.views import MapSettingsMixin
         legend = MapSettingsMixin().get_legend()
         context = super().get_context(value)
         context.update({
             'legend': legend,
-            'legend_json': json.dumps(legend)
+            'legend_json': json.dumps(legend),
+            'map_object': self.region or self.country
         })
         return context
 
