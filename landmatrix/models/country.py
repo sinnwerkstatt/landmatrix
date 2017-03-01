@@ -1,6 +1,7 @@
-import jsonfield
-from django.contrib.gis.db import models
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+import jsonfield
 
 
 class CountryManager(models.Manager):
