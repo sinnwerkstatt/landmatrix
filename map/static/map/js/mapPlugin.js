@@ -260,7 +260,9 @@
                         var sizeVariables = getChartSizeVariables(clusterData.count);
                         clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals', sizeVariables.chartSize));
 
-                        return getChartStyle(clusterSVG, clusterData.count.toString(), sizeVariables.chartSize, sizeVariables.fontSize);
+                        // No cluster text label for single locations (marker)
+                        var clusterText = clusterData.count > 1 ? clusterData.count.toString() : '';
+                        return getChartStyle(clusterSVG, clusterText, sizeVariables.chartSize, sizeVariables.fontSize);
                     },
                     visible: settings.visibleLayer == 'deals'
                 })
@@ -438,6 +440,16 @@
 
                     svg.push('<circle class="donut-segment" cx="' + chartSize/2 + '" cy="' + chartSize/2 + '" r="' + radius + '" fill="transparent" stroke="' + currColor + '" stroke-width="' + donutWidth + '" stroke-dasharray="' + currValue + ' ' + currRemainder + '" stroke-dashoffset="' + offset + '"></circle>');
                 });
+
+                // If it is a single deal location, add a marker
+                if (data.count == 1 && clusterType == 'deals') {
+                    // Parameters found through try-and-error, there is most
+                    // probably a better way ...
+                    var translate = chartSize / 2.38;
+                    var scale = chartSize / 100;
+                    svg.push('<path transform="translate(' + translate + ' ' + translate + ') scale(' + scale + ')" fill="#4a4a4a" d="M8 0c-2.761 0-5 2.239-5 5 0 5 5 11 5 11s5-6 5-11c0-2.761-2.239-5-5-5zM8 8.063c-1.691 0-3.063-1.371-3.063-3.063s1.371-3.063 3.063-3.063 3.063 1.371 3.063 3.063-1.371 3.063-3.063 3.063zM6.063 5c0-1.070 0.867-1.938 1.938-1.938s1.938 0.867 1.938 1.938c0 1.070-0.867 1.938-1.938 1.938s-1.938-0.867-1.938-1.938z" />');
+                }
+
                 svg.push('</svg>');
                 return svg.join('');
             }
@@ -478,11 +490,19 @@
                     total += c.count;
                 });
 
+                var deals = features.map(function(f) {
+                    return {
+                        id: f.getId(),
+                        url: f.getProperties().url
+                    };
+                });
+
                 featureDetailsElement.html(Handlebars.templates['deals-many-details']({
                     legend: legend,
                     count: count,
                     total: total,
-                    hasMultipleAttributes: count != total
+                    hasMultipleAttributes: count != total,
+                    deals: deals
                 }));
 
                 // Chart
