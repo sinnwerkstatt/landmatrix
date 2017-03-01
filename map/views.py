@@ -33,27 +33,27 @@ class MapSettingsMixin:
                 'attributes': [
                     {
                         'label': _('Project not started'),
-                        'id': 'not_started',
+                        'id': 'Project not started',
                         'color': '#1D6914'
                     },
                     {
                         'label': _('Startup phase (no production)'),
-                        'id': 'startup',
+                        'id': 'Startup phase (no production)',
                         'color': '#2A4BD7'
                     },
                     {
                         'label': _('In operation (production)'),
-                        'id': 'in_operation',
+                        'id': 'In operation (production)',
                         'color': '#575757'
                     },
                     {
                         'label': _('Project abandoned'),
-                        'id': 'abandoned',
+                        'id': 'Project abandoned',
                         'color': '#AD2323'
                     },
                     {
                         'label': _('Unknown'),
-                        'id': 'unknown',
+                        'id': 'Unknown',
                         'color': '#81C57A'
                     }
                 ]
@@ -63,42 +63,42 @@ class MapSettingsMixin:
                 'attributes': [
                     {
                         'label': _('Agriculture'),
-                        'id': 'agriculture',
+                        'id': 'Agriculture',
                         'color': '#1D6914'
                     },
                     {
                         'label': _('Forestry'),
-                        'id': 'forestry',
+                        'id': 'Forestry',
                         'color': '#2A4BD7'
                     },
                     {
                         'label': _('Mining'),
-                        'id': 'mining',
+                        'id': 'Mining',
                         'color': '#814A19'
                     },
                     {
                         'label': _('Tourism'),
-                        'id': 'tourism',
+                        'id': 'Tourism',
                         'color': '#9DAFFF'
                     },
                     {
                         'label': _('Industry'),
-                        'id': 'industry',
+                        'id': 'Industry',
                         'color': '#AD2323'
                     },
                     {
                         'label': _('Conservation'),
-                        'id': 'conservation',
+                        'id': 'Conservation',
                         'color': '#575757'
                     },
                     {
                         'label': _('Renewable Energy'),
-                        'id': 'renewable_energy',
+                        'id': 'Renewable Energy',
                         'color': '#81C57A'
                     },
                     {
                         'label': _('Other'),
-                        'id': 'other',
+                        'id': 'Other',
                         'color': '#8126C0'
                     }
                 ]

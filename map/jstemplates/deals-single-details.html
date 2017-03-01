@@ -1,18 +1,14 @@
 <h1><span>{{#_}}Deal #{{/_}}{{ properties.identifier }}</span></h1>
 
-{{# if properties.multipoint }}
-  <p class="alert alert-warning attribute-multipoint">{{#_}}This deal has multiple locations.{{/_}}</p>
-{{/ if }}
-
 <h5 class="attribute-title">{{#_}}Intention of investment{{/_}}</h5>
 <ul>
-  {{# each intentions }}
+  {{# each properties.intention }}
     <li>{{ this }}</li>
   {{/ each }}
 </ul>
 
 <h5 class="attribute-title">{{#_}}Implementation status{{/_}}</h5>
-<p>{{ implementation }}</p>
+<p>{{ properties.implementation }}</p>
 
 <h5 class="attribute-title">{{#_}}Operational company{{/_}}</h5>
 <p>{{ properties.investor }}</p>

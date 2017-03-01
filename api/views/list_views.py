@@ -235,7 +235,7 @@ class GlobalDealsView(APIView):
             properties={
                 "url": "/en/deal/%s/" % result['activity_identifier'],
                 "intention": result.get('intention'),
-                "implementation": 'in_operation', # TODO: where to get this from?
+                "implementation": 'In operation (production)', # TODO: where to get this from?
                 "intended_size": intended_size,
                 "contract_size": contract_size,
                 "production_size": None,
@@ -262,9 +262,9 @@ class _Mock_GlobalDealsView(APIView):
                             "url": "/en/deal/3790/",
                             "intention": [
                                 # Only top categories (eg. no "biofuels")
-                                "agriculture"
+                                "Agriculture"
                             ],
-                            "implementation": 'in_operation',
+                            "implementation": "In operation (production)",
                             "intended_size": 30000,
                             "contract_size": 30000,
                             "production_size": None,
@@ -284,9 +284,9 @@ class _Mock_GlobalDealsView(APIView):
                         "properties": {
                             "url": "/en/deal/1480/",
                             "intention": [
-                                "agriculture"
+                                "Agriculture"
                             ],
-                            "implementation": 'in_operation',
+                            "implementation": "In operation (production)",
                             "intended_size": 30000,
                             "contract_size": 30000,
                             "production_size": None,
@@ -306,9 +306,9 @@ class _Mock_GlobalDealsView(APIView):
                         "properties": {
                             "url": "/en/deal/1474/",
                             "intention": [
-                                "agriculture"
+                                "Agriculture"
                             ],
-                            "implementation": 'abandoned',
+                            "implementation": "Project abandoned",
                             "intended_size": 100000,
                             "contract_size": 25000,
                             "production_size": None,
@@ -328,9 +328,9 @@ class _Mock_GlobalDealsView(APIView):
                         "properties": {
                             "url": "/en/deal/3326/",
                             "intention": [
-                                "mining"
+                                "Mining"
                             ],
-                            "implementation": 'unknown',
+                            "implementation": "Unknown",
                             "intended_size": None,
                             "contract_size": None,
                             "production_size": None,
@@ -350,9 +350,9 @@ class _Mock_GlobalDealsView(APIView):
                         "properties": {
                             "url": "/en/deal/1470/",
                             "intention": [
-                                "agriculture"
+                                "Agriculture"
                             ],
-                            "implementation": 'unknown',
+                            "implementation": "Unknown",
                             "intended_size": 1000,
                             "contract_size": 1000,
                             "production_size": None,
@@ -372,10 +372,10 @@ class _Mock_GlobalDealsView(APIView):
                         "properties": {
                             "url": "/en/deal/1467/",
                             "intention": [
-                                "agriculture",
-                                "renewable_energy"
+                                "Agriculture",
+                                "Renewable Energy"
                             ],
-                            "implementation": 'in_operation',
+                            "implementation": "In operation (production)",
                             "intended_size": 20000,
                             "contract_size": 20000,
                             "production_size": None,
@@ -395,10 +395,10 @@ class _Mock_GlobalDealsView(APIView):
                         "properties": {
                             "url": "/en/deal/1508/",
                             "intention": [
-                                "agriculture",
-                                "forestry"
+                                "Agriculture",
+                                "Forestry"
                             ],
-                            "implementation": 'unknown',
+                            "implementation": "Unknown",
                             "intended_size": None,
                             "contract_size": None,
                             "production_size": None,
@@ -418,11 +418,11 @@ class _Mock_GlobalDealsView(APIView):
                         "properties": {
                             "url": "/en/deal/1486/",
                             "intention": [
-                                "agriculture",
-                                "conservation",
-                                "forestry"
+                                "Agriculture",
+                                "Conservation",
+                                "Forestry"
                             ],
-                            "implementation": 'in_operation',
+                            "implementation": "In operation (production)",
                             "intended_size": 205700,
                             "contract_size": 205700,
                             "production_size": None,
@@ -442,9 +442,9 @@ class _Mock_GlobalDealsView(APIView):
                         "properties": {
                             "url": "/en/deal/1478/",
                             "intention": [
-                                "agriculture"
+                                "Agriculture"
                             ],
-                            "implementation": 'in_operation',
+                            "implementation": "In operation (production)",
                             "intended_size": 160000,
                             "contract_size": 10000,
                             "production_size": None,
@@ -464,10 +464,10 @@ class _Mock_GlobalDealsView(APIView):
                         "properties": {
                             "url": "/en/deal/1481/",
                             "intention": [
-                                "agriculture",
-                                "other"
+                                "Agriculture",
+                                "Other"
                             ],
-                            "implementation": 'abandoned',
+                            "implementation": "Project abandoned",
                             "intended_size": 22441,
                             "contract_size": 22441,
                             "production_size": None,
@@ -487,10 +487,10 @@ class _Mock_GlobalDealsView(APIView):
                         "properties": {
                             "url": "/en/deal/1501/",
                             "intention": [
-                                "agriculture",
-                                "forestry"
+                                "Agriculture",
+                                "Forestry"
                             ],
-                            "implementation": 'unknown',
+                            "implementation": "Unknown",
                             "intended_size": None,
                             "contract_size": None,
                             "production_size": None,
@@ -529,25 +529,25 @@ class CountryDealsView(APIView):
                             "deals": 12,
                             "url": "/en/mali",
                             "intention": {
-                                "agriculture": 4,
-                                "renewable_energy": 2,
-                                "mining": 1,
-                                "forestry": 1,
-                                "tourism": 1,
-                                "industry": 1,
-                                "conservation": 1,
-                                "other": 1
+                                "Agriculture": 4,
+                                "Renewable Energy": 2,
+                                "Mining": 1,
+                                "Forestry": 1,
+                                "Tourism": 1,
+                                "Industry": 1,
+                                "Conservation": 1,
+                                "Other": 1
                             },
                             "accuracy": {
                                 "1km": 6,
                                 "10km": 2
                             },
                             "implementation": {
-                                "not_started": 1,
-                                "startup": 1,
-                                "in_operation": 3,
-                                "abandoned": 3,
-                                "unknown": 2
+                                "Project not started": 1,
+                                "Startup phase (no production)": 1,
+                                "In operation (production)": 3,
+                                "Project abandoned": 3,
+                                "Unknown": 2
                             },
                             # this is a voluntary field, as override for the
                             # 'calculated' centre where the info is displayed.
@@ -613,16 +613,16 @@ class CountryDealsView(APIView):
                             "deals": 3,
                             "url": "/en/bfa",
                             "intention": {
-                                "agriculture": 3,
-                                "renewable_energy": 1
+                                "Agriculture": 3,
+                                "Renewable Energy": 1
                             },
                             "accuracy": {
                                 "1km": 6,
                                 "10km": 2
                             },
                             "implementation": {
-                                "in_operation": 2,
-                                "unknown": 1
+                                "In operation (production)": 2,
+                                "Unknown": 1
                             },
                         },
                         "geometry": {
@@ -663,18 +663,18 @@ class CountryDealsView(APIView):
                             "deals": 9,
                             "url": "/en/civ",
                             "intention": {
-                                "agriculture": 9,
-                                "renewable_energy": 1,
-                                "forestry": 1
+                                "Agriculture": 9,
+                                "Renewable Energy": 1,
+                                "Forestry": 1
                             },
                             "accuracy": {
                                 "1km": 6,
                                 "10km": 2
                             },
                             "implementation": {
-                                "in_operation": 6,
-                                "not_started": 2,
-                                "unknown": 1
+                                "In operation (production)": 6,
+                                "Project not started": 2,
+                                "Unknown": 1
                             },
                         },
                         "geometry": {
@@ -713,21 +713,21 @@ class CountryDealsView(APIView):
                             "deals": 41,
                             "url": "/en/ghana",
                             "intention": {
-                                "agriculture": 37,
-                                "renewable_energy": 3,
-                                "conservation": 1,
-                                "forestry": 6
+                                "Agriculture": 37,
+                                "Renewable Energy": 3,
+                                "Conservation": 1,
+                                "Forestry": 6
                             },
                             "accuracy": {
                                 "1km": 6,
                                 "10km": 2
                             },
                             "implementation": {
-                                "startup": 7,
-                                "not_started": 4,
-                                "abandoned": 3,
-                                "in_operation": 20,
-                                "unknown": 7
+                                "Startup phase (no production)": 7,
+                                "Project not started": 4,
+                                "Project abandoned": 3,
+                                "In operation (production)": 20,
+                                "Unknown": 7
                             },
                         },
                         "geometry": {
@@ -756,16 +756,16 @@ class CountryDealsView(APIView):
                             "deals": 10,
                             "url": "/en/togo",
                             "intention": {
-                                "agriculture": 9,
-                                "tourism": 4
+                                "Agriculture": 9,
+                                "Tourism": 4
                             },
                             "accuracy": {
                                 "1km": 6,
                                 "10km": 2
                             },
                             "implementation": {
-                                "startup": 4,
-                                "in_operation": 6
+                                "Startup phase (no production)": 4,
+                                "In operation (production)": 6
                             },
                         },
                         "geometry": {
