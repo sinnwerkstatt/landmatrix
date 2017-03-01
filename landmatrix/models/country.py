@@ -1,6 +1,5 @@
-
-
-from django.db import models
+import jsonfield
+from django.contrib.gis.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -42,6 +41,7 @@ class Country(models.Model):
     high_income = models.BooleanField(_("High income"), default=False)
     is_target_country = models.BooleanField(
         _("Is target country"), default=False)
+    polygon = jsonfield.JSONField()
 
     objects = CountryManager()
 
