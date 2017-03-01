@@ -806,10 +806,15 @@
                 });
             }
 
-            this.zoomToExtent = function(extent) {
-                // this doesn't work; extent should be: [minx, miny, maxx, maxy]
-                var boundingExtent = new ol.extent.boundingExtent(extent);
-                // map.getView().fit(boundingExtent, map.getSize());
+            /**
+             *  x and y are intentionally flipped in this method, as this
+             *  matches the existing data from the database.
+             */
+            this.zoomToExtent = function(minx, miny, maxx, maxy) {
+                var extent = ol.proj.transformExtent(
+                    [miny, minx, maxy, maxx], 'EPSG:4326', 'EPSG:3857'
+                );
+                map.getView().fit(extent, map.getSize());
             };
 
             return this;

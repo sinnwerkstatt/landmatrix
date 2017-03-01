@@ -80,15 +80,18 @@
       legendKey: legendSelect.val(),
       featureDetailsElement: "details-overlay",
       featureDetailsCallback: activateTabContent,
-      visibleLayer: {% if map_object %}"deals"{% else %} "countries"{% endif %},
-      autoToggle: true,
+      visibleLayer: {% if map_object %}"deals"{% else %}"countries"{% endif %},
+      autoToggle: {% if map_object %}false{% else %}true{% endif %},
+      {% if map_object %}centerTo: [{{ map_object.point_lon }}, {{ map_object.point_lat }}],{% endif %}
       switchLayerCallback: switchLayerTo
     });
     {% if map_object %}
-      map.zoomToExtent([
-        {{ map_object.point_lon_min }}, {{ map_object.point_lat_min }},
-        {{ map_object.point_lon_max }}, {{ map_object.point_lat_max }}
-      ]);
+      map.zoomToExtent(
+          {{ map_object.point_lon_min }},
+          {{ map_object.point_lat_min }},
+          {{ map_object.point_lon_max }},
+          {{ map_object.point_lat_max }}
+      );
     {% endif %}
 
     mapPlaceholder.remove();
