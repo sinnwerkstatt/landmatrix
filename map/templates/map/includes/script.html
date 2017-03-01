@@ -80,8 +80,8 @@
       legendKey: legendSelect.val(),
       featureDetailsElement: "details-overlay",
       featureDetailsCallback: activateTabContent,
-      visibleLayer: "countries",  // Either "countries" (default) or "deals". Should correspond to state of switch position.
-      autoToggle: true,  // Defaults to true. Should correspond to state of checkbox next to switch.
+      visibleLayer: {% if map_object %}"deals"{% else %} "countries"{% endif %},
+      autoToggle: true,
       switchLayerCallback: switchLayerTo
     });
     {% if map_object %}
