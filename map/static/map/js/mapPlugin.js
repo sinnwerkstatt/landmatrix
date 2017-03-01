@@ -160,7 +160,7 @@
                 $.each(features, function(index, feature) {
                     var properties = feature.getProperties()[mapInstance.legendKey];
                     if (!properties) return;
-                    
+
                     if (typeof properties === 'string') {
                         properties = [properties];
                     }
@@ -529,6 +529,7 @@
                     legend: legend,
                     count: count,
                     total: total,
+                    hasMultipleAttributes: count != total,
                     deals: dealsData
                 }));
 
@@ -621,16 +622,8 @@
                     mapInstance.legendLabelled = legendLabelled;
                 }
 
-                // Lookup translations for certain values.
-                var properties = feature.getProperties();
-                var intentions = properties.intention.map(function(l) {
-                    return mapInstance.legendLabelled.intention[l]; });
-                var implementation = mapInstance.legendLabelled.implementation[properties.implementation];
-
                 featureDetailsElement.html(Handlebars.templates['deals-single-details']({
-                    properties: feature.getProperties(),
-                    intentions: intentions,
-                    implementation: implementation
+                    properties: feature.getProperties()
                 }));
             }
 
