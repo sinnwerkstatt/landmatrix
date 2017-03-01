@@ -157,12 +157,8 @@ class GlobalDealsView(APIView):
         
         # filter results
         result_list = self.filter_returned_results(raw_result_list)
-        # merge multipoints and prepare location data for results
-        result_list = self.format_result_location_data(result_list)
         # parse results
-        features = []
-        for result in result_list:
-            features.extend(self.create_feature_from_result(result))
+        features = [self.create_feature_from_result(result) for result in result_list]
         response = Response(FeatureCollection(features))
         return response
     
@@ -223,22 +219,6 @@ class GlobalDealsView(APIView):
         
         return result_list
     
-    def format_result_location_data(self, result_list):
-        """ Merges matched results that are really the same result with multiple location points,
-            which are put into the index as multiple documents. Also adds a 'geometry' attribute
-            to the results with a list of location tuples, as needed by GeoJSON. """
-        historic_activities = {}
-        for result in result_list:
-            unique_id = "%s_%s" % (result['activity_identifier'], result['historical_activity_id']) 
-            geometry = (float(result['point_lon']), float(result['point_lat']))
-            if unique_id in historic_activities:
-                historic_activities[unique_id]['geometry'].append(geometry)
-            else:
-                result['geometry'] = [ geometry ]
-                historic_activities[unique_id] = result
-        result_list = historic_activities.values()
-        return result_list
-    
     def create_feature_from_result(self, result):
         """ Create a GeoJSON-conform result. """
         
@@ -247,24 +227,23 @@ class GlobalDealsView(APIView):
         contract_size = result.get('contract_size', None)
         contract_size = contract_size and contract_size[0] # saved as an array currently?
 
-        features = []
-        for geometry in result['geometry']:
-            features.append(Feature(
-                id=result['historical_activity_id'],  # TODO: Shouldn't result['activity_identifier'] be used?
-                geometry=Point(geometry),
-                properties={
-                    "url": "/en/deal/%s/" % result['historical_activity_id'],
-                    "intention": result.get('intention'),
-                    "implementation": 'in_operation', # TODO: where to get this from?
-                    "intended_size": intended_size,
-                    "contract_size": contract_size,
-                    "production_size": None,
-                    "investor": "Investor-Name-Where-Do-I-Get-This",
-                    "multipoint": len(result['geometry']) > 1
-                },
-            ))
-        return features
-    
+        geometry = (float(result['point_lon']), float(result['point_lat']))
+        return Feature(
+            # Do not use ID for feature. Duplicate IDs lead to problems in
+            # Openlayers.
+            geometry=Point(geometry),
+            properties={
+                "url": "/en/deal/%s/" % result['activity_identifier'],
+                "intention": result.get('intention'),
+                "implementation": 'in_operation', # TODO: where to get this from?
+                "intended_size": intended_size,
+                "contract_size": contract_size,
+                "production_size": None,
+                "investor": "Investor-Name-Where-Do-I-Get-This",
+                "identifier": result.get('activity_identifier'),
+            },
+        )
+
 
 class _Mock_GlobalDealsView(APIView):
     """

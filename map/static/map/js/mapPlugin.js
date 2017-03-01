@@ -217,7 +217,32 @@
                         });
                         maxFeatureCount = Math.max(maxFeatureCount, c);
                     } else {
-                        maxFeatureCount = Math.max(maxFeatureCount, clusteredFeatures.length);
+                        maxFeatureCount = Math.max(
+                            maxFeatureCount,
+                            getUniqueDealsFromFeatures(clusteredFeatures).length);
+                    }
+                });
+            }
+
+            /**
+             * Filter a list of features and return only the first feature of a
+             * deal based on its identifier. This removes multipoint entries by
+             * keeping only the first point encountered.
+             *
+             * CAREFUL: This does not really return deals with multipoint
+             * geometries, it just returns the first feature of each deal. Use
+             * this only for calculating statistics etc., not for mapping!
+             *
+             * @param features
+             * @returns list of deal features.
+             */
+            function getUniqueDealsFromFeatures(features) {
+                var uniqueIds = [];
+                return features.filter(function(c) {
+                    var id = c.getProperties().identifier;
+                    if (uniqueIds.indexOf(id) == -1) {
+                        uniqueIds.push(id);
+                        return c;
                     }
                 });
             }
@@ -254,9 +279,10 @@
                         calculateClusterInfo(dealsCluster);
 
                         var clusteredFeatures = feature.get('features');
+                        var dealFeatures = getUniqueDealsFromFeatures(clusteredFeatures);
 
                         var clusterSVG = new Image();
-                        var clusterData = prepareDealClusterData(clusteredFeatures);
+                        var clusterData = prepareDealClusterData(dealFeatures);
                         var sizeVariables = getChartSizeVariables(clusterData.count);
                         clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals', sizeVariables.chartSize));
 
@@ -475,25 +501,27 @@
             /**
              * Show details about a cluster (list) of features.
              *
-             * @param features: List of features
+             * @param features: List of features (not unique deals!)
              */
             function showManyDealDetails(features) {
                 // Create a copy of the legend object
                 var legend = $.extend(true, {}, options.legend[mapInstance.legendKey]);
 
-                var clusterData = prepareDealClusterData(features);
+                var dealFeatures = getUniqueDealsFromFeatures(features);
+                var clusterData = prepareDealClusterData(dealFeatures);
 
-                var count = features.length;
+                var count = dealFeatures.length;
                 var total = 0;
                 $.each(clusterData.cluster, function(i, c) {
                     legend.attributes[i].count = c.count;
                     total += c.count;
                 });
 
-                var deals = features.map(function(f) {
+                var dealsData = dealFeatures.map(function(f) {
+                    var props = f.getProperties();
                     return {
-                        id: f.getId(),
-                        url: f.getProperties().url
+                        id: props.identifier,
+                        url: props.url
                     };
                 });
 
@@ -501,8 +529,7 @@
                     legend: legend,
                     count: count,
                     total: total,
-                    hasMultipleAttributes: count != total,
-                    deals: deals
+                    deals: dealsData
                 }));
 
                 // Chart
@@ -601,7 +628,6 @@
                 var implementation = mapInstance.legendLabelled.implementation[properties.implementation];
 
                 featureDetailsElement.html(Handlebars.templates['deals-single-details']({
-                    id: feature.getId(),
                     properties: feature.getProperties(),
                     intentions: intentions,
                     implementation: implementation
