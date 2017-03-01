@@ -269,6 +269,7 @@ CONTENT_BLOCKS = [
     ('heading', TitleBlock()),
     ('paragraph', blocks.RichTextBlock()),
     ('image', ImageBlock()),
+    ('linked_image', LinkedImageBlock()),
     ('media', EmbedBlock(icon="media")),
     ('html', RawHTMLBlock(icon="code")),
     ('link', LinkBlock(icon="link")),
