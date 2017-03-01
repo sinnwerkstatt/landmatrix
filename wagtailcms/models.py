@@ -259,14 +259,34 @@ class GalleryBlock(StructBlock):
 
 class TitleBlock(blocks.CharBlock):
 
+    def get_context(self, value):
+        context = super().get_context(value)
+        return context
+
     class Meta:
         icon = 'title'
         label = 'Title'
         template = 'widgets/title.html'
 
+class TitleWithIconBlock(StructBlock):
+    value = blocks.CharBlock(label='Title')
+    fa_icon = blocks.CharBlock(required=False)
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['title'] = value.get('title')
+        context['fa_icon'] = value.get('fa_icon')
+        return context
+
+    class Meta:
+        icon = 'title'
+        label = 'Title with Icon'
+        template = 'widgets/title.html'
+
 #FIXME: Move blocks to blocks.py
 CONTENT_BLOCKS = [
     ('heading', TitleBlock()),
+    ('title', TitleWithIconBlock()),
     ('paragraph', blocks.RichTextBlock()),
     ('image', ImageBlock()),
     ('linked_image', LinkedImageBlock()),
