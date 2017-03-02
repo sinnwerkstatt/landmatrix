@@ -21,8 +21,8 @@
     var activeClass = "active";
     var mapPlaceholder = $("#map-placeholder");
     var showHideContent = $(".show-hide-content");
-    var showIcon = "glyphicon-menu-right";
-    var hideIcon = "glyphicon-menu-left";
+    var showIcon = "lm-angle-right";
+    var hideIcon = "lm-angle-left";
     var legendSelect = $(".js-legend-select");
     var mapLegendClass = ".map-legend";
     var tabContainer = $(".map-overlay-content");
@@ -44,7 +44,7 @@
     }
     function showHideTabContent() {
       tabContainer.toggleClass("is-hidden");
-      var content = showHideContent.children("h4:first");
+      var content = showHideContent.children("i:first");
       if(content.hasClass(hideIcon)) {
         content.removeClass(hideIcon).addClass(showIcon);
       } else {

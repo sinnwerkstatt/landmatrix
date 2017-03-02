@@ -66,16 +66,20 @@
 .map-overlay-tabs {
   float: right; }
   .map-overlay-tabs .list-group-item {
-    padding: 5px 7.5px;
+    padding: 10px 7.5px 5px;
     font-size: 12px; }
+    .map-overlay-tabs .list-group-item:first-of-type {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0; }
+    .map-overlay-tabs .list-group-item:last-of-type {
+      border-bottom-left-radius: 0; }
     .map-overlay-tabs .list-group-item.active {
       background-color: #fc941f;
       border: 1px solid #ddd; }
-      .map-overlay-tabs .list-group-item.active h4.glyphicon {
+      .map-overlay-tabs .list-group-item.active i.lm {
         color: white; }
-  .map-overlay-tabs h4.glyphicon {
-    margin-bottom: 0;
-    margin-top: 5px;
+  .map-overlay-tabs i.lm {
+    font-size: 25px;
     color: #c6c6c6; }
 
 .button-layer-switch {

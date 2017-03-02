@@ -100,22 +100,30 @@ $map-height: 75vh;
   float: right;
 
   .list-group-item {
-    padding: 5px 7.5px;
+    padding: 10px 7.5px 5px;
     font-size: 12px;
+
+    &:first-of-type {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    &:last-of-type {
+      border-bottom-left-radius: 0;
+    }
 
     &.active {
       background-color: $lm_orange;
       border: 1px solid #ddd;
 
-      h4.glyphicon {
+      i.lm {
         color: white;
       }
     }
   }
 
-  h4.glyphicon {
-    margin-bottom: 0;
-    margin-top: 5px;
+  i.lm {
+    font-size: 25px;
     color: #c6c6c6;
   }
 }
