@@ -72,6 +72,7 @@ $map-height: 75vh;
   width: 250px;
   height: $map-height;
   min-height: 500px;
+  padding-right: 1rem;
   background-color: white;
   float: left;
   overflow-y: auto;
@@ -233,11 +234,6 @@ $map-height: 75vh;
 
 .map-legend-select {
   width: 100%;
-  padding-right: 1rem;
-
-  select {
-    width: 100%;
-  }
 }
 
 .map-legend {
@@ -246,12 +242,6 @@ $map-height: 75vh;
 }
 
 .map-details-table {
-  width: 100%;
-  padding-right: 1rem;
-
-  table {
-    width: 100%;
-  }
 
   td:first-child {
     padding-left: 5px;
@@ -272,6 +262,10 @@ $map-height: 75vh;
   td {
     padding: 2px 0;
   }
+}
+
+#map-search-field {
+  width: 100%;
 }
 
 .map-details-notice {
