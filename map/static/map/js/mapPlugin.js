@@ -80,8 +80,21 @@
                 source: dealsSource,
                 distance: maxClusterRadius / 2
             });
-            
-            // Overly for the container with detailed information after a click
+
+            // Map search if available
+            if (settings.searchFieldId) {
+                var mapSearch = new google.maps.places.SearchBox(document.getElementById(settings.searchFieldId));
+                mapSearch.addListener('places_changed', function() {
+                    var places = this.getPlaces();
+                    if (places.length != 1) {
+                      return;
+                    }
+                    var loc = places[0].geometry.viewport.toJSON();
+                    mapInstance.zoomToExtent(loc.south, loc.west, loc.north, loc.east);
+                });
+            }
+
+            // Overlay for the container with detailed information after a click
             var featureDetailsElement = $("#" + settings.featureDetailsElement);
 
             // Draw deals per country with all properties in the geojson.

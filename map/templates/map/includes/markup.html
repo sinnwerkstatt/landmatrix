@@ -59,13 +59,11 @@
         </label>
         {% trans "Autoswitch grouping" %}
         <h4><span>{% trans "Show info about" %}</span></h4>
-        <div class="map-legend-select">
-          <select class="js-legend-select">
-            {% for key, data in legend.items %}
-              <option value="{{ key }}"{% if forloop.first %} selected="selected"{% endif %}>{{ data.label }}</option>
-            {% endfor %}
-          </select>
-        </div>
+        <select class="js-legend-select map-legend-select">
+          {% for key, data in legend.items %}
+            <option value="{{ key }}"{% if forloop.first %} selected="selected"{% endif %}>{{ data.label }}</option>
+          {% endfor %}
+        </select>
         <h4><span>{% trans "Legend" %}</span></h4>
         {% for key, data in legend.items %}
           <div class="{{ key }} map-legend{% if forloop.first %} active{% endif %}">
@@ -79,9 +77,8 @@
       </div>
       <div class="tab-content" data-content="search">
         <h4><span>{% trans "Search" %}</span></h4>
-        <input type="text" placeholder="{% trans "Search location" %}" size="20">
-        <br/>
-        <button>{% trans "Search" %}</button>
+        <p>{% trans "Type in the field below to search for a location." %}</p>
+        <input type="text" placeholder="{% trans "Search location" %}" id="map-search-field">
       </div>
       <div class="tab-content" data-content="context">
         <h4><span>{% trans "Context layers" %}</span></h4>

@@ -10,6 +10,7 @@
   visibleLayer: 'countries',
 {% endcomment %}
 
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.0.1/ol.js" type="text/javascript"></script>
 <script src="{% static "map/js/handlebars.min.js" %}"></script>
 <script src="{% static "map/js/Chart.min.js" %}"></script>
@@ -87,7 +88,8 @@
       visibleLayer: {% if map_object %}"deals"{% else %}"countries"{% endif %},
       autoToggle: {% if map_object %}false{% else %}true{% endif %},
       {% if map_object %}centerTo: [{{ map_object.point_lon }}, {{ map_object.point_lat }}],{% endif %}
-      switchLayerCallback: switchLayerTo
+      switchLayerCallback: switchLayerTo,
+      searchFieldId: 'map-search-field'
     });
     {% if map_object %}
       map.zoomToExtent(
