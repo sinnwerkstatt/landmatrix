@@ -274,7 +274,7 @@ class TitleWithIconBlock(StructBlock):
 
     def get_context(self, value):
         context = super().get_context(value)
-        context['title'] = value.get('title')
+        context['value'] = value.get('value')
         context['fa_icon'] = value.get('fa_icon')
         return context
 
