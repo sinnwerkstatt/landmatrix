@@ -113,9 +113,9 @@ class ExportView(TemplateView):
                                 #else:
                                 #    row_item.append("[]")
                             else:
-                                row_item.append(lv or '')
+                                row_item.append(str(lv) or '')
                         else:
-                            row_item.append(lv or '')
+                            row_item.append(str(lv) or '')
                     row.append(", ".join(filter(None, row_item)))
                 else:
                     row.append(v or "")
