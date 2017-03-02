@@ -26,7 +26,7 @@ def load_geojson(apps, schema_editor):
 def purge_geojson(apps, schema_editor):
     Country = apps.get_model("landmatrix", "Country")
     db_alias = schema_editor.connection.alias
-    Country.objects.using(db_alias).update(polygon=None)
+    Country.objects.using(db_alias).update(polygon=dict())
 
 
 class Migration(migrations.Migration):
