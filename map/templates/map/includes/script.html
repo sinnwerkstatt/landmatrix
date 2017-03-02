@@ -68,6 +68,10 @@
       layerSwitch.children("div").addClass("disabled");
       element.removeClass("disabled");
     }
+    // Initially hide map menu on small screens
+    if ($(window).width() < 500) {
+      showHideTabContent();
+    }
     /**
      *  Map loading progress
      */
