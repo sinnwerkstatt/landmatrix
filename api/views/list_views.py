@@ -1,3 +1,5 @@
+import json
+
 import collections
 from django.contrib.auth import get_user_model
 from rest_framework.generics import ListAPIView
@@ -279,7 +281,12 @@ class CountryDealsView(GlobalDealsView, APIView):
         return PropertyCounter
 
     def get_countries(self, *ids):
-        return Country.objects.filter(id__in=ids)
+        """
+        Get countries with simplified geometry, to reduce size of response.
+        """
+        return Country.objects.extra(
+            select={'simple_geom': 'ST_AsGeoJSON(ST_SimplifyVW(geom, 10000))'}
+        ).filter(id__in=ids)
 
     def get(self, request, *args, **kwargs):
         """
@@ -307,7 +314,7 @@ class CountryDealsView(GlobalDealsView, APIView):
             features.append({
                 'type': 'Feature',
                 'id': country.code_alpha3,
-                'geometry': country.polygon,
+                'geometry': json.loads(country.simple_geom),
                 'properties': {
                     'name': country.name,
                     'deals': target_countries[str(country.id)].counter,
