@@ -104,7 +104,7 @@
                     delete properties.geometry;
 
                     var countryInfoPoint = new ol.Feature(new ol.geom.Point(
-                            ol.proj.fromLonLat([lat, lon], "EPSG:4326")));
+                            ol.proj.fromLonLat([lat, lon])));
                     countryInfoPoint.setProperties(properties);
 
                     countryDealsSource.addFeature(countryInfoPoint);

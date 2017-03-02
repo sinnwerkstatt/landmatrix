@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse_lazy
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -51,3 +52,6 @@ class Country(models.Model):
 
     class Meta:
         ordering = ('name', )
+
+    def get_absolute_url(self):
+        return reverse_lazy('country', kwargs={'country_slug': self.slug})
