@@ -79,7 +79,7 @@
     // first step: replace static image with map.
     advanceProgress();
     var map = $.setMap({
-      countriesUrl: "{% url "country_deals_api" %}{% if country %}?country={{ country.id }}{% endif %}",
+      countriesUrl: "{% url "country_deals_api" %}{% if country %}?country_id={{ country.id }}{% endif %}",
       dealsUrl: "{% url "deals_api" %}",
       legend: {{ legend_json|safe }},
       legendKey: legendSelect.val(),

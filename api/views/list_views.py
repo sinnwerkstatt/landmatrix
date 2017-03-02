@@ -278,6 +278,9 @@ class CountryDealsView(GlobalDealsView, APIView):
 
         return PropertyCounter
 
+    def get_countries(self, *ids):
+        return Country.objects.filter(id__in=ids)
+
     def get(self, request, *args, **kwargs):
         """
         Return grouped deals by country.
@@ -291,11 +294,13 @@ class CountryDealsView(GlobalDealsView, APIView):
 
         target_countries = collections.defaultdict(self.get_country_properties())
 
-        for result in result_list[:10]:
+        for result in result_list:
             if result.get('target_country'):
                 target_countries[result['target_country']].increment(**result)
 
-        countries = Country.objects.filter(id__in=list(target_countries.keys()))
+        filter_country = self.request.GET.get('country_id')
+        country_ids = [filter_country] if filter_country else target_countries.keys()
+        countries = self.get_countries(*country_ids)[0:10]
 
         features = []
         for country in countries:
