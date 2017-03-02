@@ -2,8 +2,6 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib.gis.db import models
 from django.utils.translation import ugettext_lazy as _
 
-import jsonfield
-
 
 class CountryManager(models.Manager):
     pass
@@ -43,8 +41,7 @@ class Country(models.Model):
     high_income = models.BooleanField(_("High income"), default=False)
     is_target_country = models.BooleanField(
         _("Is target country"), default=False)
-    polygon = jsonfield.JSONField()
-    geom = models.MultiPolygonField()
+    geom = models.MultiPolygonField(null=True)
 
     objects = CountryManager()
 
