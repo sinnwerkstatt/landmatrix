@@ -1,11 +1,9 @@
 <h1><span>{{ legend.label }}: {{ count }} {{#_}}Deals{{/_}}</span></h1>
 
-<div class="row">
-  <canvas id="chart" width="100%"></canvas>
-</div>
+<canvas id="chart" width="100%"></canvas>
 
-<div class="row">
-  <h2>{{ legend.title }}</h2>
+<h2>{{ legend.title }}</h2>
+<div class="map-details-table">
   <table>
     <tbody>
       {{# each legend.attributes }}
@@ -26,17 +24,17 @@
     </tfoot>
   </table>
   {{# if hasMultipleAttributes }}
-    <div class="panel panel-default">
+    <div class="map-details-notice">
       {{#_}}* Some attributes are selected multiple times for the same deal.{{/_}}
     </div>
   {{/ if }}
+</div>
 
-  <div>
-    <h1><span>{{#_}}Deals{{/_}}</span></h1>
-    <ul>
-      {{# each deals }}
-        <li><a href="{{ url }}">{{#_}}Deal #{{/_}}{{ id }} - {{#_}}visit detail page{{/_}}</a></li>
-      {{/ each }}
-    </ul>
-  </div>
+<div>
+  <h1><span>{{#_}}Deals{{/_}}</span></h1>
+  <ul>
+    {{# each deals }}
+      <li><a href="{{ url }}">{{#_}}Deal #{{/_}}{{ id }} - {{#_}}visit detail page{{/_}}</a></li>
+    {{/ each }}
+  </ul>
 </div>
