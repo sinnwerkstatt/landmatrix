@@ -23,10 +23,10 @@
     var showHideContent = $(".show-hide-content");
     var showIcon = "glyphicon-menu-right";
     var hideIcon = "glyphicon-menu-left";
-    var legendSelect = $(".legend-select");
+    var legendSelect = $(".js-legend-select");
     var mapLegendClass = ".map-legend";
-    var tabContainer = $(".tab");
-    var menuContainer = $(".panel-menu");
+    var tabContainer = $(".map-overlay-content");
+    var menuContainer = $(".map-overlay-tabs");
     var layerSwitch = $(".js-layer-switch");
     function advanceProgressLine() {
       var currentProgressLine = mapProgress.find(".line:not(." + successClass + "):first");
@@ -43,7 +43,7 @@
       mapProgress.fadeOut();
     }
     function showHideTabContent() {
-      tabContainer.toggleClass("hidden");
+      tabContainer.toggleClass("is-hidden");
       var content = showHideContent.children("h4:first");
       if(content.hasClass(hideIcon)) {
         content.removeClass(hideIcon).addClass(showIcon);
@@ -53,7 +53,7 @@
     }
     // show only one tab, and reset 'menu'
     function activateTabContent(element) {
-        if (tabContainer.hasClass("hidden")) {
+        if (tabContainer.hasClass("is-hidden")) {
             showHideTabContent();
         }
         // activate selected content-div
@@ -110,11 +110,15 @@
      *  Handling of panel, tabs, etc.
      */
     // handle tabs for info-panel
-    $(".panel-menu a:not(.show-hide-content)").click(function(e) {
+    $(".js-toggle-overlay-content").click(function(e) {
       e.preventDefault();
+
+      var tab = $(this).data('tab');
+      tabContainer.toggleClass('is-wide', tab == 'details');
+
       // load content of clicked tab
       var containerElement = tabContainer.children(
-          "div[data-content='" + $(this).data('tab') + "']"
+          "div[data-content='" + tab + "']"
       );
       activateTabContent(containerElement);
     });

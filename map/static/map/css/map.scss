@@ -1,12 +1,9 @@
 @import '../../../../landmatrix/static/css/colors';
 $map-height: 75vh;
 
-// move zoom controls
+// Hide zoom controls
 .ol-zoom {
-  right: 8px;
-  bottom: 40px;
-  top: auto;
-  left: auto;
+  display: none;
 }
 
 .map-container {
@@ -54,181 +51,196 @@ $map-height: 75vh;
       left: 0;
     }
   }
+}
 
-  .map-panel {
-    position: absolute;
-    top: 0;
+.map-overlay {
+  position: absolute;
+  top: 0;
+  z-index: 10;
+}
 
-    &.row, .row {
-      margin-left: 0 !important;
+.map-overlay-content {
+  width: 250px;
+  height: $map-height;
+  background-color: white;
+  float: left;
+  overflow-y: auto;
+
+  -webkit-transition: width 0.2s; /* For Safari 3.1 to 6.0 */
+  transition: width 0.2s;
+
+  &.is-wide {
+    width: 500px;
+  }
+
+  &.is-hidden {
+    width: 0;
+    opacity: 0;
+  }
+
+  .tab-content {
+    display: none;
+
+    &.active {
+      display: block;
     }
+  }
 
-    .list-group-item {
-      padding: 0;
-      font-size: 12px;
-    }
-    .flex-row {
-      display: flex;
-    }
-    .flex-col {
-      flex: 1;
-      padding: 0;
-    }
-    .tab-container {
-      z-index: 10;
-    }
-    .tab-menu {
+  h4 {
+    margin-bottom: 10px;
+    margin-top: 20px;
 
-      h4 {
-        margin-bottom: 0;
-      }
-      .list-group {
-        margin-bottom: 0;
-
-        a {
-          padding: 0 0.5em;
-          .glyphicon {
-            color: $lm_medium1;
-          }
-          &.active {
-            background-color: $lm_orange;
-            color: #fff;
-            border-color: inherit;
-
-            .glyphicon {
-              color: #fff;
-            }
-          }
-        }
-      }
-    }
-    .tab-content {
-      min-width: 250px;
-      height: $map-height;
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-
-    .tab-content, .tab {
-      background-color: #ffffff;
-
-      .js-layer-switch {
-        width: 95%;
-        padding: 5px !important;
-
-        svg {
-          margin: 0 auto;
-        }
-        > div {
-          background-color: #fff;
-          border: 2px solid $lm_orange;
-          border-radius: 5px;
-          opacity: 1;
-          text-align: center;
-        }
-        span {
-          background-color: $lm_orange;
-          color: #fff;
-        }
-
-        .disabled {
-          background-color: inherit;
-          border: none;
-          opacity: 0.6;
-
-          span {
-            background-color: inherit;
-            color: $lm_dark;
-          }
-        }
-        :hover {
-          cursor: pointer;
-        }
-      }
-
-      .switch {
-        float: left;
-        position: relative;
-        display: inline-block;
-        width: 40px;
-        height: 20px;
-        margin-right: 5px;
-      }
-
-      .switch input {
-        display:none;
-      }
-
-      .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        -webkit-transition: .4s;
-        transition: .4s;
-
-        &:before {
-          position: absolute;
-          content: "";
-          height: 12px;
-          width: 12px;
-          left: 4px;
-          bottom: 4px;
-          background-color: white;
-          -webkit-transition: .4s;
-          transition: .4s;
-        }
-        &.round {
-          border-radius: 20px;
-        }
-        &.round:before {
-          border-radius: 50%;
-        }
-      }
-
-      input:checked + .slider {
-        background-color: $lm_orange;
-      }
-
-      input:focus + .slider {
-        box-shadow: 0 0 1px $lm_orange;
-      }
-
-      input:checked + .slider:before {
-        -webkit-transform: translateX(20px);
-        -ms-transform: translateX(20px);
-        transform: translateX(20px);
-      }
-    }
-    .tab .tab-content:not(.active){
-      display: none;
+    &:first-of-type {
+      margin-top: 10px;
     }
   }
 }
 
-// styles for the feature details, after clicking on a cluster or such
-#details-overlay {
+.map-overlay-tabs {
+  float: right;
 
-  .legend-symbol {
-    margin-top: 3px;
+  .list-group-item {
+    padding: 5px 7.5px;
+    font-size: 12px;
+
+    &.active {
+      background-color: $lm_orange;
+      border: 1px solid #ddd;
+
+      h4.glyphicon {
+        color: white;
+      }
+    }
   }
 
+  h4.glyphicon {
+    margin-bottom: 0;
+    margin-top: 5px;
+    color: #c6c6c6;
+  }
+}
+
+.button-layer-switch {
+  margin-right: 1rem;
+  padding: 4px;
+  display: flex;
+
+  svg {
+    margin: 0 auto;
+  }
+  > div {
+    background-color: #fff;
+    border: 2px solid $lm_orange;
+    border-radius: 5px;
+    opacity: 1;
+    text-align: center;
+  }
+  span {
+    background-color: $lm_orange;
+    color: #fff;
+    display: block;
+  }
+
+  .disabled {
+    background-color: inherit;
+    border: none;
+    opacity: 0.6;
+
+    span {
+      background-color: inherit;
+      color: $lm_dark;
+    }
+  }
+  :hover {
+    cursor: pointer;
+  }
+}
+
+.button-switch {
+  float: left;
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  margin-right: 5px;
+
+  input {
+    display:none;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+
+    &:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+    &.round {
+      border-radius: 20px;
+    }
+    &.round:before {
+      border-radius: 50%;
+    }
+  }
+
+  input:checked + .slider {
+    background-color: $lm_orange;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px $lm_orange;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(20px);
+    -ms-transform: translateX(20px);
+    transform: translateX(20px);
+  }
+}
+
+.map-legend-select {
+  width: 100%;
+  padding-right: 1rem;
+
+  select {
+    width: 100%;
+  }
+}
+
+.map-legend {
+  margin-right: 1rem;
+  font-size: 14px;
+}
+
+.map-details-table {
+  width: 100%;
+  padding-right: 1rem;
+
   table {
-    width: 95%;
+    width: 100%;
+  }
+
+  td:first-child {
+    padding-left: 5px;
   }
 
   td:not(:first-child) {
     text-align: center;
-  }
-
-  .tab-content & {
-    width: 500px;
-    //height: $map-height;
-    //overflow-x: hidden;
-    //overflow-y: auto;
   }
 
   tr:nth-child(2n) {
@@ -241,6 +253,22 @@ $map-height: 75vh;
 
   td {
     padding: 2px 0;
+  }
+}
+
+.map-details-notice {
+  border: 1px solid silver;
+  border-radius: 4px;
+  padding: 5px;
+  font-size: 14px;
+  margin-top: 0.5rem;
+}
+
+// styles for the feature details, after clicking on a cluster or such
+#details-overlay {
+
+  .legend-symbol {
+    margin-top: 3px;
   }
 
   .attribute-title:not(:first-of-type) {

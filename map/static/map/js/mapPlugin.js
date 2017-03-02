@@ -482,6 +482,7 @@
 
             // Decide which overlay to show.
             function showFeatureDetails(event, features) {
+                featureDetailsElement.closest('.map-overlay-content').addClass('is-wide');
                 // show empty tab and spinner
                 settings.featureDetailsCallback(
                     featureDetailsElement.parent()
