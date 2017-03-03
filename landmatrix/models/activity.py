@@ -365,10 +365,10 @@ class Activity(ActivityBase):
         if involvements.count() == 0:
             return False
         # 4. Invalid Operational company name?
-        if not self.has_valid_investors(involvements):
+        if not self.has_valid_operational_company(involvements):
             return False
         # 5. Invalid Parent companies/investors?
-        if not self.has_valid_parents(involvements):
+        if not self.has_valid_parent(involvements):
             return False
         return True
 
@@ -388,7 +388,7 @@ class Activity(ActivityBase):
     #    return is_mining_deal
 
 
-    def has_valid_investors(self, involvements):
+    def has_valid_operational_company(self, involvements):
         for i in involvements:
             if not i.fk_investor:
                 continue
@@ -398,19 +398,16 @@ class Activity(ActivityBase):
                 return True
         return False
 
-    def has_valid_parents(self, involvements):
+    def has_valid_parent(self, involvements):
         for i in involvements:
             if not i.fk_investor:
                 continue
-            if i.fk_investor.venture_involvements.count() == 0:
-                return False
-            investor_name = i.fk_investor.name
-            invalid_name = "(unknown|unnamed)"
-            if investor_name and not re.search(invalid_name, investor_name.lower()):
-                return True
-            return False
-    
-        return len(involvements) > 0
+            for pi in i.fk_investor.venture_involvements.all():
+                investor_name = pi.fk_investor.name
+                invalid_name = "(unknown|unnamed)"
+                if investor_name and not re.search(invalid_name, investor_name.lower()):
+                    return True
+        return False
 
     def is_minimum_information_requirement_satisfied(self):
         target_country = self.attributes.filter(name="target_country")
