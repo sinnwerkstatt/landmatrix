@@ -353,6 +353,8 @@ class Activity(ActivityBase):
         involvements = self.investoractivityinvolvement_set.all()
         if not self.has_valid_investors(involvements):
             return False
+        if not self.has_subinvestors(involvements):
+            return False
         return True
 
     #def is_high_income_target_country(self):
@@ -381,11 +383,13 @@ class Activity(ActivityBase):
                 return True
         return False
 
-    #def has_subinvestors(involvements):
-    #        if len(involvements) == 1 and not involvements[0].subinvestors.exists():
-    #            return False
-    #
-    #        return len(involvements) > 0
+    def has_subinvestors(self, involvements):
+        for i in involvements:
+            if i.fk_investor.venture_involvements.count() > 0:
+                return True
+            return False
+    
+        return len(involvements) > 0
 
     def is_minimum_information_requirement_satisfied(self):
         target_country = self.attributes.filter(name="target_country")
