@@ -337,9 +337,7 @@ class Activity(ActivityBase):
             self.negotiation_status = attributes.first().value
 
         # Deal size
-        self.deal_size = None
-        if self.negotiation_status:
-            self.deal_size = self.get_deal_size()
+        self.deal_size = self.get_deal_size()
 
         # Deal scope (domestic or transnational)
         self.deal_scope = self.get_deal_scope()
@@ -461,16 +459,18 @@ class Activity(ActivityBase):
 
         if self.negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
             # intended deal
-            return intended_size or contract_size or production_size
+            return intended_size or contract_size or production_size or 0
         elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
             # concluded deal
-            return contract_size or production_size
+            return contract_size or production_size or 0
         elif self.negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
             # intended but failed deal
-            return intended_size or contract_size or production_size
+            return intended_size or contract_size or production_size or 0
         elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_FAILED:
             # concluded but failed
-            return contract_size or production_size
+            return contract_size or production_size or 0
+        else:
+            return 0
 
     class Meta:
         verbose_name = _('Activity')
