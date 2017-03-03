@@ -55,6 +55,9 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
             return "AND deal_country.fk_region_id = %s" % self.region
         return ''
 
+    def is_public_condition(self):
+        return "a.is_public = 't'"
+
 
 class PublicDealCountQuerySet(FakeQuerySetFlat):
 
