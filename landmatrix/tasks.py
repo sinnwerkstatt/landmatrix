@@ -5,4 +5,5 @@ from api.elasticsearch import es_save
 
 @shared_task
 def index_activity(activity):
-    es_save.index_document(activity)
+    #es_save.index_document(activity)
+    pass

@@ -29,6 +29,7 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
         if self.disable_filters:
             self.disabled_filters = request.session.get('filters')
             request.session['filters'] = {}
+            del(request.session['set_default_filters'])
             # TODO: This is ugly, move set_default_filters to somewhere else
             f = FilterWidgetMixin()
             f.request = request

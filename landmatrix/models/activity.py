@@ -461,28 +461,16 @@ class Activity(ActivityBase):
 
         if self.negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
             # intended deal
-            if not intended_size and contract_size:
-                intended_size = contract_size
-            elif not intended_size and not contract_size and production_size:
-                intended_size = production_size
-            return intended_size
+            return intended_size or contract_size or production_size
         elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
             # concluded deal
-            if not contract_size and production_size:
-                contract_size = production_size
-            return contract_size
+            return contract_size or production_size
         elif self.negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
             # intended but failed deal
-            if not intended_size and contract_size:
-                intended_size = contract_size
-            elif not intended_size and not contract_size and production_size:
-                intended_size = production_size
-            return intended_size
+            return intended_size or contract_size or production_size
         elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_FAILED:
             # concluded but failed
-            if not contract_size and production_size:
-                contract_size = production_size
-            return contract_size
+            return contract_size or production_size
 
     class Meta:
         verbose_name = _('Activity')
