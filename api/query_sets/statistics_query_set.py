@@ -32,7 +32,7 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
             # TODO: This is ugly, move set_default_filters to somewhere else
             f = FilterWidgetMixin()
             f.request = request
-            f.set_default_filters(None)
+            f.set_default_filters(None, disabled_presets=[2,])
         super().__init__(request)
         self.country = request.GET.get('target_country')
         self.region = request.GET.get('target_region')

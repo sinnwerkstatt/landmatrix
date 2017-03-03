@@ -199,13 +199,15 @@ class FilterWidgetMixin:
         #stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
         self.request.session['filter_query_params'] = None
 
-    def set_default_filters(self, data):
+    def set_default_filters(self, data, disabled_presets=[]):
         self.remove_default_filters()
         # Don't set default filters?
         if 'set_default_filters' in self.request.session:
             if not self.request.session.get('set_default_filters'):
                 return
-        disabled_presets = hasattr(self, 'disabled_presets') and self.disabled_presets or []
+        if not disabled_presets:
+            if hasattr(self, 'disabled_presets') and self.disabled_presets:
+                disabled_presets = self.disabled_presets
         stored_filters = self.request.session.get('filters', {})
         if not stored_filters:
             stored_filters = {}
