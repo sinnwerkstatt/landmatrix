@@ -346,14 +346,29 @@ class Activity(ActivityBase):
         self.save()
 
     def is_public_deal(self):
+        # Presets:
+        # >= 2000
+        # Size given and size > 200 ha
+        # 5. has subinvestors
+        # 6. has valid investor (not unknown)
+        # 7. Intention is not Mining
+        # 8. Target country is no high income country
+
+        # 1. Flag „not public“ set?
         if not self.is_flag_not_public_off():
             return False
+        # 2. Minimum information missing?
         if not self.is_minimum_information_requirement_satisfied():
             return False
+        # 3. Involvements missing?
         involvements = self.investoractivityinvolvement_set.all()
+        if involvements.count() == 0:
+            return False
+        # 4. Invalid Operational company name?
         if not self.has_valid_investors(involvements):
             return False
-        if not self.has_subinvestors(involvements):
+        # 5. Invalid Parent companies/investors?
+        if not self.has_valid_parents(involvements):
             return False
         return True
 
@@ -383,9 +398,15 @@ class Activity(ActivityBase):
                 return True
         return False
 
-    def has_subinvestors(self, involvements):
+    def has_valid_parents(self, involvements):
         for i in involvements:
-            if i.fk_investor.venture_involvements.count() > 0:
+            if not i.fk_investor:
+                continue
+            if i.fk_investor.venture_involvements.count() == 0:
+                return False
+            investor_name = i.fk_investor.name
+            invalid_name = "(unknown|unnamed)"
+            if investor_name and not re.search(invalid_name, investor_name.lower()):
                 return True
             return False
     
