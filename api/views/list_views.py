@@ -26,9 +26,12 @@ from django.conf import settings
 from geojson import FeatureCollection, Feature, Point, MultiPoint
 from api.filters import load_filters, FILTER_FORMATS_ELASTICSEARCH,\
     FILTER_FORMATS_SQL
+from grid.forms.choices import INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 
 User = get_user_model()
 
+INTENTION_EXCLUDE = list(INTENTION_AGRICULTURE_MAP.keys())
+INTENTION_EXCLUDE.extend(list(INTENTION_FORESTRY_MAP.keys()))
 
 class UserListView(ListAPIView):
     '''
@@ -245,6 +248,13 @@ class GlobalDealsView(APIView):
         intended_size = intended_size and intended_size[0] # saved as an array currently?
         contract_size = result.get('contract_size', None)
         contract_size = contract_size and contract_size[0] # saved as an array currently?
+        production_size = result.get('production_size', None)
+        production_size = production_size and production_size[0] # saved as an array currently?
+        investor = result.get('operational_stakeholder', None)
+        investor = investor and investor[0] # saved as an array currently?
+
+        # Remove subcategories from intention
+        intention = filter(lambda i: i not in INTENTION_EXCLUDE, result.get('intention', []))
 
         # unwrap single points and use a Point, for lists of points with MultiPoints        
         if len(result['geometry']) == 1:
@@ -257,12 +267,12 @@ class GlobalDealsView(APIView):
             geometry=geometry, # could lat/lon be the other way around?   #Point((-6.10233000, 14.03790000)),
             properties={
                 "url": "/en/deal/%s/" % result['historical_activity_id'],
-                "intention": result.get('intention'),
-                "implementation": 'in_operation', # TODO: where to get this from?
+                "intention": intention,
+                "implementation": result.get('implementation_status'),
                 "intended_size": intended_size,
                 "contract_size": contract_size,
-                "production_size": None,
-                "investor": "Investor-Name-Where-Do-I-Get-This",
+                "production_size": production_size,
+                "investor": investor,
             },
         )
         return feature
