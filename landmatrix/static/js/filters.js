@@ -73,7 +73,7 @@ function updateFilters(data) {
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
             // Update title for target country/region
             if (tag == 'target_country' || tag == 'target_region') {
-                $('h1 span').text(data[item].display_value + ': ' + $('h1 span').text());
+                $('h1 span').text((data[item].display_value || 'Global') + ': ' + $('h1 span').text());
             }
         }
         $(finalHtml).appendTo(tags);
