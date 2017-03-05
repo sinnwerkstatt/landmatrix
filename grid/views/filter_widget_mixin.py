@@ -151,6 +151,8 @@ class FilterWidgetMixin:
         # Country or region filter set?
         if data.get('country', None) or data.get('region', None):
             stored_filters = self.request.session.get('filters', {})
+            if not stored_filters:
+                stored_filters = {}
             if data.get('country', None):
                 filter_values['variable'] = 'target_country'
                 filter_values['operator'] = 'is'
@@ -179,14 +181,15 @@ class FilterWidgetMixin:
             filters = filter(lambda f: f.get('variable') in ('target_country', 'target_region'), stored_filters.values())
             for stored_filter in list(filters):
                 stored_filters.pop(stored_filter['name'], None)
-            # Set filter
-            new_filter = Filter(
-                variable=filter_values['variable'], operator=filter_values['operator'],
-                value=filter_values['value'], name=filter_values.get('name', None),
-                label=filter_values['label'], display_value=filter_values.get('display_value', None)
-            )
-            stored_filters[new_filter.name] = new_filter
-            self.request.session['filters'] = stored_filters
+            if filter_values:
+                # Set filter
+                new_filter = Filter(
+                    variable=filter_values['variable'], operator=filter_values['operator'],
+                    value=filter_values['value'], name=filter_values.get('name', None),
+                    label=filter_values['label'], display_value=filter_values.get('display_value', None)
+                )
+                stored_filters[new_filter.name] = new_filter
+                self.request.session['filters'] = stored_filters
         else:
             self.remove_country_region_filter()
 

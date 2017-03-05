@@ -115,36 +115,33 @@ if __name__ == '__main__':
             MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
 
         if options.deal or options.all:
-            pass
-            #MapStatus.map_all(save=options.save, verbose=options.verbose)
-            #MapLanguage.map_all(save=options.save, verbose=options.verbose)
-            #MapActivity.map_all(save=options.save, verbose=options.verbose)
-            #MapActivityChangeset.map_all(save=options.save, verbose=options.verbose)
-            #MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
-            #MapPublicInterfaceCache.map_all(save=options.save, verbose=options.verbose)
-            #MapComment.map_all(save=options.save, verbose=options.verbose)
+            MapStatus.map_all(save=options.save, verbose=options.verbose)
+            MapLanguage.map_all(save=options.save, verbose=options.verbose)
+            MapActivity.map_all(save=options.save, verbose=options.verbose)
+            MapActivityChangeset.map_all(save=options.save, verbose=options.verbose)
+            MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
+            MapPublicInterfaceCache.map_all(save=options.save, verbose=options.verbose)
+            MapComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.country or options.all:
             pass
             #MapCountry.map_all(save=options.save, verbose=options.verbose)
 
         if options.investor or options.all:
-            pass
             #if not MapStatus._done: MapStatus.map_all(save=options.save, verbose=options.verbose)
-            #MapInvestor.map_all(save=options.save, verbose=options.verbose)
+            MapInvestor.map_all(save=options.save, verbose=options.verbose)
             #if not MapActivity._done: MapActivity.map_all(save=options.save, verbose=options.verbose)
-            MapActivity._done = True
-            MapInvestor._done = True
+            #MapActivity._done = True
+            #MapInvestor._done = True
             MapInvestorActivityInvolvement.map_all(save=options.save, verbose=options.verbose)
             #MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
 
-            #MapStakeholderVentureInvolvement.map_all(save=options.save, verbose=options.verbose)
+            MapStakeholderVentureInvolvement.map_all(save=options.save, verbose=options.verbose)
             #MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.comment or options.all:
-            pass
-            #MapDjangoComments.map_all(save=options.save, verbose=options.verbose)
-            #MapThreadedComments.map_all(save=options.save, verbose=options.verbose)
+            MapDjangoComments.map_all(save=options.save, verbose=options.verbose)
+            MapThreadedComments.map_all(save=options.save, verbose=options.verbose)
 
         if options.produce or options.all:
             pass

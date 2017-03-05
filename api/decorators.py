@@ -18,7 +18,8 @@ def save_filter_query_params(session_id='filter_query_params'):
 
     def valid_params(request):
         return [
-            key for key in request.GET.keys() if key in FILTER_VARIABLE_NAMES
+            #key for key in request.GET.keys() if key in FILTER_VARIABLE_NAMES
+            'status',
         ]
 
     def decorator(view_func):
