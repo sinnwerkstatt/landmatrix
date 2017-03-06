@@ -295,9 +295,7 @@ class CountryDealsView(GlobalDealsView, APIView):
         """
         Get countries with simplified geometry, to reduce size of response.
         """
-        return Country.objects.extra(
-            select={'simple_geom': 'ST_AsGeoJSON(ST_SimplifyVW(geom, 10000))'}
-        ).filter(id__in=ids)
+        return Country.objects.filter(id__in=ids).defer('geom')
 
     def get(self, request, *args, **kwargs):
         """
@@ -318,14 +316,14 @@ class CountryDealsView(GlobalDealsView, APIView):
 
         filter_country = self.request.GET.get('country_id')
         country_ids = [filter_country] if filter_country else target_countries.keys()
-        countries = self.get_countries(*country_ids)[0:10]
+        countries = self.get_countries(*country_ids)
 
         features = []
         for country in countries:
             features.append({
                 'type': 'Feature',
                 'id': country.code_alpha3,
-                'geometry': json.loads(country.simple_geom),
+                # 'geometry': json.loads(country.geom),
                 'properties': {
                     'name': country.name,
                     'deals': target_countries[str(country.id)].counter,

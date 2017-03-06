@@ -709,7 +709,7 @@
                     var features = geojsonFormat.readFeatures(response,
                         {featureProjection: "EPSG:3857"}
                     );
-                    countrySource.addFeatures(features);
+                    // countrySource.addFeatures(features);
                     drawCountryInformation(features, dealsPerCountrySource);
                 });
             };
