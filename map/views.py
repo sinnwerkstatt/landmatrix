@@ -1,3 +1,5 @@
+import contextlib
+
 import collections
 import json
 
@@ -121,16 +123,14 @@ class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
         filters = self.request.session.get('filters', {})
         if 'Target country' in filters:
             target_country_id = filters['Target country']['value']
-            try:
-                context['country'] = Country.objects.get(pk=target_country_id)
-            except (Country.DoesNotExist, ValueError):
-                pass
+            with contextlib.suppress(Country.DoesNotExist, ValueError):
+                context['map_object'] = Country.objects.get(pk=target_country_id)
+
         if 'Target region' in filters:
             target_region_id = filters['Target region']['value']
-            try:
-                context['region'] = Region.objects.get(pk=target_region_id)
-            except (Region.DoesNotExist, ValueError):
-                pass
+            with contextlib.suppress(Region.DoesNotExist, ValueError):
+                context['map_object'] = Region.objects.get(pk=target_region_id)
+
         root = WagtailRootPage.objects.first()
         if root.map_introduction:
             context['introduction'] = root.map_introduction
