@@ -1,5 +1,8 @@
+import json
+
 import collections
 from django.contrib.auth import get_user_model
+from django.http import Http404
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -296,3 +299,31 @@ class CountryDealsView(GlobalDealsView, APIView):
         Get countries with simplified geometry, to reduce size of response.
         """
         return Country.objects.filter(id__in=ids).defer('geom')
+
+
+class CountryGeomView(APIView):
+    """
+    Get minimal geojson of requested country. This works for one country only
+    due to response size but can probably be reduced with ST_dump / ST_union for
+    mulitple countries.
+    """
+
+    http_method_names = ['get']
+
+    def get(self, request, *args, **kwargs):
+        return Response(
+            data={
+                'type': 'Feature',
+                'geometry': json.loads(self.get_queryset().simple_geom)
+            }
+        )
+
+    def get_queryset(self):
+        try:
+            return Country.objects.extra(
+                select={'simple_geom': 'ST_AsGeoJSON(ST_SimplifyVW(geom, 0.01))'}
+            ).get(
+                id=self.request.GET.get('country_id')
+            )
+        except Country.DoesNotExist:
+            raise Http404

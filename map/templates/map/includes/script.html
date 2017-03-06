@@ -2,12 +2,7 @@
 {% load static %}
 
 {% comment %}
-  If this template is loaded from a wagtail-plugin, either 'country' or 'region'
-  is available.
-  zoom: 6,
-  centerTo: [-5, 20],
-  legendKey: 'intention',
-  visibleLayer: 'countries',
+  If this template is loaded from a wagtail-plugin, the 'map_object' is set
 {% endcomment %}
 
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
@@ -39,7 +34,7 @@
       advanceProgressLine();
     }
     function finishProgress() {
-      mapProgress.find('.line').addClass(successClass);
+      mapProgress.find(".line").addClass(successClass);
       advanceProgress();
       mapProgress.fadeOut();
     }
@@ -61,7 +56,7 @@
         tabContainer.children("div").removeClass(activeClass);
         element.addClass(activeClass);
         // update tab-menu
-        menuContainer.children('a').removeClass(activeClass);
+        menuContainer.children("a").removeClass(activeClass);
         menuContainer.find("a[data-tab='" + element.data('content') + "']").addClass(activeClass);
     }
     // custom input element: switch map layers (grouped or deals)
@@ -79,7 +74,7 @@
     // first step: replace static image with map.
     advanceProgress();
     var map = $.setMap({
-      countriesUrl: "{% url "country_deals_api" %}{% if country %}?country_id={{ country.id }}{% endif %}",
+      countriesUrl: "{% url "country_deals_api" %}",
       dealsUrl: "{% url "deals_api" %}",
       legend: {{ legend_json|safe }},
       legendKey: legendSelect.val(),
@@ -89,7 +84,7 @@
       autoToggle: {% if map_object %}false{% else %}true{% endif %},
       {% if map_object %}centerTo: [{{ map_object.point_lon }}, {{ map_object.point_lat }}],{% endif %}
       switchLayerCallback: switchLayerTo,
-      searchFieldId: 'map-search-field'
+      searchFieldId: "map-search-field"
     });
     {% if map_object %}
       map.zoomToExtent(
@@ -98,6 +93,11 @@
           {{ map_object.point_lon_max }},
           {{ map_object.point_lat_max }}
       );
+        {% if is_country %}
+          map.highlightCountry(
+              "{% url "countries_geom_api" %}?country_id={{ map_object.id }}"
+          );
+        {% endif %}
     {% endif %}
 
     mapPlaceholder.remove();
@@ -119,8 +119,8 @@
     $(".js-toggle-overlay-content").click(function(e) {
       e.preventDefault();
 
-      var tab = $(this).data('tab');
-      tabContainer.toggleClass('is-wide', tab == 'details');
+      var tab = $(this).data("tab");
+      tabContainer.toggleClass("is-wide", tab == "details");
 
       // load content of clicked tab
       var containerElement = tabContainer.children(
@@ -146,7 +146,7 @@
       map.toggleVisibleLayer($(this).data("show-layer"));
       // If the toggle is clicked manually, "auto" checkbox is automatically
       // unchecked.
-      $('.js-toggle-cluster-auto').prop('checked', false).change();
+      $(".js-toggle-cluster-auto").prop("checked", false).change();
     });
     $(".js-toggle-cluster-auto").on("change", function() {
       map.setAutoToggle(this.checked);

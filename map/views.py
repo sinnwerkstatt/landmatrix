@@ -125,6 +125,7 @@ class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
             target_country_id = filters['Target country']['value']
             with contextlib.suppress(Country.DoesNotExist, ValueError):
                 context['map_object'] = Country.objects.get(pk=target_country_id)
+                context['is_country'] = True
 
         if 'Target region' in filters:
             target_region_id = filters['Target region']['value']

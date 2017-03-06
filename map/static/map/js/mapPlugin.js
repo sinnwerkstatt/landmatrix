@@ -116,8 +116,9 @@
                     var properties = country.getProperties();
                     delete properties.geometry;
 
-                    var countryInfoPoint = new ol.Feature(new ol.geom.Point(
-                            ol.proj.fromLonLat([lat, lon])));
+                    var countryInfoPoint = new ol.Feature(
+                        new ol.geom.Point(ol.proj.fromLonLat([lat, lon]))
+                    );
                     countryInfoPoint.setProperties(properties);
 
                     countryDealsSource.addFeature(countryInfoPoint);
@@ -826,7 +827,7 @@
             function drawChart(chartData) {
                 var ctx = document.getElementById("chart");
                 var doughnutChart = new Chart(ctx, {
-                    type: 'doughnut',
+                    type: "doughnut",
                     data: {
                         labels: chartData.labels,
                         datasets: [
@@ -845,9 +846,20 @@
              */
             this.zoomToExtent = function(minx, miny, maxx, maxy) {
                 var extent = ol.proj.transformExtent(
-                    [miny, minx, maxy, maxx], 'EPSG:4326', 'EPSG:3857'
+                    [miny, minx, maxy, maxx], "EPSG:4326", "EPSG:3857"
                 );
                 map.getView().fit(extent, map.getSize());
+            };
+
+            this.highlightCountry = function(url) {
+                $.ajax(url).then(function (response) {
+                    var geojsonFormat = new ol.format.GeoJSON();
+                    var features = geojsonFormat.readFeatures(
+                        response, {featureProjection: "EPSG:3857"}
+                    );
+                    countrySource.addFeatures(features);
+                });
+                countryLayer.setVisible(true);
             };
 
             return this;

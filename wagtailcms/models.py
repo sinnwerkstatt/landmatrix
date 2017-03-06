@@ -350,7 +350,8 @@ class LinkMapBlock(CountryRegionStructBlock):
         context.update({
             'legend': legend,
             'legend_json': json.dumps(legend),
-            'map_object': self.region or self.country
+            'map_object': self.region or self.country,
+            'is_country': bool(self.country)
         })
         return context
 

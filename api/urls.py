@@ -18,6 +18,8 @@ urlpatterns = [
         name='negotiation_status_api'),
     url(r'^countries\.json', CountryListView.as_view(),
         {'format': 'json'}, name='countries_api'),
+    url(r'^countries-geom\.json', CountryGeomView.as_view(),
+        {'format': 'json'}, name='countries_geom_api'),
     url(r'^regions\.json', RegionListView.as_view(),
         {'format': 'json'}, name='regions_api'),
     url(r'^investors\.json', InvestorListView.as_view(),
