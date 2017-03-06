@@ -80,8 +80,21 @@
                 source: dealsSource,
                 distance: maxClusterRadius / 2
             });
-            
-            // Overly for the container with detailed information after a click
+
+            // Map search if available
+            if (settings.searchFieldId) {
+                var mapSearch = new google.maps.places.SearchBox(document.getElementById(settings.searchFieldId));
+                mapSearch.addListener('places_changed', function() {
+                    var places = this.getPlaces();
+                    if (places.length != 1) {
+                      return;
+                    }
+                    var loc = places[0].geometry.viewport.toJSON();
+                    mapInstance.zoomToExtent(loc.south, loc.west, loc.north, loc.east);
+                });
+            }
+
+            // Overlay for the container with detailed information after a click
             var featureDetailsElement = $("#" + settings.featureDetailsElement);
 
             // Draw deals per country with all properties in the geojson.
@@ -103,8 +116,9 @@
                     var properties = country.getProperties();
                     delete properties.geometry;
 
-                    var countryInfoPoint = new ol.Feature(new ol.geom.Point(
-                            ol.proj.fromLonLat([lat, lon], "EPSG:4326")));
+                    var countryInfoPoint = new ol.Feature(
+                        new ol.geom.Point(ol.proj.fromLonLat([lat, lon]))
+                    );
                     countryInfoPoint.setProperties(properties);
 
                     countryDealsSource.addFeature(countryInfoPoint);
@@ -132,10 +146,9 @@
                     for (var prop in properties) {
                         if (properties.hasOwnProperty(prop)) {
                             var searchProp = $.grep(data, function(e) { return e.id == prop; });
-                            if (searchProp.length != 1) {
-                                break;
+                            if (searchProp.length == 1) {
+                                searchProp[0].count += properties[prop];
                             }
-                            searchProp[0].count += properties[prop];
                         }
                     }
                 });
@@ -160,17 +173,16 @@
                 $.each(features, function(index, feature) {
                     var properties = feature.getProperties()[mapInstance.legendKey];
                     if (!properties) return;
-                    
+
                     if (typeof properties === 'string') {
                         properties = [properties];
                     }
 
                     $.each(properties, function(i, prop) {
                         var searchProp = $.grep(data, function(e) { return e.id == prop; });
-                        if (searchProp.length != 1) {
-                            return;
+                        if (searchProp.length == 1) {
+                            searchProp[0].count += 1;
                         }
-                        searchProp[0].count += 1;
                     });
                 });
                 return {
@@ -217,7 +229,32 @@
                         });
                         maxFeatureCount = Math.max(maxFeatureCount, c);
                     } else {
-                        maxFeatureCount = Math.max(maxFeatureCount, clusteredFeatures.length);
+                        maxFeatureCount = Math.max(
+                            maxFeatureCount,
+                            getUniqueDealsFromFeatures(clusteredFeatures).length);
+                    }
+                });
+            }
+
+            /**
+             * Filter a list of features and return only the first feature of a
+             * deal based on its identifier. This removes multipoint entries by
+             * keeping only the first point encountered.
+             *
+             * CAREFUL: This does not really return deals with multipoint
+             * geometries, it just returns the first feature of each deal. Use
+             * this only for calculating statistics etc., not for mapping!
+             *
+             * @param features
+             * @returns list of deal features.
+             */
+            function getUniqueDealsFromFeatures(features) {
+                var uniqueIds = [];
+                return features.filter(function(c) {
+                    var id = c.getProperties().identifier;
+                    if (uniqueIds.indexOf(id) == -1) {
+                        uniqueIds.push(id);
+                        return c;
                     }
                 });
             }
@@ -254,13 +291,16 @@
                         calculateClusterInfo(dealsCluster);
 
                         var clusteredFeatures = feature.get('features');
+                        var dealFeatures = getUniqueDealsFromFeatures(clusteredFeatures);
 
                         var clusterSVG = new Image();
-                        var clusterData = prepareDealClusterData(clusteredFeatures);
+                        var clusterData = prepareDealClusterData(dealFeatures);
                         var sizeVariables = getChartSizeVariables(clusterData.count);
                         clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals', sizeVariables.chartSize));
 
-                        return getChartStyle(clusterSVG, clusterData.count.toString(), sizeVariables.chartSize, sizeVariables.fontSize);
+                        // No cluster text label for single locations (marker)
+                        var clusterText = clusterData.count > 1 ? clusterData.count.toString() : '';
+                        return getChartStyle(clusterSVG, clusterText, sizeVariables.chartSize, sizeVariables.fontSize);
                     },
                     visible: settings.visibleLayer == 'deals'
                 })
@@ -375,8 +415,8 @@
                 var currMaxFontSize = currMaxClusterRadius / 100;
                 var minValue = 1;
                 var scaleFactor = (featureCount - minValue) / (maxFeatureCount - minValue);
-                var chartSize = scaleFactor * (currMaxClusterRadius - minClusterRadius) + minClusterRadius;
-                var fontSize = scaleFactor * (currMaxFontSize - minFontSize) + minFontSize;
+                var chartSize = scaleFactor * (currMaxClusterRadius - minClusterRadius) + minClusterRadius || minClusterRadius;
+                var fontSize = scaleFactor * (currMaxFontSize - minFontSize) + minFontSize || minFontSize;
                 return {
                     chartSize: chartSize,
                     fontSize: fontSize
@@ -438,29 +478,166 @@
 
                     svg.push('<circle class="donut-segment" cx="' + chartSize/2 + '" cy="' + chartSize/2 + '" r="' + radius + '" fill="transparent" stroke="' + currColor + '" stroke-width="' + donutWidth + '" stroke-dasharray="' + currValue + ' ' + currRemainder + '" stroke-dashoffset="' + offset + '"></circle>');
                 });
+
+                // If it is a single deal location, add a marker
+                if (data.count == 1 && clusterType == 'deals') {
+                    // Parameters found through try-and-error, there is most
+                    // probably a better way ...
+                    var translate = chartSize / 2.38;
+                    var scale = chartSize / 100;
+                    svg.push('<path transform="translate(' + translate + ' ' + translate + ') scale(' + scale + ')" fill="#4a4a4a" d="M8 0c-2.761 0-5 2.239-5 5 0 5 5 11 5 11s5-6 5-11c0-2.761-2.239-5-5-5zM8 8.063c-1.691 0-3.063-1.371-3.063-3.063s1.371-3.063 3.063-3.063 3.063 1.371 3.063 3.063-1.371 3.063-3.063 3.063zM6.063 5c0-1.070 0.867-1.938 1.938-1.938s1.938 0.867 1.938 1.938c0 1.070-0.867 1.938-1.938 1.938s-1.938-0.867-1.938-1.938z" />');
+                }
+
                 svg.push('</svg>');
                 return svg.join('');
             }
 
+            // Decide which overlay to show.
             function showFeatureDetails(event, features) {
+                featureDetailsElement.closest('.map-overlay-content').addClass('is-wide');
                 // show empty tab and spinner
                 settings.featureDetailsCallback(
                     featureDetailsElement.parent()
                 );
-                featureDetailsElement.html("<i class='fa fa-spinner fa-spin' aria-hidden='true'></i>");
 
-                // load data from MapInfoDetailView
-                $.ajax(settings.featureDetailsUrl, {
-                    type: "POST",
-                    data: JSON.stringify({
-                        "features": new ol.format.GeoJSON().writeFeaturesObject(features),
-                        "legendKey": mapInstance.legendKey,
-                        "layer": settings.visibleLayer
-                    }),
-                    contentType: "application/json; charset=utf-8"
-                }).then(function(response) {
-                    featureDetailsElement.html(response);
+                if (settings.visibleLayer == 'countries') {
+                    showCountryDetails(features);
+                } else {
+                    if (features.length == 1) {
+                        showSingleDealDetails(features[0])
+                    } else {
+                        showManyDealDetails(features);
+                    }
+                }
+            }
+
+            /**
+             * Show details about a cluster (list) of features.
+             *
+             * @param features: List of features (not unique deals!)
+             */
+            function showManyDealDetails(features) {
+                // Create a copy of the legend object
+                var legend = $.extend(true, {}, options.legend[mapInstance.legendKey]);
+
+                var dealFeatures = getUniqueDealsFromFeatures(features);
+                var clusterData = prepareDealClusterData(dealFeatures);
+
+                var count = dealFeatures.length;
+                var total = 0;
+                $.each(clusterData.cluster, function(i, c) {
+                    legend.attributes[i].count = c.count;
+                    total += c.count;
                 });
+
+                var dealsData = dealFeatures.map(function(f) {
+                    var props = f.getProperties();
+                    return {
+                        id: props.identifier,
+                        url: props.url
+                    };
+                });
+
+                featureDetailsElement.html(Handlebars.templates['deals-many-details']({
+                    legend: legend,
+                    count: count,
+                    total: total,
+                    hasMultipleAttributes: count != total,
+                    deals: dealsData
+                }));
+
+                // Chart
+                var chartData = {
+                    colors: legend.attributes.map(function(l) { return l.color }),
+                    labels: legend.attributes.map(function(l) { return l.label }),
+                    data: legend.attributes.map(function(l) { return l.count })
+                };
+                drawChart(chartData);
+            }
+
+            /**
+             * Show details about a cluster (list) of deals grouped by country.
+             * @param features
+             */
+            function showCountryDetails(features) {
+                // Create a copy of the legend object
+                var legend = $.extend(true, {}, options.legend[mapInstance.legendKey]);
+
+                var countries = [];
+                var country_names = [];
+
+                // Loop through each feature to get its values. Also collect
+                // additional information of the feature (name, url etc.)
+                $.each(features, function(i, feature) {
+                    var featureProperties = feature.getProperties();
+
+                    // The feature's properties currently active according to the legend.
+                    var featurePropertiesLegend = featureProperties[mapInstance.legendKey];
+                    if (!featurePropertiesLegend) {
+                        return;
+                    }
+
+                    var featureTotal = 0;
+                    legend.attributes.map(function(l) {
+                        if (!l.values) {
+                            l.values = [];
+                        }
+                        var val = featurePropertiesLegend[l.id] || 0;
+                        l.values.push(val);
+                        featureTotal += val;
+                    });
+
+                    countries.push({
+                        name: featureProperties.name,
+                        total: featureTotal,
+                        url: featureProperties.url
+                    });
+                    country_names.push(featureProperties.name);
+
+                });
+
+                featureDetailsElement.html(Handlebars.templates['countries-details']({
+                    title: country_names.join(', '),
+                    countries: countries,
+                    legend: legend
+                }));
+
+                // Chart
+                var chartData = {
+                    colors: legend.attributes.map(function(l) { return l.color }),
+                    labels: legend.attributes.map(function(l) { return l.label }),
+                    data: legend.attributes.map(function(l) {
+                        return l.values.reduce(function(pv, cv) { return pv + cv; }, 0) || 0;
+                    })
+                };
+                drawChart(chartData);
+            }
+
+            /**
+             * Show details about a single deal.
+             *
+             * @param feature
+             */
+            function showSingleDealDetails(feature) {
+
+                // Collect translated legend values if not available yet.
+                if (!mapInstance.legendLabelled) {
+                    var legendLabelled = {};
+                    for (var legendKey in options.legend) {
+                        if (options.legend.hasOwnProperty(legendKey)) {
+                            var legendValues = {};
+                            $.each(options.legend[legendKey].attributes, function(i, l) {
+                                legendValues[l.id] = l.label;
+                            });
+                            legendLabelled[legendKey] = legendValues;
+                        }
+                    }
+                    mapInstance.legendLabelled = legendLabelled;
+                }
+
+                featureDetailsElement.html(Handlebars.templates['deals-single-details']({
+                    properties: feature.getProperties()
+                }));
             }
 
             // Display popover on click. Doubleclick should still zoom in.
@@ -531,7 +708,7 @@
                     var features = geojsonFormat.readFeatures(response,
                         {featureProjection: "EPSG:3857"}
                     );
-                    countrySource.addFeatures(features);
+                    // countrySource.addFeatures(features);
                     drawCountryInformation(features, dealsPerCountrySource);
                 });
             };
@@ -639,7 +816,60 @@
                 }
             };
 
+            /**
+             * Draw a chart using ChartsJS in a div#chart. Required a data
+             * object with arrays for keys "labels", "data" and "colors."
+             *
+             * @param chartData
+             */
+            function drawChart(chartData) {
+                var ctx = document.getElementById("chart");
+                var doughnutChart = new Chart(ctx, {
+                    type: "doughnut",
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [
+                            {
+                                data: chartData.data,
+                                backgroundColor: chartData.colors
+                            }
+                        ]
+                    }
+                });
+            }
+
+            /**
+             *  x and y are intentionally flipped in this method, as this
+             *  matches the existing data from the database.
+             */
+            this.zoomToExtent = function(minx, miny, maxx, maxy) {
+                var extent = ol.proj.transformExtent(
+                    [miny, minx, maxy, maxx], "EPSG:4326", "EPSG:3857"
+                );
+                map.getView().fit(extent, map.getSize());
+            };
+
+            this.highlightCountry = function(url) {
+                $.ajax(url).then(function (response) {
+                    var geojsonFormat = new ol.format.GeoJSON();
+                    var features = geojsonFormat.readFeatures(
+                        response, {featureProjection: "EPSG:3857"}
+                    );
+                    countrySource.addFeatures(features);
+                });
+                countryLayer.setVisible(true);
+            };
+
             return this;
         }
+    });
+
+    /**
+     * Handlebars helper to format number values: Add thousands separator or
+     * return "-" if no value.
+     */
+    Handlebars.registerHelper('numberFormat', function(val) {
+        // http://stackoverflow.com/a/2901298/841644
+        return val ? val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '-';
     });
 })(jQuery);

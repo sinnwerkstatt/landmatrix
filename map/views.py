@@ -1,3 +1,5 @@
+import contextlib
+
 import collections
 import json
 
@@ -33,27 +35,27 @@ class MapSettingsMixin:
                 'attributes': [
                     {
                         'label': _('Project not started'),
-                        'id': 'not_started',
+                        'id': 'Project not started',
                         'color': '#1D6914'
                     },
                     {
                         'label': _('Startup phase (no production)'),
-                        'id': 'startup',
+                        'id': 'Startup phase (no production)',
                         'color': '#2A4BD7'
                     },
                     {
                         'label': _('In operation (production)'),
-                        'id': 'in_operation',
+                        'id': 'In operation (production)',
                         'color': '#575757'
                     },
                     {
                         'label': _('Project abandoned'),
-                        'id': 'abandoned',
+                        'id': 'Project abandoned',
                         'color': '#AD2323'
                     },
                     {
                         'label': _('Unknown'),
-                        'id': 'unknown',
+                        'id': 'Unknown',
                         'color': '#81C57A'
                     }
                 ]
@@ -63,42 +65,42 @@ class MapSettingsMixin:
                 'attributes': [
                     {
                         'label': _('Agriculture'),
-                        'id': 'agriculture',
+                        'id': 'Agriculture',
                         'color': '#1D6914'
                     },
                     {
                         'label': _('Forestry'),
-                        'id': 'forestry',
+                        'id': 'Forestry',
                         'color': '#2A4BD7'
                     },
                     {
                         'label': _('Mining'),
-                        'id': 'mining',
+                        'id': 'Mining',
                         'color': '#814A19'
                     },
                     {
                         'label': _('Tourism'),
-                        'id': 'tourism',
+                        'id': 'Tourism',
                         'color': '#9DAFFF'
                     },
                     {
                         'label': _('Industry'),
-                        'id': 'industry',
+                        'id': 'Industry',
                         'color': '#AD2323'
                     },
                     {
                         'label': _('Conservation'),
-                        'id': 'conservation',
+                        'id': 'Conservation',
                         'color': '#575757'
                     },
                     {
                         'label': _('Renewable Energy'),
-                        'id': 'renewable_energy',
+                        'id': 'Renewable Energy',
                         'color': '#81C57A'
                     },
                     {
                         'label': _('Other'),
-                        'id': 'other',
+                        'id': 'Other',
                         'color': '#8126C0'
                     }
                 ]
@@ -121,16 +123,15 @@ class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
         filters = self.request.session.get('filters', {})
         if 'Target country' in filters:
             target_country_id = filters['Target country']['value']
-            try:
-                context['country'] = Country.objects.get(pk=target_country_id)
-            except (Country.DoesNotExist, ValueError):
-                pass
+            with contextlib.suppress(Country.DoesNotExist, ValueError):
+                context['map_object'] = Country.objects.get(pk=target_country_id)
+                context['is_country'] = True
+
         if 'Target region' in filters:
             target_region_id = filters['Target region']['value']
-            try:
-                context['region'] = Region.objects.get(pk=target_region_id)
-            except (Region.DoesNotExist, ValueError):
-                pass
+            with contextlib.suppress(Region.DoesNotExist, ValueError):
+                context['map_object'] = Region.objects.get(pk=target_region_id)
+
         root = WagtailRootPage.objects.first()
         if root.map_introduction:
             context['introduction'] = root.map_introduction

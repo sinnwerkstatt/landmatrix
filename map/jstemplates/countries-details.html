@@ -1,0 +1,45 @@
+<h1><span>{{ legend.label }}: {{ title }}</span></h1>
+
+<canvas id="chart" width="100%"></canvas>
+
+<h2>{{ legend.title }}</h2>
+<table class="map-details-table">
+  <thead>
+    <tr>
+      <td></td>
+      {{# each countries}}
+        <td>{{ name }}</td>
+      {{/ each }}
+    </tr>
+  </thead>
+  <tbody>
+    {{# each legend.attributes }}
+      <tr>
+        <td>
+          <span class="legend-symbol" style="background-color:{{ this.color }}"></span>
+          {{ this.label }}
+        </td>
+        {{# each this.values }}
+          <td>{{ this }}</td>
+        {{/ each }}
+      </tr>
+    {{/ each}}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>{{#_}}Total{{/_}}</td>
+      {{# each countries }}
+        <td>{{ total }}</td>
+      {{/ each }}
+    </tr>
+  </tfoot>
+</table>
+
+<div>
+  <h1><span>{{#_}}Country details{{/_}}</span></h1>
+  <ul>
+    {{# each countries}}
+      <li><a href="{{ url }}">{{ name }} - {{#_}}visit detail page{{/_}}</a></li>
+    {{/ each }}
+  </ul>
+</div>

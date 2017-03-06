@@ -11,7 +11,7 @@ from api.views.chart_views import (
 )
 from api.views.list_views import (
     ActivityListView, LatestChangesListView, StatisticsListView, UserListView,
-    DealListView, GlobalDealsView, CountryDealsView, MapInfoDetailView
+    DealListView, GlobalDealsView, CountryDealsView, CountryGeomView
 )
 from api.views.deal_detail_view import DealDetailView
 from api.views.investor_network_view import InvestorNetworkView
@@ -28,5 +28,5 @@ __all__ = (
     'RegionListView', 'StatisticsListView',  'ResourceExtractionView',
     'TargetCountrySummaryListView', 'Top10CountriesView',
     'TransnationalDealListView', 'TransnationalDealsByCountryView',
-    'UserListView', 'GlobalDealsView', 'CountryDealsView', 'MapInfoDetailView'
+    'UserListView', 'GlobalDealsView', 'CountryDealsView', 'CountryGeomView'
 )

@@ -1,6 +1,5 @@
-
-
-from django.db import models
+from django.core.urlresolvers import reverse_lazy
+from django.contrib.gis.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -42,6 +41,7 @@ class Country(models.Model):
     high_income = models.BooleanField(_("High income"), default=False)
     is_target_country = models.BooleanField(
         _("Is target country"), default=False)
+    geom = models.MultiPolygonField(null=True)
 
     objects = CountryManager()
 
@@ -50,3 +50,6 @@ class Country(models.Model):
 
     class Meta:
         ordering = ('name', )
+
+    def get_absolute_url(self):
+        return reverse_lazy('country', kwargs={'country_slug': self.slug})
