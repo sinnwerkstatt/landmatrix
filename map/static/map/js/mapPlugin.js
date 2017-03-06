@@ -146,10 +146,9 @@
                     for (var prop in properties) {
                         if (properties.hasOwnProperty(prop)) {
                             var searchProp = $.grep(data, function(e) { return e.id == prop; });
-                            if (searchProp.length != 1) {
-                                break;
+                            if (searchProp.length == 1) {
+                                searchProp[0].count += properties[prop];
                             }
-                            searchProp[0].count += properties[prop];
                         }
                     }
                 });
@@ -181,10 +180,9 @@
 
                     $.each(properties, function(i, prop) {
                         var searchProp = $.grep(data, function(e) { return e.id == prop; });
-                        if (searchProp.length != 1) {
-                            return;
+                        if (searchProp.length == 1) {
+                            searchProp[0].count += 1;
                         }
-                        searchProp[0].count += 1;
                     });
                 });
                 return {
