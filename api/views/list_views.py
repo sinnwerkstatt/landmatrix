@@ -19,11 +19,15 @@ from landmatrix.models.activity import ActivityBase
 
 from django.conf import settings
 
-from geojson import FeatureCollection, Feature, Point
-from api.filters import load_filters, FILTER_FORMATS_ELASTICSEARCH
+from geojson import FeatureCollection, Feature, Point, MultiPoint
+from api.filters import load_filters, FILTER_FORMATS_ELASTICSEARCH,\
+    FILTER_FORMATS_SQL
+from grid.forms.choices import INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 
 User = get_user_model()
 
+INTENTION_EXCLUDE = list(INTENTION_AGRICULTURE_MAP.keys())
+INTENTION_EXCLUDE.extend(list(INTENTION_FORESTRY_MAP.keys()))
 
 class UserListView(ListAPIView):
     '''
@@ -213,7 +217,7 @@ class GlobalDealsView(APIView):
                         result_list = result_list[:-1]
         
         return result_list
-    
+
     def create_feature_from_result(self, result):
         """ Create a GeoJSON-conform result. """
         
@@ -221,6 +225,13 @@ class GlobalDealsView(APIView):
         intended_size = intended_size and intended_size[0] # saved as an array currently?
         contract_size = result.get('contract_size', None)
         contract_size = contract_size and contract_size[0] # saved as an array currently?
+        production_size = result.get('production_size', None)
+        production_size = production_size and production_size[0] # saved as an array currently?
+        investor = result.get('operational_stakeholder', None)
+        investor = investor and investor[0] # saved as an array currently?
+
+        # Remove subcategories from intention
+        intention = filter(lambda i: i not in INTENTION_EXCLUDE, result.get('intention', []))
 
         geometry = (float(result['point_lon']), float(result['point_lat']))
         return Feature(
@@ -228,13 +239,13 @@ class GlobalDealsView(APIView):
             # Openlayers.
             geometry=Point(geometry),
             properties={
-                "url": "/en/deal/%s/" % result['activity_identifier'],
-                "intention": result.get('intention'),
-                "implementation": 'In operation (production)', # TODO: where to get this from?
+                "url": "/en/deal/%s/" % result['historical_activity_id'],
+                "intention": intention,
+                "implementation": result.get('implementation_status'),
                 "intended_size": intended_size,
                 "contract_size": contract_size,
-                "production_size": None,
-                "investor": "Investor-Name-Where-Do-I-Get-This",
+                "production_size": production_size,
+                "investor": investor,
                 "identifier": result.get('activity_identifier'),
             },
         )

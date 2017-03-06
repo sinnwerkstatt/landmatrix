@@ -158,7 +158,7 @@ class ElasticSearch(object):
                 attrs[a.name].append(value)
             else:
                 attrs[a.name] = [value,]
-                
+              
         for group, group_attrs in spatial_attrs.items():
             doc = attrs.copy()
             doc.update(group_attrs)
@@ -168,6 +168,8 @@ class ElasticSearch(object):
                 doc['geo_point'] = '%s,%s' % (group_attrs.get('point_lat'), group_attrs.get('point_lon'))
             # FIXME: we dont really need 'point_lat' and 'point_lon' here, so we should pop them from doc when adding 'geo_point'
             docs.append(doc)
+
+
         return docs
 
     def refresh_index(self):
