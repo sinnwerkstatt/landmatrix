@@ -1,5 +1,3 @@
-import json
-
 import collections
 from django.contrib.auth import get_user_model
 from rest_framework.generics import ListAPIView
@@ -7,6 +5,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.utils import PropertyCounter
 from grid.views.activity_protocol import ActivityQuerySet
 from api.query_sets.deals_query_set import DealsQuerySet
 from api.query_sets.latest_changes_query_set import LatestChangesQuerySet
@@ -19,9 +18,8 @@ from landmatrix.models.activity import ActivityBase
 
 from django.conf import settings
 
-from geojson import FeatureCollection, Feature, Point, MultiPoint
-from api.filters import load_filters, FILTER_FORMATS_ELASTICSEARCH,\
-    FILTER_FORMATS_SQL
+from geojson import FeatureCollection, Feature, Point
+from api.filters import load_filters, FILTER_FORMATS_ELASTICSEARCH
 from grid.forms.choices import INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 
 User = get_user_model()
@@ -256,59 +254,17 @@ class CountryDealsView(GlobalDealsView, APIView):
     Group deals by country
     """
 
-    def get_country_properties(self):
-        """
-        Helper to increment count of properties. One Properties-class is set
-        per country.
-        """
-        class PropertyCounter(dict):
-            # mapping of keys from elasticsearch <-> legend.
-            properties = {
-                'intention': 'intention',
-                'implementation': 'negotiation_status',
-                'accuracy': 'level_of_accuracy',
-            }
-
-            def __init__(self):
-                super().__init__()
-                self.counter = 0
-                for prop in self.properties.keys():
-                    setattr(self, prop, collections.defaultdict(int))
-
-            def increment(self, **data):
-                for key, es_key in self.properties.items():
-                    values = data.get(es_key)
-                    prop = getattr(self, key)
-                    if isinstance(values, list):
-                        for val in values:
-                            prop[val] += 1
-                    else:
-                        prop[values] += 1
-                self.counter += 1
-
-            def get_properties(self):
-                return {prop: getattr(self, prop) for prop in self.properties}
-
-        return PropertyCounter
-
-    def get_countries(self, *ids):
-        """
-        Get countries with simplified geometry, to reduce size of response.
-        """
-        return Country.objects.filter(id__in=ids).defer('geom')
-
     def get(self, request, *args, **kwargs):
         """
-        Return grouped deals by country.
+        Reuse methods from globaldealsview, but group results by country.
         """
-
         query = self.create_query_from_filters()
         raw_result_list = self.execute_elasticsearch_query(query)
 
         # filter results
         result_list = self.filter_returned_results(raw_result_list)
 
-        target_countries = collections.defaultdict(self.get_country_properties())
+        target_countries = collections.defaultdict(PropertyCounter)
 
         for result in result_list:
             if result.get('target_country'):
@@ -334,3 +290,9 @@ class CountryDealsView(GlobalDealsView, APIView):
             })
 
         return Response(FeatureCollection(features))
+
+    def get_countries(self, *ids):
+        """
+        Get countries with simplified geometry, to reduce size of response.
+        """
+        return Country.objects.filter(id__in=ids).defer('geom')
