@@ -1,0 +1,148 @@
+{% load i18n %}
+{% load static %}
+
+
+<div class="map-container">
+  <div id="map" class="map">
+    <img src="{% static "map/images/map-default.png" %}" alt="{% trans "Map with all deals" %}" id="map-placeholder" style="width: 100%;">
+    <div id="popover"></div>
+  </div>
+  <div class="map-progress row">
+    <div class="col-md-3">
+      <div class="status">
+        <div class="glyphicon glyphicon-picture" aria-hidden="true"></div>
+        {% trans "Map" %}
+      </div>
+      <div class="line right"></div>
+    </div>
+    <div class="col-md-3">
+      <div class="line left"></div>
+      <div class="status">
+        <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
+        {% trans "Countries" %}
+      </div>
+      <div class="line right"></div>
+    </div>
+    <div class="col-md-3">
+      <div class="line left"></div>
+      <div class="status">
+        <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+        {% trans "Deals" %}
+      </div>
+      <div class="line right"></div>
+    </div>
+    <div class="col-md-3">
+      <div class="line left"></div>
+      <div class="status">
+        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+        {% trans "Finished" %}
+      </div>
+    </div>
+  </div>
+  <div class="map-overlay">
+    <div class="map-overlay-content">
+      <div class="tab-content active" data-content="deals">
+        <h4><span>{% trans "Display" %}</span></h4>
+        <div class="js-layer-switch button-layer-switch well">
+          <div class="{% if map_object %}disabled{% endif %}" data-show-layer="countries">
+            <svg version="1.1" id="countries" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="70px" height="70px" viewBox="25 25 50 50" enable-background="new 0 0 100 100" xml:space="preserve"><circle class="donut-hole" cx="50" cy="50" r="15.915494309189533" fill="#f9de98"></circle><circle class="donut-ring" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#d2d3d4" stroke-width="7"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#1D6914" stroke-width="7" stroke-dasharray="69.23076923076923 30.769230769230774" stroke-dashoffset="125"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#2A4BD7" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="55.769230769230774"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#814A19" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="55.769230769230774"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#9DAFFF" stroke-width="7" stroke-dasharray="30.76923076923077 69.23076923076923" stroke-dashoffset="55.769230769230774"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#AD2323" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#575757" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#81C57A" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#8126C0" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle></svg>
+            <span>{% trans "Group by country" %}</span>
+          </div>
+          <div class="{% if not map_object %}disabled{% endif %}" data-show-layer="deals">
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="70px" height="70px" viewBox="25 25 50 50" enable-background="new 0 0 100 100" xml:space="preserve"><circle class="donut-hole" cx="50" cy="50" r="15.915494309189533" fill="#fff"></circle><circle class="donut-ring" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#d2d3d4" stroke-width="7"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#1D6914" stroke-width="7" stroke-dasharray="33.33333333333333 66.66666666666667" stroke-dashoffset="125"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#2A4BD7" stroke-width="7" stroke-dasharray="33.33333333333333 66.66666666666667" stroke-dashoffset="91.66666666666667"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#814A19" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="58.33333333333334"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#9DAFFF" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="58.33333333333334"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#AD2323" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="58.33333333333334"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#575757" stroke-width="7" stroke-dasharray="33.33333333333333 66.66666666666667" stroke-dashoffset="58.33333333333334"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#81C57A" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25.000000000000014"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#8126C0" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25.000000000000014"></circle></svg>
+            <span>{% trans "Individual deals" %}</span>
+          </div>
+        </div>
+        <label class="button-switch switch-auto-cb">
+          <input type="checkbox" checked="checked" class="js-toggle-cluster-auto">
+          <div class="slider round"></div>
+        </label>
+        {% trans "Autoswitch grouping" %}
+        <h4><span>{% trans "Show info about" %}</span></h4>
+        <select class="js-legend-select map-legend-select">
+          {% for key, data in legend.items %}
+            <option value="{{ key }}"{% if forloop.first %} selected="selected"{% endif %}>{{ data.label }}</option>
+          {% endfor %}
+        </select>
+        <h4><span>{% trans "Legend" %}</span></h4>
+        {% for key, data in legend.items %}
+          <div class="{{ key }} map-legend{% if forloop.first %} active{% endif %}">
+            <ul>
+              {% for value_element in data.attributes %}
+                <li><span class="legend-symbol" style="background-color:{{ value_element.color }};"></span>{{ value_element.label }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="tab-content" data-content="search">
+        <h4><span>{% trans "Search" %}</span></h4>
+        <p>{% trans "Type in the field below to search for a location." %}</p>
+        <input type="text" placeholder="{% trans "Search location" %}" id="map-search-field">
+      </div>
+      <div class="tab-content" data-content="context">
+        <h4><span>{% trans "Context layers" %}</span></h4>
+        <ul class="layer-list">
+          <li>
+            <input type="checkbox" id="context-layer-land_cover" name="context-layer" value="land_cover">
+            <label for="context-layer-land_cover">{% trans "Land Cover" %}</label>
+            <div class="context-layer-legend"></div>
+          </li>
+          <li>
+            <input type="checkbox" id="context-layer-cropland" name="context-layer" value="cropland">
+            <label for="context-layer-cropland">{% trans "Global Cropland" %}</label>
+            <div class="context-layer-legend"></div>
+          </li>
+          <li>
+            <input type="checkbox" id="context-layer-indigenous_lands" name="context-layer" value="indigenous_lands">
+            <label for="context-layer-indigenous_lands">{% trans "Indigenous Lands" %}</label>
+          </li>
+          <li>
+            <input type="checkbox" id="context-layer-community_lands" name="context-layer" value="community_lands">
+            <label for="context-layer-community_lands">{% trans "Community Lands" %}</label>
+          </li>
+        </ul>
+      </div>
+      <div class="tab-content" data-content="base">
+        <h4><span>{% trans "Base layers" %}</span></h4>
+        <ul class="layer-list">
+          <li>
+            <input type="radio" id="base-layer-osm" name="base-layer" value="osm" checked="checked">
+            <label for="base-layer-osm">OSM</label>
+          </li>
+          <li>
+            <input type="radio" id="base-layer-esri_satellite" name="base-layer" value="esri_satellite">
+            <label for="base-layer-esri_satellite">ESRI Satellite</label>
+          </li>
+          <li>
+            <input type="radio" id="base-layer-mapquest_satellite" name="base-layer" value="mapquest_satellite">
+            <label for="base-layer-mapquest_satellite">MapQuest Satellite</label>
+          </li>
+        </ul>
+      </div>
+      <div class="tab-content" data-content="details">
+        <div id="details-overlay">{% trans "Please click on a deal or country on the map to select details." %}</div>
+      </div>
+    </div>
+    <div class="map-overlay-tabs">
+      <a href="#" class="list-group-item text-center show-hide-content">
+        <i class="lm lm-angle-left"></i>
+      </a>
+      <a href="#" class="list-group-item text-center active js-toggle-overlay-content" data-tab="deals">
+        <i class="lm lm-cog"></i><br/>{% trans "Deals" %}
+      </a>
+      <a href="#" class="list-group-item text-center js-toggle-overlay-content" data-tab="search">
+        <i class="lm lm-search"></i><br/>{% trans "Search" %}
+      </a>
+      <a href="#" class="list-group-item text-center js-toggle-overlay-content" data-tab="context">
+        <i class="lm lm-map-o"></i><br/>{% trans "Context" %}
+      </a>
+      <a href="#" class="list-group-item text-center js-toggle-overlay-content" data-tab="base">
+        <i class="lm lm-globe"></i><br/>{% trans "Base" %}
+      </a>
+      <a href="#" class="list-group-item text-center js-toggle-overlay-content" data-tab="details">
+        <i class="lm lm-info-circle"></i><br/>{% trans "Details" %}
+      </a>
+    </div>
+  </div>
+</div>

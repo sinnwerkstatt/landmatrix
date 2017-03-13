@@ -14,7 +14,10 @@ def find_attached_activity(activity_id):
         order_by('id').\
         last()
     # print('find_attached_activity', old_activity.activity_identifier, new_activity.id)
-    return new_activity.id
+    if new_activity:
+        return new_activity.id
+    else:
+        return None
 
 
 class MapActivityChangeset(MapModel):

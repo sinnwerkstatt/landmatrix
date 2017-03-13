@@ -15,12 +15,14 @@ class CountriesQuerySet(SimpleFakeQuerySet):
         response = []
         countries = CountryPage.objects.filter(live=True).order_by('title')
         response.append({
-        	'text': str(_('Observatories')),
-        	'children': [[country.id, country.slug, country.title] for country in countries]
+            'text': str(_('Observatories')),
+            'children': [[country.id, country.slug, country.title] for country in countries]
         })
-        countries = Country.objects.filter(is_target_country=True).exclude(id__in=[c.country.id for c in countries]).order_by('name')
+        countries = Country.objects.filter(is_target_country=True).exclude(
+            id__in=[c.country.id for c in countries]
+        ).only('id', 'slug', 'name').order_by('name')
         response.append({
-        	'text': str(_('Other')),
-        	'children': [[country.id, country.slug, country.name] for country in countries]
+            'text': str(_('Other')),
+            'children': [[country.id, country.slug, country.name] for country in countries]
         })
         return response

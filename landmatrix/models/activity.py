@@ -790,4 +790,5 @@ class HistoricalActivity(ActivityBase):
         verbose_name_plural = _('Historical activities')
         get_latest_by = 'history_date'
         ordering = ('-history_date',)
+        get_latest_by = 'id'
 

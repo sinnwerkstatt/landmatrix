@@ -5,6 +5,7 @@ Filtering is pretty complex and extends into api, grid, charts, and map views.
 We try to collect it here in api where possible....
 '''
 from collections import OrderedDict
+from copy import deepcopy
 import operator
 
 from django.utils.translation import ugettext_lazy as _
@@ -16,6 +17,8 @@ from landmatrix.models.country import Country
 from landmatrix.models.filter_preset import FilterPreset
 
 
+FILTER_FORMATS_SQL = 0
+FILTER_FORMATS_ELASTICSEARCH = 1
 
 
 FILTER_VAR_ACT = [
@@ -73,6 +76,19 @@ FILTER_OPERATION_MAP = OrderedDict([
     )),
     ("is_empty", ("IS NULL", "IS NULL", _("is empty"))),
 ])
+
+def get_elasticsearch_match_operation(operator, variable_name, value):
+    """ Returns an elasticsearch-conform Match phrase for each SQL-operator """
+    if operator == 'is': return ('must', {'match_phrase': {variable_name: value}})
+    if operator == 'in': return ('should', {'match_phrase': {variable_name: value}})
+    if operator == 'not_in': return ('must_not', {'match_phrase': {variable_name: value}})
+    if operator == 'gte': return ('must', {'range': {variable_name: {'gte': value}}})
+    if operator == 'gt': return ('must', {'range': {variable_name: {'gt': value}}})
+    if operator == 'lte': return ('must', {'range': {variable_name: {'lte': value}}})
+    if operator == 'lt': return ('must', {'range': {variable_name: {'lt': value}}})
+    if operator == 'contains': return ('must', {'match': {variable_name: value}})
+    if operator == 'is_empty': return ('must', {'match_phrase': {variable_name: ''}})
+
 # TODO: this counter is shared by all users, and is per thread.
 # It should probably be moved to the session
 FILTER_COUNTER = 0
@@ -126,16 +142,8 @@ class Filter(BaseFilter):
         """
         key = self['key'] or 'value'
         # TODO: hopefully _parse_value is no longer required
-        value = _parse_value(self['value'])
-        # Is this still required? Why not just always store ids?
-        is_country_string = (
-            'country' in self['variable'] and
-            key == 'value' and
-            not value.isnumeric()
-        )
-        if is_country_string:
-            country = Country.objects.get(name__iexact=value.replace('-', ' '))
-            value = str(country.pk)
+        value = _parse_value(self['value'], variable=self['variable'], key=key)
+        
         if 'in' in self['operator'] and not isinstance(value, list):
             value = [value]
 
@@ -145,6 +153,49 @@ class Filter(BaseFilter):
         }
 
         return formatted_filter
+    
+    def to_elasticsearch_match(self):
+        """ Will return an elasticsearch operator term and an elasticsearch-format Match or Bool (for multiple matches) dictionary object.
+            Example: ('must', {'match': {'intention__value': 3}, '_filter_name': 'intention__value__is'})
+            Example2: ('must_not', {'bool': 
+                          {'should': [
+                              {'match': {'intention__value': 3}},
+                              {'match': {'intention__value': 3}}
+                          ]},
+                       '_filter_name': 'intention__value__not_in'
+                      })
+            Note: This comes with an added '_filter_name' attribute for internal aggregation which needs to be removed. """
+            
+        key = self['key'] or 'value'
+        # TODO: hopefully _parse_value is no longer required
+        value = _parse_value(self['value'], variable=self['variable'], key=key)
+        definition_key = '__'.join((self['variable'], key, self['operator']))
+        
+        # only the starting operator of this match or query-match is important for the logical operation,
+        # we now map which one
+        elastic_operator = None
+        
+        if 'in' in self['operator'] and isinstance(value, list) and len(value) > 1: # 
+            # generate multiple matches
+            matches = []
+            inside_operator = None
+            for single_value in value:
+                operator, partial_match = get_elasticsearch_match_operation(self['operator'], self['variable'], single_value)
+                inside_operator = operator
+                matches.append(partial_match) 
+            match = {'bool': {inside_operator: matches}, '_filter_name': definition_key}
+            elastic_operator = 'must' 
+            # 'must' is always right here, because the list makes the query already a composite, and the inner operator has effect
+        else:
+            if isinstance(value, list):
+                if len(value) > 1:
+                    print('WARNING: converting a filter without "in" with 2 or more values into a single match!')
+                value = value[0]
+            # generate single value match
+            elastic_operator, match = get_elasticsearch_match_operation(self['operator'], self['variable'], value)
+            match.update({'_filter_name': definition_key})
+        
+        return (elastic_operator, match)
 
 
 class PresetFilter(BaseFilter):
@@ -219,7 +270,90 @@ def format_filters(filters):
     return formatted_filters
 
 
-def load_filters(request):
+def format_filters_elasticsearch(filters, initial_query=None):
+    """
+        Generates an elasticsearch-conform `bool` query from session filters.
+        This acts recursively for nested OR filter groups from preset filters
+        @param filters: A list of Filter or PresetFilter
+        @param query: (Optional) a dict resembling an elasticsearch bool query - filters will be added to this query
+            instead of a new query. Use this for recursive calls.
+        @return: a dict resembling an elasticsearch bool query, without the "{'bool': query}" wrapper
+    """
+    from api.elasticsearch import get_elasticsearch_properties
+        
+    proto_filters = {
+        '_filter_name': None,
+        'must' : [], # AND
+        'filter': [], # EXCLUDE ALL OTHERS
+        'must_not': [], # AND NOT
+        'should': [], # OR
+    }
+    query = initial_query or deepcopy(proto_filters)
+    
+    # TODO: what about 'activity' or 'investor' filter type? (filter_obj.type)
+    for filter_obj in filters:
+        if isinstance(filter_obj, PresetFilter):
+            # we here have multiple filters coming from a preset filter, add them recursively
+            preset_filters = [condition.to_filter() for condition in filter_obj.filter.conditions.all()]
+            if filter_obj.filter.relation == filter_obj.filter.RELATION_OR:
+                # for OR relations we build a new subquery that is ORed and add it to the must matches
+                preset_name = filter_obj.filter.name
+                # we are constructing a regular query, but because this is an OR order, we will take 
+                # all the matches in the 'must' slot and add them to the 'should' list
+                or_query = format_filters_elasticsearch(preset_filters)
+                query['must'].append({
+                    'bool': {
+                        'should': or_query['must'] + or_query['should']
+                    },
+                    '_filter_name': preset_name
+                })
+            else:
+                # for AND relations we just extend the filters into our current query
+                format_filters_elasticsearch(preset_filters, initial_query=query)
+        else:
+            # add a single filter to our query
+            # note: 
+            if filter_obj['variable'] not in get_elasticsearch_properties():
+                print('>> Ignored filter variable "%s" because it was not found in the elasticsearch document properties' % filter_obj['variable'])
+                continue
+            
+            # example: ('should', {'match': {'intention__value': 3}, '_filter_name': 'intention__value__not_in'})
+            elastic_operator, elastic_match = filter_obj.to_elasticsearch_match()
+            
+            branch_list = query[elastic_operator]
+            current_filter_name = elastic_match['_filter_name']
+            existing_match_phrase, existing_i = get_list_element_by_key(branch_list, '_filter_name', current_filter_name)
+            # if no filter exists for this yet, add it
+            if existing_match_phrase is None:
+                branch_list.append(elastic_match)
+            else:
+                # if match phrase exists for this filter, and it is a bool, add the generated match(es) to its list
+                if 'bool' in existing_match_phrase:
+                    inside_operator = [key_name for key_name in existing_match_phrase.keys() if not key_name == '_filter_name'][0]
+                    if 'bool' in elastic_match:
+                        existing_match_phrase[inside_operator].extend(elastic_match[inside_operator])
+                    else:
+                        existing_match_phrase[inside_operator].append(elastic_match)
+                else:
+                    # if match phrase exists and is a single match, pop it
+                    existing_single_match = branch_list.pop(existing_i)
+                    if 'bool' in elastic_match:
+                        inside_operator = [key_name for key_name in elastic_match.keys() if not key_name == '_filter_name'][0]
+                        # if we have a bool, add the bool, add the popped match to bool
+                        elastic_match[inside_operator].append(existing_single_match)
+                        query['must'].append(elastic_match)
+                    else:
+                        # if  we have a single match, make new bool, add popped match and single match
+                        matches = [existing_single_match, elastic_match]
+                        query['must'].append({'bool': {elastic_operator: matches}, '_filter_name': current_filter_name})
+    
+    # remove our meta attribute so the query is elaticsearch-conform
+    if initial_query is None:
+        remove_all_dict_keys_from_mixed_dict(query, '_filter_name')
+    return query
+    
+
+def load_filters(request, filter_format=FILTER_FORMATS_SQL):
     filters = {}
     for filter_name, filter_dict in request.session.get('filters', {}).items():
         if 'preset_id' in filter_dict:
@@ -227,8 +361,12 @@ def load_filters(request):
         else:
             filters[filter_name] = Filter.from_session(filter_dict)
     filters.update(load_filters_from_url(request))
-
-    formatted_filters = format_filters(filters)
+    
+    if filter_format == FILTER_FORMATS_ELASTICSEARCH:
+        # note: passing only Filters, not (name, filter) dict!
+        formatted_filters = format_filters_elasticsearch(filters.values())
+    else:
+        formatted_filters = format_filters(filters, filter_format=filter_format)
 
     return formatted_filters
 
@@ -285,7 +423,7 @@ def clean_filter_query_string(request):
     return whitelist
 
 
-def _parse_value(filter_value):
+def _parse_value(filter_value, variable=None, key=None):
     """
     Necessary due to the different ways single values and lists are stored
     in DB and session.
@@ -298,4 +436,36 @@ def _parse_value(filter_value):
         value = ''
     if '[' in value:
         value = [str(v) for v in json.loads(value)]
+    
+    if variable is not None and key is not None:
+        # Is this still required? Why not just always store ids?
+        is_country_string = (
+            'country' in variable and
+            key == 'value' and
+            not value.isnumeric()
+        )
+        if is_country_string:
+            country = Country.objects.get(name__iexact=value.replace('-', ' '))
+            value = str(country.pk)
+    
     return value
+
+
+def get_list_element_by_key(the_list, key, value):
+    """ returns the *first* dictionary in a list whose value of a key matches the given value, or None """
+    if value is not None and not value == '':
+        for i, dict_element in enumerate(the_list):
+            if dict_element.get(key, None) == value:
+                return dict_element, i
+    return None, None
+
+def remove_all_dict_keys_from_mixed_dict(maybe_dict, key_name):
+    """ Recursively removes all occurences of one key from a dictionary. The recursion if continued in all lists the dictionary contains """
+    if isinstance(maybe_dict, dict):
+        if key_name in maybe_dict:
+            del maybe_dict[key_name]
+        for obj in maybe_dict.values():
+            remove_all_dict_keys_from_mixed_dict(obj, key_name)
+    elif isinstance(maybe_dict, list):
+        for obj in maybe_dict:
+            remove_all_dict_keys_from_mixed_dict(obj, key_name)

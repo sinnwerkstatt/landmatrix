@@ -8,7 +8,7 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0098_auto_20170307_1240'),
+        ('landmatrix', '0099_auto_20170307_1240'),
     ]
 
     operations = [

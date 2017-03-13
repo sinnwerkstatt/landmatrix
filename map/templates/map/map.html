@@ -1,75 +1,46 @@
 {% extends "base.html" %}
-{% load i18n custom_tags filter_tags sass_tags %}
-{% load humanize %}
+
+{% load i18n %}
+{% load sekizai_tags %}
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static "vendor/openlayers/ol.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/nprogress.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/map.css" %}"/>
+  {% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static "map/css/map.css" %}">
+  {% endaddtoblock %}
 {% endblock %}
 
 {% block page_title %}{% trans "Map" %}{% endblock %}
 {% block title %}{% trans "Map" %}{% endblock %}
 {% block breadcrumb_inner %}
-    <li>{% trans "Map" %}</li>
+  <li><a href="{% url 'data' %}">{% trans "Global" %}</a></li>
+  <li>{% trans "Map" %}</li>
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation" class="active"><span>
-        <i class="fa fa-map-marker"></i> {% trans "Map" %}
-    </span></li>
-    <li role="presentation"><a href="{% url 'data' %}{% filter_query_params %}">
-        <i class="fa fa-table"></i> {% trans "Data" %}
-    </a></li>
-    <li role="presentation"><a href="{% url 'charts' %}{% filter_query_params %}">
-        <i class="fa fa-bar-chart"></i> {% trans "Charts" %}
-    </a></li>
-    <li class="divider"></li>
-    <li role="presentation">
-        {% include "export.html" %}
-    </li>
+  <li role="presentation" class="active">
+    <span><i class="lm lm-map-marker"></i>{% trans "Map" %}</span></li>
+  <li role="presentation"><a href="../data/">
+    <i class="lm lm-table"></i>{% trans "Data" %}
+  </a></li>
+  <li role="presentation"><a href="../charts/">
+    <i class="lm lm-bar-chart"></i>{% trans "Charts" %}
+  </a></li>
+  <li class="divider"></li>
+  <li role="presentation">
+    {% include "export.html" %}
+  </li>
 {% endblock %}
 
 {% block content %}
-    {{ introduction|safe }}
-    <p></p>
-    {% include "filters.html" %}
-
-    <div id="alert_placeholder"></div>
-
-    <div id="map" class="map" title='{% trans "All Deals" %}'></div>
-
-    <div id="popup" class="ol-popup">
-        <a href="#" id="popup-closer" class="noul ol-popup-closer"></a>
-        <div id="popup-content"></div>
-    </div>
-    {% include "map/modals/legend.html" %}
-
+  {{ introduction|safe }}
+  <p></p>
+  {% include "filters.html" %}
+  {% include "map/includes/markup.html" %}
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
-<script type="text/javascript" src="{% static "vendor/ol3-google-maps/ol3gm-debug.js" %}"></script>
-<script type="text/javascript" src="{% static "js/layers.js" %}"></script>
-<script type="text/javascript" src="{% static "js/ol3-layerswitcher.js" %}"></script>
-<script type="text/javascript" src="{% static "js/clusterspiderfier.js" %}"></script>
-<script type="text/javascript" src="{% static "vendor/nprogress/nprogress.js" %}"></script>
-
-<script type="text/javascript">
-{% if country %}
-var mapBounds = [
-    [{{ country.point_lon_min|default_if_none:"null" }}, {{ country.point_lat_min|default_if_none:"null" }}],
-    [{{ country.point_lon_max|default_if_none:"null" }}, {{ country.point_lat_max|default_if_none:"null" }}]
-];
-{% elif region %}
-var mapBounds = [
-    [{{ region.point_lon_min|default_if_none:"null" }}, {{ region.point_lat_min|default_if_none:"null" }}],
-    [{{ region.point_lon_max|default_if_none:"null" }}, {{ region.point_lat_max|default_if_none:"null" }}]
-];
-{% endif %}
-</script>   
-<script type="text/javascript" src="{% static "js/map.js" %}"></script>
-<script type="text/javascript" src="{% static "js/main.js" %}"></script>
+  {% addtoblock "js" %}
+    {% include "map/includes/script.html" %}
+  {% endaddtoblock %}
 {% endblock %}

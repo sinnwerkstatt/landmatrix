@@ -2,8 +2,6 @@ from django.conf.urls import url
 
 from api.views import *
 
-
-
 urlpatterns = [
     url(r'^filter\.json', FilterView.as_view(), {'format': 'json'},
         name='api_filter'),
@@ -20,6 +18,8 @@ urlpatterns = [
         name='negotiation_status_api'),
     url(r'^countries\.json', CountryListView.as_view(),
         {'format': 'json'}, name='countries_api'),
+    url(r'^countries-geom\.json', CountryGeomView.as_view(),
+        {'format': 'json'}, name='countries_geom_api'),
     url(r'^regions\.json', RegionListView.as_view(),
         {'format': 'json'}, name='regions_api'),
     url(r'^investors\.json', InvestorListView.as_view(),
@@ -52,8 +52,10 @@ urlpatterns = [
         {'format': 'json'}, name='target_countries_for_investor_country_api'),
     url(r'^hectares\.json', HectaresView.as_view(),
         {'format': 'json'}, name='hectares_api'),
-    url(r'^deals\.json', DealListView.as_view(), {'format': 'json'},
+    url(r'^deals\.json', GlobalDealsView.as_view(), {'format': 'json'},
         name='deals_api'),
+    url(r'^country_deals\.json', CountryDealsView.as_view(), {'format': 'json'},
+        name='country_deals_api'),
     url(r'^activities\.json', ActivityListView.as_view(),
         {'format': 'json'}, name='activities_api'),
     url(r'^statistics\.json', StatisticsListView.as_view(),

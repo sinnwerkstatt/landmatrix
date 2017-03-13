@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0097_updated_country_point_desc'),
+        ('landmatrix', '0098_auto_20170302_1711'),
     ]
 
     operations = [

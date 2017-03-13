@@ -30,3 +30,10 @@ class Region(models.Model, DefaultStringRepresentation):
     def __str__(self):
         return self.name
 
+    @property
+    def point_lon(self):
+        return (self.point_lon_min + self.point_lon_max) / 2
+
+    @property
+    def point_lat(self):
+        return (self.point_lat_min + self.point_lat_max) / 2
