@@ -279,17 +279,18 @@ class CountryDealsView(GlobalDealsView, APIView):
 
         features = []
         for country in countries:
+            properties = {
+                'name': country.name,
+                'deals': target_countries[str(country.id)].counter,
+                'url': country.get_absolute_url(),
+                'centre_coordinates': [country.point_lon, country.point_lat],
+            }
+            properties.update(target_countries[str(country.id)].get_properties())
             features.append({
                 'type': 'Feature',
                 'id': country.code_alpha3,
                 # 'geometry': json.loads(country.geom),
-                'properties': {
-                    'name': country.name,
-                    'deals': target_countries[str(country.id)].counter,
-                    'url': country.get_absolute_url(),
-                    'centre_coordinates': [country.point_lon, country.point_lat],
-                    **target_countries[str(country.id)].get_properties()
-                }
+                'properties': properties
             })
 
         return Response(FeatureCollection(features))
