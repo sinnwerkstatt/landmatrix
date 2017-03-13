@@ -1,13 +1,11 @@
 import os
-import traceback
 
 from django.core.exceptions import ImproperlyConfigured
 
 
-
 def load_project(proj_path, app_name):
-
-    import os, sys
+    import os
+    import sys
 
     # This is so Django knows where to find stuff.
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", app_name + ".settings")
@@ -78,6 +76,9 @@ def read_options():
         "--old_comment", action='store_true', help="Migrate activity & stakeholder comments only"
     )
     parser.add_argument(
+        "--delete", action='store_true', help="Truncate all tables first"
+    )
+    parser.add_argument(
         "--lo", action='store_true', help="Migrate land observatory data"
     )
     parser.add_argument(
@@ -91,14 +92,27 @@ if __name__ == '__main__':
     from django.db.utils import ConnectionDoesNotExist
 
     try:
-
-        from mapping import *
-        from mapping.aux_functions import get_country_id_for_stakeholder
-        if V1 == 'v1_pg':
-            from editor.models import ActivityAttributeGroup
+        from from_v1.mapping import *
+        from from_v1.mapping.aux_functions import get_country_id_for_stakeholder
 
         options = read_options()
         print(options)
+
+        if options.delete:
+            from django.db import connections
+            cursor = connections[V2].cursor()
+            cursor.execute("TRUNCATE landmatrix_activity CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_activityattributegroup CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_activityattribute CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_activitychangeset CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_activityfeedback CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_comment CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalactivity CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalactivityattribute CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalinvestor CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_investor CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_investoractivityinvolvement CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_investorventureinvolvement CASCADE;")
 
         if options.lo:
             MapLandObservatory.map_all(save=options.save, verbose=options.verbose)
@@ -115,12 +129,21 @@ if __name__ == '__main__':
             MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
 
         if options.deal or options.all:
-            MapStatus.map_all(save=options.save, verbose=options.verbose)
-            MapLanguage.map_all(save=options.save, verbose=options.verbose)
-            MapActivity.map_all(save=options.save, verbose=options.verbose)
-            MapActivityChangeset.map_all(save=options.save, verbose=options.verbose)
+            #MapStatus.map_all(save=options.save, verbose=options.verbose)
+            MapStatus._done = True
+            #MapLanguage.map_all(save=options.save, verbose=options.verbose)
+            MapLanguage._done = True
+            #MapReviewDecision.map_all(save=options.save, verbose=options.verbose)
+            MapReviewDecision._done = True
+            #MapActivity.map_all(save=options.save, verbose=options.verbose)
+            MapActivity._done = True
+            #MapActivityChangesetReview.map_all(save=options.save, verbose=options.verbose)
+            MapActivityChangesetReview._done = True
+            #MapActivityFeedback.map_all(save=options.save, verbose=options.verbose)
+            MapActivityFeedback._done = True
             MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
-            MapPublicInterfaceCache.map_all(save=options.save, verbose=options.verbose)
+            #MapActivityAttributeGroup._done = True
+            #MapPublicInterfaceCache.map_all(save=options.save, verbose=options.verbose)
             MapComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.country or options.all:
@@ -129,12 +152,14 @@ if __name__ == '__main__':
 
         if options.investor or options.all:
             #if not MapStatus._done: MapStatus.map_all(save=options.save, verbose=options.verbose)
+            MapStatus._done = True
             MapInvestor.map_all(save=options.save, verbose=options.verbose)
+            #MapInvestor._done = True
             #if not MapActivity._done: MapActivity.map_all(save=options.save, verbose=options.verbose)
-            #MapActivity._done = True
+            MapActivity._done = True
             #MapInvestor._done = True
             MapInvestorActivityInvolvement.map_all(save=options.save, verbose=options.verbose)
-            #MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
+            MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
 
             MapStakeholderVentureInvolvement.map_all(save=options.save, verbose=options.verbose)
             #MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)
@@ -157,30 +182,28 @@ if __name__ == '__main__':
             #MapBrowseCondition.map_all(save=options.save, verbose=options.verbose)
 
         # a number of possible uses listed here as examples
-        if False:
-            for map_class in [
-                MapLanguage, MapStatus,
-                MapActivity,
-                MapActivityAttributeGroup,
-                MapRegion,
-                MapCountry,
-                MapBrowseRule, MapBrowseCondition,
-                MapAgriculturalProduce, MapCrop,
-                MapComment,
-                MapInvestor, MapInvestorActivityInvolvement,
-                MapStakeholderInvestor,
-            ]:
-                map_class.map_all(save=True)
-
-        if False:
-            MapActivity._done = True
-            MapLanguage._done = True
-            MapActivityAttributeGroup.map_all(save=True)
-            MapAgriculturalProduce.map_all(save=True)
-            MapCrop.map_all(save=True)
-
-        if False:   # example for migrating just one record
-            MapActivityAttributeGroup.map(ActivityAttribute.objects.using(V1).last().id)
+        #if False:
+        #    for map_class in [
+        #        MapLanguage, MapStatus,
+        #        MapActivity,
+        #        MapActivityAttributeGroup,
+        #        MapRegion,
+        #        MapCountry,
+        #        MapBrowseRule, MapBrowseCondition,
+        #        MapAgriculturalProduce, MapCrop,
+        #        MapComment,
+        #        MapInvestor, MapInvestorActivityInvolvement,
+        #        MapStakeholderInvestor,
+        #    ]:
+        #        map_class.map_all(save=True)
+        #if False:
+        #    MapActivity._done = True
+        #    MapLanguage._done = True
+        #    MapActivityAttributeGroup.map_all(save=True)
+        #    MapAgriculturalProduce.map_all(save=True)
+        #    MapCrop.map_all(save=True)
+        #if False:   # example for migrating just one record
+        #    MapActivityAttributeGroup.map(ActivityAttribute.objects.using(V1).last().id)
 
     except ConnectionDoesNotExist as e:
         print('You need to set CONVERT_DB to True in settings.py!')
@@ -196,3 +219,7 @@ if __name__ == '__main__':
     #    raise
     except ImproperlyConfigured:
         print('Do a "pip install mysqlclient" to install mysql drivers!')
+    except:
+        #import ipdb;
+        #ipdb.set_trace();
+        raise

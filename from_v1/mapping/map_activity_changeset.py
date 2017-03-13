@@ -1,7 +1,7 @@
-from mapping.map_model import MapModel
+from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
-from migrate import V1, V2
+from from_v1.migrate import V1, V2
 
 
 
@@ -23,7 +23,8 @@ class MapActivityChangeset(MapModel):
     depends = []
 
     attributes = {
-        'fk_activity_id': ('fk_activity_id', find_attached_activity),
+        'fk_activity_id': ('public_version', find_attached_activity),
+        'timestamp': 'history_date',
+        'fk_user': 'history_user',
         'comment': 'comment',
-        'timestamp': 'timestamp',
     }

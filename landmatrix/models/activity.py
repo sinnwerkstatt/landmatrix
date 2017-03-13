@@ -316,25 +316,11 @@ class Activity(ActivityBase):
 
 
     def refresh_cached_attributes(self):
-        # Implementation status (Latest date entered for the deal, then highest id)
-        self.implementation_status = None
-        # Null dates go last
-        attributes = self.attributes.filter(name='implementation_status')
-        attributes = attributes.extra(select={'date_is_null': 'date IS NULL'})
-        attributes = attributes.extra(
-            order_by=['date_is_null', '-date', '-id'])
-        if attributes.count() > 0:
-            self.implementation_status = attributes.first().value
+        # Implementation status
+        self.implementation_status = self.get_implementation_status()
             
-        # Negotiation status (Latest date entered for the deal, then highest id)
-        self.negotiation_status = None
-        # Null dates go last
-        attributes = self.attributes.filter(name='negotiation_status')
-        attributes = attributes.extra(select={'date_is_null': 'date IS NULL'})
-        attributes = attributes.extra(
-            order_by=['date_is_null', '-date', '-id'])
-        if attributes.count() > 0:
-            self.negotiation_status = attributes.first().value
+        # Negotiation status
+        self.negotiation_status = self.get_negotiation_status()
 
         # Deal size
         self.deal_size = self.get_deal_size()
@@ -344,6 +330,37 @@ class Activity(ActivityBase):
 
         self.is_public = self.is_public_deal()
         self.save()
+
+    def get_negotiation_status(self):
+        NEGOTIATION_STATUS_ORDER = dict(
+            [(c[0], i) for i, c in enumerate(self.NEGOTIATION_STATUS_CHOICES)])
+        return self._get_current('negotiation_status', NEGOTIATION_STATUS_ORDER)
+
+    def get_implementation_status(self):
+        IMPLEMENTATION_STATUS_ORDER = dict(
+            [(c[0], i) for i, c in enumerate(self.IMPLEMENTATION_STATUS_CHOICES)])
+        return self._get_current('implementation_status', IMPLEMENTATION_STATUS_ORDER)
+
+    def _get_current(self, attribute, ranking):
+        """
+        Returns the relevant state for the deal. Prefers states without a year but a higher ranking.
+        """
+
+        # Null dates go last
+        attributes = self.attributes.filter(name=attribute)
+        attributes = attributes.extra(select={'date_is_null': 'date IS NULL'})
+        attributes = attributes.extra(
+            order_by=['date_is_null', '-date', '-id'])
+        if attributes.count() == 0:
+            return None
+        current_value = attributes.first().value
+        current_ranking = ranking.get(current_value, 0)
+        for attr in attributes.all()[::-1]:
+            attr_ranking = ranking.get(attr.value, 0)
+            if attr_ranking > current_ranking:
+                current_value = attr.value
+                current_ranking = attr_ranking
+        return current_value
 
     def is_public_deal(self):
         # Presets:
@@ -402,7 +419,13 @@ class Activity(ActivityBase):
         for i in involvements:
             if not i.fk_investor:
                 continue
+            # Operational company name given?
+            investor_name = i.fk_investor.name
+            invalid_name = "(unknown|unnamed)"
+            if investor_name and not re.search(invalid_name, investor_name.lower()):
+                return True
             for pi in i.fk_investor.venture_involvements.all():
+                # Parent investor/company name given?
                 investor_name = pi.fk_investor.name
                 invalid_name = "(unknown|unnamed)"
                 if investor_name and not re.search(invalid_name, investor_name.lower()):
@@ -457,8 +480,7 @@ class Activity(ActivityBase):
     def get_deal_scope(self):
         involvements = self.investoractivityinvolvement_set.all()
         target_countries = {c.value for c in self.attributes.filter(name="target_country")}
-        investor_countries = {i.fk_investor.fk_country for i in involvements}
-
+        investor_countries = {str(i.fk_investor.fk_country_id) for i in involvements}
         if len(target_countries) > 0 and len(investor_countries) > 0:
             if len(target_countries.symmetric_difference(investor_countries)) == 0:
                 return "domestic"
@@ -466,7 +488,7 @@ class Activity(ActivityBase):
                 return "transnational"
         elif len(target_countries) > 0 and len(investor_countries) == 0:
             # treat deals without investor country as transnational
-            return "transnational"
+            return "domestic"
         else:
             return None
 
@@ -479,18 +501,23 @@ class Activity(ActivityBase):
         production_size = self.attributes.filter(name="production_size").order_by("-date")
         production_size = len(production_size) > 0 and production_size[0].value or None
 
-        if self.negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
-            # intended deal
-            return intended_size or contract_size or production_size or 0
-        elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
-            # concluded deal
-            return contract_size or production_size or 0
-        elif self.negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
-            # intended but failed deal
-            return intended_size or contract_size or production_size or 0
-        elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_FAILED:
-            # concluded but failed
-            return contract_size or production_size or 0
+        #if self.negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
+        #    # intended deal
+        #    return intended_size or contract_size or production_size or 0
+        #elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
+        #    # concluded deal
+        #    return contract_size or production_size or 0
+        #elif self.negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
+        #    # intended but failed deal
+        #    return intended_size or contract_size or production_size or 0
+        #elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_FAILED:
+        #    # concluded but failed
+        #    return contract_size or production_size or 0
+        #else:
+        #    return 0
+        value = contract_size or production_size or intended_size
+        if value:
+            return int(value.split(',')[0])
         else:
             return 0
 

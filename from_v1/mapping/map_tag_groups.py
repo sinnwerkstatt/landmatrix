@@ -1,8 +1,8 @@
 from django.db import transaction
 
 
-from migrate import V1, V2, load_project, BASE_PATH
-from mapping.map_model import MapModel
+from from_v1.migrate import V1, V2, load_project, BASE_PATH
+from from_v1.mapping.map_model import MapModel
 
 
 from old_editor.models import Language

@@ -1,17 +1,16 @@
 from django.utils import timezone
 
-from mapping.map_model import MapModel
+from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
-from mapping.aux_functions import get_country_id_for_stakeholder
-from migrate import V1
-from mapping.map_status import MapStatus
+from from_v1.mapping.aux_functions\
+    import get_country_id_for_stakeholder
+from from_v1.migrate import V1, V2
+from from_v1.mapping.map_status import MapStatus
 from django.db import connections
 
 
-
 def get_country_for_primary_investor(pi_id):
-
     activity_ids = old_editor.models.Involvement.objects.using(V1).filter(fk_primary_investor=pi_id).values_list('fk_activity', flat=True)
     if not activity_ids or None in activity_ids:
         return None
@@ -20,7 +19,6 @@ def get_country_for_primary_investor(pi_id):
     stakeholder_ids = list(old_editor.models.Involvement.objects.using(V1).filter(fk_activity=max_activity).order_by('-investment_ratio').values_list('fk_stakeholder', flat=True))
     while stakeholder_ids:
         stakeholder_with_greatest_investment_ratio = stakeholder_ids.pop(0)
-
         country = get_country_id_for_stakeholder(stakeholder_with_greatest_investment_ratio)
 
         if country:
@@ -32,8 +30,10 @@ def get_country_for_primary_investor(pi_id):
 def get_now(_):
     return timezone.now()
 
-class MapPrimaryInvestor(MapModel):
+def get_classification(_):
+    return '10'
 
+class MapPrimaryInvestor(MapModel):
     @classmethod
     def all_records(cls):
         ids = cls.all_ids()
@@ -74,11 +74,19 @@ ORDER BY primary_investor_identifier
         )
         new.save(using=V2)
 
+
 class MapInvestor(MapPrimaryInvestor):
     old_class = old_editor.models.PrimaryInvestor
     new_class = landmatrix.models.Investor
-    depends = [ MapStatus ]
+    depends = [MapStatus]
     attributes = {
+        'id': (
+            'id',
+            ('fk_country', get_country_for_primary_investor),
+            ('timestamp', get_now),
+            ('classification', get_classification)
+        ),
         'primary_investor_identifier': 'investor_identifier',
-        'id': ('id', ('fk_country', get_country_for_primary_investor), ('timestamp', get_now))
+        'fk_status': 'fk_status',
+        'name': 'name',
     }

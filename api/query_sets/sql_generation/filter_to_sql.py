@@ -79,6 +79,9 @@ class WhereCondition:
         sql = "{column} {operation}".format(
             column=column, operation=operator_with_value)
 
+        if self.operator == 'not_in':
+            sql = '({} OR {} IS NULL)'.format(sql, column)
+
         return sql
 
 
@@ -207,12 +210,12 @@ class FilterToSQL:
             elif operation not in ('in', 'not_in') and isinstance(value, list):
                 for subvalue in value:
                     conditions = WhereConditions(
-                        WhereCondition(table_name, 'name', 'is', variable),
+                        #WhereCondition(table_name, 'name', 'is', variable),
                         WhereCondition(table_name, key, operation, subvalue))
                     where.append(conditions)
             else:
                 conditions = WhereConditions(
-                    WhereCondition(table_name, 'name', 'is', variable),
+                    #WhereCondition(table_name, 'name', 'is', variable),
                     WhereCondition(table_name, key, operation, value))
                 where.append(conditions)
 

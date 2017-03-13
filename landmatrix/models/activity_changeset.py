@@ -13,7 +13,7 @@ class ActivityChangesetManager(models.Manager):
 
 class ReviewDecision(models.Model):
     name = models.CharField(_("Name"), max_length=255)
-    description = models.TextField(_("Description"))
+    description = models.TextField(_("Description"), blank=True, null=True)
 
 
 class ActivityChangeset(models.Model):

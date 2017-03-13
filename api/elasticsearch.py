@@ -1,9 +1,8 @@
 from pyelasticsearch import ElasticSearch as PyElasticSearch
-from pyelasticsearch.exceptions import ElasticHttpNotFoundError, ElasticHttpError
+from pyelasticsearch.exceptions import ElasticHttpNotFoundError
 import http.client
 http.client._MAXHEADERS = 1000
 from django.conf import settings
-from django.utils.datastructures import MultiValueDict
 
 from grid.views.change_deal_view import ChangeDealView
 from grid.forms.deal_spatial_form import DealSpatialForm
@@ -14,6 +13,7 @@ FIELD_TYPE_MAPPING = {
     'CharField': 'string',
     'AreaField': 'geo_shape',
 }
+
 
 class ElasticSearch(object):
     conn = None
@@ -62,7 +62,8 @@ class ElasticSearch(object):
         for activity in queryset:
             for doc in self.get_documents(activity):
                 docs.append(doc)
-        self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id')) for doc in docs),
+        self.conn.bulk(
+            (self.conn.index_op(doc, id=doc.pop('id')) for doc in docs),
             index='landmatrix',
             doc_type='deal')
 

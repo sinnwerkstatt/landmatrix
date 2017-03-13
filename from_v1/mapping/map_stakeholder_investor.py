@@ -1,7 +1,7 @@
-from mapping.map_model import MapModel
+from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
-from mapping.aux_functions import get_first_stakeholder_tag_value, get_country_id_for_stakeholder, get_now
+from from_v1.mapping.aux_functions import get_first_stakeholder_tag_value, get_country_id_for_stakeholder, get_now
 
 
 

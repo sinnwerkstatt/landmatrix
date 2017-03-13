@@ -1,7 +1,7 @@
-from migrate import V1, V2
-from mapping.map_tag_groups import MapTagGroups
+from from_v1.migrate import V1, V2
+from from_v1.mapping.map_tag_groups import MapTagGroups
 
-from mapping.aux_functions import stakeholder_ids
+from from_v1.mapping.aux_functions import stakeholder_ids
 from landmatrix.models.language import Language
 from landmatrix.models.country import Country
 

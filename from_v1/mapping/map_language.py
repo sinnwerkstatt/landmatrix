@@ -1,4 +1,4 @@
-from mapping.map_model import MapModel
+from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
 

@@ -1,5 +1,5 @@
-from mapping.map_model import MapModel
-from migrate import V1, V2
+from from_v1.mapping.map_model import MapModel
+from from_v1.migrate import V1, V2
 
 from landmatrix.models.activity import Activity, HistoricalActivity
 from django_comments.models import Comment
