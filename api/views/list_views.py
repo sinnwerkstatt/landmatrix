@@ -324,7 +324,7 @@ class CountryGeomView(APIView):
     def get_queryset(self):
         try:
             return Country.objects.extra(
-                select={'simple_geom': 'ST_AsGeoJSON(ST_SimplifyVW(geom, 0.01))'}
+                select={'simple_geom': 'ST_AsGeoJSON(ST_Simplify(geom, 0.01))'}
             ).get(
                 id=self.request.GET.get('country_id')
             )
