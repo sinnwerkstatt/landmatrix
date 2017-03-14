@@ -1,9 +1,12 @@
 @import '../../../../landmatrix/static/css/colors';
 $map-height: 75vh;
 
-// Hide zoom controls
+// move zoom controls
 .ol-zoom {
-  display: none;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  left: auto;
 }
 
 .map-container {
