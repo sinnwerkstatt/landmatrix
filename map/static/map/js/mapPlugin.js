@@ -356,7 +356,8 @@
                                 legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
                             };
                             return 'http://sdi.cde.unibe.ch/geoserver/lo/wms' + '?' + $.param(imgParams);
-                        }
+                        },
+                        dataSourceOwner: 'Source: <a href="http://www.landobservatory.org/" target="_blank">Land observatory</a>'
                     }),
                     new ol.layer.Image({
                         name: 'cropland',
@@ -379,21 +380,24 @@
                                 legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
                             };
                             return 'http://sdi.cde.unibe.ch/geoserver/lo/wms' + '?' + $.param(imgParams);
-                        }
+                        },
+                        dataSourceOwner: 'Source: <a href="http://www.landobservatory.org/" target="_blank">Land observatory</a>'
                     }),
                     new ol.layer.Tile({
                         name: 'community_lands',
                         visible: false,
                         source: new ol.source.TileArcGISRest({
                             url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_comm_LandMatrix/MapServer/'
-                        })
+                        }),
+                        dataSourceOwner: 'Source: <a href="http://www.wri.org/" target="_blank">World Resources Institute</a>'
                     }),
                     new ol.layer.Tile({
                         name: 'indigenous_lands',
                         visible: false,
                         source: new ol.source.TileArcGISRest({
-                            url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_ind_LandMatrix/MapServer/'
-                        })
+                            url: 'http://gis.wri.org/arcgis/rest/services/IndigenousCommunityLands/NationalLevel/MapServer'
+                        }),
+                        dataSourceOwner: 'Source: <a href="http://www.wri.org/" target="_blank">World Resources Institute</a>'
                     })
                 ];
             }
@@ -805,12 +809,10 @@
                 if (legendUrlFunction) {
                     legendUrl = legendUrlFunction();
                 }
-                if (!legendUrl) {
-                    return;
-                }
+                var legendHtml = legendUrl ? '<img src="' + legendUrl + '"/>' : '';
                 var legendDiv = $(checkboxEl).siblings('.context-layer-legend');
                 if (checkboxEl.checked) {
-                    legendDiv.html('<img src="' + legendUrl + '"/>');
+                    legendDiv.html(legendHtml + '<p>' + selectedLayer.get('dataSourceOwner') + '</p>');
                 } else {
                     legendDiv.html('');
                 }
