@@ -108,15 +108,15 @@
         <ul class="layer-list">
           <li>
             <input type="radio" id="base-layer-osm" name="base-layer" value="osm" checked="checked">
-            <label for="base-layer-osm">OSM</label>
+            <label for="base-layer-osm">{% trans "OSM" %}</label>
           </li>
           <li>
             <input type="radio" id="base-layer-esri_satellite" name="base-layer" value="esri_satellite">
-            <label for="base-layer-esri_satellite">ESRI Satellite</label>
+            <label for="base-layer-esri_satellite">{% trans "ESRI Satellite" %}</label>
           </li>
           <li>
             <input type="radio" id="base-layer-mapquest_satellite" name="base-layer" value="mapquest_satellite">
-            <label for="base-layer-mapquest_satellite">MapQuest Satellite</label>
+            <label for="base-layer-mapquest_satellite">{% trans "MapQuest Satellite" %}</label>
           </li>
         </ul>
       </div>
@@ -129,7 +129,7 @@
         <i class="lm lm-angle-right"></i>
       </a>
       <a href="#" class="list-group-item text-center active js-toggle-overlay-content" data-tab="deals">
-        <i class="lm lm-cog"></i><br/>{% trans "Deals" %}
+        <i class="lm lm-map-marker"></i><br/>{% trans "Deals/Info" %}
       </a>
       <a href="#" class="list-group-item text-center js-toggle-overlay-content" data-tab="search">
         <i class="lm lm-search"></i><br/>{% trans "Search" %}
