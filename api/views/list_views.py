@@ -250,6 +250,7 @@ class GlobalDealsView(APIView):
                 "production_size": production_size,
                 "investor": investor,
                 "identifier": result.get('activity_identifier'),
+                "level_of_accuracy": result.get('level_of_accuracy'),
             },
         )
 
