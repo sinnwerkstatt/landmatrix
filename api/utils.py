@@ -10,7 +10,7 @@ class PropertyCounter(dict):
     # mapping of keys from elasticsearch <-> map legend.
     properties = {
         'intention': 'intention',
-        'implementation': 'negotiation_status',
+        'implementation': 'implementation_status',
         'accuracy': 'level_of_accuracy',
     }
 
