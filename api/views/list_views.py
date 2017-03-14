@@ -2,6 +2,7 @@ import json
 
 import collections
 from django.contrib.auth import get_user_model
+from django.core.urlresolvers import reverse
 from django.http import Http404
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
@@ -240,7 +241,8 @@ class GlobalDealsView(APIView):
             # Openlayers.
             geometry=Point(geometry),
             properties={
-                "url": "/en/deal/%s/" % result['historical_activity_id'],
+                "url": reverse('deal_detail', kwargs={
+                    'deal_id': result['activity_identifier']}),
                 "intention": intention,
                 "implementation": result.get('implementation_status'),
                 "intended_size": intended_size,
