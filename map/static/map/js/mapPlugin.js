@@ -5,8 +5,8 @@
             // Default settings.
             var settings = $.extend({
                 target: "map",
-                zoom: 6,
-                centerTo: [-5, 20],
+                zoom: 2.8,
+                centerTo: [-20, 20],
                 legendKey: 'intention',
                 visibleLayer: 'countries',  // Either "countries" (default) or "deals". Should correspond to state of switch position.
                 autoToggle: true  // Defaults to true. Should correspond to state of checkbox next to switch.
