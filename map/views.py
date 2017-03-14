@@ -104,6 +104,36 @@ class MapSettingsMixin:
                         'color': '#8126C0'
                     }
                 ]
+            },
+            'level_of_accuracy': {
+                'label': _('Spatial accuracy'),
+                'attributes': [
+                    {
+                        'label': _('Country'),
+                        'id': 'Country',
+                        'color': '#1D6914'
+                    },
+                    {
+                        'label': _('Administrative region'),
+                        'id': 'Administrative region',
+                        'color': '#8126C0'
+                    },
+                    {
+                        'label': _('Approximate location'),
+                        'id': 'Approximate location',
+                        'color': '#575757'
+                    },
+                    {
+                        'label': _('Exact location'),
+                        'id': 'Exact location',
+                        'color': '#AD2323'
+                    },
+                    {
+                        'label': _('Coordinates'),
+                        'id': 'Coordinates',
+                        'color': '#814A19'
+                    }
+                ]
             }
         })
 

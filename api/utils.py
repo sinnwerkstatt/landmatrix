@@ -11,7 +11,7 @@ class PropertyCounter(dict):
     properties = {
         'intention': 'intention',
         'implementation': 'implementation_status',
-        'accuracy': 'level_of_accuracy',
+        'level_of_accuracy': 'level_of_accuracy',
     }
 
     def __init__(self):
