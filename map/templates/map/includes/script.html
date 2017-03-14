@@ -84,7 +84,8 @@
       autoToggle: {% if map_object %}false{% else %}true{% endif %},
       {% if map_object %}centerTo: [{{ map_object.point_lon }}, {{ map_object.point_lat }}],{% endif %}
       switchLayerCallback: switchLayerTo,
-      searchFieldId: "map-search-field"
+      searchFieldId: "map-search-field",
+      zoom: ($(window).width() < 500) ? 1.5 : 2.8
     });
     {% if map_object %}
       map.zoomToExtent(

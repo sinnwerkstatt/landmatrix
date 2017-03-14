@@ -63,7 +63,8 @@
     width: 500px; }
   .map-overlay-content.is-hidden {
     width: 0;
-    opacity: 0; }
+    opacity: 0;
+    padding-right: 0; }
   .map-overlay-content .tab-content {
     display: none; }
     .map-overlay-content .tab-content.active {

@@ -90,6 +90,7 @@ $map-height: 75vh;
   &.is-hidden {
     width: 0;
     opacity: 0;
+    padding-right: 0;
   }
 
   .tab-content {
