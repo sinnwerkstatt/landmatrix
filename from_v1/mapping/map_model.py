@@ -1,4 +1,4 @@
-from migrate import V1, V2
+from from_v1.migrate import V1, V2
 
 from django.db import transaction
 
@@ -33,7 +33,7 @@ class MapModel:
 
     """
 
-    attributes = { }
+    attributes = {}
     depends = []
     DEBUG = False
     DB = V1

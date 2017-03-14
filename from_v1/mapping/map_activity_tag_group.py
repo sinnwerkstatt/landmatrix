@@ -3,10 +3,10 @@ from pprint import pprint
 
 from django.db.models.aggregates import Max
 from functools import lru_cache
-from mapping.map_activity import MapActivity
-from mapping.aux_functions import year_to_date
-from migrate import V1, V2
-from mapping.map_tag_groups import MapTagGroups
+from from_v1.mapping.map_activity import MapActivity
+from from_v1.mapping.aux_functions import year_to_date
+from from_v1.migrate import V1, V2
+from from_v1.mapping.map_tag_groups import MapTagGroups
 
 from landmatrix.models.language import Language
 from landmatrix.models.activity import Activity, HistoricalActivity
@@ -28,7 +28,7 @@ class MapActivityTagGroupBase:
 #        if (len(attrs) == 1) and attrs.get('name'):
 #            return
 #
-#        from mapping.map_activity_attribute_group import clean_attributes
+#        from from_v1.mapping.map_activity_attribute_group import clean_attributes
 #
 #        attrs = clean_attributes(attrs)
 #
@@ -122,7 +122,7 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
 
     @classmethod
     def migrate_tag_group(cls, tag_group):
-        from mapping.map_activity_attribute_group import clean_attribute, clean_group
+        from from_v1.mapping.map_activity_attribute_group import clean_attribute, clean_group
         tg_name = tag_group.fk_a_tag.fk_a_value.value
 
         activity_id = tag_group.fk_activity.id#cls.matching_activity_id(tag_group)
@@ -133,6 +133,8 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
         if cls._save:
             aag.save(using=V2)
         is_current = cls.is_current_version(tag_group)
+
+        attributes = {}
         for tag in tag_group.a_tag_set.all():
             key = tag.fk_a_key.key
             value = tag.fk_a_value.value
@@ -173,7 +175,43 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
             )
             if cls._save:
                 aa.save(using=V2)
-                    
+
+            if key in attributes:
+                attributes[key]['values'].append(value)
+            else:
+                attributes[key] = dict(fk_group=tag_aag, year=year, values=[value])
+
+        if 'intention' in attributes and len(attributes['intention']['values']) == 1:
+            value = None
+            if attributes['intention']['values'][0] == 'Agriculture':
+                value = 'Agriculture unspecified'
+            elif attributes['intention']['values'][0] == 'Forestry':
+                value = 'Forestry unspecified'
+            if value:
+                intention = attributes['intention']
+                if is_current:
+                    aa = ActivityAttribute(
+                        fk_activity_id=activity_id,
+                        fk_language_id=1,
+                        fk_group=intention['year'],
+                        name='intention',
+                        value=value,
+                        date=intention['year'] or None,
+                    )
+                    if cls._save:
+                        aa.save(using=V2)
+                aa = HistoricalActivityAttribute(
+                    # id=cls.get_last_id() + 1,
+                    fk_activity_id=activity_id,
+                    fk_language_id=1,
+                    fk_group=intention['fk_group'],
+                    name='intention',
+                    value=value,
+                    date=intention['year'] or None,
+                )
+                if cls._save:
+                    aa.save(using=V2)
+
         for comment in tag_group.comment_set.all():
             if is_current:
                 aa = ActivityAttribute(

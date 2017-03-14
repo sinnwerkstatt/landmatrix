@@ -8,7 +8,7 @@ from .map_lo_activities import MapLOActivities
 from .map_lo_stakeholder import MapLOStakeholder
 from .map_lo_involvements import MapLOInvolvements
 
-from migrate import V2
+from from_v1.migrate import V2
 
 from django.db import transaction
 

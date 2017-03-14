@@ -1,11 +1,11 @@
-from mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
-from mapping.map_activity import MapActivity
-from mapping.map_investor import MapPrimaryInvestor
-from mapping.aux_functions import stakeholder_ids
+from from_v1.mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
+from from_v1.mapping.map_activity import MapActivity
+from from_v1.mapping.map_investor import MapPrimaryInvestor
+from from_v1.mapping.aux_functions import stakeholder_ids
 import landmatrix.models
 import old_editor.models
-#from mapping.map_involvement import MapInvolvement
-from migrate import V1, V2
+#from from_v1.mapping.map_involvement import MapInvolvement
+from from_v1.migrate import V1, V2
 
 from datetime import datetime
 
@@ -75,20 +75,25 @@ class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
 
     @classmethod
     def migrate(cls, involvements):
+        missing_investors = 0
         for i, involvement in enumerate(involvements):
-            fk_venture_id = get_venture_for_primary_investor(involvement)
-            fk_investor_id = get_stakeholder_id_for_stakeholder(involvement)
-            fk_status_id = get_status(involvement)
-            percentage = get_percentage(involvement)
-            stakeholder_venture_involvement = landmatrix.models.InvestorVentureInvolvement.objects.get_or_create(
-                fk_investor_id=fk_investor_id,
-                fk_venture_id=fk_venture_id,
-                fk_status_id=fk_status_id,
-                percentage=percentage,
-                role='ST',
-            )
+            try:
+                fk_venture_id = get_venture_for_primary_investor(involvement)
+                fk_investor_id = get_stakeholder_id_for_stakeholder(involvement)
+                fk_status_id = get_status(involvement)
+                percentage = get_percentage(involvement)
+                stakeholder_venture_involvement = landmatrix.models.InvestorVentureInvolvement.objects.get_or_create(
+                    fk_investor_id=fk_investor_id,
+                    fk_venture_id=fk_venture_id,
+                    fk_status_id=fk_status_id,
+                    percentage=percentage,
+                    role='ST',
+                )
+            except landmatrix.models.Investor.DoesNotExist:
+                missing_investors += 1
 
             #if cls._save:
             #    stakeholder_venture_involvement.save(using=V2)
 
             cls._print_status(involvement, i)
+        print('%i missing investors' % missing_investors)

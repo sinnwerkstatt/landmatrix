@@ -151,6 +151,8 @@ class FilterWidgetMixin:
         # Country or region filter set?
         if data.get('country', None) or data.get('region', None):
             stored_filters = self.request.session.get('filters', {})
+            if not stored_filters:
+                stored_filters = {}
             if data.get('country', None):
                 filter_values['variable'] = 'target_country'
                 filter_values['operator'] = 'is'
@@ -179,14 +181,15 @@ class FilterWidgetMixin:
             filters = filter(lambda f: f.get('variable') in ('target_country', 'target_region'), stored_filters.values())
             for stored_filter in list(filters):
                 stored_filters.pop(stored_filter['name'], None)
-            # Set filter
-            new_filter = Filter(
-                variable=filter_values['variable'], operator=filter_values['operator'],
-                value=filter_values['value'], name=filter_values.get('name', None),
-                label=filter_values['label'], display_value=filter_values.get('display_value', None)
-            )
-            stored_filters[new_filter.name] = new_filter
-            self.request.session['filters'] = stored_filters
+            if filter_values:
+                # Set filter
+                new_filter = Filter(
+                    variable=filter_values['variable'], operator=filter_values['operator'],
+                    value=filter_values['value'], name=filter_values.get('name', None),
+                    label=filter_values['label'], display_value=filter_values.get('display_value', None)
+                )
+                stored_filters[new_filter.name] = new_filter
+                self.request.session['filters'] = stored_filters
         else:
             self.remove_country_region_filter()
 
@@ -199,13 +202,15 @@ class FilterWidgetMixin:
         #stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
         self.request.session['filter_query_params'] = None
 
-    def set_default_filters(self, data):
+    def set_default_filters(self, data, disabled_presets=[]):
         self.remove_default_filters()
         # Don't set default filters?
         if 'set_default_filters' in self.request.session:
             if not self.request.session.get('set_default_filters'):
                 return
-        disabled_presets = hasattr(self, 'disabled_presets') and self.disabled_presets or []
+        if not disabled_presets:
+            if hasattr(self, 'disabled_presets') and self.disabled_presets:
+                disabled_presets = self.disabled_presets
         stored_filters = self.request.session.get('filters', {})
         if not stored_filters:
             stored_filters = {}

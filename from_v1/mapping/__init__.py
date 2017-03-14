@@ -1,20 +1,23 @@
 
-from mapping.map_language import MapLanguage
-from mapping.map_status import MapStatus
-from mapping.map_activity import MapActivity
-from mapping.map_activity_changeset import MapActivityChangeset
-from mapping.map_activity_attribute_group import MapActivityAttributeGroup
-from mapping.map_region import MapRegion
-from mapping.map_country import MapCountry
-from mapping.map_currency import MapCurrency
-from mapping.map_browse_rule import MapBrowseRule
-from mapping.map_browse_condition import MapBrowseCondition
-from mapping.map_crop import MapCrop, MapAnimal, MapMineral, MapAgriculturalProduce
-from mapping.map_comment import MapComment, MapStakeholderComment
-from mapping.map_investor import MapInvestor
-from mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
-from mapping.map_land_observatory import MapLandObservatory
-from mapping.map_stakeholder_investor import MapStakeholderInvestor
-from mapping.map_stakeholder_venture_involvement import MapStakeholderVentureInvolvement
-#from mapping.map_public_interface_cache import MapPublicInterfaceCache
-from mapping.map_threadedcomments import MapDjangoComments, MapThreadedComments
+from from_v1.mapping.map_language import MapLanguage
+from from_v1.mapping.map_status import MapStatus
+from from_v1.mapping.map_activity import MapActivity
+from from_v1.mapping.map_activity_changeset import MapActivityChangeset
+from from_v1.mapping.map_activity_attribute_group import MapActivityAttributeGroup
+from from_v1.mapping.map_region import MapRegion
+from from_v1.mapping.map_country import MapCountry
+from from_v1.mapping.map_currency import MapCurrency
+from from_v1.mapping.map_browse_rule import MapBrowseRule
+from from_v1.mapping.map_browse_condition import MapBrowseCondition
+from from_v1.mapping.map_crop import MapCrop, MapAnimal, MapMineral, MapAgriculturalProduce
+from from_v1.mapping.map_comment import MapComment, MapStakeholderComment
+from from_v1.mapping.map_investor import MapInvestor
+from from_v1.mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
+from from_v1.mapping.map_land_observatory import MapLandObservatory
+from from_v1.mapping.map_stakeholder_investor import MapStakeholderInvestor
+from from_v1.mapping.map_stakeholder_venture_involvement import MapStakeholderVentureInvolvement
+#from from_v1.mapping.map_public_interface_cache import MapPublicInterfaceCache
+from from_v1.mapping.map_threadedcomments import MapDjangoComments, MapThreadedComments
+from from_v1.mapping.map_activity_changeset_review import MapActivityChangesetReview
+from from_v1.mapping.map_activity_feedback import MapActivityFeedback
+from from_v1.mapping.map_review_decision import MapReviewDecision

@@ -30,10 +30,17 @@
             </div>
         </form>
         <div class="col-md-2 text-right">
+            {% if columns and group == 'all' %}
             <a class="toggle-filters" role="button" data-toggle="collapse" href="#filter-settings" aria-expanded="true"
                aria-controls="filter-settings" name="{% trans "List settings" %}">
                 <i class="fa fa-cog"></i>
             </a>
+            {% elif request.user.is_staff %}
+            <a class="toggle-filters" role="button" data-toggle="collapse" href="#filter-settings" aria-expanded="true"
+               aria-controls="filter-settings" name="{% trans "List settings" %}">
+                <i class="fa fa-cog"></i>
+            </a>
+            {% endif %}
             <a href="#" class="toggle-tooltip noul"
                title="You can create custom filters here. Filters are kept when changing entry point.">
                 <i class="lm lm-question-circle"> </i></a>

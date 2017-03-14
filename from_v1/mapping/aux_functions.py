@@ -1,5 +1,5 @@
 import old_editor.models
-from migrate import V1
+from from_v1.migrate import V1
 from django.utils import timezone
 from django.db import connections
 
@@ -96,7 +96,7 @@ def _get_country_for_stakeholder(stakeholder_id):
     return None
 
 
-from mapping.map_activity import MapActivity
+from from_v1.mapping.map_activity import MapActivity
 def all_involvement_records(cls):
     activity_ids = MapActivity.all_ids()
     primary_investor_ids = MapPrimaryInvestor.all_ids()

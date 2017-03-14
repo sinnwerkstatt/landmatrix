@@ -1,16 +1,15 @@
-from mapping.map_model import MapModel
+from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import editor.models
-from migrate import V1
+from from_v1.migrate import V1
 
-from mapping.map_activity_tag_group import MapActivityTagGroup
+from from_v1.mapping.map_activity_tag_group import MapActivityTagGroup
 
-from mapping.map_activity import MapActivity
-from mapping.map_language import MapLanguage
+from from_v1.mapping.map_activity import MapActivity
+from from_v1.mapping.map_language import MapLanguage
 
-from mapping.aux_functions import year_to_date, replace_model_name_with_id, \
+from from_v1.mapping.aux_functions import year_to_date, replace_model_name_with_id, \
     replace_country_name_with_id, extract_value, is_number
-
 
 
 def clean_coordinates(key, value):
@@ -36,6 +35,7 @@ def clean_coordinates(key, value):
 #    else:
 #        return parts
 
+
 def clean_level_of_accuracy(key, value):
     if value == 'Approximate level':
         value = 'Administrative region'
@@ -43,9 +43,11 @@ def clean_level_of_accuracy(key, value):
         value = 'Coordinates'
     return key, value
 
+
 def clean_target_country(key, value):
     value = replace_country_name_with_id(value)
     return key, value
+
 
 def clean_nature(key, value):
     if value == 'Lease / Concession':
@@ -53,6 +55,7 @@ def clean_nature(key, value):
     elif value == 'Exploitation license':
         value = 'Resource exploitation license / concession'
     return key, value
+
 
 def clean_crops(key, value):
     from old_editor.models import Crop
@@ -69,6 +72,7 @@ def clean_animals(key, value):
     value = replace_model_name_with_id(Animal, value)
     return key, value
 
+
 def clean_minerals(key, value):
     from old_editor.models import Mineral
     # Diamond mining
@@ -78,10 +82,12 @@ def clean_minerals(key, value):
     value = replace_model_name_with_id(Mineral, value)
     return key, value
 
+
 def replace_obsolete_crops(key, value):
     if value == 42:
         value = 7
     return key, value
+
 
 def replace_obsolete_animals(key, value):
     ANIMALS_TO_REPLACE = {
@@ -92,12 +98,22 @@ def replace_obsolete_animals(key, value):
     value = ANIMALS_TO_REPLACE.get(value, value)
     return key, value
 
+
 def clean_land_use(key, value):
     LAND_USE_MAP = {
         'Pastoralists': 'Pastoralism',
     }
     value = LAND_USE_MAP.get(value, value)
-    return value
+    return key, value
+
+
+def clean_promised_benefits(key, value):
+    BENEFITS_MAP = {
+        'Productive infrastructure (e.g. irrigation, tractors, machinery...)': 'Productive infrastructure',
+    }
+    value = BENEFITS_MAP.get(value, value)
+    return key, value
+
 
 def rename_changed_keys(key, value):
     RENAMED_KEYS = {
@@ -121,6 +137,7 @@ def rename_negotiation_status(key, value):
     value = RENAMED_STATUS.get(value, value)
     return key, value
 
+
 def clean_intention(key, value):
     if value == 'Agriunspecified':
         value = 'Agriculture unspecified'
@@ -131,6 +148,7 @@ def clean_intention(key, value):
     elif value == 'Other (please specify)':
         value = 'Other'
     return key, value
+
 
 def clean_attribute(key, value):
     key, value = rename_changed_keys(key, value)
@@ -164,7 +182,10 @@ def clean_attribute(key, value):
         return 'tg_operational_stakeholder_comment', value
     elif key == 'tg_community_benefits_comment':
         return 'tg_promised_benefits_comment', value
+    elif key == 'promised_benefits':
+        return clean_promised_benefits(key, value)
     return key, value
+
 
 def clean_group(group_name, key, value):
     if group_name == 'agreement_duration':
@@ -172,6 +193,7 @@ def clean_group(group_name, key, value):
     if group_name == 'negotiation_status' and key != 'negotiation_status':
         return 'contract_1'
     return group_name
+
 
 if V1 == 'v1_pg':
     class MapActivityAttributeGroup(MapModel):

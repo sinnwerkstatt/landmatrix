@@ -1,6 +1,6 @@
 from pprint import pprint
 
-from migrate import V1, V2
+from from_v1.migrate import V1, V2
 from .map_model import MapModel
 from .map_activity_tag_group import MapActivityTagGroup
 from .map_stakeholder_investor import MapStakeholderInvestor

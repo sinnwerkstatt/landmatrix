@@ -29,10 +29,12 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
         if self.disable_filters:
             self.disabled_filters = request.session.get('filters')
             request.session['filters'] = {}
+            if 'set_default_filters' in request.session:
+                del(request.session['set_default_filters'])
             # TODO: This is ugly, move set_default_filters to somewhere else
             f = FilterWidgetMixin()
             f.request = request
-            f.set_default_filters(None)
+            f.set_default_filters(None, disabled_presets=[2,])
         super().__init__(request)
         self.country = request.GET.get('target_country')
         self.region = request.GET.get('target_region')
@@ -44,6 +46,7 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
         if self.disable_filters:
             # Reenable original filters
             self.request.session['filters'] = self.disabled_filters
+        #raise IOError(self.sql_query())
         return output
 
     def regional_condition(self):
@@ -52,6 +55,9 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
         elif self.region:
             return "AND deal_country.fk_region_id = %s" % self.region
         return ''
+
+    def is_public_condition(self):
+        return "a.is_public = 't'"
 
 
 class PublicDealCountQuerySet(FakeQuerySetFlat):

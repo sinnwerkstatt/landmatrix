@@ -1,11 +1,11 @@
-from mapping.map_model import MapModel
+from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
 
 # from old_editor.models.region import Region as OldRegion
 from landmatrix.models.region import Region
 
-from migrate import V1, V2
+from from_v1.migrate import V1, V2
 
 from django.utils.text import slugify
 

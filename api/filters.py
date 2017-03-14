@@ -366,7 +366,7 @@ def load_filters(request, filter_format=FILTER_FORMATS_SQL):
         # note: passing only Filters, not (name, filter) dict!
         formatted_filters = format_filters_elasticsearch(filters.values())
     else:
-        formatted_filters = format_filters(filters, filter_format=filter_format)
+        formatted_filters = format_filters(filters)#, filter_format=filter_format)
 
     return formatted_filters
 

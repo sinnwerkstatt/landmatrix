@@ -3,7 +3,7 @@ from django.utils import timezone
 import landmatrix.models
 from .land_observatory_objects.stakeholder import Stakeholder
 from .map_lo_model import MapLOModel
-from migrate import V2
+from from_v1.migrate import V2
 
 
 

@@ -13,7 +13,7 @@ from .land_observatory_objects.activity import Activity
 from .land_observatory_objects.tag_groups import A_Tag_Group
 from .map_lo_model import MapLOModel
 from .map_activity import calculate_history_date
-from migrate import V2
+from from_v1.migrate import V2
 
 
 

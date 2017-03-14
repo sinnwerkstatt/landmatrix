@@ -1,9 +1,9 @@
 from django.db.models.aggregates import Max
 from django.utils.text import slugify
-from mapping.map_model import MapModel
+from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
-from migrate import V1, V2
+from from_v1.migrate import V1, V2
 from django.db import transaction
 
 

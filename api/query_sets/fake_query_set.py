@@ -62,9 +62,9 @@ class FakeQuerySet(QuerySet):
         self.user = request.user
         self._statuses = self._get_activity_statuses(request)
 
-        is_public_condition = self.is_public_condition()
-        if is_public_condition:
-            self._additional_wheres.append(is_public_condition)
+        #is_public_condition = self.is_public_condition()
+        #if is_public_condition:
+        #    self._additional_wheres.append(is_public_condition)
 
         super().__init__()
 

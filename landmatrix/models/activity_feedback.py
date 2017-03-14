@@ -17,10 +17,10 @@ class ActivityFeedback(models.Model):
         "HistoricalActivity", verbose_name=_("Activity"))
     fk_user_assigned = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name=_("User assigned"),
-        related_name="user_assigned")
+        related_name="user_assigned", blank=True, null=True)
     fk_user_created = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name=_("User created"),
-        related_name="user_created")
+        related_name="user_created", blank=True, null=True)
     comment = models.TextField(_("Comment"))
     timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
 

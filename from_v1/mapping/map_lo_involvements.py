@@ -1,5 +1,5 @@
 from landmatrix import models as new_models
-from migrate import V2
+from from_v1.migrate import V2
 from .land_observatory_objects.activity import Activity
 from .land_observatory_objects.involvement import Involvement
 from .land_observatory_objects.stakeholder import Stakeholder

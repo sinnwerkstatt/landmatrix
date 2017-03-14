@@ -160,6 +160,8 @@ class NoWrapsStreamField(StreamField):
             self.stream_block = NoWrapsStreamBlock(block_types)
 
 class ImageBlock(ImageChooserBlock):
+    url = blocks.URLBlock(required=False, label='URL')
+
     class Meta:
         icon = 'image'
         template = 'widgets/image.html'
@@ -186,9 +188,9 @@ class LinkedImageBlock(StructBlock):
 
     def get_context(self, value):
         context = super().get_context(value)
-        context['href'] = value.url
-        context['url'] = value.get_rendition('max-1200x1200').url
-        context['name'] = value.title
+        context['href'] = value.get('url')
+        context['url'] = value.get('image').get_rendition('max-1200x1200').url
+        #context['name'] = value.get('caption')
         return context
 
 
@@ -259,16 +261,37 @@ class GalleryBlock(StructBlock):
 
 class TitleBlock(blocks.CharBlock):
 
+    def get_context(self, value):
+        context = super().get_context(value)
+        return context
+
     class Meta:
         icon = 'title'
         label = 'Title'
         template = 'widgets/title.html'
 
+class TitleWithIconBlock(StructBlock):
+    value = blocks.CharBlock(label='Title')
+    fa_icon = blocks.CharBlock(required=False)
+
+    def get_context(self, value):
+        context = super().get_context(value)
+        context['value'] = value.get('value')
+        context['fa_icon'] = value.get('fa_icon')
+        return context
+
+    class Meta:
+        icon = 'title'
+        label = 'Title with Icon'
+        template = 'widgets/title.html'
+
 #FIXME: Move blocks to blocks.py
 CONTENT_BLOCKS = [
     ('heading', TitleBlock()),
+    ('title', TitleWithIconBlock()),
     ('paragraph', blocks.RichTextBlock()),
-    ('image', ImageChooserBlock(icon="image")),
+    ('image', ImageBlock()),
+    ('linked_image', LinkedImageBlock()),
     ('media', EmbedBlock(icon="media")),
     ('html', RawHTMLBlock(icon="code")),
     ('link', LinkBlock(icon="link")),
@@ -409,7 +432,7 @@ DATA_BLOCKS = [
     ('region', RegionBlock()),
 ]
 
-class ColumnsBlock(StructBlock):
+class Columns1To1Block(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
@@ -422,38 +445,37 @@ class ColumnsBlock(StructBlock):
         return context
 
     class Meta:
+        label = 'Two Columns'
+        template = 'widgets/two-columns.html'
         icon = 'fa fa-columns'
-        label = 'Columns 1-1'
-        template = None
 
+class ThreeColumnsBlock(StructBlock):
+    left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
+    middle_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
+    right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
 
-class Columns1To1Block(ColumnsBlock):
+    def get_context(self, value):
+        context = super().get_context(value)
+
+        for column in ['left_column', 'middle_column', 'right_column']:
+            context[column] = value.get(column)
+
+        return context
+
     class Meta:
-        label = 'Columns 1:1'
-        template = 'widgets/columns-1-1.html'
-
-
-class Columns2To1Block(ColumnsBlock):
-    class Meta:
-        label = 'Columns 2:1'
-        template = 'widgets/columns-2-1.html'
-
-
-class Columns1To2Block(ColumnsBlock):
-    class Meta:
-        label = 'Columns 1:2'
-        template = 'widgets/columns-1-2.html'
+        label = 'Three Columns'
+        template = 'widgets/three-columns.html'
+        icon = 'fa fa-columns'
 
 COLUMN_BLOCKS = [
     ('columns_1_1', Columns1To1Block()),
-    ('columns_2_1', Columns2To1Block()),
-    ('columns_1_2', Columns1To2Block())
+    ('columns_3', ThreeColumnsBlock()),
 ]
 
 
 class TabBlock(StructBlock):
     title = blocks.CharBlock()
-    fa_icon = blocks.CharBlock()
+    fa_icon = blocks.CharBlock(required=False)
     content = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
 
 class TabsBlock(StructBlock):
@@ -614,8 +636,7 @@ class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     country = models.ForeignKey(DataCountry, null=True, blank=True, on_delete=models.SET_NULL)
     body = NoWrapsStreamField(CONTENT_BLOCKS + [
             ('columns_1_1', Columns1To1Block()),
-            ('columns_2_1', Columns2To1Block()),
-            ('columns_1_2', Columns1To2Block())
+            ('columns_3', ThreeColumnsBlock()),
         ]
     )
     content_panels = Page.content_panels + [

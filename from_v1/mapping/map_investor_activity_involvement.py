@@ -1,12 +1,12 @@
 from operator import itemgetter
 
-from mapping.map_model import MapModel
+from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
-from migrate import V1
-from mapping.map_activity import MapActivity
-from mapping.map_investor import MapInvestor
-from mapping.aux_functions import get_now
+from from_v1.migrate import V1
+from from_v1.mapping.map_activity import MapActivity
+from from_v1.mapping.map_investor import MapInvestor
+from from_v1.mapping.aux_functions import get_now
 
 from django.db import connections, models
 

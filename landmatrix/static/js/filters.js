@@ -15,7 +15,6 @@ var currentVariable = "";
 //}
 
 function updateFilters(data) {
-
     var label;
 
     var tags = $("#filterlist");
@@ -48,6 +47,7 @@ function updateFilters(data) {
     console.log("Filterdata:", data);
     var filternames = [];
 
+    var title_prefix = 'Global';
     for (var item in data) {
         if ("preset_id" in data[item]) {
             if (data[item].hidden) {
@@ -73,11 +73,12 @@ function updateFilters(data) {
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
             // Update title for target country/region
             if (tag == 'target_country' || tag == 'target_region') {
-                $('h1 span').text(data[item].display_value + ': ' + $('h1 span').text());
+                title_prefix = data[item].display_value;
             }
         }
         $(finalHtml).appendTo(tags);
     }
+    $('h1 span').text(title_prefix + ': ' + $('h1 span').text());
     $('#filters .toggle-tooltip:not(.left,.bottom)').tooltip({placement: "top", html: true});
 
     $("#filterrow form").hide()

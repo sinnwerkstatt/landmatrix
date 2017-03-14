@@ -1,19 +1,26 @@
-from mapping.map_model import MapModel
-from mapping.map_status import MapStatus
+from from_v1.mapping.map_model import MapModel
+from from_v1.mapping.map_status import MapStatus
 import landmatrix.models
 import old_editor.models
-from migrate import V1, V2
+from from_v1.migrate import V1, V2
 
 from django.db import connections
 from django.utils import timezone
 from datetime import timedelta, datetime
 
 
+def get_fully_updated(fully_updated):
+    return bool(fully_updated)
+
 
 class MapActivity(MapModel):
     old_class = old_editor.models.Activity
     new_class = landmatrix.models.Activity
     depends = [ MapStatus ]
+
+    attributes = {
+        'fully_updated': ('fully_updated', get_fully_updated),
+    }
 
     @classmethod
     def all_records(cls):
@@ -47,7 +54,7 @@ ORDER BY activity_identifier
                 activity_identifier=version['activity_identifier'],
                 availability=version['availability'],
                 fk_status_id=version['fk_status_id'],
-                fully_updated=version['fully_updated'],
+                fully_updated=get_fully_updated(version['fully_updated']),
                 history_date=calculate_history_date(versions, i),
                 history_user=get_history_user(version)
             )
