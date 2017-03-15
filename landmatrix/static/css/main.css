@@ -792,9 +792,12 @@ form select {
   font-size: 16px;
   line-height: 1.5em; }
 
-h1 {
+h1,
+h2 {
   font-size: 28px;
-  line-height: 32px;
+  line-height: 32px; }
+
+h1 {
   margin-bottom: 20px; }
 
 h2,
@@ -1013,7 +1016,6 @@ p {
   line-height: 2em; }
 
 h1,
-h1
 h2,
 h3,
 h4,
@@ -1022,8 +1024,7 @@ h6 {
   font-family: 'Unit', sans-serif;
   font-weight: bold; }
   h1 a,
-  h1
-h2 a,
+  h2 a,
   h3 a,
   h4 a,
   h5 a,
@@ -1031,8 +1032,7 @@ h2 a,
     font-family: 'Unit', sans-serif;
     font-weight: bold; }
     h1 a:hover,
-    h1
-h2 a:hover,
+    h2 a:hover,
     h3 a:hover,
     h4 a:hover,
     h5 a:hover,
