@@ -88,9 +88,12 @@ form select {
   line-height: 1.5em;
 }
 
-h1 {
+h1,
+h2 {
   font-size: 28px;
   line-height: 32px;
+}
+h1 {
   margin-bottom: 20px;
 }
 
@@ -360,7 +363,6 @@ p {
 }
 
 h1,
-h1
 h2,
 h3,
 h4,
