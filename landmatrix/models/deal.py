@@ -140,7 +140,7 @@ def get_latest_activity(deal_id):
 
 
 def resolve_country(key, value):
-    return Country.objects.get(id=int(value)).name if 'country' in key and value.isdigit() else value
+    return Country.objects.defer('geom').get(id=int(value)).name if 'country' in key and value.isdigit() else value
 
 
 # def get_stakeholder_attributes(stakeholder):

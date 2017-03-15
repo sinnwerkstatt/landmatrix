@@ -81,19 +81,19 @@ class DealProduceInfoForm(BaseForm):
     # TODO: surely this should be a formset?
     export_country1 = forms.ModelChoiceField(
         required=False, label=_("Country 1"),
-        queryset=Country.objects.all().order_by("name"))
+        queryset=Country.objects.defer('geom').all().order_by("name"))
     export_country1_ratio = forms.IntegerField(
         required=False, label=_("Country 1 ratio"), help_text=_("%"),
         widget=NumberInput)
     export_country2 = forms.ModelChoiceField(
         required=False, label=_("Country 2"),
-        queryset=Country.objects.all().order_by("name"))
+        queryset=Country.objects.defer('geom').all().order_by("name"))
     export_country2_ratio = forms.IntegerField(
         required=False, label=_("Country 2 ratio"), help_text=_("%"),
         widget=NumberInput)
     export_country3 = forms.ModelChoiceField(
         required=False, label=_("Country 3"),
-        queryset=Country.objects.all().order_by("name"))
+        queryset=Country.objects.defer('geom').all().order_by("name"))
     export_country3_ratio = forms.IntegerField(
         required=False, label=_("Country 3 ratio"), help_text=_("%"),
         widget=NumberInput)

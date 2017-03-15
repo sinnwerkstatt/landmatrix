@@ -502,7 +502,7 @@ class CountrySelect(forms.Select):
         else:
             selected_html = ''
         if option_value:
-            code = Country.objects.get(pk=option_value).code_alpha2
+            code = Country.objects.defer('geom').get(pk=option_value).code_alpha2
         else:
             code = ""
         return u'<option value="%s" title="%s" %s>%s</option>' % (

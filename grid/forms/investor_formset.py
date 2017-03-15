@@ -112,4 +112,4 @@ def get_stakeholder_comments(stakeholder):
 def resolve_country(key, value):
     if key != 'country': return value
     if not value.isdigit(): return value
-    return Country.objects.get(id=value).name
+    return Country.objects.defer('geom').get(id=value).name

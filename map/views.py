@@ -154,7 +154,7 @@ class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
         if 'Target country' in filters:
             target_country_id = filters['Target country']['value']
             with contextlib.suppress(Country.DoesNotExist, ValueError):
-                context['map_object'] = Country.objects.get(pk=target_country_id)
+                context['map_object'] = Country.objects.defer('geom').get(pk=target_country_id)
                 context['is_country'] = True
 
         if 'Target region' in filters:
