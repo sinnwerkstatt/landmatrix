@@ -1,3 +1,5 @@
+import json
+
 from pyelasticsearch import ElasticSearch as PyElasticSearch
 from pyelasticsearch.exceptions import ElasticHttpNotFoundError
 import http.client
@@ -147,9 +149,17 @@ class ElasticSearch(object):
             # do not include the django object id
             if a.name == 'id': 
                 continue
-            value = 'area' in a.name if a.polygon else a.value
+
+            value = a.value
+            if a.name and 'area' in a.name and a.polygon is not None:
+                value = json.loads(a.polygon.json)
+
+                # Apparently this is case sensitive: MultiPolygon as provided by
+                # the GeoJSON does not work ...
+                value['type'] = 'multipolygon'
+
             # TODO: are polygons used at all for searching?
-            
+
             # do not include empty values
             if value is None or value == '':
                 continue
