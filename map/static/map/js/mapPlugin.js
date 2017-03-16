@@ -699,6 +699,13 @@
                 } else {
                     this.dealsPerCountryLayer = getCountryClusterLayer();
                     map.addLayer(this.dealsPerCountryLayer);
+
+                    // Apparently, it is necessary to re-render the map after
+                    // the layer was rendered in order to properly display
+                    // the charts on the map. Thanks, OpenLayers ...
+                    this.dealsPerCountryLayer.on('render', function() {
+                        map.render();
+                    });
                 }
             };
 
@@ -711,6 +718,13 @@
                 } else {
                     this.dealsLayer = getDealsClusterLayer();
                     map.addLayer(this.dealsLayer);
+
+                    // Apparently, it is necessary to re-render the map after
+                    // the layer was rendered in order to properly display
+                    // the charts on the map. Thanks, OpenLayers ...
+                    this.dealsLayer.on('render', function() {
+                        map.render();
+                    });
                 }
             };
 
