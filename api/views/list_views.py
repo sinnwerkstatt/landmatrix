@@ -25,6 +25,7 @@ from django.conf import settings
 from geojson import FeatureCollection, Feature, Point
 from api.filters import load_filters, FILTER_FORMATS_ELASTICSEARCH
 from grid.forms.choices import INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
+from map.views import MapSettingsMixin
 
 User = get_user_model()
 
@@ -331,3 +332,50 @@ class CountryGeomView(APIView):
             )
         except Country.DoesNotExist:
             raise Http404
+
+
+class PolygonGeomView(GlobalDealsView, APIView):
+    """
+    Get a GeoJSON representation of polygons. The polygon field is provided
+    through kwargs, only fields defined in the MapSettingsMixin are valid.
+    Currently no filtering is in place, all polygons encountered are returned.
+    If this becomes too big, spatial filtering needs to be implemented.
+    """
+
+    http_method_names = ['get']
+
+    def get(self, request, *args, **kwargs):
+        polygon_field = kwargs.get('polygon_field')
+
+        valid_polygon_fields = MapSettingsMixin.get_polygon_layers().keys()
+        if polygon_field not in valid_polygon_fields:
+            raise Http404
+
+        # Reuse methods from GlobalDealsView
+
+        # Get the basic query filter for Elasticsearch
+        query = self.create_query_from_filters()
+
+        # Filter all objects which have an existing polygon field
+        # TODO: Is there a better place and way for this?
+        query.setdefault('bool', {}).setdefault('filter', []).append({
+            'exists': {
+                'field': polygon_field
+            }
+        })
+
+        raw_result_list = self.execute_elasticsearch_query(query)
+        result_list = self.filter_returned_results(raw_result_list)
+
+        features = []
+        for result in result_list:
+            feature = result.get(polygon_field)
+            if feature is None:
+                continue
+
+            # Again, case sensitive: multipolygon in ES needs to be MultiPolygon
+            # in GeoJSON.
+            feature['type'] = 'MultiPolygon'
+            features.append(feature)
+
+        return Response(FeatureCollection(features))

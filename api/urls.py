@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from api.views import *
+from api.views.list_views import PolygonGeomView
 
 urlpatterns = [
     url(r'^filter\.json', FilterView.as_view(), {'format': 'json'},
@@ -20,6 +21,8 @@ urlpatterns = [
         {'format': 'json'}, name='countries_api'),
     url(r'^countries-geom\.json', CountryGeomView.as_view(),
         {'format': 'json'}, name='countries_geom_api'),
+    url(r'^polygons/(?P<polygon_field>[^/]+)\.json', PolygonGeomView.as_view(),
+        {'format': 'json'}, name='polygon_geom_api'),
     url(r'^regions\.json', RegionListView.as_view(),
         {'format': 'json'}, name='regions_api'),
     url(r'^investors\.json', InvestorListView.as_view(),

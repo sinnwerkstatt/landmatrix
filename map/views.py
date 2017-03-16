@@ -3,6 +3,7 @@ import contextlib
 import collections
 import json
 
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
@@ -137,6 +138,29 @@ class MapSettingsMixin:
             }
         })
 
+    @staticmethod
+    def get_polygon_layers():
+        return collections.OrderedDict({
+            'contract_area': {
+                'label': _('Contract area'),
+                'color': '#575757',
+                'url': reverse('polygon_geom_api', kwargs={
+                    'polygon_field': 'contract_area'}),
+            },
+            'intended_area': {
+                'label': _('Intended area'),
+                'color': '#AD2323',
+                'url': reverse('polygon_geom_api', kwargs={
+                    'polygon_field': 'intended_area'}),
+            },
+            'production_area': {
+                'label': _('Area in production'),
+                'color': '#1D6914',
+                'url': reverse('polygon_geom_api', kwargs={
+                    'polygon_field': 'production_area'}),
+            },
+        })
+
 
 class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
     template_name = 'map/map.html'
@@ -146,7 +170,9 @@ class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
 
         context.update({
             'legend': self.get_legend(),
-            'legend_json': json.dumps(self.get_legend())
+            'legend_json': json.dumps(self.get_legend()),
+            'polygon_layers': self.get_polygon_layers(),
+            'polygon_layers_json': json.dumps(self.get_polygon_layers()),
         })
 
         # Target country or region set?

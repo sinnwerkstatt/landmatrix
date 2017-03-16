@@ -165,10 +165,6 @@
 .map-legend-select {
   width: 100%; }
 
-.map-legend {
-  margin-right: 1rem;
-  font-size: 14px; }
-
 .map-details-table td:first-child {
   padding-left: 5px; }
 .map-details-table td:not(:first-child) {
@@ -210,15 +206,29 @@
   margin-left: 1.5rem; }
 
 .map-legend {
+  margin-right: 1rem;
+  font-size: 14px;
   display: none; }
   .map-legend ul {
     list-style-type: none;
     padding-left: 0; }
-  .map-legend .legend-symbol {
-    float: left;
-    height: 1.2em;
-    margin-right: 0.3em;
-    text-align: center;
-    width: 1.2em; }
+
+.legend-symbol {
+  float: left;
+  height: 1.2em;
+  width: 1.2em;
+  margin-right: 0.5em;
+  text-align: center; }
+
+.legend-symbol-inner {
+  float: left;
+  height: 0.9em;
+  width: 0.9em; }
+
+.polygon-legend {
+  margin-right: 1rem;
+  font-size: 14px; }
+  .polygon-legend input {
+    margin-right: 0.3em; }
 
 /*# sourceMappingURL=map.css.map */

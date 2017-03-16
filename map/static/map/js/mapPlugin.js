@@ -36,6 +36,7 @@
 
             var baseLayers = getBaseLayers();
             var contextLayers = getContextLayers();
+            var polygonLayers = {};
 
             // initialize map
             var map = new ol.Map({
@@ -817,6 +818,48 @@
                     legendDiv.html('');
                 }
             };
+            
+            this.togglePolygons = function(checkboxEl) {
+                
+                // Check if the layer was already loaded
+                if (polygonLayers[checkboxEl.value]) {
+                    var currentLayer = polygonLayers[checkboxEl.value];
+                    currentLayer.setVisible(checkboxEl.checked);
+                    return;
+                }
+
+                // Load the layer if necessary
+                var layerId = checkboxEl.value;
+                var layerSettings = settings.polygonLayers[layerId];
+                if (!layerSettings) {
+                    return;
+                }
+                $.ajax(layerSettings.url).then(function (response) {
+                    var geojsonFormat = new ol.format.GeoJSON();
+                    var features = geojsonFormat.readFeatures(response);
+
+                    var polygonSource = new ol.source.Vector();
+                    polygonSource.addFeatures(features);
+                    var polygonLayer = new ol.layer.Vector({
+                        source: polygonSource,
+                        name: layerId,
+                        style: new ol.style.Style({
+                            fill: new ol.style.Fill({
+                                color: hexToRGB(layerSettings.color, 0.4)
+                            }),
+                            stroke: new ol.style.Stroke({
+                                color: layerSettings.color,
+                                width: 2,
+                                lineCap: "round"
+                            })
+                        })
+                    });
+                    map.addLayer(polygonLayer);
+
+                    // Store the layer so it does not need to be queried again
+                    polygonLayers[layerId] = polygonLayer;
+                });
+            };
 
             /**
              * Draw a chart using ChartsJS in a div#chart. Required a data
@@ -865,6 +908,19 @@
             return this;
         }
     });
+
+    function hexToRGB(hex, alpha) {
+        // http://stackoverflow.com/a/28056903/841644
+        var r = parseInt(hex.slice(1, 3), 16),
+            g = parseInt(hex.slice(3, 5), 16),
+            b = parseInt(hex.slice(5, 7), 16);
+
+        if (alpha) {
+            return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+        } else {
+            return "rgb(" + r + ", " + g + ", " + b + ")";
+        }
+    }
 
     /**
      * Handlebars helper to format number values: Add thousands separator or

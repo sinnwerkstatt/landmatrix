@@ -64,6 +64,14 @@
             <option value="{{ key }}"{% if forloop.first %} selected="selected"{% endif %}>{{ data.label }}</option>
           {% endfor %}
         </select>
+        <h4><span>{% trans "Areas" %}</span></h4>
+        <div class="polygon-legend">
+          {% for key, layer_options in polygon_layers.items %}
+            <label>
+              <input type="checkbox" value="{{ key }}" name="show-polygons"><span class="legend-symbol" style="border: 0.15em solid {{ layer_options.color }}"><span class="legend-symbol-inner" style="background-color:{{ layer_options.color }}; opacity: 0.4"></span></span>{{ layer_options.label }}
+            </label>
+          {% endfor %}
+        </div>
         <h4><span>{% trans "Legend" %}</span></h4>
         {% for key, data in legend.items %}
           <div class="{{ key }} map-legend{% if forloop.first %} active{% endif %}">

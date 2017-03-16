@@ -240,11 +240,6 @@ $map-height: 75vh;
   width: 100%;
 }
 
-.map-legend {
-  margin-right: 1rem;
-  font-size: 14px;
-}
-
 .map-details-table {
 
   td:first-child {
@@ -316,18 +311,36 @@ $map-height: 75vh;
 
 // the legend in the tabbed menu panel
 .map-legend {
+  margin-right: 1rem;
+  font-size: 14px;
   display: none;
 
   ul {
     list-style-type: none;
     padding-left: 0;
   }
+}
 
-  .legend-symbol {
-    float: left;
-    height: 1.2em;
+.legend-symbol {
+  float: left;
+  height: 1.2em;
+  width: 1.2em;
+  margin-right: 0.5em;
+  text-align: center;
+}
+
+.legend-symbol-inner {
+  float: left;
+  height: 0.9em;
+  width: 0.9em;
+}
+
+
+.polygon-legend {
+  margin-right: 1rem;
+  font-size: 14px;
+
+  input {
     margin-right: 0.3em;
-    text-align: center;
-    width: 1.2em;
   }
 }

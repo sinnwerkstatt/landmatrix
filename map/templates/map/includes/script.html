@@ -78,6 +78,7 @@
       dealsUrl: "{% url "deals_api" %}",
       legend: {{ legend_json|safe }},
       legendKey: legendSelect.val(),
+      polygonLayers: {{ polygon_layers_json|safe }},
       featureDetailsElement: "details-overlay",
       featureDetailsCallback: activateTabContent,
       visibleLayer: {% if map_object %}"deals"{% else %}"countries"{% endif %},
@@ -159,6 +160,10 @@
     $("input[name='context-layer']").on("change", function() {
       map.toggleContextLayer(this);
     });
+
+    $("input[name='show-polygons']").on("change", function() {
+      map.togglePolygons(this);
+    })
   });
 </script>
 {% handlebarsjs "countries-details" precompile %}
