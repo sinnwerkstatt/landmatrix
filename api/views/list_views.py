@@ -234,7 +234,7 @@ class GlobalDealsView(APIView):
         investor = investor and investor[0] # saved as an array currently?
 
         # Remove subcategories from intention
-        intention = filter(lambda i: i not in INTENTION_EXCLUDE, result.get('intention', []))
+        intention = filter(lambda i: i not in INTENTION_EXCLUDE, result.get('intention', ['Unknown']))
 
         geometry = (float(result['point_lon']), float(result['point_lat']))
         return Feature(
@@ -245,13 +245,13 @@ class GlobalDealsView(APIView):
                 "url": reverse('deal_detail', kwargs={
                     'deal_id': result['activity_identifier']}),
                 "intention": intention,
-                "implementation": result.get('implementation_status'),
+                "implementation": result.get('implementation_status', 'Unknown'),
                 "intended_size": intended_size,
                 "contract_size": contract_size,
                 "production_size": production_size,
                 "investor": investor,
                 "identifier": result.get('activity_identifier'),
-                "level_of_accuracy": result.get('level_of_accuracy'),
+                "level_of_accuracy": result.get('level_of_accuracy', 'Unknown'),
             },
         )
 

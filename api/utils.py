@@ -25,7 +25,7 @@ class PropertyCounter(dict):
         Increment all counters according to given data from elasticsearch.
         """
         for key, es_key in self.properties.items():
-            values = data.get(es_key)
+            values = data.get(es_key, 'Unknown')
             prop = getattr(self, key)
             if isinstance(values, list):
                 for val in values:

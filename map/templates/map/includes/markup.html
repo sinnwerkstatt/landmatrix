@@ -44,20 +44,20 @@
       <div class="tab-content active" data-content="deals">
         <h4><span>{% trans "Display" %}</span></h4>
         <div class="js-layer-switch button-layer-switch well">
-          <div class="{% if map_object %}disabled{% endif %}" data-show-layer="countries">
+          <div class="disabled" data-show-layer="countries">
             <svg version="1.1" id="countries" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="70px" height="70px" viewBox="25 25 50 50" enable-background="new 0 0 100 100" xml:space="preserve"><circle class="donut-hole" cx="50" cy="50" r="15.915494309189533" fill="#f9de98"></circle><circle class="donut-ring" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#d2d3d4" stroke-width="7"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#1D6914" stroke-width="7" stroke-dasharray="69.23076923076923 30.769230769230774" stroke-dashoffset="125"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#2A4BD7" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="55.769230769230774"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#814A19" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="55.769230769230774"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#9DAFFF" stroke-width="7" stroke-dasharray="30.76923076923077 69.23076923076923" stroke-dashoffset="55.769230769230774"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#AD2323" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#575757" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#81C57A" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#8126C0" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25"></circle></svg>
             <span>{% trans "Group by country" %}</span>
           </div>
-          <div class="{% if not map_object %}disabled{% endif %}" data-show-layer="deals">
+          <div data-show-layer="deals">
             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="70px" height="70px" viewBox="25 25 50 50" enable-background="new 0 0 100 100" xml:space="preserve"><circle class="donut-hole" cx="50" cy="50" r="15.915494309189533" fill="#fff"></circle><circle class="donut-ring" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#d2d3d4" stroke-width="7"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#1D6914" stroke-width="7" stroke-dasharray="33.33333333333333 66.66666666666667" stroke-dashoffset="125"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#2A4BD7" stroke-width="7" stroke-dasharray="33.33333333333333 66.66666666666667" stroke-dashoffset="91.66666666666667"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#814A19" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="58.33333333333334"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#9DAFFF" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="58.33333333333334"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#AD2323" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="58.33333333333334"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#575757" stroke-width="7" stroke-dasharray="33.33333333333333 66.66666666666667" stroke-dashoffset="58.33333333333334"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#81C57A" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25.000000000000014"></circle><circle class="donut-segment" cx="50" cy="50" r="15.915494309189533" fill="transparent" stroke="#8126C0" stroke-width="7" stroke-dasharray="0 100" stroke-dashoffset="25.000000000000014"></circle></svg>
             <span>{% trans "Individual deals" %}</span>
           </div>
         </div>
-        <label class="button-switch switch-auto-cb">
-          <input type="checkbox" checked="checked" class="js-toggle-cluster-auto">
-          <div class="slider round"></div>
-        </label>
-        {% trans "Autoswitch grouping" %}
+{#        <label class="button-switch switch-auto-cb">#}
+{#          <input type="checkbox" checked="checked" class="js-toggle-cluster-auto">#}
+{#          <div class="slider round"></div>#}
+{#        </label>#}
+{#        {% trans "Autoswitch grouping" %}#}
         <h4><span>{% trans "Show info about" %}</span></h4>
         <select class="js-legend-select map-legend-select">
           {% for key, data in legend.items %}

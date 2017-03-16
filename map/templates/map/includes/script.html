@@ -81,7 +81,7 @@
       polygonLayers: {{ polygon_layers_json|safe }},
       featureDetailsElement: "details-overlay",
       featureDetailsCallback: activateTabContent,
-      visibleLayer: {% if map_object %}"deals"{% else %}"countries"{% endif %},
+      visibleLayer: "deals",
       autoToggle: {% if map_object %}false{% else %}true{% endif %},
       {% if map_object %}centerTo: [{{ map_object.point_lon }}, {{ map_object.point_lat }}],{% endif %}
       switchLayerCallback: switchLayerTo,

@@ -266,18 +266,7 @@
                 return new ol.layer.Vector({
                     source: dealsPerCountryCluster,
                     name: "countries",
-                    style: function (feature) {
-                        calculateClusterInfo(dealsPerCountryCluster, 'deals');
-
-                        var clusteredFeatures = feature.get('features');
-
-                        var clusterSVG = new Image();
-                        var clusterData = prepareCountryClusterData(clusteredFeatures);
-                        var sizeVariables = getChartSizeVariables(clusterData.count);
-                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'countries', sizeVariables.chartSize));
-
-                        return getChartStyle(clusterSVG, clusterData.count.toString(), sizeVariables.chartSize, sizeVariables.fontSize);
-                    },
+                    style: getCountryClusterStyle,
                     visible: settings.visibleLayer == 'countries'
                 });
             }
@@ -288,23 +277,38 @@
                 return new ol.layer.Vector({
                     name: "deals",
                     source: dealsCluster,
-                    style: function(feature) {
-                        calculateClusterInfo(dealsCluster);
-
-                        var clusteredFeatures = feature.get('features');
-                        var dealFeatures = getUniqueDealsFromFeatures(clusteredFeatures);
-
-                        var clusterSVG = new Image();
-                        var clusterData = prepareDealClusterData(dealFeatures);
-                        var sizeVariables = getChartSizeVariables(clusterData.count);
-                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals', sizeVariables.chartSize));
-
-                        // No cluster text label for single locations (marker)
-                        var clusterText = clusterData.count > 1 ? clusterData.count.toString() : '';
-                        return getChartStyle(clusterSVG, clusterText, sizeVariables.chartSize, sizeVariables.fontSize);
-                    },
+                    style: getDealsClusterStyle,
                     visible: settings.visibleLayer == 'deals'
-                })
+                });
+            }
+
+            function getCountryClusterStyle(feature) {
+                calculateClusterInfo(dealsPerCountryCluster, 'deals');
+
+                var clusteredFeatures = feature.get('features');
+
+                var clusterSVG = new Image();
+                var clusterData = prepareCountryClusterData(clusteredFeatures);
+                var sizeVariables = getChartSizeVariables(clusterData.count);
+                clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'countries', sizeVariables.chartSize));
+
+                return getChartStyle(clusterSVG, clusterData.count.toString(), sizeVariables.chartSize, sizeVariables.fontSize);
+            }
+
+            function getDealsClusterStyle(feature) {
+                calculateClusterInfo(dealsCluster);
+
+                var clusteredFeatures = feature.get('features');
+                var dealFeatures = getUniqueDealsFromFeatures(clusteredFeatures);
+
+                var clusterSVG = new Image();
+                var clusterData = prepareDealClusterData(dealFeatures);
+                var sizeVariables = getChartSizeVariables(clusterData.count);
+                clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals', sizeVariables.chartSize));
+
+                // No cluster text label for single locations (marker)
+                var clusterText = clusterData.count > 1 ? clusterData.count.toString() : '';
+                return getChartStyle(clusterSVG, clusterText, sizeVariables.chartSize, sizeVariables.fontSize);
             }
 
             function getBaseLayers() {
@@ -358,7 +362,7 @@
                             };
                             return 'http://sdi.cde.unibe.ch/geoserver/lo/wms' + '?' + $.param(imgParams);
                         },
-                        dataSourceOwner: 'Source: <a href="http://www.landobservatory.org/" target="_blank">Land observatory</a>'
+                        dataSourceOwner: 'Source: <a href="http://due.esrin.esa.int/page_globcover.php" target="_blank">ESA</a>'
                     }),
                     new ol.layer.Image({
                         name: 'cropland',
@@ -396,7 +400,7 @@
                         name: 'indigenous_lands',
                         visible: false,
                         source: new ol.source.TileArcGISRest({
-                            url: 'http://gis.wri.org/arcgis/rest/services/IndigenousCommunityLands/NationalLevel/MapServer'
+                            url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_comm_LandMatrix/MapServer'
                         }),
                         dataSourceOwner: 'Source: <a href="http://www.wri.org/" target="_blank">World Resources Institute</a>'
                     })
@@ -680,30 +684,34 @@
             });
 
             // Listen to zoom events. If autoToggle is active, toggle layers.
-            map.getView().on("change:resolution", function() {
-                if (settings.autoToggle) {
-                    toggleLayerByResolution();
-                }
-            });
+            // map.getView().on("change:resolution", function() {
+            //     if (settings.autoToggle) {
+            //         toggleLayerByResolution();
+            //     }
+            // });
 
             // Redraw the layer with the deals per country, with the current
             // legend as properties.
             this.setDealsPerCountryLayer = function() {
                 if (this.dealsPerCountryLayer) {
-                    map.removeLayer(this.dealsPerCountryLayer);
+                    // Update only the style
+                    this.dealsPerCountryLayer.setStyle(getCountryClusterStyle);
+                } else {
+                    this.dealsPerCountryLayer = getCountryClusterLayer();
+                    map.addLayer(this.dealsPerCountryLayer);
                 }
-                this.dealsPerCountryLayer = getCountryClusterLayer();
-                map.addLayer(this.dealsPerCountryLayer);
             };
 
             // Redraw the layer with the deals, with the current legend as
             // properties.
             this.setDealsLayer = function() {
                 if (this.dealsLayer) {
-                    map.removeLayer(this.dealsLayer);
+                    // Update only the style
+                    this.dealsLayer.setStyle(getDealsClusterStyle);
+                } else {
+                    this.dealsLayer = getDealsClusterLayer();
+                    map.addLayer(this.dealsLayer);
                 }
-                this.dealsLayer = getDealsClusterLayer();
-                map.addLayer(this.dealsLayer);
             };
 
             // Load geojson from countries-api and display data.

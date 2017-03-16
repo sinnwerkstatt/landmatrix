@@ -57,7 +57,7 @@ class MapSettingsMixin:
                     {
                         'label': _('Unknown'),
                         'id': 'Unknown',
-                        'color': '#81C57A'
+                        'color': '#bab8b8'
                     }
                 ]
             },
@@ -103,6 +103,11 @@ class MapSettingsMixin:
                         'label': _('Other'),
                         'id': 'Other',
                         'color': '#8126C0'
+                    },
+                    {
+                        'label': _('Unknown'),
+                        'id': 'Unknown',
+                        'color': '#bab8b8'
                     }
                 ]
             },
@@ -133,6 +138,11 @@ class MapSettingsMixin:
                         'label': _('Coordinates'),
                         'id': 'Coordinates',
                         'color': '#814A19'
+                    },
+                    {
+                        'label': _('Unknown'),
+                        'id': 'Unknown',
+                        'color': '#bab8b8'
                     }
                 ]
             }
