@@ -445,7 +445,7 @@ def _parse_value(filter_value, variable=None, key=None):
             not value.isnumeric()
         )
         if is_country_string:
-            country = Country.objects.get(name__iexact=value.replace('-', ' '))
+            country = Country.objects.defer('geom').get(name__iexact=value.replace('-', ' '))
             value = str(country.pk)
     
     return value

@@ -303,7 +303,7 @@ class CountryDealsView(GlobalDealsView, APIView):
         """
         Get countries with simplified geometry, to reduce size of response.
         """
-        return Country.objects.filter(id__in=ids).defer('geom')
+        return Country.objects.defer('geom').filter(id__in=ids)
 
 
 class CountryGeomView(APIView):

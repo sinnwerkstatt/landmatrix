@@ -60,7 +60,7 @@ class LatestChangesQuerySet:
         ).values_list('fk_activity_id', flat=True).distinct()
 
     def activity_ids_by_region(self):
-        countries_in_region = Country.objects.filter(fk_region_id=self.region).values_list('id', flat=True).distinct()
+        countries_in_region = Country.objects.defer('geom').filter(fk_region_id=self.region).values_list('id', flat=True).distinct()
         return ActivityAttribute.objects.filter(
             name='target_country', value__in=list(countries_in_region)
         ).values_list('fk_activity_id', flat=True).distinct()

@@ -173,7 +173,7 @@ class DealSpatialForm(BaseForm):
         if 'target_country' in attributes \
                 and not isinstance(attributes['target_country']['value'], int) \
                 and not attributes['target_country']['value'].isnumeric():
-            target_country = Country.objects.get(
+            target_country = Country.objects.defer('geom').get(
                 name=attributes['target_country']['value'])
             attributes['target_country']['value'] = target_country.pk
 
