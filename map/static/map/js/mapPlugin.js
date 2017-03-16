@@ -16,6 +16,7 @@
             var minFontSize = 1.25;  // Font size is usually clusterRadius / 100
             var minClusterRadius = 100;
             var maxClusterRadius = 300;
+            var clusterDistance = 125;
 
             // The resolution for which to toggle the layers automatically.
             var autoToggleResolution = 2000;
@@ -72,14 +73,14 @@
             var dealsPerCountrySource = new ol.source.Vector();
             var dealsPerCountryCluster = new ol.source.Cluster({
                 source: dealsPerCountrySource,
-                distance: maxClusterRadius / 2
+                distance: clusterDistance
             });
 
             // Layer and source for the deals. All deals are clustered.
             var dealsSource = new ol.source.Vector();
             var dealsCluster = new ol.source.Cluster({
                 source: dealsSource,
-                distance: maxClusterRadius / 2
+                distance: clusterDistance
             });
 
             // Map search if available
