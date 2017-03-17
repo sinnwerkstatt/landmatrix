@@ -87,6 +87,10 @@ class ElasticSearch(object):
 >>>>>>> merge-map-refactor
             doc_type='deal')
     """
+    def index_document_by_id(self, activity_id):
+        activity = HistoricalActivity.objects.get(pk=activity_id)
+        return self.index_document(activity)
+
     def index_document(self, activity):
         for doc in self.get_documents(activity):
             self.conn.index(index=self.index_name, doc_type='deal', doc=doc, id=doc.pop('id'))
