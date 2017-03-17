@@ -6,5 +6,4 @@ from landmatrix.tasks import index_activity
 
 @receiver(post_save, sender=HistoricalActivity)
 def index_document(sender, instance, **kwargs):
-    #index_activity.delay(instance)
-    pass
+    index_activity.delay(instance)
