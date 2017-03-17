@@ -3,6 +3,7 @@ import contextlib
 import collections
 import json
 
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
@@ -56,7 +57,7 @@ class MapSettingsMixin:
                     {
                         'label': _('Unknown'),
                         'id': 'Unknown',
-                        'color': '#81C57A'
+                        'color': '#bab8b8'
                     }
                 ]
             },
@@ -102,9 +103,72 @@ class MapSettingsMixin:
                         'label': _('Other'),
                         'id': 'Other',
                         'color': '#8126C0'
+                    },
+                    {
+                        'label': _('Unknown'),
+                        'id': 'Unknown',
+                        'color': '#bab8b8'
+                    }
+                ]
+            },
+            'level_of_accuracy': {
+                'label': _('Spatial accuracy'),
+                'attributes': [
+                    {
+                        'label': _('Country'),
+                        'id': 'Country',
+                        'color': '#1D6914'
+                    },
+                    {
+                        'label': _('Administrative region'),
+                        'id': 'Administrative region',
+                        'color': '#8126C0'
+                    },
+                    {
+                        'label': _('Approximate location'),
+                        'id': 'Approximate location',
+                        'color': '#575757'
+                    },
+                    {
+                        'label': _('Exact location'),
+                        'id': 'Exact location',
+                        'color': '#AD2323'
+                    },
+                    {
+                        'label': _('Coordinates'),
+                        'id': 'Coordinates',
+                        'color': '#814A19'
+                    },
+                    {
+                        'label': _('Unknown'),
+                        'id': 'Unknown',
+                        'color': '#bab8b8'
                     }
                 ]
             }
+        })
+
+    @staticmethod
+    def get_polygon_layers():
+        return collections.OrderedDict({
+            'contract_area': {
+                'label': _('Contract area'),
+                'color': '#575757',
+                'url': reverse('polygon_geom_api', kwargs={
+                    'polygon_field': 'contract_area'}),
+            },
+            'intended_area': {
+                'label': _('Intended area'),
+                'color': '#AD2323',
+                'url': reverse('polygon_geom_api', kwargs={
+                    'polygon_field': 'intended_area'}),
+            },
+            'production_area': {
+                'label': _('Area in production'),
+                'color': '#1D6914',
+                'url': reverse('polygon_geom_api', kwargs={
+                    'polygon_field': 'production_area'}),
+            },
         })
 
 
@@ -116,7 +180,9 @@ class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
 
         context.update({
             'legend': self.get_legend(),
-            'legend_json': json.dumps(self.get_legend())
+            'legend_json': json.dumps(self.get_legend()),
+            'polygon_layers': self.get_polygon_layers(),
+            'polygon_layers_json': json.dumps(self.get_polygon_layers()),
         })
 
         # Target country or region set?
@@ -124,7 +190,7 @@ class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
         if 'Target country' in filters:
             target_country_id = filters['Target country']['value']
             with contextlib.suppress(Country.DoesNotExist, ValueError):
-                context['map_object'] = Country.objects.get(pk=target_country_id)
+                context['map_object'] = Country.objects.defer('geom').get(pk=target_country_id)
                 context['is_country'] = True
 
         if 'Target region' in filters:

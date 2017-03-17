@@ -10,8 +10,8 @@ class PropertyCounter(dict):
     # mapping of keys from elasticsearch <-> map legend.
     properties = {
         'intention': 'intention',
-        'implementation': 'negotiation_status',
-        'accuracy': 'level_of_accuracy',
+        'implementation': 'implementation_status',
+        'level_of_accuracy': 'level_of_accuracy',
     }
 
     def __init__(self):
@@ -25,7 +25,7 @@ class PropertyCounter(dict):
         Increment all counters according to given data from elasticsearch.
         """
         for key, es_key in self.properties.items():
-            values = data.get(es_key)
+            values = data.get(es_key, 'Unknown')
             prop = getattr(self, key)
             if isinstance(values, list):
                 for val in values:

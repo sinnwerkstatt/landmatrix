@@ -158,7 +158,7 @@ class FilterWidgetMixin:
                 filter_values['operator'] = 'is'
                 filter_values['value'] = data.get('country')
                 try:
-                    country = Country.objects.get(pk=data.get('country'))
+                    country = Country.objects.defer('geom').get(pk=data.get('country'))
                     filter_values['display_value'] = country.name
                 except:
                     pass

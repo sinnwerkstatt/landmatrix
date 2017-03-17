@@ -5,8 +5,8 @@
             // Default settings.
             var settings = $.extend({
                 target: "map",
-                zoom: 6,
-                centerTo: [-5, 20],
+                zoom: 2.8,
+                centerTo: [-20, 20],
                 legendKey: 'intention',
                 visibleLayer: 'countries',  // Either "countries" (default) or "deals". Should correspond to state of switch position.
                 autoToggle: true  // Defaults to true. Should correspond to state of checkbox next to switch.
@@ -16,6 +16,7 @@
             var minFontSize = 1.25;  // Font size is usually clusterRadius / 100
             var minClusterRadius = 100;
             var maxClusterRadius = 300;
+            var clusterDistance = 125;
 
             // The resolution for which to toggle the layers automatically.
             var autoToggleResolution = 2000;
@@ -36,6 +37,7 @@
 
             var baseLayers = getBaseLayers();
             var contextLayers = getContextLayers();
+            var polygonLayers = {};
 
             // initialize map
             var map = new ol.Map({
@@ -71,14 +73,14 @@
             var dealsPerCountrySource = new ol.source.Vector();
             var dealsPerCountryCluster = new ol.source.Cluster({
                 source: dealsPerCountrySource,
-                distance: maxClusterRadius / 2
+                distance: clusterDistance
             });
 
             // Layer and source for the deals. All deals are clustered.
             var dealsSource = new ol.source.Vector();
             var dealsCluster = new ol.source.Cluster({
                 source: dealsSource,
-                distance: maxClusterRadius / 2
+                distance: clusterDistance
             });
 
             // Map search if available
@@ -265,18 +267,7 @@
                 return new ol.layer.Vector({
                     source: dealsPerCountryCluster,
                     name: "countries",
-                    style: function (feature) {
-                        calculateClusterInfo(dealsPerCountryCluster, 'deals');
-
-                        var clusteredFeatures = feature.get('features');
-
-                        var clusterSVG = new Image();
-                        var clusterData = prepareCountryClusterData(clusteredFeatures);
-                        var sizeVariables = getChartSizeVariables(clusterData.count);
-                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'countries', sizeVariables.chartSize));
-
-                        return getChartStyle(clusterSVG, clusterData.count.toString(), sizeVariables.chartSize, sizeVariables.fontSize);
-                    },
+                    style: getCountryClusterStyle,
                     visible: settings.visibleLayer == 'countries'
                 });
             }
@@ -287,23 +278,38 @@
                 return new ol.layer.Vector({
                     name: "deals",
                     source: dealsCluster,
-                    style: function(feature) {
-                        calculateClusterInfo(dealsCluster);
-
-                        var clusteredFeatures = feature.get('features');
-                        var dealFeatures = getUniqueDealsFromFeatures(clusteredFeatures);
-
-                        var clusterSVG = new Image();
-                        var clusterData = prepareDealClusterData(dealFeatures);
-                        var sizeVariables = getChartSizeVariables(clusterData.count);
-                        clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals', sizeVariables.chartSize));
-
-                        // No cluster text label for single locations (marker)
-                        var clusterText = clusterData.count > 1 ? clusterData.count.toString() : '';
-                        return getChartStyle(clusterSVG, clusterText, sizeVariables.chartSize, sizeVariables.fontSize);
-                    },
+                    style: getDealsClusterStyle,
                     visible: settings.visibleLayer == 'deals'
-                })
+                });
+            }
+
+            function getCountryClusterStyle(feature) {
+                calculateClusterInfo(dealsPerCountryCluster, 'deals');
+
+                var clusteredFeatures = feature.get('features');
+
+                var clusterSVG = new Image();
+                var clusterData = prepareCountryClusterData(clusteredFeatures);
+                var sizeVariables = getChartSizeVariables(clusterData.count);
+                clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'countries', sizeVariables.chartSize));
+
+                return getChartStyle(clusterSVG, clusterData.count.toString(), sizeVariables.chartSize, sizeVariables.fontSize);
+            }
+
+            function getDealsClusterStyle(feature) {
+                calculateClusterInfo(dealsCluster);
+
+                var clusteredFeatures = feature.get('features');
+                var dealFeatures = getUniqueDealsFromFeatures(clusteredFeatures);
+
+                var clusterSVG = new Image();
+                var clusterData = prepareDealClusterData(dealFeatures);
+                var sizeVariables = getChartSizeVariables(clusterData.count);
+                clusterSVG.src = 'data:image/svg+xml,' + escape(getSvgChart(clusterData, 'deals', sizeVariables.chartSize));
+
+                // No cluster text label for single locations (marker)
+                var clusterText = clusterData.count > 1 ? clusterData.count.toString() : '';
+                return getChartStyle(clusterSVG, clusterText, sizeVariables.chartSize, sizeVariables.fontSize);
             }
 
             function getBaseLayers() {
@@ -356,7 +362,8 @@
                                 legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
                             };
                             return 'http://sdi.cde.unibe.ch/geoserver/lo/wms' + '?' + $.param(imgParams);
-                        }
+                        },
+                        dataSourceOwner: 'Source: <a href="http://due.esrin.esa.int/page_globcover.php" target="_blank">ESA</a>'
                     }),
                     new ol.layer.Image({
                         name: 'cropland',
@@ -379,21 +386,24 @@
                                 legend_options: 'forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;'
                             };
                             return 'http://sdi.cde.unibe.ch/geoserver/lo/wms' + '?' + $.param(imgParams);
-                        }
+                        },
+                        dataSourceOwner: 'Source: <a href="http://www.landobservatory.org/" target="_blank">Land observatory</a>'
                     }),
                     new ol.layer.Tile({
                         name: 'community_lands',
                         visible: false,
                         source: new ol.source.TileArcGISRest({
                             url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_comm_LandMatrix/MapServer/'
-                        })
+                        }),
+                        dataSourceOwner: 'Source: <a href="http://www.wri.org/" target="_blank">World Resources Institute</a>'
                     }),
                     new ol.layer.Tile({
                         name: 'indigenous_lands',
                         visible: false,
                         source: new ol.source.TileArcGISRest({
-                            url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_ind_LandMatrix/MapServer/'
-                        })
+                            url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_comm_LandMatrix/MapServer'
+                        }),
+                        dataSourceOwner: 'Source: <a href="http://www.wri.org/" target="_blank">World Resources Institute</a>'
                     })
                 ];
             }
@@ -675,30 +685,48 @@
             });
 
             // Listen to zoom events. If autoToggle is active, toggle layers.
-            map.getView().on("change:resolution", function() {
-                if (settings.autoToggle) {
-                    toggleLayerByResolution();
-                }
-            });
+            // map.getView().on("change:resolution", function() {
+            //     if (settings.autoToggle) {
+            //         toggleLayerByResolution();
+            //     }
+            // });
 
             // Redraw the layer with the deals per country, with the current
             // legend as properties.
             this.setDealsPerCountryLayer = function() {
                 if (this.dealsPerCountryLayer) {
-                    map.removeLayer(this.dealsPerCountryLayer);
+                    // Update only the style
+                    this.dealsPerCountryLayer.setStyle(getCountryClusterStyle);
+                } else {
+                    this.dealsPerCountryLayer = getCountryClusterLayer();
+                    map.addLayer(this.dealsPerCountryLayer);
+
+                    // Apparently, it is necessary to re-render the map after
+                    // the layer was rendered in order to properly display
+                    // the charts on the map. Thanks, OpenLayers ...
+                    this.dealsPerCountryLayer.on('render', function() {
+                        map.render();
+                    });
                 }
-                this.dealsPerCountryLayer = getCountryClusterLayer();
-                map.addLayer(this.dealsPerCountryLayer);
             };
 
             // Redraw the layer with the deals, with the current legend as
             // properties.
             this.setDealsLayer = function() {
                 if (this.dealsLayer) {
-                    map.removeLayer(this.dealsLayer);
+                    // Update only the style
+                    this.dealsLayer.setStyle(getDealsClusterStyle);
+                } else {
+                    this.dealsLayer = getDealsClusterLayer();
+                    map.addLayer(this.dealsLayer);
+
+                    // Apparently, it is necessary to re-render the map after
+                    // the layer was rendered in order to properly display
+                    // the charts on the map. Thanks, OpenLayers ...
+                    this.dealsLayer.on('render', function() {
+                        map.render();
+                    });
                 }
-                this.dealsLayer = getDealsClusterLayer();
-                map.addLayer(this.dealsLayer);
             };
 
             // Load geojson from countries-api and display data.
@@ -805,15 +833,55 @@
                 if (legendUrlFunction) {
                     legendUrl = legendUrlFunction();
                 }
-                if (!legendUrl) {
-                    return;
-                }
+                var legendHtml = legendUrl ? '<img src="' + legendUrl + '"/>' : '';
                 var legendDiv = $(checkboxEl).siblings('.context-layer-legend');
                 if (checkboxEl.checked) {
-                    legendDiv.html('<img src="' + legendUrl + '"/>');
+                    legendDiv.html(legendHtml + '<p>' + selectedLayer.get('dataSourceOwner') + '</p>');
                 } else {
                     legendDiv.html('');
                 }
+            };
+            
+            this.togglePolygons = function(checkboxEl) {
+                
+                // Check if the layer was already loaded
+                if (polygonLayers[checkboxEl.value]) {
+                    var currentLayer = polygonLayers[checkboxEl.value];
+                    currentLayer.setVisible(checkboxEl.checked);
+                    return;
+                }
+
+                // Load the layer if necessary
+                var layerId = checkboxEl.value;
+                var layerSettings = settings.polygonLayers[layerId];
+                if (!layerSettings) {
+                    return;
+                }
+                $.ajax(layerSettings.url).then(function (response) {
+                    var geojsonFormat = new ol.format.GeoJSON();
+                    var features = geojsonFormat.readFeatures(response);
+
+                    var polygonSource = new ol.source.Vector();
+                    polygonSource.addFeatures(features);
+                    var polygonLayer = new ol.layer.Vector({
+                        source: polygonSource,
+                        name: layerId,
+                        style: new ol.style.Style({
+                            fill: new ol.style.Fill({
+                                color: hexToRGB(layerSettings.color, 0.4)
+                            }),
+                            stroke: new ol.style.Stroke({
+                                color: layerSettings.color,
+                                width: 2,
+                                lineCap: "round"
+                            })
+                        })
+                    });
+                    map.addLayer(polygonLayer);
+
+                    // Store the layer so it does not need to be queried again
+                    polygonLayers[layerId] = polygonLayer;
+                });
             };
 
             /**
@@ -863,6 +931,19 @@
             return this;
         }
     });
+
+    function hexToRGB(hex, alpha) {
+        // http://stackoverflow.com/a/28056903/841644
+        var r = parseInt(hex.slice(1, 3), 16),
+            g = parseInt(hex.slice(3, 5), 16),
+            b = parseInt(hex.slice(5, 7), 16);
+
+        if (alpha) {
+            return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+        } else {
+            return "rgb(" + r + ", " + g + ", " + b + ")";
+        }
+    }
 
     /**
      * Handlebars helper to format number values: Add thousands separator or

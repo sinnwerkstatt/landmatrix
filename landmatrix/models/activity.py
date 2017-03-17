@@ -185,7 +185,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         if country.count() > 0:
             country = country.first()
             try:
-                return Country.objects.get(id=country.value)
+                return Country.objects.defer('geom').get(id=country.value)
             except Country.DoesNotExist:
                 return None
         else:
