@@ -517,7 +517,7 @@ class Activity(ActivityBase):
         #    return 0
         value = contract_size or production_size or intended_size
         if value:
-            return int(value.split(',')[0])
+            return int(value.split('.')[0])
         else:
             return 0
 
