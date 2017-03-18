@@ -115,6 +115,13 @@ def clean_promised_benefits(key, value):
     return key, value
 
 
+def clean_intended_size(key, value):
+    if ',' in value:
+        return value.replace(',', '.')
+    else:
+        return value
+
+
 def rename_changed_keys(key, value):
     RENAMED_KEYS = {
         'community_compensation': 'promised_compensation',
@@ -184,6 +191,8 @@ def clean_attribute(key, value):
         return 'tg_promised_benefits_comment', value
     elif key == 'promised_benefits':
         return clean_promised_benefits(key, value)
+    elif key == 'intended_size':
+        return clean_indended_size(key, value)
     return key, value
 
 

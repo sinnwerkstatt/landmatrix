@@ -13,6 +13,7 @@ from ol3_widgets.widgets import LocationWidget
 from grid.views.browse_filter_conditions import get_field_by_key
 from grid.widgets import (
     YearBasedSelect, YearBasedMultipleSelect, YearBasedTextInput, NumberInput,
+    YearBasedSelectMultipleNumber
 )
 from grid.forms.choices import intention_choices, int_choice_to_string
 
@@ -93,7 +94,6 @@ class FilterWidgetAjaxView(View):
             field = get_field_by_key(key_id[4:])
         else:
             field = get_field_by_key(key_id)
-
         if field:
             widget = field.widget
             if widget.attrs.get("readonly", ""):
@@ -132,10 +132,10 @@ class FilterWidgetAjaxView(View):
             elif operation in ("contains",):
                 widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
             else:
-
                 if issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple, RadioSelect)):
                     widget = widget.render(request.GET.get("name", ""), value)
-                elif issubclass(type(field.widget), (YearBasedMultipleSelect, YearBasedSelect, YearBasedTextInput)):
+                elif issubclass(type(field.widget), (YearBasedMultipleSelect, YearBasedSelect, YearBasedTextInput,
+                                                     YearBasedSelectMultipleNumber)):
                     widget = widget.render(request.GET.get("name", ""), ",".join(value),
                                            attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
                 else:

@@ -17,6 +17,7 @@ FIELD_TYPE_MAPPING = {
     'IntegerField': 'integer',
     'CharField': 'string', # use 'exact_value' instead of string??
     'AreaField': 'geo_shape',
+    'FloatField': 'float',
 }
 
 

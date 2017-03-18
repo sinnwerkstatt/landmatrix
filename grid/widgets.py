@@ -150,7 +150,7 @@ class YearBasedTextInput(YearBasedWidget):
     widget = None
 
     def __init__(self, *args, **kwargs):
-        self.widget = forms.NumberInput(attrs={"class": "year-based"})
+        self.widget = forms.TextInput(attrs={"class": "year-based"})
         super().__init__(*args, **kwargs)
 
     def decompress(self, value):

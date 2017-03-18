@@ -702,6 +702,11 @@ def clean_attribute(key, value):
     elif key == 'land_cover':
         if value == 'Grassland':
             value = 'Shrub land/Grassland'
+    elif key == 'water_extraction_amount':
+        try:
+            int(value.replace(' m3/year', ''))
+        except ValueError:
+            key = 'tg_water_extraction_amount_comment'
     elif key == 'source_of_water_extraction':
         if value == 'Ground water':
             value = 'Groundwater'

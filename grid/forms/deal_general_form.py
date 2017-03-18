@@ -5,7 +5,7 @@ from landmatrix.models.activity import Activity
 from landmatrix.models.currency import Currency
 from grid.fields import (
     TitleField, YearBasedMultipleChoiceIntegerField, YearBasedChoiceField,
-    YearBasedIntegerField,
+    YearBasedIntegerField, YearBasedFloatField
 )
 from grid.widgets import CommentInput, NumberInput
 from .choices import grouped_intention_choices, intention_choices, nature_choices, price_type_choices
@@ -26,14 +26,14 @@ class DealGeneralForm(BaseForm):
     # Land area
     tg_land_area = TitleField(
         required=False, label="", initial=_("Land area"))
-    intended_size = forms.IntegerField(
+    intended_size = forms.FloatField(localize=True,
         required=False, label=_("Intended size (in ha)"), help_text=_("ha"),
-        widget=forms.NumberInput(attrs={'placeholder': _('Size')}))
-    contract_size = YearBasedIntegerField(
+        widget=forms.TextInput(attrs={'placeholder': _('Size')}))
+    contract_size = YearBasedFloatField(
         required=False,
         label=_("Size under contract (leased or purchased area, in ha)"),
         help_text=_("ha"), placeholder=_('Size'))
-    production_size = YearBasedIntegerField(
+    production_size = YearBasedFloatField(
         required=False, label=_("Size in operation (production, in ha)"),
         help_text=_("ha"), placeholder=_('Size'))
     tg_land_area_comment = forms.CharField(

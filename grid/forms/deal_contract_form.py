@@ -16,7 +16,7 @@ class DealContractForm(BaseForm):
     tg_contract = TitleField(
         required=False, label="", initial=_("Contract")
     )
-    contract_number = forms.IntegerField(
+    contract_number = forms.CharField(
         required=False, label=_("Contract number")
     )
     contract_date = forms.CharField(

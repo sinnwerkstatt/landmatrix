@@ -54,6 +54,7 @@ class SplitMultiLangTabsMixin(object):
             handler.children = tabs + handler.children[1:]
             handler._MULTILANG_TABS_PATCHED = True
 
+
 class LinkBlock(StructBlock):
     cls = blocks.ChoiceBlock(choices=[
         ('btn', 'Button'),
@@ -73,6 +74,7 @@ class LinkBlock(StructBlock):
         context['class'] = value.get('cls')
         return context
 
+
 class AnchorBlock(StructBlock):
     slug = blocks.CharBlock()
 
@@ -85,10 +87,12 @@ class AnchorBlock(StructBlock):
         context['slug'] = value.get('slug')
         return context
 
+
 class FAQBlock(StructBlock):
     slug = blocks.CharBlock()
     question = blocks.CharBlock()
     answer = blocks.RichTextBlock()
+
 
 class FAQsBlock(StructBlock):
     faqs = blocks.ListBlock(FAQBlock())
@@ -108,6 +112,7 @@ class FAQsBlock(StructBlock):
                 'definition': faq.get('answer')
             })
         return context
+
 
 class TwitterBlock(StructBlock):
     username = blocks.CharBlock(required=True)
@@ -149,6 +154,7 @@ class NoWrapsStreamBlock(StreamBlock):
         #    [(force_text(child), child.block_type) for child in value]
         #)
 
+
 class NoWrapsStreamField(StreamField):
     def __init__(self, block_types, **kwargs):
         super().__init__(block_types, **kwargs)
@@ -158,6 +164,7 @@ class NoWrapsStreamField(StreamField):
             self.stream_block = block_types()
         else:
             self.stream_block = NoWrapsStreamBlock(block_types)
+
 
 class ImageBlock(ImageChooserBlock):
     url = blocks.URLBlock(required=False, label='URL')
@@ -172,10 +179,12 @@ class ImageBlock(ImageChooserBlock):
         context['name'] = value.title
         return context
 
+
 class SectionDivider(StructBlock):
     class Meta:
         icon = 'fa fa-minus'
         template = 'widgets/divider.html'
+
 
 class LinkedImageBlock(StructBlock):
     image = ImageChooserBlock()
@@ -221,6 +230,7 @@ class SliderBlock(StructBlock):
         icon = 'fa fa-picture-o'
         label = 'Slider'
         template = 'widgets/slider.html'
+
 
 class GalleryBlock(StructBlock):
     columns = blocks.ChoiceBlock(choices=[
@@ -270,6 +280,7 @@ class TitleBlock(blocks.CharBlock):
         label = 'Title'
         template = 'widgets/title.html'
 
+
 class TitleWithIconBlock(StructBlock):
     value = blocks.CharBlock(label='Title')
     fa_icon = blocks.CharBlock(required=False)
@@ -284,6 +295,7 @@ class TitleWithIconBlock(StructBlock):
         icon = 'title'
         label = 'Title with Icon'
         template = 'widgets/title.html'
+
 
 #FIXME: Move blocks to blocks.py
 CONTENT_BLOCKS = [
@@ -303,6 +315,7 @@ CONTENT_BLOCKS = [
     ('faqs_block', FAQsBlock()),
 ]
 
+
 class CountryRegionStructBlock(StructBlock):
     country = None
     region = None
@@ -320,6 +333,7 @@ class CountryRegionStructBlock(StructBlock):
         })
 
         return context
+
 
 class LatestNewsBlock(CountryRegionStructBlock):
     limit = blocks.CharBlock()
@@ -343,11 +357,13 @@ class LatestNewsBlock(CountryRegionStructBlock):
         context['news'] = queryset[:int(limit)]
         return context
 
+
 class StatisticsBlock(CountryRegionStructBlock):
     class Meta:
         icon = 'fa fa-list'
         label = 'Statistics'
         template = 'widgets/statistics.html'
+
 
 class MapDataChartsBlock(CountryRegionStructBlock):
     class Meta:
@@ -392,6 +408,7 @@ class LatestDatabaseModificationsBlock(CountryRegionStructBlock):
         context['limit'] = value.get('limit')
         return context
 
+
 class RegionBlock(CountryRegionStructBlock):
 
     class Meta:
@@ -406,6 +423,7 @@ class RegionBlock(CountryRegionStructBlock):
         else:
             context['region'] = None
         return context
+
 
 class CountriesBlock(CountryRegionStructBlock):
 
@@ -432,6 +450,7 @@ DATA_BLOCKS = [
     ('region', RegionBlock()),
 ]
 
+
 class Columns1To1Block(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
     right_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS, form_classname='pull-right')
@@ -448,6 +467,7 @@ class Columns1To1Block(StructBlock):
         label = 'Two Columns'
         template = 'widgets/two-columns.html'
         icon = 'fa fa-columns'
+
 
 class ThreeColumnsBlock(StructBlock):
     left_column = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS)
@@ -478,6 +498,7 @@ class TabBlock(StructBlock):
     fa_icon = blocks.CharBlock(required=False)
     content = blocks.StreamBlock(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
 
+
 class TabsBlock(StructBlock):
     tabs = blocks.ListBlock(TabBlock())
 
@@ -498,6 +519,7 @@ class TabsBlock(StructBlock):
 CONTENT_BLOCKS += [
     ('tabs_block', TabsBlock()),
 ]
+
 
 class FullWidthContainerBlock(StructBlock):
     color = blocks.ChoiceBlock(choices=[
@@ -543,9 +565,16 @@ class WagtailRootPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
         FieldPanel('footer_column_4')
     ]
 
+
 class WagtailPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [StreamFieldPanel('body')]
+
+    def serve(self, request):
+        # Reset country/region blocks, since they might have been set
+        # by a region/country page that has been called just before
+        _update_country_region_structs(self.body.stream_block)
+        return super().serve(request)
 
 class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
     template = 'wagtailcms/region_page.html'
@@ -580,6 +609,7 @@ class RegionIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
 
         return super().serve(request)
 
+
 class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     region = models.ForeignKey(DataRegion, null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -598,6 +628,7 @@ class RegionPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
                 self.body.stream_block, region=self.region)
 
         return super().serve(request)
+
 
 class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
     template = 'wagtailcms/country_page.html'
@@ -631,6 +662,7 @@ class CountryIndex(TranslationMixin, SplitMultiLangTabsMixin, Page):
                     self.body.stream_block, country=self.country)
 
         return super().serve(request)
+
 
 class CountryPage(TranslationMixin, SplitMultiLangTabsMixin, Page):
     country = models.ForeignKey(DataCountry, null=True, blank=True, on_delete=models.SET_NULL)
@@ -685,6 +717,7 @@ def editor_js():
     """
   )
 
+
 @hooks.register('insert_editor_css')
 def editor_css():
     # Add extra CSS files to the admin like font-awesome
@@ -699,6 +732,7 @@ def editor_css():
         ((settings.STATIC_URL, filename) for filename in css_files))
 
     return css_includes
+
 
 @hooks.register('construct_whitelister_element_rules')
 def whitelister_element_rules():

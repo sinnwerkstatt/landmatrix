@@ -101,6 +101,45 @@ class YearBasedIntegerField(YearBasedField):
             self.fields = [forms.IntegerField(required=False), forms.CharField(required=False)]
 
 
+class YearBasedFloatField(YearBasedField):
+
+    def __init__(self, *args, **kwargs):
+        kwargs["fields"] = [
+            forms.FloatField(required=False, localize=True),
+            forms.CharField(required=False),
+            forms.BooleanField(required=False)
+        ]
+        if 'placeholder' in kwargs:
+            attrs = {'placeholder': kwargs.pop('placeholder', None)}
+        else:
+            attrs = {}
+        kwargs["widget"] = YearBasedTextInput(help_text=kwargs.pop("help_text", ""), attrs=attrs)
+        super(YearBasedFloatField, self).__init__(*args, **kwargs)
+
+    def clean(self, value):
+        # update fields
+        if value:
+            self.fields = []
+            for i in range(len(value)//3):
+                self.fields.extend([
+                    forms.FloatField(required=False, localize=True),
+                    forms.CharField(required=False),
+                    forms.BooleanField(required=False)
+                ])
+        return super(YearBasedFloatField, self).clean(value)
+
+    def compress(self, data_list):
+        """  """
+        if data_list:
+            yb_data = []
+            for i in range(len(data_list)//3):
+                if data_list[i] or data_list[i+1]:
+                    yb_data.append("%s:%s:%s" % (str(data_list[i]), str(data_list[i+1]), str(data_list[i+2])))
+            return "#".join(yb_data)
+        else:
+            self.fields = [forms.FloatField(required=False, localize=True), forms.CharField(required=False)]
+
+
 class YearBasedChoiceField(YearBasedField):
     def __init__(self, *args, **kwargs):
         self.choices = kwargs["choices"]
