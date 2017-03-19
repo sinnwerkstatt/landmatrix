@@ -284,11 +284,13 @@ class TitleBlock(blocks.CharBlock):
 class TitleWithIconBlock(StructBlock):
     value = blocks.CharBlock(label='Title')
     fa_icon = blocks.CharBlock(required=False)
+    url = blocks.URLBlock(label='URL', required=False)
 
     def get_context(self, value):
         context = super().get_context(value)
         context['value'] = value.get('value')
         context['fa_icon'] = value.get('fa_icon')
+        context['url'] = value.get('url')
         return context
 
     class Meta:

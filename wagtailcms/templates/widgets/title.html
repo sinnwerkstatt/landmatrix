@@ -1,1 +1,5 @@
-<h3>{% if fa_icon %}<i class="fa fa-{{ fa_icon }}"></i> {% endif %}{{ value }}</h3>
+<h3>
+    {% if url %}<a href="{{ url }}">{% endif %}
+    {% if fa_icon %}<i class="fa fa-{{ fa_icon }}"></i> {% endif %}{{ value }}
+    {% if url %}</a>{% endif %}
+</h3>
