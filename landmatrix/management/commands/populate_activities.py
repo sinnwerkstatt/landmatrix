@@ -11,5 +11,8 @@ class Command(BaseCommand):
     help = 'Populates the activities with common used attributes'
 
     def handle(self, *args, **options):
-        for a in Activity.objects.all():
+        count = Activity.objects.count()
+        for i, a in enumerate(Activity.objects.all()):
+            self.stdout.write('Activity %i/%i' % (i, count), ending='\r')
+            self.stdout.flush()
             a.refresh_cached_attributes()

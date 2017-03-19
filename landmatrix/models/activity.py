@@ -517,7 +517,13 @@ class Activity(ActivityBase):
         #    return 0
         value = contract_size or production_size or intended_size
         if value:
-            return int(value.split('.')[0])
+            # Legacy: There shouldn't be any comma separated values anymore in the database
+            if ',' in value:
+                return int(value.split(',')[0])
+            elif '.' in value:
+                return int(value.split('.')[0])
+            else:
+                return int(value)
         else:
             return 0
 

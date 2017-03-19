@@ -19,7 +19,8 @@ intention_agriculture_choices = (
 INTENTION_AGRICULTURE_MAP = dict(intention_agriculture_choices)
 
 intention_forestry_choices = (
-    ("For wood and fibre", _("For wood and fibre")),
+    ("Timber plantation", _("Timber plantation (for wood and fibre)")),
+    ("Forest logging / management", _("Forest logging / management (for wood and fibre)")),  # new
     ("For carbon sequestration/REDD", _("For carbon sequestration/REDD")),
     ("Forestry unspecified", _("Forestry unspecified")),
 )
@@ -27,8 +28,8 @@ intention_forestry_choices = (
 INTENTION_FORESTRY_MAP = dict(intention_forestry_choices)
 
 intention_other_choices = (
-    ("Logging", _("Logging")),
-    ("Resource extraction", _("Resource extraction (Oil, Gas, Minerals)")),
+    ("Mining", _("Mining")),
+    ("Oil / Gas extraction", _("Oil / Gas extraction")),
     ("Tourism", _("Tourism")),
     ("Industry", _("Industry")),
     ("Conservation", _("Conservation")),
@@ -50,8 +51,8 @@ grouped_intention_choices = (
 nature_choices = (
     ("Outright Purchase", _("Outright Purchase")),
     ("Lease", _("Lease")),
-    ("Resource exploitation license / concession", _("Resource exploitation license / concession")),
-    ("Logging concession", _("Logging concession")),
+    ("Concession", _("Concession")),
+    ("Exploitation permit / license / concession", _("Exploitation permit / license / concession (for mineral resources)")),
     ("Pure contract farming", _("Pure contract farming")),
 )
 

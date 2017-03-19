@@ -53,7 +53,7 @@ def clean_nature(key, value):
     if value == 'Lease / Concession':
         value = 'Lease'
     elif value == 'Exploitation license':
-        value = 'Resource exploitation license / concession'
+        value = 'Exploitation permit / license / concession'
     return key, value
 
 
@@ -145,19 +145,30 @@ def rename_negotiation_status(key, value):
     return key, value
 
 
-def clean_intention(key, value):
+def clean_intention(key, value, old_values={}):
     if value == 'Agriunspecified':
         value = 'Agriculture unspecified'
     elif value == 'Forestunspecified':
         value = 'Forestry unspecified'
-    elif value == 'Mining':
-        value = 'Resource extraction'
     elif value == 'Other (please specify)':
         value = 'Other'
+    elif value == 'For wood and fibre':
+        if 'True' in old_values.get('not_public', []):
+            value = 'Forest logging / management'
+        elif len(old_values.get('nature', [])) == 0:
+            value = 'Forestry'
+        elif 'Outright Purchase' in old_values.get('nature', []):
+            value = 'Timber plantation'
+        elif 'Lease / Concession' in old_values.get('nature', []):
+            value = 'Timber plantation'
+        elif 'Exploitation license' in old_values.get('nature', []):
+            value = 'Forest logging / management'
+        else:
+            value = None
     return key, value
 
 
-def clean_attribute(key, value):
+def clean_attribute(key, value, old_values={}):
     key, value = rename_changed_keys(key, value)
     if value == '---------':
         value = None
@@ -180,7 +191,7 @@ def clean_attribute(key, value):
     elif key == 'nature':
         return clean_nature(key, value)
     elif key == 'intention':
-        return clean_intention(key, value)
+        return clean_intention(key, value, old_values=old_values)
     elif key == 'land_use':
         return clean_land_use(key, value)
     elif key == 'tg_negotiation_status_comment':

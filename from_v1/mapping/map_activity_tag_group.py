@@ -135,13 +135,21 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
         is_current = cls.is_current_version(tag_group)
 
         attributes = {}
+        old_values = {}
+        for tag in tag_group.a_tag_set.all():
+            key = tag.fk_a_key.key
+            value = tag.fk_a_value.value
+            if key in attributes:
+                old_values[key]['values'].append(value)
+            else:
+                old_values[key] = [value]
         for tag in tag_group.a_tag_set.all():
             key = tag.fk_a_key.key
             value = tag.fk_a_value.value
             year = tag.fk_a_value.year
             #if year:
             #    year = year_to_date(year)
-            key, value = clean_attribute(key, value)
+            key, value = clean_attribute(key, value, old_values=old_values)
             if not key or not value:
                 continue
             tag_aag = clean_group(tg_name, key, value)
@@ -193,7 +201,7 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
                     aa = ActivityAttribute(
                         fk_activity_id=activity_id,
                         fk_language_id=1,
-                        fk_group=intention['year'],
+                        fk_group=intention['fk_group'],
                         name='intention',
                         value=value,
                         date=intention['year'] or None,
@@ -211,6 +219,34 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
                 )
                 if cls._save:
                     aa.save(using=V2)
+        if 'For wood and fibre' in old_values.get('intention', []):
+            if 'True' in  old_values.get('not_public', []) or 'Exploitation license' in old_values.get('nature', []):
+                tag_aag, created = ActivityAttributeGroup.objects.get_or_create(
+                    name='intention'
+                )
+                if is_current:
+                    aa = ActivityAttribute(
+                        fk_activity_id=activity_id,
+                        fk_language_id=1,
+                        fk_group=tag_aag.id,
+                        name='intention',
+                        value='Concession',
+                        date=None,
+                    )
+                    if cls._save:
+                        aa.save(using=V2)
+                aa = HistoricalActivityAttribute(
+                    # id=cls.get_last_id() + 1,
+                    fk_activity_id=activity_id,
+                    fk_language_id=1,
+                    fk_group=tag_aag.id,
+                    name='intention',
+                    value='Concession',
+                    date=None,
+                )
+                if cls._save:
+                    aa.save(using=V2)
+
 
         for comment in tag_group.comment_set.all():
             if is_current:
