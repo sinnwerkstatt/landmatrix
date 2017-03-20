@@ -221,8 +221,8 @@ class PublicDealSpatialForm(DealSpatialForm):
     location = forms.CharField(
         required=True, label=_("Location"), widget=MapWidget)
 
-    def get_location_map_widget_attrs(self, attrs=None):
-        location_attrs = super().get_location_map_widget_attrs(attrs=attrs)
+    def get_location_map_widget_attrs(self):
+        location_attrs = super().get_location_map_widget_attrs()
         location_attrs['disable_drawing'] = True
 
         return location_attrs
