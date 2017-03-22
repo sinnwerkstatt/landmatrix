@@ -90,10 +90,10 @@
     });
     {% if map_object %}
       map.zoomToExtent(
-          {{ map_object.point_lon_min }},
           {{ map_object.point_lat_min }},
-          {{ map_object.point_lon_max }},
-          {{ map_object.point_lat_max }}
+          {{ map_object.point_lon_min }},
+          {{ map_object.point_lat_max }},
+          {{ map_object.point_lon_max }}
       );
         {% if is_country %}
           map.highlightCountry(
