@@ -387,7 +387,7 @@
                             };
                             return 'http://sdi.cde.unibe.ch/geoserver/lo/wms' + '?' + $.param(imgParams);
                         },
-                        dataSourceOwner: 'Source: <a href="http://www.landobservatory.org/" target="_blank">Land observatory</a>'
+                        dataSourceOwner: 'Source: <a href="http://sedac.ciesin.columbia.edu/data/set/aglands-croplands-2000" target="_blank">Socioeconomic Data and Applications Center (SEDAC)</a>'
                     }),
                     new ol.layer.Tile({
                         name: 'community_lands',
@@ -396,7 +396,7 @@
                             url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_comm_LandMatrix/MapServer/'
                         }),
                         legendUrl: '/static/map/images/legend_community_lands.png',
-                        dataSourceOwner: 'Source: <a href="http://www.wri.org/" target="_blank">World Resources Institute</a>'
+                        dataSourceOwner: 'Source: <a href="http://www.landmarkmap.org/" target="_blank">LandMark</a>'
                     }),
                     new ol.layer.Tile({
                         name: 'indigenous_lands',
@@ -405,7 +405,7 @@
                             url: 'http://gis-stage.wri.org/arcgis/rest/services/IndigenousCommunityLands/comm_ind_LandMatrix/MapServer'
                         }),
                         legendUrl: '/static/map/images/legend_indigenous_lands.png',
-                        dataSourceOwner: 'Source: <a href="http://www.wri.org/" target="_blank">World Resources Institute</a>'
+                        dataSourceOwner: 'Source: <a href="http://www.landmarkmap.org/" target="_blank">LandMark</a>'
                     })
                 ];
             }
