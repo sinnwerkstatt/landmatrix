@@ -202,7 +202,7 @@ class FilterWidgetMixin:
         #stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
         self.request.session['filter_query_params'] = None
 
-    def set_default_filters(self, data, disabled_presets=[]):
+    def set_default_filters(self, data, disabled_presets=[], enabled_presets=[]):
         self.remove_default_filters()
         # Don't set default filters?
         if 'set_default_filters' in self.request.session:
@@ -211,6 +211,9 @@ class FilterWidgetMixin:
         if not disabled_presets:
             if hasattr(self, 'disabled_presets') and self.disabled_presets:
                 disabled_presets = self.disabled_presets
+        if not enabled_presets:
+            if hasattr(self, 'enabled_presets') and self.enabled_presets:
+                enabled_presets = self.enabled_presets
         stored_filters = self.request.session.get('filters', {})
         if not stored_filters:
             stored_filters = {}
@@ -226,12 +229,25 @@ class FilterWidgetMixin:
                     del stored_filters[preset_ids[preset.id]]
                 if preset.id in disabled_presets:
                     continue
+                if preset.id in enabled_presets:
+                    del enabled_presets[enabled_presets.index(preset.id)]
                 filter_name = 'default_preset_%i' % preset.id
                 stored_filters[filter_name] = PresetFilter(
                     preset, name=filter_name, hidden=preset.is_hidden)
         else:
             # Use global presets
             for preset in FilterPreset.objects.filter(is_default_global=True):
+                if preset.id in preset_ids.keys():
+                    del stored_filters[preset_ids[preset.id]]
+                if preset.id in disabled_presets:
+                    continue
+                filter_name = 'default_preset_%i' % preset.id
+                stored_filters[filter_name] = PresetFilter(
+                    preset, name=filter_name, hidden=preset.is_hidden)
+        # Add enabled filters (if not already set)
+        for preset_id in enabled_presets:
+            if 'default_preset_%i' % preset_id not in stored_filters.keys():
+                preset = FilterPreset.objects.get(pk=preset_id)
                 if preset.id in preset_ids.keys():
                     del stored_filters[preset_ids[preset.id]]
                 if preset.id in disabled_presets:

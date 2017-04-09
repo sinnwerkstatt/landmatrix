@@ -151,12 +151,13 @@ class MiningChartView(ChartPDFView):
     template_name = "charts/special-interest/mining.html"
     chart = "chart_mining"
     pdf_javascript_delay = 10000
+    disabled_presets = [1,2]
 
 class LoggingChartView(ChartPDFView):
     template_name = "charts/special-interest/logging.html"
     chart = "chart_logging"
     pdf_javascript_delay = 10000
-    disabled_presets = [1,]
+    disabled_presets = [2,15]
 
 class ContractFarmingChartView(ChartPDFView):
     template_name = "charts/special-interest/contract-farming.html"
