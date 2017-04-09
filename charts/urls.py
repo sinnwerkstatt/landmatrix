@@ -94,8 +94,8 @@ urlpatterns = patterns(
         save_filter_query_params()(ProduceInfoChartView.as_view()),
         {'format': 'PDF'}, name='chart_produce_info_pdf'),
     url(
-        r'^resource-extraction\.pdf$',
-        save_filter_query_params()(ResourceExtractionChartView.as_view()),
+        r'^mining\.pdf$',
+        save_filter_query_params()(MiningChartView.as_view()),
         {'format': 'PDF'}, name='chart_resource_extraction_pdf'),
     url(
         r'^logging\.pdf$', save_filter_query_params()(LoggingChartView.as_view()),
