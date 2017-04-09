@@ -248,7 +248,7 @@ def format_filters(filters):
         else:
             tags = filter_dict[name]['tags']
 
-        if filter_dict[name]['tags'].get(definition_key) and isinstance(filter_dict[name]['tags'][definition_key], list):
+        if tags.get(definition_key) and isinstance(tags[definition_key], list):
             tags[definition_key].extend(definition[definition_key])
         else:
             tags.update(definition)
@@ -264,9 +264,13 @@ def format_filters(filters):
                 _update_filters(
                     formatted_filters,
                     ('{}_{}'.format(filter_obj.name, i), condition.to_filter()),
-                    group=group)
+                    group=group
+                )
         else:
-            _update_filters(formatted_filters, (filter_name, filter_obj))
+            _update_filters(
+                formatted_filters,
+                (filter_name, filter_obj)
+            )
     return formatted_filters
 
 
