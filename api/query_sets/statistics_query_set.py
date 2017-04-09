@@ -46,7 +46,6 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
         if self.disable_filters:
             # Reenable original filters
             self.request.session['filters'] = self.disabled_filters
-        #raise IOError(self.sql_query())
         return output
 
     def regional_condition(self):
