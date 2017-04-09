@@ -18,8 +18,6 @@ from grid.widgets import (
 from grid.forms.choices import intention_choices, int_choice_to_string
 
 
-
-
 class FilterWidgetAjaxView(View):
     def dispatch(self, request, *args, **kwargs):
         """ render form to enter values for the requested field in the filter widget for the grid view

@@ -389,6 +389,33 @@ class Activity(ActivityBase):
             return False
         return True
 
+    def get_not_public_reason(self):
+        # Presets:
+        # >= 2000
+        # Size given and size > 200 ha
+        # 5. has subinvestors
+        # 6. has valid investor (not unknown)
+        # 7. Intention is not Mining
+        # 8. Target country is no high income country
+
+        # 1. Flag „not public“ set?
+        if not self.is_flag_not_public_off():
+            return '1. Flag not public set'
+        # 2. Minimum information missing?
+        if not self.is_minimum_information_requirement_satisfied():
+            return '2. Minimum information missing'
+        # 3. Involvements missing?
+        involvements = self.investoractivityinvolvement_set.all()
+        if involvements.count() == 0:
+            return '3. involvements missing'
+        # 4. Invalid Operational company name?
+        if not self.has_valid_operational_company(involvements):
+            return '4. Invalid Operational company name'
+        # 5. Invalid Parent companies/investors?
+        if not self.has_valid_parent(involvements):
+            return '5. Invalid Parent companies/investors'
+        return 'Filters passed (public)'
+
     #def is_high_income_target_country(self):
     #        for tc in self.attributes.filter(name="target_country"):
     #            country = Country.objects.get(id=tc.value)

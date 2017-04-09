@@ -58,8 +58,6 @@ class MapInvestorActivityInvolvement(MapModel):
             if involvement['fk_activity_id'] == record['fk_activity_id']
             if involvement['fk_primary_investor_id'] == record['fk_primary_investor_id']
         ]
-        if record['fk_activity_id'] == 129899:
-            print('relevant', relevant_involvements)
         if len(relevant_involvements) > cls._max_len:
             cls._max_len = len(relevant_involvements)
         return max(relevant_involvements, key=lambda i: i['id'])

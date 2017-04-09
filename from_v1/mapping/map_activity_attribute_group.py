@@ -117,9 +117,9 @@ def clean_promised_benefits(key, value):
 
 def clean_intended_size(key, value):
     if ',' in value:
-        return value.replace(',', '.')
+        return key, value.replace(',', '.')
     else:
-        return value
+        return key, value
 
 
 def rename_changed_keys(key, value):
@@ -203,7 +203,7 @@ def clean_attribute(key, value, old_values={}):
     elif key == 'promised_benefits':
         return clean_promised_benefits(key, value)
     elif key == 'intended_size':
-        return clean_indended_size(key, value)
+        return clean_intended_size(key, value)
     return key, value
 
 

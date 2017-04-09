@@ -314,6 +314,12 @@
     border: 1px solid $lm_offwhite; /* It'll get squished otherwise */
 }
 
+@media (max-width: 767px) {
+    .subnav.nav > li.divider {
+        display: block;
+        float: none;
+    }
+}
 
 .navbar-subnav {
     border: 1px solid #bebebe;

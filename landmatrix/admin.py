@@ -4,7 +4,7 @@ from landmatrix.models import *
 
 
 class FilterPresetAdmin(admin.ModelAdmin):
-	list_display = ['name', 'group', 'relation', 'is_default_country_region', 'is_default_global']
+	list_display = ['name', 'group', 'relation', 'is_default_country', 'is_default_global']
 admin.site.register(FilterPreset, FilterPresetAdmin)
 
 admin.site.register(FilterPresetGroup)

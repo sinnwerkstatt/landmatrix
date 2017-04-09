@@ -29,8 +29,8 @@ class FilterPreset(models.Model):
                               null=True)
     relation = models.CharField(max_length=3, choices=RELATION_CHOICES,
                                 default=RELATION_AND)
-    is_default_country_region = models.BooleanField(_("Country/Region"), default=False)
-    is_default_global = models.BooleanField(_("Global"), default=False)
+    is_default_country = models.BooleanField(_("Country"), default=False)
+    is_default_global = models.BooleanField(_("Global/Region"), default=False)
     is_hidden = models.BooleanField(_("Is hidden"), default=False)
 
     def __str__(self):

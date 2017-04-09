@@ -219,9 +219,9 @@ class FilterWidgetMixin:
         # Target country or region set?
         variables = [v.get('variable', '') for k, v in stored_filters.items()]
         preset_ids = dict([(v.get('preset_id', ''), k) for k, v in stored_filters.items()])
-        if ('target_country' in variables) or ('target_region' in variables):
+        if ('target_country' in variables):
             # Use national presets
-            for preset in FilterPreset.objects.filter(is_default_country_region=True):
+            for preset in FilterPreset.objects.filter(is_default_country=True):
                 if preset.id in preset_ids.keys():
                     del stored_filters[preset_ids[preset.id]]
                 if preset.id in disabled_presets:

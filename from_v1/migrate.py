@@ -129,18 +129,18 @@ if __name__ == '__main__':
             MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
 
         if options.deal or options.all:
-            #MapStatus.map_all(save=options.save, verbose=options.verbose)
-            MapStatus._done = True
-            #MapLanguage.map_all(save=options.save, verbose=options.verbose)
-            MapLanguage._done = True
-            #MapReviewDecision.map_all(save=options.save, verbose=options.verbose)
-            MapReviewDecision._done = True
-            #MapActivity.map_all(save=options.save, verbose=options.verbose)
-            MapActivity._done = True
-            #MapActivityChangesetReview.map_all(save=options.save, verbose=options.verbose)
-            MapActivityChangesetReview._done = True
-            #MapActivityFeedback.map_all(save=options.save, verbose=options.verbose)
-            MapActivityFeedback._done = True
+            MapStatus.map_all(save=options.save, verbose=options.verbose)
+            #MapStatus._done = True
+            MapLanguage.map_all(save=options.save, verbose=options.verbose)
+            #MapLanguage._done = True
+            MapReviewDecision.map_all(save=options.save, verbose=options.verbose)
+            #MapReviewDecision._done = True
+            MapActivity.map_all(save=options.save, verbose=options.verbose)
+            #MapActivity._done = True
+            MapActivityChangesetReview.map_all(save=options.save, verbose=options.verbose)
+            #MapActivityChangesetReview._done = True
+            MapActivityFeedback.map_all(save=options.save, verbose=options.verbose)
+            #MapActivityFeedback._done = True
             MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
             #MapActivityAttributeGroup._done = True
             #MapPublicInterfaceCache.map_all(save=options.save, verbose=options.verbose)

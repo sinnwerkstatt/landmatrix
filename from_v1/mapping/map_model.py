@@ -50,7 +50,7 @@ class MapModel:
         cls._check_dependencies()
         cls._start_timer()
 
-        cls.new_class.objects.all().delete()
+        #cls.new_class.objects.all().delete()
         for index, record in enumerate(cls.all_records()):
             cls.map_record(record, save, verbose)
             cls._print_status(record, index)
