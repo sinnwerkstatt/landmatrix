@@ -96,7 +96,7 @@ urlpatterns = patterns(
     url(
         r'^mining\.pdf$',
         save_filter_query_params()(MiningChartView.as_view()),
-        {'format': 'PDF'}, name='chart_resource_extraction_pdf'),
+        {'format': 'PDF'}, name='chart_mining_pdf'),
     url(
         r'^logging\.pdf$', save_filter_query_params()(LoggingChartView.as_view()),
         {'format': 'PDF'}, name='chart_logging_pdf'),
