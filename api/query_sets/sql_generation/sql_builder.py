@@ -203,7 +203,7 @@ LEFT JOIN landmatrix_activityattribute AS intention ON a.id = intention.fk_activ
             self.status_active_condition(),
             self.is_public_condition()
         ])) + """
-        AND intention.value LIKE '%Resource extraction%'"""
+        AND intention.value LIKE '%Mining%'"""
 
         cursor = connection.cursor()
         cursor.execute(sql)

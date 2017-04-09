@@ -211,7 +211,7 @@ class Command(BaseCommand):
                          OR
         (attr_10.value IS NULL)) AND
         ac11.high_income = 'f' AND
-        (((attr_12.value NOT IN ('Resource extraction') OR attr_12.value IS NULL))))
+        (((attr_12.value NOT IN ('Mining', 'Oil / Gas extraction') OR attr_12.value IS NULL))))
         -- additional subquery options:
 
         AND a.negotiation_status IN ('Contract signed', 'Oral agreement')

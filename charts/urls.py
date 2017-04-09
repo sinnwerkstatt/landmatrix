@@ -61,9 +61,9 @@ urlpatterns = patterns(
         save_filter_query_params()(ProduceInfoChartView.as_view()),
         name='chart_produce_info'),
     url(
-        r'^resource-extraction/$',
-        save_filter_query_params()(ResourceExtractionChartView.as_view()),
-        name='chart_resource_extraction'),
+        r'^mining/$',
+        save_filter_query_params()(MiningChartView.as_view()),
+        name='chart_mining'),
     url(
         r'^logging/$', save_filter_query_params()(LoggingChartView.as_view()),
         name='chart_logging'),

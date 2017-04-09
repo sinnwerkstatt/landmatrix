@@ -32,7 +32,7 @@ class IntentionQuerySet(FakeQuerySetWithSubquery):
         super().__init__(request)
         self.intention = request.GET.get("intention", "")
 
-    INTENTIONS = list(filter(lambda k: "Resource extraction" not in k, [i[0] for i in intention_choices]))
+    INTENTIONS = list(filter(lambda k: "Mining" not in k and "Oil / Gas extraction" not in k, [i[0] for i in intention_choices]))
     INTENTIONS_AGRICULTURE = [i[0] for i in intention_agriculture_choices]
 
     def all(self):

@@ -21,12 +21,14 @@ $(document).ready(function () {
             'Deal Intention': {
                 'Agriculture': '#1D6914',
                 'Forestry': '#2A4BD7',
-                'Conservation': '#575757',
-                'Industry': '#AD2323',
-                'Renewable Energy': '#81C57A',
+                'Mining': '#814A19',
+                'Oil / Gas extraction': '',
                 'Tourism': '#9DAFFF',
+                'Industry': '#AD2323',
+                'Conservation': '#575757',
+                'Land speculation': '',
+                'Renewable Energy': '#81C57A',
                 'Other': '#8126C0',
-                'Resource extraction': '#814A19',
                 'Undefined': '#FF0000'
             }
         };

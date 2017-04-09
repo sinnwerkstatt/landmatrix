@@ -12,6 +12,7 @@ from grid.views.filter_widget_mixin import FilterWidgetMixin
 class ChartView(FilterWidgetMixin, TemplateView):
     chart = ""
     disabled_presets = []
+    enabled_presets = []
 
     def get_context_data(self, **kwargs):
         context = super(ChartView, self).get_context_data(**kwargs)
@@ -64,6 +65,8 @@ class IntentionChartView(ChartPDFView):
     chart = "chart_intention"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
+    disabled_presets = [5,6,7,18]
+    enabled_presets = [1,15,16,19]
 
 
 class NegotiationStatusChartView(ChartPDFView):
@@ -71,7 +74,8 @@ class NegotiationStatusChartView(ChartPDFView):
     chart = "chart_negotiation_status"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
-    disabled_presets = [2,]
+    disabled_presets = [5,6,7,18,2]
+    enabled_presets = [1,15,16,19]
 
 
 class ImplementationStatusChartView(ChartPDFView):
@@ -79,6 +83,8 @@ class ImplementationStatusChartView(ChartPDFView):
     chart = "chart_implementation_status"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
+    disabled_presets = [5,6,7,18]
+    enabled_presets = [1,15,16,19]
 
 
 class IntentionAgricultureChartView(ChartPDFView):
@@ -86,6 +92,8 @@ class IntentionAgricultureChartView(ChartPDFView):
     chart = "chart_intention_agriculture"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
+    disabled_presets = [5,6,7,18]
+    enabled_presets = [1,15,16,19]
 
 
 class TransnationalDealsChartView(ChartPDFView):
@@ -139,9 +147,9 @@ class ProduceInfoChartView(ChartPDFView):
     chart = "chart_produce_info"
     pdf_javascript_delay = 10000
 
-class ResourceExtractionChartView(ChartPDFView):
-    template_name = "charts/special-interest/resource-extraction.html"
-    chart = "chart_resource_extraction"
+class MiningChartView(ChartPDFView):
+    template_name = "charts/special-interest/mining.html"
+    chart = "chart_mining"
     pdf_javascript_delay = 10000
 
 class LoggingChartView(ChartPDFView):

@@ -650,9 +650,7 @@ def clean_attribute(key, value):
         elif 'In operation' in value:
             value = value.replace('In operation', 'In operation (production)')
     elif key == 'intention':
-        if value == 'Mining':
-            value = value.replace('Mining', 'Resource extraction')
-        elif value == 'carbon sequestration':
+        if value == 'carbon sequestration':
             value = value.replace('carbon sequestration', 'For carbon sequestration/REDD')
         elif value == 'wood and fibre':
             value = value.replace('wood and fibre', 'For wood and fibre')
