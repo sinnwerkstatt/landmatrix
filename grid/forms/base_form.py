@@ -381,7 +381,13 @@ class BaseForm(forms.Form):
                 current = date_values.pop()
                 date = date_values.pop()
                 if date_values:
-                    if isinstance(field.fields[0], forms.ChoiceField):
+                    # Grouped choice field?
+                    if isinstance(field.fields[0].choices[0][1], (list, tuple)):
+                        selected = date_values[0].split(',')
+                        date_values[0] = ''
+                        for group, items in field.fields[0].choices:
+                            date_values[0] += ', '.join([str(l) for v, l in items if str(v) in selected])
+                    elif isinstance(field.fields[0], forms.ChoiceField):
                         selected = date_values[0].split(',')
                         date_values[0] = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) in selected])
                     value = ''
