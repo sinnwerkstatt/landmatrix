@@ -505,9 +505,11 @@ class Activity(ActivityBase):
     #    return len(negotiation_stati) > 0 or len(implementation_stati) > 0
 
     def get_deal_scope(self):
-        involvements = self.investoractivityinvolvement_set.all()
         target_countries = {c.value for c in self.attributes.filter(name="target_country")}
-        investor_countries = {str(i.fk_investor.fk_country_id) for i in involvements}
+        involvements = self.investoractivityinvolvement_set.all()
+        investor_countries = set()
+        for oc in involvements:
+            investor_countries.update({str(i.fk_investor.fk_country_id) for i in oc.fk_investor.venture_involvements.all()})
         if len(target_countries) > 0 and len(investor_countries) > 0:
             if len(target_countries.symmetric_difference(investor_countries)) == 0:
                 return "domestic"

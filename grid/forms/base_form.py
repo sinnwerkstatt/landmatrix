@@ -381,19 +381,27 @@ class BaseForm(forms.Form):
                 current = date_values.pop()
                 date = date_values.pop()
                 if date_values:
-                    # Grouped choice field?
-                    if isinstance(field.fields[0].choices[0][1], (list, tuple)):
+                    # Replace value with label for choice fields
+                    if isinstance(field.fields[0], forms.ChoiceField):
                         selected = date_values[0].split(',')
-                        date_values[0] = ''
-                        for group, items in field.fields[0].choices:
-                            date_values[0] += ', '.join([str(l) for v, l in items if str(v) in selected])
-                    elif isinstance(field.fields[0], forms.ChoiceField):
-                        selected = date_values[0].split(',')
-                        date_values[0] = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) in selected])
+                        # Grouped choice field?
+                        if isinstance(list(field.fields[0].choices)[0][1], (list, tuple)):
+                            date_values[0] = []
+                            for group, items in field.fields[0].choices:
+                                date_value = ', '.join([str(l) for v, l in items if str(v) in selected])
+                                if date_value:
+                                    date_values[0].append(date_value)
+                            date_values[0] = ', '.join(date_values[0])
+                        else:
+                            date_values[0] = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) in selected])
                     value = ''
                     if date or current:
                         value += '[%s] ' % ', '.join(filter(None, [date, (current and 'current' or '')]))
-                    value += ', '.join(filter(None, date_values))
+                    value += date_values[0]
+                    if len(date_values) > 1:
+                        value2 = ', '.join(filter(None, date_values[1:]))
+                        if value2:
+                            value += _(' (%s ha)') % value2
                 if value:
                     values.append(value)
         return '<br>'.join(values)
