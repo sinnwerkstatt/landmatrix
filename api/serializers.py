@@ -10,9 +10,6 @@ from landmatrix.models import (
 )
 
 
-User = get_user_model()
-
-
 class PassThruSerializer(serializers.BaseSerializer):
     '''
     Read only serializer that does nothing, just passed the JSON object
@@ -35,7 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.get_full_name()
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('id', 'username', 'full_name')
 
 

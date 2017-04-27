@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils import timezone
 
 from multiselectfield import MultiSelectField
 
@@ -90,7 +91,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     opencorporates_link = models.URLField(
         _("Opencorporates link"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
-    timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
+    timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
     comment = models.TextField(_("Comment"), blank=True, null=True)
 
     objects = InvestorQuerySet.as_manager()
@@ -233,7 +234,7 @@ class Investor(InvestorBase):
 
 
 class HistoricalInvestor(InvestorBase):
-    history_date = models.DateTimeField(auto_now_add=True)
+    history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
 
     class Meta:
@@ -292,7 +293,7 @@ class InvestorVentureInvolvement(models.Model):
     loans_date = models.CharField("Loan date", max_length=10, blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
-    timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
+    timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
 
     objects = InvestorVentureQuerySet.as_manager()
 
@@ -346,7 +347,7 @@ class InvestorActivityInvolvement(models.Model):
     # investor can only be an Operational Stakeholder in an activity
     #comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
-    timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
+    timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
 
     objects = InvestorActivityInvolvementManager()
 

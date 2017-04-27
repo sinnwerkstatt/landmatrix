@@ -41,3 +41,5 @@ django-jstemplate==1.3.8
 pyelasticsearch
 celery[redis]
 geojson==1.3.4
+libmysqlclient
+pylibmc

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-
+from django.utils import timezone
 
 
 
@@ -26,7 +26,7 @@ class ActivityChangeset(models.Model):
     fk_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name=_("User"), blank=True,
         null=True)
-    timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
+    timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
     fk_review_decision = models.ForeignKey(
         ReviewDecision, verbose_name=_("Review decision"), blank=True,
         null=True)

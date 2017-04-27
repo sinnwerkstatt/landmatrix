@@ -11,9 +11,6 @@ from grid.widgets import CommentInput
 from .base_form import BaseForm
 
 
-User = get_user_model()
-
-
 class DealActionCommentForm(BaseForm):
     NOT_PUBLIC_REASON_CHOICES = (
         ("", _("---------")),
@@ -28,9 +25,6 @@ class DealActionCommentForm(BaseForm):
             _('Land Observatory Import (duplicate)'),
         ),
     )
-    ASSIGN_TO_USER_QUERYSET = User.objects.filter(
-        groups__name__in=("Editors", "Administrators")).order_by(
-        "username")
 
     form_title = _('Action Comment')
     tg_action = TitleField(
@@ -65,13 +59,18 @@ class DealActionCommentForm(BaseForm):
 
     tg_feedback = TitleField(required=False, label="", initial=_("Feedback"))
     assign_to_user = UserModelChoiceField(
-        required=False, label=_("Assign to"), queryset=ASSIGN_TO_USER_QUERYSET,
+        required=False, label=_("Assign to"), queryset=None,
         empty_label=_("Unassigned"))
     tg_feedback_comment = forms.CharField(
         required=False, label=_("Feedback comment"), widget=CommentInput)
 
     class Meta:
         name = 'action_comment'
+
+    def __init__(self, *args, **kwargs):
+        super(DealActionCommentForm, self).__init__(*args, **kwargs)
+        self.fields['assign_to_user'].queryset = get_user_model().objects.filter(
+            groups__name__in=("Editors", "Administrators")).order_by("username")
 
     def get_attributes(self, request=None):
         # Remove action comment, this field is handled separately in SaveDealView

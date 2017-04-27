@@ -162,8 +162,8 @@ class FilterWidgetMixin:
                     filter_values['display_value'] = country.name
                 except:
                     pass
-                filter_values['name'] = str(_('Target country'))
-                filter_values['label'] = str(_('Target country'))
+                filter_values['name'] = _('Target country')
+                filter_values['label'] = _('Target country')
                 data.pop('country')
             elif data.get('region', None):
                 filter_values['variable'] = 'target_region'
@@ -174,8 +174,8 @@ class FilterWidgetMixin:
                     filter_values['display_value'] = region.name
                 except:
                     pass
-                filter_values['name'] = str(_('Target region'))
-                filter_values['label'] = str(_('Target region'))
+                filter_values['name'] = _('Target region')
+                filter_values['label'] = _('Target region')
                 data.pop('region')
             # Remove existing target country/region filters
             filters = filter(lambda f: f.get('variable') in ('target_country', 'target_region'), stored_filters.values())

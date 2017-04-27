@@ -52,7 +52,11 @@ class YearBasedBooleanField(YearBasedField):
             yb_data = []
             for i in range(len(data_list)/3):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1]), str(data_list[i+2])))
+                    yb_data.append("%s:%s" % (
+                        str(data_list[i] or ''),
+                        str(data_list[i+1] or ''),
+                        str(data_list[i+2] or '')
+                    ))
             return "#".join(yb_data)
         else:
             self.fields = [
@@ -95,7 +99,11 @@ class YearBasedIntegerField(YearBasedField):
             yb_data = []
             for i in range(len(data_list)//3):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s:%s" % (str(data_list[i]), str(data_list[i+1]), str(data_list[i+2])))
+                    yb_data.append("%s:%s:%s" % (
+                        str(data_list[i] or ''),
+                        str(data_list[i+1] or ''),
+                        str(data_list[i+2] or '')
+                    ))
             return "#".join(yb_data)
         else:
             self.fields = [forms.IntegerField(required=False), forms.CharField(required=False)]
@@ -134,7 +142,11 @@ class YearBasedFloatField(YearBasedField):
             yb_data = []
             for i in range(len(data_list)//3):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s:%s" % (str(data_list[i]), str(data_list[i+1]), str(data_list[i+2])))
+                    yb_data.append("%s:%s:%s" % (
+                        str(data_list[i] or ''),
+                        str(data_list[i+1] or ''),
+                        str(data_list[i+2] or '')
+                    ))
             return "#".join(yb_data)
         else:
             self.fields = [forms.FloatField(required=False, localize=True), forms.CharField(required=False)]
@@ -164,7 +176,11 @@ class YearBasedChoiceField(YearBasedField):
             yb_data = []
             for i in range(len(data_list)//3):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s:%s" % (str(data_list[i]), str(data_list[i+1]), str(data_list[i+2])))
+                    yb_data.append("%s:%s:%s" % (
+                        str(data_list[i] or ''),
+                        str(data_list[i+1] or ''),
+                        str(data_list[i+2] or '')
+                    ))
             return "#".join(yb_data)
         else:
             self.fields = [
@@ -198,7 +214,11 @@ class YearBasedModelMultipleChoiceField(YearBasedField):
             yb_data = []
             for i in range(len(data_list)//3):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1]), str(data_list[i+2])))
+                    yb_data.append("%s:%s:%s" % (
+                        str(data_list[i] or ''),
+                        str(data_list[i+1] or ''),
+                        str(data_list[i+2] or '')
+                    ))
             return "#".join(yb_data)
         else:
             self.fields = [
@@ -242,7 +262,11 @@ class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
             yb_data = []
             for i in range(len(data_list)//4):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s:%s" % (str(data_list[i]), str(data_list[i+1]), str(data_list[i+2])))
+                    yb_data.append("%s:%s:%s" % (
+                        str(data_list[i] or ''),
+                        str(data_list[i+1] or ''),
+                        str(data_list[i+2] or '')
+                    ))
             return "#".join(yb_data)
         else:
             self.fields = [
@@ -287,7 +311,11 @@ class YearBasedMultipleChoiceIntegerField(YearBasedField):
             yb_data = []
             for i in range(len(data_list)//4):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s:%s" % (str(data_list[i]), str(data_list[i+1]), str(data_list[i+2])))
+                    yb_data.append("%s:%s:%s" % (
+                        str(data_list[i] or ''),
+                        str(data_list[i+1] or ''),
+                        str(data_list[i+2] or '')
+                    ))
             return "#".join(yb_data)
         else:
             self.fields = [
@@ -436,7 +464,10 @@ class ActorsField(forms.MultiValueField):
             yb_data = []
             for i in range(len(data_list)//2):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s" % (str(data_list[i]), str(data_list[i+1])))
+                    yb_data.append("%s:%s" % (
+                        str(data_list[i] or ''),
+                        str(data_list[i+1] or '')
+                    ))
             return "#".join(yb_data)
         else:
             self.fields = [forms.CharField(required=False), forms.ChoiceField(choices=self.choices, required=False)]

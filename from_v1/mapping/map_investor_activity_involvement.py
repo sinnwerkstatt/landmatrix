@@ -3,13 +3,19 @@ from operator import itemgetter
 from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
-from from_v1.migrate import V1
+from from_v1.migrate import V1, V2
 from from_v1.mapping.map_activity import MapActivity
 from from_v1.mapping.map_investor import MapInvestor
 from from_v1.mapping.aux_functions import get_now
 
 from django.db import connections, models
 
+
+def get_fk_activity_id(old_activity_id):
+    # Get new activity id for old activity id
+    activity_identifier = old_editor.models.Activity.objects.using(V1).get(id=old_activity_id).activity_identifier
+    new_activity_id = landmatrix.models.Activity.objects.using(V2).get(activity_identifier=activity_identifier).id
+    return new_activity_id
 
 
 def get_status_for_investor(primary_investor_id):
@@ -22,6 +28,7 @@ class MapInvestorActivityInvolvement(MapModel):
     new_class = landmatrix.models.InvestorActivityInvolvement
     attributes = {
         'investment_ratio': 'percentage',
+        'fk_activity_id': ('fk_activity_id', get_fk_activity_id),
         'fk_primary_investor_id': ('fk_investor_id', ('fk_status_id', get_status_for_investor), ('timestamp', get_now))
     }
     depends = [ MapActivity, MapInvestor ]
@@ -64,7 +71,6 @@ class MapInvestorActivityInvolvement(MapModel):
 
     @classmethod
     def all_stakeholder_ids(cls):
-
         cursor = connections[V1].cursor()
         cursor.execute("""
 SELECT id

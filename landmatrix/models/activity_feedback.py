@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-
+from django.utils import timezone
 
 
 class ActivityFeedbackManager(models.Manager):
@@ -22,7 +22,7 @@ class ActivityFeedback(models.Model):
         settings.AUTH_USER_MODEL, verbose_name=_("User created"),
         related_name="user_created", blank=True, null=True)
     comment = models.TextField(_("Comment"))
-    timestamp = models.DateTimeField(_("Timestamp"), auto_now_add=True)
+    timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
 
     objects = ActivityFeedbackManager()
 

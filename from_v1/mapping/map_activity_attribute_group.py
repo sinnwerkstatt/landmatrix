@@ -49,11 +49,14 @@ def clean_target_country(key, value):
     return key, value
 
 
-def clean_nature(key, value):
+def clean_nature(key, value, old_values={}):
     if value == 'Lease / Concession':
         value = 'Lease'
     elif value == 'Exploitation license':
-        value = 'Exploitation permit / license / concession'
+        if 'For wood and fibre' in old_values.get('intention', []):
+            value = 'Concession'
+        else:
+            value = 'Exploitation permit / license / concession'
     return key, value
 
 
@@ -156,7 +159,7 @@ def clean_intention(key, value, old_values={}):
         if 'True' in old_values.get('not_public', []):
             value = 'Forest logging / management'
         elif len(old_values.get('nature', [])) == 0:
-            value = 'Forestry'
+            value = 'Forestry unspecified'
         elif 'Outright Purchase' in old_values.get('nature', []):
             value = 'Timber plantation'
         elif 'Lease / Concession' in old_values.get('nature', []):
@@ -189,7 +192,7 @@ def clean_attribute(key, value, old_values={}):
     elif key == 'level_of_accuracy':
         return clean_level_of_accuracy(key, value)
     elif key == 'nature':
-        return clean_nature(key, value)
+        return clean_nature(key, value, old_values=old_values)
     elif key == 'intention':
         return clean_intention(key, value, old_values=old_values)
     elif key == 'land_use':

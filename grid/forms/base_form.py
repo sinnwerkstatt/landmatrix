@@ -267,7 +267,7 @@ class BaseForm(forms.Form):
         # Collect all attributes for date (for multiple choice fields)
         if multiple[0]:
             for attribute in attributes:
-                key = '%s:%s' % (attribute.date, values_count > 2 and attribute.value2 or '')
+                key = '%s:%s' % (attribute.date or '', values_count > 2 and attribute.value2 or '')
                 if key in attributes_by_date:
                     if attribute.value:
                         attributes_by_date[key][1] += ',' + attribute.value

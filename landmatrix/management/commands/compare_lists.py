@@ -30,7 +30,7 @@ class Command(BaseCommand):
         additional = list(set(new) - set(old))
         additional.sort()
         missing_deals = OrderedDict()
-        missing_deals['investor'] = []
+        missing_deals['status'] = []
         missing_deals['unknown'] = []
         additional_deals = OrderedDict()
         additional_deals['unknown'] = []
@@ -38,12 +38,8 @@ class Command(BaseCommand):
         for deal_id in missing:
             a = Activity.objects.get(activity_identifier=deal_id)
             inv = a.investoractivityinvolvement_set.all()
-            if inv.count() > 0:
-                investor_name = inv[0].fk_investor.name
-            else:
-                investor_name = ''
-            if 'Unknown' in investor_name:
-                missing_deals['investor'].append(a)
+            if a.fk_status_id not in (2,3):
+                missing_deals['status'].append(a)
             else:
                 missing_deals['unknown'].append(a)
 
@@ -151,8 +147,7 @@ class Command(BaseCommand):
         AND pi.version = (SELECT max(version) FROM primary_investors pimax, status st WHERE pimax.fk_status = st.id AND pimax.primary_investor_identifier = pi.primary_investor_identifier AND st.name IN ("active", "overwritten", "deleted"))
         AND pi_st.name IN ("active", "overwritten")
 
-
-                    AND lower(negotiation.value) in ('concluded (oral agreement)', 'concluded (contract signed)')  AND deal_scope.value = 'transnational'
+AND deal_scope.value = 'transnational'
               ) AS sub
              WHERE a.id = sub.id
         ORDER BY a.activity_identifier;
@@ -198,22 +193,13 @@ AND a.is_public = 't'
 --  additional where conditions:
 
 --  filter sql:
-        AND (((attr_0.date >= '2000-01-01') OR
-(attr_1.date >= '2000-01-01') OR
-(attr_2.date IS NULL) OR
-(attr_3.date IS NULL)) AND
+        AND (((a.init_date > '1999-12-31') OR
+(a.init_date IS NULL)) AND
 (((attr_4.value NOT IN ('Pure contract farming') OR attr_4.value IS NULL))) AND
 ((CAST(COALESCE(NULLIF(attr_5.value, ''), '0') AS FLOAT) >= 200) OR
 (CAST(COALESCE(NULLIF(attr_6.value, ''), '0') AS FLOAT) >= 200) OR
 (CAST(COALESCE(NULLIF(attr_7.value, ''), '0') AS FLOAT) >= 200)) AND
-a.deal_scope = 'transnational' AND
-
-                a.id NOT IN (
-                    SELECT fk_activity_id
-                    FROM landmatrix_activityattribute
-                    WHERE landmatrix_activityattribute.name = 'deal_scope'
-                    AND landmatrix_activityattribute.value NOT IN ('transnational')
-                )
+a.deal_scope = 'transnational'
                  AND
 (((attr_9.value NOT IN ('Resource extraction') OR attr_9.value IS NULL))) AND
 (((attr_10.value NOT IN ('Logging') OR attr_10.value IS NULL))) AND

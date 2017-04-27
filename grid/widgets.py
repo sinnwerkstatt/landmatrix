@@ -345,8 +345,8 @@ class NumberInput(forms.TextInput):
 
 class FileInputWithInitial(forms.ClearableFileInput):
     displayed_chars = 40
-    existing_file_template = '<a class="input-group-addon" href="{url}" target="_blank" title="' + str(_('Current file')) \
-        + ' class="toggle-tooltip"><i class="fa fa-file-pdf-o"></i></a>'
+    existing_file_template = '<a class="input-group-addon" href="{url}" target="_blank" ' \
+                             'title="{label}" class="toggle-tooltip"><i class="fa fa-file-pdf-o"></i></a>'
     new_upload_template = "{}-new"
 
     def render(self, name, value, attrs=None):
@@ -369,9 +369,9 @@ class FileInputWithInitial(forms.ClearableFileInput):
             else:
                 display_name = value_name
 
-            output += self.existing_file_template.format(label=_("Saved file"),
-                                                         url=value_url,
-                                                         name=display_name)
+            output += self.existing_file_template.format(url=value_url,
+                                                         name=display_name,
+                                                         label=_('Current file'))
 
         file_input = super().render(self.new_upload_template.format(name),
                                     None, attrs)

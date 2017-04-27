@@ -3,7 +3,7 @@ Template rendering utils.
 
 TODO: this can all be done in the template, move it there.
 '''
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 

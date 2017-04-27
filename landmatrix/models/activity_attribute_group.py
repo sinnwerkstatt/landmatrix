@@ -1,10 +1,7 @@
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 
-#from simple_history.models import HistoricalRecords
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django_hstore import hstore
 from django.contrib.gis.db import models as geomodels
 
 
@@ -49,7 +46,7 @@ class ActivityAttribute(ActivityAttributeBase):
 class HistoricalActivityAttribute(ActivityAttributeBase):
     """All versions (including the current) of activity attributes"""
     fk_activity = models.ForeignKey("HistoricalActivity", verbose_name=_("Activity"), related_name="attributes")
-    #history_date = models.DateTimeField(auto_now_add=True)
+    #history_date = models.DateTimeField(default=timezone.now)
     #history_user = models.ForeignKey('auth.User', blank=True, null=True)
 
     class Meta:

@@ -2,7 +2,7 @@ import json
 import numbers
 
 from django.http import Http404
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
 from django.template import RequestContext

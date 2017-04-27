@@ -6,6 +6,7 @@ from django.db.models.functions import Coalesce
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.status import Status
@@ -110,7 +111,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
     availability = models.FloatField(_("availability"), blank=True, null=True)
-    fully_updated = models.BooleanField(_("Fully updated"), default=False)#, auto_now_add=True)
+    fully_updated = models.BooleanField(_("Fully updated"), default=False)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
 
     objects = ActivityQuerySet.as_manager()
@@ -223,7 +224,7 @@ class Activity(ActivityBase):
     NEGOTIATION_STATUS_ORAL_AGREEMENT = 'Oral agreement'
     NEGOTIATION_STATUS_CONTRACT_SIGNED = 'Contract signed'
     NEGOTIATION_STATUS_NEGOTIATIONS_FAILED = 'Negotiations failed'
-    NEGOTIATION_STATUS_CONTRACT_CANCELLED = 'Contract cancelled'
+    NEGOTIATION_STATUS_CONTRACT_CANCELLED = 'Contract canceled'
     NEGOTIATION_STATUS_CONTRACT_EXPIRED = 'Contract expired'
     NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP = 'Change of ownership'
 
@@ -313,6 +314,8 @@ class Activity(ActivityBase):
         verbose_name=_('Implementation status'), max_length=64,
         choices=IMPLEMENTATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
     deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
+    init_date = models.CharField(verbose_name=_('Initiation year or date'), max_length=10,
+                                 blank=True, null=True, db_index=True)
 
 
     def refresh_cached_attributes(self):
@@ -327,6 +330,10 @@ class Activity(ActivityBase):
 
         # Deal scope (domestic or transnational)
         self.deal_scope = self.get_deal_scope()
+
+        # Initiation year
+        self.init_date = self.get_init_date()
+
 
         self.is_public = self.is_public_deal()
         self.save()
@@ -372,20 +379,18 @@ class Activity(ActivityBase):
         # 8. Target country is no high income country
 
         # 1. Flag „not public“ set?
-        if not self.is_flag_not_public_off():
+        if self.has_flag_not_public():
             return False
         # 2. Minimum information missing?
-        if not self.is_minimum_information_requirement_satisfied():
+        if self.missing_information():
             return False
         # 3. Involvements missing?
         involvements = self.investoractivityinvolvement_set.all()
         if involvements.count() == 0:
             return False
         # 4. Invalid Operational company name?
-        if not self.has_valid_operational_company(involvements):
-            return False
         # 5. Invalid Parent companies/investors?
-        if not self.has_valid_parent(involvements):
+        if self.has_invalid_operational_company(involvements) and self.has_invalid_parents(involvements):
             return False
         return True
 
@@ -399,21 +404,22 @@ class Activity(ActivityBase):
         # 8. Target country is no high income country
 
         # 1. Flag „not public“ set?
-        if not self.is_flag_not_public_off():
+        if self.has_flag_not_public():
             return '1. Flag not public set'
         # 2. Minimum information missing?
-        if not self.is_minimum_information_requirement_satisfied():
+        if self.missing_information():
             return '2. Minimum information missing'
         # 3. Involvements missing?
         involvements = self.investoractivityinvolvement_set.all()
         if involvements.count() == 0:
             return '3. involvements missing'
         # 4. Invalid Operational company name?
-        if not self.has_valid_operational_company(involvements):
-            return '4. Invalid Operational company name'
+        if self.has_invalid_operational_company(involvements):
+            return ''
+        # 4. Invalid Operational company name?
         # 5. Invalid Parent companies/investors?
-        if not self.has_valid_parent(involvements):
-            return '5. Invalid Parent companies/investors'
+        if self.has_invalid_operational_company(involvements) and self.has_invalid_parents(involvements):
+            return '4. Invalid Operational company name or 5. Invalid Parent companies/investors'
         return 'Filters passed (public)'
 
     #def is_high_income_target_country(self):
@@ -431,38 +437,39 @@ class Activity(ActivityBase):
     #    is_mining_deal = len(mining) > 0 and len(intentions) == 1
     #    return is_mining_deal
 
-
-    def has_valid_operational_company(self, involvements):
+    def has_invalid_operational_company(self, involvements):
         for i in involvements:
             if not i.fk_investor:
                 continue
             investor_name = i.fk_investor.name
             invalid_name = "^(unknown|unnamed)( \(([, ]*(unnamed investor [0-9]+)*)+\))?$"
             if investor_name and not re.match(invalid_name, investor_name.lower()):
-                return True
-        return False
+                return False
+        return True
 
-    def has_valid_parent(self, involvements):
+    def has_invalid_parents(self, involvements):
         for i in involvements:
             if not i.fk_investor:
                 continue
             # Operational company name given?
-            investor_name = i.fk_investor.name
-            invalid_name = "(unknown|unnamed)"
-            if investor_name and not re.search(invalid_name, investor_name.lower()):
-                return True
+            # investor_name = i.fk_investor.name
+            # invalid_name = "(unknown|unnamed)"
+            # if not investor_name:
+            #     return True
+            # elif not re.search(invalid_name, investor_name.lower()):
+            #     return True
             for pi in i.fk_investor.venture_involvements.all():
                 # Parent investor/company name given?
                 investor_name = pi.fk_investor.name
                 invalid_name = "(unknown|unnamed)"
                 if investor_name and not re.search(invalid_name, investor_name.lower()):
-                    return True
-        return False
+                    return False
+        return True
 
-    def is_minimum_information_requirement_satisfied(self):
+    def missing_information(self):
         target_country = self.attributes.filter(name="target_country")
         ds_type = self.attributes.filter(name="type")
-        return len(target_country) > 0 and len(ds_type) > 0
+        return len(target_country) == 0 or len(ds_type) == 0
 
 
     #def is_size_invalid(self):
@@ -475,41 +482,39 @@ class Activity(ActivityBase):
     #    return no_size_set or size_too_small
 
 
-    def is_flag_not_public_off(self):
+    def has_flag_not_public(self):
         # Filter B1 (flag is unreliable not set):
         not_public = self.attributes.filter(name="not_public")
         not_public = len(not_public) > 0 and not_public[0].value or None
-        return (not not_public) or (not_public in ("False", "off"))
+        return not_public and not_public in ("True", "on")
 
-    #def is_public_older_y2k(self):
-    #    """
-    #    Filter B3
-    #    Only drop a deal if we have information that initiation years are < 2000.
-    #    Deals with missing year values have to cross the filter to the PI
-    #    """
-    #    negotiation_stati = self.attributes.filter(name="negotiation_status"). \
-    #        filter(attributes__contains={
-    #                'negotiation_status': [
-    #                    "Expression of interest", "Under negotiation", "Oral Agreement",
-    #                    "Memorandum of understanding", "Contract signed"
-    #                ]
-    #            }
-    #        ). \
-    #        filter(date__lt='2000-01-01')
-    #
-    #    implementation_stati = self.attributes.filter(name="implementation_status"). \
-    #        filter(attributes__contains={
-    #            'implementation_status': ["Startup phase (no production)", "In operation (production)"]}
-    #        ). \
-    #        filter(date__lt='2000-01-01')
-    #    return len(negotiation_stati) > 0 or len(implementation_stati) > 0
+    def get_init_date(self):
+        init_dates = []
+        negotiation_stati = self.attributes.filter(name="negotiation_status", value__in=
+            self.NEGOTIATION_STATUSES_CONCLUDED + self.NEGOTIATION_STATUSES_INTENDED).order_by("date")
+        implementation_stati = self.attributes.filter(name="implementation_status", value__in=(
+            self.IMPLEMENTATION_STATUS_STARTUP_PHASE,
+            self.IMPLEMENTATION_STATUS_IN_OPERATION
+        )).order_by("date")
+        if negotiation_stati.count() > 0:
+            if negotiation_stati[0].date:
+                init_dates.append(negotiation_stati[0].date)
+        if implementation_stati.count() > 0:
+            if implementation_stati[0].date:
+                init_dates.append(implementation_stati[0].date)
+        if init_dates:
+            return min(init_dates)
+        else:
+            return None
 
     def get_deal_scope(self):
         target_countries = {c.value for c in self.attributes.filter(name="target_country")}
         involvements = self.investoractivityinvolvement_set.all()
         investor_countries = set()
         for oc in involvements:
-            investor_countries.update({str(i.fk_investor.fk_country_id) for i in oc.fk_investor.venture_involvements.all()})
+            for i in oc.fk_investor.venture_involvements.stakeholders():
+                if i.fk_investor.fk_country_id:
+                    investor_countries.add(str(i.fk_investor.fk_country_id))
         if len(target_countries) > 0 and len(investor_countries) > 0:
             if len(target_countries.symmetric_difference(investor_countries)) == 0:
                 return "domestic"
@@ -517,7 +522,7 @@ class Activity(ActivityBase):
                 return "transnational"
         elif len(target_countries) > 0 and len(investor_countries) == 0:
             # treat deals without investor country as transnational
-            return "domestic"
+            return "transnational"
         else:
             return None
 
@@ -616,7 +621,7 @@ class HistoricalActivity(ActivityBase):
     """
     public_version = models.OneToOneField(
         Activity, blank=True, null=True, related_name='historical_version')
-    history_date = models.DateTimeField(auto_now_add=True)
+    history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
     comment = models.TextField(_('Comment'), blank=True, null=True)
 

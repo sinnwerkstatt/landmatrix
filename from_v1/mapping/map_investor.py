@@ -12,19 +12,13 @@ from django.db import connections
 
 
 def get_country_for_primary_investor(pi_id):
-    activity_ids = old_editor.models.Involvement.objects.using(V1).filter(fk_primary_investor=pi_id).values_list('fk_activity', flat=True)
-    if not activity_ids or None in activity_ids:
-        return None
-
-    max_activity = max(activity_ids)
-    stakeholder_ids = list(old_editor.models.Involvement.objects.using(V1).filter(fk_activity=max_activity).order_by('-investment_ratio').values_list('fk_stakeholder', flat=True))
-    while stakeholder_ids:
-        stakeholder_with_greatest_investment_ratio = stakeholder_ids.pop(0)
-        country = get_country_id_for_stakeholder(stakeholder_with_greatest_investment_ratio)
-
-        if country:
-            return landmatrix.models.Country(country)
-
+    inv = old_editor.models.Involvement.objects.using(V1).filter(fk_primary_investor_id=pi_id)
+    if inv.count() > 0:
+        activity = inv[0].fk_activity
+        if activity:
+            target_country = old_editor.models.A_Key_Value_Lookup.objects.using(V1).filter(activity_identifier=activity.activity_identifier, key="target_country")
+            if target_country:
+                return landmatrix.models.Country.objects.using(V2).get(id=target_country[0].value)
     return None
 
 

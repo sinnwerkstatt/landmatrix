@@ -34,8 +34,7 @@ class MapActivity(MapModel):
         cursor.execute("""
 SELECT id
 FROM activities AS a
-WHERE version = (SELECT MAX(version) FROM activities WHERE activity_identifier = a.activity_identifier)
---                                                                         AND activity_identifier = 3538
+WHERE version = (SELECT max(version) FROM activities amax, status st WHERE amax.fk_status = st.id AND amax.activity_identifier = a.activity_identifier)
 ORDER BY activity_identifier
         """)
         return [id[0] for id in cursor.fetchall()]
@@ -55,13 +54,21 @@ ORDER BY activity_identifier
                 availability=version['availability'],
                 fk_status_id=version['fk_status_id'],
                 fully_updated=get_fully_updated(version['fully_updated']),
-                history_date=calculate_history_date(versions, i),
+                history_date=get_history_date(versions, i),
                 history_user=get_history_user(version)
             )
+            # Overwrite pending activity if possible
+            if new.fk_status_id in (1, 6):
+                if version['fk_status_id'] not in (1, 6):
+                    new.id = version['id']
+                    new.activity_identifier = version['activity_identifier']
+                    new.availability = version['availability']
+                    new.fk_status_id = version['fk_status_id']
+                    new.fully_updated = get_fully_updated(version['fully_updated'])
         new.save(using=V2)
 
 
-def calculate_history_date(versions, i):
+def get_history_date(versions, i):
     history_date = None
 
     try:
@@ -70,16 +77,9 @@ def calculate_history_date(versions, i):
         # Give up
         history_date = datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
     else:
-        if version.get('fully_updated'):
-            history_date = version['fully_updated']
-        elif version.get('timestamp_review'):
-            history_date = version['timestamp_review']
-            history_date = timezone.make_aware(
-                history_date, timezone.get_current_timezone())
-        else:
-            changeset = get_changeset(version)
-            if changeset:
-                history_date = changeset.timestamp
+        changeset = get_changeset(version)
+        if changeset:
+            history_date = changeset.timestamp
 
     # could not find any time information. use next newer version and
     # arbitrarily subtract 1 minute.

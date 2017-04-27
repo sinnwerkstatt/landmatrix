@@ -309,6 +309,7 @@ TWITTER_TIMELINE = {
 }
 
 ELASTICSEARCH_URL = 'http://localhost:9200/'
+ELASTICSEARCH_INDEX_NAME = 'landmatrix'
 
 # CELERY SETTINGS
 BROKER_URL = 'redis://localhost:6379/0'

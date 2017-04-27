@@ -50,12 +50,13 @@ def get_elasticsearch_properties():
 class ElasticSearch(object):
     conn = None
     url = settings.ELASTICSEARCH_URL
-    index_name = None
+    index_name = settings.ELASTICSEARCH_INDEX_NAME
     
 
-    def __init__(self, index_name='landmatrix'):
+    def __init__(self, index_name=None):
         self.conn = PyElasticSearch()
-        self.index_name = index_name
+        if index_name:
+            self.index_name = index_name
 
     def get_spatial_properties(self):
         return DealSpatialForm.base_fields.keys()

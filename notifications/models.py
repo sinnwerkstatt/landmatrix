@@ -49,7 +49,7 @@ class NotificationEmail(models.Model):
         (STATUS_ERROR, _("Error")),
     )
 
-    created_on = models.DateTimeField(auto_now_add=True,
+    created_on = models.DateTimeField(default=timezone.now,
                                       verbose_name=_("Created On"))
     sent_on = models.DateTimeField(blank=True, null=True, editable=False,
                                    verbose_name=_("Sent on"))
