@@ -6,16 +6,45 @@ from django.utils import timezone
 from django.contrib.gis.geos import (
     MultiPolygon, Polygon, GeometryCollection, GEOSGeometry,
 )
+from django.utils import timezone
+from datetime import timedelta, datetime
 
 import landmatrix.models
 from .land_observatory_objects.tags import A_Value
 from .land_observatory_objects.activity import Activity
 from .land_observatory_objects.tag_groups import A_Tag_Group
 from .map_lo_model import MapLOModel
-from .map_activity import calculate_history_date
 from from_v1.migrate import V2
 
+from .map_activity import get_changeset
 
+def get_history_date(versions, i):
+    history_date = None
+
+    try:
+        version = versions[i]
+    except IndexError:
+        # Give up
+        history_date = datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
+    else:
+        if version.get('fully_updated'):
+            history_date = version['fully_updated']
+        elif version.get('timestamp_review'):
+            history_date = version['timestamp_review']
+            history_date = timezone.make_aware(
+                history_date, timezone.get_current_timezone())
+        else:
+            changeset = get_changeset(version)
+            if changeset:
+                history_date = changeset.timestamp
+
+    # could not find any time information. use next newer version and
+    # arbitrarily subtract 1 minute.
+    if not history_date:
+        history_date = get_history_date(versions, i + 1) - timedelta(
+            minutes=1)
+
+    return history_date
 
 
 class MapLOActivities(MapLOModel):
@@ -152,7 +181,7 @@ class MapLOActivities(MapLOModel):
 
         historical_activity.activity_identifier = new.activity_identifier
         historical_activity.fk_status = cls._pending_status
-        historical_activity.history_date = calculate_history_date(versions, i)
+        historical_activity.history_date = get_history_date(versions, i)
         historical_activity.history_user_id = 75
 
         if save:

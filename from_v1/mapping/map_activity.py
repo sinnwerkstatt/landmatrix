@@ -84,7 +84,7 @@ def get_history_date(versions, i):
     # could not find any time information. use next newer version and
     # arbitrarily subtract 1 minute.
     if not history_date:
-        history_date = calculate_history_date(versions, i + 1) - timedelta(
+        history_date = get_history_date(versions, i + 1) - timedelta(
             minutes=1)
 
     return history_date
