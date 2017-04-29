@@ -175,25 +175,25 @@ SELECT DISTINCT
 --  additional joins:
     LEFT JOIN landmatrix_activityattribute         AS target_country   ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'
 LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.value AS NUMERIC) = deal_country.id
-LEFT JOIN landmatrix_activityattribute         AS attr_0                ON a.id = attr_0.fk_activity_id AND attr_0.name = 'intended_size'
-LEFT JOIN landmatrix_activityattribute         AS attr_1                ON a.id = attr_1.fk_activity_id AND attr_1.name = 'contract_size'
-LEFT JOIN landmatrix_activityattribute         AS attr_2                ON a.id = attr_2.fk_activity_id AND attr_2.name = 'production_size'
+LEFT JOIN landmatrix_activityattribute         AS attr_0                ON a.id = attr_0.fk_activity_id AND attr_0.name = 'intention'
+LEFT JOIN landmatrix_activityattribute         AS attr_1                ON a.id = attr_1.fk_activity_id AND attr_1.name = 'deal_scope'
+LEFT JOIN landmatrix_activityattribute         AS attr_2                ON a.id = attr_2.fk_activity_id AND attr_2.name = 'intention'
 LEFT JOIN landmatrix_activityattribute         AS attr_3                ON a.id = attr_3.fk_activity_id AND attr_3.name = 'intention'
-LEFT JOIN landmatrix_activityattribute         AS attr_4                ON a.id = attr_4.fk_activity_id AND attr_4.name = 'init_date'
-LEFT JOIN landmatrix_activityattribute         AS attr_5                ON a.id = attr_5.fk_activity_id AND attr_5.name = 'init_date'
-LEFT JOIN landmatrix_activityattribute         AS attr_6                ON a.id = attr_6.fk_activity_id AND attr_6.name = 'intention'
-LEFT JOIN landmatrix_activityattribute         AS attr_7                ON a.id = attr_7.fk_activity_id AND attr_7.name = 'nature'
+LEFT JOIN landmatrix_activityattribute         AS attr_4                ON a.id = attr_4.fk_activity_id AND attr_4.name = 'nature'
+LEFT JOIN landmatrix_activityattribute         AS attr_5                ON a.id = attr_5.fk_activity_id AND attr_5.name = 'intended_size'
+LEFT JOIN landmatrix_activityattribute         AS attr_6                ON a.id = attr_6.fk_activity_id AND attr_6.name = 'contract_size'
+LEFT JOIN landmatrix_activityattribute         AS attr_7                ON a.id = attr_7.fk_activity_id AND attr_7.name = 'production_size'
+LEFT JOIN landmatrix_activityattribute         AS attr_8                ON a.id = attr_8.fk_activity_id AND attr_8.name = 'nature'
+LEFT JOIN landmatrix_activityattribute         AS attr_9                ON a.id = attr_9.fk_activity_id AND attr_9.name = 'init_date'
+LEFT JOIN landmatrix_activityattribute         AS attr_10               ON a.id = attr_10.fk_activity_id AND attr_10.name = 'init_date'
 
-                    LEFT JOIN landmatrix_activityattribute AS attr_8
-                    ON (a.id = attr_8.fk_activity_id AND attr_8.name = 'target_country')
+                    LEFT JOIN landmatrix_activityattribute AS attr_11
+                    ON (a.id = attr_11.fk_activity_id AND attr_11.name = 'target_country')
 
 
-                    LEFT JOIN landmatrix_country AS ac8
-                    ON CAST(NULLIF(attr_8.value, '0') AS NUMERIC) = ac8.id
+                    LEFT JOIN landmatrix_country AS ac11
+                    ON CAST(NULLIF(attr_11.value, '0') AS NUMERIC) = ac11.id
 
-LEFT JOIN landmatrix_activityattribute         AS attr_9                ON a.id = attr_9.fk_activity_id AND attr_9.name = 'intention'
-LEFT JOIN landmatrix_activityattribute         AS attr_10               ON a.id = attr_10.fk_activity_id AND attr_10.name = 'nature'
-LEFT JOIN landmatrix_activityattribute         AS attr_11               ON a.id = attr_11.fk_activity_id AND attr_11.name = 'deal_scope'
 
     WHERE
         a.fk_status_id IN (2, 3)
@@ -201,18 +201,18 @@ AND a.is_public = 't'
 --  additional where conditions:
 
 --  filter sql:
-        AND (((CAST(COALESCE(NULLIF(attr_0.value, ''), '0') AS FLOAT) >= 200) OR
-(CAST(COALESCE(NULLIF(attr_1.value, ''), '0') AS FLOAT) >= 200) OR
-(CAST(COALESCE(NULLIF(attr_2.value, ''), '0') AS FLOAT) >= 200)) AND
-((attr_3.value NOT IN ('Oil / Gas extraction') OR attr_3.value IS NULL)) AND
-((attr_4.value > '1999-12-31') OR
-(attr_5.value IS NULL)) AND
-(((attr_6.value NOT IN ('Forest logging / management') OR attr_6.value IS NULL)) OR
-((attr_7.value NOT IN ('Concession') OR attr_7.value IS NULL))) AND
-ac8.high_income = 'f' AND
-(((attr_9.value NOT IN ('Mining') OR attr_9.value IS NULL))) AND
-(((attr_10.value NOT IN ('Pure contract farming') OR attr_10.value IS NULL))) AND
-a.deal_scope = 'transnational')
+        AND ((((attr_0.value NOT IN ('Mining') OR attr_0.value IS NULL))) AND
+a.deal_scope = 'transnational' AND
+((attr_2.value NOT IN ('Oil / Gas extraction') OR attr_2.value IS NULL)) AND
+(((attr_3.value NOT IN ('Forest logging / management') OR attr_3.value IS NULL)) OR
+((attr_4.value NOT IN ('Concession') OR attr_4.value IS NULL))) AND
+((CAST(COALESCE(NULLIF(attr_5.value, ''), '0') AS FLOAT) >= 200) OR
+(CAST(COALESCE(NULLIF(attr_6.value, ''), '0') AS FLOAT) >= 200) OR
+(CAST(COALESCE(NULLIF(attr_7.value, ''), '0') AS FLOAT) >= 200)) AND
+(((attr_8.value NOT IN ('Pure contract farming') OR attr_8.value IS NULL))) AND
+(a.init_date > '1999-12-31' OR
+a.init_date IS NULL) AND
+ac11.high_income = 'f')
         """
         cursor = connections['default'].cursor()
         cursor.execute(sql)
