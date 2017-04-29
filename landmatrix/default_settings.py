@@ -87,8 +87,6 @@ INSTALLED_APPS += (
 
     'jstemplate',
 
-#   to check test coverage
-    'coverage',
     #'simple_history',
     'django_extensions',
     'crispy_forms',

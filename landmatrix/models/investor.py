@@ -46,7 +46,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         STATUS_TO_DELETE, _('To delete'),
     )
     INVESTOR_IDENTIFIER_DEFAULT = 2147483647  # max safe int
-    OPERATIONAL_COMPANY_CLASSIFICATIONS = (
+    STAKEHOLDER_CLASSIFICATIONS = (
         ('10', _("Private company")),
         ('20', _("Stock-exchange listed company")),
         ('30', _("Individual entrepreneur")),
@@ -69,7 +69,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         ('210', _("Non - Profit organization (e.g. Church, University etc.)")),
     )
     CLASSIFICATION_CHOICES = (
-        OPERATIONAL_COMPANY_CLASSIFICATIONS + INVESTOR_CLASSIFICATIONS
+        STAKEHOLDER_CLASSIFICATIONS + INVESTOR_CLASSIFICATIONS
     )
     PARENT_RELATION_CHOICES = (
         ('Subsidiary', _("Subsidiary of parent company")),

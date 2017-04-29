@@ -1,22 +1,16 @@
-from copy import copy, deepcopy
 import datetime
 import re
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.datastructures import SortedDict, MultiValueDict
 from django import forms
-from django.utils.html import conditional_escape
-from django.utils.encoding import force_text
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-#from crispy_forms.helper import FormHelper
-
-from landmatrix.models.activity_attribute_group import ActivityAttributeGroup
-from landmatrix.models.comment import Comment
 from grid.fields import (
     NestedMultipleChoiceField, YearBasedField, MultiCharField, ActorsField,
+    AreaField
 )
+
 
 class BaseForm(forms.Form):
     DEBUG = False
@@ -34,29 +28,8 @@ class BaseForm(forms.Form):
             # New tag group?
             if n.startswith('tg_') and not n.endswith('_comment'):
                 continue
-                #if n.endswith('_comment'):
-                    #raise NotImplementedError('Comment')
-                    #comment = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n, None)
-                    #if comment:
-                    #    activity["comment"] = comment
-                #else:
-                    #if activity["main_tag"]["value"] and (attributes or activity["comment"]):
-                    #    attributes.append(deepcopy(activity))
-                    #activity["main_tag"]["value"] = n[3:]
-                    #attributes = []
-                    #activity["comment"] = ""
-                #if n == "investment_ratio":
-                #    activity["investment_ratio"] = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-                # don't add choices for select fields, they're always the same
-                #elif isinstance(f, UserModelChoiceField):
-                #    value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
-                #    if value:
-                #        tag["value"] = value
-                #        attributes.append(tag)
             if isinstance(f, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
                 # Create tags for each value
-                #tag["op"] = "select"
-                a = self.data
                 value = self.data.getlist(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
                 values = []
                 for v in list(value):
@@ -80,12 +53,7 @@ class BaseForm(forms.Form):
                 if values:
                     attributes[name] = values
             elif isinstance(f, forms.ChoiceField):
-                #tag["op"] = "select"
                 value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-#                if activity["main_tag"]["value"] == "investor":
-#                    raise IOError, self.data
-#                if activity["main_tag"]["value"] == "investor" and value:
-#                    raise IOError, n
                 # quickfix for receiving 'Non' as a value FIXME
                 if value and value != "0" and value != "Non":
                     if name in ("investor", "primary_investor"):
@@ -151,9 +119,6 @@ class BaseForm(forms.Form):
                 value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
                 if value:
                     attributes[name] = {'value': value}
-            #if i == len(self.fields.items())-1:
-            #    if activity["main_tag"]["value"] and (attributes or activity["comment"]):
-            #        attributes.append(deepcopy(activity))
         return attributes
 
     @classmethod
@@ -333,6 +298,8 @@ class BaseForm(forms.Form):
                 value = self.get_display_value_model_choice_field(field, field_name)
             elif isinstance(field, forms.ChoiceField):
                 value = self.get_display_value_choice_field(field, field_name)
+            elif isinstance(field, AreaField):
+                value = None
             elif isinstance(field, forms.MultiValueField):
                 value = self.get_display_value_multi_value_field(field, field_name)
             elif isinstance(field, forms.FileField):
@@ -504,12 +471,6 @@ class BaseForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(BaseForm, self).__init__(*args, **kwargs)
-        #self.helper = FormHelper()
-        #self.helper.form_method = 'post'
-        #self.helper.form_tag = False
-        #self.helper.form_class = 'form-horizontal'
-        #self.helper.label_class = 'col-sm-2'
-        #self.helper.field_class = 'col-sm-8'
 
         if self.DEBUG:
             print(self.__class__.__name__, args)

@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
-from grid.forms.investor_form import InvestorForm, OperationalCompanyForm
+from grid.forms.investor_form import InvestorForm, StakeholderForm, OperationalCompanyForm
 from grid.forms.parent_stakeholder_formset import (
     ParentStakeholderFormSet, ParentInvestorFormSet,
 )
@@ -24,12 +24,12 @@ class StakeholderFormsMixin:
                 role = 'operational_stakeholder'
             else:
                 role = 'parent_investor'
-        if role == 'operational_stakeholder':
-            form_class = OperationalCompanyForm
+        if role == 'parent_investor':
+            return InvestorForm
+        elif role == 'parent_stakeholder':
+            return StakeholderForm
         else:
-            form_class = InvestorForm
-
-        return form_class
+            return OperationalCompanyForm
 
     def get_formset_kwargs(self):
         kwargs = {}

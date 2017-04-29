@@ -5,13 +5,9 @@ from from_v1.migrate import V1, V2, load_project, BASE_PATH
 from from_v1.mapping.map_model import MapModel
 
 
-from old_editor.models import Language
-
-
 class MapTagGroups(MapModel):
 
     key_value_lookup = None
-    language = Language.objects.using(V1).get(pk=1)
 
     @classmethod
     def map_all(cls, save=False, verbose=False):

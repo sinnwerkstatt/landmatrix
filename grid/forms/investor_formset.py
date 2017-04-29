@@ -11,8 +11,6 @@ from landmatrix.models.country import Country
 from grid.forms.investor_form import InvestorForm
 
 
-
-
 BaseInvestorFormSet = formset_factory(InvestorForm, extra=1)
 
 

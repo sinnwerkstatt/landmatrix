@@ -3,17 +3,14 @@ from django.db.models.fields import BLANK_CHOICE_DASH
 from django import forms
 
 from landmatrix.models.investor import Investor
-from landmatrix.models.status import Status
 from grid.forms.base_model_form import BaseModelForm
 from grid.widgets import CommentInput
 
 
-
-
 INVESTOR_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
     Investor.INVESTOR_CLASSIFICATIONS)
-OPERATIONAL_STAKEHOLDER_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
-    Investor.OPERATIONAL_COMPANY_CLASSIFICATIONS)
+STAKEHOLDER_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
+    Investor.STAKEHOLDER_CLASSIFICATIONS)
 
 
 # TODO: move to fields.
@@ -67,7 +64,13 @@ class InvestorForm(InvestorFormBase):
         )
 
 
+class StakeholderForm(InvestorForm):
+    classification = forms.ChoiceField(
+        required=False, label=_("Classification"),
+        choices=STAKEHOLDER_CLASSIFICATION_CHOICES)
+
+
 class OperationalCompanyForm(InvestorFormBase):
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
-        choices=OPERATIONAL_STAKEHOLDER_CLASSIFICATION_CHOICES)
+        choices=STAKEHOLDER_CLASSIFICATION_CHOICES)
