@@ -33,6 +33,8 @@ class Command(BaseCommand):
         missing_deals['status'] = []
         missing_deals['unknown'] = []
         additional_deals = OrderedDict()
+        additional_deals['no_inv'] = []
+        additional_deals['oc_only'] = []
         additional_deals['unknown'] = []
 
         for deal_id in missing:
@@ -45,7 +47,13 @@ class Command(BaseCommand):
 
         for deal_id in additional:
             a = Activity.objects.get(activity_identifier=deal_id)
-            additional_deals['unknown'].append(a)
+            inv = a.investoractivityinvolvement_set.all()
+            if inv.count() == 0:
+                additional_deals['no_inv'].append(a)
+            elif inv[0].fk_investor.venture_involvements.count() == 0:
+                additional_deals['oc_only'].append(a)
+            else:
+                additional_deals['unknown'].append(a)
 
         for key, value in missing_deals.items():
             self.stdout.write('-- MISSING: %i %s deals:' % (len(value), key))
