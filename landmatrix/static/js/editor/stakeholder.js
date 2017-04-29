@@ -260,7 +260,6 @@ function createInvestorNetwork() {
           var inv = d.involvement;
           text = (d.parent_type == "investor" && "Parent investor" || "Parent company"); 
           text += inv.percentage && " ("+inv.percentage+"%"+(inv.investment_type && " "+inv.investment_type || "")+")" || "";
-
         } else {
           text = "Operational company";
         }
@@ -278,15 +277,31 @@ function createInvestorNetwork() {
     .on("click", function (d) {
         var modal = $('#stakeholder');
         modal.find('.modal-header h4').text(d.name);
-        var inv = d.involvement;
-        var data = [
-            inv.loans_amount && inv.loans_amount + inv.loans_currency + (inv.loans_date && " ("+inv.loans_date+")"),
-            inv.comment,
-            d.parent_relation,
-            d.homepage && '<a target="_blank" href="'+d.homepage+'">'+d.homepage+'</a>',
-            d.opencorporates_link && '<a target="_blank" href="'+d.opencorporates_link+'">'+d.opencorporates_link+'</a>',
-            d.comment,
-          ].filter(function (val) {return val;}).join('<br>'); 
+        if (d.involvement) {
+            var inv = d.involvement;
+            var data = [
+                (d.parent_type == "investor" && "Parent investor" || "Parent company") +
+                (inv.percentage && " (" + inv.percentage + "%" + (inv.investment_type && " " + inv.investment_type || "") + ")" || ""),
+                d.classification,
+                d.country,
+                inv.loans_amount && inv.loans_amount + inv.loans_currency + (inv.loans_date && " (" + inv.loans_date + ")"),
+                inv.comment,
+                d.parent_relation,
+                d.homepage && '<a target="_blank" href="' + d.homepage + '">' + d.homepage + '</a>',
+                d.opencorporates_link && '<a target="_blank" href="' + d.opencorporates_link + '">' + d.opencorporates_link + '</a>',
+                d.comment,
+            ];
+        } else {
+            data = [
+                d.classification,
+                d.country,
+                d.parent_relation,
+                d.homepage,
+                d.opencorporates_link,
+                d.comment,
+            ]
+        }
+        data = data.filter(function (val) {return val;}).join('<br>');
         modal.find('.modal-body p').html(data);
         modal.modal("show");
     });

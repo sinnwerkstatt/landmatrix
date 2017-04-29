@@ -26,7 +26,7 @@ $(document).ready(function () {
       addText: '<i class="icon-plus"></i> {% trans "Add investor" %}',
       addCssClass: 'btn add-row',
       deleteText: '<i class="icon-remove"></i> {% trans "Remove investor" %}',
-      deleteCssClass: 'btn delete-row',
+          deleteCssClass: 'btn delete-row',
       formTemplate: '.empty',
       added: function (row) {
         $(row).removeClass('empty').show();
