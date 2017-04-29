@@ -16,8 +16,8 @@ class Command(BaseCommand):
     #    parser.add_argument('file', nargs='+', type=str)
 
     def handle(self, *args, **options):
-        old = self.get_old_activities()
-        new = self.get_new_activities()
+        old = self.get_old_activities() or []
+        new = self.get_new_activities() or []
         #with open(options['file'][0], 'r') as csvfile:
         #    reader = csv.reader(csvfile, delimiter=';')
         #    for i, row in enumerate(reader):
@@ -158,34 +158,36 @@ AND deal_scope.value = 'transnational'
 
     def get_new_activities(self):
         sql = """
-    SELECT DISTINCT
+ SELECT DISTINCT
         a.id,
-        a.activity_identifier,
 --  subquery columns:
+        a.activity_identifier,
         a.negotiation_status AS negotiation_status
     FROM landmatrix_activity                       AS a
 --  additional joins:
     LEFT JOIN landmatrix_activityattribute         AS target_country   ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'
 LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.value AS NUMERIC) = deal_country.id
-LEFT JOIN landmatrix_activityattribute         AS attr_0                ON a.id = attr_0.fk_activity_id AND attr_0.name = 'negotiation_status'
-LEFT JOIN landmatrix_activityattribute         AS attr_1                ON a.id = attr_1.fk_activity_id AND attr_1.name = 'implementation_status'
-LEFT JOIN landmatrix_activityattribute         AS attr_2                ON a.id = attr_2.fk_activity_id AND attr_2.name = 'negotiation_status'
-LEFT JOIN landmatrix_activityattribute         AS attr_3                ON a.id = attr_3.fk_activity_id AND attr_3.name = 'implementation_status'
-LEFT JOIN landmatrix_activityattribute         AS attr_4                ON a.id = attr_4.fk_activity_id AND attr_4.name = 'nature'
-LEFT JOIN landmatrix_activityattribute         AS attr_5                ON a.id = attr_5.fk_activity_id AND attr_5.name = 'intended_size'
-LEFT JOIN landmatrix_activityattribute         AS attr_6                ON a.id = attr_6.fk_activity_id AND attr_6.name = 'contract_size'
-LEFT JOIN landmatrix_activityattribute         AS attr_7                ON a.id = attr_7.fk_activity_id AND attr_7.name = 'production_size'
-LEFT JOIN landmatrix_activityattribute         AS attr_8                ON a.id = attr_8.fk_activity_id AND attr_8.name = 'deal_scope'
-LEFT JOIN landmatrix_activityattribute         AS attr_9                ON a.id = attr_9.fk_activity_id AND attr_9.name = 'intention'
-LEFT JOIN landmatrix_activityattribute         AS attr_10               ON a.id = attr_10.fk_activity_id AND attr_10.name = 'intention'
+LEFT JOIN landmatrix_activityattribute         AS attr_0                ON a.id = attr_0.fk_activity_id AND attr_0.name = 'intended_size'
+LEFT JOIN landmatrix_activityattribute         AS attr_1                ON a.id = attr_1.fk_activity_id AND attr_1.name = 'contract_size'
+LEFT JOIN landmatrix_activityattribute         AS attr_2                ON a.id = attr_2.fk_activity_id AND attr_2.name = 'production_size'
+LEFT JOIN landmatrix_activityattribute         AS attr_3                ON a.id = attr_3.fk_activity_id AND attr_3.name = 'intention'
+LEFT JOIN landmatrix_activityattribute         AS attr_4                ON a.id = attr_4.fk_activity_id AND attr_4.name = 'negotiation_status'
+LEFT JOIN landmatrix_activityattribute         AS attr_5                ON a.id = attr_5.fk_activity_id AND attr_5.name = 'implementation_status'
+LEFT JOIN landmatrix_activityattribute         AS attr_6                ON a.id = attr_6.fk_activity_id AND attr_6.name = 'implementation_status'
+LEFT JOIN landmatrix_activityattribute         AS attr_7                ON a.id = attr_7.fk_activity_id AND attr_7.name = 'negotiation_status'
+LEFT JOIN landmatrix_activityattribute         AS attr_8                ON a.id = attr_8.fk_activity_id AND attr_8.name = 'intention'
+LEFT JOIN landmatrix_activityattribute         AS attr_9                ON a.id = attr_9.fk_activity_id AND attr_9.name = 'nature'
 
-                    LEFT JOIN landmatrix_activityattribute AS attr_11
-                    ON (a.id = attr_11.fk_activity_id AND attr_11.name = 'target_country')
+                    LEFT JOIN landmatrix_activityattribute AS attr_10
+                    ON (a.id = attr_10.fk_activity_id AND attr_10.name = 'target_country')
 
 
-                    LEFT JOIN landmatrix_country AS ac11
-                    ON CAST(NULLIF(attr_11.value, '0') AS NUMERIC) = ac11.id
+                    LEFT JOIN landmatrix_country AS ac10
+                    ON CAST(NULLIF(attr_10.value, '0') AS NUMERIC) = ac10.id
 
+LEFT JOIN landmatrix_activityattribute         AS attr_11               ON a.id = attr_11.fk_activity_id AND attr_11.name = 'intention'
+LEFT JOIN landmatrix_activityattribute         AS attr_12               ON a.id = attr_12.fk_activity_id AND attr_12.name = 'nature'
+LEFT JOIN landmatrix_activityattribute         AS attr_13               ON a.id = attr_13.fk_activity_id AND attr_13.name = 'deal_scope'
 
     WHERE
         a.fk_status_id IN (2, 3)
@@ -193,18 +195,20 @@ AND a.is_public = 't'
 --  additional where conditions:
 
 --  filter sql:
-        AND (((a.init_date > '1999-12-31') OR
-(a.init_date IS NULL)) AND
-(((attr_4.value NOT IN ('Pure contract farming') OR attr_4.value IS NULL))) AND
-((CAST(COALESCE(NULLIF(attr_5.value, ''), '0') AS FLOAT) >= 200) OR
-(CAST(COALESCE(NULLIF(attr_6.value, ''), '0') AS FLOAT) >= 200) OR
-(CAST(COALESCE(NULLIF(attr_7.value, ''), '0') AS FLOAT) >= 200)) AND
-a.deal_scope = 'transnational'
-                 AND
-(((attr_9.value NOT IN ('Resource extraction') OR attr_9.value IS NULL))) AND
-(((attr_10.value NOT IN ('Logging') OR attr_10.value IS NULL))) AND
-ac11.high_income = 'f')
--- additional subquery options:
+        AND (((CAST(COALESCE(NULLIF(attr_0.value, ''), '0') AS FLOAT) >= 200) OR
+(CAST(COALESCE(NULLIF(attr_1.value, ''), '0') AS FLOAT) >= 200) OR
+(CAST(COALESCE(NULLIF(attr_2.value, ''), '0') AS FLOAT) >= 200)) AND
+((attr_3.value NOT IN ('Oil / Gas extraction') OR attr_3.value IS NULL)) AND
+((attr_4.date IS NULL) OR
+(attr_5.date IS NULL) OR
+(attr_6.date > '1999-12-31') OR
+(attr_7.date > '1999-12-31')) AND
+(((attr_8.value NOT IN ('Forest logging / management') OR attr_8.value IS NULL)) OR
+((attr_9.value NOT IN ('Concession') OR attr_9.value IS NULL))) AND
+ac10.high_income = 'f' AND
+(((attr_11.value NOT IN ('Mining') OR attr_11.value IS NULL))) AND
+(((attr_12.value NOT IN ('Pure contract farming') OR attr_12.value IS NULL))) AND
+a.deal_scope = 'transnational')
         """
         cursor = connections['default'].cursor()
         cursor.execute(sql)

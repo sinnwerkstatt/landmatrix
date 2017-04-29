@@ -7,10 +7,10 @@ from django.template.defaultfilters import slugify
 class Top10InvestorCountriesQuerySet(FakeQuerySetWithSubquery):
 
     FIELDS = [
-        ('investor_country', 'investor_country'),
+        ('investor_country',    'investor_country'),
         ('investor_country_id', 'investor_country_id'),
-        ('hectares',          "COALESCE(ROUND(SUM(a.deal_size)), 0)"),
-        ('deals',         'COUNT(DISTINCT a.activity_identifier)'),
+        ('hectares',            "COALESCE(ROUND(SUM(a.deal_size)), 0)"),
+        ('deals',               'COUNT(DISTINCT a.activity_identifier)'),
     ]
     SUBQUERY_FIELDS = [
         ('investor_country', 'investor_country.name'),

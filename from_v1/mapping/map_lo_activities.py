@@ -18,6 +18,7 @@ from from_v1.migrate import V2
 
 from .map_activity import get_changeset
 
+
 def get_history_date(versions, i):
     history_date = None
 
