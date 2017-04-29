@@ -296,8 +296,8 @@ function createInvestorNetwork() {
                 d.classification,
                 d.country,
                 d.parent_relation,
-                d.homepage,
-                d.opencorporates_link,
+                d.homepage && '<a target="_blank" href="' + d.homepage + '">' + d.homepage + '</a>',
+                d.opencorporates_link && '<a target="_blank" href="' + d.opencorporates_link + '">' + d.opencorporates_link + '</a>',comm
                 d.comment,
             ]
         }
