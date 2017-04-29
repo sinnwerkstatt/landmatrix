@@ -47,7 +47,6 @@ ORDER BY activity_identifier
 
         versions = get_activity_versions(new)
         for i, version in enumerate(versions):
-            #if not version['id'] == new.id:
             landmatrix.models.HistoricalActivity.objects.create(
                 id=version['id'],
                 activity_identifier=version['activity_identifier'],
@@ -57,14 +56,14 @@ ORDER BY activity_identifier
                 history_date=get_history_date(versions, i),
                 history_user=get_history_user(version)
             )
-            # Overwrite pending activity if possible
-            if new.fk_status_id in (1, 6):
-                if version['fk_status_id'] not in (1, 6):
-                    new.id = version['id']
-                    new.activity_identifier = version['activity_identifier']
-                    new.availability = version['availability']
-                    new.fk_status_id = version['fk_status_id']
-                    new.fully_updated = get_fully_updated(version['fully_updated'])
+            # Overwrite with latest active
+            if version['fk_status_id'] not in (1, 5, 6):
+                new.id = version['id']
+                new.activity_identifier = version['activity_identifier']
+                new.availability = version['availability']
+                new.fk_status_id = version['fk_status_id']
+                new.fully_updated = get_fully_updated(version['fully_updated'])
+
         new.save(using=V2)
 
 
