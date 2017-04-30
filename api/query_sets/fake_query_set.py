@@ -13,13 +13,11 @@ from api.query_sets.sql_generation.filter_to_sql import FilterToSQL
 from api.filters import load_filters, load_statuses_from_url
 
 
-
-
 class FakeModel(dict):
     pk = None
 
 
-class FakeQuerySet(QuerySet):
+class FakeQuerySet(object):
 
     DEBUG = False
 

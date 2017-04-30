@@ -560,11 +560,6 @@ class WagtailPage(TranslationMixin, Page):
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [StreamFieldPanel('body')]
 
-    def serve(self, request):
-        # Reset country/region blocks, since they might have been set
-        # by a region/country page that has been called just before
-        _update_country_region_structs(self.body.stream_block)
-        return super().serve(request)
 
 class RegionIndex(TranslationMixin, Page):
     template = 'wagtailcms/region_page.html'
