@@ -1,4 +1,4 @@
-Django < 1.9
+Django < 1.10
 django-tastypie >= 0.12.1
 
 pip >= 7.0.3
@@ -13,9 +13,9 @@ django-classy-tags >= 0.6.1
 
 django-bootstrap3-datetimepicker-2==2.4.2
 
-wagtail==1.3.1
-wagtail-blog==1.6.5
-git+git://github.com/sinnwerkstatt/wagtail-modeltranslation.git@translatable-streamfields
+wagtail-blog
+wagtail==1.9
+git+git://github.com/sinnwerkstatt/wagtail-modeltranslation.git@django1.9
 coverage >= 3.7
 xlwt >= 1.1.2
 python-mimeparse >= 0.1.4
@@ -41,5 +41,5 @@ django-jstemplate==1.3.8
 pyelasticsearch
 celery[redis]
 geojson==1.3.4
-libmysqlclient
-pylibmc
+#libmysqlclient
+#pylibmc

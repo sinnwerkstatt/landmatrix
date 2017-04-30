@@ -3,7 +3,7 @@ import re
 import json
 from django.http import HttpResponse
 from django.contrib import messages
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict
 
 from grid.forms.deal_general_form import DealGeneralForm
 from api.query_sets.activity_query_set import ActivityQuerySet

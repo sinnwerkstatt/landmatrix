@@ -14,9 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 
-from django.conf import settings
-from django.conf.urls import include, url, patterns
-from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 
@@ -42,7 +40,7 @@ from landmatrix.views import *
 
 CACHE_TIMEOUT = 24*3600
 
-urlpatterns = patterns('',
+urlpatterns = [
     url('^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^impersonate/', include('impersonate.urls')),
@@ -171,11 +169,11 @@ urlpatterns = patterns('',
     url(r'^editor/', include(editor_urls)),
     #url(r'^filters$', FilterView.as_view(), name='filterdebug'),
     url(r'', include(wagtail_urls)),
-)
+]
 # Non i18n patterns
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(),
             name='ajax_widget'),
-)
+]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

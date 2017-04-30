@@ -10,7 +10,7 @@ from django.http.response import HttpResponse
 from django.views.generic import TemplateView
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict
 from django.utils.encoding import force_text
 import xlwt
 
@@ -176,7 +176,7 @@ class DealDetailExportView(DealDetailView, ExportView):
                         'field': field['label'],
                         'value': field['value']
                     })
-        headers = SortedDict()
+        headers = OrderedDict()
         headers['field'] = {'label': _('Field')}
         headers['value'] = {'label': _('Value')}
         return self.export(attributes, headers, format, filename=kwargs['deal_id'])

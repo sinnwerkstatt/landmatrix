@@ -2,7 +2,8 @@ import datetime
 import re
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.datastructures import SortedDict, MultiValueDict
+from collections import OrderedDict
+from django.utils.datastructures import MultiValueDict
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
@@ -478,7 +479,7 @@ class BaseForm(forms.Form):
             for field in self.Meta.exclude:
                 del self.fields[field]
         if hasattr(self.Meta, "fields") and self.Meta.fields:
-            fields = SortedDict()
+            fields = OrderedDict()
             for field in self.Meta.fields:
                 fields[field] = self.fields[field]
             self.fields = fields

@@ -11,14 +11,13 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 
 from api.decorators import save_filter_query_params
 from .views import *
 
 
-urlpatterns = patterns(
-    'chart.views',
+urlpatterns = [
     url(r'^$', save_filter_query_params()(ChartRedirectView.as_view()),
         name='charts'),
     url(
@@ -120,4 +119,4 @@ urlpatterns = patterns(
         r'^intention-agriculture\.pdf$',
         save_filter_query_params()(IntentionAgricultureChartView.as_view()),
         {'format': 'PDF'}, name='chart_intention_agriculture_pdf'),
-)
+]

@@ -1,4 +1,4 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import RedirectView
 
@@ -11,8 +11,7 @@ from editor.views import (
 )
 
 
-urlpatterns = patterns(
-    'editor.views',
+urlpatterns = [
     url(r'^$', DashboardView.as_view(), name='editor'),
     url(
         r'^manage/feedback/', ManageFeedbackView.as_view(),
@@ -64,4 +63,4 @@ urlpatterns = patterns(
         login_required(
             RedirectView.as_view(pattern_name='log_added', permanent=False)),
         name='log'),
-)
+]

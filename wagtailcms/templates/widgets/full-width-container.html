@@ -1,10 +1,10 @@
-	</div><!-- close block wrapper -->
+{% load wagtailcore_tags %}	</div><!-- close block wrapper -->
 </div>
 <div class="fullwidth fullwidth-{{ color }}">
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
-				{{ content|safe }}
+				{% include_block content %}
 			</div>
 		</div>
 	</div>

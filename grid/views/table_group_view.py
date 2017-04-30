@@ -16,7 +16,7 @@ from .view_aux_functions import render_to_response, get_field_label
 from grid.forms.choices import intention_choices, \
     INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP, \
     grouped_intention_choices
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict
 from django.template.defaultfilters import slugify
 from wagtailcms.models import WagtailRootPage
 
@@ -215,7 +215,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             'operational_company_opencorporates_link': _("Operational company Opencorporates link"),
             'operational_company_comment': _("Additional comment on Operational company"),
         }
-        columns = SortedDict()
+        columns = OrderedDict()
         for name in self.columns:
             label = None
             if name in COLUMN_LABELS_MAP.keys():
@@ -256,7 +256,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             # Add extra lines for groups (agriculture and forestry)
             items = []
             for group_name, choices in grouped_intention_choices:
-                group = SortedDict()
+                group = OrderedDict()
                 group['intention'] = [{'value': group_name, 'slug':slugify(group_name)},]
                 group['deal_count'] = 0
                 group['availability'] = 0
@@ -271,7 +271,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
                         group['availability'] += item['availability']
                         group['availability_count'] += 1
                     else:
-                        item = SortedDict()
+                        item = OrderedDict()
                         item['intention'] = [{'value': choice_label, 'slug':slugify(choice_label), 'parent': group},]
                         item['deal_count'] = 0
                         item['availability'] = 0
@@ -285,7 +285,7 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
 
     def _get_row(self, record, query_result):
         # iterate over database result
-        row = SortedDict()
+        row = OrderedDict()
         for j, c in enumerate(self.columns):
             # iterate over columns relevant for view or download
             value = record[j+1]

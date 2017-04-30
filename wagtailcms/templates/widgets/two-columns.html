@@ -1,14 +1,14 @@
-<div class="row widget-columns-2">
+{% load wagtailcore_tags %}<div class="row widget-columns-2">
 
 	<div class="col-sm-6 col">
 
-		{{ left_column|safe }}
+		{% include_block left_column %}
 
 	</div>
 
 	<div class="col-sm-6 col">
 
-		{{ right_column|safe }}
+		{% include_block right_column %}
 
 	</div>
 

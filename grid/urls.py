@@ -1,4 +1,4 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 
 from api.decorators import save_filter_query_params
 from grid.views import *
@@ -6,7 +6,7 @@ from grid.views import *
 
 CACHE_TIMEOUT = 24*3600
 
-urlpatterns = patterns('grid.views',
+urlpatterns = [
     # please leave them here, commented out, for quick cache de-/activation when developing
     # url(r'^$', AllDealsView.as_view(), name='app_main'),
     # url(r'^(?P<group>.+)/(?P<list>.+)/$', TableGroupView.as_view(), name='table_list'),
@@ -43,4 +43,4 @@ urlpatterns = patterns('grid.views',
         save_filter_query_params()(TableGroupView.as_view()),
         name='table_list'
     ),
-)
+]

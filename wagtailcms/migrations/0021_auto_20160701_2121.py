@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(wagtail_modeltranslation.models.TranslationMixin, wagtailcms.models.SplitMultiLangTabsMixin, 'wagtailcore.page'),
+            bases=(wagtail_modeltranslation.models.TranslationMixin, 'wagtailcore.page'),
         ),
         migrations.CreateModel(
             name='RegionPage',
@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(wagtail_modeltranslation.models.TranslationMixin, wagtailcms.models.SplitMultiLangTabsMixin, 'wagtailcore.page'),
+            bases=(wagtail_modeltranslation.models.TranslationMixin, 'wagtailcore.page'),
         ),
         migrations.RemoveField(
             model_name='country',
