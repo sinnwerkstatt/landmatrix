@@ -292,7 +292,7 @@ class InvestorVentureInvolvement(models.Model):
         "Currency", verbose_name=_("Loan currency"), blank=True, null=True)
     loans_date = models.CharField("Loan date", max_length=10, blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
-    fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
+    fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
     timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
 
     objects = InvestorVentureQuerySet.as_manager()
