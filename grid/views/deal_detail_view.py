@@ -167,7 +167,8 @@ def get_forms(activity, prefix=None):
 
 
 def get_form(activity, form_class, prefix=None):
-    prefix = hasattr(form_class[1], 'prefix') and (prefix + form_class[1].prefix) or prefix
+    if hasattr(form_class[1], 'prefix') and form_class[1].prefix:
+        prefix = prefix + form_class[1].prefix
     data = form_class[1].get_data(activity, prefix=prefix)
     return form_class[1](initial=data, prefix=prefix)
 
