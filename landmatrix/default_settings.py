@@ -59,7 +59,7 @@ INSTALLED_APPS += (
     'tastypie',
 
     #'debug_toolbar',
-    'template_timings_panel',
+    #'template_timings_panel',
 
     # wagtail and dependencies
     'wagtail.wagtailforms',
