@@ -342,31 +342,34 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 
 var numeric_operators = ["lt", "gt", "gte", "lte", "is", "is_empty"];
 var string_operators = ["not_in", "in", "is", "contains"];
-var list_operators = ["not_in", "in", "is", "is_empty"];
+var date_operators = ["lt", "gt", "gte", "lte", "is", "is_empty"];
+var list_operators = ["not_in", "in", "is", "is_empty", "contains"];
 /**
  *  updates the filter widget for the grid view if the field to filter by is changed
  */
-function update_widget(el, key_id, form) {
-    var value = form.find("input[type='hidden']").val(),
-        name = el.find(":input").attr("name"),
-        op = el.parents("li").prev().find("option:selected"),
-        op_value = op.val();
-    name = name.replace("_0", "");
-    $.get("/ajax/widget/values", {key_id: key_id, value: value, name: name, operation: op_value}, function (data) {
-        el.html(data);
-        var is_number = (el.find(":input[type=number]:not(.year-based-year)").length > 0);
-        var is_list = (el.find("select,ul").length > 0);
-        form.find(".operator option").each(function (index) {
-            if (is_number) {
-                $(this).attr("disabled", (jQuery.inArray($(this).val(), numeric_operators) == -1));
-            } else if (is_list) {
-                $(this).attr("disabled", (jQuery.inArray($(this).val(), list_operators) == -1));
-            } else {
-                $(this).attr("disabled", (jQuery.inArray($(this).val(), string_operators) == -1));
-            }
-        });
-    });
-}
+//function update_widget(el, key_id, form) {
+//    var value = form.find("input[type='hidden']").val(),
+//        name = el.find(":input").attr("name"),
+//        op = el.parents("li").prev().find("option:selected"),
+//        op_value = op.val();
+//    name = name.replace("_0", "");
+//    $.get("/ajax/widget/values", {key_id: key_id, value: value, name: name, operation: op_value}, function (data) {
+//        el.html(data);
+//        var is_number = (el.find(":input[type=number]:not(.year-based-year)").length > 0);
+//        var is_list = (el.find("select,ul").length > 0);
+//        form.find(".operator option").each(function (index) {
+//            if (is_number) {
+//                $(this).attr("disabled", (jQuery.inArray($(this).val(), numeric_operators) == -1));
+//            } else if (is_list) {
+//                $(this).attr("disabled", (jQuery.inArray($(this).val(), list_operators) == -1));
+//            } else if (is_date) {
+//                $(this).attr("disabled", (jQuery.inArray($(this).val(), list_operators) == -1));
+//            } else {
+//                $(this).attr("disabled", (jQuery.inArray($(this).val(), string_operators) == -1));
+//            }
+//        });
+//    });
+//}
 
 
 function show_reply_form(event) {

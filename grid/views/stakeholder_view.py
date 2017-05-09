@@ -15,6 +15,7 @@ class StakeholderFormsMixin:
     '''
     Handle the shared form behaviour for create and update.
     '''
+
     def get_form_class(self):
         investor = self.get_object()
         # Check current role of investor
@@ -54,7 +55,7 @@ class StakeholderFormsMixin:
         kwargs = self.get_formset_kwargs()
         kwargs['prefix'] = 'parent-stakeholder-form'
 
-        queryset = self.get_venture_involvements_queryset().stakeholders()
+        queryset = self.get_venture_involvements_queryset().none()
         kwargs['queryset'] = queryset
 
         return kwargs
@@ -63,7 +64,7 @@ class StakeholderFormsMixin:
         kwargs = self.get_formset_kwargs()
         kwargs['prefix'] = 'parent-investor-form'
 
-        queryset = self.get_venture_involvements_queryset().investors()
+        queryset = self.get_venture_involvements_queryset().none()
         kwargs['queryset'] = queryset
 
         return kwargs

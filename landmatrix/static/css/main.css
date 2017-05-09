@@ -283,6 +283,9 @@
 .wagtail-userbar {
   top: 180px; }
 
+.select2-search.select2-search--dropdown {
+  width: 100% !important; }
+
 /* COLLAPSE NAVBAR EARLIER */
 @media (min-width: 768px) and (max-width: 991px) {
   .navbar-collapse.collapse {
@@ -353,6 +356,9 @@ textarea.form-control {
 .select2-container--default .select2-selection--single span.select2-selection__arrow {
   right: 10px;
   top: 10px; }
+
+.select2-dropdown {
+  font-size: 14px; }
 
 .controls > ul {
   padding: 0;
@@ -514,6 +520,9 @@ a.remove-ybd:hover {
 .control-group.parent-stakeholder-form .input-group,
 .control-group.parent-investor-form .input-group {
   width: auto; }
+
+.filtervaluebox .bootstrap-datetimepicker-widget {
+  clear: both !important; }
 
 /* Chrome-on-OSX (only!) bugfix, select fields are (weirdly) not high enough on that platform: */
 select:not([multiple]) {
@@ -723,6 +732,9 @@ small input {
 
 .toggle-filters {
   margin-left: 7px; }
+
+#filters .filter-variable .select2-container {
+  width: 100% !important; }
 
 /* ==========================================================================
  *    COLORS
@@ -1770,7 +1782,7 @@ a.btn:hover {
   padding: 0; }
 
 .breadcrumb > li,
-.breadcrumb > li > a  {
+.breadcrumb > li > a {
   text-shadow: none !important; }
 
 .breadcrumb > li > a {

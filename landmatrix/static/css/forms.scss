@@ -76,6 +76,10 @@ textarea.form-control {
   top: 10px;
 }
 
+.select2-dropdown {
+    font-size: 14px;
+}
+
 .controls > ul {
   padding: 0;
   margin: 0;
@@ -267,6 +271,10 @@ a.remove-ybd:hover {
 .control-group.parent-stakeholder-form .input-group,
 .control-group.parent-investor-form .input-group {
   width: auto;
+}
+
+.filtervaluebox .bootstrap-datetimepicker-widget {
+  clear: both !important;
 }
 
 /* Chrome-on-OSX (only!) bugfix, select fields are (weirdly) not high enough on that platform: */

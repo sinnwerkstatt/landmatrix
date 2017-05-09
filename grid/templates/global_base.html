@@ -10,60 +10,6 @@
 {% endblock %}
 {% block body_class %}{% endblock %}
 
-
-{% block nav %}
-<!-- TODO: This is duplicated? And also in bad shape for the newer bootstrap
-    <li><a class="get-the-idea toggle-tooltip bottom" title="{% trans "Get&nbsp;the&nbsp;idea" %}" href="/get-the-idea/">{% trans "Get the idea" %}</a></li>
-    <li class="active"><a class="get-the-detail toggle-tooltip bottom" title="{% trans "Get&nbsp;the&nbsp;detail" %}" href="/get-the-detail/">{% trans "Get the detail" %}</a></li>
-    <li><a class="get-involved toggle-tooltip bottom" title="{% trans "Get&nbsp;involved" %}" href="/get-involved/">{% trans "Get involved" %}</a></li>
-    <li><a class="about toggle-tooltip bottom" title="{% trans "About" %}" href="/about/">{% trans "About" %}</a></li>
--->
-{% endblock %}
-
-{% comment %}
-{% block subnav_inner %}
-<!--
-
-    <div class="row title entry-point">
-  <div class="col-md-4">
-    <h4>Entry points</h4>
-    <span class="entry-point-{{ group_slug }}">Entry point {{ group_slug }}</span>
-  </div>
-</div>
-<div class="row collapsible collapsed">
-    <ul class="nav nav-pills subnav col-md-4">
-		<li class="by-target-country {% if group_slug == "by-target-country" or group_slug == "by-target-region" %} active{% endif %}">
-            <div class="thumbnail">
-                <a href="/global/by-target-country/none/">By target country</a><br/>
-                <a href="/global/by-target-region/none/">By target region</a>
-            </div>
-        </li>
-        <li class="by-investor-country {% if group_slug == "by-stakeholder-country" or group_slug == "by-stakeholder-region" or group_slug == "by-stakeholder-name" %} active{% endif %}">
-            <div class="thumbnail">
-                <a href="/global/by-stakeholder-name/none/">By stakeholder</a><br/>
-                <a href="/global/by-stakeholder-country/none/">By stakeholder country</a><br/>
-                <a href="/global/by-stakeholder-region/none/">By stakeholder region</a>
-            </div>
-        </li>
-		<li class="by-data-source-type {% if group_slug == "by-data-source-type" %} active{% endif %}">
-            <div class="thumbnail"><a href="/global/by-data-source-type/none/">By data source type</a></div>
-        </li>
-		<li class="by-intention {% if group_slug == "by-intention" %} active{% endif %}">
-            <div class="thumbnail"><a href="/global/by-intention/none/">By intention of investment</a></div>
-        </li>
-		<li class="by-crop {% if group_slug == "by-crop" %} active{% endif %}">
-            <div class="thumbnail"><a href="/global/by-crop/none/">By crop</a></div>
-        </li>
-		<li class="all last{% if group_slug == "all" %} active{% endif %}">
-            <div class="thumbnail"><a href="/global/all/">All deals (ungrouped)</a></div>
-        </li>
-    </ul>
-</div>
-
--->
-{% endblock %}
-{% endcomment %}
-
 {% block breadcrumb %}
 <ul class="breadcrumb">
 	<li><a href="/">{% trans 'Home' %}</a></li>

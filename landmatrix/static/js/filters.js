@@ -81,7 +81,7 @@ function updateFilters(data) {
     $('h1 span').text(title_prefix + ': ' + $('h1 span').text());
     $('#filters .toggle-tooltip:not(.left,.bottom)').tooltip({placement: "top", html: true});
 
-    $("#filterrow form").hide()
+    $("#filterrow .filtercontrolbox,#filterrow .filtervaluebox").hide()
 }
 
 
@@ -112,7 +112,7 @@ function removeFilter(filterName) {
 }
 
 function createFilter(variable, label) {
-    $("#filterrow form").show()
+    $("#filterrow .filtercontrolbox,#filterrow .filtervaluebox").show()
     get_filter_options($("#filter_operator"), $("#filter_value"), variable);
     $('#filter_variable').val(variable);
     currentVariable = variable;
@@ -132,6 +132,7 @@ function get_filter_options(operatorfield, variablefield, key_id) {
         //console.log('Got this from django:', data);
         variablefield.html(data);
         var is_number = (variablefield.find(":input[type=number]:not(.year-based-year)").length > 0);
+        var is_date = (variablefield.find(".date").length > 0);
         var is_list = (variablefield.find("select,ul").length > 0);
         var is_yearbased = (variablefield.find(".year-based").length > 0);
 
@@ -154,6 +155,8 @@ function get_filter_options(operatorfield, variablefield, key_id) {
         operatorfield.find('option').each(function (index) {
             if (is_number) {
                 var state = (jQuery.inArray($(this).val(), numeric_operators) == -1);
+            } else if (is_date) {
+                var state = (jQuery.inArray($(this).val(), date_operators) == -1);
             } else if (is_list) {
                 var state = (jQuery.inArray($(this).val(), list_operators) == -1);
             } else {
@@ -181,6 +184,11 @@ $(document).ready(function () {
      $('a.intention-icon').popover({trigger: "hover", placement: "top"});
      init_form_condition($("ul.form:not(.empty) .field:first-child select"));
      */
+    var filter_variable = $('#filter_variable').select2({
+        placeholder: "Select a variable",
+    }).on('change', function(e) {
+        createFilter($(this).val(), $(this).find(':selected').text());
+    });
 
     // Get initial filter data for this session
     $.get(

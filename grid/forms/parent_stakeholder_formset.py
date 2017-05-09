@@ -1,14 +1,9 @@
 from django.utils.translation import ugettext_lazy as _
 from django import forms
-from django.forms.widgets import Select, Textarea, CheckboxSelectMultiple
 
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
-from landmatrix.models.status import Status
 from grid.fields import TitleField
 from grid.widgets import CommentInput
-
-
-investor_widget = Select(attrs={'class': 'form-control investorfield'})
 
 
 class ParentStakeholderForm(forms.ModelForm):
@@ -20,7 +15,8 @@ class ParentStakeholderForm(forms.ModelForm):
     )
     fk_investor = forms.ModelChoiceField(
         required=False, label=_("Existing parent company"),
-        queryset=Investor.objects.all(), widget=investor_widget)
+        queryset=Investor.objects.none(),
+        widget=forms.Select(attrs={'class': 'form-control investorfield'}))
     percentage = forms.DecimalField(
         required=False, max_digits=5, decimal_places=2,
         label=_("Ownership share"), help_text=_("%"))
@@ -32,9 +28,9 @@ class ParentStakeholderForm(forms.ModelForm):
         name = 'parent-company'
         model = InvestorVentureInvolvement
         fields = [
-            'tg_parent_stakeholder', 'id', 'fk_investor', 'investment_type', 'percentage', 
-            'loans_amount', 'loans_currency', 'loans_date',
-            'comment'
+            'tg_parent_stakeholder', 'id', 'fk_investor', 'investment_type', 'percentage',
+            'loans_amount', 'loans_date',
+            'comment',
         ]
 
 
@@ -47,15 +43,16 @@ class ParentInvestorForm(ParentStakeholderForm):
     )
     fk_investor = forms.ModelChoiceField(
         required=False, label=_("Existing investor"),
-        queryset=Investor.objects.all(), widget=investor_widget)
+        queryset=Investor.objects.none(),
+        widget=forms.Select(attrs={'class': 'form-control investorfield'}))
 
     class Meta:
         name = 'parent-investor'
         model = InvestorVentureInvolvement
         fields = [
-            'tg_parent_stakeholder', 'id', 'fk_investor', 'investment_type', 'percentage', 
-            'loans_amount', 'loans_currency', 'loans_date',
-            'comment'
+            'tg_parent_stakeholder', 'id', 'fk_investor', 'investment_type', 'percentage',
+            'loans_amount', 'loans_date',
+            'comment',
         ]
 
 

@@ -3,6 +3,7 @@ from django.db.models.fields import BLANK_CHOICE_DASH
 from django import forms
 
 from landmatrix.models.investor import Investor
+from landmatrix.models.country import Country
 from grid.forms.base_model_form import BaseModelForm
 from grid.widgets import CommentInput
 
@@ -27,12 +28,16 @@ class InvestorFormBase(BaseModelForm):
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
         choices=INVESTOR_CLASSIFICATION_CHOICES)
+    fk_country = forms.ModelChoiceField(
+        required=False, label=_("Country of registration/origin"),
+        queryset=Country.objects.none(),
+        widget=forms.Select(attrs={'class': 'form-control countryfield'}))
     comment = forms.CharField(
         required=False, label=_("Comment"), widget=CommentInput)
 
     class Meta:
         model = Investor
-        exclude = ('fk_status', 'subinvestors', 'investor_identifier')
+        exclude = ('fk_status', 'subinvestors', 'investor_identifier', 'timestamp')
 
     def save(self, commit=True):
         '''
@@ -60,7 +65,7 @@ class InvestorForm(InvestorFormBase):
         model = Investor
         exclude = (
             'fk_status', 'subinvestors', 'investor_identifier',
-            'parent_relation',
+            'parent_relation', 'timestamp',
         )
 
 

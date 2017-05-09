@@ -4,15 +4,6 @@ var tree_margin = {top: 0, right: 320, bottom: 0, left: 0},
     tree, tree_svg, tree_data;
 
 function init_investor_form(form) {
-    // Init buttons
-    form.find('.add-form').click(function () {
-        $(this).parents('.panel-body').find('.formset-add-form').trigger('click');
-    });
-    form.find('.remove-form').click(function () {
-        form.find('.formset-remove-form').trigger('click');
-    });
-
-
     function formatInvestor (investor) {
         return investor.text;
     }
@@ -46,9 +37,6 @@ function init_investor_form(form) {
         loadInvestorNetwork($(this).val());
     });
     generateButtons(investorfield);
-
-    form.find('.loans_date input').attr('placeholder', 'YYYY-MM-DD');
-    form.find('.loans_currency select').select2();
 }
 
 function generateButtons(field) {
@@ -114,7 +102,7 @@ function stakeholderRemoved(row) {
 
 $(document).ready(function () {
     $('.country select').select2();
-            
+
     $('.parent-companies-form').formset({
         addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
         addCssClass: 'formset-add-form hidden',
@@ -227,7 +215,7 @@ function createInvestorNetwork() {
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
   //node.append("rect");
-  var text_width = tree_svg.selectAll(".link")[0][0].getBBox().width,
+  var text_width = tree_svg.selectAll(".link")[0][0] && tree_svg.selectAll(".link")[0][0].getBBox().width || "400",
     text_padding = 10;
   function wrap() {
       var self = d3.select(this),
@@ -238,7 +226,7 @@ function createInvestorNetwork() {
           self.text(text + '...');
           textLength = self.node().getComputedTextLength();
       }
-  } 
+  }
 
   node.append("text")
       .attr("class", "name")
@@ -258,7 +246,7 @@ function createInvestorNetwork() {
         var text = "";
         if (d.involvement) {
           var inv = d.involvement;
-          text = (d.parent_type == "investor" && "Parent investor" || "Parent company"); 
+          text = (d.parent_type == "investor" && "Parent investor" || "Parent company");
           text += inv.percentage && " ("+inv.percentage+"%"+(inv.investment_type && " "+inv.investment_type || "")+")" || "";
         } else {
           text = "Operational company";
@@ -327,7 +315,7 @@ function createInvestorNetwork() {
 //    .attr("height", "1.86em")
 //    .style("fill", "#ffffff")
 //    .style("fill-opacity", 1)
-};
+}
 
 function elbow(d, i) {
   return "M" + d.source.y + "," + d.source.x

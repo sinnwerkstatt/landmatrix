@@ -5,7 +5,7 @@ from collections import OrderedDict
 from django.db import connection
 from django.utils.datastructures import MultiValueDict
 from django.http import Http404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.browse_condition import BrowseCondition
@@ -162,7 +162,7 @@ class FilterWidgetMixin:
                     filter_values['display_value'] = country.name
                 except:
                     pass
-                filter_values['name'] = _('Target country')
+                filter_values['name'] = 'country'
                 filter_values['label'] = _('Target country')
                 data.pop('country')
             elif data.get('region', None):
@@ -174,11 +174,11 @@ class FilterWidgetMixin:
                     filter_values['display_value'] = region.name
                 except:
                     pass
-                filter_values['name'] = str(_('Target region'))
+                filter_values['name'] = 'region'
                 filter_values['label'] = str(_('Target region'))
                 data.pop('region')
             # Remove existing target country/region filters
-            filters = filter(lambda f: f.get('variable') in ('target_country', 'target_region'), stored_filters.values())
+            filters = filter(lambda f: f.get('name') in ('country', 'region'), stored_filters.values())
             for stored_filter in list(filters):
                 stored_filters.pop(stored_filter['name'], None)
             if filter_values:
@@ -196,7 +196,7 @@ class FilterWidgetMixin:
     def remove_country_region_filter(self):
         stored_filters = self.request.session.get('filters', {})
         if stored_filters:
-            stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
+            stored_filters = dict(filter(lambda i: i[1].get('name', '') not in ('country', 'region'), stored_filters.items()))
         self.request.session['filters'] = stored_filters
         #stored_filters = self.request.session['filter_query_params']
         #stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
@@ -217,12 +217,10 @@ class FilterWidgetMixin:
         stored_filters = self.request.session.get('filters', {})
         if not stored_filters:
             stored_filters = {}
-        variables = []
-        preset_ids = []
         # Target country or region set?
-        variables = [v.get('variable', '') for k, v in stored_filters.items()]
+        filter_names = [v.get('name', '') for k, v in stored_filters.items()]
         preset_ids = dict([(v.get('preset_id', ''), k) for k, v in stored_filters.items()])
-        if ('target_country' in variables):
+        if ('country' in filter_names):
             # Use national presets
             for preset in FilterPreset.objects.filter(is_default_country=True):
                 if preset.id in preset_ids.keys():

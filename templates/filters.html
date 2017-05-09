@@ -74,28 +74,37 @@
                     {% endfor %}
                 </ul>
             </div>
-            <div class="col-md-3 filterbox no-pad">
-                <h6>{% trans "Create a custom filter" %}</h6>
-                <ul class="variables">
+            <form class="form" method="POST" action="./">
+                <div class="col-md-3 filterbox filter-variable controls">
+                    <h6>{% trans "Create a custom filter" %}</h6>
+                    <select id="filter_variable" name="variable">
+                        <option></option>
                     {% for group, items in variables.items %}
-                        <li>
-                            <h4>{{ group }}</h4>
-                            <ul>
-                                {% for variable in items %}
-                                    <li id="filter_{{ variable.name }}" class="filter_item"><a
-                                            href="javascript:createFilter('{{ variable.name }}', '{{ variable.label }}')"
-                                            id="filter_{{ variable.name }}_link">{% trans variable.label %}</a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
+                        <optgroup label="{{ group }}">
+                            {% for variable in items %}
+                            <option id="filter_{{ variable.name }}" class="filter_item" value="{{ variable.name }}">{% trans variable.label %}</option>
+                            {% endfor %}
+                        </optgroup>
                     {% endfor %}
-                </ul>
-            </div>
-            <form class="form" method="POST" action="./" style="display:none">
-                <div class="col-md-2 filterbox filtercontrolbox">
+                    </select>
+                    <!-- ul class="variables">
+                        {% for group, items in variables.items %}
+                            <li>
+                                <h4>{{ group }}</h4>
+                                <ul>
+                                    {% for variable in items %}
+                                        <li id="filter_{{ variable.name }}" class="filter_item"><a
+                                                href="javascript:createFilter('{{ variable.name }}', '{{ variable.label }}')"
+                                                id="filter_{{ variable.name }}_link">{% trans variable.label %}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul -->
+                </div>
+                <div class="col-md-2 filterbox filtercontrolbox" style="display:none">
                     <h6>&nbsp;</h6>
-                    <input id="filter_variable" type="hidden" name="variable" value=""/>
                     <div class="">
                         <select id="filter_operator" name="operator" class="form-control">
                             <option value="lt">{% trans "is <" %}</option>
@@ -113,7 +122,7 @@
                     <button id="filter_submit" type="submit" class="btn btn-primary" name="add"
                             value="add">{% trans "Add Filter" %}</button>
                 </div>
-                <div class="col-md-4 filtervaluebox filterbox">
+                <div class="col-md-4 filtervaluebox filterbox" style="display:none">
                     <h6>&nbsp;</h6>
                     <div class="" id="filter_value"> <!-- class="form-inline"> -->
                         <input type="text" class="form-control"/>

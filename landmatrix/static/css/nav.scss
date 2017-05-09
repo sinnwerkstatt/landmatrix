@@ -338,6 +338,10 @@
     top: 180px;
 }
 
+.select2-search.select2-search--dropdown {
+    width: 100% !important;
+}
+
 /* COLLAPSE NAVBAR EARLIER */
 @media (min-width: 768px) and (max-width: 991px) {
     .navbar-collapse.collapse {
