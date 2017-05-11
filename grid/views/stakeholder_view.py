@@ -5,13 +5,13 @@ from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
 from grid.forms.investor_form import InvestorForm, StakeholderForm, OperationalCompanyForm
-from grid.forms.parent_stakeholder_formset import (
-    ParentStakeholderFormSet, ParentInvestorFormSet,
+from grid.forms.parent_investor_formset import (
+    ParentCompanyFormSet, ParentInvestorFormSet,
 )
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 
 
-class StakeholderFormsMixin:
+class InvestorFormsMixin:
     '''
     Handle the shared form behaviour for create and update.
     '''
@@ -27,7 +27,7 @@ class StakeholderFormsMixin:
                 role = 'parent_investor'
         if role == 'parent_investor':
             return InvestorForm
-        elif role == 'parent_stakeholder':
+        elif role == 'parent_company':
             return StakeholderForm
         else:
             return OperationalCompanyForm
@@ -55,7 +55,7 @@ class StakeholderFormsMixin:
         kwargs = self.get_formset_kwargs()
         kwargs['prefix'] = 'parent-stakeholder-form'
 
-        queryset = self.get_venture_involvements_queryset().none()
+        queryset = self.get_venture_involvements_queryset().filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
         kwargs['queryset'] = queryset
 
         return kwargs
@@ -64,7 +64,7 @@ class StakeholderFormsMixin:
         kwargs = self.get_formset_kwargs()
         kwargs['prefix'] = 'parent-investor-form'
 
-        queryset = self.get_venture_involvements_queryset().none()
+        queryset = self.get_venture_involvements_queryset().filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
         kwargs['queryset'] = queryset
 
         return kwargs
@@ -75,9 +75,9 @@ class StakeholderFormsMixin:
         if 'form' not in context:
             context['form'] = self.get_form(form_class=self.get_form_class())
 
-        if 'parent_stakeholders' not in context:
+        if 'parent_companies' not in context:
             stakeholders_kwargs = self.get_stakeholders_formset_kwargs()
-            context['parent_stakeholders'] = ParentStakeholderFormSet(
+            context['parent_companies'] = ParentCompanyFormSet(
                 **stakeholders_kwargs)
 
         if 'parent_investors' not in context:
@@ -95,16 +95,16 @@ class StakeholderFormsMixin:
                 context['role'] = 'parent_investor'
         ROLE_MAP = {
             'operational_stakeholder': _('Operational company'),
-            'parent_stakeholder': _('Parent company'),
-            'parent_investor': _('Parent investor'),
+            'parent_company': _('Parent company'),
+            'parent_investor': _('Tertiary investor/lendor'),
         }
-        context['role'] = ROLE_MAP.get(role, _('Parent investor'))
+        context['role'] = ROLE_MAP.get(role, _('Tertiary investor/lendor'))
         return context
 
     def form_invalid(self, investor_form, stakeholders_formset,
                      investors_formset):
         context = self.get_context_data(
-            form=investor_form, parent_stakeholders=stakeholders_formset,
+            form=investor_form, parent_companies=stakeholders_formset,
             parent_investors=investors_formset)
         return self.render_to_response(context)
 
@@ -118,7 +118,7 @@ class StakeholderFormsMixin:
         investors_formset_kwargs = self.get_investors_formset_kwargs()
 
         investor_form = self.get_form()
-        stakeholders_formset = ParentStakeholderFormSet(
+        stakeholders_formset = ParentCompanyFormSet(
             **stakeholders_formset_kwargs)
         investors_formset = ParentInvestorFormSet(**investors_formset_kwargs)
 
@@ -134,7 +134,7 @@ class StakeholderFormsMixin:
         return response
 
 
-class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
+class ChangeStakeholderView(InvestorFormsMixin, UpdateView):
     template_name = 'stakeholder.html'
     context_object_name = 'investor'
     model = Investor
@@ -171,7 +171,7 @@ class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
             response = self.render_popup()
         else:
             context = self.get_context_data(
-                form=investor_form, parent_stakeholders=stakeholders_formset,
+                form=investor_form, parent_companies=stakeholders_formset,
                 parent_investors=investors_formset)
             response = self.render_to_response(context)
 
@@ -189,7 +189,7 @@ class ChangeStakeholderView(StakeholderFormsMixin, UpdateView):
         return HttpResponse(result)
 
 
-class AddStakeholderView(StakeholderFormsMixin, CreateView):
+class AddStakeholderView(InvestorFormsMixin, CreateView):
     model = Investor
     form_class = InvestorForm
     template_name = 'stakeholder.html'

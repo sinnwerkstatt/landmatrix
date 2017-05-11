@@ -101,55 +101,87 @@ function stakeholderRemoved(row) {
 }
 
 $(document).ready(function () {
-    $('.country select').select2();
-
-    $('.parent-companies-form').formset({
-        addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
-        addCssClass: 'formset-add-form hidden',
-        deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
-        deleteCssClass: 'formset-remove-form hidden',
-        prefix: 'parent-stakeholder-form',
-        formCssClass: 'parent-companies-form',
-        //extraClasses: ['dynamic-form'],
-        added: stakeholderAdded,
-        removed: stakeholderRemoved,
-    }).each(function () { init_investor_form($(this)); });
-    $('.parent-investors-form').formset({
-        addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
-        addCssClass: 'formset-add-form hidden',
-        deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
-        deleteCssClass: 'formset-remove-form hidden',
-        prefix: 'parent-investor-form',
-        formCssClass: 'parent-investors-form',
-        //extraClasses: ['dynamic-form'],
-        added: stakeholderAdded,
-        removed: stakeholderRemoved,
-    }).each(function () { init_investor_form($(this)); });
-
-
+    var country_select = $('.fk_country select').select2({
+        //placeholder: "",
+    });
+    var country_request = $.ajax({
+      url: '/api/countries.json'
+    });
+    var group, item, option;
+    country_request.then(function (data) {
+        country_select.data(data);
+        for (var d = 0; d < data.length; d++) {
+            group = data[d];
+            for (var o = 0; o < group.children.length; o++) {
+                item = group.children[o];
+                option = new Option(item[2], item[1], false, false);
+                country_select.append(option);
+            }
+        }
+        country_select.trigger('change');
+    });
     // Init operational company field (deal add/edit)
     $(".investorfield").each(function (index) {
-        var investorId = $(this).val();
         $(this).select2({
-            placeholder: 'Select Investor'
+            //placeholder: 'Select Investor',
+            ajax: {
+                url: '/api/investors.json',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                  return {
+                    q: params.term, // search term
+                    page: params.page
+                  };
+                },
+                processResults: function (data, params) {
+                    // parse the results into the format expected by Select2
+                    // since we are using custom formatting functions we do not need to
+                    // alter the remote JSON data, except to indicate that infinite
+                    // scrolling can be used
+                    params.page = params.page || 1;
+
+                    return {
+                      results: data.results,
+                      pagination: {
+                        more: (params.page * 30) < data.count
+                      }
+                    };
+                },
+                //cache: true
+            },
+            minimumInputLength: 3,
         });
-        /*
-         var investorId = $(this).val();
-         $(this).select2({
-         placeholder: 'Select Investor',
-         ajax: {
-         url: '/api/investors.json',
-         cache: true
-         }
-         });
-         */
-        generateButtons($(this), index);
         $(this).on('change', function () {
             generateButtons($(this), index);
             loadInvestorNetwork($(this).val());
-        });
-        loadInvestorNetwork(investorId);
+        }).trigger('change');
     });
+
+
+    // DEPRECATED?
+    //$('.parent-companies-form').formset({
+    //    addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+    //    addCssClass: 'formset-add-form hidden',
+    //    deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
+    //    deleteCssClass: 'formset-remove-form hidden',
+    //    prefix: 'parent-stakeholder-form',
+    //    formCssClass: 'parent-companies-form',
+    //    //extraClasses: ['dynamic-form'],
+    //    added: stakeholderAdded,
+    //    removed: stakeholderRemoved,
+    //}).each(function () { init_investor_form($(this)); });
+    //$('.parent-investors-form').formset({
+    //    addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+    //    addCssClass: 'formset-add-form hidden',
+    //    deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
+    //    deleteCssClass: 'formset-remove-form hidden',
+    //    prefix: 'parent-investor-form',
+    //    formCssClass: 'parent-investors-form',
+    //    //extraClasses: ['dynamic-form'],
+    //    added: stakeholderAdded,
+    //    removed: stakeholderRemoved,
+    //}).each(function () { init_investor_form($(this)); });
 });
 
 
@@ -246,7 +278,7 @@ function createInvestorNetwork() {
         var text = "";
         if (d.involvement) {
           var inv = d.involvement;
-          text = (d.parent_type == "investor" && "Parent investor" || "Parent company");
+          text = (d.parent_type == "investor" && "Tertiary investor/lendor" || "Parent company");
           text += inv.percentage && " ("+inv.percentage+"%"+(inv.investment_type && " "+inv.investment_type || "")+")" || "";
         } else {
           text = "Operational company";
@@ -268,7 +300,7 @@ function createInvestorNetwork() {
         if (d.involvement) {
             var inv = d.involvement;
             var data = [
-                (d.parent_type == "investor" && "Parent investor" || "Parent company") +
+                (d.parent_type == "investor" && "Tertiary investor/lendor" || "Parent company") +
                 (inv.percentage && " (" + inv.percentage + "%" + (inv.investment_type && " " + inv.investment_type || "") + ")" || ""),
                 d.classification,
                 d.country,

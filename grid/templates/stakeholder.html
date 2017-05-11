@@ -42,7 +42,7 @@
                 </div>
             </div>
 
-            <div class="panel panel-default{% for form in parent_stakeholders.forms %}{% if form.errors %} with-error{% endif %}{% endfor %}">
+            <div class="panel panel-default{% for form in parent_companies.forms %}{% if form.errors %} with-error{% endif %}{% endfor %}">
                 <div class="panel-heading">
                     <a data-toggle="collapse" data-parent="#accordion"
                        href="#parent_companies_body"
@@ -56,15 +56,15 @@
                 </div>
 
                 <div id="parent_companies_body"
-                     class="panel-collapse collapse{% for form in parent_stakeholders.forms %}{% if form.errors %} in{% endif %}{% endfor %}">
+                     class="panel-collapse collapse{% for form in parent_companies.forms %}{% if form.errors %} in{% endif %}{% endfor %}">
                     <div class="panel-body">
-                        {{ parent_stakeholders.management_form }}
-                        {% for form in parent_stakeholders.forms %}
-                            <div class="dynamic-form {{ parent_stakeholders.form_title|slugify }}-form{% if form.errors %} with-error{% endif %}">
+                        {{ parent_companies.management_form }}
+                        {% for form in parent_companies.forms %}
+                            <div class="dynamic-form {{ parent_companies.form_title|slugify }}-form{% if form.errors %} with-error{% endif %}">
                             {% include "form.html" with form_count=forloop.counter form=form %}
                             </div>
                         {% endfor %}
-                        {#% include 'includes/stakeholder-involvements-formset.html' with formset=parent_stakeholders %#}
+                        {#% include 'includes/stakeholder-involvements-formset.html' with formset=parent_companies %#}
                     </div>
                 </div>
             </div>
@@ -75,7 +75,7 @@
                        href="#parent_investors_body"
                        id="parent_investors">
                         <h5 class="panel-title">
-                            {% trans "Investors" %}
+                            {% trans "Tertiary investors/lendors" %}
                             <span id="collapsebtn_investors"
                                   class="lm-chevron-circle-down pull-right mgrey1"></span>
                         </h5>

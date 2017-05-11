@@ -6,7 +6,7 @@ from grid.fields import TitleField
 from grid.widgets import CommentInput
 
 
-class ParentStakeholderForm(forms.ModelForm):
+class ParentCompanyForm(forms.ModelForm):
 
     form_title = _('Parent companies')
 
@@ -24,6 +24,14 @@ class ParentStakeholderForm(forms.ModelForm):
         required=False, label=_("Comment"),
         widget=CommentInput)
 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Show given/current value only, rest happens via ajax
+        if 'fk_investor' in self.initial:
+            valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get('fk_investor', ''))
+            self.fields['fk_investor'].queryset = Investor.objects.filter(pk=valid_choice)
+
     class Meta:
         name = 'parent-company'
         model = InvestorVentureInvolvement
@@ -34,12 +42,12 @@ class ParentStakeholderForm(forms.ModelForm):
         ]
 
 
-class ParentInvestorForm(ParentStakeholderForm):
+class ParentInvestorForm(ParentCompanyForm):
 
-    form_title = _('Parent investors')
+    form_title = _('Tertiary investor/lendor')
 
     tg_parent_stakeholder = TitleField(
-        required=False, label="", initial=_("Parent investor")
+        required=False, label="", initial=_("Tertiary investor/lendor")
     )
     fk_investor = forms.ModelChoiceField(
         required=False, label=_("Existing investor"),
@@ -54,6 +62,13 @@ class ParentInvestorForm(ParentStakeholderForm):
             'loans_amount', 'loans_date',
             'comment',
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Show given/current value only, rest happens via ajax
+        if 'fk_investor' in self.initial:
+            valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get('fk_investor', ''))
+            self.fields['fk_investor'].queryset = Investor.objects.filter(pk=valid_choice)
 
 
 class BaseInvolvementFormSet(forms.BaseModelFormSet):
@@ -84,7 +99,7 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
         return instances
 
 
-class BaseStakeholderFormSet(BaseInvolvementFormSet):
+class BaseCompanyFormSet(BaseInvolvementFormSet):
     form_title = _('Parent companies')
     ROLE = InvestorVentureInvolvement.STAKEHOLDER_ROLE
 
@@ -93,16 +108,16 @@ class BaseStakeholderFormSet(BaseInvolvementFormSet):
 
 
 class BaseInvestorFormSet(BaseInvolvementFormSet):
-    form_title = _('Parent investors')
+    form_title = _('Tertiary investors/lendors')
     ROLE = InvestorVentureInvolvement.INVESTOR_ROLE
 
     class Meta:
         name = 'parent-investor'
 
 
-ParentStakeholderFormSet = forms.modelformset_factory(
-    InvestorVentureInvolvement, form=ParentStakeholderForm,
-    formset=BaseStakeholderFormSet, extra=1, min_num=0, max_num=1,
+ParentCompanyFormSet = forms.modelformset_factory(
+    InvestorVentureInvolvement, form=ParentCompanyForm,
+    formset=BaseCompanyFormSet, extra=1, min_num=0, max_num=1,
     can_delete=True)
 
 ParentInvestorFormSet = forms.modelformset_factory(

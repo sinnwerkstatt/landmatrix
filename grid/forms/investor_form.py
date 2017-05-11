@@ -39,6 +39,12 @@ class InvestorFormBase(BaseModelForm):
         model = Investor
         exclude = ('fk_status', 'subinvestors', 'investor_identifier', 'timestamp')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Show current value only, rest happens via ajax
+        if 'fk_country' in self.initial:
+            self.fields['fk_country'].queryset = Country.objects.filter(pk=self.initial.get('fk_country', None))
+
     def save(self, commit=True):
         '''
         Force status to pending on update.
