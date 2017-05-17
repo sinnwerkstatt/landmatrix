@@ -53,9 +53,9 @@ class InvestorFormsMixin:
 
     def get_stakeholders_formset_kwargs(self):
         kwargs = self.get_formset_kwargs()
-        kwargs['prefix'] = 'parent-stakeholder-form'
+        kwargs['prefix'] = 'parent-company-form'
 
-        queryset = self.get_venture_involvements_queryset().filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
+        queryset = self.get_venture_involvements_queryset().filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
         kwargs['queryset'] = queryset
 
         return kwargs
@@ -64,7 +64,7 @@ class InvestorFormsMixin:
         kwargs = self.get_formset_kwargs()
         kwargs['prefix'] = 'parent-investor-form'
 
-        queryset = self.get_venture_involvements_queryset().filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
+        queryset = self.get_venture_involvements_queryset().filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
         kwargs['queryset'] = queryset
 
         return kwargs
@@ -98,7 +98,7 @@ class InvestorFormsMixin:
             'parent_company': _('Parent company'),
             'parent_investor': _('Tertiary investor/lendor'),
         }
-        context['role'] = ROLE_MAP.get(role, _('Tertiary investor/lendor'))
+        context['role'] = ROLE_MAP.get(role, _('Operational company'))
         return context
 
     def form_invalid(self, investor_form, stakeholders_formset,

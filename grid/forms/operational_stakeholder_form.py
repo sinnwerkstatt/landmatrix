@@ -10,8 +10,6 @@ from grid.fields import TitleField, ActorsField
 from grid.widgets import CommentInput
 
 
-
-
 class OperationalStakeholderForm(BaseForm):
     form_title = _('Investor info')
 
@@ -19,7 +17,7 @@ class OperationalStakeholderForm(BaseForm):
         required=False, label="", initial=_("Operational company"))
     operational_stakeholder = ModelChoiceField(
         required=False, label=_("Operational company"),
-        queryset=Investor.objects.all(),
+        queryset=Investor.objects.none(),
         widget=Select(attrs={'class': 'form-control investorfield'}))
     actors = ActorsField(
         required=False,
@@ -35,16 +33,18 @@ class OperationalStakeholderForm(BaseForm):
     def get_data(cls, activity, group=None, prefix=""):
         data = super().get_data(activity, group, prefix)
         op = InvestorActivityInvolvement.objects.filter(
-            fk_activity_id=activity.id).first()
+            fk_activity_id=activity.public_version_id).first()
         if op:
             data['operational_stakeholder'] = str(op.fk_investor.id)
         return data
 
     def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-        # Set the queryset on runtime, because stakeholder can be added during during deal creation (popup)
-        self.fields['operational_stakeholder'].queryset = Investor.objects.all()
-        self.fields['operational_stakeholder'].widget.choices = self.fields['operational_stakeholder'].choices
+        super().__init__(*args, **kwargs)
+
+        # Show given/current value only, rest happens via ajax
+        valid_choice = self.data.get('operational_stakeholder', self.initial.get('operational_stakeholder', None))
+        if valid_choice:
+            self.fields['operational_stakeholder'].queryset = Investor.objects.filter(pk=valid_choice)
 
     class Meta:
         name = 'investor_info'

@@ -517,7 +517,7 @@ a.remove-ybd:hover {
 .dynamic-form + .dynamic-form .add-form {
   display: none; }
 
-.control-group.parent-stakeholder-form .input-group,
+.control-group.parent-company-form .input-group,
 .control-group.parent-investor-form .input-group {
   width: auto; }
 

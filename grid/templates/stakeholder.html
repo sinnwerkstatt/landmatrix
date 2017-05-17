@@ -64,7 +64,22 @@
                             {% include "form.html" with form_count=forloop.counter form=form %}
                             </div>
                         {% endfor %}
-                        {#% include 'includes/stakeholder-involvements-formset.html' with formset=parent_companies %#}
+                        <script type="text/javascript">
+                        $(document).ready(function () {
+                            // Init dynamic forms for stakeholder popup
+                            $('.{{ parent_companies.form_title|slugify }}-form').formset({
+                                addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+                                addCssClass: 'formset-add-form hidden',
+                                deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
+                                deleteCssClass: 'formset-remove-form hidden',
+                                prefix: 'parent-company-form',
+                                formCssClass: '{{ parent_companies.form_title|slugify }}-form',
+                                //extraClasses: ['dynamic-form'],
+                                added: stakeholderAdded,
+                                removed: stakeholderRemoved,
+                            }).each(function () { initInvestorForm($(this)); });
+                        });
+                        </script>
                     </div>
                 </div>
             </div>
@@ -91,7 +106,22 @@
                             {% include "form.html" with form_count=forloop.counter form=form %}
                             </div>
                         {% endfor %}
-                        {#% include 'includes/stakeholder-involvements-formset.html' with formset=parent_investors %#}
+                        <script type="text/javascript">
+                        $(document).ready(function () {
+                            // Init dynamic forms for stakeholder popup
+                            $('.{{ parent_investors.form_title|slugify }}-form ').formset({
+                                addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
+                                addCssClass: 'formset-add-form hidden',
+                                deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
+                                deleteCssClass: 'formset-remove-form hidden',
+                                prefix: 'parent-investor-form',
+                                formCssClass: '{{ parent_investors.form_title|slugify }}-form',
+                                //extraClasses: ['dynamic-form'],
+                                added: stakeholderAdded,
+                                removed: stakeholderRemoved,
+                            }).each(function () { initInvestorForm($(this)); });
+                        });
+                        </script>
                     </div>
                 </div>
             </div>

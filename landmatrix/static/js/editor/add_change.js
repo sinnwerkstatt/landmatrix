@@ -306,6 +306,7 @@ $(document).ready(function(){
     });
 
     /* Collapse existing investor fields on page load */
+    initInvestorField($("#id_operational_stakeholder"));
     $(".form.existing-investor:not(.empty) li.investor div ul li a:not(.selected-investor)").hide();
 
     /* submit form-wizard only once */

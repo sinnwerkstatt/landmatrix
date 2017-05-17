@@ -3,40 +3,51 @@ var tree_margin = {top: 0, right: 320, bottom: 0, left: 0},
     tree_height = 500 - tree_margin.top - tree_margin.bottom,
     tree, tree_svg, tree_data;
 
-function init_investor_form(form) {
-    function formatInvestor (investor) {
-        return investor.text;
-    }
-    function formatInvestorSelection (investor) {
-        return investor.text;
-    }
-    var investorfield = form.find('select.investorfield');
-    investorfield.select2({
+function initInvestorField(field) {
+    field.select2({
+        //placeholder: 'Select Investor',
         ajax: {
             url: '/api/investors.json',
             dataType: 'json',
             delay: 250,
             data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, params) {
+                // parse the results into the format expected by Select2
+                // since we are using custom formatting functions we do not need to
+                // alter the remote JSON data, except to indicate that infinite
+                // scrolling can be used
+                params.page = params.page || 1;
+
                 return {
-                    q: params.term
+                  results: data.results,
+                  pagination: {
+                    more: (params.page * 30) < data.count
+                  }
                 };
             },
-            processResults: function (data) {
-                return {
-                    results: data
-                };
-            },
-            cache: true
+            //cache: true
         },
-        escapeMarkup: function (markup) { return markup; },
         minimumInputLength: 3,
-        templateResult: formatInvestor,
-        templateSelection: formatInvestorSelection
     }).on('change', function () {
         generateButtons($(this));
         loadInvestorNetwork($(this).val());
+    }).trigger('change');
+}
+
+function initInvestorForm(form) {
+    // Init buttons
+    form.find('.add-form').click(function () {
+        form.parents('.panel-body').find('.formset-add-form').trigger('click');
     });
-    generateButtons(investorfield);
+    form.find('.remove-form').click(function () {
+        form.find('.formset-remove-form').trigger('click');
+    });
+    initInvestorField(form.find(".investorfield"));
 }
 
 function generateButtons(field) {
@@ -66,12 +77,12 @@ function generateButtons(field) {
     $('a.add-investor').click(function (e) {
       e.preventDefault()
       showAddInvestorPopup(this);
-      return False;
+      return false;
     });
     $('a.change-investor').click(function (e) {
       e.preventDefault()
       showChangeInvestorPopup(this);
-      return False;
+      return false;
     });
 
 }
@@ -86,7 +97,7 @@ function stakeholderAdded(row) {
     row.find("option:selected").removeAttr("selected");
     row.find(".select2").remove();
     row.find(".select2-hidden-accessible").removeClass("select2-hidden-accessible").data('select2', null);
-    init_investor_form(row);
+    initInvestorForm(row);
     // Scroll to the new row
     $('html, body').animate({
         scrollTop: row.offset().top
@@ -120,74 +131,12 @@ $(document).ready(function () {
         }
         country_select.trigger('change');
     });
-    // Init operational company field (deal add/edit)
-    $(".investorfield").each(function (index) {
-        $(this).select2({
-            //placeholder: 'Select Investor',
-            ajax: {
-                url: '/api/investors.json',
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                  return {
-                    q: params.term, // search term
-                    page: params.page
-                  };
-                },
-                processResults: function (data, params) {
-                    // parse the results into the format expected by Select2
-                    // since we are using custom formatting functions we do not need to
-                    // alter the remote JSON data, except to indicate that infinite
-                    // scrolling can be used
-                    params.page = params.page || 1;
-
-                    return {
-                      results: data.results,
-                      pagination: {
-                        more: (params.page * 30) < data.count
-                      }
-                    };
-                },
-                //cache: true
-            },
-            minimumInputLength: 3,
-        });
-        $(this).on('change', function () {
-            generateButtons($(this), index);
-            loadInvestorNetwork($(this).val());
-        }).trigger('change');
-    });
-
-
-    // DEPRECATED?
-    //$('.parent-companies-form').formset({
-    //    addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
-    //    addCssClass: 'formset-add-form hidden',
-    //    deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
-    //    deleteCssClass: 'formset-remove-form hidden',
-    //    prefix: 'parent-stakeholder-form',
-    //    formCssClass: 'parent-companies-form',
-    //    //extraClasses: ['dynamic-form'],
-    //    added: stakeholderAdded,
-    //    removed: stakeholderRemoved,
-    //}).each(function () { init_investor_form($(this)); });
-    //$('.parent-investors-form').formset({
-    //    addText: '<i class="fa fa-plus"></i> {% trans "Add another" %}',
-    //    addCssClass: 'formset-add-form hidden',
-    //    deleteText: '<i class="fa fa-minus"></i> {% trans "Remove" %}',
-    //    deleteCssClass: 'formset-remove-form hidden',
-    //    prefix: 'parent-investor-form',
-    //    formCssClass: 'parent-investors-form',
-    //    //extraClasses: ['dynamic-form'],
-    //    added: stakeholderAdded,
-    //    removed: stakeholderRemoved,
-    //}).each(function () { init_investor_form($(this)); });
 });
 
 
 /* PEDIGREE */
 function loadInvestorNetwork(investorId) {
-    if (investorId <= 0) {
+    if (investorId <= 0 || $("#investor-network").size() <= 0) {
         return;
     }
     d3.json("/api/investor_network.json?operational_stakeholder=" + investorId,

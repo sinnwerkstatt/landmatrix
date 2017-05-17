@@ -28,8 +28,8 @@ class ParentCompanyForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Show given/current value only, rest happens via ajax
-        if 'fk_investor' in self.initial:
-            valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get('fk_investor', ''))
+        valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get('fk_investor', None))
+        if valid_choice:
             self.fields['fk_investor'].queryset = Investor.objects.filter(pk=valid_choice)
 
     class Meta:
@@ -66,8 +66,8 @@ class ParentInvestorForm(ParentCompanyForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Show given/current value only, rest happens via ajax
-        if 'fk_investor' in self.initial:
-            valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get('fk_investor', ''))
+        valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get('fk_investor', None))
+        if valid_choice:
             self.fields['fk_investor'].queryset = Investor.objects.filter(pk=valid_choice)
 
 

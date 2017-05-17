@@ -248,10 +248,11 @@ class SaveDealView(TemplateView):
         #    involvement.fk_investor = operational_stakeholder
         #else:
         if operational_stakeholder:
+            can_change_activity = self.request.user.has_perm('landmatrix.change_activity')
             involvement = InvestorActivityInvolvement.objects.create(
                 fk_activity=activity,
                 fk_investor=operational_stakeholder,
-                fk_status_id=activity.STATUS_PENDING,
+                fk_status_id=can_change_activity and activity.STATUS_ACTIVE or activity.STATUS_PENDING,
             )
             involvement.save()
 
