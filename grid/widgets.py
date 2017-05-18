@@ -20,8 +20,6 @@ from landmatrix.models import Country
 from landmatrix.storage import data_source_storage
 
 
-
-
 class TitleWidget(forms.TextInput):
     def __init__(self, initial, *args, **kwargs):
         self.initial = initial
@@ -641,8 +639,10 @@ class AreaWidget(forms.MultiWidget):
         output = '''
         <div id="{name}-container" style="{style}">
             {map_widget}
-            <br>
-            {file_widget}
+            <div class="input-group">
+                {file_widget}
+                <div class="input-group-addon">{file_label}</div>
+            </div>
         </div>
         <a href="#" class="show-hide-area pull-right"
             data-alternate="{link_alt_text}"
@@ -653,6 +653,7 @@ class AreaWidget(forms.MultiWidget):
         '''.format(
             name=name, style=container_style, map_widget=rendered_widgets[0],
             file_widget=rendered_widgets[1], link_text=show_hide_link_text,
-            link_alt_text=show_hide_link_alt_text, js=js)
+            link_alt_text=show_hide_link_alt_text, js=js,
+            file_label=_('Shapefile upload (.zip)'))
 
         return output

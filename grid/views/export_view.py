@@ -90,11 +90,11 @@ class ExportView(TemplateView):
                                 row_item.append("[%s:%s] %s" % (
                                     year != "0" and year or "",
                                     current and "current" or "",
-                                    name,
+                                    name.strip(),
                                 ))
                             # Required for intention
                             elif value and not lv.get("is_parent", False):
-                                row_item.append(str(value))
+                                row_item.append(str(value).strip())
                             #else:
                             #    row_item.append("[]")
                         elif isinstance(lv, (list, tuple)):
@@ -108,17 +108,17 @@ class ExportView(TemplateView):
                                     row_item.append("[%s:%s] %s" % (
                                         year != "0" and year or "",
                                         current and "current" or "",
-                                        name,
+                                        name.strip(),
                                     ))
                                 #else:
                                 #    row_item.append("[]")
                             else:
-                                row_item.append(str(lv) or '')
+                                row_item.append(str(lv).strip() or '')
                         else:
-                            row_item.append(str(lv) or '')
+                            row_item.append(str(lv).strip() or '')
                     row.append(", ".join(filter(None, row_item)))
                 else:
-                    row.append(v or "")
+                    row.append(v.strip() or "")
             rows.append(row)
         return rows
 

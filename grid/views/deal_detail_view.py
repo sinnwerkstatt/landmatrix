@@ -62,7 +62,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalActivity.objects
         if not self.request.user.has_perm('landmatrix.review_activity'):
-            queryset = queryset.public()
+            queryset = queryset.public_or_deleted()
         try:
             if history_id:
                 activity = queryset.get(id=history_id)
