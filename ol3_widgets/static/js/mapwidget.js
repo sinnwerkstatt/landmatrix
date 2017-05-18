@@ -652,6 +652,7 @@ $(document).ready(function () {
             var clearFeatures = map.next('.clear_features').children('a');
             clearFeatures.on('click', function(event) {
                 event.preventDefault();
+                var mapWidget = $(this).parent('.clear_features').next('.map-serialized-data').data('mapWidget');
                 mapWidget.clearFeatures();
             });
         };
