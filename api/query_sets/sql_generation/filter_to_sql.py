@@ -155,8 +155,8 @@ class FilterToSQL:
             where.append(condition)
 
         for index, (tag, value) in enumerate(tags.items()):
-            if self.DEBUG:
-                print('_where_activity', index, tag, value)
+            if not value:
+                continue
 
             i = start_index + index
 
