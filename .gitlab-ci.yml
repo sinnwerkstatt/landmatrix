@@ -1,3 +1,5 @@
+image: python:3.4
+
 before_script:
   - apt-get install python-virtualenv
   - virtualenv -p /usr/bin/python3.4 --system-site-packages venv
