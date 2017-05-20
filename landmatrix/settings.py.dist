@@ -18,7 +18,7 @@ DATABASES = {
         'NAME': 'landmatrix',                         # CORRECT DB FOR V2 GOES HERE
         'USER': 'landmatrix',
         'PASSWORD': '',
-        'HOST': 'postgres',
+        'HOST': 'postgis',
         'PORT': '',
     },
 }
