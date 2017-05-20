@@ -10,8 +10,6 @@ from grid.widgets import CommentInput, NumberInput
 from .base_form import BaseForm
 
 
-
-
 class DealProduceInfoForm(BaseForm):
     BOOLEAN_CHOICES = (
         ("Yes", _("Yes")),
