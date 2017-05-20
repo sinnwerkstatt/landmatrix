@@ -17,5 +17,5 @@ variables:
 
 test:
   script:
-    - python manage.py migrate
+    - source venv/bin/activate
     - python manage.py test

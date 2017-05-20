@@ -6,6 +6,9 @@ import http.client
 http.client._MAXHEADERS = 1000
 from django.conf import settings
 
+from grid.views.change_deal_view import ChangeDealView
+from grid.forms.deal_spatial_form import DealSpatialForm
+
 
 from landmatrix.models.activity import HistoricalActivity
 
@@ -33,7 +36,6 @@ def get_elasticsearch_properties():
             'geo_point': {'type': 'geo_point'},
             'status': {'type': 'integer'}, 
         }
-        from grid.views.change_deal_view import ChangeDealView
         for form in ChangeDealView.FORMS:
             form = hasattr(form, "form") and form.form or form
             for name, field in form.base_fields.items():
@@ -57,7 +59,6 @@ class ElasticSearch(object):
             self.index_name = index_name
 
     def get_spatial_properties(self):
-        from grid.forms.deal_spatial_form import DealSpatialForm
         return DealSpatialForm.base_fields.keys()
 
     def create_index(self, delete=True):
