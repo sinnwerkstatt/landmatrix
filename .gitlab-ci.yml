@@ -8,7 +8,7 @@ before_script:
   - cp landmatrix/settings.py.dist landmatrix/settings.py
 
 services:
-  - postgres:latest
+  - postgis:latest
 
 variables:
   POSTGRES_DB: landmatrix
