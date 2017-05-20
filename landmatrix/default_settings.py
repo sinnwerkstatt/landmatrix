@@ -54,7 +54,7 @@ INSTALLED_APPS += (
     # OL3 widgets must come before GIS
     'ol3_widgets',
     'django.contrib.gis',
-    'django_hstore',
+    #'django_hstore',
 
     'tastypie',
 
