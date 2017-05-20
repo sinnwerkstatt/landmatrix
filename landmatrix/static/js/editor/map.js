@@ -202,6 +202,14 @@ function initializeMap (mapId, lat, lon) {
         updateLocationFields(mapId, evt.coordinate);
     });
 
+    map.on('zoomend', function(evt) {
+        debugger;
+    });
+
+    map.on('moveend', function(evt) {
+        debugger;
+    });
+
     fields.lon.change(function() {
         updateMapLocation(mapId);
     });

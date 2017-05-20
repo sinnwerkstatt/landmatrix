@@ -26,6 +26,7 @@
                         {% if form.form_description %}<div class="col-sm-12"><p class="alert alert-info">{{ form.form_description }}</p></div>{% endif %}
                     {% endfor %}
                     <script type="text/javascript">
+                    var mapWidgets = {}
                     function init_form(form) {
                         // Init buttons
                         form.find('.add-form').click(function () {
@@ -45,7 +46,6 @@
                             }
                         })
                         // Init map
-                        var mapWidgets = {};
                         var maps = form.find('.map-serialized-data');
                         maps.each(function(index) {
                             var id = $(this).attr('id');
@@ -62,6 +62,18 @@
                                 options['boundLevelOfAccuracyField'] = form.find('.level_of_accuracy :input');
                             }
                             var mapWidget = new MapWidget(options);
+                            mapWidget.map.on('moveend', function (evt) {
+                                // Update all maps (location and areas) for location accordingly
+                                var maps = $(evt.map.getTargetElement()).parents('.location-form')
+                                    .find('.geometry-multipolygon .map-serialized-data');
+                                var center = evt.map.getView().getCenter();
+                                var zoom = evt.map.getView().getZoom();
+                                maps.each(function (index, value) {
+                                    var map = mapWidgets[value.id].map;
+                                    map.getView().setCenter(center);
+                                    map.getView().setZoom(zoom);
+                                });
+                            });
                             mapWidgets[id] = mapWidget;
                             $('#' + id).data('mapWidget', mapWidget);
                         });
