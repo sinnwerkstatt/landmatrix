@@ -85,10 +85,10 @@ class ChangeDealView(SaveDealView):
             if form_class == DealActionCommentForm and not self.request.user.is_authenticated():
                 forms.append(PublicUserInformationForm(data=data))
             else:
-                forms.append(self.get_form(form_class, data, files))
+                forms.append(self.get_form(form_class, data=data, files=files))
         # Add country specific forms
         for form_class in get_country_specific_form_classes(self.get_object()):
-            forms.append(self.get_form(form_class, data, files))
+            forms.append(self.get_form(form_class, data=data, files=files))
         return forms
 
     def get_form(self, form_class, data=None, files=None):
@@ -96,17 +96,16 @@ class ChangeDealView(SaveDealView):
         initial = form_class.get_data(self.get_object())
         return form_class(initial=initial, files=files, data=data, prefix=prefix)
 
-    def render_to_response(self, *args, **kwargs):
-        '''
-        If we have a shapefile upload, just reload the page so it displays
-        correctly
-        '''
-        # TODO: remove this hack, make the different area fields handle this
-        if any(['_area' in key for key in self.request.FILES.keys()]):
-            return HttpResponseRedirect(
-                self.request.META.get('HTTP_REFERER', '/'))
-
-        return super().render_to_response(*args, **kwargs)
+    #def render_to_response(self, *args, **kwargs):
+    #    '''
+    #    If we have a shapefile upload, just reload the page so it displays
+    #    correctly
+    #    '''
+    #    # TODO: remove this hack, make the different area fields handle this
+    #    if any(['_area' in key for key in self.request.FILES.keys()]):
+    #        return HttpResponseRedirect(
+    #            self.request.META.get('HTTP_REFERER', '/'))
+    #    return super().render_to_response(*args, **kwargs)
 
 
 #def to_formset_data(data):

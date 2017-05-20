@@ -654,6 +654,6 @@ class AreaWidget(forms.MultiWidget):
             name=name, style=container_style, map_widget=rendered_widgets[0],
             file_widget=rendered_widgets[1], link_text=show_hide_link_text,
             link_alt_text=show_hide_link_alt_text, js=js,
-            file_label=_('Shapefile upload (.zip)'))
+            file_label=_('Shapefile upload (select all files, required: .shp, .shx, .dbf, and .prj)'))
 
         return output
