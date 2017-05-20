@@ -17,5 +17,4 @@ variables:
 
 test:
   script:
-    - source venv/bin/activate
-    - python manage.py test
+    - venv/bin/python manage.py test
