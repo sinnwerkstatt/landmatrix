@@ -8,8 +8,12 @@ before_script:
   - cp landmatrix/settings.py.dist landmatrix/settings.py
 
 services:
-   db:
-     image: postgres
+  - postgres:latest
+
+variables:
+  POSTGRES_DB: landmatrix
+  POSTGRES_USER: landmatrix
+  POSTGRES_PASSWORD: ""
 
 test:
   script:

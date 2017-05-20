@@ -15,11 +15,11 @@ DATABASES = {
     'default': {
 #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'postgres',                         # CORRECT DB FOR V2 GOES HERE
-        'USER': 'postgres',
+        'NAME': 'landmatrix',                         # CORRECT DB FOR V2 GOES HERE
+        'USER': 'landmatrix',
         'PASSWORD': '',
-        'HOST': 'db',
-        'PORT': 5432,
+        'HOST': '',
+        'PORT': '',
     },
 }
 if CONVERT_DB:
