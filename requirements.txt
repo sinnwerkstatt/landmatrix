@@ -43,3 +43,4 @@ celery[redis]
 geojson==1.3.4
 #libmysqlclient
 #pylibmc
+django-compressor
