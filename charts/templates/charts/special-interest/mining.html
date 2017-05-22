@@ -92,7 +92,7 @@ $(document).ready(function () {
     };
     // Update by size
     size.find('.number-concluded').text(numberWithCommas(by_size[1]) + ' ha');
-    percentage = by_size > 0 && parseInt(by_size[1] / by_size[0] * 100) || 0;
+    percentage = by_size[0] > 0 && parseInt(by_size[1] / by_size[0] * 100) || 0;
     size.find('.progress-concluded .bar').css('width', percentage + '%');
     size.find('.percentage-concluded').text(percentage + '%');
     size.find('.number-intended').text(numberWithCommas(by_size[2]) + ' ha');
