@@ -78,29 +78,29 @@ $(document).ready(function () {
     };
     // Update by size
     size.find('.number-concluded').text(numberWithCommas(by_size[1]) + ' ha');
-    percentage = by_size[0] > 0 && parseInt(by_size[1] / by_size[0] * 100) || 0;
+    percentage = by_size[0] > 0 && Math.round((by_size[1] / by_size[0] * 100) || 0;
     size.find('.progress-concluded .bar').css('width', percentage + '%');
     size.find('.percentage-concluded').text(percentage + '%');
     size.find('.number-intended').text(numberWithCommas(by_size[2]) + ' ha');
-    percentage = by_size[0] > 0 && parseInt(by_size[2] / by_size[0] * 100) || 0;
+    percentage = by_size[0] > 0 && Math.round((by_size[2] / by_size[0] * 100) || 0;
     size.find('.progress-intended .bar').css('width', percentage + '%');
     size.find('.percentage-intended').text(percentage + '%');
     size.find('.number-failed').text(numberWithCommas(by_size[3]) + ' ha');
-    percentage = by_size[0] > 0 && parseInt(by_size[3] / by_size[0] * 100) || 0;
+    percentage = by_size[0] > 0 && Math.round((by_size[3] / by_size[0] * 100) || 0;
     size.find('.progress-failed .bar').css('width', percentage + '%');
     size.find('.percentage-failed').text(percentage + '%');
 
     // Update by deals
     deals.find('.number-concluded').text(numberWithCommas(by_deals[1]));
-    percentage = by_deals[0] > 0 && parseInt(by_deals[1] / by_deals[0] * 100) || 0;
+    percentage = by_deals[0] > 0 && Math.round((by_deals[1] / by_deals[0] * 100) || 0;
     deals.find('.progress-concluded .bar').css('width', percentage + '%');
     deals.find('.percentage-concluded').text(percentage + '%');
     deals.find('.number-intended').text(numberWithCommas(by_deals[2]));
-    percentage = by_deals[0] > 0 && parseInt(by_deals[2] / by_deals[0] * 100) || 0;
+    percentage = by_deals[0] > 0 && Math.round((by_deals[2] / by_deals[0] * 100) || 0;
     deals.find('.progress-intended .bar').css('width', percentage + '%');
     deals.find('.percentage-intended').text(percentage + '%');
     deals.find('.number-failed').text(numberWithCommas(by_deals[3]));
-    percentage = by_deals[0] > 0 && parseInt(by_deals[3] / by_deals[0] * 100) || 0;
+    percentage = by_deals[0] > 0 && Math.round((by_deals[3] / by_deals[0] * 100) || 0;
     deals.find('.progress-failed .bar').css('width', percentage + '%');
     deals.find('.percentage-failed').text(percentage + '%');
   });
