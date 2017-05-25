@@ -9,14 +9,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
-from landmatrix.models.status import Status
 from landmatrix.models.activity_attribute_group import (
-    ActivityAttribute, HistoricalActivityAttribute,
+    ActivityAttribute,
 )
 from landmatrix.models.investor import (
     Investor, InvestorActivityInvolvement, InvestorVentureInvolvement,
 )
 from landmatrix.models.country import Country
+
 
 class ActivityQuerySet(models.QuerySet):
     def public(self):
@@ -111,7 +111,6 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
     availability = models.FloatField(_("availability"), blank=True, null=True)
-    fully_updated = models.BooleanField(_("Fully updated"), default=False)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
 
     objects = ActivityQuerySet.as_manager()
@@ -316,7 +315,7 @@ class Activity(ActivityBase):
     deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
     init_date = models.CharField(verbose_name=_('Initiation year or date'), max_length=10,
                                  blank=True, null=True, db_index=True)
-
+    fully_updated = models.DateField(_("Fully updated"), blank=True, null=True)
 
     def refresh_cached_attributes(self):
         # Implementation status
@@ -334,6 +333,8 @@ class Activity(ActivityBase):
         # Initiation year
         self.init_date = self.get_init_date()
 
+        # Fully updated
+        self.fully_updated = self.get_fully_updated()
 
         self.is_public = self.is_public_deal()
         self.save()
@@ -561,6 +562,14 @@ class Activity(ActivityBase):
         else:
             return 0
 
+    def get_fully_updated(self):
+        try:
+            activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier,
+                                                         fully_updated=True).latest()
+            return activity.history_date
+        except:
+            return None
+
     class Meta:
         verbose_name = _('Activity')
         verbose_name_plural = _('Activities')
@@ -624,6 +633,7 @@ class HistoricalActivity(ActivityBase):
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
     comment = models.TextField(_('Comment'), blank=True, null=True)
+    fully_updated = models.BooleanField(_("Fully updated"), default=False)
 
     objects = HistoricalActivityQuerySet.as_manager()
 

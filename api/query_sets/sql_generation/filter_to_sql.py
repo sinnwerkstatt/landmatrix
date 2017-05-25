@@ -207,6 +207,9 @@ class FilterToSQL:
                 # (as the most recent status is cached there)
                 condition = WhereCondition('a', variable, operation, value)
                 where.append(condition)
+            elif variable == 'fully_updated':
+                condition = WhereCondition('a', variable, operation, value)
+                where.append(condition)
             elif operation not in ('in', 'not_in') and isinstance(value, list):
                 for subvalue in value:
                     conditions = WhereConditions(
