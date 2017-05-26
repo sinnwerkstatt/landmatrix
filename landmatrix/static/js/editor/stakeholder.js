@@ -3,42 +3,6 @@ var tree_margin = {top: 0, right: 320, bottom: 0, left: 0},
     tree_height = 500 - tree_margin.top - tree_margin.bottom,
     tree, tree_svg, tree_data;
 
-function initInvestorField(field) {
-    field.select2({
-        //placeholder: 'Select Investor',
-        ajax: {
-            url: '/api/investors.json',
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-              return {
-                q: params.term, // search term
-                page: params.page
-              };
-            },
-            processResults: function (data, params) {
-                // parse the results into the format expected by Select2
-                // since we are using custom formatting functions we do not need to
-                // alter the remote JSON data, except to indicate that infinite
-                // scrolling can be used
-                params.page = params.page || 1;
-
-                return {
-                  results: data.results,
-                  pagination: {
-                    more: (params.page * 30) < data.count
-                  }
-                };
-            },
-            //cache: true
-        },
-        minimumInputLength: 3,
-    }).on('change', function () {
-        generateButtons($(this));
-        loadInvestorNetwork($(this).val());
-    }).trigger('change');
-}
-
 function initInvestorForm(form) {
     // Init buttons
     form.find('.add-form').click(function () {
@@ -112,24 +76,8 @@ function stakeholderRemoved(row) {
 }
 
 $(document).ready(function () {
-    var country_select = $('.fk_country select').select2({
-        //placeholder: "",
-    });
-    var country_request = $.ajax({
-      url: '/api/countries.json'
-    });
-    var group, item, option;
-    country_request.then(function (data) {
-        country_select.data(data);
-        for (var d = 0; d < data.length; d++) {
-            group = data[d];
-            for (var o = 0; o < group.children.length; o++) {
-                item = group.children[o];
-                option = new Option(item[2], item[1], false, false);
-                country_select.append(option);
-            }
-        }
-        country_select.trigger('change');
+    $('.fk_country select').each(function () {
+        initCountryField(this);
     });
 });
 
@@ -227,7 +175,7 @@ function createInvestorNetwork() {
         var text = "";
         if (d.involvement) {
           var inv = d.involvement;
-          text = (d.parent_type == "investor" && "Tertiary investor/lendor" || "Parent company");
+          text = (d.parent_type == "investor" && "Tertiary investor/lender" || "Parent company");
           text += inv.percentage && " ("+inv.percentage+"%"+(inv.investment_type && " "+inv.investment_type || "")+")" || "";
         } else {
           text = "Operational company";
@@ -249,7 +197,7 @@ function createInvestorNetwork() {
         if (d.involvement) {
             var inv = d.involvement;
             var data = [
-                (d.parent_type == "investor" && "Tertiary investor/lendor" || "Parent company") +
+                (d.parent_type == "investor" && "Tertiary investor/lender" || "Parent company") +
                 (inv.percentage && " (" + inv.percentage + "%" + (inv.investment_type && " " + inv.investment_type || "") + ")" || ""),
                 d.classification,
                 d.country,

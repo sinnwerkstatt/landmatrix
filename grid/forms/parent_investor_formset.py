@@ -44,10 +44,10 @@ class ParentCompanyForm(forms.ModelForm):
 
 class ParentInvestorForm(ParentCompanyForm):
 
-    form_title = _('Tertiary investor/lendor')
+    form_title = _('Tertiary investor/lender')
 
     tg_parent_stakeholder = TitleField(
-        required=False, label="", initial=_("Tertiary investor/lendor")
+        required=False, label="", initial=_("Tertiary investor/lender")
     )
     fk_investor = forms.ModelChoiceField(
         required=False, label=_("Existing investor"),
@@ -108,7 +108,7 @@ class BaseCompanyFormSet(BaseInvolvementFormSet):
 
 
 class BaseInvestorFormSet(BaseInvolvementFormSet):
-    form_title = _('Tertiary investors/lendors')
+    form_title = _('Tertiary investors/lenders')
     ROLE = InvestorVentureInvolvement.INVESTOR_ROLE
 
     class Meta:

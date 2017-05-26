@@ -5,14 +5,13 @@ from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 from django.utils.datastructures import MultiValueDict
-from django.template import RequestContext
 
 from landmatrix.models.investor import Investor
 from grid.views.filter_widget_mixin import FilterWidgetMixin
 from grid.views.profiling_decorators import \
     print_execution_time_and_num_queries
 from grid.views.activity_protocol import ActivityProtocol
-from .view_aux_functions import render_to_response, get_field_label
+from grid.views.browse_filter_conditions import get_field_label
 from grid.forms.choices import intention_choices, \
     INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP, \
     grouped_intention_choices

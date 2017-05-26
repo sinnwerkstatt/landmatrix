@@ -371,6 +371,68 @@ var list_operators = ["not_in", "in", "is", "is_empty", "contains"];
 //    });
 //}
 
+function initCountryField(field) {
+    var country_select = field.select2({
+        //placeholder: "",
+    });
+    var country_request = $.ajax({
+      url: '/api/countries.json'
+    });
+    var group, item, option;
+    country_request.then(function (data) {
+        country_select.data(data);
+        for (var d = 0; d < data.length; d++) {
+            group = data[d];
+            for (var o = 0; o < group.children.length; o++) {
+                item = group.children[o];
+                option = new Option(item[2], item[0], false, false);
+                country_select.append(option);
+            }
+        }
+        country_select.trigger('change');
+    });
+}
+
+function initInvestorField(field, set_events) {
+    set_events = typeof set_events !== 'undefined' ? set_events : true;
+
+    field.select2({
+        //placeholder: 'Select Investor',
+        ajax: {
+            url: '/api/investors.json',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, params) {
+                // parse the results into the format expected by Select2
+                // since we are using custom formatting functions we do not need to
+                // alter the remote JSON data, except to indicate that infinite
+                // scrolling can be used
+                params.page = params.page || 1;
+
+                return {
+                  results: data.results,
+                  pagination: {
+                    more: (params.page * 30) < data.count
+                  }
+                };
+            },
+            //cache: true
+        },
+        minimumInputLength: 3,
+    });
+    if (set_events) {
+        field.on('change', function () {
+            generateButtons($(this));
+            loadInvestorNetwork($(this).val());
+        }).trigger('change');
+    }
+}
 
 function show_reply_form(event) {
     var $this = $(this);
@@ -380,6 +442,7 @@ function show_reply_form(event) {
     $('#cancel-reply').show();
     $(this).parents('.panel-body').find('h3').text('Reply to comment');
 };
+
 function cancel_reply_form(event) {
     $('#id_comment').val('');
     $('#id_parent').val('');
@@ -387,10 +450,9 @@ function cancel_reply_form(event) {
     $('#cancel-reply').hide();
     $(this).parents('.panel-body').find('h3').text('Add a comment');
 }
+
+
 $(document).ready(function () {
-
-
-
     function setupSharePopover() {
         $("#btn-share").popover({
             html: true,

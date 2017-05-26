@@ -2,15 +2,12 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import serializers
 
 from landmatrix.models.filter_preset import FilterPreset as FilterPresetModel
-from grid.views.save_deal_view import SaveDealView
 from api.filters import Filter, PresetFilter
 from api.serializers import FilterPresetSerializer
-from grid.views.view_aux_functions import get_field_label
-
+from grid.views.browse_filter_conditions import get_field_label
 
 
 class FilterView(APIView):

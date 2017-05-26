@@ -23,7 +23,7 @@ class InvestorField(forms.ChoiceField):
 
 class InvestorFormBase(BaseModelForm):
     # We use ID to build related form links
-    id = forms.CharField(required=False, widget=forms.HiddenInput())
+    id = forms.CharField(required=False, label=_("ID"), widget=forms.HiddenInput())
     name = forms.CharField(required=False, label=_("Name"), max_length=255)
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
@@ -66,7 +66,7 @@ class InvestorFormBase(BaseModelForm):
         return {}
 
 
-class InvestorForm(InvestorFormBase):
+class ParentInvestorForm(InvestorFormBase):
     class Meta:
         model = Investor
         exclude = (
@@ -75,7 +75,7 @@ class InvestorForm(InvestorFormBase):
         )
 
 
-class StakeholderForm(InvestorForm):
+class ParentStakeholderForm(ParentInvestorForm):
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
         choices=STAKEHOLDER_CLASSIFICATION_CHOICES)

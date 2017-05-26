@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
-from grid.forms.investor_form import InvestorForm, StakeholderForm, OperationalCompanyForm
+from grid.forms.investor_form import ParentInvestorForm, ParentStakeholderForm, OperationalCompanyForm
 from grid.forms.parent_investor_formset import (
     ParentCompanyFormSet, ParentInvestorFormSet,
 )
@@ -26,9 +26,9 @@ class InvestorFormsMixin:
             else:
                 role = 'parent_investor'
         if role == 'parent_investor':
-            return InvestorForm
+            return ParentInvestorForm
         elif role == 'parent_company':
-            return StakeholderForm
+            return StakeholderFormParent
         else:
             return OperationalCompanyForm
 
@@ -96,7 +96,7 @@ class InvestorFormsMixin:
         ROLE_MAP = {
             'operational_stakeholder': _('Operational company'),
             'parent_company': _('Parent company'),
-            'parent_investor': _('Tertiary investor/lendor'),
+            'parent_investor': _('Tertiary investor/lender'),
         }
         context['role'] = ROLE_MAP.get(role, _('Operational company'))
         return context
@@ -191,7 +191,7 @@ class ChangeStakeholderView(InvestorFormsMixin, UpdateView):
 
 class AddStakeholderView(InvestorFormsMixin, CreateView):
     model = Investor
-    form_class = InvestorForm
+    form_class = ParentInvestorForm
     template_name = 'stakeholder.html'
     context_object_name = 'investor'
 

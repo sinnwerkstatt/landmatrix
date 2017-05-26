@@ -1,11 +1,11 @@
-from django.utils.translation import ugettext_lazy as _
+import re
 
 from grid.forms.choices import intention_choices, get_choice_parent
 from api.query_sets.sql_generation.join_functions import (
     join_attributes, join_expression,
 )
-from api.query_sets.sql_generation.sql_builder_data import SQLBuilderData
 from api.filters import FILTER_OPERATION_MAP
+from landmatrix.models import InvestorVentureInvolvement
 
 
 class WhereCondition:
@@ -213,12 +213,10 @@ class FilterToSQL:
             elif operation not in ('in', 'not_in') and isinstance(value, list):
                 for subvalue in value:
                     conditions = WhereConditions(
-                        #WhereCondition(table_name, 'name', 'is', variable),
                         WhereCondition(table_name, key, operation, subvalue))
                     where.append(conditions)
             else:
                 conditions = WhereConditions(
-                    #WhereCondition(table_name, 'name', 'is', variable),
                     WhereCondition(table_name, key, operation, value))
                 where.append(conditions)
 
@@ -361,20 +359,17 @@ class FilterToSQL:
                 operation = 'is'
 
             if operation == "is_empty" or not value or (value and not value[0]):
-                where_inv += " AND opsh_{count}.id IS NULL ".format(count)
+                where_inv += " AND operational_company_{count}.id IS NULL ".format(count)
             elif operation in ("in", "not_in"):
                 value = value[0].split(",")
                 in_values = ",".join(["'%s'" % v.strip().replace("'", "\\'") for v in value])
                 op_sql = self.OPERATION_MAP[operation][0] % in_values
-                if variable == "operational_stakeholder_region":
-                    where_inv += "AND opsh_region_{count}.id {op}".format(
-                        count=i, op=op_sql)
-                elif variable == "operational_stakeholder_country":
-                    where_inv += "AND opsh_country_{count}.id {op}".format(
-                        count=i, op=op_sql)
+                if 'region' in variable:
+                    where_inv += "AND investor_region_{count}.id {op}".format(count=i, op=op_sql)
+                elif 'country' in 'variable':
+                    where_inv += "AND investor_country_{count}.id {op}".format(count=i, op=op_sql)
                 else:
-                    where_inv += "AND opsh_{count}.id {op}".format(
-                        count=i, op=op_sql)
+                    where_inv += "AND operational_company_{count}.id {op}".format(count=i, op=op_sql)
             else:
                 if not isinstance(value, list):
                     value = [value]
@@ -382,22 +377,28 @@ class FilterToSQL:
                 for v in value:
                     operation_type = not v.isdigit() and 1 or 0
                     op_sql = self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'")
+                    #if self.DEBUG:
+                    #    print('FilterToSQL.where_investor:', index, variable, operation, v, operation_type)
 
-                    if self.DEBUG:
-                        print('FilterToSQL.where_investor:', index, variable, operation, v, operation_type)
-
-                    if variable == 'operational_stakeholder_region':
-                        where_inv += "AND opsh_region_{count}.id {op}".format(
-                            count=i, op=op_sql)
-                    elif variable == 'operational_stakeholder_country':
-                        where_inv += "AND opsh_country_{count}.id {op}".format(
-                            count=i, op=op_sql)
+                    if 'region' in variable:
+                        where_inv += "AND investor_region_{count}.id {op}".format(count=i, op=op_sql)
+                    elif 'country' in variable:
+                        where_inv += "AND investor_country_{count}.id {op}".format(count=i, op=op_sql)
                     elif variable == 'investor':
                         where_inv += ' AND sh.investor_identifier = {}'.format(v)
                     elif variable == 'operational_stakeholder' and operation != 'contains':
-                        where_inv += " AND opsh_%i.id %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
-                    else:
-                        where_inv += " AND opsh_%i.name %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
+                        where_inv += " AND operational_stakeholder_%i.id %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
+                    elif 'operational_company_' in variable:
+                        variable = variable.replace('operational_company_', '')
+                        where_inv += " AND operational_stakeholder_%i.%s %s" % (i, variable, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
+                    elif 'parent_stakeholder_' in variable:
+                        variable = variable.replace('parent_stakeholder_', '')
+                        where_inv += " AND ivi_%i.role = '%s'" % (i, InvestorVentureInvolvement.STAKEHOLDER_ROLE)
+                        where_inv += " AND parent_stakeholder_%i.%s %s" % (i, variable, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
+                    elif 'parent_investor_' in variable:
+                        variable = variable.replace('parent_investor_', '')
+                        where_inv += " AND ivi_%i.role = '%s'" % (i, InvestorVentureInvolvement.INVESTOR_ROLE)
+                        where_inv += " AND parent_investor_%i.%s %s" % (i, variable, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
 
         return where_inv
 
@@ -412,39 +413,60 @@ class FilterToSQL:
             if value:
                 variable = tag.split("__")[0]
 
-            investor_tables.extend([
-                join_expression(
-                    'landmatrix_investoractivityinvolvement',
-                    'iai_{count}'.format(count=i), 'a.id', 'fk_activity_id'),
-                join_expression(
-                    'landmatrix_investor', 'opsh_{count}'.format(count=i),
-                    'iai_{count}.fk_investor_id'.format(count=i)),
-                join_expression(
-                    'landmatrix_investorventureinvolvement',
-                    'ivi_{count}'.format(count=i),
-                    'opsh_{count}.id'.format(count=i), 'fk_venture_id'),
-                join_expression(
-                    'landmatrix_investor', 'sh_{count}'.format(count=i),
-                    'ivi_{count}.fk_investor_id'.format(count=i)),
-                ])
+            INVESTOR_JOINS = {
+                'operational_company': [
+                    join_expression(
+                        'landmatrix_investoractivityinvolvement',
+                        'iai_{count}'.format(count=i), 'a.id', 'fk_activity_id'),
+                    join_expression(
+                        'landmatrix_investor',
+                        'operational_stakeholder_{count}'.format(count=i),
+                        'iai_{count}.fk_investor_id'.format(count=i)),
+                ],
+                'parent_stakeholder': [
+                    join_expression(
+                        'landmatrix_investorventureinvolvement',
+                        'ivi_{count}'.format(count=i),
+                        'operational_stakeholder_{count}.id'.format(count=i),
+                        'fk_venture_id'),
+                    join_expression(
+                        'landmatrix_investor',
+                        'parent_stakeholder_{count}'.format(count=i),
+                        'ivi_{count}.fk_investor_id'.format(count=i)),
+                ],
+                'parent_investor': [
+                    join_expression(
+                        'landmatrix_investorventureinvolvement',
+                        'ivi_{count}'.format(count=i),
+                        'operational_stakeholder_{count}.id'.format(count=i),
+                        'fk_venture_id'),
+                    join_expression(
+                        'landmatrix_investor',
+                        'parent_investor_{count}'.format(count=i),
+                        'ivi_{count}.fk_investor_id'.format(count=i)),
+                ],
+            }
+            role = re.match('^(operational_company|parent_stakeholder|parent_investor)_', variable).groups()[0]
+            if role == 'operational_company':
+                investor_tables.extend(INVESTOR_JOINS['operational_company'])
+            elif role == 'parent_stakeholder':
+                investor_tables.extend(INVESTOR_JOINS['operational_company'])
+                investor_tables.extend(INVESTOR_JOINS['parent_stakeholder'])
+            elif role == 'parent_investor':
+                investor_tables.extend(INVESTOR_JOINS['operational_company'])
+                investor_tables.extend(INVESTOR_JOINS['parent_investor'])
 
-            is_country_or_region = variable in (
-                'operational_stakeholder_country',
-                'operational_stakeholder_region',
-            )
-
-            if is_country_or_region:
+            if 'country' in variable:
                 country_join = join_expression(
                     'landmatrix_country',
-                    'opsh_country_{count}'.format(count=i),
-                    'opsh_{count}.fk_country_id'.format(count=i))
+                    'investor_country_{count}'.format(count=i),
+                    '{role}_{count}.fk_country_id'.format(count=i, role=role))
                 investor_tables.append(country_join)
-
-            if variable == 'operational_stakeholder_region':
+            elif 'region' in variable:
                 region_join = join_expression(
                     'landmatrix_region',
-                    'opsh_region_{count}'.format(count=i),
-                    'opsh_region_{count}.fk_region_id'.format(count=i))
+                    'investor_region_{count}'.format(count=i),
+                    '{role}_region_{count}.fk_region_id'.format(count=i, role=role))
                 investor_tables.append(region_join)
 
         return '\n'.join(investor_tables)

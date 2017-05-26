@@ -1,26 +1,18 @@
-from pprint import pprint
-from time import time
 from collections import OrderedDict
 
-from django.db import connection
 from django.utils.datastructures import MultiValueDict
-from django.http import Http404
 from django.utils.translation import ugettext as _
 
 from .profiling_decorators import print_execution_time_and_num_queries
-from landmatrix.models.browse_condition import BrowseCondition
 from landmatrix.models.filter_preset import FilterPreset, FilterPresetGroup
 from api.filters import Filter, PresetFilter
 from grid.fields import TitleField
 from grid.forms.browse_condition_form import ConditionFormset
 from grid.views.save_deal_view import SaveDealView
 from grid.views.browse_filter_conditions import BrowseFilterConditions
-from api.serializers import FilterPresetSerializer
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
-
-
-
+from grid.forms.investor_form import OperationalCompanyForm, ParentInvestorForm, ParentStakeholderForm
 
 def get_variable_table():
     '''
@@ -39,12 +31,13 @@ def get_variable_table():
     group_items = []
     group_title = ''
 
-    # Add an ID filter
+    # Add Deal ID
     variable_table[_('Deal ID')] = [{
         'name': 'activity_identifier',
         'label': _("Deal ID"),
     }]
 
+    # Add deal attributes
     for form in deal_forms:
         for field_name, field in form.base_fields.items():
             if isinstance(field, TitleField):
@@ -61,37 +54,36 @@ def get_variable_table():
     if group_title and group_items:
         variable_table[group_title] = group_items
 
-    # TODO: this is fragile, rethink this whole mess
-    if _('Operational company') in variable_table:
-        stakeholder_extras = [
-            {
-                'name': 'operational_company_country',
-                'label': _(
-                    "Operational company country of registration/origin"),
-            },
-            {
-                'name': 'operational_company_region',
-                'label': _(
-                    "Operational company region of registration/origin"),
-            },
-            {
-                'name': 'operational_company_classification',
-                'label': _("Operational company classification"),
-            },
-            {
-                'name': 'operational_company_homepage',
-                'label': _("Operational company homepage"),
-            },
-            {
-                'name': 'operational_company_opencorporates_link',
-                'label': _("Operational company Opencorporates link"),
-            },
-            {
-                'name': 'operational_company_comment',
-                'label': _("Additional comment on Operational company"),
-            },
-        ]
-        variable_table[_('Operational company')].extend(stakeholder_extras)
+    # Add operational company attributes
+    if _('Operational company') not in variable_table:
+        variable_table[str(_('Operational company'))] = []
+    for field_name, field in OperationalCompanyForm.base_fields.items():
+        if field_name == 'id':
+            continue
+        variable_table[str(_('Operational company'))].append({
+            'name': 'operational_company_%s' % field_name,
+            'label': '%s %s' % (str(_('Operational company')), str(field.label)),
+        })
+
+    # Add parent company attributes
+    variable_table[str(_('Parent company'))] = []
+    for field_name, field in ParentStakeholderForm.base_fields.items():
+        if field_name == 'id':
+            continue
+        variable_table[str(_('Parent company'))].append({
+            'name': 'parent_stakeholder_%s' % field_name,
+            'label': '%s %s' % (str(_('Parent company')), str(field.label)),
+            })
+
+    # Add tertiary investors/lenders attributes
+    variable_table[str(_('Tertiary investor/lender'))] = []
+    for field_name, field in ParentInvestorForm.base_fields.items():
+        if field_name == 'id':
+            continue
+        variable_table[str(_('Tertiary investor/lender'))].append({
+            'name': 'parent_investor_%s' % field_name,
+            'label': '%s %s' % (str(_('Tertiary investor/lender')), str(field.label)),
+         })
 
     return variable_table
 

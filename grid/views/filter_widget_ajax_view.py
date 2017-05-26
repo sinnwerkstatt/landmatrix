@@ -28,36 +28,31 @@ class FilterWidgetAjaxView(View):
             return self.render_widget_values(request)
 
     def render_widget_values(self, request):
-
         # TODO: Cleanup this hog of a method
 
-        fc_attrs = {'class': 'valuefield form-control'}
-        vf_attrs = {'class': 'valuefield'}
+        def merge_attrs(attrs_1, attrs_2):
+            for key, value in attrs_2.items():
+                if key in attrs_1 and key == 'class':
+                    attrs_1[key] += ' %s' % attrs_2[key]
+                else:
+                    attrs_1[key] = attrs_2[key]
+            return attrs_1
+
+        attrs = {'class': 'valuefield form-control'}
 
         value = request.GET.get("value", "")
         key_id = request.GET.get("key_id", "")
         operation = request.GET.get("operation", "")
         field = None
         value = value and value.split(",") or []
-        widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
+        widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
 
-        #if operation == 'is_empty':
-        #    return HttpResponse('', content_type="text/plain")
-        # Deal ID
+        # Get widget if there's no form field
         if key_id == 'activity_identifier':
             if operation in ("in", "not_in"):
-                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
+                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
             else:
-                widget = NumberInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
-        # deal scope
-        #elif key_id == "-2":
-        #    widget = CheckboxSelectMultiple()
-        #    widget.choices = (
-        #        (10, "Domestic"),
-        #        (20, "Transnational")
-        #    )
-        #    widget = widget.render(request.GET.get("name", ""), value, attrs=vf_attrs)
-
+                widget = NumberInput().render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
         elif key_id == "fully_updated" or key_id == "last_modification":
             value = len(value) > 0 and value[0] or ""
             if value:
@@ -88,12 +83,17 @@ class FilterWidgetAjaxView(View):
                 widget = Select(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(
                     request.GET.get("name", ""), len(value) == 1 and value[0] or value,
                     attrs={"id": "id_%s" % request.GET.get("name", "")})
-        elif "inv_" in key_id:
+        # Deprecated?
+        if "inv_" in key_id:
             field = get_field_by_key(key_id[4:])
         else:
             field = get_field_by_key(key_id)
+
+        # Get widget by form field
         if field:
             widget = field.widget
+            attrs = merge_attrs(attrs, field.widget.attrs)
+            attrs["id"] = "id_%s" % request.GET.get("name", "")
             if widget.attrs.get("readonly", ""):
                 del widget.attrs["readonly"]
             if type(widget) == HiddenInput:
@@ -101,19 +101,17 @@ class FilterWidgetAjaxView(View):
                 widget = Select(choices=field.choices)
             if type(widget) == LocationWidget:
                 field.widget = TextInput()
-                widget = field.widget.render(request.GET.get("name", ""), len(value) > 0 and value[0] or "", attrs=fc_attrs)
+                widget = field.widget.render(request.GET.get("name", ""), len(value) > 0 and value[0] or "", attrs=attrs)
             elif operation in ("in", "not_in"):
                 if type(widget) == YearBasedSelect:
                     field.widget = YearBasedMultipleSelect(choices=field.widget.choices)
                     # FIXME: multiple value parameters can arrive like "value=1&value=2" or "value=1,2", not very nice
                     value = type(value) in (list, tuple) and value or request.GET.getlist("value", [])
                     value = [value, ""]
-                    widget = field.widget.render(request.GET.get("name", ""), value,
-                                                 attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
+                    widget = field.widget.render(request.GET.get("name", ""), value, attrs=attrs)
 
                 elif type(widget) == YearBasedTextInput:
-                    widget = widget.render(request.GET.get("name", ""), ",".join(value),
-                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
+                    widget = widget.render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
                 elif type(widget) == RadioSelect:
                     widget = CheckboxSelectMultiple()
                     widget.choices = field.widget.choices
@@ -125,20 +123,16 @@ class FilterWidgetAjaxView(View):
                     widget.choices = field.widget.choices
                     widget = widget.render(request.GET.get("name", ""), value)
                 else:
-                    widget = widget.render(request.GET.get("name", ""), ",".join(value),
-                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "valuefield form-control"})
+                    widget = widget.render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
             elif operation in ("contains",):
-                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=fc_attrs)
+                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
             else:
                 if issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple, RadioSelect)):
                     widget = widget.render(request.GET.get("name", ""), value)
                 elif issubclass(type(field.widget), (YearBasedMultipleSelect, YearBasedSelect, YearBasedTextInput,
                                                      YearBasedSelectMultipleNumber)):
-                    widget = widget.render(request.GET.get("name", ""), ",".join(value),
-                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
+                    widget = widget.render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
                 else:
-                    widget = widget.render(request.GET.get("name", ""), ",".join(value),
-                                           attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "valuefield form-control"})
+                    widget = widget.render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
 
-            #print(type(field.widget))
         return HttpResponse(widget, content_type="text/plain")

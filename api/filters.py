@@ -105,7 +105,14 @@ class BaseFilter(dict):
 
     @property
     def type(self):
-        if self['variable'] in FILTER_VAR_INV:
+        if 'operational_company_' in self['variable']:
+            return self.INVESTOR_TYPE
+        elif 'parent_stakeholder_' in self['variable']:
+            return self.INVESTOR_TYPE
+        elif 'parent_investor_' in self['variable']:
+            return self.INVESTOR_TYPE
+        # Deprecated?
+        elif self['variable'] in FILTER_VAR_INV:
             return self.INVESTOR_TYPE
         else:
             return self.ACTIVITY_TYPE

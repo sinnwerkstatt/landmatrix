@@ -8,10 +8,10 @@ from django.forms.formsets import formset_factory
 
 from landmatrix.models.comment import Comment
 from landmatrix.models.country import Country
-from grid.forms.investor_form import InvestorForm
+from grid.forms.investor_form import ParentInvestorForm
 
 
-BaseInvestorFormSet = formset_factory(InvestorForm, extra=1)
+BaseInvestorFormSet = formset_factory(ParentInvestorForm, extra=1)
 
 
 class InvestorFormSet(BaseInvestorFormSet):
