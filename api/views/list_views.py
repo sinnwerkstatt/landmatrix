@@ -4,6 +4,7 @@ import collections
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.views.generic import View
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -69,7 +70,7 @@ class DealListView(FakeQuerySetListView):
         return self.fake_queryset_class(self.request)
 
 
-class GlobalDealsView(APIView):
+class ElasticSearchView(View):
     
     # default status are the public ones. will only get replaced if well formed and allowed
     status_list = ActivityBase.PUBLIC_STATUSES
@@ -221,6 +222,8 @@ class GlobalDealsView(APIView):
         
         return result_list
 
+
+class GlobalDealsView(APIView, ElasticSearchView):
     def create_feature_from_result(self, result):
         """ Create a GeoJSON-conform result. """
         

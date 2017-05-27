@@ -5,42 +5,48 @@ except ImportError:
 from xml.dom.minidom import parseString
 import unicodecsv as csv
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.http.response import HttpResponse
 from django.views.generic import TemplateView
-from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from collections import OrderedDict
-from django.utils.encoding import force_text
 import xlwt
 
-from grid.views import AllDealsView, TableGroupView, DealDetailView
+from grid.views import AllDealsView, TableGroupView, DealDetailView, ChangeDealView
+from api.views import ElasticSearchView
 
 
-
-
-class ExportView(TemplateView):
-    template_name = 'export.html'
+class ExportView(ElasticSearchView):
     FORMATS = ['csv', 'xml', 'xls']
 
-    def export(self, items, columns, format, filename="test"):
+    def get(self, request, *args, **kwargs):
+        format = kwargs.pop('format')
+        query = self.create_query_from_filters()
+        raw_result_list = self.execute_elasticsearch_query(query)
+
+        # filter results
+        items = self.filter_returned_results(raw_result_list)
+
         if format not in self.FORMATS:
             raise RuntimeError('Download format not recognized: ' + format)
 
+        filename = 'export'
         return getattr(self, 'export_%s' % format)(
-            columns, self.format_items_for_download(items, columns),
-            "%s.%s" % (filename, format))
+            self.format_items_for_download(items),
+            "%s.%s" % (filename, format)
+        )
 
-    def export_xls(self, header, data, filename):
+    def export_xls(self, data, filename):
         response = HttpResponse(content_type="application/ms-excel")
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
         wb = xlwt.Workbook()#encoding='utf-8')
-        ws = wb.add_sheet('Land Matrix')
-        for i, h in enumerate([column['label'] for name, column in header.items()]):
-            ws.write(0, i, str(h))
+        ws_deals = wb.add_sheet('Deals')
+        #for i, h in enumerate([column['label'] for name, column in header.items()]):
+        #    ws_deals.write(0, i, str(h))
         for i, row in enumerate(data):
             for j, d in enumerate(row):
-                ws.write(i+1, j, str(d))
+                ws_deals.write(i+1, j, str(d))
+        ws_involvements = wb.add_sheet('Involvements')
+        ws_investors = wb.add_sheet('Investors')
         wb.save(response)
         return response
 
@@ -68,57 +74,58 @@ class ExportView(TemplateView):
             writer.writerow([str(s) for s in row])
         return response
 
-
-    def format_items_for_download(self, items, columns):
+    def format_items_for_download(self, items):
         """ Format the data of the items to a proper download format.
             Returns an array of arrays, each row is an an array of data
         """
         rows = []
         for item in items:
             row = []
-            for c in columns:
-                v = item.get(c)
-                row_item = []
-                if isinstance(v, (tuple, list)):
-                    for lv in v:
-                        if isinstance(lv, dict):
-                            year = lv.get("year", None)
-                            current = lv.get("current", None)
-                            name = lv.get("name", None)
-                            value = lv.get("value", None)
-                            if name:
-                                row_item.append("[%s:%s] %s" % (
-                                    year != "0" and year or "",
-                                    current and "current" or "",
-                                    name.strip(),
-                                ))
-                            # Required for intention
-                            elif value and not lv.get("is_parent", False):
-                                row_item.append(str(value).strip())
-                            #else:
-                            #    row_item.append("[]")
-                        elif isinstance(lv, (list, tuple)):
-                            # Some vars take additional data for the template
-                            # (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
-                            if len(lv) > 0 and isinstance(lv[0], dict):
+            for form in ChangeDealView.FORMS:
+                form = hasattr(form, "form") and form.form or form
+                for c in form.base_fields:
+                    v = item.get(c)
+                    row_item = []
+                    if isinstance(v, (tuple, list)):
+                        for lv in v:
+                            if isinstance(lv, dict):
                                 year = lv.get("year", None)
                                 current = lv.get("current", None)
                                 name = lv.get("name", None)
+                                value = lv.get("value", None)
                                 if name:
                                     row_item.append("[%s:%s] %s" % (
                                         year != "0" and year or "",
                                         current and "current" or "",
                                         name.strip(),
                                     ))
+                                # Required for intention
+                                elif value and not lv.get("is_parent", False):
+                                    row_item.append(str(value).strip())
                                 #else:
                                 #    row_item.append("[]")
+                            elif isinstance(lv, (list, tuple)):
+                                # Some vars take additional data for the template
+                                # (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
+                                if len(lv) > 0 and isinstance(lv[0], dict):
+                                    year = lv.get("year", None)
+                                    current = lv.get("current", None)
+                                    name = lv.get("name", None)
+                                    if name:
+                                        row_item.append("[%s:%s] %s" % (
+                                            year != "0" and year or "",
+                                            current and "current" or "",
+                                            name.strip(),
+                                        ))
+                                    #else:
+                                    #    row_item.append("[]")
+                                else:
+                                    row_item.append(str(lv).strip() or '')
                             else:
                                 row_item.append(str(lv).strip() or '')
-                        else:
-                            row_item.append(str(lv).strip() or '')
-                    row.append(", ".join(filter(None, row_item)))
-                else:
-                    row.append(v.strip() or "")
+                        row.append(", ".join(filter(None, row_item)))
+                    else:
+                        row.append(str(v).strip() or "")
             rows.append(row)
         return rows
 

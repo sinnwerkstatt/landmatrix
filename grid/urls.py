@@ -18,17 +18,17 @@ urlpatterns = [
     ),
     url(
         r'^all\.(?P<format>(csv|xml|xls))/$',
-        save_filter_query_params()(AllDealsExportView.as_view()),
+        save_filter_query_params()(ExportView.as_view()),
         name='export'
     ),
     url(
         r'^(?P<group>.+)/(?P<group_value>.+)\.(?P<format>(csv|xml|xls))/$',
-        save_filter_query_params()(TableGroupExportView.as_view()),
+        save_filter_query_params()(ExportView.as_view()),
         name='export'
     ),
     url(
         r'^(?P<group>.+)\.(?P<format>(csv|xml|xls))/$',
-        save_filter_query_params()(TableGroupExportView.as_view()),
+        save_filter_query_params()(ExportView.as_view()),
         name='export'
     ),
 
