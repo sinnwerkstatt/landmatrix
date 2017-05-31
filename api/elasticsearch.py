@@ -262,7 +262,7 @@ class ElasticSearch(object):
         docs = []
         spatial_names = self.get_spatial_properties()
         spatial_attrs = {}
-        attrs = {
+        deal_attrs = {
             'historical_activity_id': activity.id,
             'activity_identifier': activity.activity_identifier,
             'status': activity.fk_status_id,
@@ -273,41 +273,51 @@ class ElasticSearch(object):
                 continue
             value = a.value
 
+            # Area field?
+            if a.name and 'area' in a.name and a.polygon is not None:
+                # Get polygon
+                value = json.loads(a.polygon.json)
+                # Apparently this is case sensitive: MultiPolygon as provided by
+                # the GeoJSON does not work ...
+                value['type'] = 'multipolygon'
+            # do not include empty values
+            if value is None or value == '':
+                continue
+
             # Doc types: location, data_source or contract
             group_match = re.match('(?P<doc_type>location|data_source|contract)_(?P<count>\d+)', a.fk_group.name)
             if group_match:
                 dt, count = group_match.groupdict()['doc_type'], int(group_match.groupdict()['count'])
-                if dt == doc_type:
-                    while len(docs) <= count:
-                        docs.append({'id': int('%i%i' % (a.id, count))})
-                    docs[count][a.name] = [value,]
+                if doc_type == dt:
+                    while len(docs) < count:
+                        docs.append({
+                            'id': '%i_%i' % (a.id, count),
+                            'activity_id': a.id,
+                        })
+                    docs[count-1][a.name] = [value,]
+                # Set doc type counter within deal doc type (for location/data_source/contract)
+                elif doc_type == 'deal':
+                    key = '%s_count' % dt
+                    if key not in deal_attrs.keys():
+                        deal_attrs[key] = count
+                    elif deal_attrs[key] < count:
+                        deal_attrs[key] = count
             # Doc type: deal
             if doc_type == 'deal':
-
-                # Get polygon
-                if a.name and 'area' in a.name and a.polygon is not None:
-                    value = json.loads(a.polygon.json)
-                    # Apparently this is case sensitive: MultiPolygon as provided by
-                    # the GeoJSON does not work ...
-                    value['type'] = 'multipolygon'
-                # do not include empty values
-                if value is None or value == '':
-                    continue
-
                 if a.name in spatial_names:
                     if a.fk_group_id in spatial_attrs:
                         spatial_attrs[a.fk_group_id][a.name] = value
                     else:
                         spatial_attrs[a.fk_group_id] = {a.name: value}
-                elif a.name in attrs:
-                    attrs[a.name].append(value)
+                elif a.name in deal_attrs:
+                    deal_attrs[a.name].append(value)
                 else:
-                    attrs[a.name] = [value,]
+                    deal_attrs[a.name] = [value,]
 
         # Create single document for each location
         # FIXME: Saving single deals for each location might be deprecated since we have doc_type location now?
         for group, group_attrs in spatial_attrs.items():
-            doc = attrs.copy()
+            doc = deal_attrs.copy()
             doc.update(group_attrs)
             # Set unique ID for location (deals can have multiple locations)
             doc['id'] = '%s_%s' % (doc['historical_activity_id'], group)
@@ -327,14 +337,18 @@ class ElasticSearch(object):
             for ivi in ivis:
                 doc = {}
                 for field in ivi._meta.local_fields:
-                    doc[field.name] = getattr(ivi, field.name)
-                    if isinstance(field, ForeignKey) and doc[field.name]:
-                        doc[field.name] = doc[field.name].id
+                    if isinstance(field, ForeignKey):
+                        doc[field.name] = getattr(ivi, '%s_id' % field.name)
+                    else:
+                        doc[field.name] = getattr(ivi, field.name)
                 docs.append(doc)
         elif doc_type == 'investor':
             doc = {}
             for field in investor._meta.local_fields:
-                doc[field.name] = getattr(investor, field.name)
+                if isinstance(field, ForeignKey):
+                    doc[field.name] = getattr(investor, '%s_id' % field.name)
+                else:
+                    doc[field.name] = getattr(investor, field.name)
             docs.append(doc)
         return docs
 

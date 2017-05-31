@@ -16,7 +16,7 @@ wagtail-blog
 wagtail==1.9
 git+git://github.com/sinnwerkstatt/wagtail-modeltranslation.git@django1.9
 coverage >= 3.7
-xlwt >= 1.1.2
+openpyxl
 python-mimeparse >= 0.1.4
 requests
 django-simple-history

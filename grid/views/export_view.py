@@ -9,17 +9,20 @@ from django.http.response import HttpResponse
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext_lazy as _
 from collections import OrderedDict
-import xlwt
+from openpyxl import Workbook
 
 from grid.views import AllDealsView, TableGroupView, DealDetailView, ChangeDealView
 from api.views import ElasticSearchView
 
 
 class ExportView(ElasticSearchView):
-    FORMATS = ['csv', 'xml', 'xls']
+    # TODO: XLS is deprecated, should be removed in templates
+    FORMATS = ['csv', 'xml', 'xls', 'xlsx']
 
     def get(self, request, *args, **kwargs):
         format = kwargs.pop('format')
+        if format == 'xls':
+            format = 'xlsx'
         query = self.create_query_from_filters()
         raw_result_list = self.execute_elasticsearch_query(query)
 
@@ -31,22 +34,20 @@ class ExportView(ElasticSearchView):
 
         filename = 'export'
         return getattr(self, 'export_%s' % format)(
-            self.format_items_for_download(items),
+            self.get_data(items),
             "%s.%s" % (filename, format)
         )
 
-    def export_xls(self, data, filename):
+    def export_xlsx(self, data, filename):
         response = HttpResponse(content_type="application/ms-excel")
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
-        wb = xlwt.Workbook()#encoding='utf-8')
-        ws_deals = wb.add_sheet('Deals')
-        #for i, h in enumerate([column['label'] for name, column in header.items()]):
-        #    ws_deals.write(0, i, str(h))
-        for i, row in enumerate(data):
-            for j, d in enumerate(row):
-                ws_deals.write(i+1, j, str(d))
-        ws_involvements = wb.add_sheet('Involvements')
-        ws_investors = wb.add_sheet('Investors')
+        wb = Workbook()
+        ws_deals = wb.create_sheet(title='Deals')
+        ws_deals.append(data['headers'])
+        for i, row in enumerate(data['items']):
+            ws_deals.append(row)
+        ws_involvements = wb.create_sheet(title='Involvements')
+        ws_investors = wb.create_sheet(title='Investors')
         wb.save(response)
         return response
 
@@ -74,60 +75,106 @@ class ExportView(ElasticSearchView):
             writer.writerow([str(s) for s in row])
         return response
 
-    def format_items_for_download(self, items):
-        """ Format the data of the items to a proper download format.
+    @staticmethod
+    def format_value(value, i=None):
+        if not value:
+            return ""
+        # Formset?
+        if i is not None:
+            try:
+                value = value[i]
+            except IndexError:
+                return ""
+        row_item = []
+        if isinstance(value, (tuple, list)):
+            for lv in value:
+                if isinstance(lv, dict):
+                    year = lv.get("year", None)
+                    current = lv.get("current", None)
+                    name = lv.get("name", None)
+                    vvalue = lv.get("value", None)
+                    if name:
+                        row_item.append("[%s:%s] %s" % (
+                            year != "0" and year or "",
+                            current and "current" or "",
+                            name.strip(),
+                        ))
+                    # Required for intention
+                    elif vvalue and not lv.get("is_parent", False):
+                        row_item.append(str(vvalue).strip())
+                        # else:
+                        #    row_item.append("[]")
+                elif isinstance(lv, (list, tuple)):
+                    # Some vars take additional data for the template
+                    # (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
+                    if len(lv) > 0 and isinstance(lv[0], dict):
+                        year = lv.get("year", None)
+                        current = lv.get("current", None)
+                        name = lv.get("name", None)
+                        if name:
+                            row_item.append("[%s:%s] %s" % (
+                                year != "0" and year or "",
+                                current and "current" or "",
+                                name.strip(),
+                            ))
+                            # else:
+                            #    row_item.append("[]")
+                    else:
+                        row_item.append(str(lv).strip() or '')
+                else:
+                    row_item.append(str(lv).strip() or '')
+            return ", ".join(filter(None, row_item))
+        else:
+            return str(value).strip() or ""
+
+    def get_data(self, items):
+        """ Get headers and format the data of the items to a proper download format.
             Returns an array of arrays, each row is an an array of data
         """
+        data = {
+            'headers': [],
+            'items': [],
+            'max': {},
+        }
+        # Get headers and max formset counts
+        headers = []
+        for form in ChangeDealView.FORMS:
+            formset_name = hasattr(form, "form") and form.Meta.name or None
+            form = formset_name and form.form or form
+            # Is formset?
+            if formset_name:
+                # Get item with maximum forms
+                data['max'][formset_name] = max([i.get('%s_count' % formset_name, 0) for i in items])
+                for i in range(0, data['max'][formset_name]):
+                    for field_name, field in form.base_fields.items():
+                        headers.append('%s %i: %s' % (
+                            form.form_title,
+                            i + 1,
+                            str(field.label),
+                        ))
+            else:
+                for field_name, field in form.base_fields.items():
+                    headers.append(str(field.label))
+        data['headers'] = headers
+
         rows = []
         for item in items:
             row = []
             for form in ChangeDealView.FORMS:
-                form = hasattr(form, "form") and form.form or form
-                for c in form.base_fields:
-                    v = item.get(c)
-                    row_item = []
-                    if isinstance(v, (tuple, list)):
-                        for lv in v:
-                            if isinstance(lv, dict):
-                                year = lv.get("year", None)
-                                current = lv.get("current", None)
-                                name = lv.get("name", None)
-                                value = lv.get("value", None)
-                                if name:
-                                    row_item.append("[%s:%s] %s" % (
-                                        year != "0" and year or "",
-                                        current and "current" or "",
-                                        name.strip(),
-                                    ))
-                                # Required for intention
-                                elif value and not lv.get("is_parent", False):
-                                    row_item.append(str(value).strip())
-                                #else:
-                                #    row_item.append("[]")
-                            elif isinstance(lv, (list, tuple)):
-                                # Some vars take additional data for the template
-                                # (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
-                                if len(lv) > 0 and isinstance(lv[0], dict):
-                                    year = lv.get("year", None)
-                                    current = lv.get("current", None)
-                                    name = lv.get("name", None)
-                                    if name:
-                                        row_item.append("[%s:%s] %s" % (
-                                            year != "0" and year or "",
-                                            current and "current" or "",
-                                            name.strip(),
-                                        ))
-                                    #else:
-                                    #    row_item.append("[]")
-                                else:
-                                    row_item.append(str(lv).strip() or '')
-                            else:
-                                row_item.append(str(lv).strip() or '')
-                        row.append(", ".join(filter(None, row_item)))
-                    else:
-                        row.append(str(v).strip() or "")
+                formset_name = hasattr(form, "form") and form.Meta.name or None
+                form = formset_name and form.form or form
+                # Is formset?
+                if formset_name:
+                    for i in range(0, data['max'][formset_name]):
+                        for field_name, field in form.base_fields.items():
+                            row.append(self.format_value(item.get(field_name), i).encode('unicode_escape').decode('utf-8'))
+                else:
+                    for field_name, field in form.base_fields.items():
+                        row.append(self.format_value(item.get(field_name)).encode('unicode_escape').decode('utf-8'))
             rows.append(row)
-        return rows
+        data['items'] = rows
+
+        return data
 
 
 class AllDealsExportView(AllDealsView, ExportView):
