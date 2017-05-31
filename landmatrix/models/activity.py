@@ -315,7 +315,7 @@ class Activity(ActivityBase):
     deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
     init_date = models.CharField(verbose_name=_('Initiation year or date'), max_length=10,
                                  blank=True, null=True, db_index=True)
-    fully_updated = models.DateField(_("Fully updated"), blank=True, null=True)
+    fully_updated_date = models.DateField(_("Fully updated date"), blank=True, null=True)
 
     def refresh_cached_attributes(self):
         # Implementation status
@@ -334,7 +334,7 @@ class Activity(ActivityBase):
         self.init_date = self.get_init_date()
 
         # Fully updated
-        self.fully_updated = self.get_fully_updated()
+        self.fully_updated_date = self.get_fully_updated_date()
 
         self.is_public = self.is_public_deal()
         self.save()
@@ -562,7 +562,7 @@ class Activity(ActivityBase):
         else:
             return 0
 
-    def get_fully_updated(self):
+    def get_fully_updated_date(self):
         try:
             activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier,
                                                          fully_updated=True).latest()
