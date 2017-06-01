@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, Group
 from django.conf import settings
+from django.shortcuts import redirect
 
 from landmatrix.models.activity_attribute_group import (
     HistoricalActivityAttribute, ActivityAttributeGroup,
@@ -158,9 +159,10 @@ class SaveDealView(TemplateView):
             self.create_activity_changeset(hactivity)
             messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 
-        context = self.get_context_data(**self.kwargs)
-        context['forms'] = forms
-        return self.render_to_response(context)
+        #context = self.get_context_data(**self.kwargs)
+        #context['forms'] = forms
+        #return self.render_to_response(context)
+        return redirect('deal_detail', deal_id=hactivity.activity_identifier)
 
     def form_invalid(self, forms):
         messages.error(self.request, _('Please correct the error below.'))

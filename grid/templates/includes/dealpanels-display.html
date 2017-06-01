@@ -12,15 +12,17 @@
                     <a href="{{ field.value|safe|decimalgroupstring }}" target="_blank">{{ field.value|safe|decimalgroupstring }}</a>
                 {% elif field.name == 'file' %}
                     <a href="{{ MEDIA_URL }}{{ DATA_SOURCE_DIR }}/{{ field.value|safe }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+                {% elif 'area' in field.name %}
+                    <div id="area-{{ forloop.counter }}-div-map" class="geometry-multipolygon">
+                        <div id="area-{{ forloop.counter }}-map" style="width: 600px; height: 400px;"></div>
+                        <textarea id="area-{{ forloop.counter }}" class="map-serialized-data" class="vSerializedField required" cols="150" rows="10" style="display:none" data-map-widget-options='{"mapWidth": 600, "mapHeight": 400, "initialZoom": 8, "initialCenterLat": 0, "initialCenterLon": 0, "showLayerSwitcher": true, "geomName": "MultiPolygon", "disableDrawing": true, "mapSRID": {{ field.value.srid }}}'>{{ field.value.serialized }}</textarea>
+                    </div>
                 {% else %}
                     {{ field.value|safe|decimalgroupstring }}
                 {% endif %}
             </div>
         </div>
-        {% if field.name == 'location' %}
-            {{ form.location|random_id }}
-            <br clear="left">
-        {% endif %}
+        {% if field.name == 'location' %}{{ form.location|random_id }}<br clear="left">{% endif %}
     {% endif %}
 {% endfor %}
 

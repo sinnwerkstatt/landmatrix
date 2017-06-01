@@ -147,7 +147,7 @@ class DealSpatialForm(BaseForm):
         if value_is_file:
             # Files are the second widget, so append _1
             field_name = '{}_1'.format(self[field_name].html_name)
-            shapefile_data = self.files.getlist(field_name)
+            shapefile_data = hasattr(self.files, 'getlist') and self.files.getlist(field_name) or self.files[field_name]
             try:
                 value = parse_shapefile(shapefile_data)
             except ValueError as err:

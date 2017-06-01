@@ -100,6 +100,7 @@ INSTALLED_APPS += (
     'rest_framework_gis',
     'rest_framework_docs',
     'django.contrib.syndication',
+    'file_resubmit',
 
 #   apps of the actual landmatrix project
     'landmatrix',
@@ -254,7 +255,11 @@ CONN_MAX_AGE = 0
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-    }
+    },
+    "file_resubmit": {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        "LOCATION": '/tmp/file_resubmit/'
+    },
 }
 
 COMMENTS_APP = 'public_comments'

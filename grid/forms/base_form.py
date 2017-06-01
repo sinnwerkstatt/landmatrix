@@ -300,7 +300,7 @@ class BaseForm(forms.Form):
             elif isinstance(field, forms.ChoiceField):
                 value = self.get_display_value_choice_field(field, field_name)
             elif isinstance(field, AreaField):
-                value = None
+                value = self.get_display_value_area_field(field, field_name)
             elif isinstance(field, forms.MultiValueField):
                 value = self.get_display_value_multi_value_field(field, field_name)
             elif isinstance(field, forms.FileField):
@@ -385,6 +385,14 @@ class BaseForm(forms.Form):
 #        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
 #        if data: data = [data]
 #        return data
+
+    def get_display_value_area_field(self, field, field_name):
+        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        # Return serialized value for map
+        return {
+            'srid': data and data.srid or None,
+            'serialized': field.widget.widgets[0].serialize(data),
+        }
 
     def get_display_value_multiple_choice_field(self, field, field_name):
         data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])

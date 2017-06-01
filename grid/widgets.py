@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
 from django.utils.html import conditional_escape, escape
+from file_resubmit.widgets import ResubmitFileWidget
 
 from ol3_widgets.widgets import SerializedMapWidget
 from landmatrix.models import Country
@@ -341,7 +342,7 @@ class NumberInput(forms.TextInput):
         return super(NumberInput, self).render(name, value, attrs)
 
 
-class FileInputWithInitial(forms.ClearableFileInput):
+class FileInputWithInitial(ResubmitFileWidget):
     displayed_chars = 40
     existing_file_template = '<a class="input-group-addon" href="{url}" target="_blank" ' \
                              'title="{label}" class="toggle-tooltip"><i class="fa fa-file-pdf-o"></i></a>'
@@ -569,7 +570,7 @@ class AreaWidget(forms.MultiWidget):
 
         widgets = [
             SerializedMapWidget(attrs=map_attrs),
-            forms.ClearableFileInput(attrs=file_attrs),
+            ResubmitFileWidget(attrs=file_attrs),
         ]
         super().__init__(widgets, *args, **kwargs)
 

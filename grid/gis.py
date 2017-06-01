@@ -19,7 +19,7 @@ def parse_shapefile(files):
     required_extensions = ('shp', 'shx', 'dbf', 'prj')
     extensions = [file_obj.name[-3:].lower() for file_obj in files]
     if set(required_extensions).difference(set(extensions)):
-        raise ValueError('SHP, SHX, DBF, and PRJ files are required')
+        raise ValueError('SHP, SHX, DBF and PRJ files are required')
 
     clean_polygons = None
 

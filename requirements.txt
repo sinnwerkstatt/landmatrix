@@ -15,6 +15,7 @@ django-bootstrap3-datetimepicker-2==2.4.2
 wagtail-blog
 wagtail==1.9
 git+git://github.com/sinnwerkstatt/wagtail-modeltranslation.git@django1.9
+git+git://github.com/sinnwerkstatt/django-file-resubmit
 coverage >= 3.7
 openpyxl
 python-mimeparse >= 0.1.4

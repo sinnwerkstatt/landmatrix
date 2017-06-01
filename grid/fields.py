@@ -473,6 +473,31 @@ class ActorsField(forms.MultiValueField):
             self.fields = [forms.CharField(required=False), forms.ChoiceField(choices=self.choices, required=False)]
 
 
+class MultiFileField(forms.FileField):
+    '''
+    Prevent upload error for multiple files
+    '''
+    def to_python(self, data):
+        for file in data:
+            if file in self.empty_values:
+                return None
+
+            # UploadedFile objects should have name and size attributes.
+            try:
+                file_name = file.name
+                file_size = file.size
+            except AttributeError:
+                raise ValidationError(self.error_messages['invalid'], code='invalid')
+
+            if self.max_length is not None and len(file_name) > self.max_length:
+                params = {'max': self.max_length, 'length': len(file_name)}
+                raise ValidationError(self.error_messages['max_length'], code='max_length', params=params)
+            if not file_name:
+                raise ValidationError(self.error_messages['invalid'], code='invalid')
+            if not self.allow_empty_file and not file_size:
+                raise ValidationError(self.error_messages['empty'], code='empty')
+        return data
+
 class AreaField(forms.MultiValueField):
     '''
     MultiValueField for area map with optional shapefile upload.
