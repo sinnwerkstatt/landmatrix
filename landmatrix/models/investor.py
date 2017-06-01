@@ -286,7 +286,7 @@ class  InvestorVentureInvolvement(models.Model):
     percentage = models.FloatField(
         _('Ownership share'), blank=True, null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
-    role = models.CharField(max_length=2, choices=ROLE_CHOICES)
+    role = models.CharField(verbose_name=_("Role"), max_length=2, choices=ROLE_CHOICES)
     loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
     loans_currency = models.ForeignKey(
         "Currency", verbose_name=_("Loan currency"), blank=True, null=True)

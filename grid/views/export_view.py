@@ -6,11 +6,11 @@ from xml.dom.minidom import parseString
 import unicodecsv as csv
 
 from django.http.response import HttpResponse
-from django.views.generic import TemplateView
 from django.utils.translation import ugettext_lazy as _
 from collections import OrderedDict
 from openpyxl import Workbook
 
+from landmatrix.models import Investor, InvestorVentureInvolvement
 from grid.views import AllDealsView, TableGroupView, DealDetailView, ChangeDealView
 from api.views import ElasticSearchView
 
@@ -24,17 +24,24 @@ class ExportView(ElasticSearchView):
         if format == 'xls':
             format = 'xlsx'
         query = self.create_query_from_filters()
-        raw_result_list = self.execute_elasticsearch_query(query)
 
-        # filter results
-        items = self.filter_returned_results(raw_result_list)
+        results = {}
+        # Search deals
+        deals = self.execute_elasticsearch_query(query, doc_type='deal')
+        results['deals'] = self.filter_returned_results(deals)
+
+        # Get all involvements
+        results['involvements'] = self.execute_elasticsearch_query({}, doc_type='involvement')
+
+        # Get all investors
+        results['investors'] = self.execute_elasticsearch_query({}, doc_type='investor')
 
         if format not in self.FORMATS:
             raise RuntimeError('Download format not recognized: ' + format)
 
         filename = 'export'
         return getattr(self, 'export_%s' % format)(
-            self.get_data(items),
+            self.get_data(results),
             "%s.%s" % (filename, format)
         )
 
@@ -42,12 +49,26 @@ class ExportView(ElasticSearchView):
         response = HttpResponse(content_type="application/ms-excel")
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
         wb = Workbook()
-        ws_deals = wb.create_sheet(title='Deals')
-        ws_deals.append(data['headers'])
-        for i, row in enumerate(data['items']):
+
+        # Deals tab
+        ws_deals = wb.get_sheet_by_name('Sheet')
+        ws_deals.title = 'Deals'
+        ws_deals.append(data['deals']['headers'])
+        for i, row in enumerate(data['deals']['items']):
             ws_deals.append(row)
+
+        # Involvements tab
         ws_involvements = wb.create_sheet(title='Involvements')
+        ws_involvements.append(data['involvements']['headers'])
+        for i, row in enumerate(data['involvements']['items']):
+            ws_involvements.append(row)
+
+        # Investors tab
         ws_investors = wb.create_sheet(title='Investors')
+        ws_investors.append(data['investors']['headers'])
+        for i, row in enumerate(data['investors']['items']):
+            ws_investors.append(row)
+
         wb.save(response)
         return response
 
@@ -79,14 +100,14 @@ class ExportView(ElasticSearchView):
     def format_value(value, i=None):
         if not value:
             return ""
-        # Formset?
-        if i is not None:
-            try:
-                value = value[i]
-            except IndexError:
-                return ""
         row_item = []
         if isinstance(value, (tuple, list)):
+            # Formset?
+            if i is not None:
+                try:
+                    value = value[i]
+                except IndexError:
+                    return ""
             for lv in value:
                 if isinstance(lv, dict):
                     year = lv.get("year", None)
@@ -127,16 +148,26 @@ class ExportView(ElasticSearchView):
         else:
             return str(value).strip() or ""
 
-    def get_data(self, items):
+    def get_data(self, results):
         """ Get headers and format the data of the items to a proper download format.
             Returns an array of arrays, each row is an an array of data
         """
         data = {
-            'headers': [],
-            'items': [],
-            'max': {},
+            'deals': {
+                'headers': [],
+                'items': [],
+                'max': {},
+            },
+            'involvements': {
+                'headers': [],
+                'items': [],
+            },
+            'investors': {
+                'headers': [],
+                'items': [],
+            },
         }
-        # Get headers and max formset counts
+        # Get deal headers and max formset counts
         headers = []
         for form in ChangeDealView.FORMS:
             formset_name = hasattr(form, "form") and form.Meta.name or None
@@ -144,8 +175,8 @@ class ExportView(ElasticSearchView):
             # Is formset?
             if formset_name:
                 # Get item with maximum forms
-                data['max'][formset_name] = max([i.get('%s_count' % formset_name, 0) for i in items])
-                for i in range(0, data['max'][formset_name]):
+                data['deals']['max'][formset_name] = max([i.get('%s_count' % formset_name, 0) for i in results['deals']])
+                for i in range(0, data['deals']['max'][formset_name]):
                     for field_name, field in form.base_fields.items():
                         headers.append('%s %i: %s' % (
                             form.form_title,
@@ -155,24 +186,55 @@ class ExportView(ElasticSearchView):
             else:
                 for field_name, field in form.base_fields.items():
                     headers.append(str(field.label))
-        data['headers'] = headers
+        data['deals']['headers'] = headers
 
+        # Get deals
         rows = []
-        for item in items:
+        for item in results['deals'][:3]:
             row = []
             for form in ChangeDealView.FORMS:
                 formset_name = hasattr(form, "form") and form.Meta.name or None
                 form = formset_name and form.form or form
                 # Is formset?
                 if formset_name:
-                    for i in range(0, data['max'][formset_name]):
+                    for i in range(0, data['deals']['max'][formset_name]):
                         for field_name, field in form.base_fields.items():
                             row.append(self.format_value(item.get(field_name), i).encode('unicode_escape').decode('utf-8'))
                 else:
                     for field_name, field in form.base_fields.items():
                         row.append(self.format_value(item.get(field_name)).encode('unicode_escape').decode('utf-8'))
             rows.append(row)
-        data['items'] = rows
+        data['deals']['items'] = rows
+
+        # Get involvement headers
+        headers = []
+        for field in InvestorVentureInvolvement._meta.local_fields:
+            headers.append(str(hasattr(field, 'verbose_name') and field.verbose_name or ''))
+        data['involvements']['headers'] = headers
+        # Get involvements
+        rows = []
+        for item in results['involvements'][:3]:
+            item = item.get('_source', {})
+            row = []
+            for field in InvestorVentureInvolvement._meta.local_fields:
+                row.append(self.format_value(item.get(field.name)).encode('unicode_escape').decode('utf-8'))
+            rows.append(row)
+        data['involvements']['items'] = rows
+
+        # Get investor headers
+        headers = []
+        for field in Investor._meta.local_fields:
+            headers.append(str(hasattr(field, 'verbose_name') and field.verbose_name or ''))
+        data['investors']['headers'] = headers
+        # Get investors
+        rows = []
+        for item in results['investors'][:3]:
+            item = item.get('_source', {})
+            row = []
+            for field in Investor._meta.local_fields:
+                row.append(self.format_value(item.get(field.name)).encode('unicode_escape').decode('utf-8'))
+            rows.append(row)
+        data['investors']['items'] = rows
 
         return data
 

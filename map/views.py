@@ -187,14 +187,14 @@ class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
 
         # Target country or region set?
         filters = self.request.session.get('filters', {})
-        if 'Target country' in filters:
-            target_country_id = filters['Target country']['value']
+        if 'country' in filters:
+            target_country_id = filters['country']['value']
             with contextlib.suppress(Country.DoesNotExist, ValueError):
                 context['map_object'] = Country.objects.defer('geom').get(pk=target_country_id)
                 context['is_country'] = True
 
-        if 'Target region' in filters:
-            target_region_id = filters['Target region']['value']
+        if 'region' in filters:
+            target_region_id = filters['region']['value']
             with contextlib.suppress(Region.DoesNotExist, ValueError):
                 context['map_object'] = Region.objects.get(pk=target_region_id)
 
