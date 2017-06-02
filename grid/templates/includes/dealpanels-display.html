@@ -15,7 +15,7 @@
                 {% elif 'area' in field.name %}
                     <div id="area-{{ forloop.counter }}-div-map" class="geometry-multipolygon">
                         <div id="area-{{ forloop.counter }}-map" style="width: 600px; height: 400px;"></div>
-                        <textarea id="area-{{ forloop.counter }}" class="map-serialized-data" class="vSerializedField required" cols="150" rows="10" style="display:none" data-map-widget-options='{"mapWidth": 600, "mapHeight": 400, "initialZoom": 8, "initialCenterLat": 0, "initialCenterLon": 0, "showLayerSwitcher": true, "geomName": "MultiPolygon", "disableDrawing": true, "mapSRID": {{ field.value.srid }}}'>{{ field.value.serialized }}</textarea>
+                        <textarea id="area-{{ forloop.counter }}" class="map-serialized-data" class="vSerializedField required" cols="150" rows="10" style="display:none" data-map-widget-options='{"mapWidth": 600, "mapHeight": 400, "baseLayers": null, "initialZoom": 8, "initialCenterLat": 0, "initialCenterLon": 0, "showLayerSwitcher": true, "geomName": "MultiPolygon", "disableDrawing": true, "mapSRID": {{ field.value.srid }}}'>{{ field.value.serialized }}</textarea>
                     </div>
                 {% else %}
                     {{ field.value|safe|decimalgroupstring }}

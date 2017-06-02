@@ -77,7 +77,7 @@ function stakeholderRemoved(row) {
 
 $(document).ready(function () {
     $('.fk_country select').each(function () {
-        initCountryField(this);
+        initCountryField($(this));
     });
 });
 
