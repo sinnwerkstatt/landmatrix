@@ -6,7 +6,7 @@
 var datatype = 'size';
 
 var d3_lmcolors = [
-    "#fc941f", "#b9d635", "#4bbb87", "#179961", "#7c9a61",
+    "#fc941f", "#b9d635", "#1f7bfc", "#179961", "#7c9a61",
     "#c6c6c6", "#919191", "#ebebeb"
 ];
 
