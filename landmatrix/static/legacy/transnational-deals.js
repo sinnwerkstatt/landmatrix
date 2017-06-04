@@ -396,7 +396,7 @@ function mouseup(d) {
                         target_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") + "></tr>";
 
                     }
-                    info.find(".target-regions a.inbound").attr("href", "/global/data/by-target-country/" + n.slug + "/");
+                    info.find(".target-regions a.inbound").attr("href", "/data/by-target-country/" + n.slug + "/");
                     info.find(".target-regions").find("table").html(target_regions);
                 }
                 if (data.target_country.length > 1) {
@@ -406,7 +406,7 @@ function mouseup(d) {
                         if (data.target_country.length == 2 && r.region == "Total") continue;
                         investor_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") + "></tr>";
                     }
-                    info.find(".investor-regions a.outbound").attr("href", "/global/data/by-stakeholder-country/" + n.slug + "/");
+                    info.find(".investor-regions a.outbound").attr("href", "/data/by-investor-country/" + n.slug + "/");
                     info.find(".investor-regions").find("table").html(investor_regions);
                 }
                 info.show();

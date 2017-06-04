@@ -65,9 +65,7 @@ class FakeQuerySetFlat(FakeQuerySet):
 SELECT DISTINCT
 --  columns:
     %s
-FROM landmatrix_activity                       AS a
-LEFT JOIN landmatrix_investoractivityinvolvement AS iai            ON iai.fk_activity_id = a.id
-LEFT JOIN landmatrix_investor                  AS operational_stakeholder ON iai.fk_investor_id = operational_stakeholder.id
+    %s
 --  additional joins:
 %s
 WHERE
@@ -87,6 +85,7 @@ WHERE
         filter_sql = self._filter_sql if self.APPLY_GLOBAL_FILTERS else ''
         return self.QUERY % (
             self.columns(),
+            self.get_from(),
             self.additional_joins(),
             "\nAND ".join(filter(None, [
                 self.status_active_condition(),

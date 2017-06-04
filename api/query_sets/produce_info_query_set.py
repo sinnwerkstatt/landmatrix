@@ -8,7 +8,7 @@ class AnimalsQuerySet(FakeQuerySetFlat):
     # for empty strings
     FIELDS = [
         ('name', 'animal.name'),
-        ('size', 'SUM(COALESCE(CASE WHEN animals.value2 ~ E\'^\\d+$\' THEN animals.value2::integer ELSE 0 END, a.deal_size))'),
+        ('size', 'SUM(COALESCE(CASE WHEN animals.value2 ~ E\'^\\\d+$\' THEN animals.value2::integer ELSE 0 END, a.deal_size))'),
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattribute         AS animals          ON a.id = animals.fk_activity_id AND animals.name = 'animals'",
@@ -21,10 +21,13 @@ class AnimalsQuerySet(FakeQuerySetFlat):
         'size',
     ]
 
+    def get_from(self):
+        return "FROM landmatrix_activity                       AS a"
+
 class MineralsQuerySet(FakeQuerySetFlat):
     FIELDS = [
         ('name', 'mineral.name'),
-        ('size', 'SUM(COALESCE(CASE WHEN minerals.value2 ~ E\'^\\d+$\' THEN minerals.value2::integer ELSE 0 END, a.deal_size))'),
+        ('size', 'SUM(COALESCE(CASE WHEN minerals.value2 ~ E\'^\\\d+$\' THEN minerals.value2::integer ELSE 0 END, a.deal_size))'),
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattribute         AS minerals         ON a.id = minerals.fk_activity_id AND minerals.name = 'minerals'",
@@ -37,10 +40,13 @@ class MineralsQuerySet(FakeQuerySetFlat):
         'size',
     ]
 
+    def get_from(self):
+        return "FROM landmatrix_activity                       AS a"
+
 class CropsQuerySet(FakeQuerySetFlat):
     FIELDS = [
         ('name', 'crop.name'),
-        ('size', 'SUM(COALESCE(CASE WHEN crops.value2 ~ E\'^\\d+$\' THEN crops.value2::integer ELSE 0 END, a.deal_size))'),
+        ('size', 'SUM(COALESCE(CASE WHEN crops.value2 ~ E\'^\\\d+$\' THEN crops.value2::integer ELSE 0 END, a.deal_size))'),
     ]
     ADDITIONAL_JOINS = [
         "LEFT JOIN landmatrix_activityattribute         AS crops            ON a.id = crops.fk_activity_id AND crops.name = 'crops'",
@@ -52,6 +58,9 @@ class CropsQuerySet(FakeQuerySetFlat):
     ORDER_BY = [
         'size',
     ]
+
+    def get_from(self):
+        return "FROM landmatrix_activity                       AS a"
 
 class ProduceInfoQuerySet(FakeQuerySetFlat):
     """
@@ -86,8 +95,8 @@ class ProduceInfoQuerySet(FakeQuerySetFlat):
         minerals = MineralsQuerySet(self.request).all()#[:20]
         crops = CropsQuerySet(self.request).all()#[:20]
         response = {
-            "animals": animals,
-            "minerals": minerals,
-            "crops": crops
+            "animals": filter(lambda a: a['size'] > 0, animals),
+            "minerals": filter(lambda m: m['size'] > 0, minerals),
+            "crops": filter(lambda c: c['size'] > 0, crops)
         }
         return response

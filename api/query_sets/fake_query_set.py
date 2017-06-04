@@ -82,6 +82,13 @@ class FakeQuerySet(object):
         # print(self.FIELDS)
         return ",\n    ".join([definition+" AS "+alias for alias, definition in self._fields])
 
+    def get_from(self):
+        return """
+FROM landmatrix_activity                       AS a
+LEFT JOIN landmatrix_investoractivityinvolvement AS iai            ON iai.fk_activity_id = a.id
+LEFT JOIN landmatrix_investor                  AS operational_stakeholder ON iai.fk_investor_id = operational_stakeholder.id
+"""
+
     def additional_joins(self):
         no_dups = self._uniquify_join_expressions(self._additional_joins)
         # print('additional joins:', no_dups)

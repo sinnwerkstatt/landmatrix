@@ -2,8 +2,8 @@
 {% load i18n custom_tags filter_tags %}
 {% load humanize %}
 
-{% block page_title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}{% trans "By" %} {{ group }}{% endif %}{% endblock %}
-{% block title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}{% trans "By" %} {{ group }}{% endif %}{% endblock %}
+{% block page_title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name|title }}{% else %}{% trans "By" %} {{ group|title }}{% endif %}{% endblock %}
+{% block title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name|title }}{% else %}{% trans "By" %} {{ group|title }}{% endif %}{% endblock %}
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
