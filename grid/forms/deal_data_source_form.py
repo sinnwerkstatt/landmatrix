@@ -220,28 +220,26 @@ def handle_url(form_data, request):
     # Create file for URL
     if not data_source_storage.exists(url_slug):
         try:
-            if 'https' in url_match['protocol']:
-                conn = http.client.HTTPSConnection(url_match['domain'])
-            else:
-                conn = http.client.HTTPConnection(url_match['domain'])
-            conn.request('GET', url)
-            response = conn.getresponse()
-
             # PDF URL given?
             if url.endswith(".pdf"):
+                if 'https' in url_match['protocol']:
+                    conn = http.client.HTTPSConnection(url_match['domain'])
+                else:
+                    conn = http.client.HTTPConnection(url_match['domain'])
+                conn.request('GET', url)
+                response = conn.getresponse()
                 # Save to storage
                 data_source_storage.save(url_slug,
                                          ContentFile(response.read()))
             else:
-                # Save HTML to temp file
-                # Create PDF from saved HTML file
-                # (WKHTMLTOPDF can handle URLs too, but it does so very badly especially with SSL)
-                temp_file = os.path.join(settings.MEDIA_ROOT, settings.DATA_SOURCE_DIR, '%s.html' % url_slug)
-                with open(temp_file, 'w') as f:
-                    f.write(str(response.read()))
+                # Create PDF from URL
+                #temp_file = os.path.join(settings.MEDIA_ROOT, settings.DATA_SOURCE_DIR, '%s.html' % url_slug)
+                #with open(temp_file, 'w') as f:
+                #    f.write(str(response.read()))
                 file_name = os.path.join(settings.MEDIA_ROOT, settings.DATA_SOURCE_DIR, url_slug)
-                output = wkhtmltopdf(pages=temp_file, output=file_name)
-                os.remove(temp_file)
+                output = wkhtmltopdf(pages=url, output=file_name)
+                #output = wkhtmltopdf(pages=temp_file, output=file_name)
+                #os.remove(temp_file)
             form_data['date'] = {'value': timezone.now().strftime("%Y-%m-%d")}
             form_data['file'] = {'value': url_slug}
         except Exception as e:
