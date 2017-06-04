@@ -245,7 +245,6 @@ def handle_url(form_data, request):
             form_data['date'] = timezone.now().strftime("%Y-%m-%d")
             form_data['file'] = url_slug
         except Exception as e:
-            raise
             print(e)
             # skip possible html to pdf conversion errors
             # if request and not default_storage.exists(uploaded_pdf_path):
