@@ -202,7 +202,7 @@ def get_file_from_upload(files, form_index):
 def handle_url(form_data, request):
     url = form_data['url']['value']
     if not url:
-        return
+        return form_data
     url_match = re.match('(?P<protocol>.*?:\/\/)?(?P<domain>.*?\..*?)(?P<path>\/.*)?$', url)
     if url_match:
         url_match = url_match.groupdict()
