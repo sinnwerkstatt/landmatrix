@@ -254,6 +254,8 @@ def handle_url(form_data, request):
                   "could not be downloaded as a PDF file."
                   "Please upload manually.").format(url)
             )
+    else:
+        form_data['file'] = url_slug
 
     return form_data
 
