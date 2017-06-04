@@ -388,11 +388,14 @@ class BaseForm(forms.Form):
 
     def get_display_value_area_field(self, field, field_name):
         data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        # Return serialized value for map
-        return {
-            'srid': data and data.srid or None,
-            'serialized': field.widget.widgets[0].serialize(data),
-        }
+        if data:
+            # Return serialized value for map
+            return {
+                'srid': data and data.srid or None,
+                'serialized': field.widget.widgets[0].serialize(data),
+            }
+        else:
+            return {}
 
     def get_display_value_multiple_choice_field(self, field, field_name):
         data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])

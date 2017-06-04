@@ -151,7 +151,7 @@
                 var id = $(this).attr('id');
                 var options = $(this).data('map-widget-options');
                 options['id'] = id;
-                options['map_id'] = id + '-map';
+                options['mapId'] = id + '-map';
                 mapWidgets[id] = new MapWidget(options);
             });
         });
