@@ -2,7 +2,8 @@
 TODO: cleanup formset_factory handling.
 '''
 import re
-import urllib.request
+import http.client
+import os
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -19,8 +20,6 @@ from landmatrix.storage import data_source_storage
 from grid.forms.base_form import BaseForm
 from grid.fields import TitleField, FileFieldWithInitial
 from grid.widgets import CommentInput
-
-
 
 
 class DealDataSourceForm(BaseForm):
@@ -202,11 +201,14 @@ def get_file_from_upload(files, form_index):
 
 def handle_url(form_data, request):
     url = form_data['url']['value']
-    url_slug = get_url_slug(request, url)
-
-    # TODO: this is a quick and dirty KeyError fix, needs some cleanup
-    if not url_slug:
-        return form_data
+    if not url:
+        return
+    url_match = re.match('(?P<protocol>.*?:\/\/)?(?P<domain>.*?\..*?)(?P<path>\/.*)?$', url)
+    if url_match:
+        url_match = url_match.groupdict()
+    else:
+        raise ValueError(url)
+    url_slug = '%s.pdf' % slugify('%s%s' % (url_match['domain'], url_match['path']))
 
     if 'file' in form_data:
         if url_slug == form_data['file']:
@@ -218,42 +220,42 @@ def handle_url(form_data, request):
     # Create file for URL
     if not data_source_storage.exists(url_slug):
         try:
-            # Check if URL changed and no file given
+            if 'https' in url_match['protocol']:
+                conn = http.client.HTTPSConnection(url_match['domain'])
+            else:
+                conn = http.client.HTTPConnection(url_match['domain'])
+            conn.request('GET', url)
+            response = conn.getresponse()
+
+            # PDF URL given?
             if url.endswith(".pdf"):
-                response = urllib.request.urlopen(url)
+                # Save to storage
                 data_source_storage.save(url_slug,
                                          ContentFile(response.read()))
             else:
-                # Create PDF from URL
-                uploaded_pdf_path = '%s%s/%s' % (
-                    settings.MEDIA_ROOT, settings.DATA_SOURCE_DIR, url_slug)
-                output = wkhtmltopdf(pages=url, output=uploaded_pdf_path)
+                # Save HTML to temp file
+                # Create PDF from saved HTML file
+                # (WKHTMLTOPDF can handle URLs too, but it does so very badly especially with SSL)
+                temp_file = os.path.join(settings.MEDIA_ROOT, settings.DATA_SOURCE_DIR, '%s.html' % url_slug)
+                with open(temp_file, 'w') as f:
+                    f.write(str(response.read()))
+                file_name = os.path.join(settings.MEDIA_ROOT, settings.DATA_SOURCE_DIR, url_slug)
+                output = wkhtmltopdf(pages=temp_file, output=file_name)
+                os.remove(temp_file)
             form_data['date'] = timezone.now().strftime("%Y-%m-%d")
             form_data['file'] = url_slug
         except Exception as e:
+            raise
             print(e)
             # skip possible html to pdf conversion errors
             # if request and not default_storage.exists(uploaded_pdf_path):
-            error_could_not_upload(request, url, str(e))
+            messages.error(
+                request,
+                _("Data source <a target='_blank' href='{0}'>URL</a> "
+                  "could not be downloaded as a PDF file."
+                  "Please upload manually.").format(url)
+            )
 
     return form_data
 
-
-def get_url_slug(request, url):
-    try:
-        urllib.request.urlopen(url)
-    except (urllib.error.HTTPError, urllib.error.URLError):
-        error_could_not_upload(request, url)
-        return None
-
-    return "%s.pdf" % re.sub(r"https|http|ftp|www|", "", slugify(url))
-
-
-def error_could_not_upload(request, url, message=''):
-    messages.error(
-        request,
-        _("Data source <a target='_blank' href='{0}'>URL</a> "
-          "could not be uploaded as a PDF file."
-          "Please upload manually.").format(url)
-    )
 
