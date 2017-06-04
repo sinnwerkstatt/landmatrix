@@ -211,7 +211,7 @@ def handle_url(form_data, request):
     url_slug = '%s.pdf' % slugify('%s%s' % (url_match['domain'], url_match['path']))
 
     if 'file' in form_data:
-        if url_slug == form_data['file']:
+        if url_slug == form_data['file']['value']:
             return form_data
         else:
             # Remove file from group
@@ -242,8 +242,8 @@ def handle_url(form_data, request):
                 file_name = os.path.join(settings.MEDIA_ROOT, settings.DATA_SOURCE_DIR, url_slug)
                 output = wkhtmltopdf(pages=temp_file, output=file_name)
                 os.remove(temp_file)
-            form_data['date'] = timezone.now().strftime("%Y-%m-%d")
-            form_data['file'] = url_slug
+            form_data['date'] = {'value': timezone.now().strftime("%Y-%m-%d")}
+            form_data['file'] = {'value': url_slug}
         except Exception as e:
             print(e)
             # skip possible html to pdf conversion errors
@@ -255,7 +255,7 @@ def handle_url(form_data, request):
                   "Please upload manually.").format(url)
             )
     else:
-        form_data['file'] = url_slug
+        form_data['file'] = {'value': url_slug}
 
     return form_data
 
