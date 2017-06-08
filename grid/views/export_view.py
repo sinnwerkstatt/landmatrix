@@ -276,9 +276,7 @@ class ExportView(ElasticSearchView):
                     value = value[formset_index]
                 except IndexError:
                     value = ''
-            return value
-        else:
-            return value.encode('unicode_escape').decode('utf-8')
+        return value.encode('unicode_escape').decode('utf-8')
 
 class AllDealsExportView(AllDealsView, ExportView):
     def dispatch(self, request, *args, **kwargs):
