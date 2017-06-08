@@ -278,7 +278,8 @@ class  InvestorVentureInvolvement(models.Model):
 
     fk_venture = models.ForeignKey(Investor, verbose_name=_('Investor ID Downstream'), db_index=True,
                                    related_name='venture_involvements')
-    fk_investor = models.ForeignKey(Investor, verbose_name=_('Investor ID Upstream'), db_index=True, related_name='+')
+    fk_investor = models.ForeignKey(Investor, verbose_name=_('Investor ID Upstream'), db_index=True,
+                                    related_name='investors')
     role = models.CharField(verbose_name=_("Relation type"), max_length=2, choices=ROLE_CHOICES)
     investment_type = MultiSelectField(
         max_length=255, choices=INVESTMENT_TYPE_CHOICES,

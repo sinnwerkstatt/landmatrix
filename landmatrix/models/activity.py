@@ -316,27 +316,17 @@ class Activity(ActivityBase):
     init_date = models.CharField(verbose_name=_('Initiation year or date'), max_length=10,
                                  blank=True, null=True, db_index=True)
     fully_updated_date = models.DateField(_("Fully updated date"), blank=True, null=True)
+    top_investors = models.ManyToManyField(Investor, verbose_name=_("Top investors"), blank=True)
 
     def refresh_cached_attributes(self):
-        # Implementation status
         self.implementation_status = self.get_implementation_status()
-            
-        # Negotiation status
         self.negotiation_status = self.get_negotiation_status()
-
-        # Deal size
         self.deal_size = self.get_deal_size()
-
-        # Deal scope (domestic or transnational)
         self.deal_scope = self.get_deal_scope()
-
-        # Initiation year
         self.init_date = self.get_init_date()
-
-        # Fully updated
         self.fully_updated_date = self.get_fully_updated_date()
-
         self.is_public = self.is_public_deal()
+        self.top_investors = self.get_top_investors()
         self.save()
 
     def get_negotiation_status(self):
@@ -569,6 +559,24 @@ class Activity(ActivityBase):
             return activity.history_date
         except:
             return None
+
+    def get_top_investors(self):
+        def get_parent_investors(investors):
+            parent_investors = []
+            for investor in investors:
+                parent_investors.extend(Investor.objects.filter(investors__fk_venture=investor,
+                                                                investors__role=InvestorVentureInvolvement.STAKEHOLDER_ROLE))
+            if parent_investors:
+                return get_parent_investors(parent_investors)
+            else:
+                return investors
+        # Operational company
+        operational_companies = Investor.objects.filter(
+            investoractivityinvolvement__fk_activity__activity_identifier=self.activity_identifier)
+        return get_parent_investors(operational_companies)
+
+        # Parent companies
+        return None
 
     class Meta:
         verbose_name = _('Activity')

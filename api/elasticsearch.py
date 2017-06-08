@@ -403,6 +403,19 @@ class ElasticSearch(object):
                     deal_attrs[a.name] = [value,]
                     if '%s_attr' % a.name in _landmatrix_mappings['deal']['properties'].keys():
                         deal_attrs['%s_attr' % a.name] = [attribute,]
+        if doc_type == 'deal':
+            # Additionally save operational company attributes
+            oc = Investor.objects.filter(investoractivityinvolvement__fk_activity__activity_identifier=activity.activity_identifier)
+            if oc.count() > 0:
+                oc = oc.first()
+                for field in Investor._meta.fields:
+                    if isinstance(field, ForeignKey):
+                        deal_attrs['operational_company_%s' % field.name] = getattr(oc, '%s_id' % field.name)
+                    else:
+                        deal_attrs['operational_company_%s' % field.name] = getattr(oc, field.name)
+            else:
+                pass
+                #self.stderr.write("Missing operational company for deal #%i" % activity.activity_identifier)
 
         # Create single document for each location
         # FIXME: Saving single deals for each location might be deprecated since we have doc_type location now?
@@ -445,6 +458,7 @@ class ElasticSearch(object):
                 formset_name = hasattr(form, "form") and form.Meta.name or None
                 form = formset_name and form.form or form
                 properties.update(form.export(doc, formset=formset_name))
+            properties.update(ExportInvestorForm.export(doc, prefix='operational_company_'))
             return properties
 
     def get_investor_documents(self, investor, doc_type='investor'):

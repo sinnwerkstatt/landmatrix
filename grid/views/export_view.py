@@ -167,10 +167,15 @@ class ExportView(ElasticSearchView):
             },
         }
         # Get deal headers and max formset counts
+        exclude = []
+        if hasattr(ExportInvestorForm, 'exclude_in_export'):
+            exclude = ExportInvestorForm.exclude_in_export
+
         headers = [
             str(_('ID')),
             str(_('Is public')),
             str(_('Deal scope')),
+            str(_('Top investors')),
         ]
         for form in ChangeDealView.FORMS:
             formset_name = hasattr(form, "form") and form.Meta.name or None
@@ -194,6 +199,12 @@ class ExportView(ElasticSearchView):
                     if field_name.startswith('tg_') and not field_name.endswith('_comment'):
                         continue
                     headers.append(str(field.label))
+            # Append operational company attributes to investor info
+            if form.Meta.name == 'investor_info':
+                for field_name, field in ExportInvestorForm.base_fields.items():
+                    if field_name in exclude:
+                        continue
+                    headers.append('%s: %s' % (_('Operational company'), str(field.label)))
         data['deals']['headers'] = headers
 
         # Get deals
@@ -203,6 +214,7 @@ class ExportView(ElasticSearchView):
                 '#%s' % item.get('activity_identifier'),    # ID
                 item.get('is_public_export'),               # Is public
                 item.get('deal_scope_export'),              # Deal Scope
+                item.get('top_investors'),                  # Top investors
             ]
             for form in ChangeDealView.FORMS:
                 formset_name = hasattr(form, "form") and form.Meta.name or None
@@ -219,6 +231,12 @@ class ExportView(ElasticSearchView):
                         if field_name.startswith('tg_') and not field_name.endswith('_comment'):
                             continue
                         row.append(self.get_export_value(field_name, item))
+                # Append operational company attributes to investor info
+                if form.Meta.name == 'investor_info':
+                    for field_name, field in ExportInvestorForm.base_fields.items():
+                        if field_name in exclude:
+                            continue
+                        row.append(self.get_export_value('operational_company_%s' % field_name, item))
             rows.append(row)
         data['deals']['items'] = rows
 

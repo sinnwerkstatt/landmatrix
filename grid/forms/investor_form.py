@@ -75,13 +75,14 @@ class ExportInvestorForm(BaseInvestorForm):
         widget=forms.Select(attrs={'class': 'form-control countryfield'}))
 
     @classmethod
-    def export(cls, doc):
+    def export(cls, doc, prefix=''):
         """Get field value for export"""
         output = {}
         for field_name, field in cls.base_fields.items():
+            field_name = '%s%s' % (prefix, field_name)
             export_key = '%s_export' % field_name
 
-            values = doc.get(field_name)
+            values = doc.get('%s' % field_name)
             if not values:
                 output[export_key] = ''
                 continue

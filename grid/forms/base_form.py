@@ -371,6 +371,8 @@ class BaseForm(forms.Form):
                         value2 = ', '.join(filter(None, date_values[1:]))
                         if value2:
                             value += _(' (%s ha)') % value2
+                else:
+                    value = ''
                 if value:
                     values.append(value)
         return '<br>'.join(values)
@@ -422,7 +424,8 @@ class BaseForm(forms.Form):
         value = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
         if value:
             try:
-                return str(field.queryset.get(pk=value))
+                # Use base queryset to handle none() querysets (used with ajax based widgets)
+                return str(field.queryset.model.objects.get(pk=value))
             except (ValueError, AttributeError, ObjectDoesNotExist):
                 return ''
         else:
