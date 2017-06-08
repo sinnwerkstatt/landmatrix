@@ -218,27 +218,28 @@ class ElasticSearch(object):
             # Bulk index documents
             self.stdout and self.stdout.write('Index %i %ss...' % (len(docs), doc_type))
             if len(docs) > 0:
-                try:
-                    paginator = Paginator(docs, 1000)
-                    for page in paginator.page_range:
+                paginator = Paginator(docs, 1000)
+                for page in paginator.page_range:
+                    try:
                         self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id'), parent=doc.pop('_parent', None)) for doc in paginator.page(page)),
                             index=self.index_name,
                             doc_type=doc_type)
-                        self.conn.refresh()
-
-                except BulkError as e:
-                    for error in e.errors:
-                        msg = '%s: %s on ID %s' % (
+                    except BulkError as e:
+                        for error in e.errors:
+                            msg = '%s: %s on ID %s' % (
                                 error['index']['error']['type'],
                                 error['index']['error']['reason'],
                                 error['index']['_id']
-                              )
-                        if 'caused_by' in error['index']['error']:
-                            msg += ' (%s: %s)' % (
-                                error['index']['error']['caused_by']['type'],
-                                error['index']['error']['caused_by']['reason']
                             )
-                        self.stderr and self.stderr.write(msg)
+                            if 'caused_by' in error['index']['error']:
+                                msg += ' (%s: %s)' % (
+                                    error['index']['error']['caused_by']['type'],
+                                    error['index']['error']['caused_by']['reason']
+                                )
+                            self.stderr and self.stderr.write(msg)
+                    self.conn.refresh()
+
+
 
     def index_investor_documents(self):
         investors = Investor.objects.all()
@@ -500,10 +501,9 @@ class ElasticSearch(object):
             else:
                 start = len(raw_result_list)
         
-        self.stdout and self.stdout.write('\nElasticsearch returned %i documents from a total of %i \n\n' % (
+        print('\nElasticsearch returned %i documents from a total of %i \n\n' % (
             len(raw_result_list), query_result['hits']['total'])
         )
-        
         return raw_result_list
 
 # Init two connections

@@ -26,11 +26,11 @@ class ExportView(ElasticSearchView):
         format = kwargs.pop('format')
         if format == 'xls':
             format = 'xlsx'
-        query = self.create_query_from_filters()
+        #query = self.create_query_from_filters()
 
         results = {}
         # Search deals
-        deals = self.execute_elasticsearch_query(query, doc_type='deal')
+        deals = self.execute_elasticsearch_query({ "match_all": {} }, doc_type='deal')
         results['deals'] = self.filter_returned_results(deals)
 
         # Get all involvements

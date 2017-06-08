@@ -190,7 +190,6 @@ class ElasticSearchView(View):
                 raw_result_list = es.search(match_all_query)
             else:
                 raise
-            
         return raw_result_list
     
     def filter_returned_results(self, raw_result_list):

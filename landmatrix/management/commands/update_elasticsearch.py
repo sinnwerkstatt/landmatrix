@@ -16,8 +16,8 @@ class Command(BaseCommand):
         es.create_index(delete=True)
         es.stdout = self.stdout
         es.stderr = self.stderr
-        es.index_investor_documents()
         es.index_activity_documents()
+        es.index_investor_documents()
         es.refresh_index()
 
         #self.stdout.write(str(self.es.get_mapping('landmatrix')))
