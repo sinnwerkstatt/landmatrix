@@ -11,6 +11,7 @@ from grid.fields import (
     NestedMultipleChoiceField, YearBasedField, MultiCharField, ActorsField,
     AreaField
 )
+from grid.utils import get_export_value
 
 
 class BaseForm(forms.Form):
@@ -427,7 +428,6 @@ class BaseForm(forms.Form):
         else:
             return ''
 
-
     def get_availability(self):
         available_field_count = 0.0
         if self.data.get(self.prefix and "%s-TOTAL_FORMS"%self.prefix or "TOTAL_FORMS", 1) < 1:
@@ -443,7 +443,6 @@ class BaseForm(forms.Form):
                     value = value != "0" and value or None
                     if value and isinstance(f.choices,(list, tuple)) and f.choices[0][0] != 0:
                         value = None
-                # Year based data?
                 # Year based data?
                 elif isinstance(f, forms.MultiValueField):
                     keys = filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n) ,o), self.data.keys())
@@ -474,6 +473,29 @@ class BaseForm(forms.Form):
             else:
                 count = count + 1
         return count
+
+    @classmethod
+    def export(cls, doc, formset=None):
+        """Get field value for export"""
+        output = {}
+        for name, field in cls.base_fields.items():
+            # Title field?
+            if name.startswith('tg_') and not name.endswith('_comment'):
+                continue
+            export_key = '%s_export' % name
+
+            values = doc.get(name)
+            if not values:
+                output[export_key] = ''
+                continue
+            if not isinstance(values, (list, tuple)):
+                values = [values,]
+            attr_key = '%s_attr' % name
+            attributes = attr_key in doc and doc.get(attr_key) or None
+
+            output[export_key] = get_export_value(field, values, attributes, formset=formset)
+
+        return output
 
     class Meta:
         exclude = ()

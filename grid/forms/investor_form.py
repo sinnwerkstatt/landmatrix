@@ -6,7 +6,7 @@ from landmatrix.models.investor import Investor
 from landmatrix.models.country import Country
 from grid.forms.base_model_form import BaseModelForm
 from grid.widgets import CommentInput
-
+from grid.utils import get_export_value
 
 INVESTOR_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
     Investor.INVESTOR_CLASSIFICATIONS)
@@ -21,13 +21,13 @@ class InvestorField(forms.ChoiceField):
         return {'class': 'investorfield'}
 
 
-class InvestorFormBase(BaseModelForm):
+class BaseInvestorForm(BaseModelForm):
     # We use ID to build related form links
     id = forms.CharField(required=False, label=_("ID"), widget=forms.HiddenInput())
     name = forms.CharField(required=False, label=_("Name"), max_length=255)
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
-        choices=INVESTOR_CLASSIFICATION_CHOICES)
+        choices=INVESTOR_CLASSIFICATION_CHOICES + STAKEHOLDER_CLASSIFICATION_CHOICES)
     fk_country = forms.ModelChoiceField(
         required=False, label=_("Country of registration/origin"),
         queryset=Country.objects.none(),
@@ -66,7 +66,40 @@ class InvestorFormBase(BaseModelForm):
         return {}
 
 
-class ParentInvestorForm(InvestorFormBase):
+class ExportInvestorForm(BaseInvestorForm):
+    exclude_in_export = ('id', 'fk_status', 'timestamp', 'subinvestors')
+
+    fk_country = forms.ModelChoiceField(
+        required=False, label=_("Country of registration/origin"),
+        queryset=Country.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control countryfield'}))
+
+    @classmethod
+    def export(cls, doc):
+        """Get field value for export"""
+        output = {}
+        for field_name, field in cls.base_fields.items():
+            export_key = '%s_export' % field_name
+
+            values = doc.get(field_name)
+            if not values:
+                output[export_key] = ''
+                continue
+            if not isinstance(values, (list, tuple)):
+                values = [values,]
+
+            output[export_key] = get_export_value(field, values)
+
+        return output
+
+    class Meta:
+        model = Investor
+        exclude = ()
+
+class ParentInvestorForm(BaseInvestorForm):
+    classification = forms.ChoiceField(
+        required=False, label=_("Classification"),
+        choices=INVESTOR_CLASSIFICATION_CHOICES)
     class Meta:
         model = Investor
         exclude = (
@@ -81,7 +114,7 @@ class ParentStakeholderForm(ParentInvestorForm):
         choices=STAKEHOLDER_CLASSIFICATION_CHOICES)
 
 
-class OperationalCompanyForm(InvestorFormBase):
+class OperationalCompanyForm(BaseInvestorForm):
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
         choices=STAKEHOLDER_CLASSIFICATION_CHOICES)

@@ -4,9 +4,34 @@ from django import forms
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 from grid.fields import TitleField
 from grid.widgets import CommentInput
+from grid.utils import get_export_value
 
+class InvestorVentureInvolvementForm(forms.ModelForm):
+    exclude_in_export = ('id', 'fk_status', 'timestamp')
 
-class ParentCompanyForm(forms.ModelForm):
+    @classmethod
+    def export(cls, doc):
+        """Get field value for export"""
+        output = {}
+        for field_name, field in cls.base_fields.items():
+            export_key = '%s_export' % field_name
+
+            values = doc.get(field_name)
+            if not values:
+                output[export_key] = ''
+                continue
+            if not isinstance(values, (list, tuple)):
+                values = [values,]
+
+            output[export_key] = get_export_value(field, values)
+
+        return output
+
+    class Meta:
+        model = InvestorVentureInvolvement
+        exclude = []
+
+class ParentCompanyForm(InvestorVentureInvolvementForm):
 
     form_title = _('Parent companies')
 

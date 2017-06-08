@@ -4,6 +4,8 @@ except ImportError:
     import xml.etree.ElementTree as ET
 from xml.dom.minidom import parseString
 import unicodecsv as csv
+import zipfile
+from io import StringIO
 
 from django.http.response import HttpResponse
 from django.utils.translation import ugettext_lazy as _
@@ -12,6 +14,8 @@ from openpyxl import Workbook
 
 from landmatrix.models import Investor, InvestorVentureInvolvement
 from grid.views import AllDealsView, TableGroupView, DealDetailView, ChangeDealView
+from grid.forms.investor_form import ExportInvestorForm
+from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from api.views import ElasticSearchView
 
 
@@ -54,99 +58,95 @@ class ExportView(ElasticSearchView):
         ws_deals = wb.get_sheet_by_name('Sheet')
         ws_deals.title = 'Deals'
         ws_deals.append(data['deals']['headers'])
-        for i, row in enumerate(data['deals']['items']):
-            ws_deals.append(row)
+        for item in data['deals']['items']:
+            ws_deals.append(item)
 
         # Involvements tab
         ws_involvements = wb.create_sheet(title='Involvements')
         ws_involvements.append(data['involvements']['headers'])
-        for i, row in enumerate(data['involvements']['items']):
-            ws_involvements.append(row)
+        for item in data['involvements']['items']:
+            ws_involvements.append(item)
 
         # Investors tab
         ws_investors = wb.create_sheet(title='Investors')
         ws_investors.append(data['investors']['headers'])
-        for i, row in enumerate(data['investors']['items']):
-            ws_investors.append(row)
+        for item in data['investors']['items']:
+            ws_investors.append(item)
 
         wb.save(response)
         return response
 
-    def export_xml(self, header, data, filename):
+    def export_xml(self, data, filename):
         root = ET.Element('data')
-        for r in data:
-            row = ET.SubElement(root, "item")
-            for i,h in enumerate([column['label'] for name, column in header.items()]):
+
+        # Deals
+        deals = ET.SubElement(root, 'deals')
+        for item in data['deals']['items']:
+            row = ET.SubElement(deals, "item")
+            for i, value in enumerate(item):
                 field = ET.SubElement(row, "field")
-                field.text = str(r[i])
-                field.set("name", h)
+                field.text = str(value)
+                field.set("name", data['deals']['headers'][i])
+
+        # Involvements
+        involvements = ET.SubElement(root, 'involvements')
+        for item in data['involvements']['items']:
+            row = ET.SubElement(involvements, "item")
+            for i, value in enumerate(item):
+                field = ET.SubElement(row, "field")
+                field.text = str(value)
+                field.set("name", data['involvements']['headers'][i])
+
+        # Investors
+        investors = ET.SubElement(root, 'investors')
+        for item in data['investors']['items']:
+            row = ET.SubElement(investors, "item")
+            for i, value in enumerate(item):
+                field = ET.SubElement(row, "field")
+                field.text = str(value)
+                field.set("name", data['investors']['headers'][i])
+
         xml = parseString(ET.tostring(root)).toprettyxml()
         response = HttpResponse(xml, content_type='text/xml')
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
 
-    def export_csv(self, header, data, filename):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-        writer = csv.writer(response, delimiter=";", encoding='utf-8')
-        #writer = csv.writer(response, delimiter=";", encoding='cp1252')
-        # write csv header
-        writer.writerow([column['label'] for name, column in header.items()])
-        for row in data:
-            writer.writerow([str(s) for s in row])
-        return response
+    def export_csv(self, data, filename):
+        result = StringIO.StringIO()
+        zip_file = zipfile.ZipFile(zip_file, "w")
 
-    @staticmethod
-    def format_value(value, i=None):
-        if not value:
-            return ""
-        row_item = []
-        if isinstance(value, (tuple, list)):
-            # Formset?
-            if i is not None:
-                try:
-                    value = value[i]
-                except IndexError:
-                    return ""
-            for lv in value:
-                if isinstance(lv, dict):
-                    year = lv.get("year", None)
-                    current = lv.get("current", None)
-                    name = lv.get("name", None)
-                    vvalue = lv.get("value", None)
-                    if name:
-                        row_item.append("[%s:%s] %s" % (
-                            year != "0" and year or "",
-                            current and "current" or "",
-                            name.strip(),
-                        ))
-                    # Required for intention
-                    elif vvalue and not lv.get("is_parent", False):
-                        row_item.append(str(vvalue).strip())
-                        # else:
-                        #    row_item.append("[]")
-                elif isinstance(lv, (list, tuple)):
-                    # Some vars take additional data for the template
-                    # (e.g. investor name = {"id":1, "name":"Investor"}), export just the name
-                    if len(lv) > 0 and isinstance(lv[0], dict):
-                        year = lv.get("year", None)
-                        current = lv.get("current", None)
-                        name = lv.get("name", None)
-                        if name:
-                            row_item.append("[%s:%s] %s" % (
-                                year != "0" and year or "",
-                                current and "current" or "",
-                                name.strip(),
-                            ))
-                            # else:
-                            #    row_item.append("[]")
-                    else:
-                        row_item.append(str(lv).strip() or '')
-                else:
-                    row_item.append(str(lv).strip() or '')
-            return ", ".join(filter(None, row_item))
-        else:
-            return str(value).strip() or ""
+        # Deals CSV
+        deals_file = StringIO.StringIO()
+        writer = csv.writer(deals_file, delimiter=";", encoding='utf-8') #encoding='cp1252'
+        writer.writerow(data['deals']['headers'])
+        for item in data['deals']['items']:
+            writer.writerow(item)
+        deals_file.seek(0)
+        zip_file.writestr('deals.csv', deals_file.getvalue())
+
+        # Involvements CSV
+        involvements_file = StringIO.StringIO()
+        writer = csv.writer(involvements_file, delimiter=";", encoding='utf-8') #encoding='cp1252'
+        writer.writerow(data['involvements']['headers'])
+        for item in data['involvements']['items']:
+            writer.writerow(item)
+        involvements_file.seek(0)
+        zip_file.writestr('involvements.csv', involvements_file.getvalue())
+
+        # Investors CSV
+        investors_file = StringIO.StringIO()
+        writer = csv.writer(investors_file, delimiter=";", encoding='utf-8')  # encoding='cp1252'
+        writer.writerow(data['investors']['headers'])
+        for item in data['investors']['items']:
+            writer.writerow(item)
+        investors_file.seek(0)
+        zip_file.writestr('investors.csv', investors_file.getvalue())
+
+        zip_file.close()
+        response = HttpResponse(result.getvalue(), content_type='application/x-zip-compressed')
+        filename = filename.replace('.csv', '.zip')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        return response
 
     def get_data(self, results):
         """ Get headers and format the data of the items to a proper download format.
@@ -168,16 +168,23 @@ class ExportView(ElasticSearchView):
             },
         }
         # Get deal headers and max formset counts
-        headers = []
+        headers = [
+            str(_('ID')),
+            str(_('Is public')),
+            str(_('Deal scope')),
+        ]
         for form in ChangeDealView.FORMS:
             formset_name = hasattr(form, "form") and form.Meta.name or None
             form = formset_name and form.form or form
             # Is formset?
             if formset_name:
                 # Get item with maximum forms
-                data['deals']['max'][formset_name] = max([i.get('%s_count' % formset_name, 0) for i in results['deals']])
+                form_count = [i.get('%s_count' % formset_name, 0) for i in results['deals']]
+                data['deals']['max'][formset_name] = form_count and max(form_count) or 0
                 for i in range(0, data['deals']['max'][formset_name]):
                     for field_name, field in form.base_fields.items():
+                        if field_name.startswith('tg_') and not field_name.endswith('_comment'):
+                            continue
                         headers.append('%s %i: %s' % (
                             form.form_title,
                             i + 1,
@@ -185,13 +192,19 @@ class ExportView(ElasticSearchView):
                         ))
             else:
                 for field_name, field in form.base_fields.items():
+                    if field_name.startswith('tg_') and not field_name.endswith('_comment'):
+                        continue
                     headers.append(str(field.label))
         data['deals']['headers'] = headers
 
         # Get deals
         rows = []
-        for item in results['deals'][:3]:
-            row = []
+        for item in results['deals']:
+            row = [
+                '#%s' % item.get('activity_identifier'),    # ID
+                item.get('is_public_export'),               # Is public
+                item.get('deal_scope_export'),              # Deal Scope
+            ]
             for form in ChangeDealView.FORMS:
                 formset_name = hasattr(form, "form") and form.Meta.name or None
                 form = formset_name and form.form or form
@@ -199,45 +212,74 @@ class ExportView(ElasticSearchView):
                 if formset_name:
                     for i in range(0, data['deals']['max'][formset_name]):
                         for field_name, field in form.base_fields.items():
-                            row.append(self.format_value(item.get(field_name), i).encode('unicode_escape').decode('utf-8'))
+                            if field_name.startswith('tg_') and not field_name.endswith('_comment'):
+                                continue
+                            row.append(self.get_export_value(field_name, item, formset_index=i))
                 else:
                     for field_name, field in form.base_fields.items():
-                        row.append(self.format_value(item.get(field_name)).encode('unicode_escape').decode('utf-8'))
+                        if field_name.startswith('tg_') and not field_name.endswith('_comment'):
+                            continue
+                        row.append(self.get_export_value(field_name, item))
             rows.append(row)
         data['deals']['items'] = rows
 
         # Get involvement headers
+        exclude = []
+        if hasattr(InvestorVentureInvolvementForm, 'exclude_in_export'):
+            exclude = InvestorVentureInvolvementForm.exclude_in_export
         headers = []
-        for field in InvestorVentureInvolvement._meta.local_fields:
-            headers.append(str(hasattr(field, 'verbose_name') and field.verbose_name or ''))
+        for field_name, field in InvestorVentureInvolvementForm.base_fields.items():
+            if field_name in exclude:
+                continue
+            headers.append(str(field.label))
         data['involvements']['headers'] = headers
         # Get involvements
         rows = []
-        for item in results['involvements'][:3]:
+        for item in results['involvements']:
             item = item.get('_source', {})
             row = []
-            for field in InvestorVentureInvolvement._meta.local_fields:
-                row.append(self.format_value(item.get(field.name)).encode('unicode_escape').decode('utf-8'))
+            for field_name, field in InvestorVentureInvolvementForm.base_fields.items():
+                if field_name in exclude:
+                    continue
+                row.append(self.get_export_value(field_name, item))
             rows.append(row)
         data['involvements']['items'] = rows
 
         # Get investor headers
+        exclude = []
+        if hasattr(ExportInvestorForm, 'exclude_in_export'):
+            exclude = ExportInvestorForm.exclude_in_export
         headers = []
-        for field in Investor._meta.local_fields:
-            headers.append(str(hasattr(field, 'verbose_name') and field.verbose_name or ''))
+        for field_name, field in ExportInvestorForm.base_fields.items():
+            if field_name in exclude:
+                continue
+            headers.append(str(field.label))
         data['investors']['headers'] = headers
         # Get investors
         rows = []
-        for item in results['investors'][:3]:
+        for item in results['investors']:
             item = item.get('_source', {})
             row = []
-            for field in Investor._meta.local_fields:
-                row.append(self.format_value(item.get(field.name)).encode('unicode_escape').decode('utf-8'))
+            for field_name, field in ExportInvestorForm.base_fields.items():
+                if field_name in exclude:
+                    continue
+                row.append(self.get_export_value(field_name, item))
             rows.append(row)
         data['investors']['items'] = rows
 
         return data
 
+    def get_export_value(self, name, data, formset_index=None):
+        value = data.get('%s_export' % name) or ''
+        if isinstance(value, (list, tuple)):
+            if formset_index is not None:
+                try:
+                    value = value[formset_index]
+                except IndexError:
+                    value = ''
+            return value
+        else:
+            return value.encode('unicode_escape').decode('utf-8')
 
 class AllDealsExportView(AllDealsView, ExportView):
     def dispatch(self, request, *args, **kwargs):

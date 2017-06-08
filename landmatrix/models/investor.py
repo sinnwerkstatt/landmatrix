@@ -8,8 +8,6 @@ from multiselectfield import MultiSelectField
 from landmatrix.models.default_string_representation import \
     DefaultStringRepresentation
 
-
-
 class InvestorQuerySet(models.QuerySet):
 
     def public(self):
@@ -78,14 +76,14 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     )
 
     investor_identifier = models.IntegerField(
-        _("Investor id"), db_index=True, default=INVESTOR_IDENTIFIER_DEFAULT)
+        _("Investor ID"), db_index=True, default=INVESTOR_IDENTIFIER_DEFAULT)
     name = models.CharField(_("Name"), max_length=1024)
     fk_country = models.ForeignKey(
         "Country", verbose_name=_("Country of registration/origin"),
         blank=True, null=True)
-    classification = models.CharField(
+    classification = models.CharField(verbose_name=_('Classification'),
         max_length=3, choices=CLASSIFICATION_CHOICES, blank=True, null=True)
-    parent_relation = models.CharField(
+    parent_relation = models.CharField(verbose_name=_('Parent relation'),
         max_length=255, choices=PARENT_RELATION_CHOICES, blank=True, null=True)
     homepage = models.URLField(_("Investor homepage"), blank=True, null=True)
     opencorporates_link = models.URLField(
@@ -222,6 +220,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
         self.save(update_fields=['fk_status'])
 
+
 class Investor(InvestorBase):
     subinvestors = models.ManyToManyField(
         "self", through='InvestorVentureInvolvement', symmetrical=False,
@@ -277,16 +276,16 @@ class  InvestorVentureInvolvement(models.Model):
         (DEBT_FINANCING_INVESTMENT_TYPE, _('Debt financing')),
     )
 
-    fk_venture = models.ForeignKey(Investor, db_index=True,
+    fk_venture = models.ForeignKey(Investor, verbose_name=_('Investor ID Downstream'), db_index=True,
                                    related_name='venture_involvements')
-    fk_investor = models.ForeignKey(Investor, db_index=True, related_name='+')
+    fk_investor = models.ForeignKey(Investor, verbose_name=_('Investor ID Upstream'), db_index=True, related_name='+')
+    role = models.CharField(verbose_name=_("Relation type"), max_length=2, choices=ROLE_CHOICES)
     investment_type = MultiSelectField(
         max_length=255, choices=INVESTMENT_TYPE_CHOICES,
         default='', blank=True, null=True)
     percentage = models.FloatField(
         _('Ownership share'), blank=True, null=True,
         validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
-    role = models.CharField(verbose_name=_("Role"), max_length=2, choices=ROLE_CHOICES)
     loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
     loans_currency = models.ForeignKey(
         "Currency", verbose_name=_("Loan currency"), blank=True, null=True)
