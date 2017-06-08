@@ -5,14 +5,13 @@ except ImportError:
 from xml.dom.minidom import parseString
 import unicodecsv as csv
 import zipfile
-from io import StringIO
+from io import BytesIO
 
 from django.http.response import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from collections import OrderedDict
 from openpyxl import Workbook
 
-from landmatrix.models import Investor, InvestorVentureInvolvement
 from grid.views import AllDealsView, TableGroupView, DealDetailView, ChangeDealView
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
@@ -112,11 +111,11 @@ class ExportView(ElasticSearchView):
         return response
 
     def export_csv(self, data, filename):
-        result = StringIO.StringIO()
-        zip_file = zipfile.ZipFile(zip_file, "w")
+        result = BytesIO()
+        zip_file = zipfile.ZipFile(result, "w")
 
         # Deals CSV
-        deals_file = StringIO.StringIO()
+        deals_file = BytesIO()
         writer = csv.writer(deals_file, delimiter=";", encoding='utf-8') #encoding='cp1252'
         writer.writerow(data['deals']['headers'])
         for item in data['deals']['items']:
@@ -125,7 +124,7 @@ class ExportView(ElasticSearchView):
         zip_file.writestr('deals.csv', deals_file.getvalue())
 
         # Involvements CSV
-        involvements_file = StringIO.StringIO()
+        involvements_file = BytesIO()
         writer = csv.writer(involvements_file, delimiter=";", encoding='utf-8') #encoding='cp1252'
         writer.writerow(data['involvements']['headers'])
         for item in data['involvements']['items']:
@@ -134,7 +133,7 @@ class ExportView(ElasticSearchView):
         zip_file.writestr('involvements.csv', involvements_file.getvalue())
 
         # Investors CSV
-        investors_file = StringIO.StringIO()
+        investors_file = BytesIO()
         writer = csv.writer(investors_file, delimiter=";", encoding='utf-8')  # encoding='cp1252'
         writer.writerow(data['investors']['headers'])
         for item in data['investors']['items']:
