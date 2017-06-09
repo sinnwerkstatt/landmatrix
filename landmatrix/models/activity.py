@@ -19,17 +19,25 @@ from landmatrix.models.country import Country
 
 
 class ActivityQuerySet(models.QuerySet):
-    def public(self):
+    def public(self, user=None):
         '''
         Status public, not to be confused with is_public.
         '''
-        return self.filter(fk_status_id__in=ActivityBase.PUBLIC_STATUSES)
+        if user:
+            return self.filter(models.Q(fk_status_id__in=ActivityBase.PUBLIC_STATUSES) |
+                               models.Q(history_user=user))
+        else:
+            return self.filter(fk_status_id__in=ActivityBase.PUBLIC_STATUSES)
 
-    def public_or_deleted(self):
+    def public_or_deleted(self, user=None):
         statuses = ActivityBase.PUBLIC_STATUSES + (
             ActivityBase.STATUS_DELETED,
         )
-        return self.filter(fk_status_id__in=statuses)
+        if user:
+            return self.filter(models.Q(fk_status_id__in=statuses) |
+                        models.Q(history_user=user))
+        else:
+            return self.filter(fk_status_id__in=statuses)
 
     def public_or_pending(self):
         statuses = ActivityBase.PUBLIC_STATUSES + (
