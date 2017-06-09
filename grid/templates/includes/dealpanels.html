@@ -7,7 +7,7 @@
                href="#{{ form.form_title|slugify }}_body"
                id="{{ form.form_title|slugify }}">
                 <h5 class="panel-title">
-                    {{ form.form_title }}{% if form.meta.name == 'action_comment' or form.meta.name == 'location' %} <small>({% trans "required" %})</small>{% endif %}
+                    {{ form.form_title }}{% if form.meta.name == 'action_comment' or form.meta.name == 'location' %} <small>({% trans "mandatory" %})</small>{% endif %}
                     <span id="collapsebtn_{{ forloop.counter }}"
                           class="lm-chevron-circle-down pull-right mgrey1"></span>
                 </h5>
