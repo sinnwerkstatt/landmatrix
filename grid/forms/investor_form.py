@@ -41,9 +41,11 @@ class BaseInvestorForm(BaseModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Show current value only, rest happens via ajax
-        if 'fk_country' in self.initial:
-            self.fields['fk_country'].queryset = Country.objects.filter(pk=self.initial.get('fk_country', None))
+
+        # Show given/current value only, rest happens via ajax
+        valid_choice = self.data.get('fk_country', self.initial.get('fk_country', None))
+        if valid_choice:
+            self.fields['fk_country'].queryset = Country.objects.filter(pk=valid_choice)
 
     def save(self, commit=True):
         '''
@@ -97,10 +99,12 @@ class ExportInvestorForm(BaseInvestorForm):
         model = Investor
         exclude = ()
 
+
 class ParentInvestorForm(BaseInvestorForm):
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
         choices=INVESTOR_CLASSIFICATION_CHOICES)
+
     class Meta:
         model = Investor
         exclude = (

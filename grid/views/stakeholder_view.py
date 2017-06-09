@@ -28,7 +28,7 @@ class InvestorFormsMixin:
         if role == 'parent_investor':
             return ParentInvestorForm
         elif role == 'parent_company':
-            return StakeholderFormParent
+            return ParentStakeholderForm
         else:
             return OperationalCompanyForm
 
