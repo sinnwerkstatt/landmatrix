@@ -248,6 +248,11 @@ class DealSpatialBaseFormSet(BaseFormSet):
     def get_attributes(self, request=None):
         return [form.get_attributes(request=request) for form in self.forms]
 
+    @property
+    def meta(self):
+        # Required for template access to Meta class
+        return hasattr(self, 'Meta') and self.Meta or None
+
     class Meta:
         name = 'location'
 

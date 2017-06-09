@@ -21,7 +21,7 @@
     </div>
     {% else %}
     <div class="control-label col-md-3">
-        {{ field.label_tag }}
+        {{ field.label_tag }}{% if field.field.required %}<strong> ({% trans "required" %}</strong>){% endif %}
     </div>
     <div class="controls col-md-9">
         {% if field.help_text %}

@@ -500,6 +500,11 @@ class BaseForm(forms.Form):
 
         return output
 
+    @property
+    def meta(self):
+        # Required for template access to Meta class
+        return hasattr(self, 'Meta') and self.Meta or None
+
     class Meta:
         exclude = ()
         fields = ()
