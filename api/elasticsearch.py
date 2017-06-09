@@ -322,6 +322,7 @@ class ElasticSearch(object):
             deal_attrs.update({
                 'is_public': public_activity.is_public,
                 'deal_scope': public_activity.deal_scope,
+                'top_investors': ', '.join([str(i.investor_identifier) for i in public_activity.top_investors.all()])
             })
         except:
             # Fixme: This should never happen
@@ -452,6 +453,7 @@ class ElasticSearch(object):
             properties = {
                 'deal_scope_export': doc.get('deal_scope', ''),
                 'is_public_export': doc.get('is_public', False) and str(_('Yes')) or str(_('No')),
+                'top_investors_export': doc.get('top_investors', ''),
             }
             # Doc types: deal, location, contract and data_source
             for form in ChangeDealView.FORMS:

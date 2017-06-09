@@ -564,15 +564,17 @@ class Activity(ActivityBase):
         def get_parent_investors(investors):
             parent_investors = []
             for investor in investors:
-                parent_investors.extend(Investor.objects.filter(investors__fk_venture=investor,
-                                                                investors__role=InvestorVentureInvolvement.STAKEHOLDER_ROLE))
+                parent_investors.extend([ivi.fk_investor for ivi in InvestorVentureInvolvement.objects.filter(
+                    fk_venture=investor, role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)])
             if parent_investors:
-                return get_parent_investors(parent_investors)
+                print("parent companies found: %s" % str(parent_investors))
+                return get_parent_investors(list(set(parent_investors)))
             else:
                 return investors
         # Operational company
         operational_companies = Investor.objects.filter(
             investoractivityinvolvement__fk_activity__activity_identifier=self.activity_identifier)
+        print("operational company found: %s" % str(operational_companies))
         return get_parent_investors(operational_companies)
 
         # Parent companies
