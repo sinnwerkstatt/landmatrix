@@ -322,7 +322,14 @@ class ElasticSearch(object):
             deal_attrs.update({
                 'is_public': public_activity.is_public,
                 'deal_scope': public_activity.deal_scope,
-                'top_investors': ', '.join([str(i.investor_identifier) for i in public_activity.top_investors.all()])
+                'top_investors': '|'.join([
+                    '%s (%s, %s, %s)' % (
+                        i.name,
+                        str(i.investor_identifier),
+                        i.get_classification_display(),
+                        str(i.country)
+                    ) for i in public_activity.top_investors.all()
+                ])
             })
         except:
             # Fixme: This should never happen

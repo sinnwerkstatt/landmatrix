@@ -256,7 +256,7 @@ class InvestorVentureQuerySet(models.QuerySet):
         return self.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
 
 
-class  InvestorVentureInvolvement(models.Model):
+class InvestorVentureInvolvement(models.Model):
     '''
     InvestorVentureInvolvement links investors to each other.
     Generally fk_venture links to the Operational Company, and fk_investor
