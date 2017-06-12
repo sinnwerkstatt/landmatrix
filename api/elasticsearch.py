@@ -327,12 +327,12 @@ class ElasticSearch(object):
                         i.name,
                         str(i.investor_identifier),
                         i.get_classification_display(),
-                        str(i.country)
+                        str(i.fk_country)
                     ) for i in public_activity.top_investors.all()
                 ])
             })
-        except:
-            # Fixme: This should never happen
+        except Activity.DoesNotExist:
+            # Fixme: This should not happen
             self.stderr.write(_('Missing activity for historical activity %i (Activity identifier: #%i)' % (
                 activity.id,
                 activity.activity_identifier
