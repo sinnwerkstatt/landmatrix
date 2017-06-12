@@ -337,6 +337,13 @@ class ElasticSearch(object):
                 activity.id,
                 activity.activity_identifier
             )))
+        except Activity.MultipleObjectsReturned:
+            # Fixme: This should not happen
+            self.stderr.write(_('Too much activities for historical activity %i (Activity identifier: #%i)' % (
+                activity.id,
+                activity.activity_identifier
+            )))
+
 
         for a in activity.attributes.select_related('fk_group__name').order_by('fk_group__name'):
             # do not include the django object id
