@@ -266,8 +266,8 @@ class  InvestorVentureInvolvement(models.Model):
     STAKEHOLDER_ROLE = 'ST'
     INVESTOR_ROLE = 'IN'
     ROLE_CHOICES = (
-        (STAKEHOLDER_ROLE, _('Stakeholder')),
-        (INVESTOR_ROLE, _('Investor')),
+        (STAKEHOLDER_ROLE, _('Parent company')),
+        (INVESTOR_ROLE, _('Tertiary investor/lendor')),
     )
     EQUITY_INVESTMENT_TYPE = 10
     DEBT_FINANCING_INVESTMENT_TYPE = 20

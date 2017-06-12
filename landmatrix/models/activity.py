@@ -569,21 +569,23 @@ class Activity(ActivityBase):
             return None
 
     def get_top_investors(self):
-        def get_parent_investors(investors):
-            parent_investors = []
+        """Get list of highest parent companies (all right-hand side parent companies of the network visualisation)"""
+        def get_parent_companies(investors):
+            parents = []
             for investor in investors:
-                parent_investors.extend([ivi.fk_investor for ivi in InvestorVentureInvolvement.objects.filter(
-                    fk_venture=investor, role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)])
-            if parent_investors:
-                print("parent companies found: %s" % str(parent_investors))
-                return get_parent_investors(list(set(parent_investors)))
-            else:
-                return investors
+                # Check if there are parent companies for investor
+                parent_companies = [ivi.fk_investor for ivi in InvestorVentureInvolvement.objects.filter(
+                    fk_venture=investor, role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)]
+                if parent_companies:
+                    parents.extend(get_parent_companies(parent_companies))
+                else:
+                    parents.append(investor)
+            return parents
+
         # Operational company
         operational_companies = Investor.objects.filter(
             investoractivityinvolvement__fk_activity__activity_identifier=self.activity_identifier)
-        print("operational company found: %s" % str(operational_companies))
-        return get_parent_investors(operational_companies)
+        return list(set(get_parent_companies(operational_companies)))
 
         # Parent companies
         return None

@@ -175,7 +175,7 @@ class ExportView(ElasticSearchView):
             str(_('ID')),
             str(_('Is public')),
             str(_('Deal scope')),
-            str(_('Top investors')),
+            str(_('Top parent companies')),
         ]
         for form in ChangeDealView.FORMS:
             formset_name = hasattr(form, "form") and form.Meta.name or None
