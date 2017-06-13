@@ -16,7 +16,7 @@ from landmatrix.models.investor import (
     Investor, InvestorActivityInvolvement, InvestorVentureInvolvement,
 )
 from landmatrix.models.country import Country
-
+from django.core.cache import cache
 
 class ActivityQuerySet(models.QuerySet):
     def public(self, user=None):
@@ -324,7 +324,7 @@ class Activity(ActivityBase):
     init_date = models.CharField(verbose_name=_('Initiation year or date'), max_length=10,
                                  blank=True, null=True, db_index=True)
     fully_updated_date = models.DateField(_("Fully updated date"), blank=True, null=True)
-    top_investors = models.ManyToManyField(Investor, verbose_name=_("Top investors"), blank=True)
+    top_investors = models.TextField(verbose_name=_("Top parent companies"), blank=True)
 
     def refresh_cached_attributes(self):
         self.implementation_status = self.get_implementation_status()
@@ -585,10 +585,14 @@ class Activity(ActivityBase):
         # Operational company
         operational_companies = Investor.objects.filter(
             investoractivityinvolvement__fk_activity__activity_identifier=self.activity_identifier)
-        return list(set(get_parent_companies(operational_companies)))
-
-        # Parent companies
-        return None
+        top_investors = list(set(get_parent_companies(operational_companies)))
+        #return '|'.join(['%s (%s, %s, %s)' % (
+        #            i.name,
+        #            str(i.investor_identifier),
+        #            i.get_classification_display(),
+        #            str(i.fk_country)
+        #    ) for i in top_investors])
+        return '|'.join(['%s %s' % (str(i.investor_identifier), i.name) for i in top_investors])
 
     class Meta:
         verbose_name = _('Activity')

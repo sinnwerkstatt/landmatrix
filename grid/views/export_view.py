@@ -172,7 +172,7 @@ class ExportView(ElasticSearchView):
             exclude = ExportInvestorForm.exclude_in_export
 
         headers = [
-            str(_('ID')),
+            str(_('Deal ID')),
             str(_('Is public')),
             str(_('Deal scope')),
             str(_('Top parent companies')),
