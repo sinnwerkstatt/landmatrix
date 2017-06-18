@@ -59,7 +59,7 @@ class DealActionCommentForm(BaseForm):
 
     tg_feedback = TitleField(required=False, label="", initial=_("Feedback"))
     assign_to_user = UserModelChoiceField(
-        required=False, label=_("Assign to"), queryset=None,
+        required=False, label=_("Assign to"), queryset=get_user_model().objects.none(),
         empty_label=_("Unassigned"))
     tg_feedback_comment = forms.CharField(
         required=False, label=_("Feedback comment"), widget=CommentInput)
