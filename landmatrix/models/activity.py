@@ -23,7 +23,7 @@ class ActivityQuerySet(models.QuerySet):
         '''
         Status public, not to be confused with is_public.
         '''
-        if user:
+        if user and user.is_authenticated():
             return self.filter(models.Q(fk_status_id__in=ActivityBase.PUBLIC_STATUSES) |
                                models.Q(history_user=user))
         else:
@@ -33,7 +33,7 @@ class ActivityQuerySet(models.QuerySet):
         statuses = ActivityBase.PUBLIC_STATUSES + (
             ActivityBase.STATUS_DELETED,
         )
-        if user:
+        if user and user.is_authenticated():
             return self.filter(models.Q(fk_status_id__in=statuses) |
                         models.Q(history_user=user))
         else:
@@ -592,7 +592,7 @@ class Activity(ActivityBase):
         #            i.get_classification_display(),
         #            str(i.fk_country)
         #    ) for i in top_investors])
-        return '|'.join(['%s %s' % (str(i.investor_identifier), i.name) for i in top_investors])
+        return '|'.join(['#'.join([str(i.investor_identifier), i.name]) for i in top_investors])
 
     class Meta:
         verbose_name = _('Activity')

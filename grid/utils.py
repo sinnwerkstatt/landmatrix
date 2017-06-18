@@ -5,7 +5,7 @@ from landmatrix.models import Investor
 
 def get_export_value(field, values, attributes=None, formset=None):
     output = []
-    delimiter = ', '
+    delimiters = ['|', '#', ',']
     if not values:
         return ''
     if isinstance(field, forms.ModelChoiceField):
@@ -15,11 +15,11 @@ def get_export_value(field, values, attributes=None, formset=None):
         if not choices:
             # FIXME: Performing the queryset here for some reason is incredibly slow
             if field.queryset.model == Investor:
-                choices = dict(((o.pk, str(o.investor_identifier)) for o in field.queryset))
+                choices = dict(((str(o.pk), str(o.investor_identifier)) for o in field.queryset))
             else:
-                choices = dict(((o.pk, str(o)) for o in field.queryset))
+                choices = dict(((str(o.pk), str(o)) for o in field.queryset))
             cache.set('%s_choices' % model_name, choices)
-        output = [value and choices.get(value, '') or '' for value in values]
+        output = [value and choices.get(str(value), '') or '' for value in values]
     elif isinstance(field, forms.ChoiceField):
         for k, v in [i[:2] for i in field.choices]:
             if str(k) in values:
@@ -64,42 +64,42 @@ def get_export_value(field, values, attributes=None, formset=None):
                     is_current = attribute['is_current'] and 'current' or ''
                     attributes_by_date[key] = [is_current, attribute['value']]
             if values_count > 2:
-                output = ['[%s:%s:%s] %s' % (
+                output = [delimiters[1].join([
                     d.split(':')[0],
                     a[0],
                     d.split(':')[1],
                     a[1],
-                ) for d, a in attributes_by_date.items()]
+                ]) for d, a in attributes_by_date.items()]
             else:
-                output = ['[%s:%s] %s' % (
+                output = [delimiters[1].join([
                     d or '',
                     a[0],
                     a[1],
-                ) for d, a in attributes_by_date.items()]
+                ]) for d, a in attributes_by_date.items()]
         else:
             for attribute in attributes:
                 is_current = attribute['is_current'] and 'current' or ''
                 # Value:Value2:Date:Is current
                 if values_count > 2:
-                    output.append('[%s:%s:%s] %s' % (
+                    output.append(delimiters[1].join([
                         attribute['date'] or '',
                         is_current,
                         attribute['value2'],
                         attribute['value'],
-                    ))
+                    ]))
                 # Value:Date:Is current
                 elif values_count > 1:
-                    output.append('[%s:%s] %s' % (
+                    output.append(delimiters[1].join([
                         attribute['date'] or '',
                         is_current,
                         attribute['value'],
-                    ))
+                    ]))
                 # Value:Value2 (e.g. Actors field)
                 else:
-                    output.append('%s%s' % (
+                    output.append(delimiters[1].join([
                         attribute['value'],
-                        attribute['value2'] and ' (%s)' % attribute['value2'] or '',
-                    ))
+                        attribute['value2']
+                    ]))
     elif isinstance(field, forms.FileField):
         output = values
     elif isinstance(field, forms.BooleanField):
@@ -113,4 +113,4 @@ def get_export_value(field, values, attributes=None, formset=None):
     if formset:
         return output
     else:
-        return delimiter.join(output)
+        return delimiters[0].join(output)

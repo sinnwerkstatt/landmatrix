@@ -3,15 +3,38 @@ from django.contrib import admin
 from landmatrix.models import *
 
 
+class FilterConditionAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(FilterCondition, FilterConditionAdmin)
+
+
+class FilterConditionInline(admin.TabularInline):
+    model = FilterCondition
+    extra = 0
+
+
 class FilterPresetAdmin(admin.ModelAdmin):
-	list_display = ['name', 'group', 'relation', 'is_default_country', 'is_default_global']
+    list_display = ['name', 'group', 'relation', 'is_default_country', 'is_default_global']
+    inlines = [
+        FilterConditionInline
+    ]
 admin.site.register(FilterPreset, FilterPresetAdmin)
 
-admin.site.register(FilterPresetGroup)
-admin.site.register(FilterCondition)
+
+class FilterPresetInline(admin.TabularInline):
+    model = FilterPreset
+    extra = 0
+
+
+class FilterPresetGroupAdmin(admin.ModelAdmin):
+    inlines = [
+        FilterPresetInline
+    ]
+admin.site.register(FilterPresetGroup, FilterPresetGroupAdmin)
+
 
 class CountryAdmin(admin.ModelAdmin):
-	list_display = ['name', 'is_target_country']
+    list_display = ['name', 'is_target_country']
 admin.site.register(Country, CountryAdmin)
 
 admin.site.register(Region)

@@ -322,6 +322,7 @@ class ElasticSearch(object):
             deal_attrs.update({
                 'is_public': public_activity.is_public,
                 'deal_scope': public_activity.deal_scope,
+                'deal_size': public_activity.deal_size,
                 'top_investors': public_activity.top_investors,
             })
         except Activity.DoesNotExist:
@@ -411,6 +412,7 @@ class ElasticSearch(object):
                     deal_attrs[a.name] = [value,]
                     if '%s_attr' % a.name in _landmatrix_mappings['deal']['properties'].keys():
                         deal_attrs['%s_attr' % a.name] = [attribute,]
+
         if doc_type == 'deal':
             # Additionally save operational company attributes
             oc = Investor.objects.filter(investoractivityinvolvement__fk_activity__activity_identifier=activity.activity_identifier)
@@ -461,6 +463,7 @@ class ElasticSearch(object):
                 'deal_scope_export': doc.get('deal_scope', ''),
                 'is_public_export': doc.get('is_public', False) and str(_('Yes')) or str(_('No')),
                 'top_investors_export': doc.get('top_investors', ''),
+                'deal_size_export': doc.get('deal_size', ''),
             }
             # Doc types: deal, location, contract and data_source
             for form in ChangeDealView.FORMS:

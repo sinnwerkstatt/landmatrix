@@ -214,6 +214,7 @@ class ExportView(ElasticSearchView):
                 '#%s' % item.get('activity_identifier'),    # ID
                 item.get('is_public_export'),               # Is public
                 item.get('deal_scope_export'),              # Deal Scope
+                item.get('deal_size_export'),               # Deal Size
                 item.get('top_investors'),                  # Top investors
             ]
             for form in ChangeDealView.FORMS:
