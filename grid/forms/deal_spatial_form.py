@@ -14,6 +14,7 @@ from .base_form import BaseForm
 
 
 class DealSpatialForm(BaseForm):
+    exclude_in_export = ['target_region',]
     ACCURACY_CHOICES = (
         ("", _("---------")),
         ("Country", _("Country")),

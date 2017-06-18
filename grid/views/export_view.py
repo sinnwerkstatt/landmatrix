@@ -175,6 +175,8 @@ class ExportView(ElasticSearchView):
             str(_('Deal ID')),
             str(_('Is public')),
             str(_('Deal scope')),
+            str(_('Deal size')),
+            str(_('Current negotiation status')),
             str(_('Top parent companies')),
         ]
         for form in ChangeDealView.FORMS:
@@ -215,6 +217,7 @@ class ExportView(ElasticSearchView):
                 item.get('is_public_export'),               # Is public
                 item.get('deal_scope_export'),              # Deal Scope
                 item.get('deal_size_export'),               # Deal Size
+                item.get('current_negotiation_status_export'),  # Current negotiation status
                 item.get('top_investors'),                  # Top investors
             ]
             for form in ChangeDealView.FORMS:

@@ -347,7 +347,39 @@ class Activity(ActivityBase):
             [(c[0], i) for i, c in enumerate(self.IMPLEMENTATION_STATUS_CHOICES)])
         return self._get_current('implementation_status', IMPLEMENTATION_STATUS_ORDER)
 
-    def _get_current(self, attribute, ranking):
+    def get_deal_size(self):
+        # FIXME: This should probably not sort by -date but by -id (latest element instead of newest)
+        intended_size = self._get_current("intended_size")
+        contract_size = self._get_current("contract_size")
+        production_size = self._get_current("production_size")
+
+        if self.negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
+            # intended deal
+            value = intended_size or contract_size or production_size or 0
+        elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
+            # concluded deal
+            value = contract_size or production_size or 0
+        elif self.negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
+            # intended but failed deal
+            value = intended_size or contract_size or production_size or 0
+        elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_FAILED:
+            # concluded but failed
+            value = contract_size or production_size or 0
+        else:
+            value = 0
+
+        if value:
+            # Legacy: There shouldn't be any comma separated values anymore in the database
+            if ',' in value:
+                return int(value.split(',')[0])
+            elif '.' in value:
+                return int(value.split('.')[0])
+            else:
+                return int(value)
+        else:
+            return 0
+
+    def _get_current(self, attribute, ranking=None):
         """
         Returns the relevant state for the deal. Prefers states without a year but a higher ranking.
         """
@@ -356,16 +388,17 @@ class Activity(ActivityBase):
         attributes = self.attributes.filter(name=attribute)
         attributes = attributes.extra(select={'date_is_null': 'date IS NULL'})
         attributes = attributes.extra(
-            order_by=['date_is_null', '-date', '-id'])
+            order_by=['-is_current', 'date_is_null', '-date', '-id'])
         if attributes.count() == 0:
             return None
         current_value = attributes.first().value
-        current_ranking = ranking.get(current_value, 0)
-        for attr in attributes.all()[::-1]:
-            attr_ranking = ranking.get(attr.value, 0)
-            if attr_ranking > current_ranking:
-                current_value = attr.value
-                current_ranking = attr_ranking
+        if ranking:
+            current_ranking = ranking.get(current_value, 0)
+            for attr in attributes.all()[::-1]:
+                attr_ranking = ranking.get(attr.value, 0)
+                if attr_ranking > current_ranking:
+                    current_value = attr.value
+                    current_ranking = attr_ranking
         return current_value
 
     def is_public_deal(self):
@@ -524,41 +557,6 @@ class Activity(ActivityBase):
             return "transnational"
         else:
             return None
-
-    def get_deal_size(self):
-        # FIXME: This should probably not sort by -date but by -id (latest element instead of newest)
-        intended_size = self.attributes.filter(name="intended_size").order_by("-date")
-        intended_size = len(intended_size) > 0 and intended_size[0].value or None
-        contract_size = self.attributes.filter(name="contract_size").order_by("-date")
-        contract_size = len(contract_size) > 0 and contract_size[0].value or None
-        production_size = self.attributes.filter(name="production_size").order_by("-date")
-        production_size = len(production_size) > 0 and production_size[0].value or None
-
-        #if self.negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
-        #    # intended deal
-        #    return intended_size or contract_size or production_size or 0
-        #elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
-        #    # concluded deal
-        #    return contract_size or production_size or 0
-        #elif self.negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
-        #    # intended but failed deal
-        #    return intended_size or contract_size or production_size or 0
-        #elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_FAILED:
-        #    # concluded but failed
-        #    return contract_size or production_size or 0
-        #else:
-        #    return 0
-        value = contract_size or production_size or intended_size
-        if value:
-            # Legacy: There shouldn't be any comma separated values anymore in the database
-            if ',' in value:
-                return int(value.split(',')[0])
-            elif '.' in value:
-                return int(value.split('.')[0])
-            else:
-                return int(value)
-        else:
-            return 0
 
     def get_fully_updated_date(self):
         try:
