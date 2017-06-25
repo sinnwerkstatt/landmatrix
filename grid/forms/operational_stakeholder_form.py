@@ -33,7 +33,7 @@ class OperationalStakeholderForm(BaseForm):
     def get_data(cls, activity, group=None, prefix=""):
         data = super().get_data(activity, group, prefix)
         op = InvestorActivityInvolvement.objects.filter(
-            fk_activity_id=activity.public_version_id).first()
+            fk_activity__activity_identifier=activity.activity_identifier).first()
         if op:
             data['operational_stakeholder'] = str(op.fk_investor.id)
         return data
