@@ -234,7 +234,7 @@ class ElasticSearch(object):
 
 
     def index_investor_documents(self):
-        investors = Investor.objects.public()
+        investors = Investor.objects.public().order_by('investor_identifier', '-id').distinct('investor_identifier')
 
         for doc_type in DOC_TYPES_INVESTOR:
             docs = []
