@@ -114,3 +114,13 @@ def get_export_value(field, values, attributes=None, formset=None):
         return output
     else:
         return delimiters[0].join(output)
+
+
+def get_spatial_properties():
+    keys = []
+    from grid.forms.deal_spatial_form import DealSpatialForm
+    for key in DealSpatialForm.base_fields.keys():
+        if key.startswith('tg_') and not key.endswith('_comment'):
+            continue
+        keys.append(key)
+    return keys

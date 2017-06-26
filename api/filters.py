@@ -366,7 +366,8 @@ def format_filters_elasticsearch(filters, initial_query=None):
 
 def load_filters(request, filter_format=FILTER_FORMATS_SQL):
     filters = {}
-    for filter_name, filter_dict in request.session.get('filters', {}).items():
+    session_filters = request.session.get('filters', {}) or {}  # Can be None in some cases
+    for filter_name, filter_dict in session_filters.items():
         if 'preset_id' in filter_dict:
             filters[filter_name] = PresetFilter.from_session(filter_dict)
         else:

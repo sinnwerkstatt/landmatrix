@@ -71,6 +71,7 @@ class DealListView(FakeQuerySetListView):
 
 
 class ElasticSearchView(View):
+    doc_type = 'deal'
     
     # default status are the public ones. will only get replaced if well formed and allowed
     status_list = ActivityBase.PUBLIC_STATUSES
@@ -156,7 +157,7 @@ class ElasticSearchView(View):
         
     def get(self, request, *args, **kwargs):
         query = self.create_query_from_filters()
-        raw_result_list = self.execute_elasticsearch_query(query)    
+        raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
         
         # filter results
         result_list = self.filter_returned_results(raw_result_list)
@@ -203,8 +204,9 @@ class ElasticSearchView(View):
                 continue
             if not result.get('intention', None): # TODO: should we hide results with no intention field value?
                 continue
+            result['id'] = raw_result['_id']
             result_list.append(result)
-        
+
         # we have a special filter mode for status=STATUS_PENDING type searches, 
         # if pending deals are to be shown, matched deals with status PENDING hide all other deals
         # with the same activity_identifier that are not PENDING
@@ -223,6 +225,7 @@ class ElasticSearchView(View):
 
 
 class GlobalDealsView(APIView, ElasticSearchView):
+
     def create_feature_from_result(self, result):
         """ Create a GeoJSON-conform result. """
         
@@ -268,7 +271,7 @@ class CountryDealsView(GlobalDealsView, APIView):
         Reuse methods from globaldealsview, but group results by country.
         """
         query = self.create_query_from_filters()
-        raw_result_list = self.execute_elasticsearch_query(query)
+        raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
 
         # filter results
         result_list = self.filter_returned_results(raw_result_list)
@@ -366,7 +369,7 @@ class PolygonGeomView(GlobalDealsView, APIView):
             }
         })
 
-        raw_result_list = self.execute_elasticsearch_query(query)
+        raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
         result_list = self.filter_returned_results(raw_result_list)
 
         features = []

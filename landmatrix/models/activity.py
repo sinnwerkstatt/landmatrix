@@ -609,8 +609,8 @@ class Activity(ActivityBase):
 class HistoricalActivityQuerySet(ActivityQuerySet):
 
     def get_my_deals(self, user):
-        return self.filter(history_user=user).\
-            filter(fk_status__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_REJECTED))
+        return self.filter(history_user=user)\
+            #.filter(fk_status__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_REJECTED))
 
     def _single_revision_identifiers(self):
         '''

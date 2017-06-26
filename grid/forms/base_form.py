@@ -489,7 +489,7 @@ class BaseForm(forms.Form):
 
             values = doc.get(name)
             if not values:
-                output[export_key] = ''
+                output[export_key] = ['',]
                 continue
             if not isinstance(values, (list, tuple)):
                 values = [values,]
@@ -497,7 +497,6 @@ class BaseForm(forms.Form):
             attributes = attr_key in doc and doc.get(attr_key) or None
 
             output[export_key] = get_export_value(field, values, attributes, formset=formset)
-
         return output
 
     @property

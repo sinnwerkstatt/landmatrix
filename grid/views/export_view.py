@@ -16,7 +16,7 @@ from grid.views import AllDealsView, TableGroupView, DealDetailView, ChangeDealV
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from api.views import ElasticSearchView
-
+from grid.utils import get_spatial_properties
 
 class ExportView(ElasticSearchView):
     # TODO: XLS is deprecated, should be removed in templates
@@ -31,7 +31,8 @@ class ExportView(ElasticSearchView):
         results = {}
         # Search deals
         deals = self.execute_elasticsearch_query(query, doc_type='deal')
-        results['deals'] = self.filter_returned_results(deals)
+        deals = self.filter_returned_results(deals)
+        results['deals'] = self.merge_deals(deals)
 
         # Get all involvements
         results['involvements'] = self.execute_elasticsearch_query({}, doc_type='involvement')
@@ -147,9 +148,36 @@ class ExportView(ElasticSearchView):
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
 
+    def merge_deals(self, deals):
+        """
+        Merge multiple deal locations into one deal
+        FIXME:
+            1. Extend the elasticsearch doc_type „location“ with the necessary display variables for the map
+            2. Switch the map to search for doc_type „location“ using the „has_parent“ elasticsearch option
+            3. Merge multiple locations of deals in elasticsearch doc_type „deal“
+            4. Remove this method
+        """
+        result_dict = {}
+        spatial_names = list('%s_export' % n for n in get_spatial_properties())
+        for deal in deals:
+            deal_id, location_id = deal.get('id').split('_')
+            if deal_id in result_dict:
+                for name in spatial_names:
+                    value = deal.get(name, None)
+                    if value:
+                        result_dict[deal_id][name][int(location_id)] = deal.get(name, [''])[0]
+            else:
+                location_count = deal['location_count']
+                result_dict[deal_id] = deal.copy()
+                for name in spatial_names:
+                    result_dict[deal_id][name] = location_count * ['']
+                    result_dict[deal_id][name][int(location_id)] = deal.get(name, [''])[0]
+        return result_dict.values()
+
     def get_data(self, results):
-        """ Get headers and format the data of the items to a proper download format.
-            Returns an array of arrays, each row is an an array of data
+        """
+        Get headers and format the data of the items to a proper download format.
+        Returns an array of arrays, each row is an an array of data
         """
         data = {
             'deals': {
@@ -298,6 +326,8 @@ class ExportView(ElasticSearchView):
                     value = value[formset_index]
                 except IndexError:
                     value = ''
+            else:
+                value = value[0]
         return value.encode('unicode_escape').decode('utf-8')
 
 class AllDealsExportView(AllDealsView, ExportView):

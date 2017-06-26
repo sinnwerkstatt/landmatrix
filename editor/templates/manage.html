@@ -27,18 +27,16 @@
     <div class="navbar navbar-default navbar-subnav" role="navigation">
         <div class="container-fluid">
             <ul class="manage nav navbar-nav" id="manage-sections">
-                {% if not perms.landmatrix.change_activity %}
-                    <li><a href="{% url 'manage_my_deals' %}"><i class="icon-chevron-down"></i>
-                        {% trans "My deals" %}{% if my_deals_page %} <small><span class="label label-default">{{ my_deals|length }}</span></small>{% endif %}</a></li>
-                {% endif %}
+                <li{% if action == 'my_deals' %} class="active"{% endif %}><a href="{% url 'manage_my_deals' %}"><i class="icon-chevron-down"></i>
+                    {% trans "My deals" %}{% if my_deals_page %} <small><span class="label label-default">{{ my_deals|length }}</span></small>{% endif %}</a></li>
                 {% if perms.landmatrix.review_activity %}
-                    <li><a href="{% url 'manage_feedback' %}"><i class="icon-chevron-down icon-white"></i>
+                    <li{% if action == 'feedback' %} class="active"{% endif %}><a href="{% url 'manage_feedback' %}"><i class="icon-chevron-down icon-white"></i>
                         {% trans "Feedback" %}{% if feedback_count %} <small><span class="label label-default">{{ feedback_count }}</span></small>{% endif %}</a></li>
-                    <li><a href="{% url 'manage_pending_updates' %}"><i class="icon-chevron-down"></i>
+                    <li{% if action == 'pending_updates' %} class="active"{% endif %}><a href="{% url 'manage_pending_updates' %}"><i class="icon-chevron-down"></i>
                         {% trans "Pending updates" %}{% if pending_updates_count %} <small><span class="label label-default">{{ pending_updates_count }}</span></small>{% endif %}</a></li>
-                    <li><a href="{% url 'manage_pending_deletes' %}"><i class="icon-chevron-down"></i>
+                    <li{% if action == 'pending_deletes' %} class="active"{% endif %}><a href="{% url 'manage_pending_deletes' %}"><i class="icon-chevron-down"></i>
                         {% trans "Pending deletions" %}{% if pending_deletes_count %} <small><span class="label label-default">{{ pending_deletes_count }}</span></small>{% endif %}</a></li>
-                    <li><a href="{% url 'manage_pending_adds' %}"><i class="icon-chevron-down"></i>
+                    <li{% if action == 'pending_adds' %} class="active"{% endif %}><a href="{% url 'manage_pending_adds' %}"><i class="icon-chevron-down"></i>
                         {% trans "New deals for approval" %}{% if pending_adds_count %} <small><span class="label label-default">{{ pending_adds_count }}</span></small>{% endif %}</a></li>
                     {# TODO: make investor deletes work #}
                     <!--

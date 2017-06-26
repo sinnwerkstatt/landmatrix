@@ -14,11 +14,11 @@ from django.core.paginator import Paginator
 from django.utils.translation import ugettext_lazy as _
 
 from grid.views.change_deal_view import ChangeDealView
-from grid.forms.deal_spatial_form import DealSpatialForm
 from landmatrix.models.activity import HistoricalActivity, Activity
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
+from grid.utils import get_spatial_properties
 
 FIELD_TYPE_MAPPING = {
     'IntegerField': 'integer',
@@ -137,14 +137,6 @@ class ElasticSearch(object):
         if stderr:
             self.stderr = stderr
 
-    def get_spatial_properties(self):
-        keys = []
-        for key in DealSpatialForm.base_fields.keys():
-            if key.startswith('tg_') and not key.endswith('_comment'):
-                continue
-            keys.append(key)
-        return keys
-
     def create_index(self, delete=True):
         if delete:
             try:
@@ -242,7 +234,7 @@ class ElasticSearch(object):
 
 
     def index_investor_documents(self):
-        investors = Investor.objects.all()
+        investors = Investor.objects.public()
 
         for doc_type in DOC_TYPES_INVESTOR:
             docs = []
@@ -370,9 +362,7 @@ class ElasticSearch(object):
             group_match = re.match('(?P<doc_type>location|data_source|contract)_(?P<count>\d+)', a.fk_group.name)
             if group_match:
                 dt, count = group_match.groupdict()['doc_type'], int(group_match.groupdict()['count'])
-                # Fallback for wrong entries, should be deprecated soon
-                if count == 0:
-                    count = 1
+                count += 1
                 if doc_type == dt:
                     while len(docs) < count:
                         docs.append({
@@ -430,7 +420,7 @@ class ElasticSearch(object):
 
         # Create single document for each location
         # FIXME: Saving single deals for each location might be deprecated since we have doc_type location now?
-        spatial_names = list(self.get_spatial_properties())
+        spatial_names = list(get_spatial_properties())
         for i in range(deal_attrs.get('location_count', 0)):
             doc = deal_attrs.copy()
             for name in spatial_names:
@@ -441,7 +431,7 @@ class ElasticSearch(object):
                 else:
                     doc[name] = ''
             # Set unique ID for location (deals can have multiple locations)
-            #doc['id'] = '%s_%s' % (doc['historical_activity_id'], group)
+            doc['id'] = '%s_%i' % (doc['id'], i)
             if 'point_lat' in doc and 'point_lon' in doc:
                 doc['geo_point'] = '%s,%s' % (doc.get('point_lat'), doc.get('point_lon'))
             # FIXME: we dont really need 'point_lat' and 'point_lon' here,
