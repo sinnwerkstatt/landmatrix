@@ -98,7 +98,7 @@ def get_export_value(field, values, attributes=None, formset=None):
                 else:
                     output.append(delimiters[1].join([
                         attribute['value'],
-                        attribute['value2']
+                        attribute['value2'] or ''
                     ]))
     elif isinstance(field, forms.FileField):
         output = values
