@@ -435,7 +435,7 @@
                 };
             }
 
-            // Return the basic chart style for cluster: Use a SVG image icon 
+            // Return the basic chart style for cluster: Use a SVG image icon
             // and display number of features as text.
             function getChartStyle(clusterSVG, clusterText, chartSize, fontSize) {
                 return new ol.style.Style({
@@ -843,9 +843,9 @@
                     legendDiv.html('');
                 }
             };
-            
+
             this.togglePolygons = function(checkboxEl) {
-                
+
                 // Check if the layer was already loaded
                 if (polygonLayers[checkboxEl.value]) {
                     var currentLayer = polygonLayers[checkboxEl.value];

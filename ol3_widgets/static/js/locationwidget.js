@@ -6,7 +6,7 @@ $(document).ready(function () {
             // defaults
             this.options = {
                 geocoder: new google.maps.Geocoder()
-            }; 
+            };
             for (var property in options) {
                 if (options.hasOwnProperty(property)) {
                     this.options[property] = options[property];

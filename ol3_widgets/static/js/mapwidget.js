@@ -529,7 +529,7 @@ $(document).ready(function () {
                 var countryValue = options.filter('option[title="' + countryCode + '"]').val();
                 // This seems to be more robust than setting the option to selected
                 // manually
-                this.options.boundTargetCountryField.val(countryValue);                     
+                this.options.boundTargetCountryField.val(countryValue);
             }
         };
 
@@ -611,7 +611,7 @@ $(document).ready(function () {
                 point.getCoordinates(), this.map.getView().getProjection(), 'EPSG:4326');
             this.geocodeCoordinates(latLon);
             if (this.options.boundLatField && this.options.boundLonField) {
-                this.updateLatLongFields(latLon);                
+                this.updateLatLongFields([latLon[1], latLon[0]]);
             }
 
         };
