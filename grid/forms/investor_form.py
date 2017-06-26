@@ -86,7 +86,7 @@ class ExportInvestorForm(BaseInvestorForm):
 
             values = doc.get('%s' % field_name)
             if not values:
-                output[export_key] = ''
+                output[export_key] = []
                 continue
             if not isinstance(values, (list, tuple)):
                 values = [values,]

@@ -489,7 +489,7 @@ class BaseForm(forms.Form):
 
             values = doc.get(name)
             if not values:
-                output[export_key] = ['',]
+                output[export_key] = []
                 continue
             if not isinstance(values, (list, tuple)):
                 values = [values,]

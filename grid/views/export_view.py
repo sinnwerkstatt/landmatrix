@@ -164,14 +164,14 @@ class ExportView(ElasticSearchView):
             if deal_id in result_dict:
                 for name in spatial_names:
                     value = deal.get(name, None)
-                    if value:
-                        result_dict[deal_id][name][int(location_id)] = deal.get(name, [''])[0]
+                    result_dict[deal_id][name][int(location_id)] = value and value[0] or ''
             else:
                 location_count = deal['location_count']
                 result_dict[deal_id] = deal.copy()
                 for name in spatial_names:
                     result_dict[deal_id][name] = location_count * ['']
-                    result_dict[deal_id][name][int(location_id)] = deal.get(name, [''])[0]
+                    value = deal.get(name, None)
+                    result_dict[deal_id][name][int(location_id)] = value and value[0] or ''
         return result_dict.values()
 
     def get_data(self, results):
