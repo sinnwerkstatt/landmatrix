@@ -312,13 +312,13 @@ class ExportView(ElasticSearchView):
             for field_name, field in ExportInvestorForm.base_fields.items():
                 if field_name in exclude:
                     continue
-                row.append(self.get_export_value(field_name, item))
+                row.append(self.get_export_value(field_name, item, encode=False))
             rows.append(row)
         data['investors']['items'] = rows
 
         return data
 
-    def get_export_value(self, name, data, formset_index=None):
+    def get_export_value(self, name, data, formset_index=None, encode=True):
         value = data.get('%s_export' % name) or ''
         if isinstance(value, (list, tuple)):
             if formset_index is not None:
@@ -328,7 +328,10 @@ class ExportView(ElasticSearchView):
                     value = ''
             else:
                 value = value[0]
-        return value.encode('unicode_escape').decode('utf-8')
+        if encode:
+            return value.encode('unicode_escape').decode('utf-8')
+        else:
+            return value
 
 class AllDealsExportView(AllDealsView, ExportView):
     def dispatch(self, request, *args, **kwargs):
