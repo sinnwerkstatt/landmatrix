@@ -262,3 +262,13 @@ def addstr(arg1, arg2):
 def random_id(obj):
     """Overwrite bound form field with random ID (workaround for location/map)"""
     return obj.as_widget(attrs={'id': obj.auto_id + ('_%i' % uuid4())})
+
+
+@register.simple_tag
+def get_user_role(user):
+    roles = ['Administrator', 'Editor', 'Reporter']
+    groups = [g.name for g in user.groups.all()]
+    for role in roles:
+        if role in groups:
+            return role
+    return _('No role')

@@ -13,7 +13,7 @@ from landmatrix.models.activity_attribute_group import (
     ActivityAttribute,
 )
 from landmatrix.models.investor import (
-    Investor, InvestorActivityInvolvement, InvestorVentureInvolvement,
+    Investor, InvestorActivityInvolvement, InvestorVentureInvolvement, InvestorBase
 )
 from landmatrix.models.country import Country
 from django.core.cache import cache
@@ -573,7 +573,9 @@ class Activity(ActivityBase):
             for investor in investors:
                 # Check if there are parent companies for investor
                 parent_companies = [ivi.fk_investor for ivi in InvestorVentureInvolvement.objects.filter(
-                    fk_venture=investor, role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)]
+                    fk_venture=investor,
+                    fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
+                    role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)]
                 if parent_companies:
                     parents.extend(get_parent_companies(parent_companies))
                 else:
@@ -590,7 +592,7 @@ class Activity(ActivityBase):
         #            i.get_classification_display(),
         #            str(i.fk_country)
         #    ) for i in top_investors])
-        return '|'.join(['#'.join([str(i.investor_identifier), i.name]) for i in top_investors])
+        return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '')]) for i in top_investors])
 
     class Meta:
         verbose_name = _('Activity')

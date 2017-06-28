@@ -90,6 +90,9 @@ class ExportInvestorForm(BaseInvestorForm):
                 continue
             if not isinstance(values, (list, tuple)):
                 values = [values,]
+            # Remove # in name
+            if field_name == '%sname' % prefix:
+                values = [v.replace('#', '') for v in values]
 
             output[export_key] = get_export_value(field, values)
 
