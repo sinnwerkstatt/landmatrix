@@ -11,6 +11,7 @@ from django.contrib.humanize.templatetags.humanize import naturaltime, intcomma
 from django.utils.safestring import mark_safe
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from collections import OrderedDict
 
 
 # from editor.views import get_display_value_by_field
@@ -266,9 +267,12 @@ def random_id(obj):
 
 @register.simple_tag
 def get_user_role(user):
-    roles = ['Administrator', 'Editor', 'Reporter']
+    roles = OrderedDict()
+    roles['Administrators'] = _('Administrator')
+    roles['Editors'] = _('Editor')
+    roles['Reporters'] = _('Reporter')
     groups = [g.name for g in user.groups.all()]
-    for role in roles:
+    for role, name in roles.items():
         if role in groups:
-            return role
+            return name
     return _('No role')
