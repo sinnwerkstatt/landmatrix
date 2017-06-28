@@ -32,11 +32,12 @@ class Command(BaseCommand):
         for i, row in enumerate(ws.rows):
             if i == 0:
                 continue
+            if not row[5].value:
+                continue
             top_investors = row[5].value.split('|')
             for investor in top_investors:
                 if not investor:
                     continue
-                print(investor)
                 id, name = investor.split('#')
                 if not id in investors.keys():
                     self.stderr.write('Missing investor ID: %s (Sheet: Investors)' % id)
