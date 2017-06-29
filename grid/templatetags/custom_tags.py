@@ -267,6 +267,7 @@ def random_id(obj):
 
 @register.simple_tag
 def get_user_role(user):
+    output = []
     roles = OrderedDict()
     roles['Administrators'] = _('Administrator')
     roles['Editors'] = _('Editor')
@@ -274,5 +275,13 @@ def get_user_role(user):
     groups = [g.name for g in user.groups.all()]
     for role, name in roles.items():
         if role in groups:
-            return name
-    return _('No role')
+            output.append(str(name))
+    if not output:
+        output.append(str(_('No role')))
+    if user.userregionalinfo:
+        area = [c.name for c in user.userregionalinfo.country.all()]
+        area.extend([r.name for r in user.userregionalinfo.region.all()])
+        if area:
+            output.append(str(_('for')))
+            output.append(', '.join(area))
+    return ' '.join(output)
