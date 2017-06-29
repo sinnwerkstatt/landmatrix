@@ -21,7 +21,7 @@ class ActivityChangeset(models.Model):
         'landmatrix.HistoricalActivity', verbose_name=_("Activity"),
         blank=True, null=True, related_name='changesets')
     fk_country = models.ForeignKey(
-        'landmatrix.Country', verbose_name=_("County"), blank=True, null=True)
+        'landmatrix.Country', verbose_name=_("Country"), blank=True, null=True)
 
     fk_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name=_("User"), blank=True,
