@@ -16,7 +16,7 @@ class CountriesQuerySet(SimpleFakeQuerySet):
         countries = CountryPage.objects.filter(live=True).order_by('title')
         response.append({
             'text': _('Observatories'),
-            'children': [[country.id, country.slug, country.title] for country in countries]
+            'children': [[country.country.id, country.slug, country.title] for country in countries]
         })
         countries = Country.objects.filter(is_target_country=True).exclude(
             id__in=[c.country.id for c in countries]
