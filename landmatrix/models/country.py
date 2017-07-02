@@ -4,7 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class CountryManager(models.Manager):
-    pass
+    def get_queryset(self):
+        # Defer geom field since it slows down queries, especially within the django admin
+        return super(CountryManager, self).get_queryset().defer('geom')
 
 
 class Country(models.Model):
