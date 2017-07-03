@@ -278,7 +278,12 @@ def get_user_role(user):
             output.append(str(name))
     if not output:
         output.append(str(_('No role')))
-    if user.userregionalinfo:
+    userregionalinfo = None
+    try:
+        userregionalinfo = user.userregionalinfo
+    except:
+        pass
+    if userregionalinfo:
         area = [c.name for c in user.userregionalinfo.country.all()]
         area.extend([r.name for r in user.userregionalinfo.region.all()])
         if area:
