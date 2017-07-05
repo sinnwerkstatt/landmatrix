@@ -93,6 +93,9 @@ class SaveDealView(TemplateView):
         try:
             user = User.objects.get(
                 email=data['public_user_email'])
+        except User.MultipleObjectsReturned:
+            user = User.objects.filter(
+                email=data['public_user_email']).first()
         except User.DoesNotExist:
             names = data['public_user_name'].split(' ')
             if len(names) > 1:
