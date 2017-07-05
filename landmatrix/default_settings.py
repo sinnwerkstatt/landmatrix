@@ -126,7 +126,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sites.middleware.CurrentSiteMiddleware',
 
     # populate the history user automatically
     'simple_history.middleware.HistoryRequestMiddleware',
