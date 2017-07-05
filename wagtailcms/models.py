@@ -301,7 +301,7 @@ def get_country_or_region(request, page=None):
         result['region'] = page.region
     elif hasattr(page, 'country'):
         result['country'] = page.country
-    else:
+    elif request:
         kwargs = request.resolver_match.kwargs
         if 'region_slug' in kwargs:
             result['region'] = DataRegion.objects.get(slug=kwargs.get('region_slug'))
@@ -570,7 +570,7 @@ class RegionIndex(TranslationMixin, Page):
     ]
     subpage_types = ['wagtailcms.RegionPage']
 
-    def get_context(self, request, *args, **kwarg):
+    def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
         context.update(get_country_or_region(request))
         return context
