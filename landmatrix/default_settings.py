@@ -321,3 +321,5 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
     'template_timings_panel.panels.TemplateTimings.TemplateTimings',
 ]
+
+BLOG_LIMIT_AUTHOR_CHOICES_GROUP = 'CMS News'
