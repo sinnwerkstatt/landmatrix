@@ -84,40 +84,45 @@ class SaveDealView(TemplateView):
             return self.form_invalid(forms)
 
     def _get_or_create_user(self, user_information_form):
-        # TODO: this is really bad practice. Why not a form that makes it
-        # clear to the user that they are creating an account?
+        def generate_username(first_name, last_name):
+            val = "{0}.{1}".format(first_name.replace(' ', '.'), last_name).lower()
+            x = 0
+            while True:
+                if x == 0 and User.objects.filter(username=val).count() == 0:
+                    return val
+                else:
+                    new_val = "{0}{1}".format(val, x)
+                    if User.objects.filter(username=new_val).count() == 0:
+                        return new_val
+                x += 1
+                if x > 1000000:
+                    raise Exception("Name is super popular!")
+
         if not user_information_form:
             raise ValidationError(
                 _('User is not authenticated and no user information given.'))
         data = user_information_form.cleaned_data
-        try:
-            user = User.objects.get(
-                email=data['public_user_email'])
-        except User.MultipleObjectsReturned:
-            user = User.objects.filter(
-                email=data['public_user_email']).first()
-        except User.DoesNotExist:
-            names = data['public_user_name'].split(' ')
-            if len(names) > 1:
-                first_name = ' '.join(names[:-1])
-                last_name = names[-1]
-            else:
-                first_name = names[0]
-                last_name = ''
+        names = data['public_user_name'].split(' ')
+        if len(names) > 1:
+            first_name = ' '.join(names[:-1])
+            last_name = names[-1]
+        else:
+            first_name = names[0]
+            last_name = ''
 
-            user = User.objects.create_user(
-                data['public_user_email'],
-                email=data['public_user_email'],
-                password=None,
-                first_name=first_name,
-                last_name=last_name,
-            )
-            UserRegionalInfo.objects.create(
-                user=user,
-                phone=data['public_user_phone'],
-            )
-            group, created = Group.objects.get_or_create(name='Reporters')
-            user.groups.add(group)
+        user = User.objects.create_user(
+            generate_username(first_name, last_name),
+            email=data['public_user_email'],
+            password=None,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        UserRegionalInfo.objects.create(
+            user=user,
+            phone=data['public_user_phone'],
+        )
+        group, created = Group.objects.get_or_create(name='Reporters')
+        user.groups.add(group)
 
         return user
 
