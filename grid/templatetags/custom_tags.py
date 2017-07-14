@@ -269,7 +269,7 @@ def random_id(obj):
 def get_user_role(user):
     output = []
     roles = OrderedDict()
-    roles['Administrators']     = _('Administrator')
+    roles['Administrators'] = _('Administrator')
     roles['Editors'] = _('Editor')
     roles['Reporters'] = _('Reporter')
     groups = [g.name for g in user.groups.all()]

@@ -16,8 +16,6 @@ from grid.widgets import (
 )
 
 
-
-
 class YearBasedField(forms.MultiValueField):
     '''
     Base class for year based fields, since there are some isinstance

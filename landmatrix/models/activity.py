@@ -381,24 +381,22 @@ class Activity(ActivityBase):
 
     def _get_current(self, attribute, ranking=None):
         """
-        Returns the relevant state for the deal. Prefers states without a year but a higher ranking.
+        Returns the relevant state for the deal.
+        Uses entry marked as „current“ or last given entry
         """
-
-        # Null dates go last
         attributes = self.attributes.filter(name=attribute)
-        attributes = attributes.extra(select={'date_is_null': 'date IS NULL'})
-        attributes = attributes.extra(
-            order_by=['-is_current', 'date_is_null', '-date', '-id'])
+        #attributes = attributes.extra(select={'date_is_null': 'date IS NULL'})
+        attributes = attributes.extra(order_by=['-is_current', '-id'])
         if attributes.count() == 0:
             return None
         current_value = attributes.first().value
-        if ranking:
-            current_ranking = ranking.get(current_value, 0)
-            for attr in attributes.all()[::-1]:
-                attr_ranking = ranking.get(attr.value, 0)
-                if attr_ranking > current_ranking:
-                    current_value = attr.value
-                    current_ranking = attr_ranking
+        #if ranking:
+        #    current_ranking = ranking.get(current_value, 0)
+        #    for attr in attributes.all()[::-1]:
+        #        attr_ranking = ranking.get(attr.value, 0)
+        #        if attr_ranking > current_ranking:
+        #            current_value = attr.value
+        #            current_ranking = attr_ranking
         return current_value
 
     def is_public_deal(self):

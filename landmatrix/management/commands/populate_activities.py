@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         count = Activity.objects.count()
-        for i, a in enumerate(Activity.objects.all()):
+        for i, a in enumerate(Activity.objects.filter(activity_identifier=3)):
             self.stdout.write('Activity %i/%i' % (i, count), ending='\r')
             self.stdout.flush()
             a.refresh_cached_attributes()

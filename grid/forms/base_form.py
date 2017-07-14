@@ -24,7 +24,7 @@ class BaseForm(forms.Form):
         For activity or stakeholder, using attribute group only - if given
         (for formsets)
         """
-        attributes = {}
+        attributes = OrderedDict()
         for i, (n, f) in enumerate(self.fields.items()):
             name = str(n)
             # New tag group?
@@ -142,10 +142,10 @@ class BaseForm(forms.Form):
         data = MultiValueDict()
 
         # Create attributes dict
-        queryset = activity.attributes
+        queryset = activity.attributes.order_by('id')
         if group:
             queryset = queryset.filter(fk_group__name=group)
-        attributes = dict()
+        attributes = OrderedDict()
         for aa in queryset.all():
             if aa.name in attributes:
                 attributes[aa.name].append(aa)
