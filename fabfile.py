@@ -6,14 +6,14 @@ from fabric.operations import get
 from fabvenv import virtualenv
 
 
-def staging():
+def dev():
     env.name = 'staging'
     env.hosts = ['landmatrix@beta.landmatrix.org']
-    env.path = '/home/landmatrix/landmatrix'
-    env.virtualenv_path = '/home/landmatrix/.virtualenvs/landmatrix'
+    env.path = '/home/landmatrix/landmatrix-dev'
+    env.virtualenv_path = '/home/landmatrix/.virtualenvs/landmatrix-dev'
     env.push_branch = 'master'
     env.push_remote = 'origin'
-    env.reload_cmd = 'sudo supervisorctl restart landmatrix'
+    env.reload_cmd = 'sudo supervisorctl restart landmatrix-dev'
     env.db_name = 'landmatrix'
     env.db_username = 'landmatrix'
     env.after_deploy_url = 'http://beta.landmatrix.org'
@@ -55,6 +55,14 @@ def deploy():
     migrate()
     reload_webserver()
     ping()
+
+def hotdeploy():
+    with cd(env.path):
+        run("git pull %(push_remote)s %(push_branch)s" % env)
+        compile_less()
+        with virtualenv(env.virtualenv_path):
+            run("./manage.py collectstatic --noinput")
+    reload_webserver()
     
 def init_fixtures():
     with virtualenv(env.virtualenv_path):
