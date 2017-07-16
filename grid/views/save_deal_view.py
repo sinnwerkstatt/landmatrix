@@ -89,11 +89,11 @@ class SaveDealView(TemplateView):
             x = 0
             while True:
                 if x == 0 and User.objects.filter(username=val).count() == 0:
-                    return val
+                    return val[:30]
                 else:
                     new_val = "{0}{1}".format(val, x)
                     if User.objects.filter(username=new_val).count() == 0:
-                        return new_val
+                        return new_val[:30]
                 x += 1
                 if x > 1000000:
                     raise Exception("Name is super popular!")
@@ -112,10 +112,10 @@ class SaveDealView(TemplateView):
 
         user = User.objects.create_user(
             generate_username(first_name, last_name),
-            email=data['public_user_email'],
+            email=data['public_user_email'][:254],
             password=None,
-            first_name=first_name,
-            last_name=last_name,
+            first_name=first_name[:30],
+            last_name=last_name[:30],
         )
         UserRegionalInfo.objects.create(
             user=user,

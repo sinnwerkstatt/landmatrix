@@ -18,6 +18,7 @@ from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from api.views import ElasticSearchView
 from grid.utils import get_spatial_properties
 
+
 class ExportView(ElasticSearchView):
     # TODO: XLS is deprecated, should be removed in templates
     FORMATS = ['csv', 'xml', 'xls', 'xlsx']
@@ -339,7 +340,9 @@ class AllDealsExportView(AllDealsView, ExportView):
         kwargs['group'] = 'all'
         context = super().get_context_data(*args, **kwargs)
         return self.export(
-            context['data']['items'], context['columns'], format,
+            context['data']['items'],
+            context['columns'],
+            format,
             filename=kwargs['group'])
 
     def _limit_query(self):
@@ -351,7 +354,9 @@ class TableGroupExportView(TableGroupView, ExportView):
         format = kwargs.pop('format')
         context = super().get_context_data(*args, **kwargs)
         return self.export(
-            context['data']['items'], context['columns'], format,
+            context['data']['items'],
+            context['columns'],
+            format,
             filename=kwargs['group'])
 
     def _limit_query(self):

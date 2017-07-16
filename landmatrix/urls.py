@@ -25,7 +25,7 @@ from wagtail.wagtailcore import urls as wagtail_urls
 from grid.views import (
     AddDealView, ChangeDealView, DealComparisonView, DealDetailView,
     FilterWidgetAjaxView, AddStakeholderView, ChangeStakeholderView,
-    InvestorComparisonView, DealDetailExportView, DeleteDealView,
+    InvestorComparisonView, DeleteDealView, ExportView,
     RecoverDealView
 )
 from map.views import GlobalView
@@ -99,7 +99,7 @@ urlpatterns = [
     ),
     url(
         r'^deal/(?P<deal_id>\d+)\.(?P<format>(csv|xml|xls))/$',
-        DealDetailExportView.as_view(),
+        ExportView.as_view(),
         name='export'
     ),
 
