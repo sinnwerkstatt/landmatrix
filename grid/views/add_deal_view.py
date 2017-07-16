@@ -33,7 +33,8 @@ class AddDealView(SaveDealView):
         return forms
 
     def form_valid(self, forms):
-        activity_identifier = Activity.objects.values().aggregate(Max('activity_identifier'))['activity_identifier__max'] + 1
+        activity_identifier = Activity.objects.values().aggregate(Max('activity_identifier'))['activity_identifier__max'] or 0
+        activity_identifier += 1
         investor_form = list(filter(lambda f: isinstance(f, OperationalStakeholderForm), forms))[0]
         # Create new historical activity
         hactivity = HistoricalActivity(

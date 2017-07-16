@@ -5,7 +5,6 @@ from fabric.contrib import django
 from fabric.operations import get
 from fabvenv import virtualenv
 
-
 def dev():
     env.name = 'staging'
     env.hosts = ['landmatrix@beta.landmatrix.org']

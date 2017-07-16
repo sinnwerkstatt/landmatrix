@@ -1,6 +1,4 @@
-
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
-
 from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.activity_attribute_group import ActivityAttribute, HistoricalActivityAttribute, ActivityAttributeGroup
 from landmatrix.models.activity_changeset import ActivityChangeset, ReviewDecision

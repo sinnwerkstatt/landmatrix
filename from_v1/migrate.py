@@ -25,16 +25,9 @@ V1, V2 = 'v1_my', 'v2'
 BASE_PATH = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
-if 'Simon' in BASE_PATH:
-    # Simon settings
-    load_project(BASE_PATH+'/landmatrix', 'landmatrix')
-    load_project(BASE_PATH+'/landmatrix-old', 'old_editor')
-else:
-    # Cole settings
-    load_project(BASE_PATH+'/land-matrix-2', 'landmatrix')
-    load_project(BASE_PATH+'/land-matrix', 'old_editor')
-
-
+# Adapt for your local path
+load_project(BASE_PATH+'/landmatrix', 'landmatrix')
+load_project(BASE_PATH+'/landmatrix-old', 'old_editor')
 
 def map_classes(*args):
     for map_class in args:

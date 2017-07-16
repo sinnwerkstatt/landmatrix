@@ -10,6 +10,7 @@ from grid.views.save_deal_view import SaveDealView
 from landmatrix.models.activity import HistoricalActivity
 from django.contrib import messages
 
+
 class DeleteDealView(SaveDealView):
     success_message = _('The deal #{} has been marked for deletion. It will be reviewed and deleted soon.')
     success_message_admin = _('The deal #{} has been deleted successfully.')

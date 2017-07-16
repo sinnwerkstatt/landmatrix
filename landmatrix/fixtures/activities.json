@@ -1,0 +1,16 @@
+[
+  {"pk": 10, "model": "landmatrix.activity", "fields": {"activity_identifier": 1, "fk_status": 2}},
+  {"pk": 20, "model": "landmatrix.activity", "fields": {"activity_identifier": 2, "fk_status": 3}},
+  {"pk": 30, "model": "landmatrix.activity", "fields": {"activity_identifier": 3, "fk_status": 3}},
+
+  {"pk": 101, "model": "landmatrix.activityattribute", "fields": {"fk_activity_id": 10, "name": "contract_size", "value": 1000}},
+  {"pk": 102, "model": "landmatrix.activityattribute", "fields": {"fk_activity_id": 10, "name": "negotiation_status", "value": "Contract signed", "date": 2000}},
+
+  {"pk": 10, "model": "landmatrix.historicalactivity", "fields": {"activity_identifier": 1, "fk_status": 2}},
+  {"pk": 20, "model": "landmatrix.historicalactivity", "fields": {"activity_identifier": 2, "fk_status": 3}},
+  {"pk": 30, "model": "landmatrix.historicalactivity", "fields": {"activity_identifier": 3, "fk_status": 3}},
+  {"pk": 30, "model": "landmatrix.historicalactivity", "fields": {"activity_identifier": 3, "fk_status": 4}},
+
+  {"pk": 101, "model": "landmatrix.historicalactivityattribute", "fields": {"fk_activity_id": 10, "name": "contract_size", "value": 1000}},
+  {"pk": 102, "model": "landmatrix.historicalactivityattribute", "fields": {"fk_activity_id": 10, "name": "negotiation_status", "value": "Contract signed", "date": 2000}}
+]

@@ -1,0 +1,9 @@
+[
+  {"pk": 1, "model": "auth.group", "fields": {"name": "Reporters", "permissions": []}},
+  {"pk": 2, "model": "auth.group", "fields": {"name": "Editors", "permissions": []}},
+  {"pk": 3, "model": "auth.group", "fields": {"name": "Administrators", "permissions": []}},
+
+  {"pk": 1, "model": "auth.user", "fields": {"username": "reporter", "first_name": "Reporter", "last_name": "Reporter", "email": "reporter@example.com", "password": "", "is_superuser": false, "is_staff": false, "is_active": true, "groups": [1], "user_permissions": []}},
+  {"pk": 2, "model": "auth.user", "fields": {"username": "editor", "first_name": "Editor", "last_name": "Editor", "email": "editor@example.com", "password": "", "is_superuser": false, "is_staff": false, "is_active": true, "groups": [2], "user_permissions": []}},
+  {"pk": 3, "model": "auth.user", "fields": {"username": "administrator", "first_name": "Administrator", "last_name": "Administrator", "email": "administrator@example.com", "password": "", "is_superuser": false, "is_staff": false, "is_active": true, "groups": [3], "user_permissions": []}}
+]

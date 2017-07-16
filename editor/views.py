@@ -105,24 +105,23 @@ class PendingChangesMixin(FilteredQuerysetMixin):
             queryset=self.get_permitted_activities())
         inserts = inserts.without_multiple_revisions()
         inserts = inserts.pending_only()
-
         return inserts
 
     def get_pending_updates_queryset(self):
         updates = self.get_filtered_activity_queryset(
             queryset=self.get_permitted_activities()).with_multiple_revisions()
         updates = updates.pending_only()
-
         return updates
 
     def get_pending_deletes_queryset(self):
-        return self.get_filtered_activity_queryset(
-            queryset=self.get_permitted_activities()).to_delete()
+        deletes = self.get_filtered_activity_queryset(
+            queryset=self.get_permitted_activities())
+        deletes = deletes.to_delete()
+        return deletes
 
     def get_feedback_queryset(self):
         feedback = ActivityFeedback.objects.active()
         feedback = feedback.filter(fk_user_assigned=self.request.user)
-
         return feedback
 
     def get_pending_investor_deletes_queryset(self):
@@ -132,13 +131,11 @@ class PendingChangesMixin(FilteredQuerysetMixin):
         rejected = self.get_filtered_activity_queryset()
         rejected = rejected.rejected()
         rejected = rejected.filter(changesets__fk_user=self.request.user)
-
         return rejected
 
     def get_my_deals_queryset(self):
         my_deals = self.get_filtered_activity_queryset()
         my_deals = my_deals.get_my_deals(self.request.user.id)
-
         return my_deals
 
 
@@ -429,9 +426,9 @@ class ApproveActivityDeleteView(BaseManageDealView):
     queryset = HistoricalActivity.objects.to_delete()
     action = 'approve'
 
-    @method_decorator(permission_required('landmatrix.delete_activity'))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    #@method_decorator(permission_required('landmatrix.delete_activity'))
+    #def dispatch(self, *args, **kwargs):
+    #    return super().dispatch(*args, **kwargs)
 
     def form_valid(self, form):
         activity = self.get_object()
@@ -447,9 +444,9 @@ class RejectActivityDeleteView(BaseManageDealView):
     queryset = HistoricalActivity.objects.to_delete()
     action = 'reject'
 
-    @method_decorator(permission_required('landmatrix.delete_activity'))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    #@method_decorator(permission_required('landmatrix.delete_activity'))
+    #def dispatch(self, *args, **kwargs):
+    #    return super().dispatch(*args, **kwargs)
 
     def form_valid(self, form):
         activity = self.get_object()

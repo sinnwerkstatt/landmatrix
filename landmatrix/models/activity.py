@@ -707,20 +707,10 @@ class HistoricalActivity(ActivityBase):
     def approve_delete(self, user=None, comment=None):
         assert self.fk_status_id == HistoricalActivity.STATUS_TO_DELETE
 
-        # Only approvals of administrators should go public
-        if user.has_perm('landmatrix.change_activity'):
+        # Only approvals of administrators should be deleted
+        if user.has_perm('landmatrix.delete_activity'):
             self.fk_status_id = HistoricalActivity.STATUS_DELETED
             self.save(update_fields=['fk_status'])
-
-            # TODO: this seems weird to me, but I just moved the logic over
-            # Wouldn't it make sense to delete here?
-            try:
-                investor = InvestorActivityInvolvement.objects.get(
-                    fk_activity_id=self.pk).fk_investor
-            except InvestorActivityInvolvement.DoesNotExist:
-                pass
-            else:
-                investor.approve()
             self.update_public_activity()
 
         self.changesets.create(fk_user=user, comment=comment)
