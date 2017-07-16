@@ -323,3 +323,13 @@ DEBUG_TOOLBAR_PANELS = [
 ]
 
 BLOG_LIMIT_AUTHOR_CHOICES_GROUP = 'CMS News'
+
+# Disable migrations for tests
+class DisableMigrations(object):
+    def __contains__(self, item):
+        return True
+
+    def __getitem__(self, item):
+        return "notmigrations"
+
+MIGRATION_MODULES = DisableMigrations()
