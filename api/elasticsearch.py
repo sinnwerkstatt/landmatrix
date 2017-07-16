@@ -31,6 +31,8 @@ DOC_TYPES_ACTIVITY = ('deal', 'location', 'data_source', 'contract')
 DOC_TYPES_INVESTOR = ('investor', 'involvement')
 
 _landmatrix_mappings = None
+
+
 def get_elasticsearch_properties(doc_type=None):
     """ Generates a list of elasticsearch document properties from all filter fields in the
     attribute model forms. doc_type can be deal, location, contract, data_source, involvement or investor """
@@ -264,7 +266,7 @@ class ElasticSearch(object):
                         self.stderr and self.stderr.write(msg)
 
     #def index_activity_by_version(self, activity_identifier):
-    #    for doc_type in _landmatrix_mappings.keys():
+    #    for doc_type in get_elasticsearch_properties().keys():
     #        docs = self.get_documents_for_activity_version(activity_identifier, doc_type=doc_type)
     #        if len(docs) > 0:
     #            try:
@@ -320,13 +322,13 @@ class ElasticSearch(object):
             })
         except Activity.DoesNotExist:
             # Fixme: This should not happen
-            self.stderr.write(_('Missing activity for historical activity %i (Activity identifier: #%i)' % (
+            self.stderr and self.stderr.write(_('Missing activity for historical activity %i (Activity identifier: #%i)' % (
                 activity.id,
                 activity.activity_identifier
             )))
         except Activity.MultipleObjectsReturned:
             # Fixme: This should not happen
-            self.stderr.write(_('Too much activities for historical activity %i (Activity identifier: #%i)' % (
+            self.stderr and self.stderr.write(_('Too much activities for historical activity %i (Activity identifier: #%i)' % (
                 activity.id,
                 activity.activity_identifier
             )))
@@ -338,7 +340,7 @@ class ElasticSearch(object):
                 continue
             attribute = None
             attribute_key = '%s_attr' % a.name
-            if attribute_key in _landmatrix_mappings['deal']['properties'].keys():
+            if attribute_key in get_elasticsearch_properties()['deal']['properties'].keys():
                 attribute = {
                     'value': a.value,
                     'value2': a.value2,
@@ -359,7 +361,8 @@ class ElasticSearch(object):
                 continue
 
             # Doc types: location, data_source or contract
-            group_match = re.match('(?P<doc_type>location|data_source|contract)_(?P<count>\d+)', a.fk_group.name)
+            group_match = a.fk_group and a.fk_group.name or ''
+            group_match = re.match('(?P<doc_type>location|data_source|contract)_(?P<count>\d+)', group_match)
             if group_match:
                 dt, count = group_match.groupdict()['doc_type'], int(group_match.groupdict()['count'])
                 count += 1
@@ -397,11 +400,11 @@ class ElasticSearch(object):
             elif doc_type == 'deal':
                 if a.name in deal_attrs:
                     deal_attrs[a.name].append(value)
-                    if '%s_attr' % a.name in _landmatrix_mappings['deal']['properties'].keys():
+                    if '%s_attr' % a.name in get_elasticsearch_properties()['deal']['properties'].keys():
                         deal_attrs['%s_attr' % a.name].append(attribute)
                 else:
                     deal_attrs[a.name] = [value,]
-                    if '%s_attr' % a.name in _landmatrix_mappings['deal']['properties'].keys():
+                    if '%s_attr' % a.name in get_elasticsearch_properties()['deal']['properties'].keys():
                         deal_attrs['%s_attr' % a.name] = [attribute,]
 
         if doc_type == 'deal':
@@ -416,7 +419,7 @@ class ElasticSearch(object):
                         deal_attrs['operational_company_%s' % field.name] = getattr(oc, field.name)
             else:
                 pass
-                #self.stderr.write("Missing operational company for deal #%i" % activity.activity_identifier)
+                #self.stderr and self.stderr.write("Missing operational company for deal #%i" % activity.activity_identifier)
 
         # Create single document for each location
         # FIXME: Saving single deals for each location might be deprecated since we have doc_type location now?

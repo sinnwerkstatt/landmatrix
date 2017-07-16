@@ -1,19 +1,25 @@
+from openpyxl import load_workbook
+from io import BytesIO
+
 from django.contrib.auth.models import AnonymousUser, User, Group, Permission
 from django.test import TestCase, RequestFactory
 from django.core.urlresolvers import reverse
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.http import Http404
+from django.conf import settings
 
-from grid.views import AddDealView, ChangeDealView, DeleteDealView, RecoverDealView, DealDetailView
+from grid.views import AddDealView, ChangeDealView, DeleteDealView, RecoverDealView, DealDetailView, ExportView
 from editor.views import ManageAddsView, ManageUpdatesView, ManageDeletesView, ManageMyDealsView, \
     ApproveActivityChangeView, ApproveActivityDeleteView
 from landmatrix.models import HistoricalActivity, Activity
+
 
 class TestAddDeal(TestCase):
     fixtures = [
         'countries_and_regions',
         'users_and_groups',
         'status',
+        'investors',
     ]
 
     def setUp(self):
@@ -39,6 +45,8 @@ class TestAddDeal(TestCase):
         self.groups['administrator'].permissions.add(perm_add_activity)
         self.groups['administrator'].permissions.add(perm_change_activity)
 
+        settings.CELERY_ALWAYS_EAGER = True
+
     def test_add_deal_as_reporter(self):
         # Add deal as reporter
         data = {
@@ -48,11 +56,15 @@ class TestAddDeal(TestCase):
             "location-MIN_NUM_FORMS": 1,
             "location-MAX_NUM_FORMS": 1000,
             "location-0-level_of_accuracy": "Exact location",
-            "location-0-location": "Berlin, Deutschland",
-            "location-0-location-map": "Berlin, Deutschland",
-            "location-0-point_lat": 52.52000659999999,
-            "location-0-point_lon": 13.404953999999975,
-            "location-0-target_country": 276,
+            "location-0-location": "Rakhaing-Staat, Myanmar (Birma)",
+            "location-0-location-map": "Rakhaing-Staat, Myanmar (Birma)",
+            "location-0-point_lat": 19.810093,
+            "location-0-point_lon": 93.98784269999999,
+            "location-0-target_country": 104,
+            # General info
+            "id_negotiation_status_0": "Contract signed",
+            "id_negotiation_status_1": None,
+            "id_negotiation_status_2": None,
             # Contract
             "contract-TOTAL_FORMS": 0,
             "contract-INITIAL_FORMS": 0,
@@ -63,12 +75,14 @@ class TestAddDeal(TestCase):
             "data_source-INITIAL_FORMS": 0,
             "data_source-MIN_NUM_FORMS": 0,
             "data_source-MAX_NUM_FORMS": 0,
+            # Investor
+            "id_operational_stakeholder": 1,
             # Action comment
             "tg_action_comment": "Test add deal",
         }
         request = self.factory.post(reverse('add_deal'), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
@@ -77,48 +91,48 @@ class TestAddDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
 
         # Check if deal appears in my deals section of reporter
         request = self.factory.get(reverse('manage_my_deals'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
         response = ManageMyDealsView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage My Deals of Reporter does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals of Reporter')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage My Deals of Reporter')
 
         # Check if deal NOT appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_adds'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ManageAddsView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Deals of Administrator does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 0)
+        self.assertEqual(len(activities), 0, msg='Manage Pending Deals of Administrator should be empty')
 
         # Check if deal appears in manage section of editor
         request = self.factory.get(reverse('manage_pending_adds'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
         response = ManageAddsView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Additions of Editor does not work')
         activities = list(response.context_data['activities'])
         self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
-        self.assertEqual(activities[0]['user'], self.users['reporter'].username)
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage Pending Deals of Editor')
+        self.assertEqual(activities[0]['user'], self.users['reporter'].username, msg='Deal has wrong user in Manage Pending Deals of Editor')
 
         # Approve deal as editor
         data = {
@@ -127,7 +141,7 @@ class TestAddDeal(TestCase):
         }
         request = self.factory.post(reverse('manage_approve_change_deal', kwargs={'id': activity.id}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
@@ -136,21 +150,21 @@ class TestAddDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Editor does not redirect')
 
         # Check if deal appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_adds'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ManageAddsView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Additions of Administrator does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
-        self.assertEqual(activities[0]['user'], self.users['reporter'].username)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Additions of Administrator')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage Pending Additions of Administrator')
+        self.assertEqual(activities[0]['user'], self.users['reporter'].username, msg='Deal has wrong user in Manage Pending Additions of Administrator')
 
         # Approve deal as administrator
         data = {
@@ -159,7 +173,7 @@ class TestAddDeal(TestCase):
         }
         request = self.factory.post(reverse('manage_approve_change_deal', kwargs={'id': activity.id}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
@@ -168,7 +182,7 @@ class TestAddDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
         # Check if deal is public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
@@ -178,7 +192,22 @@ class TestAddDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
+
+        # Check if deal is in elasticsearch/export
+        request = self.factory.get(reverse('export', kwargs={'format': 'xls'}))
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = AnonymousUser()
+        response = ExportView.as_view()(request, format='xls')
+        self.assertEqual(response.status_code, 200, msg='Export does not work')
+        wb = load_workbook(BytesIO(response.content), read_only=True)
+        ws = wb['Deals']
+        activity_identifiers = [row[0].value for row in ws.rows]
+        if str(activity.activity_identifier) not in activity_identifiers:
+            self.fail('Deal does not appear in export (checked XLS only)')
 
     def test_add_deal_as_editor(self):
         # Add deal as editor
@@ -209,7 +238,7 @@ class TestAddDeal(TestCase):
         }
         request = self.factory.post(reverse('add_deal'), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
@@ -218,23 +247,23 @@ class TestAddDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
 
         # Check if deal appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_adds'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ManageAddsView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Additions of Administrator does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
-        self.assertEqual(activities[0]['user'], self.users['editor'].username)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Additions of Administrator')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage Pending Additions of Administrator')
+        self.assertEqual(activities[0]['user'], self.users['editor'].username, msg='Deal has wrong user in Manage Pending Additions of Administrator')
 
         # Approve deal as administrator
         data = {
@@ -243,7 +272,7 @@ class TestAddDeal(TestCase):
         }
         request = self.factory.post(reverse('manage_approve_change_deal', kwargs={'id': activity.id}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
@@ -252,7 +281,7 @@ class TestAddDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
         # Check if deal is public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
@@ -262,7 +291,7 @@ class TestAddDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
 
     def test_add_deal_as_administrator(self):
         # Add deal as administrator
@@ -293,7 +322,7 @@ class TestAddDeal(TestCase):
         }
         request = self.factory.post(reverse('add_deal'), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
@@ -302,7 +331,7 @@ class TestAddDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
         activity = HistoricalActivity.objects.active().latest()
 
@@ -314,7 +343,7 @@ class TestAddDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Deal is not public')
 
 
 class TestChangeDeal(TestCase):
@@ -380,7 +409,7 @@ class TestChangeDeal(TestCase):
         }
         request = self.factory.post(reverse('change_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
@@ -389,48 +418,48 @@ class TestChangeDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
 
         # Check if deal appears in my deals section of reporter
         request = self.factory.get(reverse('manage_my_deals'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
         response = ManageMyDealsView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage My Deals of Reporter does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals of Reporter')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage My Deals of Reporter')
 
         # Check if deal NOT appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_updates'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ManageUpdatesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Administrator does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 0)
+        self.assertEqual(len(activities), 0, msg='Manage Pending Updates of Administrator should be empty')
 
         # Check if deal appears in manage section of editor
         request = self.factory.get(reverse('manage_pending_updates'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
         response = ManageUpdatesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Editor does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
-        self.assertEqual(activities[0]['user'], self.users['reporter'].username)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Updates of Editor')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage Pending Updates of Editor')
+        self.assertEqual(activities[0]['user'], self.users['reporter'].username, msg='Deals has wrong user in Manage Pending Updates of Editor')
 
         # Approve deal as editor
         data = {
@@ -439,7 +468,7 @@ class TestChangeDeal(TestCase):
         }
         request = self.factory.post(reverse('manage_approve_change_deal', kwargs={'id': activity.id}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
@@ -448,21 +477,21 @@ class TestChangeDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Editor does not redirect')
 
         # Check if deal appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_updates'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ManageUpdatesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Administrator does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
-        self.assertEqual(activities[0]['user'], self.users['reporter'].username)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Updates of Administrator')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage Pending Updates of Administrator')
+        self.assertEqual(activities[0]['user'], self.users['reporter'].username, msg='Deal has wrong user in Manage Pending Updates of Administrator')
 
         # Approve deal as administrator
         data = {
@@ -471,7 +500,7 @@ class TestChangeDeal(TestCase):
         }
         request = self.factory.post(reverse('manage_approve_change_deal', kwargs={'id': activity.id}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
@@ -480,7 +509,7 @@ class TestChangeDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
         # Check if deal is public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
@@ -490,7 +519,7 @@ class TestChangeDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
 
     def test_change_deal_as_editor(self):
         # Change deal as editor
@@ -522,7 +551,7 @@ class TestChangeDeal(TestCase):
         }
         request = self.factory.post(reverse('change_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
@@ -531,23 +560,23 @@ class TestChangeDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
 
         # Check if deal appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_updates'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ManageUpdatesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Administrator does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
-        self.assertEqual(activities[0]['user'], self.users['editor'].username)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Updates of Administrator')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage Pending Updates of Administrator')
+        self.assertEqual(activities[0]['user'], self.users['editor'].username, msg='Deal has wrong user in Manage Pending Updates of Administrator')
 
         # Approve deal as administrator
         data = {
@@ -556,7 +585,7 @@ class TestChangeDeal(TestCase):
         }
         request = self.factory.post(reverse('manage_approve_change_deal', kwargs={'id': activity.id}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
@@ -565,7 +594,7 @@ class TestChangeDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
         # Check if deal is public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
@@ -575,7 +604,7 @@ class TestChangeDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
 
     def test_change_deal_as_administrator(self):
         # Change deal as administrator
@@ -607,7 +636,7 @@ class TestChangeDeal(TestCase):
         }
         request = self.factory.post(reverse('change_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
@@ -616,7 +645,7 @@ class TestChangeDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
 
         activity = HistoricalActivity.objects.active().latest()
 
@@ -628,7 +657,7 @@ class TestChangeDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Deal is not public')
 
 
 class TestDeleteDeal(TestCase):
@@ -673,7 +702,7 @@ class TestDeleteDeal(TestCase):
         }
         request = self.factory.post(reverse('delete_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
@@ -682,48 +711,48 @@ class TestDeleteDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Delete deal by Reporter does not redirect')
 
         activity = HistoricalActivity.objects.to_delete().latest()
 
         # Check if deal appears in my deals section of reporter
         request = self.factory.get(reverse('manage_my_deals'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
         response = ManageMyDealsView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage My Deals of Reporter does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals of Reporter')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage My Deals of Reporter')
 
         # Check if deal NOT appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_deletes'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ManageDeletesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Deletes of Administrator does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 0)
+        self.assertEqual(len(activities), 0, msg='Manage Pending Deletes of Administrator should be empty')
 
         # Check if deal appears in manage section of editor
         request = self.factory.get(reverse('manage_pending_deletes'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
         response = ManageDeletesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Deletes of Editor does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
-        self.assertEqual(activities[0]['user'], self.users['reporter'].username)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Deletes of Editor')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage Pending Deletes of Editor')
+        self.assertEqual(activities[0]['user'], self.users['reporter'].username, msg='Deal has wrong user in Manage Pending Deletes of Editor')
 
         # Approve deal as editor
         data = {
@@ -732,7 +761,7 @@ class TestDeleteDeal(TestCase):
         }
         request = self.factory.post(reverse('manage_approve_delete_deal', kwargs={'id': activity.id}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
@@ -741,21 +770,21 @@ class TestDeleteDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Editor does not redirect')
 
         # Check if deal appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_deletes'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ManageDeletesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Deletes of Administrator does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
-        self.assertEqual(activities[0]['user'], self.users['reporter'].username)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Deletes of Administrator')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage Pending Deletes of Administrator')
+        self.assertEqual(activities[0]['user'], self.users['reporter'].username, msg='Deal has wrong user in Manage Pending Deletes of Administrator')
 
         # Approve deal as administrator
         data = {
@@ -764,7 +793,7 @@ class TestDeleteDeal(TestCase):
         }
         request = self.factory.post(reverse('manage_approve_delete_deal', kwargs={'id': activity.id}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
@@ -773,7 +802,7 @@ class TestDeleteDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
         # Check if deal is public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
@@ -794,7 +823,7 @@ class TestDeleteDeal(TestCase):
         }
         request = self.factory.post(reverse('delete_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
@@ -803,23 +832,23 @@ class TestDeleteDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Delete deal does not redirect')
 
         activity = HistoricalActivity.objects.to_delete().latest()
 
         # Check if deal appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_deletes'))
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ManageDeletesView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Deletes of Administrator does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id)
-        self.assertEqual(activities[0]['user'], self.users['editor'].username)
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Deletes of Administrator')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage Pending Deletes of Administrator')
+        self.assertEqual(activities[0]['user'], self.users['editor'].username, msg='Deal has wrong user in Manage Pending Deletes of Administrator')
 
         # Approve deal as administrator
         data = {
@@ -828,7 +857,7 @@ class TestDeleteDeal(TestCase):
         }
         request = self.factory.post(reverse('manage_approve_delete_deal', kwargs={'id': activity.id}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
@@ -837,7 +866,7 @@ class TestDeleteDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Approve deal does not redirect')
 
         # Check if deal is public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
@@ -858,7 +887,7 @@ class TestDeleteDeal(TestCase):
         }
         request = self.factory.post(reverse('delete_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
@@ -867,7 +896,7 @@ class TestDeleteDeal(TestCase):
         #    # For debugging purposes
         #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
         #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Delete deal does not redirect')
 
         activity = HistoricalActivity.objects.deleted().latest()
 
@@ -890,12 +919,12 @@ class TestDeleteDeal(TestCase):
         }
         request = self.factory.post(reverse('recover_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
         response = RecoverDealView.as_view()(request, deal_id=activity.activity_identifier)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Recover deal does not redirect')
 
         # Check if deal is public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
@@ -916,12 +945,12 @@ class TestDeleteDeal(TestCase):
         }
         request = self.factory.post(reverse('recover_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', 'session')
+        setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = RecoverDealView.as_view()(request, deal_id=activity.activity_identifier)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, msg='Recover deal does not redirect')
 
         # Check if deal is public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
