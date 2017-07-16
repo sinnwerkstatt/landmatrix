@@ -10,6 +10,8 @@ before_script:
 
 services:
   - mdillon/postgis:latest
+  - elasticsearch:latest
+  - redis:latest
 
 variables:
   POSTGRES_DB: landmatrix
