@@ -13,6 +13,36 @@ from editor.views import ManageAddsView, ManageUpdatesView, ManageDeletesView, M
     ApproveActivityChangeView, ApproveActivityDeleteView
 from landmatrix.models import HistoricalActivity, Activity
 
+DEAL_DATA = {
+    # Location
+    "location-TOTAL_FORMS": 1,
+    "location-INITIAL_FORMS": 0,
+    "location-MIN_NUM_FORMS": 1,
+    "location-MAX_NUM_FORMS": 1,
+    "location-0-level_of_accuracy": "Exact location",
+    "location-0-location": "Rakhaing-Staat, Myanmar (Birma)",
+    "location-0-location-map": "Rakhaing-Staat, Myanmar (Birma)",
+    "location-0-point_lat": 19.810093,
+    "location-0-point_lon": 93.98784269999999,
+    "location-0-target_country": 104,
+    # General info
+    "id_negotiation_status_0": "Contract signed",
+    "id_negotiation_status_1": None,
+    "id_negotiation_status_2": None,
+    # Contract
+    "contract-TOTAL_FORMS": 0,
+    "contract-INITIAL_FORMS": 0,
+    "contract-MIN_NUM_FORMS": 0,
+    "contract-MAX_NUM_FORMS": 0,
+    # Data source
+    "data_source-TOTAL_FORMS": 1,
+    "data_source-INITIAL_FORMS": 0,
+    "data_source-MIN_NUM_FORMS": 1,
+    "data_source-MAX_NUM_FORMS": 1,
+    "data_source-0-type": "Media report",
+    # Investor
+    "id_operational_stakeholder": 1,
+}
 
 class TestAddDeal(TestCase):
     fixtures = [
@@ -49,37 +79,11 @@ class TestAddDeal(TestCase):
 
     def test_add_deal_as_reporter(self):
         # Add deal as reporter
-        data = {
-            # Location
-            "location-TOTAL_FORMS": 1,
-            "location-INITIAL_FORMS": 0,
-            "location-MIN_NUM_FORMS": 1,
-            "location-MAX_NUM_FORMS": 1000,
-            "location-0-level_of_accuracy": "Exact location",
-            "location-0-location": "Rakhaing-Staat, Myanmar (Birma)",
-            "location-0-location-map": "Rakhaing-Staat, Myanmar (Birma)",
-            "location-0-point_lat": 19.810093,
-            "location-0-point_lon": 93.98784269999999,
-            "location-0-target_country": 104,
-            # General info
-            "id_negotiation_status_0": "Contract signed",
-            "id_negotiation_status_1": None,
-            "id_negotiation_status_2": None,
-            # Contract
-            "contract-TOTAL_FORMS": 0,
-            "contract-INITIAL_FORMS": 0,
-            "contract-MIN_NUM_FORMS": 0,
-            "contract-MAX_NUM_FORMS": 0,
-            # Data source
-            "data_source-TOTAL_FORMS": 0,
-            "data_source-INITIAL_FORMS": 0,
-            "data_source-MIN_NUM_FORMS": 0,
-            "data_source-MAX_NUM_FORMS": 0,
-            # Investor
-            "id_operational_stakeholder": 1,
+        data = DEAL_DATA.copy()
+        data.update({
             # Action comment
             "tg_action_comment": "Test add deal",
-        }
+        })
         request = self.factory.post(reverse('add_deal'), data)
         # Mock messages framework (not available for unit tests)
         setattr(request, 'session', {})
@@ -211,31 +215,11 @@ class TestAddDeal(TestCase):
 
     def test_add_deal_as_editor(self):
         # Add deal as editor
-        data = {
-            # Location
-            "location-TOTAL_FORMS": 1,
-            "location-INITIAL_FORMS": 0,
-            "location-MIN_NUM_FORMS": 1,
-            "location-MAX_NUM_FORMS": 1000,
-            "location-0-level_of_accuracy": "Exact location",
-            "location-0-location": "Berlin, Deutschland",
-            "location-0-location-map": "Berlin, Deutschland",
-            "location-0-point_lat": 52.52000659999999,
-            "location-0-point_lon": 13.404953999999975,
-            "location-0-target_country": 276,
-            # Contract
-            "contract-TOTAL_FORMS": 0,
-            "contract-INITIAL_FORMS": 0,
-            "contract-MIN_NUM_FORMS": 0,
-            "contract-MAX_NUM_FORMS": 0,
-            # Data source
-            "data_source-TOTAL_FORMS": 0,
-            "data_source-INITIAL_FORMS": 0,
-            "data_source-MIN_NUM_FORMS": 0,
-            "data_source-MAX_NUM_FORMS": 0,
+        data = DEAL_DATA.copy()
+        data.update({
             # Action comment
             "tg_action_comment": "Test add deal",
-        }
+        })
         request = self.factory.post(reverse('add_deal'), data)
         # Mock messages framework (not available for unit tests)
         setattr(request, 'session', {})
@@ -295,31 +279,11 @@ class TestAddDeal(TestCase):
 
     def test_add_deal_as_administrator(self):
         # Add deal as administrator
-        data = {
-            # Location
-            "location-TOTAL_FORMS": 1,
-            "location-INITIAL_FORMS": 0,
-            "location-MIN_NUM_FORMS": 1,
-            "location-MAX_NUM_FORMS": 1000,
-            "location-0-level_of_accuracy": "Exact location",
-            "location-0-location": "Berlin, Deutschland",
-            "location-0-location-map": "Berlin, Deutschland",
-            "location-0-point_lat": 52.52000659999999,
-            "location-0-point_lon": 13.404953999999975,
-            "location-0-target_country": 276,
-            # Contract
-            "contract-TOTAL_FORMS": 0,
-            "contract-INITIAL_FORMS": 0,
-            "contract-MIN_NUM_FORMS": 0,
-            "contract-MAX_NUM_FORMS": 0,
-            # Data source
-            "data_source-TOTAL_FORMS": 0,
-            "data_source-INITIAL_FORMS": 0,
-            "data_source-MIN_NUM_FORMS": 0,
-            "data_source-MAX_NUM_FORMS": 0,
+        data = DEAL_DATA.copy()
+        data.update({
             # Action comment
             "tg_action_comment": "Test add deal",
-        }
+        })
         request = self.factory.post(reverse('add_deal'), data)
         # Mock messages framework (not available for unit tests)
         setattr(request, 'session', {})
@@ -382,31 +346,11 @@ class TestChangeDeal(TestCase):
     def test_change_deal_as_reporter(self):
         # Change deal as reporter
         activity = HistoricalActivity.objects.active().latest()
-        data = {
-            # Location
-            "location-TOTAL_FORMS": 1,
-            "location-INITIAL_FORMS": 0,
-            "location-MIN_NUM_FORMS": 1,
-            "location-MAX_NUM_FORMS": 1000,
-            "location-0-level_of_accuracy": "Exact location",
-            "location-0-location": "Berlin, Deutschland",
-            "location-0-location-map": "Berlin, Deutschland",
-            "location-0-point_lat": 52.52000659999999,
-            "location-0-point_lon": 13.404953999999975,
-            "location-0-target_country": 276,
-            # Contract
-            "contract-TOTAL_FORMS": 0,
-            "contract-INITIAL_FORMS": 0,
-            "contract-MIN_NUM_FORMS": 0,
-            "contract-MAX_NUM_FORMS": 0,
-            # Data source
-            "data_source-TOTAL_FORMS": 0,
-            "data_source-INITIAL_FORMS": 0,
-            "data_source-MIN_NUM_FORMS": 0,
-            "data_source-MAX_NUM_FORMS": 0,
+        data = DEAL_DATA.copy()
+        data.update({
             # Action comment
             "tg_action_comment": "Test change deal",
-        }
+        })
         request = self.factory.post(reverse('change_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
         setattr(request, 'session', {})
@@ -524,31 +468,11 @@ class TestChangeDeal(TestCase):
     def test_change_deal_as_editor(self):
         # Change deal as editor
         activity = HistoricalActivity.objects.active().latest()
-        data = {
-            # Location
-            "location-TOTAL_FORMS": 1,
-            "location-INITIAL_FORMS": 0,
-            "location-MIN_NUM_FORMS": 1,
-            "location-MAX_NUM_FORMS": 1000,
-            "location-0-level_of_accuracy": "Exact location",
-            "location-0-location": "Berlin, Deutschland",
-            "location-0-location-map": "Berlin, Deutschland",
-            "location-0-point_lat": 52.52000659999999,
-            "location-0-point_lon": 13.404953999999975,
-            "location-0-target_country": 276,
-            # Contract
-            "contract-TOTAL_FORMS": 0,
-            "contract-INITIAL_FORMS": 0,
-            "contract-MIN_NUM_FORMS": 0,
-            "contract-MAX_NUM_FORMS": 0,
-            # Data source
-            "data_source-TOTAL_FORMS": 0,
-            "data_source-INITIAL_FORMS": 0,
-            "data_source-MIN_NUM_FORMS": 0,
-            "data_source-MAX_NUM_FORMS": 0,
+        data = DEAL_DATA.copy()
+        data.update({
             # Action comment
             "tg_action_comment": "Test change deal",
-        }
+        })
         request = self.factory.post(reverse('change_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
         setattr(request, 'session', {})
@@ -609,31 +533,11 @@ class TestChangeDeal(TestCase):
     def test_change_deal_as_administrator(self):
         # Change deal as administrator
         activity = HistoricalActivity.objects.active().latest()
-        data = {
-            # Location
-            "location-TOTAL_FORMS": 1,
-            "location-INITIAL_FORMS": 0,
-            "location-MIN_NUM_FORMS": 1,
-            "location-MAX_NUM_FORMS": 1000,
-            "location-0-level_of_accuracy": "Exact location",
-            "location-0-location": "Berlin, Deutschland",
-            "location-0-location-map": "Berlin, Deutschland",
-            "location-0-point_lat": 52.52000659999999,
-            "location-0-point_lon": 13.404953999999975,
-            "location-0-target_country": 276,
-            # Contract
-            "contract-TOTAL_FORMS": 0,
-            "contract-INITIAL_FORMS": 0,
-            "contract-MIN_NUM_FORMS": 0,
-            "contract-MAX_NUM_FORMS": 0,
-            # Data source
-            "data_source-TOTAL_FORMS": 0,
-            "data_source-INITIAL_FORMS": 0,
-            "data_source-MIN_NUM_FORMS": 0,
-            "data_source-MAX_NUM_FORMS": 0,
+        data = DEAL_DATA.copy()
+        data.update({
             # Action comment
             "tg_action_comment": "Test change deal",
-        }
+        })
         request = self.factory.post(reverse('change_deal', kwargs={'deal_id': activity.activity_identifier}), data)
         # Mock messages framework (not available for unit tests)
         setattr(request, 'session', {})

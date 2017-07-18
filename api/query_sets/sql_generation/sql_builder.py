@@ -6,8 +6,6 @@ from api.query_sets.sql_generation.join_functions import *
 from api.query_sets.sql_generation.sql_builder_data import SQLBuilderData
 
 
-
-
 def list_view_wanted(filters):
     group = filters.get("group_by", "")
     group_value = filters.get("group_value", "")
@@ -88,7 +86,7 @@ class SQLBuilder(SQLBuilderData):
         return ''
 
     def get_columns_sql(self):
-        return ",\n".join(map(lambda c: self.column_sql(c), self.columns))
+        return ",\n".join(filter(None, map(lambda c: self.column_sql(c), self.columns)))
 
     def get_sub_columns_sql(self):
         return ''

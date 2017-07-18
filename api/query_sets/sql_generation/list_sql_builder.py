@@ -33,27 +33,27 @@ class ListSQLBuilder(SQLBuilder):
         return group_by_sql
 
     def column_sql(self, c):
+        # FIXME: Why are columns for sizes removed here?
         if c in ("intended_size", "contract_size", "production_size"):
             return ''
         else:
             return self.SQL_COLUMN_MAP[c][0]
 
     def get_sub_columns_sql(self):
-        sub_columns_sql = ''
+        output = []
         for c in self.columns:
             if c in ("intended_size", "contract_size", "production_size"):
-                sub_columns_sql += "NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.value), ', '), '') AS %(name)s,\n" % {"name": c}
+                output.append("NULLIF(ARRAY_TO_STRING(ARRAY_AGG(DISTINCT %(name)s.value), ', '), '') AS %(name)s" % {"name": c})
             elif c == "data_source":
-                sub_columns_sql += "sub.data_source_type AS data_source_type, sub.data_source_url AS data_source_url, sub.data_source_date AS data_source_date, sub.data_source_organisation AS data_source_organisation,\n"
+                output.append("sub.data_source_type AS data_source_type, sub.data_source_url AS data_source_url, sub.data_source_date AS data_source_date, sub.data_source_organisation AS data_source_organisation")
             else:
-                sub_columns_sql += "sub.%(name)s AS %(name)s,\n" % {"name": c}
-        return sub_columns_sql
+                output.append("sub.%(name)s AS %(name)s" % {"name": c})
+        return ",\n".join(output)
 
     def get_base_sql(self):
         return u"""SELECT
 sub.name AS name,
 %(sub_columns)s
-'dummy' AS dummy
 FROM
 landmatrix_activity AS a """ + "\n" \
 + join_attributes('intended_size') + "\n" \
@@ -65,7 +65,7 @@ JOIN (
     SELECT DISTINCT
     a.id AS id,
     %(name)s AS name,
-    %(columns)s    'dummy' AS dummy
+    %(columns)s
     FROM landmatrix_activity AS a
     %(from)s""" + "\n" + \
      join_attributes('deal_scope') + """

@@ -70,7 +70,7 @@ class WhereCondition:
             quoted_value = self.quote_value(self.value)
             operator_with_value = self.operator_sql % quoted_value
 
-        if self.is_value_numeric and not self.is_id_column and not self.column_name == 'date':
+        if self.is_value_numeric and not self.is_id_column and not self.column_name == 'date' and not self.column_name == 'deal_size':
             column = "CAST(COALESCE(NULLIF({}.{}, ''), '0') AS FLOAT)".format(
                 self.table_name, self.column_name)
         else:

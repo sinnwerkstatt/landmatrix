@@ -22,18 +22,18 @@ class RecordReader:
 
     @print_execution_time_and_num_queries
     def get_all(self, assemble=None):
-        if list_view_wanted(self.filters):
-            records = self._slap_columns_together(assemble)
-        else:
-            records = self.get_all_at_once()
-        return records
+        #if list_view_wanted(self.filters):
+        #    records = self._slap_columns_together(assemble)
+        #else:
+        #    records = self.get_all_at_once()
+        return self.get_all_at_once()
 
     def get_all_sql(self):
-        if list_view_wanted(self.filters):
-            sql = ''
-            for column in self.columns:
-                sql += '\n' + self.get_column_sql(column)
-            return sql
+        #if list_view_wanted(self.filters):
+        #    sql = ''
+        #    for column in self.columns:
+        #        sql += '\n' + self.get_column_sql(column)
+        #    return sql
         return self.get_all_at_once_sql()
 
     @print_execution_time_and_num_queries
@@ -74,18 +74,18 @@ class RecordReader:
 
         return cursor.fetchall()
 
-    @print_execution_time_and_num_queries
-    def _slap_columns_together(self, assemble=None):
-        assemble = assemble or self._make_record_from_column_data
-
-        column_data = self.get_all_columns()
-
-        final_data = []
-        for i in range(0, len(column_data.get(self.columns[0], []))):
-            self._ensure_records_equal(column_data, i)
-            record = assemble(column_data, i)
-            final_data.append(record)
-        return final_data
+    #@print_execution_time_and_num_queries
+    #def _slap_columns_together(self, assemble=None):
+    #    assemble = assemble or self._make_record_from_column_data
+    #
+    #    column_data = self.get_all_columns()
+    #
+    #    final_data = []
+    #    for i in range(0, len(column_data.get(self.columns[0], []))):
+    #        self._ensure_records_equal(column_data, i)
+    #        record = assemble(column_data, i)
+    #        final_data.append(record)
+    #    return final_data
 
     @print_execution_time_and_num_queries
     def get_all_columns(self):

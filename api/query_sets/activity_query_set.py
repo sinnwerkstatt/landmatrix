@@ -9,7 +9,7 @@ from grid.views.profiling_decorators import print_execution_time_and_num_queries
 
 class ActivityQuerySet:
 
-    DEBUG = False
+    DEBUG = True
 
     def __init__(self, request):
         data = request.POST.get('data', '{"filters": {}, "columns": {}, "status": {}}')

@@ -1,6 +1,7 @@
 
 from api.query_sets.sql_generation.sql_builder import SQLBuilder
 
+
 class GroupSQLBuilder(SQLBuilder):
 
     def get_where_sql(self):
@@ -19,7 +20,6 @@ class GroupSQLBuilder(SQLBuilder):
                 where.append("AND trim(lower(%s.value)) like '%s%%%%' " % (self.group, starts_with))
 
         return '\n'.join(where)
-
 
     def get_group_sql(self):
         group_by = [self.group if self.group else 'dummy', self.get_name_sql()]

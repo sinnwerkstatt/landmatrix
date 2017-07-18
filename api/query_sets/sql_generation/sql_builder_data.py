@@ -7,8 +7,6 @@ from landmatrix.models.investor import Investor, InvestorActivityInvolvement, In
 from landmatrix.models.crop import Crop
 
 
-
-
 class DefaultDict(collections.defaultdict):
     '''
     defaultdict that passes the key name to the default value factory.
