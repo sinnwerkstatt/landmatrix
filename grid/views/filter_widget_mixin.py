@@ -113,7 +113,9 @@ class FilterWidgetMixin:
 
         set_default_filters = True
         if 'set_default_filters' in self.request.session and not self.request.session.get('set_default_filters'):
+            # Disable and remove all default filters (including hidden)
             set_default_filters = False
+            self.remove_default_filters()
         context.update({
             'filters': self.filters,
             'empty_form_conditions': self.current_formset_conditions,
