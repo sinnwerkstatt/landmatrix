@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
+
 class LandMatrixConfig(AppConfig):
     name = 'landmatrix'
     verbose_name = "Land Matrix"

@@ -1,7 +1,6 @@
 from api.query_sets.fake_query_set import FakeQuerySet
 
 
-
 class FakeQuerySetWithSubquery(FakeQuerySet):
 
     ADDITIONAL_SUBQUERY_OPTIONS = ''
@@ -58,6 +57,7 @@ WHERE sub.id = a.id
 
     def subquery_columns(self):
         return ",\n        " + ",\n        ".join([definition+" AS "+alias for alias, definition in self.SUBQUERY_FIELDS]) if self.SUBQUERY_FIELDS else ''
+
 
 class FakeQuerySetFlat(FakeQuerySet):
 

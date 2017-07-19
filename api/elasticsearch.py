@@ -1,5 +1,8 @@
 import json
 import re
+import logging
+logger = logging.getLogger('elasticsearch')
+logger.setLevel('WARNING')
 
 from pyelasticsearch import ElasticSearch as PyElasticSearch
 from pyelasticsearch.exceptions import ElasticHttpNotFoundError, BulkError
@@ -152,6 +155,10 @@ class ElasticSearch(object):
         activity = HistoricalActivity.objects.get(pk=activity_id)
         return self.index_activity(activity)
 
+    def delete_activity_by_id(self, activity_id):
+        activity = HistoricalActivity.objects.get(pk=activity_id)
+        return self.delete_activity(activity)
+
     def index_activity(self, activity):
         for doc_type in DOC_TYPES_ACTIVITY:
             docs = self.get_activity_documents(activity, doc_type=doc_type)
@@ -185,10 +192,10 @@ class ElasticSearch(object):
                 except BulkError as e:
                     for error in e.errors:
                         msg = '%s: %s on ID %s' % (
-                                error['index']['error']['type'],
-                                error['index']['error']['reason'],
-                                error['index']['_id']
-                              )
+                            error['index']['error']['type'],
+                            error['index']['error']['reason'],
+                            error['index']['_id']
+                        )
                         if 'caused_by' in error['index']['error']:
                             msg += ' (%s: %s)' % (
                                 error['index']['error']['caused_by']['type'],
@@ -289,7 +296,7 @@ class ElasticSearch(object):
         try:
             newest = HistoricalActivity.objects.filter(activity_identifier=activity_identifier, fk_status__in=(
                 HistoricalActivity.STATUS_ACTIVE, HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED)).distinct().latest()
-            if newest:
+            if newest and not newest.fk_status_id == HistoricalActivity.STATUS_DELETED:
                 versions.append(newest)
         except HistoricalActivity.DoesNotExist:
             newest = None
@@ -332,7 +339,6 @@ class ElasticSearch(object):
                 activity.id,
                 activity.activity_identifier
             )))
-
 
         for a in activity.attributes.select_related('fk_group__name').order_by('fk_group__name'):
             # do not include the django object id
@@ -526,6 +532,27 @@ class ElasticSearch(object):
             len(raw_result_list), query_result['hits']['total'])
         )
         return raw_result_list
+
+    def delete_activity(self, activity):
+        for doc_type in DOC_TYPES_ACTIVITY:
+            try:
+                if doc_type == 'deal':
+                    self.conn.delete(
+                        id=activity.activity_identifier,
+                        index=self.index_name,
+                        doc_type=doc_type)
+                else:
+                    self.conn.delete_by_query(query={
+                        "parent_id": {
+                            "type": "deal",
+                            "id": str(activity.activity_identifier),
+                            }
+                        },
+                        index=self.index_name,
+                        doc_type=doc_type)
+            except ElasticHttpNotFoundError as e:
+                pass
+
 
 # Init two connections
 es_search = ElasticSearch()

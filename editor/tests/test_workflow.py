@@ -8,49 +8,54 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from django.http import Http404
 from django.conf import settings
 
-from grid.views import AddDealView, ChangeDealView, DeleteDealView, RecoverDealView, DealDetailView, ExportView
+from grid.views.add_deal_view import AddDealView
+from grid.views.change_deal_view import ChangeDealView
+from grid.views.delete_deal_view import DeleteDealView, RecoverDealView
+from grid.views.deal_detail_view import DealDetailView
+from grid.views.export_view import ExportView
 from editor.views import ManageAddsView, ManageUpdatesView, ManageDeletesView, ManageMyDealsView, \
-    ApproveActivityChangeView, ApproveActivityDeleteView
-from landmatrix.models import HistoricalActivity, Activity
+    ApproveActivityChangeView, ApproveActivityDeleteView, LogAddedView, LogModifiedView, LogDeletedView
+from landmatrix.models import HistoricalActivity
+from api.elasticsearch import es_search
 
-DEAL_DATA = {
-    # Location
-    "location-TOTAL_FORMS": 1,
-    "location-INITIAL_FORMS": 0,
-    "location-MIN_NUM_FORMS": 1,
-    "location-MAX_NUM_FORMS": 1,
-    "location-0-level_of_accuracy": "Exact location",
-    "location-0-location": "Rakhaing-Staat, Myanmar (Birma)",
-    "location-0-location-map": "Rakhaing-Staat, Myanmar (Birma)",
-    "location-0-point_lat": 19.810093,
-    "location-0-point_lon": 93.98784269999999,
-    "location-0-target_country": 104,
-    # General info
-    "id_negotiation_status_0": "Contract signed",
-    "id_negotiation_status_1": None,
-    "id_negotiation_status_2": None,
-    # Contract
-    "contract-TOTAL_FORMS": 0,
-    "contract-INITIAL_FORMS": 0,
-    "contract-MIN_NUM_FORMS": 0,
-    "contract-MAX_NUM_FORMS": 0,
-    # Data source
-    "data_source-TOTAL_FORMS": 1,
-    "data_source-INITIAL_FORMS": 0,
-    "data_source-MIN_NUM_FORMS": 1,
-    "data_source-MAX_NUM_FORMS": 1,
-    "data_source-0-type": "Media report",
-    # Investor
-    "id_operational_stakeholder": 1,
-}
-
-class TestAddDeal(TestCase):
+class BaseTestDeal(TestCase):
     fixtures = [
         'countries_and_regions',
         'users_and_groups',
         'status',
         'investors',
     ]
+
+    DEAL_DATA = {
+        # Location
+        "location-TOTAL_FORMS": 1,
+        "location-INITIAL_FORMS": 0,
+        "location-MIN_NUM_FORMS": 1,
+        "location-MAX_NUM_FORMS": 1,
+        "location-0-level_of_accuracy": "Exact location",
+        "location-0-location": "Rakhaing-Staat, Myanmar (Birma)",
+        "location-0-location-map": "Rakhaing-Staat, Myanmar (Birma)",
+        "location-0-point_lat": 19.810093,
+        "location-0-point_lon": 93.98784269999999,
+        "location-0-target_country": 104,
+        # General info
+        "id_negotiation_status_0": "Contract signed",
+        "id_negotiation_status_1": None,
+        "id_negotiation_status_2": None,
+        # Contract
+        "contract-TOTAL_FORMS": 0,
+        "contract-INITIAL_FORMS": 0,
+        "contract-MIN_NUM_FORMS": 0,
+        "contract-MAX_NUM_FORMS": 0,
+        # Data source
+        "data_source-TOTAL_FORMS": 1,
+        "data_source-INITIAL_FORMS": 0,
+        "data_source-MIN_NUM_FORMS": 1,
+        "data_source-MAX_NUM_FORMS": 1,
+        "data_source-0-type": "Media report",
+        # Investor
+        "id_operational_stakeholder": 1,
+    }
 
     def setUp(self):
         self.users = {
@@ -71,15 +76,54 @@ class TestAddDeal(TestCase):
         self.groups['editor'].permissions.add(perm_review_activity)
         perm_add_activity = Permission.objects.get(codename='add_activity')
         perm_change_activity = Permission.objects.get(codename='change_activity')
+        perm_delete_activity = Permission.objects.get(codename='delete_activity')
         self.groups['administrator'].permissions.add(perm_review_activity)
         self.groups['administrator'].permissions.add(perm_add_activity)
         self.groups['administrator'].permissions.add(perm_change_activity)
+        self.groups['administrator'].permissions.add(perm_delete_activity)
 
         settings.CELERY_ALWAYS_EAGER = True
+        settings.ELASTICSEARCH_INDEX_NAME = 'landmatrix_test'
+
+        es_search.create_index()
+
+
+class TestAddDeal(BaseTestDeal):
+
+    def is_deal_added(self, activity, user):
+        # Check if deal is public
+        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
+        request.user = AnonymousUser()
+        response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
+        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
+
+        # Check if deal is in latest added log
+        request = self.factory.get(reverse('log_added'))
+        request.user = user
+        response = LogAddedView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Latest Added Log does not work')
+        activities = list(response.context_data['activities'])
+        self.assertGreaterEqual(len(activities), 1, msg='Wrong list of deals in Latest Added Log of Reporter')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Latest Added Log')
+
+        # Check if deal is in elasticsearch/export
+        request = self.factory.get(reverse('export', kwargs={'format': 'xls'}))
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = AnonymousUser()
+        response = ExportView.as_view()(request, format='xls')
+        self.assertEqual(response.status_code, 200, msg='Export does not work')
+        wb = load_workbook(BytesIO(response.content), read_only=True)
+        ws = wb['Deals']
+        activity_identifiers = [row[0].value for row in ws.rows]
+        if '#%s' % str(activity.activity_identifier) not in activity_identifiers:
+            self.fail('Deal does not appear in export (checked XLS only)')
 
     def test_add_deal_as_reporter(self):
         # Add deal as reporter
-        data = DEAL_DATA.copy()
+        data = self.DEAL_DATA.copy()
         data.update({
             # Action comment
             "tg_action_comment": "Test add deal",
@@ -91,10 +135,6 @@ class TestAddDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
         response = AddDealView.as_view()(request)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
@@ -150,10 +190,6 @@ class TestAddDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
         response = ApproveActivityChangeView.as_view()(request, id=activity.id)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve deal by Editor does not redirect')
 
         # Check if deal appears in manage section of administrator
@@ -182,40 +218,13 @@ class TestAddDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ApproveActivityChangeView.as_view()(request, id=activity.id)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
-        # Check if deal is public
-        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
-        request.user = AnonymousUser()
-        response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
-
-        # Check if deal is in elasticsearch/export
-        request = self.factory.get(reverse('export', kwargs={'format': 'xls'}))
-        # Mock messages framework (not available for unit tests)
-        setattr(request, 'session', {})
-        messages = FallbackStorage(request)
-        setattr(request, '_messages', messages)
-        request.user = AnonymousUser()
-        response = ExportView.as_view()(request, format='xls')
-        self.assertEqual(response.status_code, 200, msg='Export does not work')
-        wb = load_workbook(BytesIO(response.content), read_only=True)
-        ws = wb['Deals']
-        activity_identifiers = [row[0].value for row in ws.rows]
-        if str(activity.activity_identifier) not in activity_identifiers:
-            self.fail('Deal does not appear in export (checked XLS only)')
+        self.is_deal_added(activity, self.users['reporter'])
 
     def test_add_deal_as_editor(self):
         # Add deal as editor
-        data = DEAL_DATA.copy()
+        data = self.DEAL_DATA.copy()
         data.update({
             # Action comment
             "tg_action_comment": "Test add deal",
@@ -227,10 +236,6 @@ class TestAddDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
         response = AddDealView.as_view()(request)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
@@ -261,25 +266,13 @@ class TestAddDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ApproveActivityChangeView.as_view()(request, id=activity.id)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
-        # Check if deal is public
-        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
-        request.user = AnonymousUser()
-        response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
+        self.is_deal_added(activity, self.users['editor'])
 
     def test_add_deal_as_administrator(self):
         # Add deal as administrator
-        data = DEAL_DATA.copy()
+        data = self.DEAL_DATA.copy()
         data.update({
             # Action comment
             "tg_action_comment": "Test add deal",
@@ -291,26 +284,14 @@ class TestAddDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = AddDealView.as_view()(request)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
-        activity = HistoricalActivity.objects.active().latest()
+        activity = HistoricalActivity.objects.public().latest()
 
-        # Check if deal is public
-        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
-        request.user = AnonymousUser()
-        response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200, msg='Deal is not public')
+        self.is_deal_added(activity, self.users['administrator'])
 
 
-class TestChangeDeal(TestCase):
+class TestChangeDeal(BaseTestDeal):
     fixtures = [
         'countries_and_regions',
         'users_and_groups',
@@ -318,35 +299,41 @@ class TestChangeDeal(TestCase):
         'activities',
     ]
 
-    def setUp(self):
-        self.users = {
-            'reporter': User.objects.get(username='reporter'),
-            'editor': User.objects.get(username='editor'),
-            'administrator': User.objects.get(username='administrator'),
-        }
-        self.groups = {
-            'reporter': Group.objects.get(name='Reporters'),
-            'editor': Group.objects.get(name='Editors'),
-            'administrator': Group.objects.get(name='Administrators'),
-        }
-        self.factory = RequestFactory()
+    def is_deal_changed(self, activity, user):
+        # Check if deal is public
+        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
+        request.user = AnonymousUser()
+        response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
+        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
 
-        # Create group permissions
-        # This not possible in fixtures, because permissions and content types are created on run-time
-        perm_review_activity = Permission.objects.get(codename='review_activity')
-        self.groups['editor'].permissions.add(perm_review_activity)
-        perm_add_activity = Permission.objects.get(codename='add_activity')
-        perm_change_activity = Permission.objects.get(codename='change_activity')
-        perm_delete_activity = Permission.objects.get(codename='delete_activity')
-        self.groups['administrator'].permissions.add(perm_review_activity)
-        self.groups['administrator'].permissions.add(perm_add_activity)
-        self.groups['administrator'].permissions.add(perm_change_activity)
-        self.groups['administrator'].permissions.add(perm_delete_activity)
+        # Check if deal is in latest changed log
+        request = self.factory.get(reverse('log_modified'))
+        request.user = user
+        response = LogModifiedView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Latest Modified Log does not work')
+        activities = list(response.context_data['activities'])
+        self.assertGreaterEqual(len(activities), 1, msg='Wrong list of deals in Latest Modified Log')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Latest Modified Log')
+
+        # Check if deal is in elasticsearch/export
+        request = self.factory.get(reverse('export', kwargs={'format': 'xls'}))
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = AnonymousUser()
+        response = ExportView.as_view()(request, format='xls')
+        self.assertEqual(response.status_code, 200, msg='Export does not work')
+        wb = load_workbook(BytesIO(response.content), read_only=True)
+        ws = wb['Deals']
+        activity_identifiers = [row[0].value for row in ws.rows]
+        if '#%s' % str(activity.activity_identifier) not in activity_identifiers:
+            self.fail('Deal does not appear in export (checked XLS only)')
 
     def test_change_deal_as_reporter(self):
         # Change deal as reporter
-        activity = HistoricalActivity.objects.active().latest()
-        data = DEAL_DATA.copy()
+        activity = HistoricalActivity.objects.public().latest()
+        data = self.DEAL_DATA.copy()
         data.update({
             # Action comment
             "tg_action_comment": "Test change deal",
@@ -358,10 +345,6 @@ class TestChangeDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
         response = ChangeDealView.as_view()(request, deal_id=activity.activity_identifier)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
@@ -417,10 +400,6 @@ class TestChangeDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
         response = ApproveActivityChangeView.as_view()(request, id=activity.id)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve deal by Editor does not redirect')
 
         # Check if deal appears in manage section of administrator
@@ -449,26 +428,14 @@ class TestChangeDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ApproveActivityChangeView.as_view()(request, id=activity.id)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
-        # Check if deal is public
-        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
-        request.user = AnonymousUser()
-        response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
+        self.is_deal_changed(activity, self.users['reporter'])
 
     def test_change_deal_as_editor(self):
         # Change deal as editor
-        activity = HistoricalActivity.objects.active().latest()
-        data = DEAL_DATA.copy()
+        activity = HistoricalActivity.objects.public().latest()
+        data = self.DEAL_DATA.copy()
         data.update({
             # Action comment
             "tg_action_comment": "Test change deal",
@@ -480,10 +447,6 @@ class TestChangeDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
         response = ChangeDealView.as_view()(request, deal_id=activity.activity_identifier)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
@@ -520,20 +483,12 @@ class TestChangeDeal(TestCase):
         #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
-        # Check if deal is public
-        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
-        request.user = AnonymousUser()
-        response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
+        self.is_deal_changed(activity, self.users['editor'])
 
     def test_change_deal_as_administrator(self):
         # Change deal as administrator
-        activity = HistoricalActivity.objects.active().latest()
-        data = DEAL_DATA.copy()
+        activity = HistoricalActivity.objects.public().latest()
+        data = self.DEAL_DATA.copy()
         data.update({
             # Action comment
             "tg_action_comment": "Test change deal",
@@ -545,26 +500,14 @@ class TestChangeDeal(TestCase):
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ChangeDealView.as_view()(request, deal_id=activity.activity_identifier)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
 
-        activity = HistoricalActivity.objects.active().latest()
+        activity = HistoricalActivity.objects.public().latest()
 
-        # Check if deal is public
-        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
-        request.user = AnonymousUser()
-        response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
-        #if response.status_code == 200:
-        #    # For debugging purposes
-        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
-        #    self.assertEqual(errors, [])
-        self.assertEqual(response.status_code, 200, msg='Deal is not public')
+        self.is_deal_changed(activity, self.users['administrator'])
 
 
-class TestDeleteDeal(TestCase):
+class TestDeleteDeal(BaseTestDeal):
     fixtures = [
         'countries_and_regions',
         'users_and_groups',
@@ -572,34 +515,44 @@ class TestDeleteDeal(TestCase):
         'activities',
     ]
 
-    def setUp(self):
-        self.users = {
-            'reporter': User.objects.get(username='reporter'),
-            'editor': User.objects.get(username='editor'),
-            'administrator': User.objects.get(username='administrator'),
-        }
-        self.groups = {
-            'reporter': Group.objects.get(name='Reporters'),
-            'editor': Group.objects.get(name='Editors'),
-            'administrator': Group.objects.get(name='Administrators'),
-        }
-        self.factory = RequestFactory()
+    def is_deal_deleted(self, activity, user=None):
+        # Check if deal is NOT public
+        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
+        request.user = AnonymousUser()
+        try:
+            response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
+        except Http404:
+            pass
+        else:
+            self.fail("Deal still exists after deletion")
 
-        # Create group permissions
-        # This not possible in fixtures, because permissions and content types are created on run-time
-        perm_review_activity = Permission.objects.get(codename='review_activity')
-        self.groups['editor'].permissions.add(perm_review_activity)
-        perm_add_activity = Permission.objects.get(codename='add_activity')
-        perm_change_activity = Permission.objects.get(codename='change_activity')
-        perm_delete_activity = Permission.objects.get(codename='delete_activity')
-        self.groups['administrator'].permissions.add(perm_review_activity)
-        self.groups['administrator'].permissions.add(perm_add_activity)
-        self.groups['administrator'].permissions.add(perm_change_activity)
-        self.groups['administrator'].permissions.add(perm_delete_activity)
+        # Check if deal is in latest deleted log
+        request = self.factory.get(reverse('log_deleted'))
+        request.user = user
+        response = LogDeletedView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Latest Deleted Log does not work')
+        activities = list(response.context_data['activities'])
+        self.assertGreaterEqual(len(activities), 1, msg='Wrong list of deals in Latest Deleted Log')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Latest Deleted Log')
+
+        # Check if deal is NOT in elasticsearch/export
+        request = self.factory.get(reverse('export', kwargs={'format': 'xls'}))
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = AnonymousUser()
+        response = ExportView.as_view()(request, format='xls')
+        self.assertEqual(response.status_code, 200, msg='Export does not work')
+        wb = load_workbook(BytesIO(response.content), read_only=True)
+        ws = wb['Deals']
+        activity_identifiers = [row[0].value for row in ws.rows]
+        if '#%s' % str(activity.activity_identifier) in activity_identifiers:
+            self.fail('Deal still appears in export after deletion (checked XLS only)')
 
     def test_delete_deal_as_reporter(self):
         # Delete deal as reporter
-        activity = HistoricalActivity.objects.active().latest()
+        activity = HistoricalActivity.objects.public().latest()
         data = {
             # Action comment
             "tg_action_comment": "Test delete deal",
@@ -708,19 +661,11 @@ class TestDeleteDeal(TestCase):
         #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
-        # Check if deal is public
-        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
-        request.user = AnonymousUser()
-        try:
-            response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
-        except Http404:
-            pass
-        else:
-            self.fail("Deal still exists after deletion")
+        self.is_deal_deleted(activity, self.users['reporter'])
 
     def test_delete_deal_as_editor(self):
         # Delete deal as editor
-        activity = HistoricalActivity.objects.active().latest()
+        activity = HistoricalActivity.objects.public().latest()
         data = {
             # Action comment
             "tg_action_comment": "Test delete deal",
@@ -772,19 +717,11 @@ class TestDeleteDeal(TestCase):
         #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve deal does not redirect')
 
-        # Check if deal is public
-        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
-        request.user = AnonymousUser()
-        try:
-            response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
-        except Http404:
-            pass
-        else:
-            self.fail("Deal still exists after deletion")
+        self.is_deal_deleted(activity, self.users['editor'])
 
     def test_delete_deal_as_administrator(self):
         # Delete deal as administrator
-        activity = HistoricalActivity.objects.active().latest()
+        activity = HistoricalActivity.objects.public().latest()
         data = {
             # Action comment
             "tg_action_comment": "Test delete deal",
@@ -804,15 +741,7 @@ class TestDeleteDeal(TestCase):
 
         activity = HistoricalActivity.objects.deleted().latest()
 
-        # Check if deal is public
-        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
-        request.user = AnonymousUser()
-        try:
-            response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
-        except Http404:
-            pass
-        else:
-            self.fail("Deal still exists after deletion")
+        self.is_deal_deleted(activity, self.users['administrator'])
 
     def test_recover_deal_as_editor(self):
         # Recover deal as editor

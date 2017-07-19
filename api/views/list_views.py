@@ -202,8 +202,8 @@ class ElasticSearchView(View):
                 continue
             if not 'point_lat' in result or not 'point_lon' in result:
                 continue
-            if not result.get('intention', None): # TODO: should we hide results with no intention field value?
-                continue
+            #if not result.get('intention', None): # TODO: should we hide results with no intention field value?
+            #    continue
             result['id'] = raw_result['_id']
             result_list.append(result)
 

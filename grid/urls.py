@@ -1,7 +1,9 @@
 from django.conf.urls import url
 
 from api.decorators import save_filter_query_params
-from grid.views import *
+from grid.views.all_deals_view import AllDealsView
+from grid.views.export_view import ExportView
+from grid.views.table_group_view import TableGroupView
 
 
 CACHE_TIMEOUT = 24*3600

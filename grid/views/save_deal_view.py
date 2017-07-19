@@ -141,7 +141,7 @@ class SaveDealView(TemplateView):
 
         if can_change_activity:
             hactivity.fk_status_id = hactivity.STATUS_OVERWRITTEN
-        hactivity.save()
+        hactivity.save(update_elasticsearch=False)
 
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)
@@ -150,7 +150,7 @@ class SaveDealView(TemplateView):
             hactivity.fully_updated = self.get_fully_updated(form)
         else:
             hactivity.fully_updated = False
-        hactivity.save()
+        hactivity.save(update_elasticsearch=False)
         if can_change_activity:
             hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
@@ -171,6 +171,9 @@ class SaveDealView(TemplateView):
         #context['forms'] = forms
         #return self.render_to_response(context)
         return redirect('deal_detail', deal_id=hactivity.activity_identifier)
+
+    def set_status(self):
+        s
 
     def form_invalid(self, forms):
         messages.error(self.request, _('Please correct the error below.'))

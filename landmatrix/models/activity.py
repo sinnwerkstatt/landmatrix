@@ -16,7 +16,7 @@ from landmatrix.models.investor import (
     Investor, InvestorActivityInvolvement, InvestorVentureInvolvement, InvestorBase
 )
 from landmatrix.models.country import Country
-from django.core.cache import cache
+
 
 class ActivityQuerySet(models.QuerySet):
     def public(self, user=None):
@@ -772,7 +772,7 @@ class HistoricalActivity(ActivityBase):
             self.fk_status_id = self.STATUS_OVERWRITTEN
         elif self.fk_status_id == self.STATUS_TO_DELETE:
             self.fk_status_id = self.STATUS_DELETED
-        self.save()
+        self.save(update_elasticsearch=False)
 
         # Historical activity already is the newest version of activity?
         if self.public_version:
@@ -828,7 +828,7 @@ class HistoricalActivity(ActivityBase):
         HistoricalActivity.objects.filter(public_version=activity).update(
             public_version=None)
         self.public_version = activity
-        self.save(update_fields=['public_version'])
+        self.save(update_fields=['public_version'], update_elasticsearch=True)
 
         return True
 
@@ -847,6 +847,16 @@ class HistoricalActivity(ActivityBase):
         comment = changeset.comment if changeset else ''
 
         return comment
+
+    def save(self, *args, **kwargs):
+        update_elasticsearch = kwargs.pop('update_elasticsearch', True)
+        super().save(*args, **kwargs)
+        if update_elasticsearch:
+            from landmatrix.tasks import index_activity, delete_activity
+            if self.fk_status_id == self.STATUS_DELETED:
+                delete_activity.delay(self.id)
+            else:
+                index_activity.delay(self.id)
 
     class Meta:
         verbose_name = _('Historical activity')

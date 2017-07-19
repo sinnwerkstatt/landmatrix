@@ -12,11 +12,16 @@ from django.utils.translation import ugettext_lazy as _
 from collections import OrderedDict
 from openpyxl import Workbook
 
-from grid.views import AllDealsView, TableGroupView, DealDetailView, ChangeDealView
+from grid.views.all_deals_view import AllDealsView
+from grid.views.table_group_view import TableGroupView
+from grid.views.deal_detail_view import DealDetailView
+from grid.views.change_deal_view import ChangeDealView
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
-from api.views import ElasticSearchView
+from api.views.list_views import ElasticSearchView
 from grid.utils import get_spatial_properties
+from landmatrix.models import Activity, InvestorVentureInvolvement
+from landmatrix.models.investor import InvestorBase
 
 
 class ExportView(ElasticSearchView):
@@ -27,7 +32,16 @@ class ExportView(ElasticSearchView):
         format = kwargs.pop('format')
         if format == 'xls':
             format = 'xlsx'
-        query = self.create_query_from_filters()
+
+        deal_id = kwargs.pop('deal_id', None)
+        if deal_id:
+            activity = Activity.objects.get(activity_identifier=deal_id)
+            query = {
+                "type": "deal",
+                "values": [deal_id,]
+            }
+        else:
+            query = self.create_query_from_filters()
 
         results = {}
         # Search deals
@@ -36,10 +50,52 @@ class ExportView(ElasticSearchView):
         results['deals'] = self.merge_deals(deals)
 
         # Get all involvements
-        results['involvements'] = self.execute_elasticsearch_query({}, doc_type='involvement')
+        if deal_id:
+            def get_involvements(involvements):
+                parents = []
+                for involvement in involvements:
+                    # Check if there are parent companies for investor
+                    parent_involvements = InvestorVentureInvolvement.objects.filter(
+                        fk_venture=involvement.fk_investor,
+                        fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
+                        fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN)
+                    )
+                    if parent_involvements:
+                        parents.extend(get_involvements(parent_involvements))
+                    if involvement.fk_investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
+                        parents.append(involvement.id)
+                return parents
+            query = {
+                "type": "deal",
+                "values": get_involvements(activity.investoractivityinvolvement_set.all())
+            }
+        else:
+            query = {}
+        results['involvements'] = self.execute_elasticsearch_query(query, doc_type='involvement')
 
         # Get all investors
-        results['investors'] = self.execute_elasticsearch_query({}, doc_type='investor')
+        if deal_id:
+            def get_investors(investors):
+                parents = []
+                for investor in investors:
+                    # Check if there are parent companies for investor
+                    parent_investors = [i.fk_investor for i in InvestorVentureInvolvement.objects.filter(
+                        fk_venture=investor,
+                        fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
+                        fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN)
+                    )]
+                    if parent_investors:
+                        parents.extend(get_investors(parent_investors))
+                    if investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
+                        parents.append(investor.id)
+                return parents
+            query = {
+                "type": "deal",
+                "values": get_investors([i.fk_investor for i in activity.investoractivityinvolvement_set.all()])
+            }
+        else:
+            query = {}
+        results['investors'] = self.execute_elasticsearch_query(query, doc_type='investor')
 
         if format not in self.FORMATS:
             raise RuntimeError('Download format not recognized: ' + format)

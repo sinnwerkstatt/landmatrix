@@ -22,13 +22,16 @@ from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 
-from grid.views import (
-    AddDealView, ChangeDealView, DealComparisonView, DealDetailView,
-    FilterWidgetAjaxView, AddStakeholderView, ChangeStakeholderView,
-    InvestorComparisonView, DeleteDealView, ExportView,
-    RecoverDealView
-)
-from map.views import GlobalView
+from grid.views.change_deal_view import ChangeDealView
+from grid.views.deal_comparison_view import DealComparisonView
+from grid.views.deal_detail_view import DealDetailView
+from grid.views.filter_widget_ajax_view import FilterWidgetAjaxView
+from grid.views.stakeholder_view import AddStakeholderView, ChangeStakeholderView
+from grid.views.investor_comparison_view import InvestorComparisonView
+from grid.views.delete_deal_view import DeleteDealView, RecoverDealView
+from grid.views.export_view import ExportView
+from grid.views.add_deal_view import AddDealView
+
 from feeds.views import ActivityChangesFeed
 from api import urls as api_urls
 from grid import urls as grid_urls

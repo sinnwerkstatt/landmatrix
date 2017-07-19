@@ -1,7 +1,6 @@
 import time
 import re
 
-from django.db.models.query import QuerySet
 from django.db import connection
 
 from landmatrix.models.browse_condition import BrowseCondition

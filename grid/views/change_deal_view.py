@@ -7,8 +7,7 @@ from django.http import Http404, HttpResponseRedirect
 from grid.forms.deal_general_form import DealGeneralForm
 from grid.forms.deal_contract_form import DealContractFormSet
 from .save_deal_view import SaveDealView
-from landmatrix.models.activity import Activity, HistoricalActivity
-from landmatrix.models.deal_history import DealHistoryItem
+from landmatrix.models.activity import HistoricalActivity
 
 from grid.forms.deal_employment_form import DealEmploymentForm
 from grid.forms.deal_overall_comment_form import DealOverallCommentForm

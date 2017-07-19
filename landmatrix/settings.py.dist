@@ -1,6 +1,6 @@
+from .default_settings import *
 
 # whether to show SQL generated (is referenced below when configuring logging)
-LOG_DB_QUERIES = False
 
 CONVERT_DB = False
 CONVERT_FROM_MY = False
@@ -43,28 +43,59 @@ if CONVERT_DB:
             'PORT': '',
         }
 
-
-if LOG_DB_QUERIES:
-    LOGGING = {
-        'version': 1,
-        'filters': {
-            'require_debug_true': {
-                '()': 'django.utils.log.RequireDebugTrue',
-            }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(message)s',
+             'datefmt': '%y %b %d, %H:%M:%S',
+            },
         },
-        'handlers': {
-            'console': {
-                'level': 'DEBUG',
-                'filters': ['require_debug_true'],
-                'class': 'logging.StreamHandler',
-            }
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
         },
-        'loggers': {
-            'django.db.backends': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            }
-        }
+        'celery': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'celery.log',
+            'formatter': 'simple',
+            'maxBytes': 1024 * 1024 * 100,  # 100 mb
+        },
+    },
+    'loggers': {
+        'celery': {
+            'handlers': ['celery', 'console'],
+            'level': 'DEBUG',
+        },
     }
+}
 
-from .default_settings import *
+#CACHES = {
+#   'default': {
+#       'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+#       'LOCATION': '127.0.0.1:11211',
+#   }
+#}
+#
+#RECAPTCHA_PUBLIC_KEY = '6LdxVR8TAAAAANbYtUauMj_AQ-hJPxd-cXS8lCsd'
+#RECAPTCHA_PRIVATE_KEY = '6LdxVR8TAAAAACmxZCrpsSsW9DGJ3qXjP2huKKRu'
+
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_PORT = '587'
+#EMAIL_HOST_USER = 'admin@landmatrix.org'
+#EMAIL_HOST_PASSWORD = 'secret'
+#EMAIL_USE_TLS = True
+#DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Use nose to run all tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Tell nose to measure coverage on the 'foo' and 'bar' apps
+#NOSE_ARGS = [
+#    '--with-coverage',
+#    '--cover-package=api,charts,editor,feeds,grid,landmatrix,map,wagtailcms'
+#]
