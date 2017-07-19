@@ -166,7 +166,7 @@ class ElasticSearchView(View):
         response = Response(FeatureCollection(features))
         return response
     
-    def execute_elasticsearch_query(self, query, doc_type='deal'):
+    def execute_elasticsearch_query(self, query, doc_type='deal', fallback=True):
         from api.elasticsearch import es_search as es
         es.refresh_index()
         
@@ -179,7 +179,7 @@ class ElasticSearchView(View):
             if settings.DEBUG and len(raw_result_list) == 0:
                 raise(Exception('NoResultsForQuery-DebugException! I am raising this because the query got no results and was probably malformed.'))
         except Exception as e:
-            if settings.DEBUG:
+            if settings.DEBUG and fallback:
                 print('\n\n>>>>>>> Error! There was an error when querying elasticsearch with the current filters!')
                 print('               Falling back to a match-all query.')
                 print('               WARNING: YOUR RESULTS ARE NOT THOSE OF A FILTERED QUERY!\n\n')

@@ -47,7 +47,7 @@ class ExportView(ElasticSearchView):
 
         results = {}
         # Search deals
-        deals = self.execute_elasticsearch_query(query, doc_type='deal')
+        deals = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False)
         deals = self.filter_returned_results(deals)
         results['deals'] = self.merge_deals(deals)
 
@@ -75,7 +75,7 @@ class ExportView(ElasticSearchView):
             }
         else:
             query = {}
-        results['involvements'] = self.execute_elasticsearch_query(query, doc_type='involvement')
+        results['involvements'] = self.execute_elasticsearch_query(query, doc_type='involvement', fallback=False)
 
         # Get all investors
         if deal_id:
@@ -101,7 +101,7 @@ class ExportView(ElasticSearchView):
             }
         else:
             query = {}
-        results['investors'] = self.execute_elasticsearch_query(query, doc_type='investor')
+        results['investors'] = self.execute_elasticsearch_query(query, doc_type='investor', fallback=False)
 
         if format not in self.FORMATS:
             raise RuntimeError('Download format not recognized: ' + format)
