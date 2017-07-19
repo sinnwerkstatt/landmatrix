@@ -37,9 +37,12 @@ class ExportView(ElasticSearchView):
         if deal_id:
             activity = Activity.objects.get(activity_identifier=deal_id)
             query = {
-                "ids": {
-                    "type": "deal",
-                    "values": [deal_id,]
+                "constant_score" : {
+                    "filter" : {
+                        "term" : {
+                            "activity_identifier": deal_id
+                        }
+                    }
                 }
             }
         else:
