@@ -37,8 +37,10 @@ class ExportView(ElasticSearchView):
         if deal_id:
             activity = Activity.objects.get(activity_identifier=deal_id)
             query = {
-                "type": "deal",
-                "values": [deal_id,]
+                "ids": {
+                    "type": "deal",
+                    "values": [deal_id,]
+                }
             }
         else:
             query = self.create_query_from_filters()
@@ -66,8 +68,10 @@ class ExportView(ElasticSearchView):
                         parents.append(involvement.id)
                 return parents
             query = {
-                "type": "deal",
-                "values": get_involvements(activity.investoractivityinvolvement_set.all())
+                "ids": {
+                    "type": "involvement",
+                    "values": get_involvements(activity.investoractivityinvolvement_set.all())
+                }
             }
         else:
             query = {}
@@ -90,8 +94,10 @@ class ExportView(ElasticSearchView):
                         parents.append(investor.id)
                 return parents
             query = {
-                "type": "deal",
-                "values": get_investors([i.fk_investor for i in activity.investoractivityinvolvement_set.all()])
+                "ids": {
+                    "type": "investor",
+                    "values": get_investors([i.fk_investor for i in activity.investoractivityinvolvement_set.all()])
+                }
             }
         else:
             query = {}
