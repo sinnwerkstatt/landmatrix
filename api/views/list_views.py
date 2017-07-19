@@ -179,18 +179,19 @@ class ElasticSearchView(View):
             if settings.DEBUG and len(raw_result_list) == 0:
                 raise(Exception('NoResultsForQuery-DebugException! I am raising this because the query got no results and was probably malformed.'))
         except Exception as e:
-            if settings.DEBUG and fallback:
-                print('\n\n>>>>>>> Error! There was an error when querying elasticsearch with the current filters!')
-                print('               Falling back to a match-all query.')
-                print('               WARNING: YOUR RESULTS ARE NOT THOSE OF A FILTERED QUERY!\n\n')
-                print('               Exception was:\n')
-                print(e)
-                print('\n\n')
-                
-                match_all_query = { "match_all": {} }
-                raw_result_list = es.search(match_all_query)
-            else:
-                raise
+            if fallback:
+                if settings.DEBUG:
+                    print('\n\n>>>>>>> Error! There was an error when querying elasticsearch with the current filters!')
+                    print('               Falling back to a match-all query.')
+                    print('               WARNING: YOUR RESULTS ARE NOT THOSE OF A FILTERED QUERY!\n\n')
+                    print('               Exception was:\n')
+                    print(e)
+                    print('\n\n')
+
+                    match_all_query = { "match_all": {} }
+                    raw_result_list = es.search(match_all_query)
+                else:
+                    raise
         return raw_result_list
     
     def filter_returned_results(self, raw_result_list):
