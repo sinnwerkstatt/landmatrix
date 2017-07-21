@@ -93,10 +93,11 @@ class PendingChangesMixin(FilteredQuerysetMixin):
             queryset = queryset.filter(history_user__groups__name='Reporters')
             queryset = queryset.exclude(changesets__fk_user__groups__name='Editors')
         # for admins:
-        # show only activites that have been added/changed or reviewed by editors
+        # show activities that have been added/changed or reviewed by editors or reporters
+        # FIXME: Is filtering necessary here at all?
         else:
-            queryset = queryset.filter(Q(history_user__groups__name='Editors') |
-                Q(changesets__fk_user__groups__name='Editors'))
+            queryset = queryset.filter(Q(history_user__groups__name__in=('Reporters', 'Editors')) |
+                Q(changesets__fk_user__groups__name__in=('Reporters', 'Editors')))
 
         return queryset
 
