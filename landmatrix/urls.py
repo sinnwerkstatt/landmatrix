@@ -21,6 +21,7 @@ from django.contrib import admin
 from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
+from feeds.views import ActivityChangesFeed
 
 from grid.views.change_deal_view import ChangeDealView
 from grid.views.deal_comparison_view import DealComparisonView
@@ -32,7 +33,6 @@ from grid.views.delete_deal_view import DeleteDealView, RecoverDealView
 from grid.views.export_view import ExportView
 from grid.views.add_deal_view import AddDealView
 
-from feeds.views import ActivityChangesFeed
 from api import urls as api_urls
 from grid import urls as grid_urls
 from map import urls as map_urls
@@ -44,7 +44,8 @@ from landmatrix.views import *
 CACHE_TIMEOUT = 24*3600
 
 urlpatterns = [
-    url('^accounts/', include('django.contrib.auth.urls')),
+    url(r'^accounts/register/$', RegistrationView.as_view(), name='registration_register'),
+    url(r'^accounts/', include('registration.backends.hmac.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^impersonate/', include('impersonate.urls')),
 

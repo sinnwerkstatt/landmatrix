@@ -20,17 +20,12 @@
     <p>{% trans "Please login to see this page." %}</p>
     {% endif %}
 {% endif %}
-
-<form class="form-horizontal" method="post" action="{% url 'login' %}">{% csrf_token %}
+<br>
+<form class="form-horizontal" method="post" action="{% url 'auth_login' %}">{% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}" />
-    <div class="form-group">
-        <div class="col-sm-3">{{ form.username.label_tag }}</div>
-        <div class="col-sm-3">{{ form.username }}</div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-3">{{ form.password.label_tag }}</div>
-        <div class="col-sm-3">{{ form.password }}</div>
-    </div>
+
+    {% include "form.html" with mandatory_label=" " %}
+
     <div class="form-group">
         <div class="col-sm-3 col-sm-offset-3">
             <input class="btn btn-default" type="submit" value="{% trans "Login" %}" />
@@ -39,6 +34,7 @@
 </form>
 
 {# Assumes you setup the password_reset view in your URLconf #}
-<p><a href="{% url 'password_reset' %}">{% trans "Lost password?" %}</a></p>
+<p>{% trans "Forgot password?" %} <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a></p>
+<p>{% trans "No registered user yet?" %} <a href="{% url 'registration_register' %}{% if next %}?next={{ next }}{% endif %}">{% trans "Register" %}</a></p>
 
 {% endblock %}

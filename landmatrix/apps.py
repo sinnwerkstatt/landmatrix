@@ -7,3 +7,4 @@ class LandMatrixConfig(AppConfig):
 
     def ready(self):
         from landmatrix import signals
+

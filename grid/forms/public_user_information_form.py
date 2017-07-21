@@ -6,9 +6,6 @@ from grid.forms.base_form import BaseForm
 from grid.fields import TitleField
 from grid.widgets import CommentInput
 
-
-
-
 class PublicUserInformationForm(BaseForm):
     form_title = _('User information')
     form_description = _('Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org.')

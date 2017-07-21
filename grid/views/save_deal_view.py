@@ -8,6 +8,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 from landmatrix.models.activity_attribute_group import (
     HistoricalActivityAttribute, ActivityAttributeGroup,
@@ -34,8 +36,6 @@ from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 
 
-
-
 class SaveDealView(TemplateView):
     FORMS = [
         DealSpatialFormSet,
@@ -57,6 +57,10 @@ class SaveDealView(TemplateView):
     success_message = _('Your changes to the deal have been submitted successfully. The changes will be reviewed and published soon.')
     success_message_admin = _('Your changes to the deal have been saved successfully.')
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**self.kwargs)
         if self.request.method != 'POST':
@@ -73,58 +77,9 @@ class SaveDealView(TemplateView):
         forms = self.get_forms(
             data=self.request.POST, files=self.request.FILES)
         if all(form.is_valid() for form in forms):
-            # Register user if not authenticated
-            if not self.request.user.is_authenticated():
-                user_information_form = self.get_form_by_type(
-                    forms, PublicUserInformationForm)
-                user = self._get_or_create_user(user_information_form)
-                self.login_user(user)
             return self.form_valid(forms)
         else:
             return self.form_invalid(forms)
-
-    def _get_or_create_user(self, user_information_form):
-        def generate_username(first_name, last_name):
-            val = "{0}.{1}".format(first_name.replace(' ', '.'), last_name).lower()
-            x = 0
-            while True:
-                if x == 0 and User.objects.filter(username=val).count() == 0:
-                    return val[:30]
-                else:
-                    new_val = "{0}{1}".format(val, x)
-                    if User.objects.filter(username=new_val).count() == 0:
-                        return new_val[:30]
-                x += 1
-                if x > 1000000:
-                    raise Exception("Name is super popular!")
-
-        if not user_information_form:
-            raise ValidationError(
-                _('User is not authenticated and no user information given.'))
-        data = user_information_form.cleaned_data
-        names = data['public_user_name'].split(' ')
-        if len(names) > 1:
-            first_name = ' '.join(names[:-1])
-            last_name = names[-1]
-        else:
-            first_name = names[0]
-            last_name = ''
-
-        user = User.objects.create_user(
-            generate_username(first_name, last_name),
-            email=data['public_user_email'][:254],
-            password=None,
-            first_name=first_name[:30],
-            last_name=last_name[:30],
-        )
-        UserRegionalInfo.objects.create(
-            user=user,
-            phone=data['public_user_phone'],
-        )
-        group, created = Group.objects.get_or_create(name='Reporters')
-        user.groups.add(group)
-
-        return user
 
     def form_valid(self, forms):
         old_hactivity = self.get_object()
@@ -304,18 +259,3 @@ class SaveDealView(TemplateView):
             fk_user=user,
         )
         return changeset
-
-    def login_user(self, user):
-        """
-        Log in a user without requiring credentials (using ``login`` from
-        ``django.contrib.auth``, first finding a matching backend).
-
-        """
-        from django.contrib.auth import load_backend, login
-        if not hasattr(user, 'backend'):
-            for backend in settings.AUTHENTICATION_BACKENDS:
-                if user == load_backend(backend).get_user(user.pk):
-                    user.backend = backend
-                    break
-        if hasattr(user, 'backend'):
-            return login(self.request, user)

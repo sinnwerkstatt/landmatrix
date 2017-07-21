@@ -84,12 +84,12 @@
                                     <li><a href="{% url 'editor' %}">{% trans "Dashboard" %}</a></li>
                                     <li><a href="{% url 'manage' %}">{% trans "Manage" %}</a></li>
                                     <li><a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a></li>
-                                    <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
+                                    <li><a href="{% url 'auth_logout' %}">{% trans "Logout" %}</a></li>
                                 </ul>
                             </li>
                         {% else %}
                         <li>
-                            <a href="{% url "login" %}?next=/" role="button" title="{% trans "Login" %}"><i class="fa fa-sign-in"></i></a> 
+                            <a href="{% url "auth_login" %}?next=/" role="button" title="{% trans "Login" %}"><i class="fa fa-sign-in"></i></a>
                         </li>
                         {% endif %}
                     {% endblock %}

@@ -47,3 +47,4 @@ django-compressor
 django-test-without-migrations
 django-nose
 django-hstore
+django-registration

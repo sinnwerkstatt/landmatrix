@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Registration closed" %}{% endblock %}
+{% block title %}{% trans "Registration closed" %}{% endblock %}
+{% block breadcrumb_inner %}
+<li>{% trans "Registration closed" %}</li>
+{% endblock %}
+
+{% block content %}
+	<p>{% trans "Registration is currently closed." %}</p>
+{% endblock %}
