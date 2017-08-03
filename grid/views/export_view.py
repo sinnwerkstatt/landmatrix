@@ -47,10 +47,11 @@ class ExportView(ElasticSearchView):
             }
         else:
             query = self.create_query_from_filters()
+        sort = ['activity_identifier',]
 
         results = {}
         # Search deals
-        deals = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False)
+        deals = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False, sort=sort)
         deals = self.filter_returned_results(deals)
         results['deals'] = self.merge_deals(deals)
 
@@ -78,7 +79,8 @@ class ExportView(ElasticSearchView):
             }
         else:
             query = {}
-        results['involvements'] = self.execute_elasticsearch_query(query, doc_type='involvement', fallback=False)
+        sort = ['id',]
+        results['involvements'] = self.execute_elasticsearch_query(query, doc_type='involvement', fallback=False, sort=sort)
 
         # Get all investors
         if deal_id:
@@ -104,7 +106,8 @@ class ExportView(ElasticSearchView):
             }
         else:
             query = {}
-        results['investors'] = self.execute_elasticsearch_query(query, doc_type='investor', fallback=False)
+        sort = ['investor_identifier',]
+        results['investors'] = self.execute_elasticsearch_query(query, doc_type='investor', fallback=False, sort=sort)
 
         if format not in self.FORMATS:
             raise RuntimeError('Download format not recognized: ' + format)
@@ -276,6 +279,9 @@ class ExportView(ElasticSearchView):
         for form in ChangeDealView.FORMS:
             formset_name = hasattr(form, "form") and form.Meta.name or None
             form = formset_name and form.form or form
+            exclude = []
+            if hasattr(form, 'exclude_in_export'):
+                exclude = form.exclude_in_export
             # Is formset?
             if formset_name:
                 # Get item with maximum forms
@@ -283,6 +289,8 @@ class ExportView(ElasticSearchView):
                 data['deals']['max'][formset_name] = form_count and max(form_count) or 0
                 for i in range(0, data['deals']['max'][formset_name]):
                     for field_name, field in form.base_fields.items():
+                        if field_name in exclude:
+                            continue
                         if field_name.startswith('tg_') and not field_name.endswith('_comment'):
                             continue
                         headers.append('%s %i: %s' % (
@@ -292,6 +300,8 @@ class ExportView(ElasticSearchView):
                         ))
             else:
                 for field_name, field in form.base_fields.items():
+                    if field_name in exclude:
+                        continue
                     if field_name.startswith('tg_') and not field_name.endswith('_comment'):
                         continue
                     headers.append(str(field.label))
@@ -307,7 +317,7 @@ class ExportView(ElasticSearchView):
         rows = []
         for item in results['deals']:
             row = [
-                '#%s' % item.get('activity_identifier'),    # ID
+                item.get('activity_identifier'),    # ID
                 item.get('is_public_export'),               # Is public
                 item.get('deal_scope_export'),              # Deal Scope
                 item.get('deal_size_export'),               # Deal Size
@@ -317,15 +327,22 @@ class ExportView(ElasticSearchView):
             for form in ChangeDealView.FORMS:
                 formset_name = hasattr(form, "form") and form.Meta.name or None
                 form = formset_name and form.form or form
+                exclude = []
+                if hasattr(form, 'exclude_in_export'):
+                    exclude = form.exclude_in_export
                 # Is formset?
                 if formset_name:
                     for i in range(0, data['deals']['max'][formset_name]):
                         for field_name, field in form.base_fields.items():
+                            if field_name in exclude:
+                                continue
                             if field_name.startswith('tg_') and not field_name.endswith('_comment'):
                                 continue
                             row.append(self.get_export_value(field_name, item, formset_index=i))
                 else:
                     for field_name, field in form.base_fields.items():
+                        if field_name in exclude:
+                            continue
                         if field_name.startswith('tg_') and not field_name.endswith('_comment'):
                             continue
                         row.append(self.get_export_value(field_name, item))

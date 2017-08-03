@@ -166,7 +166,7 @@ class ElasticSearchView(View):
         response = Response(FeatureCollection(features))
         return response
     
-    def execute_elasticsearch_query(self, query, doc_type='deal', fallback=True):
+    def execute_elasticsearch_query(self, query, doc_type='deal', fallback=True, sort=[]):
         from api.elasticsearch import es_search as es
         es.refresh_index()
         
@@ -175,7 +175,7 @@ class ElasticSearchView(View):
         pprint(query)
         
         try:
-            raw_result_list = es.search(query, doc_type=doc_type)
+            raw_result_list = es.search(query, doc_type=doc_type, sort=sort)
             if settings.DEBUG and len(raw_result_list) == 0:
                 raise(Exception('NoResultsForQuery-DebugException! I am raising this because the query got no results and was probably malformed.'))
         except Exception as e:
@@ -192,6 +192,8 @@ class ElasticSearchView(View):
                     raw_result_list = es.search(match_all_query)
                 else:
                     raise
+            else:
+                raw_result_list = []
         return raw_result_list
     
     def filter_returned_results(self, raw_result_list):

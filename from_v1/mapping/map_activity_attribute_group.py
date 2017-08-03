@@ -1,3 +1,5 @@
+import re
+
 from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import editor.models
@@ -212,9 +214,15 @@ def clean_attribute(key, value, old_values={}):
 
 def clean_group(group_name, key, value):
     if group_name == 'agreement_duration':
-        return 'contract_1'
+        return 'contract_01'
     if group_name == 'negotiation_status' and key != 'negotiation_status':
-        return 'contract_1'
+        return 'contract_01'
+    match = re.match('(.*?)_(\d)', group_name)
+    if match:
+        return '%s_%02i' % (
+            match.groups()[0],
+            int(match.groups()[1]),
+        )
     return group_name
 
 

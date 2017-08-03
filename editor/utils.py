@@ -6,13 +6,17 @@ TODO: this can all be done in the template, move it there.
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
+from grid.templatetags.custom_tags import get_user_role
 
 def activity_to_template(activity):
     try:
-        username = activity.history_user.username
+        user = activity.history_user.username
+        role = get_user_role(activity.history_user)
+        if role:
+            user += ' (%s)' % role
     except AttributeError:
         # User doesn't exist anymore
-        username = _('Deleted User')
+        user = _('Deleted User')
 
     history_date = timezone.localtime(
         activity.history_date, timezone.get_current_timezone())
@@ -21,7 +25,7 @@ def activity_to_template(activity):
         'id': activity.pk,
         'deal_id': activity.activity_identifier,
         'history_id': activity.id,
-        'user': username,
+        'user': user,
         'timestamp': history_date.strftime('%Y-%m-%d %H:%M:%S'),
         'status': activity.fk_status,
         'comment': activity.comment,

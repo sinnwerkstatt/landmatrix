@@ -3074,3 +3074,7 @@ th .toggle-tooltip {
     }
 }
 */
+
+table td.user {
+  white-space: nowrap;
+}

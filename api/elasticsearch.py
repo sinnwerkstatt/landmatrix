@@ -505,7 +505,7 @@ class ElasticSearch(object):
     def refresh_index(self):
         self.conn.refresh(self.index_name)
         
-    def search(self, elasticsearch_query, doc_type='deal'):
+    def search(self, elasticsearch_query, doc_type='deal', sort=[]):
         """ Executes paginated queries until all results have been retrieved. 
             @return: The full list of hits. """
         start = 0
@@ -519,6 +519,8 @@ class ElasticSearch(object):
                 'from': start,
                 'size': size,
             }
+            if sort:
+                query['sort'] = sort
             query_result = self.conn.search(query, index=self.index_name, doc_type=doc_type)
             raw_result_list.extend(query_result['hits']['hits'])
             results_total = query_result['hits']['total']
