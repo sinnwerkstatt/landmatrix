@@ -12,10 +12,11 @@ from django.db import connections, models
 
 
 def get_fk_activity_id(old_activity_id):
+    return old_activity_id
     # Get new activity id for old activity id
-    activity_identifier = old_editor.models.Activity.objects.using(V1).get(id=old_activity_id).activity_identifier
-    new_activity_id = landmatrix.models.Activity.objects.using(V2).get(activity_identifier=activity_identifier).id
-    return new_activity_id
+    #activity_identifier = old_editor.models.Activity.objects.using(V1).get(id=old_activity_id).activity_identifier
+    #new_activity_id = landmatrix.models.Activity.objects.using(V2).get(activity_identifier=activity_identifier).id
+    #return new_activity_id
 
 
 def get_status_for_investor(primary_investor_id):

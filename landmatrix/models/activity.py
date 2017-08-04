@@ -7,6 +7,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+from django.conf import settings
 
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
 from landmatrix.models.activity_attribute_group import (
@@ -851,7 +852,7 @@ class HistoricalActivity(ActivityBase):
     def save(self, *args, **kwargs):
         update_elasticsearch = kwargs.pop('update_elasticsearch', True)
         super().save(*args, **kwargs)
-        if update_elasticsearch:
+        if update_elasticsearch and not settings.CONVERT_DB:
             from landmatrix.tasks import index_activity, delete_activity
             if self.fk_status_id == self.STATUS_DELETED:
                 delete_activity.delay(self.id)
