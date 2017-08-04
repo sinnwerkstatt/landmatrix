@@ -371,7 +371,6 @@ class ElasticSearch(object):
             group_match = re.match('(?P<doc_type>location|data_source|contract)_(?P<count>\d+)', group_match)
             if group_match:
                 dt, count = group_match.groupdict()['doc_type'], int(group_match.groupdict()['count'])
-                count += 1
                 if doc_type == dt:
                     while len(docs) < count:
                         docs.append({
