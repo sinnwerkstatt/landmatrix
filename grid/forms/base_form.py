@@ -54,21 +54,22 @@ class BaseForm(forms.Form):
                             values.append({'value': value})
                 if values:
                     attributes[name] = values
+            elif isinstance(f, forms.ModelChoiceField):
+                value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+                if value:
+                    # Save pk of object
+                    attributes[name] = {'value': value}
             elif isinstance(f, forms.ChoiceField):
                 value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-                # quickfix for receiving 'Non' as a value FIXME
-                if value and value != "0" and value != "Non":
-                    if name in ("investor", "primary_investor"):
-                        attributes[name] = value
-                    else:
-                        try:
-                            if hasattr(f, 'queryset'):
-                                value = int(value)
-                            value = str(dict(f.choices).get(value))
-                            if value:  
-                                attributes[name] = {'value': value}
-                        except (ValueError, TypeError):
-                            raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
+                if value:
+                    try:
+                        if hasattr(f, 'queryset'):
+                            value = int(value)
+                        value = str(dict(f.choices).get(value))
+                        if value:
+                            attributes[name] = {'value': value}
+                    except (ValueError, TypeError):
+                        raise IOError("Value '%s' for field %s (%s) not allowed." % (value, n, type(self)))
             # Year based data (or Actors field)?
             elif isinstance(f, (YearBasedField, ActorsField)):
                 # Grab last item and enumerate, since there can be gaps

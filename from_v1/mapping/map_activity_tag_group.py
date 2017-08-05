@@ -249,13 +249,15 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
 
 
         for comment in tag_group.comment_set.all():
+            key = 'tg_%s_comment' % re.sub('_\d+', '', tg_name)
+            key, value = clean_attribute(key, comment.comment)
             if is_current:
                 aa = ActivityAttribute(
                     fk_activity_id=activity_id,
                     fk_language_id=1,
                     fk_group=aag,
-                    name='tg_%s_comment' % re.sub('_\d+', '', tg_name),
-                    value=comment.comment,
+                    name=key,
+                    value=value,
                 )
                 if cls._save:
                     aa.save(using=V2)
@@ -263,8 +265,8 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
                 fk_activity_id=activity_id,
                 fk_language_id=1,
                 fk_group=aag,
-                name='tg_%s_comment' % re.sub('_\d+', '', tg_name),
-                value=comment.comment,
+                name=key,
+                value=value,
             )
             if cls._save:
                 aa.save(using=V2)

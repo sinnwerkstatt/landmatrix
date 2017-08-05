@@ -11,6 +11,8 @@ from grid.widgets import CommentInput
 
 
 class OperationalStakeholderForm(BaseForm):
+    exclude_in_export = ('operational_stakeholder',)
+
     form_title = _('Investor info')
 
     tg_operational_stakeholder = TitleField(

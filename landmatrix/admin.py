@@ -50,3 +50,5 @@ admin.site.register(ActivityFeedback)
 admin.site.register(Animal)
 admin.site.register(Mineral)
 admin.site.register(Crop)
+admin.site.register(Currency)
+

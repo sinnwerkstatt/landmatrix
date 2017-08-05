@@ -28,7 +28,7 @@ class DealDataSourceForm(BaseForm):
     tg_data_source = TitleField(
         required=False, label="", initial=_("Data source")
     )
-    type = forms.TypedChoiceField(
+    type = forms.ChoiceField(
         required=False, label=_("Data source type"), choices=(
             ("", _("---------")),
             ("Media report", _("Media report")),

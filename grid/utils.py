@@ -8,27 +8,24 @@ def get_export_value(field, values, attributes=None, formset=None):
     delimiters = ['|', '#', ',']
     if not values:
         return ''
-    if isinstance(field, forms.ModelChoiceField):
+    if isinstance(field, forms.ModelChoiceField) and field.queryset.model == Investor:
         # Use cached unfiltered queryset to retrieve object (because some fields use none() for ajax)
         model_name = field.queryset.model._meta.model_name
         choices = cache.get('%s_choices' % model_name)
         if not choices:
-            # FIXME: Performing the queryset here for some reason is incredibly slow
-            if field.queryset.model == Investor:
-                choices = dict(((str(o.pk), str(o.investor_identifier)) for o in field.queryset))
-            else:
-                choices = dict(((str(o.pk), str(o)) for o in field.queryset))
+            #if field.queryset.model == Investor:
+            choices = dict(((str(o.pk), str(o.investor_identifier)) for o in field.queryset))
+            #else:
+            #    choices = dict(((str(o.pk), str(o)) for o in field.queryset))
             cache.set('%s_choices' % model_name, choices)
         output = [value and choices.get(str(value), '') or '' for value in values]
     elif isinstance(field, forms.ChoiceField):
-        for k, v in [i[:2] for i in field.choices]:
-            if str(k) in values:
-                output.append(str(v))
+        choices = dict((i[:2] for i in field.choices))
         if 'NestedMultipleChoiceField' in str(type(field)):
             for choice in field.choices:
-                for k, v in [i[:2] for i in choice[2] or []]:
-                    if str(k) in values:
-                        output.append(str(v))
+                if len(choice) > 2:
+                    choices.update(dict((i[:2] for i in choice[2])))
+        output = [value and choices.get(str(value), '') or '' for value in values]
     elif 'AreaField' in str(type(field)):
         pass
     elif isinstance(field, forms.MultiValueField) and attributes:

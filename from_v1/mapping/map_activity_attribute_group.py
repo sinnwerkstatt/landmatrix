@@ -11,7 +11,7 @@ from from_v1.mapping.map_activity import MapActivity
 from from_v1.mapping.map_language import MapLanguage
 
 from from_v1.mapping.aux_functions import year_to_date, replace_model_name_with_id, \
-    replace_country_name_with_id, extract_value, is_number
+    replace_country_name_with_id, extract_value, is_number, replace_currency_name_with_id
 
 
 def clean_coordinates(key, value):
@@ -48,6 +48,12 @@ def clean_level_of_accuracy(key, value):
 
 def clean_target_country(key, value):
     value = replace_country_name_with_id(value)
+    return key, value
+
+
+def clean_currency(key, value):
+    value = value.split(' (')[0]
+    value = replace_currency_name_with_id(value)
     return key, value
 
 
@@ -209,6 +215,8 @@ def clean_attribute(key, value, old_values={}):
         return clean_promised_benefits(key, value)
     elif key == 'intended_size':
         return clean_intended_size(key, value)
+    elif key in ('purchase_price_currency', 'annual_leasing_fee_currency'):
+        return clean_currency(key, value)
     return key, value
 
 

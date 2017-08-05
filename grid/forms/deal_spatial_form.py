@@ -168,15 +168,6 @@ class DealSpatialForm(BaseForm):
 
     def get_attributes(self, request=None):
         attributes = super().get_attributes()
-        # Replace country name with pk
-        # FIXME: Why is the coutnry ID getting replaced by the name before
-        # Guess that happens by mistake in BaseForm.get_attributes
-        if 'target_country' in attributes \
-                and not isinstance(attributes['target_country']['value'], int) \
-                and not attributes['target_country']['value'].isnumeric():
-            target_country = Country.objects.defer('geom').get(
-                name=attributes['target_country']['value'])
-            attributes['target_country']['value'] = target_country.pk
 
         # For polygon fields, pass the value directly
         for field_name in self.AREA_FIELDS:

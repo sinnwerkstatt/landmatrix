@@ -197,6 +197,9 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
                 return Country.objects.defer('geom').get(id=country.value)
             except Country.DoesNotExist:
                 return None
+            # Deprecated: Was necessary because of wrong values in the database
+            except:
+                return None
         else:
             return None
 

@@ -41,6 +41,10 @@ def replace_country_name_with_id(value):
     return replace_model_name_with_id(old_editor.models.Country, value)
 
 
+def replace_currency_name_with_id(value):
+    return replace_model_name_with_id(old_editor.models.Currency, value)
+
+
 def is_number(s):
     try:
         float(s)

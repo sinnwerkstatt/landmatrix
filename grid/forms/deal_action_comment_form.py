@@ -12,7 +12,7 @@ from .base_form import BaseForm
 
 
 class DealActionCommentForm(BaseForm):
-    exclude_in_export = ("tg_action_comment", "source", "id", "assign_to_user", "tg_feedback_comment")
+    exclude_in_export = ("tg_action_comment", "source", "id", "assign_to_user", "tg_feedback_comment", "fully_updated")
 
     NOT_PUBLIC_REASON_CHOICES = (
         ("", _("---------")),
