@@ -23,7 +23,7 @@ def get_export_value(field, values, attributes=None, formset=None):
         choices = dict((i[:2] for i in field.choices))
         if 'NestedMultipleChoiceField' in str(type(field)):
             for choice in field.choices:
-                if len(choice) > 2:
+                if len(choice) > 2 and choice[2]:
                     choices.update(dict((i[:2] for i in choice[2])))
         output = [value and choices.get(str(value), '') or '' for value in values]
     elif 'AreaField' in str(type(field)):
