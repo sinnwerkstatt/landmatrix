@@ -79,7 +79,7 @@ class ExportView(ElasticSearchView):
             }
         else:
             query = {}
-        sort = ['id',]
+        sort = ['fk_venture', 'fk_investor']
         results['involvements'] = self.execute_elasticsearch_query(query, doc_type='involvement', fallback=False, sort=sort)
 
         # Get all investors
@@ -272,6 +272,7 @@ class ExportView(ElasticSearchView):
             str(_('Deal scope')),
             str(_('Deal size')),
             str(_('Current negotiation status')),
+            str(_('Fully updated')),
             str(_('Top parent companies')),
         ]
         for form in ChangeDealView.FORMS:

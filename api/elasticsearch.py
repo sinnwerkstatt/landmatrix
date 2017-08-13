@@ -28,6 +28,7 @@ FIELD_TYPE_MAPPING = {
     'CharField': 'string', # use 'exact_value' instead of string??
     'AreaField': 'geo_shape',
     'FloatField': 'float',
+    'ForeignKey': 'keyword',
 }
 
 DOC_TYPES_ACTIVITY = ('deal', 'location', 'data_source', 'contract')
@@ -74,8 +75,6 @@ def get_elasticsearch_properties(doc_type=None):
         _landmatrix_mappings['involvement'] = {
             'properties': {
                 'id': {'type': 'string'},
-                'fk_activity': {'type': 'keyword'},
-                'fk_investor': {'type': 'keyword'},
             }
         }
         _landmatrix_mappings['investor'] = {
