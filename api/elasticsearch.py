@@ -326,6 +326,7 @@ class ElasticSearch(object):
                 'deal_size': public_activity.deal_size,
                 'current_negotiation_status': public_activity.negotiation_status,
                 'top_investors': public_activity.top_investors,
+                'fully_updated_date': public_activity.fully_updated_date,
             })
         except Activity.DoesNotExist:
             # Fixme: This should not happen
@@ -464,6 +465,7 @@ class ElasticSearch(object):
                 'deal_size_export': doc.get('deal_size', ''),
                 'current_negotiation_status_export': doc.get('current_negotiation_status', ''),
                 'top_investors_export': doc.get('top_investors', ''),
+                'fully_updated_date_export': doc.get('fully_updated_date', ''),
             }
             # Doc types: deal, location, contract and data_source
             for form in ChangeDealView.FORMS:

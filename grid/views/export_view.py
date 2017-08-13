@@ -324,6 +324,7 @@ class ExportView(ElasticSearchView):
                 item.get('deal_scope_export'),              # Deal Scope
                 item.get('deal_size_export'),               # Deal Size
                 item.get('current_negotiation_status_export'),  # Current negotiation status
+                item.get('fully_updated_date_export'),      # Fully updated date
                 item.get('top_investors'),                  # Top investors
             ]
             for form in ChangeDealView.FORMS:
