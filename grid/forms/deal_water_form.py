@@ -51,9 +51,9 @@ class DealWaterForm(BaseForm):
 
     tg_water_extraction_amount = TitleField(
         required=False, initial=_("How much water is extracted?"))
-    water_extraction_amount = forms.IntegerField(
+    water_extraction_amount = forms.CharField(
         required=False, label=_("Water extraction amount"),
-        help_text=_("m3/year"), widget=NumberInput)
+        help_text=_("m3/year"))
     tg_water_extraction_amount_comment = forms.CharField(
         required=False, label=_("Comment on How much water is extracted"),
         widget=CommentInput)

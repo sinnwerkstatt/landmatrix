@@ -10,7 +10,6 @@ from io import BytesIO
 from django.http.response import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from collections import OrderedDict
-from openpyxl import Workbook
 
 from grid.views.all_deals_view import AllDealsView
 from grid.views.table_group_view import TableGroupView
@@ -226,7 +225,7 @@ class ExportView(ElasticSearchView):
             3. Merge multiple locations of deals in elasticsearch doc_type „deal“
             4. Remove this method
         """
-        result_dict = {}
+        result_dict = OrderedDict()
         spatial_names = list('%s_export' % n for n in get_spatial_properties())
         for deal in deals:
             deal_id, location_id = deal.get('id').split('_')

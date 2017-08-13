@@ -165,13 +165,13 @@ class Command(BaseCommand):
         wb = load_workbook(filename=options['file'][0], read_only=True)
         ## Check row count
         ws = wb['Deals']
-        if len(list(ws.rows) < 2):
+        if len(list(ws.rows)) < 2:
             self.stderr.write('No data in Sheet Deals')
         ws = wb['Involvements']
-        if len(list(ws.rows) < 2):
+        if len(list(ws.rows)) < 2:
             self.stderr.write('No data in Sheet Involvements')
         ws = wb['Investors']
-        if len(list(ws.rows) < 2):
+        if len(list(ws.rows)) < 2:
             self.stderr.write('No data in Sheet Investors')
 
         ## Check top parent companies
