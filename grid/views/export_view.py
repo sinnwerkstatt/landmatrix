@@ -265,8 +265,6 @@ class ExportView(ElasticSearchView):
         }
         # Get deal headers and max formset counts
         exclude = []
-        if hasattr(ExportInvestorForm, 'exclude_in_export'):
-            exclude = ExportInvestorForm.exclude_in_export
 
         headers = [
             str(_('Deal ID')),
@@ -305,6 +303,10 @@ class ExportView(ElasticSearchView):
                     if field_name.startswith('tg_') and not field_name.endswith('_comment'):
                         continue
                     headers.append(str(field.label))
+
+            exclude = []
+            if hasattr(ExportInvestorForm, 'exclude_in_export'):
+                exclude = ExportInvestorForm.exclude_in_export
             # Append operational company attributes to investor info
             if form.Meta.name == 'investor_info':
                 for field_name, field in ExportInvestorForm.base_fields.items():
@@ -317,7 +319,7 @@ class ExportView(ElasticSearchView):
         rows = []
         for item in results['deals']:
             row = [
-                item.get('activity_identifier'),    # ID
+                item.get('activity_identifier'),            # ID
                 item.get('is_public_export'),               # Is public
                 item.get('deal_scope_export'),              # Deal Scope
                 item.get('deal_size_export'),               # Deal Size

@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_text
 from django.contrib.gis.forms import MultiPolygonField
 from django.conf import settings
+from django.core import validators
 
 
 from landmatrix.models import Country
@@ -15,6 +16,15 @@ from grid.widgets import (
     AreaWidget,
 )
 
+
+class YearMonthDateValidator(validators.RegexValidator):
+    # Allow YYYY or YYYY-MM or YYYY-MM-DD
+    regex = '^([0-9]{4}|[0-9]{4}-[0-9]{2}|[0-9]{4}-[0-9]{2}-[0-9]{2})$'
+
+class YearMonthDateField(forms.CharField):
+    default_validators = [
+        YearMonthDateValidator()
+    ]
 
 class YearBasedField(forms.MultiValueField):
     '''
@@ -40,7 +50,7 @@ class YearBasedBooleanField(YearBasedField):
             for i in range(len(value)/3):
                 self.fields.extend([
                     forms.BooleanField(required=False),
-                    forms.CharField(required=False),
+                    YearMonthDateField(required=False),
                     forms.BooleanField(required=False)
                 ])
         return super(YearBasedBooleanField, self).clean(value)
@@ -69,7 +79,7 @@ class YearBasedIntegerField(YearBasedField):
     def __init__(self, *args, **kwargs):
         kwargs["fields"] = [
             forms.IntegerField(required=False),
-            forms.CharField(required=False),
+            YearMonthDateField(required=False),
             forms.BooleanField(required=False)
         ]
         if 'placeholder' in kwargs:
@@ -86,7 +96,7 @@ class YearBasedIntegerField(YearBasedField):
             for i in range(len(value)//3):
                 self.fields.extend([
                     forms.IntegerField(required=False),
-                    forms.CharField(required=False),
+                    YearMonthDateField(required=False),
                     forms.BooleanField(required=False)
                 ])
         return super(YearBasedIntegerField, self).clean(value)
@@ -112,7 +122,7 @@ class YearBasedFloatField(YearBasedField):
     def __init__(self, *args, **kwargs):
         kwargs["fields"] = [
             forms.FloatField(required=False, localize=True),
-            forms.CharField(required=False),
+            YearMonthDateField(required=False),
             forms.BooleanField(required=False)
         ]
         if 'placeholder' in kwargs:
@@ -129,7 +139,7 @@ class YearBasedFloatField(YearBasedField):
             for i in range(len(value)//3):
                 self.fields.extend([
                     forms.FloatField(required=False, localize=True),
-                    forms.CharField(required=False),
+                    YearMonthDateField(required=False),
                     forms.BooleanField(required=False)
                 ])
         return super(YearBasedFloatField, self).clean(value)
@@ -147,13 +157,13 @@ class YearBasedFloatField(YearBasedField):
                     ))
             return "#".join(yb_data)
         else:
-            self.fields = [forms.FloatField(required=False, localize=True), forms.CharField(required=False)]
+            self.fields = [forms.FloatField(required=False, localize=True), YearMonthDateField(required=False)]
 
 
 class YearBasedChoiceField(YearBasedField):
     def __init__(self, *args, **kwargs):
         self.choices = kwargs["choices"]
-        kwargs["fields"] = [forms.ChoiceField(choices=kwargs["choices"], required=False), forms.CharField(required=False)]
+        kwargs["fields"] = [forms.ChoiceField(choices=kwargs["choices"], required=False), YearMonthDateField(required=False)]
         kwargs["widget"] = YearBasedSelect(choices=kwargs.pop("choices"), help_text=kwargs.pop("help_text", ""),attrs={})
         super(YearBasedChoiceField, self).__init__(*args, **kwargs)
 
@@ -164,7 +174,7 @@ class YearBasedChoiceField(YearBasedField):
             for i in range(len(value)//3):
                 self.fields.extend([
                     forms.ChoiceField(choices=self.choices, required=False),
-                    forms.CharField(required=False),
+                    YearMonthDateField(required=False),
                     forms.BooleanField(required=False)
                 ])
         return super(YearBasedChoiceField, self).clean(value)
@@ -183,7 +193,7 @@ class YearBasedChoiceField(YearBasedField):
         else:
             self.fields = [
                 forms.ChoiceField(choices=self.choices, required=False),
-                forms.CharField(required=False),
+                YearMonthDateField(required=False),
                 forms.BooleanField(required=False)
             ]
 
@@ -191,7 +201,7 @@ class YearBasedChoiceField(YearBasedField):
 class YearBasedModelMultipleChoiceField(YearBasedField):
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop("queryset")
-        kwargs["fields"] = [forms.ModelMultipleChoiceField(queryset=self.queryset, required=False), forms.CharField(required=False)]
+        kwargs["fields"] = [forms.ModelMultipleChoiceField(queryset=self.queryset, required=False), YearMonthDateField(required=False)]
         kwargs["widget"] = YearBasedSelectMultiple(choices=kwargs['fields'][0].choices, help_text=kwargs.pop("help_text", ""),attrs={})
         super(YearBasedModelMultipleChoiceField, self).__init__(*args, **kwargs)
 
@@ -202,7 +212,7 @@ class YearBasedModelMultipleChoiceField(YearBasedField):
             for i in range(len(value)//3):
                 self.fields.extend([
                     forms.ModelMultipleChoiceField(queryset=self.queryset, required=False),
-                    forms.CharField(required=False),
+                    YearMonthDateField(required=False),
                     forms.BooleanField(required=False)
                 ])
         return super(YearBasedModelMultipleChoiceField, self).clean(value)
@@ -221,7 +231,7 @@ class YearBasedModelMultipleChoiceField(YearBasedField):
         else:
             self.fields = [
                 forms.ModelMultipleChoiceField(queryset=self.queryset, required=False),
-                forms.CharField(required=False),
+                YearMonthDateField(required=False),
                 forms.BooleanField(required=False)
             ]
 
@@ -232,7 +242,7 @@ class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
         kwargs["fields"] = [
             forms.ModelMultipleChoiceField(queryset=self.queryset, required=False),
             forms.IntegerField(required=False),
-            forms.CharField(required=False),
+            YearMonthDateField(required=False),
             forms.BooleanField(required=False),
         ]
         kwargs["widget"] = YearBasedSelectMultipleNumber(
@@ -250,7 +260,7 @@ class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
                 self.fields.extend([
                     forms.ModelMultipleChoiceField(queryset=self.queryset, required=False),
                     forms.IntegerField(required=False),
-                    forms.CharField(required=False),
+                    YearMonthDateField(required=False),
                     forms.BooleanField(required=False),
                 ])
         return super(YearBasedModelMultipleChoiceIntegerField, self).clean(value)
@@ -270,7 +280,7 @@ class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
             self.fields = [
                 forms.ModelMultipleChoiceField(queryset=self.queryset, required=False),
                 forms.IntegerField(required=False),
-                forms.CharField(required=False),
+                YearMonthDateField(required=False),
                 forms.BooleanField(required=False),
             ]
 
@@ -281,7 +291,7 @@ class YearBasedMultipleChoiceIntegerField(YearBasedField):
         kwargs["fields"] = [
             forms.MultipleChoiceField(choices=self.choices, required=False),
             forms.IntegerField(required=False),
-            forms.CharField(required=False),
+            YearMonthDateField(required=False),
             forms.BooleanField(required=False),
         ]
         kwargs["widget"] = YearBasedSelectMultipleNumber(
@@ -299,7 +309,7 @@ class YearBasedMultipleChoiceIntegerField(YearBasedField):
                 self.fields.extend([
                     forms.MultipleChoiceField(choices=self.choices, required=False),
                     forms.IntegerField(required=False),
-                    forms.CharField(required=False),
+                    YearMonthDateField(required=False),
                     forms.BooleanField(required=False),
                 ])
         return super(YearBasedMultipleChoiceIntegerField, self).clean(value)
@@ -319,7 +329,7 @@ class YearBasedMultipleChoiceIntegerField(YearBasedField):
             self.fields = [
                 forms.MultipleChoiceField(choices=self.choices, required=False),
                 forms.IntegerField(required=False),
-                forms.CharField(required=False),
+                YearMonthDateField(required=False),
                 forms.BooleanField(required=False),
             ]
 
