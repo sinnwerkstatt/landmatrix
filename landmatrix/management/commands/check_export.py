@@ -152,7 +152,7 @@ NO_EMPTY_ALLOWED = (
     'Location 1: Longitude',
     'Location 1: Target Country',
     'Operational company: Investor ID',
-    'Negotiation status',
+    #'Negotiation status',
 )
 
 class Command(BaseCommand):
@@ -191,9 +191,9 @@ class Command(BaseCommand):
         for i, row in enumerate(ws.rows):
             if i == 0:
                 continue
-            if not row[5].value:
+            if not row[6].value:
                 continue
-            top_investors = row[5].value.split('|')
+            top_investors = row[6].value.split('|')
             for investor in top_investors:
                 if not investor:
                     continue
@@ -212,7 +212,7 @@ class Command(BaseCommand):
                 continue
             for j, cell in enumerate(row):
                 columns[j]['items'].append(str(cell.value or '').strip())
-        rows = len(list(ws.rows))
+        rows = len(list(ws.rows)) - 1
         for column in columns:
             count = len(list(filter(None, column['items'])))
             if count == 0 and column['label'] not in EMPTY_ALLOWED:

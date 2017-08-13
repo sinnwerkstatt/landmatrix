@@ -352,6 +352,9 @@ class ExportView(ElasticSearchView):
                         row.append(self.get_export_value(field_name, item))
                 # Append operational company attributes to investor info
                 if form.Meta.name == 'investor_info':
+                    exclude = []
+                    if hasattr(ExportInvestorForm, 'exclude_in_export'):
+                        exclude = ExportInvestorForm.exclude_in_export
                     for field_name, field in ExportInvestorForm.base_fields.items():
                         if field_name in exclude:
                             continue
