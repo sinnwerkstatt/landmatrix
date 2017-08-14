@@ -35,7 +35,7 @@ class MapInvestorActivityInvolvement(MapModel):
 
     @classmethod
     def all_records(cls):
-        activity_ids = MapActivity.all_ids()
+        activity_ids = MapActivity.all_ids_by_status()
         investor_ids = MapInvestor.all_ids()
         stakeholder_ids = cls.all_stakeholder_ids()
         stakeholders_condition = models.Q(

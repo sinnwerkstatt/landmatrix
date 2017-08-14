@@ -34,11 +34,24 @@ class MapActivity(MapModel):
         cursor.execute("""
 SELECT id
 FROM activities AS a
-WHERE version = (SELECT max(version) FROM activities amax, status st WHERE amax.fk_status = st.id AND amax.activity_identifier = a.activity_identifier AND st.name IN ("active", "overwritten", "deleted"))
+WHERE version = (SELECT max(version) FROM activities amax, status st WHERE amax.fk_status = st.id AND amax.activity_identifier = a.activity_identifier)
 -- AND activity_identifier = 4948
 ORDER BY activity_identifier
         """)
         return [id[0] for id in cursor.fetchall()]
+
+    @classmethod
+    def all_ids_by_status(cls):
+        cursor = connections[V1].cursor()
+        cursor.execute("""
+    SELECT id
+    FROM activities AS a
+    WHERE version = (SELECT max(version) FROM activities amax, status st WHERE amax.fk_status = st.id AND amax.activity_identifier = a.activity_identifier AND st.name IN ("active", "overwritten", "deleted"))
+    -- AND activity_identifier = 4948
+    ORDER BY activity_identifier
+        """)
+        return [id[0] for id in cursor.fetchall()]
+
 
     @classmethod
     def save_record(cls, new, save):
