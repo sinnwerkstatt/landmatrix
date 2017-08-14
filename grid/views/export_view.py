@@ -419,7 +419,7 @@ class ExportView(ElasticSearchView):
             else:
                 value = value[0]
         if format == 'xlsx':
-            return value#.encode('unicode_escape').decode('utf-8')
+            return value.encode('unicode_escape').decode('utf-8')
         else:
             return value
 
