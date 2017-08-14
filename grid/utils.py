@@ -8,15 +8,15 @@ def get_export_value(field, values, attributes=None, formset=None):
     delimiters = ['|', '#', ',']
     if not values:
         return ''
-    if isinstance(field, forms.ModelChoiceField) and field.queryset.model == Investor:
+    if isinstance(field, forms.ModelChoiceField):
         # Use cached unfiltered queryset to retrieve object (because some fields use none() for ajax)
         model_name = field.queryset.model._meta.model_name
         choices = cache.get('%s_choices' % model_name)
         if not choices:
-            #if field.queryset.model == Investor:
-            choices = dict(((str(o.pk), str(o.investor_identifier)) for o in field.queryset))
-            #else:
-            #    choices = dict(((str(o.pk), str(o)) for o in field.queryset))
+            if field.queryset.model == Investor:
+                choices = dict(((str(o.pk), str(o.investor_identifier)) for o in field.queryset))
+            else:
+                choices = dict(((str(o.pk), str(o)) for o in field.queryset))
             cache.set('%s_choices' % model_name, choices)
         output = [value and choices.get(str(value), '') or '' for value in values]
     elif isinstance(field, forms.ChoiceField):
