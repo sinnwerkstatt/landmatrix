@@ -29,7 +29,7 @@ class ExportView(ElasticSearchView):
     FORMATS = ['csv', 'xml', 'xls', 'xlsx']
 
     def get(self, request, *args, **kwargs):
-        format = kwargs.pop('format')
+        format = kwargs.pop('format').lower()
         if format == 'xls':
             format = 'xlsx'
 
@@ -114,7 +114,7 @@ class ExportView(ElasticSearchView):
 
         filename = 'export'
         return getattr(self, 'export_%s' % format)(
-            self.get_data(results),
+            self.get_data(results, format=format),
             "%s.%s" % (filename, format)
         )
 
@@ -243,7 +243,7 @@ class ExportView(ElasticSearchView):
                     result_dict[deal_id][name][int(location_id)] = value and value[0] or ''
         return result_dict.values()
 
-    def get_data(self, results):
+    def get_data(self, results, format=None):
         """
         Get headers and format the data of the items to a proper download format.
         Returns an array of arrays, each row is an an array of data
@@ -342,14 +342,14 @@ class ExportView(ElasticSearchView):
                                 continue
                             if field_name.startswith('tg_') and not field_name.endswith('_comment'):
                                 continue
-                            row.append(self.get_export_value(field_name, item, formset_index=i))
+                            row.append(self.get_export_value(field_name, item, formset_index=i, format=format))
                 else:
                     for field_name, field in form.base_fields.items():
                         if field_name in exclude:
                             continue
                         if field_name.startswith('tg_') and not field_name.endswith('_comment'):
                             continue
-                        row.append(self.get_export_value(field_name, item))
+                        row.append(self.get_export_value(field_name, item, format=format))
                 # Append operational company attributes to investor info
                 if form.Meta.name == 'investor_info':
                     exclude = []
@@ -358,7 +358,7 @@ class ExportView(ElasticSearchView):
                     for field_name, field in ExportInvestorForm.base_fields.items():
                         if field_name in exclude:
                             continue
-                        row.append(self.get_export_value('operational_company_%s' % field_name, item))
+                        row.append(self.get_export_value('operational_company_%s' % field_name, item, format=format))
             rows.append(row)
         data['deals']['items'] = rows
 
@@ -380,7 +380,7 @@ class ExportView(ElasticSearchView):
             for field_name, field in InvestorVentureInvolvementForm.base_fields.items():
                 if field_name in exclude:
                     continue
-                row.append(self.get_export_value(field_name, item))
+                row.append(self.get_export_value(field_name, item, format=format))
             rows.append(row)
         data['involvements']['items'] = rows
 
@@ -402,13 +402,13 @@ class ExportView(ElasticSearchView):
             for field_name, field in ExportInvestorForm.base_fields.items():
                 if field_name in exclude:
                     continue
-                row.append(self.get_export_value(field_name, item, encode=False))
+                row.append(self.get_export_value(field_name, item, format=format))
             rows.append(row)
         data['investors']['items'] = rows
 
         return data
 
-    def get_export_value(self, name, data, formset_index=None, encode=True):
+    def get_export_value(self, name, data, formset_index=None, format=None):
         value = data.get('%s_export' % name) or ''
         if isinstance(value, (list, tuple)):
             if formset_index is not None:
@@ -418,8 +418,8 @@ class ExportView(ElasticSearchView):
                     value = ''
             else:
                 value = value[0]
-        if encode:
-            return value.encode('unicode_escape').decode('utf-8')
+        if format == 'xlsx':
+            return value#.encode('unicode_escape').decode('utf-8')
         else:
             return value
 
