@@ -109,7 +109,7 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
         # to migrate a subset of versioned tag groups
         # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')[:10000]
         # to migrate all tag groups including old versions
-        tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')
+        tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')#.filter(fk_activity__activity_identifier=4948)
         #key_value_lookup = A_Key_Value_Lookup
 
     #@classmethod

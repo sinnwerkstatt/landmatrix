@@ -39,10 +39,13 @@ class MapPrimaryInvestor(MapModel):
     def all_ids(cls):
         cursor = connections[V1].cursor()
         cursor.execute("""
-SELECT id
+SELECT pi.id
 FROM primary_investors AS pi
-WHERE version = (SELECT MAX(version) FROM primary_investors WHERE primary_investor_identifier = pi.primary_investor_identifier)
-ORDER BY primary_investor_identifier
+-- left join involvements i on i.fk_primary_investor = pi.id
+-- left join activities a on i.fk_activity = a.id
+WHERE pi.version = (SELECT MAX(p.version) FROM primary_investors p WHERE p.primary_investor_identifier = pi.primary_investor_identifier)
+-- AND a.activity_identifier = 4948
+ORDER BY pi.primary_investor_identifier
         """)
         return [id[0] for id in cursor.fetchall()]
 
