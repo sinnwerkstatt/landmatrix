@@ -14,7 +14,7 @@ def activity_to_template(activity):
         role = get_user_role(activity.history_user)
         if role:
             user += ' (%s)' % role
-    except AttributeError:
+    except:
         # User doesn't exist anymore
         user = _('Deleted User')
 
