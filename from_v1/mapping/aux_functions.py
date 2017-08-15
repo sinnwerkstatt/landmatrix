@@ -33,7 +33,10 @@ def extract_value(part):
 def replace_model_name_with_id(model, value):
     if is_number(value):
         return value
-    value = model.objects.using(V1).filter(name=value).values('id')[0]['id']
+    try:
+        value = model.objects.using(V1).filter(name=value).values('id')[0]['id']
+    except:
+        pass
     return value
 
 
