@@ -141,6 +141,16 @@ class ElasticSearchView(View):
                 ]
             }
         })
+
+        # Public user?
+        if request.user.is_anonymous():
+            elasticsearch_query['filter'].append({
+                "filter": {
+                    "term": {
+                        "is_public": True
+                    }
+                }
+            })
         
         # TODO: these were at some point in the UI. add the missing filters!
         request_filters = {
@@ -166,7 +176,7 @@ class ElasticSearchView(View):
         response = Response(FeatureCollection(features))
         return response
     
-    def  execute_elasticsearch_query(self, query, doc_type='deal', fallback=True, sort=[]):
+    def execute_elasticsearch_query(self, query, doc_type='deal', fallback=True, sort=[]):
         from api.elasticsearch import es_search as es
         es.refresh_index()
         
