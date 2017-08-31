@@ -145,9 +145,11 @@ class ElasticSearchView(View):
         # Public user?
         if request.user.is_anonymous():
             elasticsearch_query['filter'].append({
-                "filter": {
-                    "term": {
-                        "is_public": True
+                "bool": {
+                    "filter": {
+                        "term": {
+                            "is_public": True
+                        }
                     }
                 }
             })
