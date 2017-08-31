@@ -52,11 +52,6 @@ def get_elasticsearch_properties(doc_type=None):
                 'activity_identifier': {'type': 'integer'},
                 'geo_point': {'type': 'geo_point'},
                 'status': {'type': 'integer'},
-                #'is_public': {'type': 'string'},
-                #'deal_scope': {'type': 'string'},
-                #'deal_size': {'type': 'string'},
-                #'current_negotiation_status': {'type': 'string'},
-                #'top_investors': {'type': 'string'},
                 'fully_updated_date': {'type': 'string'},
                 'fully_updated_date_export': {'type': 'string'},
             }
@@ -245,8 +240,6 @@ class ElasticSearch(object):
                                 )
                             self.stderr and self.stderr.write(msg)
                     self.conn.refresh()
-
-
 
     def index_investor_documents(self):
         investors = Investor.objects.public().order_by('investor_identifier', '-id').distinct('investor_identifier')

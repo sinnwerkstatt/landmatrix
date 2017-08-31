@@ -166,7 +166,7 @@ class ElasticSearchView(View):
         response = Response(FeatureCollection(features))
         return response
     
-    def execute_elasticsearch_query(self, query, doc_type='deal', fallback=True, sort=[]):
+    def  execute_elasticsearch_query(self, query, doc_type='deal', fallback=True, sort=[]):
         from api.elasticsearch import es_search as es
         es.refresh_index()
         

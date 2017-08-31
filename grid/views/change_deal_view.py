@@ -55,6 +55,7 @@ class ChangeDealView(SaveDealView):
             'deal_id': deal_id,
             'history_id': history_id,
             'activity': self.get_object(),
+            'export_formats': ("XML", "CSV", "XLS", "PDF"),
         })
         return context
 

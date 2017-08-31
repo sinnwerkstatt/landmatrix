@@ -12,8 +12,8 @@
     <a href="{% url "export" group=group_slug format="xml" %}" class="btn-media xml">
     {% endif %}
   {% else %}
-    {% if deal %}
-    <a href="{% url "export" deal_id=deal.activity_identifier format="xml" %}?{{ request.GET.urlencode }}" class="btn-media xml">
+    {% if activity %}
+    <a href="{% url "export" deal_id=activity.activity_identifier format="xml" %}?{{ request.GET.urlencode }}" class="btn-media xml">
     {% else %}
     <a href="{% url "export" format="xml" %}?{{ request.GET.urlencode }}" class="btn-media xml">
     {% endif %}
@@ -27,8 +27,8 @@
     <a href="{% url "export" group=group_slug format="csv" %}?{{ request.GET.urlencode }}" class="btn-media csv">
     {% endif %}
   {% else %}
-    {% if deal %}
-    <a href="{% url "export" deal_id=deal.activity_identifier format="csv" %}?{{ request.GET.urlencode }}" class="btn-media csv">
+    {% if activity %}
+    <a href="{% url "export" deal_id=activity.activity_identifier format="csv" %}?{{ request.GET.urlencode }}" class="btn-media csv">
     {% else %}
     <a href="{% url "export" format="csv" %}?{{ request.GET.urlencode }}" class="btn-media csv">
     {% endif %}
@@ -42,16 +42,16 @@
     <a href="{% url "export" group=group_slug format="xls" %}?{{ request.GET.urlencode }}" class="btn-media xls">
     {% endif %}
   {% else %}
-    {% if deal %}
-    <a href="{% url "export" deal_id=deal.activity_identifier format="xls" %}?{{ request.GET.urlencode }}" class="btn-media xls">
+    {% if activity %}
+    <a href="{% url "export" deal_id=activity.activity_identifier format="xls" %}?{{ request.GET.urlencode }}" class="btn-media xls">
     {% else %}
     <a href="{% url "export" format="xls" %}?{{ request.GET.urlencode }}" class="btn-media xls">
     {% endif %}
   {% endif %}
     <i class=""></i>XLS
   </a>
-  {% if 'PDF' in export_formats %}
-  <a class="btn-media pdf" href="{% if deal %}{% url 'deal_detail_pdf' deal_id=deal.activity_identifier %}{% elif pdf_export_url %}{{ pdf_export_url }}{% endif %}">
+  {% if activity and 'PDF' in export_formats %}
+  <a class="btn-media pdf" href="{% if deal %}{% url 'deal_detail_pdf' deal_id=activity.activity_identifier %}{% elif pdf_export_url %}{{ pdf_export_url }}{% endif %}">
       <i class=""></i>PDF
   </a>
   {% endif %}
