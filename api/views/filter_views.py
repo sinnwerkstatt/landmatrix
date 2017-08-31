@@ -34,7 +34,7 @@ class FilterView(APIView):
             if 'preset' in request_data:
                 # Check for duplicates
                 for filter_name, stored_filter in stored_filters.items():
-                    if stored_filter['preset_id'] == request_data['preset']:
+                    if stored_filter.get('preset_id', '') == request_data['preset']:
                         return Response(stored_filters)
                 new_filter = PresetFilter(request_data['preset'], name=name)
             else:
