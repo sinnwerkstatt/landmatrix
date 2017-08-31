@@ -98,13 +98,11 @@ function removeFilter(filterName) {
     $.post(
         "/api/filter.json?action=remove&name=" + filterName,
         function () {
-            // Drop querystring params before reload, as they can add filters
-            // that were just removed
-            var baseURL = window.location.href.split("?")[0];
-            if (baseURL != window.location) {
-                window.location.replace(baseURL);
-            }
-            else {
+            // Check if querystring params contain removed filter
+            var url = window.location.href.split("?");
+            if (url[1].indexOf(filterName) > -1) {
+                window.location.replace(url[0]);
+            } else {
                 window.location.reload();
             }
         }
