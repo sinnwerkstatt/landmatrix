@@ -100,7 +100,7 @@ function removeFilter(filterName) {
         function () {
             // Check if querystring params contain removed filter
             var url = window.location.href.split("?");
-            if (url && url[1].indexOf(filterName) > -1) {
+            if (url[1] && url[1].indexOf(filterName) > -1) {
                 window.location.replace(baseUrl);
             } else {
                 window.location.reload();
