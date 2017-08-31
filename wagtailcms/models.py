@@ -301,7 +301,7 @@ def get_country_or_region(request, page=None):
         result['region'] = page.region
     elif hasattr(page, 'country'):
         result['country'] = page.country
-    elif request:
+    elif request and request.resolver_match:
         kwargs = request.resolver_match.kwargs
         if 'region_slug' in kwargs:
             result['region'] = DataRegion.objects.get(slug=kwargs.get('region_slug'))
