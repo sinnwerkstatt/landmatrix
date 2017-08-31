@@ -324,7 +324,7 @@ def format_filters_elasticsearch(filters, initial_query=None):
         else:
             # add a single filter to our query
             # note: 
-            if filter_obj['variable'] not in get_elasticsearch_properties('deal'):
+            if filter_obj['variable'] not in get_elasticsearch_properties('deal').get('properties', {}):
                 print('>> Ignored filter variable "%s" because it was not found in the elasticsearch document properties' % filter_obj['variable'])
                 continue
             
