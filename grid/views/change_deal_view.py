@@ -3,6 +3,9 @@ from pprint import pprint
 from django.forms.formsets import BaseFormSet
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 from grid.forms.deal_general_form import DealGeneralForm
 from grid.forms.deal_contract_form import DealContractFormSet
@@ -46,7 +49,20 @@ class ChangeDealView(SaveDealView):
 
     template_name = 'change-deal.html'
 
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
+        activity = self.get_object()
+        # Status: Pending
+        if activity.fk_status_id in (HistoricalActivity.STATUS_PENDING,
+                                     HistoricalActivity.STATUS_TO_DELETE,
+                                     HistoricalActivity.STATUS_REJECTED):
+            # Only Editors and Administrators are allowed to edit pending deals
+            if not self.request.user.has_perm('landmatrix.review_activity'):
+                # Redirect to deal detail
+                args = {'deal_id': activity.activity_identifier}
+                if 'history_id' in kwargs:
+                    args['history_id'] = kwargs['history_id']
+                return HttpResponseRedirect(reverse('deal_detail', kwargs=args))
         return super(ChangeDealView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, deal_id, history_id=None):
@@ -64,17 +80,18 @@ class ChangeDealView(SaveDealView):
         deal_id = self.kwargs.get('deal_id')
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalActivity.objects
-        if not self.request.user.has_perm('landmatrix.review_activity'):
-            queryset = queryset.public(self.request.user)
         try:
             if history_id:
                 activity = queryset.get(id=history_id)
             else:
+                queryset = queryset.exclude(fk_status_id=HistoricalActivity.STATUS_REJECTED)
                 activity = queryset.filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
-            raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e))) 
-        if not self.request.user.has_perm('landmatrix.change_activity'):
-            if activity.fk_status_id == activity.STATUS_DELETED:
+            raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e)))
+        # Status: Deleted
+        if activity.fk_status_id == HistoricalActivity.STATUS_DELETED:
+            # Only Administrators are allowed to edit (recover) deleted deals
+            if not self.request.user.has_perm('landmatrix.change_activity'):
                 raise Http404('Activity %s has been deleted' % deal_id)
         return activity 
 

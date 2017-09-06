@@ -10,13 +10,14 @@ from django.conf import settings
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.http import HttpResponseForbidden
 
 from landmatrix.models.activity_attribute_group import (
     HistoricalActivityAttribute, ActivityAttributeGroup,
 )
 from landmatrix.models.activity import Activity, HistoricalActivity
 from landmatrix.models.investor import InvestorActivityInvolvement
-from landmatrix.models.activity_changeset import ActivityChangeset
+from landmatrix.models.activity_changeset import ActivityChangeset, ReviewDecision
 from landmatrix.models.activity_feedback import ActivityFeedback
 from editor.models import UserRegionalInfo
 from grid.forms.public_user_information_form import PublicUserInformationForm
@@ -84,6 +85,19 @@ class SaveDealView(TemplateView):
     def form_valid(self, forms):
         old_hactivity = self.get_object()
         investor_form = list(filter(lambda f: isinstance(f, OperationalStakeholderForm), forms))[0]
+        is_admin = self.request.user.has_perm('landmatrix.change_activity')
+        is_editor = self.request.user.has_perm('landmatrix.review_activity')
+
+        if old_hactivity.fk_status_id == HistoricalActivity.STATUS_PENDING:
+            # Only editors and administrators are allowed to edit pending versions
+            if is_editor or is_admin:
+                # Set pending activity to overwritten
+                #old_hactivity.fk_status_id = HistoricalActivity.STATUS_OVERWRITTEN
+                #old_hactivity.save()
+                # Remove changesets
+                pass
+            else:
+                raise HttpResponseForbidden('Deal version is pending')
 
         # Create new historical activity
         hactivity = HistoricalActivity(
@@ -91,10 +105,7 @@ class SaveDealView(TemplateView):
             fk_status_id=HistoricalActivity.STATUS_PENDING,
             history_user=self.request.user)
 
-        can_change_activity = self.request.user.has_perm(
-            'landmatrix.change_activity')
-
-        if can_change_activity:
+        if is_admin:
             hactivity.fk_status_id = hactivity.STATUS_OVERWRITTEN
         hactivity.save(update_elasticsearch=False)
 
@@ -106,7 +117,7 @@ class SaveDealView(TemplateView):
         else:
             hactivity.fully_updated = False
         hactivity.save(update_elasticsearch=False)
-        if can_change_activity:
+        if is_admin:
             hactivity.update_public_activity()
         self.create_involvement(hactivity, investor_form)
 
@@ -116,7 +127,7 @@ class SaveDealView(TemplateView):
             self.create_activity_feedback(hactivity, form)
 
         # Create success message
-        if can_change_activity:
+        if is_admin:
             messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
         else:
             self.create_activity_changeset(hactivity)
@@ -126,9 +137,6 @@ class SaveDealView(TemplateView):
         #context['forms'] = forms
         #return self.render_to_response(context)
         return redirect('deal_detail', deal_id=hactivity.activity_identifier)
-
-    def set_status(self):
-        s
 
     def form_invalid(self, forms):
         messages.error(self.request, _('Please correct the error below.'))

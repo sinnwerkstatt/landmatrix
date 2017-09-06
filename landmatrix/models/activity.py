@@ -404,14 +404,6 @@ class Activity(ActivityBase):
         return current_value
 
     def is_public_deal(self):
-        # Presets:
-        # >= 2000
-        # Size given and size > 200 ha
-        # 5. has subinvestors
-        # 6. has valid investor (not unknown)
-        # 7. Intention is not Mining
-        # 8. Target country is no high income country
-
         # 1. Flag „not public“ set?
         if self.has_flag_not_public():
             return False
@@ -627,7 +619,8 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         '''
         queryset = HistoricalActivity.objects.values('activity_identifier') # don't use 'self' here
         queryset = queryset.annotate(
-            revisions_count=models.Count('activity_identifier'))
+            revisions_count=models.Count('activity_identifier'),
+        )
         queryset = queryset.order_by('activity_identifier')
         queryset = queryset.exclude(revisions_count__gt=1)
         queryset = queryset.values_list('activity_identifier', flat=True)
@@ -639,14 +632,22 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         Get only new activities (without any other historical instances).
         '''
         subquery = self._single_revision_identifiers()
-        return self.exclude(activity_identifier__in=subquery)
+        queryset = self.exclude(activity_identifier__in=subquery)
+        return queryset.filter(id__in=self.latest_only())
 
     def without_multiple_revisions(self):
         '''
         Get only new activities (without any other historical instances).
         '''
         subquery = self._single_revision_identifiers()
-        return self.filter(activity_identifier__in=subquery)
+        queryset = self.filter(activity_identifier__in=subquery)
+        return queryset.filter(id__in=self.latest_only())
+
+    def latest_only(self):
+        queryset = HistoricalActivity.objects.values('activity_identifier').annotate(
+            max_id=models.Max('id'),
+        ).values_list('max_id', flat=True)
+        return queryset
 
 
 class HistoricalActivity(ActivityBase):

@@ -110,7 +110,8 @@ class PendingChangesMixin(FilteredQuerysetMixin):
 
     def get_pending_updates_queryset(self):
         updates = self.get_filtered_activity_queryset(
-            queryset=self.get_permitted_activities()).with_multiple_revisions()
+            queryset=self.get_permitted_activities())
+        updates = updates.with_multiple_revisions()
         updates = updates.pending_only()
         return updates
 

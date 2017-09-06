@@ -26,11 +26,13 @@
 
 {% block messages %}
 {{ block.super }}
-{% if activity.fk_status_id == 1 %}
+{% if activity.fk_status_id == 1 or activity.fk_status_id == 6 %}
 <p class="alert alert-danger">{% trans "This deal version is pending." %}{% if perms.landmatrix.review_activity %} {% trans "Please accept or reject it in the manage section." %}{% endif %}</p>
-{% else %}{% if activity.fk_status_id == 4 %}
+{% elif activity.fk_status_id == 4 %}
 <p class="alert alert-danger">{% trans "This deal has been deleted. It is not visible for public users." %}</p>
-{% endif %}{% endif %}
+{% elif activity.fk_status_id == 5 %}
+<p class="alert alert-danger">{% trans "This deal version has been rejected. It is not visible for public users." %}</p>
+{% endif %}
 {% endblock %}
 
 {% block content %}
