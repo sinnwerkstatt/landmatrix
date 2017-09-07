@@ -137,7 +137,7 @@ class PendingChangesMixin(FilteredQuerysetMixin):
 
     def get_my_deals_queryset(self):
         #my_deals = self.get_filtered_activity_queryset()
-        my_deals = self.get_my_deals(self.request.user.id)
+        my_deals = HistoricalActivity.objects.get_my_deals(self.request.user.id)
         return my_deals
 
 
