@@ -89,8 +89,8 @@
 
             {% include "includes/deal-history.html" %}
 
-            {% if activity.public_version %}
-                {% get_comment_count for activity.public_version as comment_count %}
+            {% if not history_id %}
+                {% get_comment_count for activity as comment_count %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <a id="comments" data-toggle="collapse" data-parent="#accordion" href="#collapse_comments">
