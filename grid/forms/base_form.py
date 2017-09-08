@@ -394,9 +394,11 @@ class BaseForm(forms.Form):
         data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
         if data:
             # Return serialized value for map
+            widget = field.widget.widgets[0]
+            context = widget.get_context('contract_area', data)
             return {
-                'srid': data and data.srid or None,
-                'serialized': field.widget.widgets[0].serialize(data),
+                'srid': widget.map_srid,
+                'serialized': context['serialized'],
             }
         else:
             return {}

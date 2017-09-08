@@ -146,9 +146,9 @@
     <script type="text/javascript" src="{% static "js/ol3-layerswitcher-custom.js" %}"></script>
     <script src="{% static "js/mapwidget.js" %}" type="text/javascript" charset="utf-8"></script>
     <script>
+        var mapWidgets = {};
         $(document).ready(function () {
             // Init maps
-            var mapWidgets = {};
             $('.map-serialized-data').each(function(index) {
                 var id = $(this).attr('id');
                 var options = $(this).data('map-widget-options');

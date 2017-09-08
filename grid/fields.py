@@ -506,6 +506,7 @@ class MultiFileField(forms.FileField):
                 raise ValidationError(self.error_messages['empty'], code='empty')
         return data
 
+
 class AreaField(forms.MultiValueField):
     '''
     MultiValueField for area map with optional shapefile upload.
