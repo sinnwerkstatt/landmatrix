@@ -33,7 +33,7 @@ class AddDealView(SaveDealView):
         return forms
 
     def form_valid(self, forms):
-        activity_identifier = Activity.objects.values().aggregate(Max('activity_identifier'))['activity_identifier__max'] or 0
+        activity_identifier = HistoricalActivity.objects.values().aggregate(Max('activity_identifier'))['activity_identifier__max'] or 0
         activity_identifier += 1
         investor_form = list(filter(lambda f: isinstance(f, OperationalStakeholderForm), forms))[0]
         # Create new historical activity
@@ -41,8 +41,7 @@ class AddDealView(SaveDealView):
             activity_identifier=activity_identifier,
             history_user=self.request.user,
         )
-        can_add_activity = self.request.user.has_perm(
-            'landmatrix.add_activity')
+        can_add_activity = self.request.user.has_perm('landmatrix.add_activity')
         if can_add_activity:
             hactivity.fk_status_id = hactivity.STATUS_ACTIVE
         else:

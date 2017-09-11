@@ -53,9 +53,8 @@ class ChangeDealView(SaveDealView):
     def dispatch(self, request, *args, **kwargs):
         activity = self.get_object()
         # Status: Pending
-        if activity.fk_status_id in (HistoricalActivity.STATUS_PENDING,
-                                     HistoricalActivity.STATUS_TO_DELETE,
-                                     HistoricalActivity.STATUS_REJECTED):
+        if activity.fk_status_id in (HistoricalActivity.STATUS_PENDING, HistoricalActivity.STATUS_TO_DELETE)\
+           or (activity.fk_status_id == HistoricalActivity.STATUS_REJECTED and activity.history_user != request.user):
             # Only Editors and Administrators are allowed to edit pending deals
             if not self.request.user.has_perm('landmatrix.review_activity'):
                 # Redirect to deal detail
@@ -84,7 +83,9 @@ class ChangeDealView(SaveDealView):
             if history_id:
                 activity = queryset.get(id=history_id)
             else:
-                queryset = queryset.exclude(fk_status_id=HistoricalActivity.STATUS_REJECTED)
+                queryset = queryset.filter(fk_status_id__in=(HistoricalActivity.STATUS_ACTIVE,
+                                                             HistoricalActivity.STATUS_OVERWRITTEN,
+                                                             HistoricalActivity.STATUS_DELETED))
                 activity = queryset.filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e)))
