@@ -14,5 +14,17 @@ class CustomRegistrationForm(RegistrationForm):
                                   widget=forms.Textarea)
     captcha = ReCaptchaField()
 
+    #group, created = Group.objects.get_or_create(name='Reporters')
+    #user.groups.add(group)
+    #
+    #UserRegionalInfo.objects.create(
+    #    user=user,
+    #    phone=form.cleaned_data['phone'],
+    #    information=form.cleaned_data['information'],
+    #)
+    #
+    #self.login(user)
+
     class Meta(RegistrationForm.Meta):
-        fields = ('first_name', 'last_name', 'email', 'phone', 'information', 'password1', 'password2', 'captcha')
+        fields = ('username', 'first_name', 'last_name', 'email', 'phone',
+                  'information', 'password1', 'password2', 'captcha')

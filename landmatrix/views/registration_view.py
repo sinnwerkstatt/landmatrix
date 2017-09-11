@@ -6,7 +6,7 @@ from registration.views import RegistrationView as BaseRegistrationView
 from landmatrix.forms import CustomRegistrationForm
 from editor.models import UserRegionalInfo
 
-
+"""
 class RegistrationView(BaseRegistrationView):
     success_url = '/'
 
@@ -69,3 +69,4 @@ class RegistrationView(BaseRegistrationView):
             return next
         else:
             return self.success_url
+"""
