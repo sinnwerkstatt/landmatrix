@@ -9,7 +9,7 @@ from django.views.generic import (
 )
 from django.db.models import Q
 
-from landmatrix.models import Activity, HistoricalActivity, ActivityFeedback
+from landmatrix.models import Activity, HistoricalActivity, ActivityFeedback, Country
 from editor.models import UserRegionalInfo
 from editor.forms import ApproveRejectChangeForm
 from editor.utils import activity_to_template, feedback_to_template
@@ -34,12 +34,11 @@ class FilteredQuerysetMixin:
             country_ids = self.request.GET.getlist('country')
             try:
                 country_ids = filter(
-                    None, [int(country_id) for country_id in country_ids])
+                    None, [str(country_id) for country_id in country_ids])
             except ValueError:
                 country_ids = []
         elif user_regional_info:
-            country_ids = user_regional_info.country.values_list(
-                'id', flat=True)
+            country_ids = [str(id) for id in user_regional_info.country.values_list('id', flat=True)]
         else:
             country_ids = []
 
@@ -47,20 +46,24 @@ class FilteredQuerysetMixin:
             region_ids = self.request.GET.getlist('region')
             try:
                 region_ids = filter(
-                    None, [int(region_id) for region_id in region_ids])
+                    None, [str(region_id) for region_id in region_ids])
             except ValueError:
                 region_ids = []
         elif user_regional_info:
-            region_ids = user_regional_info.region.values_list('id', flat=True)
+            region_ids = [str(id) for id in user_regional_info.region.values_list('id', flat=True)]
         else:
             region_ids = []
+        if region_ids:
+            for region_id in region_ids:
+                country_ids.extend(
+                    [str(country_id.id) for country_id in Country.objects.filter(fk_region=region_id)]
+                )
 
         if country_ids:
             queryset = queryset.filter(
-                changesets__fk_country_id__in=country_ids)
-        if region_ids:
-            queryset = queryset.filter(
-                changesets__fk_country__fk_region_id__in=region_ids)
+                attributes__name='target_country',
+                attributes__value__in=country_ids
+            )
 
         return queryset
 
