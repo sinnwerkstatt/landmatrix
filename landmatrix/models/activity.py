@@ -186,7 +186,9 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     @property
     def history(self):
-        return HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
+        activities = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
+        activities = activities.exclude(fk_status_id=HistoricalActivity.STATUS_REJECTED)
+        return activities
 
     @property
     def target_country(self):

@@ -36,8 +36,8 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
             f.request = request
             f.set_default_filters(None, disabled_presets=[2,])
         super().__init__(request)
-        self.country = request.GET.get('target_country')
-        self.region = request.GET.get('target_region')
+        self.country = request.GET.get('country')
+        self.region = request.GET.get('region')
         self.request = request
 
     def all(self):

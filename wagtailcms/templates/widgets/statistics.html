@@ -49,7 +49,7 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function () {
-  $.get('/api/statistics.json?disable_filters=1{% if country %}&target_country={{ country.id }}{% elif region %}&target_region={{ region.id }}{% endif %}', function (data) {
+  $.get('/api/statistics.json?disable_filters=1{% if country %}&country={{ country.id }}{% elif region %}&region={{ region.id }}{% endif %}', function (data) {
     var stats = $('#stats'),
         size = stats.find('.size'),
         deals = stats.find('.deals'),
