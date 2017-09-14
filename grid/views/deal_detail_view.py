@@ -62,6 +62,9 @@ class DealDetailView(PDFViewMixin, TemplateView):
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalActivity.objects
         if not self.request.user.is_authenticated():
+            a = self._get_activity()
+            if not a or not a.is_public:
+                raise Http404('Activity %s is not public' % deal_id)
             queryset = queryset.public_or_deleted(self.request.user)
         try:
             if history_id:
@@ -77,6 +80,10 @@ class DealDetailView(PDFViewMixin, TemplateView):
             if not self.request.user.has_perm('landmatrix.change_activity'):
                 raise Http404('Activity %s has been deleted' % deal_id)
         return activity 
+
+    def _get_activity(self):
+        # TODO: Cache result for user
+        return Activity.objects.filter(activity_identifier=self.kwargs.get('deal_id')).first()
 
     def get_context_data(self, deal_id, history_id=None):
         context = super(DealDetailView, self).get_context_data()
