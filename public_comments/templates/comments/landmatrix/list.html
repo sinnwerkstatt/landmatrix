@@ -18,7 +18,7 @@
                         | <a href="{% url 'comments-edit' comment.id %}">{% trans "Edit" %}</a>
                         | <form action="{% url 'comments-delete' comment.id %}" method="POST">
                             {% csrf_token %}
-                            <input type="hidden" name="next" value="{% url 'deal_detail' deal.activity_identifier %}">
+                            <input type="hidden" name="next" value="{% url 'deal_detail' activity.activity_identifier %}">
                             <input type="submit" value="{% trans "Delete" %}">
                         </form>
                     </span>

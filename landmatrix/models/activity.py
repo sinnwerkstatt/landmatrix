@@ -832,8 +832,7 @@ class HistoricalActivity(ActivityBase):
         activity.refresh_cached_attributes()
 
         # Keep public version relation up to date
-        HistoricalActivity.objects.filter(public_version=activity).update(
-            public_version=None)
+        HistoricalActivity.objects.filter(public_version=activity).update(public_version=None)
         self.public_version = activity
         self.save(update_fields=['public_version'], update_elasticsearch=True)
 
