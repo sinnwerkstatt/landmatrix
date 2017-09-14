@@ -18,10 +18,10 @@ class MapDjangoComments(MapModel):
 
     @classmethod
     def save_record(cls, new, save):
-        #new.content_type_id = 24)
+        new.content_type_id = 24
         activity_identifier = HistoricalActivity.objects.using(V2).get(pk=new.object_pk).activity_identifier
         activity = Activity.objects.using(V2).get(activity_identifier=activity_identifier)
-        #new.object_pk = activity.id
+        new.object_pk = activity.id
         new.content_object = activity
         if save:
             new.save(using=V2)
