@@ -81,22 +81,15 @@ class DealDetailView(PDFViewMixin, TemplateView):
                 raise Http404('Activity %s has been deleted' % deal_id)
         return activity 
 
-    def _get_activity(self):
+    def _get_public_activity(self):
         # TODO: Cache result for user
         return Activity.objects.filter(activity_identifier=self.kwargs.get('deal_id')).first()
 
     def get_context_data(self, deal_id, history_id=None):
         context = super(DealDetailView, self).get_context_data()
         activity = self.get_object()
-        context['deal'] = {
-            'id': activity.id,
-            'activity': activity,
-            'activity_identifier': activity.activity_identifier,
-            'attributes': activity.attributes,
-            'operational_stakeholder': activity.operational_stakeholder,
-            'stakeholders': activity.stakeholders,
-        }
         context['activity'] = activity
+        context['public_activity'] = self._get_public_activity()
         context['forms'] = get_forms(activity)
         context['investor'] = activity.stakeholders
         context['history_id'] = history_id

@@ -1,8 +1,8 @@
 {% extends "global_base.html" %}
 {% load i18n custom_tags static humanize comments threadedcomments_tags %}
 
-{% block page_title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
-{% block title %}{% trans "Deal" %} #{{ deal.activity_identifier }}{% endblock %}
+{% block page_title %}{% trans "Deal" %} #{{ activity.activity_identifier }}{% endblock %}
+{% block title %}{% trans "Deal" %} #{{ activity.activity_identifier }}{% endblock %}
 
 {% block head %}
 {{ block.super }}
@@ -12,14 +12,14 @@
 
 {% block breadcrumb_inner %}
     <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
-    <li>{% trans "Deal" %} #{{ deal.activity_identifier }}</li>
+    <li>{% trans "Deal" %} #{{ activity.activity_identifier }}</li>
 {% endblock %}
 
 {% block subnav_inner %}
-    {% if deal.activity.fk_status_id == 4 and not perms.landmatrix.change_activity %}
+    {% if activity.fk_status_id == 4 and not perms.landmatrix.change_activity %}
     {% else %}
     <li role="presentation">
-        <a href="{% url "change_deal" deal.activity_identifier %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
+        <a href="{% url "change_deal" activity.activity_identifier %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
     </li>
     {% endif %}
     <li role="presentation"><a href="#history">
@@ -30,7 +30,7 @@
     </a></li>
     <li class="divider"></li>
     <li role="presentation">
-        <a href="{% url "deal_changes_feed" deal.activity_identifier %}" target="_blank"><i class="fa fa-rss"></i> {% trans "RSS Feed" %}</a>
+        <a href="{% url "deal_changes_feed" activity.activity_identifier %}" target="_blank"><i class="fa fa-rss"></i> {% trans "RSS Feed" %}</a>
     </li>
     <li role="presentation">
         {% include "export.html" %}
@@ -50,8 +50,8 @@
 
 {% block content %}
 
-    {% if deal %}
-        <input type="hidden" id="deal-stakeholder" value="{{ deal.operational_stakeholder.id }}">
+    {% if activity %}
+        <input type="hidden" id="deal-stakeholder" value="{{ activity.operational_stakeholder.id }}">
         <div class="panel-group" id="accordion">
             {% if forms %}
                 {% for form in forms %}
@@ -90,7 +90,7 @@
             {% include "includes/deal-history.html" %}
 
             {% if not history_id %}
-                {% get_comment_count for activity as comment_count %}
+                {% get_comment_count for public_activity as comment_count %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <a id="comments" data-toggle="collapse" data-parent="#accordion" href="#collapse_comments">
@@ -105,7 +105,7 @@
                         <div class="panel-body">
                             <div class="col-sm-12">
                                 {% if comment_count > 0 %}
-                                    {% render_comment_list for activity.public_version %}
+                                    {% render_comment_list for public_activity %}
                                 {% else %}
                                     <p class="alert alert-info">{% trans "There are no comments to this deal yet." %}</p>
                                 {% endif %}
@@ -115,10 +115,10 @@
                                 <div class="col-sm-12">
                                     <h3>{% trans "Add a comment" %}</h3>
                                 </div>
-                                {% get_comment_form for activity.public_version as comment_form %}
+                                {% get_comment_form for public_activity as comment_form %}
                                 {% csrf_token %}
                                 {# TODO: move next into the form logic #}
-                                <input type="hidden" name="next" value="{% url 'deal_detail' deal.activity_identifier %}">
+                                <input type="hidden" name="next" value="{% url 'deal_detail' activity.activity_identifier %}">
                                 {% include "form.html" with form=comment_form %}
                                 <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
                                 <a href="#c0" id="cancel-reply" style="display:none">{% trans "Cancel reply" %}</a>
