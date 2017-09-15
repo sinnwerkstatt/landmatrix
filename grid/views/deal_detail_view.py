@@ -62,7 +62,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalActivity.objects
         if not self.request.user.is_authenticated():
-            a = self._get_activity()
+            a = self._get_public_activity()
             if not a or not a.is_public:
                 raise Http404('Activity %s is not public' % deal_id)
             queryset = queryset.public_or_deleted(self.request.user)

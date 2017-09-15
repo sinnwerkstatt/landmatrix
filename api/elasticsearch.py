@@ -359,8 +359,7 @@ class ElasticSearch(object):
             if a.name and 'area' in a.name and a.polygon is not None:
                 # Get polygon
                 value = json.loads(a.polygon.json)
-                # Apparently this is case sensitive: MultiPolygon as provided by
-                # the GeoJSON does not work ...
+                # Apparently this is case sensitive: MultiPolygon as provided by the GeoJSON does not work
                 value['type'] = 'multipolygon'
             # do not include empty values
             if value is None or value == '':

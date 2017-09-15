@@ -374,15 +374,15 @@ class PolygonGeomView(GlobalDealsView, APIView):
         # Reuse methods from GlobalDealsView
 
         # Get the basic query filter for Elasticsearch
-        query = self.create_query_from_filters()
+        query = {}#self.create_query_from_filters()
 
         # Filter all objects which have an existing polygon field
         # TODO: Is there a better place and way for this?
-        query.setdefault('bool', {}).setdefault('filter', []).append({
+        query = {
             'exists': {
                 'field': polygon_field
             }
-        })
+        }
 
         raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
         result_list = self.filter_returned_results(raw_result_list)
