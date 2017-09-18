@@ -317,8 +317,8 @@ class ElasticSearch(object):
 
         # Todo: Is there a nice way to prevent this extra Activity query?
         # e.g. if we save is_public/deal_scope as ActivityAttributes
-        try:
-            public_activity = Activity.objects.get(activity_identifier=activity.activity_identifier)
+        public_activity = Activity.objects.filter(activity_identifier=activity.activity_identifier).first()
+        if public_activity:
             deal_attrs.update({
                 'is_public': public_activity.is_public,
                 'deal_scope': public_activity.deal_scope,
@@ -327,18 +327,18 @@ class ElasticSearch(object):
                 'top_investors': public_activity.top_investors,
                 'fully_updated_date': public_activity.fully_updated_date,
             })
-        except Activity.DoesNotExist:
+        else:
             # Fixme: This should not happen
             self.stderr and self.stderr.write(_('Missing activity for historical activity %i (Activity identifier: #%i)' % (
                 activity.id,
                 activity.activity_identifier
             )))
-        except Activity.MultipleObjectsReturned:
-            # Fixme: This should not happen
-            self.stderr and self.stderr.write(_('Too much activities for historical activity %i (Activity identifier: #%i)' % (
-                activity.id,
-                activity.activity_identifier
-            )))
+        #except Activity.MultipleObjectsReturned:
+        #    # Fixme: This should not happen
+        #    self.stderr and self.stderr.write(_('Too much activities for historical activity %i (Activity identifier: #%i)' % (
+        #        activity.id,
+        #        activity.activity_identifier
+        #    )))
 
         for a in activity.attributes.select_related('fk_group__name').order_by('fk_group__name'):
             # do not include the django object id
