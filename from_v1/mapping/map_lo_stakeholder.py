@@ -46,8 +46,7 @@ class MapLOStakeholder(MapLOModel):
         uuid_match = 'UUID: {}'.format(record['stakeholder_identifier'])
 
         already_imported = cls.new_class.objects.using(V2)
-        already_imported = already_imported.filter(
-            comment__contains=uuid_match).first()
+        already_imported = already_imported.filter(comment__contains=uuid_match).first()
 
         return already_imported
 

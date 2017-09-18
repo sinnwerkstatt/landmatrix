@@ -51,7 +51,7 @@
     <i class=""></i>XLS
   </a>
   {% if activity and 'PDF' in export_formats %}
-  <a class="btn-media pdf" href="{% if deal %}{% url 'deal_detail_pdf' deal_id=activity.activity_identifier %}{% elif pdf_export_url %}{{ pdf_export_url }}{% endif %}">
+  <a class="btn-media pdf" href="{% if activity %}{% url 'deal_detail_pdf' deal_id=activity.activity_identifier %}{% elif pdf_export_url %}{{ pdf_export_url }}{% endif %}">
       <i class=""></i>PDF
   </a>
   {% endif %}
