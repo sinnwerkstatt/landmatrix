@@ -1,3 +1,4 @@
+"""
 from django.db.models import Max
 from editor.models import PrimaryInvestor, Stakeholder, Involvement, A_Key_Value_Lookup, Country, SH_Tag, SH_Tag_Group
 import io
@@ -135,3 +136,4 @@ with io.open('duplicates-pi-si.csv', 'w', encoding='utf8') as file:
             u', '.join([unicode(id) for id in sinvestors[key]['ids']]),
             u', '.join([unicode(id) for id in sinvestors[key]['deals']]),
         ))
+"""
