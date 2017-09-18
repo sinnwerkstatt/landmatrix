@@ -1,5 +1,6 @@
 from django.db.models import Max
 from editor.models import PrimaryInvestor, Stakeholder, Involvement, A_Key_Value_Lookup, Country, SH_Tag, SH_Tag_Group
+import io
 
 def get_country_for_primary_investor(pi_id):
     inv = Involvement.objects.filter(fk_primary_investor_id=pi_id)
@@ -39,13 +40,13 @@ for pi in PrimaryInvestor.objects.filter(id__in=current_ids):
         }
 
 print("%i primary investors with same name/target country" % len(pduplicate_keys))
-with open('duplicates-pi.csv', 'w') as file:
-    file.write('Name;Investors;Deals')
+with io.open('duplicates-pi.csv', 'w', encoding='utf8') as file:
+    file.write(u'Name;Investors;Deals\n')
     for key in pduplicate_keys:
-        file.write('%s;%s;%s' % (
+        file.write('%s;%s;%s\n' % (
             key,
-            ','.join([str(id) for id in pinvestors[key]['ids']]),
-            ','.join([str(id) for id in pinvestors[key]['deals']]),
+            u','.join([unicode(id) for id in pinvestors[key]['ids']]),
+            u','.join([unicode(id) for id in pinvestors[key]['deals']]),
         ))
 
 
@@ -104,26 +105,33 @@ for s in Stakeholder.objects.filter(id__in=current_ids):
         }
 
 print("%i secondary investors with same name/target country" % len(sduplicate_keys))
-with open('duplicates-si.csv', 'w') as file:
-    file.write('Name;Investors;Deals')
+with io.open('duplicates-si.csv', 'w', encoding='utf8') as file:
+    file.write(u'Name;Investors;Deals\n')
     for key in sduplicate_keys:
-        file.write('%s;%s;%s' % (
+        file.write(u'%s;%s;%s\n' % (
             key,
-            ', '.join([str(id) for id in sinvestors[key]['ids']]),
-            ', '.join([str(id) for id in sinvestors[key]['deals']]),
+            u', '.join([unicode(id) for id in sinvestors[key]['ids']]),
+            u', '.join([unicode(id) for id in sinvestors[key]['deals']]),
         ))
 
 pinvestors_keys = set(pinvestors.keys())
 sinvestors_keys = set(sinvestors.keys())
-psduplicates = pinvestors_keys & sinvestors_keys
+psduplicates_tmp = pinvestors_keys & sinvestors_keys
+psduplicates = []
+for key in psduplicates_tmp:
+    name = pinvestors[key]['name']
+    if name in ('', 'Unknown', 'Unknown ()'):
+        continue
+    psduplicates.append(key)
+
 print("%i duplicates within primary and secondary investors" % len(psduplicates))
-with open('duplicates-pi-si.csv', 'w') as file:
-    file.write('Name;Primary Investors;Deals (PI);Secondary Investors;Deals (SI)')
+with io.open('duplicates-pi-si.csv', 'w', encoding='utf8') as file:
+    file.write(u'Name;Primary Investors;Deals (PI);Secondary Investors;Deals (SI)\n')
     for key in psduplicates:
-        file.write('%s;%s;%s;%s;%s' % (
+        file.write(u'%s;%s;%s;%s;%s\n' % (
             key,
-            ', '.join([str(id) for id in pinvestors[key]['ids']]),
-            ', '.join([str(id) for id in pinvestors[key]['deals']]),
-            ', '.join([str(id) for id in sinvestors[key]['ids']]),
-            ', '.join([str(id) for id in sinvestors[key]['deals']]),
+            u', '.join([unicode(id) for id in pinvestors[key]['ids']]),
+            u', '.join([unicode(id) for id in pinvestors[key]['deals']]),
+            u', '.join([unicode(id) for id in sinvestors[key]['ids']]),
+            u', '.join([unicode(id) for id in sinvestors[key]['deals']]),
         ))

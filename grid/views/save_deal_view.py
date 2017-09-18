@@ -203,12 +203,11 @@ class SaveDealView(TemplateView):
         # As an intermediate solution we'll just create another involvement which links
         # to the public activity, which will replace the current involvement when the
         # historical activity gets approved.
-        activity = hactivity.public_version
+        activity = Activity.objects.filter(activity_identifier=hactivity.activity_identifier).first()
 
         if not activity:
             # Create a stub
-            activity = Activity.objects.create(
-                activity_identifier=hactivity.activity_identifier)
+            activity = Activity.objects.create(activity_identifier=hactivity.activity_identifier)
             hactivity.public_version = activity
             hactivity.save()
 
