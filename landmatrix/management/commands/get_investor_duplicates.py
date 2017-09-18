@@ -1,4 +1,4 @@
-"""
+from django.db.models import Max
 from editor.models import PrimaryInvestor, Stakeholder, Involvement, A_Key_Value_Lookup, Country, SH_Tag, SH_Tag_Group
 
 def get_country_for_primary_investor(pi_id):
@@ -11,25 +11,42 @@ def get_country_for_primary_investor(pi_id):
                 return Country.objects.get(id=target_country[0].value).name
     return None
 
+def get_deals_for_pi(pi_id):
+    qs = Involvement.objects.filter(fk_primary_investor__primary_investor_identifier=pi_id)
+    return list(qs.values_list('fk_activity_id__activity_identifier', flat=True).distinct())
+
+
 pduplicate_keys = []
 pinvestors = {}
-for pi in PrimaryInvestor.objects.all():
-    key = '%s (%s)' % (pi.name, get_country_for_primary_investor(pi.id))
-    if key == 'Unknown () (None)':
+current_ids = PrimaryInvestor.objects.filter(fk_status_id__in=(2,3), involvement__isnull=False).\
+    values('primary_investor_identifier').annotate(Max('id')).values_list('id__max', flat=True)
+for pi in PrimaryInvestor.objects.filter(id__in=current_ids):
+    country = get_country_for_primary_investor(pi.id)
+    key = '%s (%s)' % (pi.name, country)
+    if pi.name in ('', 'Unknown', 'Unknown ()'):
         continue
-    if key in pinvestors and pi.primary_investor_identifier not in pinvestors[key]:
-        pinvestors[key].append(pi.primary_investor_identifier)
+    if key in pinvestors and pi.primary_investor_identifier not in pinvestors[key]['ids']:
+        pinvestors[key]['ids'].append(pi.primary_investor_identifier)
+        pinvestors[key]['deals'].extend(get_deals_for_pi(pi.primary_investor_identifier))
         if not key in pduplicate_keys:
             pduplicate_keys.append(key)
     else:
-        pinvestors[key] = [pi.primary_investor_identifier,]
+        pinvestors[key] = {
+            'name': pi.name,
+            'country': country,
+            'ids' : [pi.primary_investor_identifier,],
+            'deals': get_deals_for_pi(pi.primary_investor_identifier),
+        }
 
 print("%i primary investors with same name/target country" % len(pduplicate_keys))
-for key in pduplicate_keys:
-    print('%s: %s' % (
-        key,
-        ', '.join([str(id) for id in pinvestors[key]]),
-    ))
+with open('duplicates-pi.csv', 'w') as file:
+    file.write('Name;Investors;Deals')
+    for key in pduplicate_keys:
+        file.write('%s;%s;%s' % (
+            key,
+            ','.join([str(id) for id in pinvestors[key]['ids']]),
+            ','.join([str(id) for id in pinvestors[key]['deals']]),
+        ))
 
 
 def _get_stakeholder_tag_groups(stakeholder_id):
@@ -58,37 +75,55 @@ def _get_country_for_stakeholder(stakeholder_id):
         return country_name#Country.objects.get(name=country_name)
     return None
 
+def get_deals_for_si(si_id):
+    qs = Involvement.objects.filter(fk_stakeholder__stakeholder_identifier=si_id)
+    return list(qs.values_list('fk_activity_id__activity_identifier', flat=True).distinct())
+
 
 sduplicate_keys = []
 sinvestors = {}
-for s in Stakeholder.objects.all():
+current_ids = Stakeholder.objects.filter(fk_status_id__in=(2,3), involvement__isnull=False).\
+    values('stakeholder_identifier').annotate(Max('id')).values_list('id__max', flat=True)
+for s in Stakeholder.objects.filter(id__in=current_ids):
     name = get_name_for_stakeholder(s.id)
     country = _get_country_for_stakeholder(s.id)
     key = '%s (%s)' % (name, country)
-    if key in ('Unknown () (None)', ' (None)'):
+    if name in ('', 'Unknown', 'Unknown ()'):
         continue
-    if key in sinvestors and s.stakeholder_identifier not in sinvestors[key]:
-        sinvestors[key].append(s.stakeholder_identifier)
+    if key in sinvestors and s.stakeholder_identifier not in sinvestors[key]['ids']:
+        sinvestors[key]['ids'].append(s.stakeholder_identifier)
+        sinvestors[key]['deals'].extend(get_deals_for_si(s.stakeholder_identifier))
         if not key in sduplicate_keys:
             sduplicate_keys.append(key)
     else:
-        sinvestors[key] = [s.stakeholder_identifier,]
+        sinvestors[key] = {
+            'name': name,
+            'country': country,
+            'ids': [s.stakeholder_identifier,],
+            'deals': get_deals_for_si(s.stakeholder_identifier),
+        }
 
 print("%i secondary investors with same name/target country" % len(sduplicate_keys))
-for key in sduplicate_keys:
-    print('%s: %s' % (
-        key,
-        ', '.join([str(id) for id in sinvestors[key]]),
-    ))
+with open('duplicates-si.csv', 'w') as file:
+    file.write('Name;Investors;Deals')
+    for key in sduplicate_keys:
+        file.write('%s;%s;%s' % (
+            key,
+            ', '.join([str(id) for id in sinvestors[key]['ids']]),
+            ', '.join([str(id) for id in sinvestors[key]['deals']]),
+        ))
 
 pinvestors_keys = set(pinvestors.keys())
 sinvestors_keys = set(sinvestors.keys())
 psduplicates = pinvestors_keys & sinvestors_keys
 print("%i duplicates within primary and secondary investors" % len(psduplicates))
-for key in psduplicates:
-    print('%s: PI (%s), SI (%s)' % (
-        key,
-        ', '.join([str(id) for id in pinvestors[key]]),
-        ', '.join([str(id) for id in sinvestors[key]]),
-    ))
-"""
+with open('duplicates-pi-si.csv', 'w') as file:
+    file.write('Name;Primary Investors;Deals (PI);Secondary Investors;Deals (SI)')
+    for key in psduplicates:
+        file.write('%s;%s;%s;%s;%s' % (
+            key,
+            ', '.join([str(id) for id in pinvestors[key]['ids']]),
+            ', '.join([str(id) for id in pinvestors[key]['deals']]),
+            ', '.join([str(id) for id in sinvestors[key]['ids']]),
+            ', '.join([str(id) for id in sinvestors[key]['deals']]),
+        ))

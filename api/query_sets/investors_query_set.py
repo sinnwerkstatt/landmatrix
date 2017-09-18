@@ -12,10 +12,10 @@ class InvestorsQuerySet(SimpleFakeQuerySet):
         if term:
             investors = investors.filter(name__icontains=term)
         role = self.get_data.GET.get('role', '')
-        if role == 'operational_stakeholder':
-            investors = investors.filter(investoractivityinvolvement__isnull=False)
-        else:
-            investors = investors.filter(investoractivityinvolvement__isnull=True)
+        #if role == 'operational_stakeholder':
+        #    investors = investors.filter(investoractivityinvolvement__isnull=False)
+        #else:
+        #    investors = investors.filter(investoractivityinvolvement__isnull=True)
         investors = investors.order_by('name')
         return [
                 {'id': investor.id, 'text': investor.name.strip()}
