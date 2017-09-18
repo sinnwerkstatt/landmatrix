@@ -26,7 +26,11 @@ from grid.utils import get_spatial_properties
 FIELD_TYPE_MAPPING = {
     'IntegerField': 'integer',
     'CharField': 'string', # use 'exact_value' instead of string??
-    'AreaField': 'geo_shape',
+    # don't use 'geo_shape' for areas (yet?), because elasticsearch takes parsing (too?) seriously,
+    # which prevents deals from being indexed because of the following errors:
+    # - invalid_shape_exception: Provided shape has duplicate consecutive coordinates
+    # - invalid_shape_exception: Self-intersection at or near point
+    'AreaField': 'string',
     'FloatField': 'float',
     'ModelChoiceField': 'keyword',
 }
@@ -358,9 +362,10 @@ class ElasticSearch(object):
             # Area field?
             if a.name and 'area' in a.name and a.polygon is not None:
                 # Get polygon
-                value = json.loads(a.polygon.json)
+                #value = json.loads(a.polygon.json)
                 # Apparently this is case sensitive: MultiPolygon as provided by the GeoJSON does not work
-                value['type'] = 'multipolygon'
+                #value['type'] = 'multipolygon'
+                value = a.polygon.json
             # do not include empty values
             if value is None or value == '':
                 continue
