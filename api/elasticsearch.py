@@ -173,7 +173,6 @@ class ElasticSearch(object):
                         index=self.index_name,
                         doc_type=doc_type)
                 except BulkError as e:
-                    self.stdout.write(str(docs))
                     for error in e.errors:
                         msg = '%s: %s on ID %s' % (
                                 error['index']['error']['type'],
