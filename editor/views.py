@@ -109,14 +109,14 @@ class PendingChangesMixin(FilteredQuerysetMixin):
             queryset=self.get_permitted_activities())
         inserts = inserts.without_multiple_revisions()
         inserts = inserts.pending_only()
-        return inserts
+        return inserts.distinct()
 
     def get_pending_updates_queryset(self):
         updates = self.get_filtered_activity_queryset(
             queryset=self.get_permitted_activities())
         updates = updates.with_multiple_revisions()
         updates = updates.pending_only()
-        return updates
+        return updates.distinct()
 
     def get_pending_deletes_queryset(self):
         deletes = self.get_filtered_activity_queryset(
