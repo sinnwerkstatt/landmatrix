@@ -166,13 +166,14 @@ class ElasticSearch(object):
 
     def index_activity(self, activity):
         for doc_type in DOC_TYPES_ACTIVITY:
-            docs = self.get_activity_documents(activity, doc_type=doc_type)x^^^
+            docs = self.get_activity_documents(activity, doc_type=doc_type)
             if len(docs) > 0:
                 try:
                     self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id'), parent=doc.pop('_parent', None)) for doc in docs),
                         index=self.index_name,
                         doc_type=doc_type)
                 except BulkError as e:
+                    self.stdout.write(str(docs))
                     for error in e.errors:
                         msg = '%s: %s on ID %s' % (
                                 error['index']['error']['type'],

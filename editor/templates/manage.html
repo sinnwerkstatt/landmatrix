@@ -105,12 +105,7 @@
                         {% for activity in activities %}
                             <tr>
                                 <td class="deal">
-                                    {% if activity.status == "rejected" %}
-                                        <a href="{% url 'deal_detail' deal_id=activity.deal_id version='rejected' %}">#{{ activity.deal_id }}
-                                            ({% trans "Rejected version" %})</a>
-                                    {% else %}
-                                        <a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
-                                    {% endif %}
+                                    <a href="{% url 'deal_detail' deal_id=activity.deal_id history_id=activity.id %}">#{{ activity.deal_id }}</a>
                                 </td>
                                 <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
