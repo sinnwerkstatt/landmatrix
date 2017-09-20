@@ -502,7 +502,7 @@ class Activity(ActivityBase):
     def missing_information(self):
         target_country = self.attributes.filter(name="target_country")
         ds_type = self.attributes.filter(name="type")
-        return len(target_country) == 0 or len(ds_type) == 0
+        return len(target_country) == 0 or len(ds_type) == 0 or self.get_deal_size() == 0
 
 
     #def is_size_invalid(self):
@@ -523,11 +523,18 @@ class Activity(ActivityBase):
 
     def get_init_date(self):
         init_dates = []
-        negotiation_stati = self.attributes.filter(name="negotiation_status", value__in=
-            self.NEGOTIATION_STATUSES_CONCLUDED + self.NEGOTIATION_STATUSES_INTENDED).order_by("date")
+        negotiation_stati = self.attributes.filter(name="negotiation_status", value__in=(
+            #NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST, - removed, see #1154
+            self.NEGOTIATION_STATUS_UNDER_NEGOTIATION,
+            self.NEGOTIATION_STATUS_ORAL_AGREEMENT,
+            self.NEGOTIATION_STATUS_CONTRACT_SIGNED,
+            self.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
+            self.NEGOTIATION_STATUS_CONTRACT_CANCELLED
+            )).order_by("date")
         implementation_stati = self.attributes.filter(name="implementation_status", value__in=(
             self.IMPLEMENTATION_STATUS_STARTUP_PHASE,
-            self.IMPLEMENTATION_STATUS_IN_OPERATION
+            self.IMPLEMENTATION_STATUS_IN_OPERATION,
+            self.IMPLEMENTATION_STATUS_PROJECT_ABANDONED
         )).order_by("date")
         if negotiation_stati.count() > 0:
             if negotiation_stati[0].date:
