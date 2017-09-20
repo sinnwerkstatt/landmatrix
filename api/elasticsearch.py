@@ -445,10 +445,17 @@ class ElasticSearch(object):
                     doc[name] = ''
             # Set unique ID for location (deals can have multiple locations)
             doc['id'] = '%s_%i' % (doc['id'], i)
-            point_lat = doc.get('point_lat', None)
-            point_lon = doc.get('point_lon', None)
+            point_lat = doc.pop('point_lat', None)
+            point_lon = doc.pop('point_lon', None)
             if point_lat and point_lon:
-                doc['geo_point'] = '%s,%s' % (point_lat, point_lon)
+                # Parse values
+                try:
+                    parsed_lat, parsed_lon = float(point_lat), float(point_lon)
+                    doc['geo_point'] = '%s,%s' % (point_lat, point_lon)
+                except ValueError:
+                    doc['geo_point'] = '0,0'
+            else:
+                doc['geo_point'] = '0,0'
             # FIXME: we dont really need 'point_lat' and 'point_lon' here,
             # so we should pop them from doc when adding 'geo_point'
             docs.append(doc)
