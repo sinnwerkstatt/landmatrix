@@ -166,7 +166,7 @@ class ElasticSearch(object):
 
     def index_activity(self, activity):
         for doc_type in DOC_TYPES_ACTIVITY:
-            docs = self.get_activity_documents(activity, doc_type=doc_type)
+            docs = self.get_activity_documents(activity, doc_type=doc_type)x^^^
             if len(docs) > 0:
                 try:
                     self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id'), parent=doc.pop('_parent', None)) for doc in docs),
@@ -365,7 +365,7 @@ class ElasticSearch(object):
                 #value = json.loads(a.polygon.json)
                 # Apparently this is case sensitive: MultiPolygon as provided by the GeoJSON does not work
                 #value['type'] = 'multipolygon'
-                value = a.polygon.json
+                value = a.polygon.json or ''
             # do not include empty values
             if value is None or value == '':
                 continue

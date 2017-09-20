@@ -420,6 +420,9 @@ class Activity(ActivityBase):
         # 5. Invalid Parent companies/investors?
         if self.has_invalid_operational_company(involvements) and self.has_invalid_parents(involvements):
             return False
+        # 6. High income country?
+        if self.is_high_income_target_country():
+            return False
         return True
 
     def get_not_public_reason(self):
@@ -448,15 +451,17 @@ class Activity(ActivityBase):
         # 5. Invalid Parent companies/investors?
         if self.has_invalid_operational_company(involvements) and self.has_invalid_parents(involvements):
             return '4. Invalid Operational company name or 5. Invalid Parent companies/investors'
+        # 6. High income country
+        if self.is_high_income_target_country():
+            return '6. High income country'
         return 'Filters passed (public)'
 
-    #def is_high_income_target_country(self):
-    #        for tc in self.attributes.filter(name="target_country"):
-    #            country = Country.objects.get(id=tc.value)
-    #            if country.high_income:
-    #                return True
-    #        return False
-
+    def is_high_income_target_country(self):
+        for tc in self.attributes.filter(name="target_country"):
+            country = Country.objects.get(id=tc.value)
+            if country.high_income:
+                return True
+        return False
 
     #def is_mining_deal(self):
     #    mining = A_Key_Value_Lookup.objects.filter(activity_identifier=activity_identifier, key="intention",
