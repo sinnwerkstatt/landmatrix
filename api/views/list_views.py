@@ -395,6 +395,7 @@ class PolygonGeomView(GlobalDealsView, APIView):
 
             # Again, case sensitive: multipolygon in ES needs to be MultiPolygon
             # in GeoJSON.
+            feature = json.loads(feature)
             feature['type'] = 'MultiPolygon'
             features.append(feature)
 
