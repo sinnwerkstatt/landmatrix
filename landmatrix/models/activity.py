@@ -601,7 +601,7 @@ class Activity(ActivityBase):
         #            i.get_classification_display(),
         #            str(i.fk_country)
         #    ) for i in top_investors])
-        return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '')]) for i in top_investors])
+        return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '').replace("\n", '')]) for i in top_investors])
 
     class Meta:
         verbose_name = _('Activity')
