@@ -67,6 +67,21 @@ class BaseInvestorForm(BaseModelForm):
     def get_data(cls, investor):
         return {}
 
+    def clean(self):
+        cleaned_data = super(BaseInvestorForm, self).clean()
+
+        # Prevent duplicate names
+        # FIXME: Make model field unique in the future
+        name = self.cleaned_data['name']
+        duplicates = Investor.objects.filter(name=name)
+        id = cleaned_data.get('id', None)
+        if id:
+            duplicates = duplicates.exclude(id=id)
+        if duplicates.count() > 0:
+            self.add_error('name', "This name exists already.")
+
+        return cleaned_data
+
 
 class ExportInvestorForm(BaseInvestorForm):
     exclude_in_export = ('id', 'fk_status', 'timestamp', 'subinvestors')
