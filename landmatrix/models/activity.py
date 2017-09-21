@@ -69,7 +69,7 @@ class ActivityQuerySet(models.QuerySet):
         return self.filter(fk_status_id=ActivityBase.STATUS_REJECTED)
 
     def activity_identifier_count(self):
-        return self.values('activity_identifier').distinct().count()
+        return self.order_by('-id').values('activity_identifier').distinct().count()
 
     def overall_activity_count(self):
         return self.public().activity_identifier_count()
