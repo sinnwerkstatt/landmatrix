@@ -321,7 +321,7 @@ class ElasticSearch(object):
 
         # Todo: Is there a nice way to prevent this extra Activity query?
         # e.g. if we save is_public/deal_scope as ActivityAttributes
-        public_activity = Activity.objects.filter(activity_identifier=activity.activity_identifier).first()
+        public_activity = Activity.objects.filter(activity_identifier=activity.activity_identifier).order_by('-id').first()
         if public_activity:
             deal_attrs.update({
                 'is_public': public_activity.is_public,

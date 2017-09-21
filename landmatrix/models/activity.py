@@ -75,7 +75,7 @@ class ActivityQuerySet(models.QuerySet):
         return self.public().activity_identifier_count()
 
     def public_activity_count(self):
-        return self.public().filter(is_public=True).activity_identifier_count()
+        return self.public().filter(is_public=False).activity_identifier_count()
 
 
 class NegotiationStatusManager(models.Manager):
