@@ -459,6 +459,8 @@ class ElasticSearch(object):
                 except ValueError:
                     doc['geo_point'] = '0,0'
             else:
+                doc['point_lat'] = '0'
+                doc['point_lon'] = '0'
                 doc['geo_point'] = '0,0'
             # FIXME: we dont really need 'point_lat' and 'point_lon' here,
             # so we should pop them from doc when adding 'geo_point'
