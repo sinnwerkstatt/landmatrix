@@ -53,10 +53,12 @@ class ChangeDealView(SaveDealView):
     def dispatch(self, request, *args, **kwargs):
         activity = self.get_object()
         # Status: Pending
+        is_editor = self.request.user.has_perm('landmatrix.review_activity')
+        is_author = activity.history_user != request.user
         if activity.fk_status_id in (HistoricalActivity.STATUS_PENDING, HistoricalActivity.STATUS_TO_DELETE)\
-           or (activity.fk_status_id == HistoricalActivity.STATUS_REJECTED and activity.history_user != request.user):
+           or (activity.fk_status_id == HistoricalActivity.STATUS_REJECTED and not (is_editor or is_author)):
             # Only Editors and Administrators are allowed to edit pending deals
-            if not self.request.user.has_perm('landmatrix.review_activity'):
+            if not is_editor:
                 # Redirect to deal detail
                 args = {'deal_id': activity.activity_identifier}
                 if 'history_id' in kwargs:
