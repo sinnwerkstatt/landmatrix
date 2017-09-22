@@ -298,14 +298,19 @@ class ElasticSearch(object):
         # get the newest non-pending, readable historic version:
         try:
             newest = HistoricalActivity.objects.filter(activity_identifier=activity_identifier, fk_status__in=(
-                HistoricalActivity.STATUS_ACTIVE, HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED)).distinct().latest()
+                HistoricalActivity.STATUS_ACTIVE,
+                HistoricalActivity.STATUS_OVERWRITTEN,
+                HistoricalActivity.STATUS_DELETED)).distinct().latest()
             if newest and not newest.fk_status_id == HistoricalActivity.STATUS_DELETED:
                 versions.append(newest)
         except HistoricalActivity.DoesNotExist:
             newest = None
             
         # get all pendings
-        pendings = HistoricalActivity.objects.filter(activity_identifier=activity_identifier, fk_status_id=HistoricalActivity.STATUS_PENDING).distinct()
+        pendings = HistoricalActivity.objects.filter(activity_identifier=activity_identifier,
+                                                     fk_status_id=HistoricalActivity.STATUS_PENDING).distinct()
+        if newest:
+            pendings.filter(history_date__gt=newest.history_date)
         versions.extend(pendings)
         
         return versions
@@ -517,7 +522,7 @@ class ElasticSearch(object):
 
     def refresh_index(self):
         self.conn.refresh(self.index_name)
-        
+
     def search(self, elasticsearch_query, doc_type='deal', sort=[]):
         """ Executes paginated queries until all results have been retrieved. 
             @return: The full list of hits. """
@@ -568,6 +573,14 @@ class ElasticSearch(object):
             except ElasticHttpNotFoundError as e:
                 pass
 
+    def get_deals_by_activity_identifier(self, activity_identifier, doc_type='deal'):
+        return self.search({"constant_score": {
+            "filter": {
+                "term": {
+                    "activity_identifier": activity_identifier
+                }
+            }
+        }})
 
 # Init two connections
 es_search = ElasticSearch()
