@@ -118,6 +118,12 @@ urlpatterns = [
     ),
 
     url(
+        r'^deal/edit/(?P<deal_id>\d+)/(?P<history_id>\d+)/$',
+        ChangeDealView.as_view(),
+        name='change_deal'
+    ),
+
+    url(
         r'^deal/add/$',
         AddDealView.as_view(),
         name='add_deal'
