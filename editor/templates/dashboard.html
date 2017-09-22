@@ -283,7 +283,7 @@
                                 {% for activity in manage.activities.updates %}
                                     <tr class="update">
                                         <td class="deal"><a
-                                                href="{% if request.user.is_staff %}{% url 'change_deal' activity.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
+                                                href="{% if request.user.is_staff %}{% url 'change_deal' deal_id=activity.deal_id history_id=activity.id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
                                         </td>
                                         <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Update" %}</td>
