@@ -141,3 +141,11 @@ class View:
                 u', '.join([unicode(id) for id in sinvestors[key]['deals']]),
             ))
         return psduplicates
+
+    def get_si_name_diff_country_classification(self, response):
+        writer = csv.writer(response, delimiter=';')
+        return None
+
+    def get_pi_name_diff_target_country(self, response):
+        writer = csv.writer(response, delimiter=';')
+        return None

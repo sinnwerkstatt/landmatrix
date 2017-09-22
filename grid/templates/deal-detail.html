@@ -89,7 +89,7 @@
 
             {% include "includes/deal-history.html" %}
 
-            {% if not history_id %}
+            {% if not history_id and activity %}
                 {% get_comment_count for public_activity as comment_count %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
