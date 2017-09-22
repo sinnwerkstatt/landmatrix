@@ -306,7 +306,7 @@ class ElasticSearch(object):
         except HistoricalActivity.DoesNotExist:
             newest = None
             
-        # get all pendings
+        # get newer pendings
         pendings = HistoricalActivity.objects.filter(activity_identifier=activity_identifier,
                                                      fk_status_id=HistoricalActivity.STATUS_PENDING).distinct()
         if newest:
@@ -318,7 +318,7 @@ class ElasticSearch(object):
     def get_activity_documents(self, activity, doc_type='deal'):
         docs = []
         deal_attrs = {
-            'id': activity.activity_identifier,
+            'id': activity.id,
             'activity_identifier': activity.activity_identifier,
             'historical_activity_id': activity.id,
             'status': activity.fk_status_id,
@@ -449,8 +449,8 @@ class ElasticSearch(object):
                     doc[name] = ''
             # Set unique ID for location (deals can have multiple locations)
             doc['id'] = '%s_%i' % (doc['id'], i)
-            point_lat = doc.pop('point_lat', None)
-            point_lon = doc.pop('point_lon', None)
+            point_lat = doc.get('point_lat', None)
+            point_lon = doc.get('point_lon', None)
             if point_lat and point_lon:
                 # Parse values
                 try:
