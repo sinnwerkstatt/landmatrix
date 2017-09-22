@@ -19,7 +19,7 @@
     {% if activity.fk_status_id == 4 and not perms.landmatrix.change_activity %}
     {% else %}
     <li role="presentation">
-        <a href="{% url "change_deal" activity.activity_identifier %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
+        <a href="{% if history_id %}{% url "change_deal" deal_id=activity.activity_identifier history_id=history_id %}{% else %}{% url "change_deal" deal_id=activity.activity_identifier %}{% endif %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
     </li>
     {% endif %}
     <li role="presentation"><a href="#history">
