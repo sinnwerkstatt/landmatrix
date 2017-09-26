@@ -96,6 +96,12 @@ class ChangeDealView(SaveDealView):
             # Only Administrators are allowed to edit (recover) deleted deals
             if not self.request.user.has_perm('landmatrix.change_activity'):
                 raise Http404('Activity %s has been deleted' % deal_id)
+        # Status: Rejected
+        if activity.fk_status_id == HistoricalActivity.STATUS_REJECTED:
+            # Only Administrators are allowed to edit (recover) deleted deals
+            if not self.request.user.has_perm('landmatrix.review_activity') and \
+               not activity.history_user == self.request.user:
+                raise Http404('Activity %s has been rejected' % deal_id)
         return activity 
 
     def get_forms(self, data=None, files=None):

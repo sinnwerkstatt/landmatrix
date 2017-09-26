@@ -1,6 +1,7 @@
 import io
 from django.db.models import Max
-from editor.models import Activity, PrimaryInvestor, Stakeholder, Involvement, A_Key_Value_Lookup, Country, SH_Tag, SH_Tag_Group
+from editor.models import Activity, PrimaryInvestor, Stakeholder, Involvement, A_Key_Value_Lookup, Country, SH_Tag, SH_Tag_Group, A_Tag
+
 
 class View:
     def get_country_for_primary_investor(self, pi_id):
@@ -149,3 +150,61 @@ class View:
     def get_pi_name_diff_target_country(self, response):
         writer = csv.writer(response, delimiter=';')
         return None
+
+    def get_target_countries_and_regions(self, inv):
+        countries, regions = [], []
+        activity = inv.fk_activity
+        if activity:
+            target_countries = A_Tag.objects.filter(
+                fk_a_tag_group__fk_activity=activity,
+                fk_a_key__key="target_country"
+            )
+            for country in target_countries:
+                value = country.fk_a_value.value
+                country = Country.objects.get(name=value)
+                countries.append(country.name)
+                regions.append(country.region.name)
+        return set(countries), set(regions)
+
+    def get_investors_deals(self, response):
+        writer = csv.writer(response, delimiter=';')
+
+        writer.writerow([u'Deal ID', u'Target Region', u'Target Country',
+                         u'P. Investor',  u'Primary Investor name',
+                         u'S.Investor ID', u'Secondary Investor name',
+                         u'S. Investor country', u'S. Investor classification'])
+        act_ids = Activity.objects.exclude(fk_status=4).values('activity_identifier').annotate(Max('id'))\
+            .values_list('id__max', flat=True)
+        pi_ids = PrimaryInvestor.objects.exclude(fk_status=4).values('primary_investor_identifier').annotate(Max('id'))\
+            .values_list('id__max', flat=True)
+        st_ids = Stakeholder.objects.exclude(fk_status=4).values('stakeholder_identifier').annotate(Max('id'))\
+            .values_list('id__max', flat=True)
+        for inv in Involvement.objects.select_related('fk_activity', 'fk_primary_investor', 'fk_stakeholder')\
+                .filter(fk_activity__in=act_ids, fk_primary_investor__in=pi_ids, fk_stakeholder__in=st_ids)\
+                .order_by('fk_activity__activity_identifier'):
+            activity_identifier = str(inv.fk_activity.activity_identifier)
+            countries, regions = self.get_target_countries_and_regions(inv)
+            pi = inv.fk_primary_investor
+            si = inv.fk_stakeholder
+            if si:
+                si_name = self._get_name_for_stakeholder(si.id) or ""
+                si_country = self._get_country_for_stakeholder(si.id) or ""
+                si_classification = self._get_classification_for_stakeholder(si.id) or ""
+            else:
+                si_name = ""
+                si_country = ""
+                si_classification = ""
+
+            writer.writerow((
+                activity_identifier.encode('utf-8'),
+                ', '.join([id.encode('utf-8') for id in countries]),
+                ', '.join([id.encode('utf-8') for id in regions]),
+                str(pi.primary_investor_identifier).encode('utf-8'),
+                pi.name.encode('utf-8'),
+                str(si.stakeholder_identifier).encode('utf-8'),
+                si_name.encode('utf-8'),
+                si_country.encode('utf-8'),
+                si_classification.encode('utf-8'),
+            ))
+
+        return []
