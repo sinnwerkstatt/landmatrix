@@ -15,7 +15,7 @@ class ActivityQuerySet:
         data = request.POST.get('data', '{"filters": {}, "columns": {}, "status": {}}')
         self.data = json.loads(data)
         self.data['filters'].update(load_filters(request))
-        self.is_staff = request.user.is_staff
+        self.is_staff = request.user.is_authenticated()
         if self.DEBUG: pprint(self.data['filters'], width=120, compact=True)
         if 'columns' not in self.data:
             self.data['columns'] = {}
