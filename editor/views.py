@@ -99,8 +99,9 @@ class PendingChangesMixin(FilteredQuerysetMixin):
         # show activities that have been added/changed or reviewed by editors or reporters
         # FIXME: Is filtering necessary here at all?
         else:
-            queryset = queryset.filter(Q(history_user__groups__name__in=('Reporters', 'Editors')) |
-                Q(changesets__fk_user__groups__name__in=('Reporters', 'Editors')))
+            #queryset = queryset.filter(Q(history_user__groups__name__in=('Reporters', 'Editors')) |
+            #    Q(changesets__fk_user__groups__name__in=('Reporters', 'Editors')))
+            pass # No filter required for admins
 
         return queryset
 
