@@ -54,7 +54,7 @@ class ChangeDealView(SaveDealView):
         activity = self.get_object()
         # Status: Pending
         is_editor = self.request.user.has_perm('landmatrix.review_activity')
-        is_author = activity.history_user_id != request.user.id
+        is_author = activity.history_user_id == request.user.id
         # Only Editors and Administrators are allowed to edit pending deals
         if not is_editor:
             if activity.fk_status_id in (HistoricalActivity.STATUS_PENDING, HistoricalActivity.STATUS_TO_DELETE)\
