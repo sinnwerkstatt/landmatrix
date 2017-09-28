@@ -14,7 +14,8 @@ from landmatrix.models.activity_attribute_group import (
     ActivityAttribute,
 )
 from landmatrix.models.investor import (
-    Investor, InvestorActivityInvolvement, InvestorVentureInvolvement, InvestorBase
+    Investor, InvestorActivityInvolvement, InvestorVentureInvolvement, InvestorBase,
+    InvestorActivitySize
 )
 from landmatrix.models.country import Country
 
@@ -340,8 +341,21 @@ class Activity(ActivityBase):
         self.init_date = self.get_init_date()
         self.fully_updated_date = self.get_fully_updated_date()
         self.is_public = self.is_public_deal()
-        self.top_investors = self.get_top_investors()
+        top_investors = self.get_top_investors()
+        self.top_investors = self.format_investors(top_investors)
         self.save()
+
+        self.create_investoractivitysizes(top_investors)
+
+    def create_investoractivitysizes(self, top_investors):
+        sizes = InvestorActivitySize.objects.all().delete()
+        for investor in top_investors:
+            InvestorActivitySize.objects.create(
+                fk_activity=self,
+                fk_investor=investor,
+                size=self.deal_size,
+            )
+
 
     def get_negotiation_status(self):
         NEGOTIATION_STATUS_ORDER = dict(
@@ -595,13 +609,11 @@ class Activity(ActivityBase):
         operational_companies = Investor.objects.filter(
             investoractivityinvolvement__fk_activity__activity_identifier=self.activity_identifier)
         top_investors = list(set(get_parent_companies(operational_companies)))
-        #return '|'.join(['%s (%s, %s, %s)' % (
-        #            i.name,
-        #            str(i.investor_identifier),
-        #            i.get_classification_display(),
-        #            str(i.fk_country)
-        #    ) for i in top_investors])
-        return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '').replace("\n", '')]) for i in top_investors])
+        return top_investors
+
+    def format_investors(self, investors):
+        return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '').replace("\n", '')])
+                         for i in investors])
 
     class Meta:
         verbose_name = _('Activity')
@@ -892,4 +904,3 @@ class HistoricalActivity(ActivityBase):
         get_latest_by = 'history_date'
         ordering = ('-history_date',)
         get_latest_by = 'id'
-
