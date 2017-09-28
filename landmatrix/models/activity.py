@@ -712,6 +712,7 @@ class HistoricalActivity(ActivityBase):
         assert self.fk_status_id == HistoricalActivity.STATUS_PENDING
         self.fk_status_id = HistoricalActivity.STATUS_REJECTED
         self.save(update_fields=['fk_status'])
+        self.update_public_activity()
 
         try:
             investor = InvestorActivityInvolvement.objects.get(
@@ -794,18 +795,22 @@ class HistoricalActivity(ActivityBase):
         self.save(update_elasticsearch=False)
 
         # Historical activity already is the newest version of activity?
-        if self.public_version:
-            return False
+        #if self.public_version:
+        #    return False
 
-        activity = Activity.objects.filter(
-            activity_identifier=self.activity_identifier).order_by(
-            '-id').first()
+        activity = Activity.objects.filter(activity_identifier=self.activity_identifier).order_by('-id').first()
 
         # Activity has been deleted?
         if self.fk_status_id == self.STATUS_DELETED:
             if activity:
                 activity.delete()
             return True
+        elif self.fk_status_id == self.STATUS_REJECTED:
+            # Activity add has been rejected?
+            activities = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
+            if len(activities) == 1:
+                activity.delete()
+                return True
 
         if not activity:
             activity = Activity.objects.create(
