@@ -222,14 +222,23 @@ class SaveDealView(TemplateView):
         #    involvement = involvements.last()
         #    involvement.fk_investor = operational_stakeholder
         #else:
+        can_change_activity = self.request.user.has_perm('landmatrix.change_activity')
         if operational_stakeholder:
-            can_change_activity = self.request.user.has_perm('landmatrix.change_activity')
             involvement = InvestorActivityInvolvement.objects.create(
                 fk_activity=activity,
                 fk_investor=operational_stakeholder,
                 fk_status_id=can_change_activity and activity.STATUS_ACTIVE or activity.STATUS_PENDING,
             )
             involvement.save()
+        else:
+            involvements = InvestorActivityInvolvement.objects.filter(fk_activity=activity)
+            if involvements.count() > 0:
+                if can_change_activity:
+                    involvements.delete()
+                else:
+                    for involvement in involvements:
+                        involvement.fk_status = involvement.STATUS_TO_DELETE
+                        involvement.save()
 
     def get_form_by_type(self, forms, type):
         form = list(filter(lambda f: isinstance(f, type), forms))

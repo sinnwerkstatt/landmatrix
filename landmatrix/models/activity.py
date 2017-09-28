@@ -820,7 +820,10 @@ class HistoricalActivity(ActivityBase):
         # Delete old and create new activity attributes
         activity.attributes.all().delete()
 
+        has_investor = False
         for hattribute in self.attributes.all():
+            if hattribute.name == 'operational_stakeholder':
+                has_investor = True
             ActivityAttribute.objects.create(
                 fk_activity_id=activity.id,
                 fk_group_id=hattribute.fk_group_id,
@@ -835,12 +838,14 @@ class HistoricalActivity(ActivityBase):
         involvements = InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=activity.activity_identifier)
         if involvements.count() > 0:
             latest = involvements.latest()
-            latest.fk_activity_id = activity.id
-            if latest.fk_status_id not in (latest.STATUS_ACTIVE, latest.STATUS_OVERWRITTEN):
-                latest.fk_status_id = latest.STATUS_OVERWRITTEN
-            latest.save()
+            if not latest.fk_status_id == latest.STATUS_TO_DELETE:
+                latest.fk_activity_id = activity.id
+                if latest.fk_status_id not in (latest.STATUS_ACTIVE, latest.STATUS_OVERWRITTEN):
+                    latest.fk_status_id = latest.STATUS_OVERWRITTEN
+                latest.save()
+                involvements = involvements.exclude(id=latest.id)
             # Delete other involvments for activity, since we don't need a history of involvements
-            involvements.exclude(id=latest.id).delete()
+            involvements.delete()
         activity.refresh_cached_attributes()
 
         # Keep public version relation up to date

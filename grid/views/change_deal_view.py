@@ -108,6 +108,7 @@ class ChangeDealView(SaveDealView):
         forms = []
         for form_class in self.FORMS:
             # Add register form instead of action comment form for non authenticated user
+            # FIXME: This should not be possible anymore, remove?
             if form_class == DealActionCommentForm and not self.request.user.is_authenticated():
                 forms.append(PublicUserInformationForm(data=data))
             else:

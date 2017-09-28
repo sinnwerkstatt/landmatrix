@@ -422,9 +422,15 @@ function initInvestorField(field, set_events) {
                   }
                 };
             },
-            //cache: true
+            cache: true,
         },
         minimumInputLength: 3,
+        allowClear: true,
+        placeholder: ""
+    }).on("select2:unselecting", function (e) {
+        $(this).val("");
+        $(this).find('option:selected').removeAttr('selected');
+        debugger;
     });
     if (set_events) {
         field.on('change', function () {
