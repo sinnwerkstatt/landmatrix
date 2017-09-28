@@ -430,7 +430,8 @@ function initInvestorField(field, set_events) {
     }).on("select2:unselecting", function (e) {
         $(this).val("");
         $(this).find('option:selected').removeAttr('selected');
-        debugger;
+        // parent company formset / tertiary investor/lender formset: delete
+        $(this).parents('.dynamic-form').find('.DELETE input').val('1')
     });
     if (set_events) {
         field.on('change', function () {
