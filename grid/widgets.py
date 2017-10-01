@@ -613,48 +613,19 @@ class AreaWidget(forms.MultiWidget):
             show_hide_link_text = _('Hide area')
             show_hide_link_alt_text = _('Show area')
 
-        # TODO: move the JS into a static file
-        js = '''
-            var container = jQuery('#{name}-container');
-            var showLink = container.next('a.show-hide-area');
-
-            showLink.on('click', function (event) {{
-                event.preventDefault();
-                $this = jQuery(this);
-                var target = jQuery('#' + $this.data('divId'));
-                var oldText = $this.text();
-                var newText = $this.data('alternate');
-
-                target.toggle();
-                $this.text(newText);
-                $this.data('alternate', oldText);
-
-                if (target.is(':visible')) {{
-                    var mapWidget = jQuery('#id_{name}_0').data('mapWidget');
-                    mapWidget.map.updateSize();
-                    mapWidget.positionMap();
-                }}
-
-            }});
-        '''.format(name=name)
         output = '''
-        <div id="{name}-container" style="{style}">
+        <div id="{name}-container" class="area-container" style="{style}">
             {map_widget}
             <div class="input-group">
                 {file_widget}
                 <div class="input-group-addon">{file_label}</div>
             </div>
         </div>
-        <a href="#" class="show-hide-area pull-right"
-            data-alternate="{link_alt_text}"
-            data-div-id="{name}-container">{link_text}</a>
-        <script>
-            {js}
-        </script>
+        <a href="#{name}-container" class="show-hide-area pull-right" data-alternate="{link_alt_text}">{link_text}</a>
         '''.format(
             name=name, style=container_style, map_widget=rendered_widgets[0],
             file_widget=rendered_widgets[1], link_text=show_hide_link_text,
-            link_alt_text=show_hide_link_alt_text, js=js,
+            link_alt_text=show_hide_link_alt_text,
             file_label=_('Shapefile upload (select all files, required: .shp, .shx, .dbf, and .prj)'))
 
         return output

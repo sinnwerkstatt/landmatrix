@@ -1,40 +1,61 @@
-{% extends "widgets/openlayers_osm.html" %}
-{% load l10n %}
+{% load i18n l10n %}
+{# TODO: move style to a new block #}
+<!--style type="text/css">
+    #{{ id }}-map .aligned label { float: inherit; }
+</style-->
 
-{% block options %}
-{{ block.super }}
-{% if bound_lat_field_id and bound_lon_field_id %}
-    options['boundLatField'] = $('#{{ bound_lat_field_id }}');
-    options['boundLonField'] = $('#{{ bound_lon_field_id }}');
-{% endif %}
-{% if bound_location_field_id %}
-    options['boundLocationField'] = $('#{{ bound_location_field_id }}');
-{% endif %}
-{% if bound_level_of_accuracy_field_id %}
-    options['boundLevelOfAccuracyField'] = $('#{{ bound_level_of_accuracy_field_id }}');
-{% endif %}
-{% if bound_target_country_field_id %}
-    options['boundTargetCountryField'] = $('#{{ bound_target_country_field_id }}');
-{% endif %}
-{% if bound_map_field_id %}
-    options['boundMapField'] = $('#{{ bound_map_field_id }}');
-{% endif %}
-{% if disable_drawing %}
-    options['disableDrawing'] = true;
-{% endif %}
-{% if initial_point %}
-    options['initialPoint'] = [{{ initial_point.0 }}, {{ initial_point.1 }}];
-{% endif %}
-{% if show_layer_switcher %}
-    options['showLayerSwitcher'] = true;
-{% endif %}
-{% if initial_layer %}
-    options['initialLayer'] = '{{ initial_layer }}';
-{% endif %}
-{% endblock %}
-
-
-{% block base_layer %}
-// Just use the defaults from the JS file
-var baseLayers = null;
-{% endblock %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+<div id="{{ id }}-div-map" class="geometry-{{ geom_type|lower }}"style="position: relative; vertical-align: top; float: {{ LANGUAGE_BIDI|yesno:"right,left" }};">
+    <div id="{{ id }}-map" style="width: {{ map_width }}px; height: {{ map_height }}px;"></div>
+    {% if geom_type != 'Point' %}<span class="clear_features"><a href="#">{% trans "Delete all Features" %}</a></span>{% endif %}
+    {% if display_raw %}<p>{% trans "Debugging window (serialized value)" %}</p>{% endif %}
+    <textarea class="map-serialized-data vSerializedField required"
+              id="{{ id }}"
+              cols="150" rows="10"
+              name="{{ name }}"
+              style="{% if not display_raw %}display: none;{% endif %}"
+              data-map-widget-options='{
+              "geomName": "{{ geom_type }}",
+              "mapSRID": "{{ map_srid|unlocalize }}",
+              "mapId": "{{ id }}-map",
+              {% if bound_lat_field_id and bound_lon_field_id %}
+              "boundLatField": "#{{ bound_lat_field_id }}",
+              "boundLonField": "#{{ bound_lon_field_id }}",
+              {% endif %}
+              {% if bound_location_field_id %}
+              "boundLocationField": "#{{ bound_location_field_id }}",
+              {% endif %}
+              {% if bound_level_of_accuracy_field_id %}
+              "boundLevelOfAccuracyField": "#{{ bound_level_of_accuracy_field_id }}",
+              {% endif %}
+              {% if bound_target_country_field_id %}
+              "boundTargetCountryField": "#{{ bound_target_country_field_id }}",
+              {% endif %}
+              {% if bound_map_field_id %}
+              "boundMapField": "#{{ bound_map_field_id }}",
+              {% endif %}
+              {% if disable_drawing %}
+              "disableDrawing": true,
+              {% endif %}
+              {% if initial_point %}
+              "initialPoint": [{{ initial_point.0 }}, {{ initial_point.1 }}],
+              {% endif %}
+              {% if show_layer_switcher %}
+              "showLayerSwitcher": true,
+              {% endif %}
+              {% if initial_layer %}
+              "initialLayer": "{{ initial_layer }}",
+              {% endif %}
+              "initialCenterLon": "{{ initial_center_lon|unlocalize }}",
+              "initialCenterLat": "{{ initial_center_lat|unlocalize }}",
+              "initialZoom": "{{ initial_zoom|unlocalize }}"
+              {% if initial_bounds %}
+              , "initialBounds": {
+                  "latMin": {{ initial_bounds.0 }},
+                  "latMax": {{ initial_bounds.1 }},
+                  "lonMin": {{ initial_bounds.2 }}
+                  "lonMax": {{ initial_bounds.3 }}
+              }
+              {% endif %}
+            }'>{{ serialized }}</textarea>
+</div>

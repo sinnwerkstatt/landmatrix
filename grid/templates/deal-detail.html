@@ -154,6 +154,17 @@
                 var options = $(this).data('map-widget-options');
                 options['id'] = id;
                 options['mapId'] = id + '-map';
+                // remove bound options
+                var id_options = ['boundLatField', 'boundLonField', 'boundLocationField',
+                    'boundTargetCountryField', 'boundLevelOfAccuracyField', 'boundMapField'];
+                for (var i in id_options) {
+                    if (id_options.hasOwnProperty(i)) {
+                        i = id_options[i];
+                        if (i in options) {
+                            delete options[i];
+                        }
+                    }
+                }
                 mapWidgets[id] = new MapWidget(options);
             });
         });

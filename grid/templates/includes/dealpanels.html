@@ -44,8 +44,8 @@
                                 //form.find('.location :input').attr('readonly', null);
                                 form.find('.point_lat :input,.point_lon :input').attr('readonly', 'readonly');
                             }
-                        })
-                                // Init map
+                        });
+                        // Init map
                         var maps = form.find('.map-serialized-data');
                         maps.each(function(index) {
                             var id = $(this).attr('id');
@@ -60,6 +60,17 @@
                                 options['boundLocationField'] = form.find('.location :input');
                                 options['boundTargetCountryField'] = form.find('.target_country :input');
                                 options['boundLevelOfAccuracyField'] = form.find('.level_of_accuracy :input');
+                            }
+                            // convert ids to elements
+                            var id_options = ['boundLatField', 'boundLonField', 'boundLocationField',
+                                       'boundTargetCountryField', 'boundLevelOfAccuracyField', 'boundMapField'];
+                            for (var i in id_options) {
+                                if (id_options.hasOwnProperty(i)) {
+                                    i = id_options[i];
+                                    if (i in options && typeof(options[i]) === 'string') {
+                                        options[i] = $(i); // don't use form.find here
+                                    }
+                                }
                             }
                             var mapWidget = new MapWidget(options);
                             mapWidget.map.on('moveend', function (evt) {
@@ -85,6 +96,28 @@
                                 id: $(this).attr('id'),
                                 mapWidget: mapWidgets[mapId]
                             });
+                        });
+
+                        // Init area links
+                        var showLink = form.find('a.show-hide-area');
+                        showLink.on('click', function (e) {
+                            e.preventDefault();
+                            var that = $(this);
+                            //var target = $(that.attr("href"));
+                            var target = that.prev();
+                            var oldText = that.text();
+                            var newText = that.data('alternate');
+
+                            target.toggle();
+                            that.text(newText);
+                            that.data('alternate', oldText);
+
+                            if (target.is(':visible')) {
+                                var mapWidget = target.find('.map-serialized-data').data('mapWidget');
+                                mapWidget.map.updateSize();
+                                mapWidget.positionMap();
+                            }
+
                         });
 
                         // Init data sources
