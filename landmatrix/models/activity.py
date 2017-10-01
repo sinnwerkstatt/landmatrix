@@ -683,7 +683,7 @@ class HistoricalActivity(ActivityBase):
     Only the current historical activity should have a public version set.
     """
     public_version = models.OneToOneField(
-        Activity, blank=True, null=True, related_name='historical_version')
+        Activity, blank=True, null=True, related_name='historical_version', on_delete=models.SET_NULL)
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
     comment = models.TextField(_('Comment'), blank=True, null=True)
@@ -819,7 +819,7 @@ class HistoricalActivity(ActivityBase):
             return True
         elif self.fk_status_id == self.STATUS_REJECTED:
             # Activity add has been rejected?
-            activities = Activity.objects.filter(activity_identifier=self.activity_identifier)
+            activities = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
             if len(activities) == 1:
                 activity.delete()
                 return True
