@@ -14,7 +14,6 @@ from grid.forms.public_user_information_form import PublicUserInformationForm
 from grid.forms.deal_action_comment_form import DealActionCommentForm
 
 
-
 class AddDealView(SaveDealView):
     template_name = 'add-deal.html'
     success_message = _('Added successfully.')
@@ -50,10 +49,11 @@ class AddDealView(SaveDealView):
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)
         hactivity.save()
+
+        self.create_involvement(hactivity, investor_form)
         if can_add_activity:
             # Create new activity (required for involvement)
             hactivity.update_public_activity()
-        self.create_involvement(hactivity, investor_form)
         if can_add_activity:
             messages.success(
                 self.request,

@@ -400,3 +400,10 @@ class InvestorActivitySize(models.Model):
     class Meta:
         verbose_name = _('Investor activity size')
         verbose_name_plural = _('Investor activity sizes')
+
+    def __str__(self):
+        return '%s-%s: %s' % (
+            str(self.fk_activity),
+            str(self.fk_investor),
+            self.deal_size
+        )

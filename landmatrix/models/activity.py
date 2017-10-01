@@ -348,12 +348,12 @@ class Activity(ActivityBase):
         self.create_investoractivitysizes(top_investors)
 
     def create_investoractivitysizes(self, top_investors):
-        sizes = InvestorActivitySize.objects.all().delete()
+        sizes = InvestorActivitySize.objects.filter(fk_activity__activity_identifier=self.activity_identifier).delete()
         for investor in top_investors:
             InvestorActivitySize.objects.create(
                 fk_activity=self,
                 fk_investor=investor,
-                size=self.deal_size,
+                deal_size=self.deal_size,
             )
 
 

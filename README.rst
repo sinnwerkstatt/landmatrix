@@ -28,7 +28,7 @@ If you intend to develop on the frontend, you'll probably want livereload:
 $ npm install gulp gulp-livereload  gulp-watch
 
 Setup a virtual environment for Python3.4 including the postgres driver:
-$ mkvirtualenv landmatrix --system-site-packges -p /usr/bin/python3.4
+$ mkvirtualenv landmatrix --system-site-packages -p /usr/bin/python3.4
 $ workon landmatrix
 
 Install Django requirements via pip:
@@ -60,23 +60,55 @@ Run the server:
 
 $ python manage.py runserver
 
-Upgrading
----------
 
-After upgrading, you may have to update the static files to see changes e.g. to the CSS:
+Manage commands
+---------------
+$ python manage.py check_export
+$ python manage.py clean_activityattributegroups
+$ python manage.py compare_lists
+$ python manage.py deals_with_multiple_primary_investors
+$ python manage.py elasticsearch_test
+$ python manage.py get_investor_duplicates
+$ python manage.py get_not_public_reason
+$ python manage.py link_comments
+$ python manage.py load_country_geometries
+$ python manage.py populate_activities
+$ python manage.py populate_activity_changesets
+$ python manage.py populate_countries
+$ python manage.py populate_operational_companies
+$ python manage.py primary_investors_with_different_countries
+$ python manage.py read_new_countries
+$ python manage.py update_elasticsearch
 
-$ bower install                 # If you upgraded or added any 3rd party javascript libraries
-$ python manage.py compilescss  # if you changed the sass stylesheet scss
-$ python manage.py collectstatic
 
-Backup to dump
---------------
+Structure and Apps schema
+-------------------------
+- api
+- charts
+- docs
+- editor
+- feeds
+- from_v1
+- grid
+- landmatrix
+    - default_settings.py
+    - settings.py
+- lo
+- locale
+- map
+- media
+- notifications
+- ol3_widgets
+- public_comments
+- static
+- templates
+- wagtailcms
+manage.py
+requirements.txt
+fabfile.py
 
-$ pg_dump -U landmatrix landmatrix_2 -f landmatrix-dump.sql
+API
+---
 
-
-Restore Dump
-------------
-
-$ psql -U landmatrix -d landmatrix_2 -f landmatrix-dump.sql
-
+Tests
+-----
