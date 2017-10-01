@@ -819,7 +819,7 @@ class HistoricalActivity(ActivityBase):
             return True
         elif self.fk_status_id == self.STATUS_REJECTED:
             # Activity add has been rejected?
-            activities = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
+            activities = Activity.objects.filter(activity_identifier=self.activity_identifier)
             if len(activities) == 1:
                 activity.delete()
                 return True
