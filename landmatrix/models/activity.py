@@ -516,7 +516,7 @@ class Activity(ActivityBase):
     def missing_information(self):
         target_country = self.attributes.filter(name="target_country")
         ds_type = self.attributes.filter(name="type")
-        return len(target_country) == 0 or len(ds_type) == 0 or self.get_deal_size() == 0
+        return len(target_country) == 0 or len(ds_type) == 0
 
 
     #def is_size_invalid(self):
