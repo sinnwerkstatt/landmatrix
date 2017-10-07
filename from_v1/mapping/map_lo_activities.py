@@ -174,7 +174,7 @@ class MapLOActivities(MapLOModel):
             new.save(using=V2)
 
         # existing records already have a historical version
-        if new.historical_version:
+        if hasattr(new, 'historical_version') and new.historical_version:
             historical_activity = new.historical_version
         else:
             historical_activity = landmatrix.models.HistoricalActivity(
