@@ -54,7 +54,7 @@ class MapLOStakeholder(MapLOModel):
     def save_record(cls, new, old, save):
         old = cls.old_class.objects.using(cls.DB).get(pk=old['id'])
 
-        new.investor_identifier = new.id
+        new.investor_identifier = old['id']#new.id
         new.name = old.get_tag_value('Name') or ''
         new.fk_country = get_lm_country(
             old.get_tag_value('Country of origin'))
