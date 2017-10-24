@@ -861,8 +861,11 @@
                 }
                 $.ajax(layerSettings.url).then(function (response) {
                     var geojsonFormat = new ol.format.GeoJSON();
-                    var features = geojsonFormat.readFeatures(response);
-
+                    var features = geojsonFormat.readFeatures(
+                        response, {
+                            dataProjection: 'EPSG:4326',
+                            featureProjection: 'EPSG:3857'
+                        });
                     var polygonSource = new ol.source.Vector();
                     polygonSource.addFeatures(features);
                     var polygonLayer = new ol.layer.Vector({
