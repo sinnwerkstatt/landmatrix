@@ -150,13 +150,13 @@ Structure and Apps schema
 * *fabfile.py*: Configuration files for deployment using Fabric
 
 API
----
+===
 
 The API documentation can be found at https://dev.landmatrix.org/api/
 
 
 Tests
------
+=====
 
 The projects includes integration and unit tests.
 The tests are run using django-nose in the background.
