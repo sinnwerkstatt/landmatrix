@@ -17,7 +17,7 @@ from landmatrix.models import Country
 
 
 class Command(BaseCommand):
-    help = 'Populates the activities with common used attributes'
+    help = 'Populates the countries with shape geometries (from biogeo.ucdavis.edu)'
 
     def handle(self, *args, **options):
 

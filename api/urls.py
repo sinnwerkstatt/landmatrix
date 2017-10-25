@@ -1,7 +1,11 @@
 from django.conf.urls import url
 
+from rest_framework_swagger.views import get_swagger_view
+
 from api.views import *
 from api.views.list_views import PolygonGeomView
+
+schema_view = get_swagger_view(title='LandMatrix API')
 
 urlpatterns = [
     url(r'^filter\.json', FilterView.as_view(), {'format': 'json'},
@@ -76,4 +80,5 @@ urlpatterns = [
         name='logging_api'),
     url(r'^contract-farming\.json', ContractFarmingView.as_view(), {'format': 'json'},
         name='contract_farming_api'),
+    url(r'^$', schema_view)
 ]

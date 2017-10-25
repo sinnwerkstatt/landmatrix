@@ -9,6 +9,12 @@ TEST_AGAINST_LIVE_DB = False
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+INSTALLED_APPS = (
+    'coverage',
+    'test_without_migrations',
+    'django_nose',
+) + INSTALLED_APPS
+
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 DATABASES = {
@@ -99,3 +105,5 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 #    '--with-coverage',
 #    '--cover-package=api,charts,editor,feeds,grid,landmatrix,map,wagtailcms'
 #]
+CELERY_ALWAYS_EAGER = True
+ACCOUNT_ACTIVATION_DAYS = 7

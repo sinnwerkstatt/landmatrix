@@ -99,6 +99,7 @@ INSTALLED_APPS += (
     'rest_framework.authtoken',
     'rest_framework_gis',
     'rest_framework_docs',
+    'rest_framework_swagger',
     'django.contrib.syndication',
     'file_resubmit',
 

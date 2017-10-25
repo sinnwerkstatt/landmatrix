@@ -156,7 +156,7 @@ NO_EMPTY_ALLOWED = (
 )
 
 class Command(BaseCommand):
-    help = 'Check if export has any errors (for internal QA)'
+    help = 'Checks if export has any errors (for internal QA)'
 
     def add_arguments(self, parser):
         parser.add_argument('file', nargs='+', type=str)

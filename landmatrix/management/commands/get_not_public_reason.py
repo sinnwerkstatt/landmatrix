@@ -5,7 +5,7 @@ from landmatrix.models import Activity
 
 
 class Command(BaseCommand):
-    help = 'Check why deal is not public'
+    help = 'Checks why deal is not public'
 
     def add_arguments(self, parser):
         parser.add_argument('activity_identifier', nargs='+', type=str)
