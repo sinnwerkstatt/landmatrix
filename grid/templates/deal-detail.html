@@ -16,11 +16,10 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    {% if activity.fk_status_id == 4 and not perms.landmatrix.change_activity %}
-    {% elif activity.latest == activity %}
-    <li role="presentation">
-        <a href="{% url "change_deal" deal_id=activity.activity_identifier %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
-    </li>
+    {% if activity|is_editable:user %}
+        <li role="presentation">
+            <a href="{% url "change_deal" deal_id=activity.activity_identifier %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
+        </li>
     {% endif %}
     <li role="presentation"><a href="#history">
         <i class="fa fa-history"></i> {% trans "History" %}

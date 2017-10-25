@@ -52,18 +52,12 @@ class ChangeDealView(SaveDealView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         activity = self.get_object()
-        # Status: Pending
-        is_editor = self.request.user.has_perm('landmatrix.review_activity')
-        is_author = activity.history_user_id == request.user.id
-        # Only Editors and Administrators are allowed to edit pending deals
-        if not is_editor:
-            if activity.fk_status_id in (HistoricalActivity.STATUS_PENDING, HistoricalActivity.STATUS_TO_DELETE)\
-                or (activity.fk_status_id == HistoricalActivity.STATUS_REJECTED and not is_author):
-                # Redirect to deal detail
-                args = {'deal_id': activity.activity_identifier}
-                if 'history_id' in kwargs:
-                    args['history_id'] = kwargs['history_id']
-                return HttpResponseRedirect(reverse('deal_detail', kwargs=args))
+        if not activity.is_editable(user):
+            # Redirect to deal detail
+            args = {'deal_id': activity.activity_identifier}
+            if 'history_id' in kwargs:
+                args['history_id'] = kwargs['history_id']
+            return HttpResponseRedirect(reverse('deal_detail', kwargs=args))
         return super(ChangeDealView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, deal_id, history_id=None):

@@ -295,3 +295,8 @@ def get_user_role(user):
 @register.filter
 def history(activity, user):
     return activity.get_history(user)
+
+
+@register.filter
+def is_editable(activity, user):
+    return activity.is_editable(user)

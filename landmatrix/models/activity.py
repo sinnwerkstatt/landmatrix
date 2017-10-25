@@ -194,6 +194,21 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
                                                          HistoricalActivity.STATUS_ACTIVE,
                                                          HistoricalActivity.STATUS_OVERWRITTEN,
                                                      )).all()
+
+    def is_editable(self, user=None):
+        if self.latest != self:
+            return False
+        if user:
+            # Status: Pending
+            is_editor = user.has_perm('landmatrix.review_activity')
+            is_author = self.history_user_id == user.id
+            # Only Editors and Administrators are allowed to edit pending deals
+            if not is_editor:
+                if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE)\
+                    or (self.fk_status_id == self.STATUS_REJECTED and not is_author):
+                    return False
+        return True
+
     @property
     def target_country(self):
         country = self.attributes.filter(name='target_country')
