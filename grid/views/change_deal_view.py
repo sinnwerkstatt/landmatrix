@@ -85,23 +85,23 @@ class ChangeDealView(SaveDealView):
             if history_id:
                 activity = queryset.get(id=history_id)
             else:
-                queryset = queryset.filter(fk_status_id__in=(HistoricalActivity.STATUS_ACTIVE,
-                                                             HistoricalActivity.STATUS_OVERWRITTEN,
-                                                             HistoricalActivity.STATUS_DELETED))
+                #queryset = queryset.filter(fk_status_id__in=(HistoricalActivity.STATUS_ACTIVE,
+                #                                             HistoricalActivity.STATUS_OVERWRITTEN,
+                #                                             HistoricalActivity.STATUS_DELETED))
                 activity = queryset.filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e)))
         # Status: Deleted
-        if activity.fk_status_id == HistoricalActivity.STATUS_DELETED:
-            # Only Administrators are allowed to edit (recover) deleted deals
-            if not self.request.user.has_perm('landmatrix.change_activity'):
-                raise Http404('Activity %s has been deleted' % deal_id)
+        #if activity.fk_status_id == HistoricalActivity.STATUS_DELETED:
+        #    # Only Administrators are allowed to edit (recover) deleted deals
+        #    if not self.request.user.has_perm('landmatrix.change_activity'):
+        #        raise Http404('Activity %s has been deleted' % deal_id)
         # Status: Rejected
-        if activity.fk_status_id == HistoricalActivity.STATUS_REJECTED:
-            # Only Administrators are allowed to edit (recover) deleted deals
-            if not self.request.user.has_perm('landmatrix.review_activity') and \
-               not activity.history_user == self.request.user:
-                raise Http404('Activity %s has been rejected' % deal_id)
+        #if activity.fk_status_id == HistoricalActivity.STATUS_REJECTED:
+        #    # Only Administrators are allowed to edit (recover) deleted deals
+        #    if not self.request.user.has_perm('landmatrix.review_activity') and \
+        #       not activity.history_user == self.request.user:
+        #        raise Http404('Activity %s has been rejected' % deal_id)
         return activity 
 
     def get_forms(self, data=None, files=None):

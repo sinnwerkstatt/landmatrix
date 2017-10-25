@@ -17,9 +17,9 @@
 
 {% block subnav_inner %}
     {% if activity.fk_status_id == 4 and not perms.landmatrix.change_activity %}
-    {% else %}
+    {% elif activity.latest == activity %}
     <li role="presentation">
-        <a href="{% if history_id %}{% url "change_deal" deal_id=activity.activity_identifier history_id=history_id %}{% else %}{% url "change_deal" deal_id=activity.activity_identifier %}{% endif %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
+        <a href="{% url "change_deal" deal_id=activity.activity_identifier %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
     </li>
     {% endif %}
     <li role="presentation"><a href="#history">
@@ -45,6 +45,9 @@
 <p class="alert alert-danger">{% trans "This deal has been deleted. It is not visible for public users." %}</p>
 {% elif activity.fk_status_id == 5 %}
 <p class="alert alert-danger">{% trans "This deal version has been rejected. It is not visible for public users." %}</p>
+{% endif %}
+{% if activity.latest != activity %}
+    <p class="alert alert-danger">{% trans "There's a newer version of this deal." %} <a href="{% url "deal_detail" deal_id=activity.activity_identifier %}">{% trans "Click here to show the latest version." %}</a></p>
 {% endif %}
 {% endblock %}
 

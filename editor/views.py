@@ -123,7 +123,7 @@ class PendingChangesMixin(FilteredQuerysetMixin):
         deletes = self.get_filtered_activity_queryset(
             queryset=self.get_permitted_activities())
         deletes = deletes.to_delete()
-        return deletes
+        return deletes.filter(id__in=deletes.latest_only())
 
     def get_feedback_queryset(self):
         feedback = ActivityFeedback.objects.active()
@@ -137,10 +137,9 @@ class PendingChangesMixin(FilteredQuerysetMixin):
         rejected = self.get_filtered_activity_queryset()
         rejected = rejected.rejected()
         rejected = rejected.filter(changesets__fk_user=self.request.user)
-        return rejected
+        return rejected.filter(id__in=rejected.latest_only())
 
     def get_my_deals_queryset(self):
-        #my_deals = self.get_filtered_activity_queryset()
         my_deals = HistoricalActivity.objects.get_my_deals(self.request.user.id)
         return my_deals
 

@@ -290,3 +290,8 @@ def get_user_role(user):
             output.append(str(_('for')))
             output.append(', '.join(area))
     return ' '.join(output)
+
+
+@register.filter
+def history(activity, user):
+    return activity.get_history(user)

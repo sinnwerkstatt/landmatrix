@@ -185,12 +185,15 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         else:
             return []
 
-    @property
-    def history(self):
-        activities = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier)
-        activities = activities.exclude(fk_status_id=HistoricalActivity.STATUS_REJECTED)
-        return activities
-
+    def get_history(self, user=None):
+        if user and user.is_authenticated():
+            return HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).all()
+        else:
+            return HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier,
+                                                     fk_status__in=(
+                                                         HistoricalActivity.STATUS_ACTIVE,
+                                                         HistoricalActivity.STATUS_OVERWRITTEN,
+                                                     )).all()
     @property
     def target_country(self):
         country = self.attributes.filter(name='target_country')
@@ -632,8 +635,8 @@ class Activity(ActivityBase):
 class HistoricalActivityQuerySet(ActivityQuerySet):
 
     def get_my_deals(self, user):
-        return self.filter(history_user=user)\
-            #.filter(fk_status__in=(ActivityBase.STATUS_PENDING, ActivityBase.STATUS_REJECTED))
+        queryset = self.filter(history_user=user)
+        return queryset.filter(id__in=self.latest_only())
 
     def _single_revision_identifiers(self):
         '''
@@ -897,6 +900,15 @@ class HistoricalActivity(ActivityBase):
                 delete_activity.delay(self.id)
             else:
                 index_activity.delay(self.id)
+
+    @property
+    def latest(self):
+        '''
+        Returns latest historical activity for activity identifier
+        '''
+        if not hasattr(self, '_latest'):
+            self._latest = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).latest()
+        return self._latest
 
     class Meta:
         verbose_name = _('Historical activity')

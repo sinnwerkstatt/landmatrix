@@ -174,7 +174,7 @@ class MapLOActivities(MapLOModel):
             new.save(using=V2)
 
         # existing records already have a historical version
-        if hasattr(new, 'historical_version') and new.historical_version:
+        if hasattr(newnew.historical_version:
             historical_activity = new.historical_version
         else:
             historical_activity = landmatrix.models.HistoricalActivity(
@@ -292,7 +292,7 @@ class MapLOActivities(MapLOModel):
 
             if save:
                 comments.delete()
-                activity.attributes.model.objects.create(
+                activity.attributes.model.objects.using(V2).create(
                     fk_activity=activity, fk_group=aag,
                     name='tg_implementation_status_comment', date=None,
                     value=joined_comment)

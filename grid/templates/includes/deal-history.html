@@ -14,7 +14,7 @@
                             <div class="col-sm-12">
                                 <table class="table">
                                     <tbody>
-                                    {% for item in activity.history.all %}
+                                    {% for item in activity|history:user %}
                                         <tr>
                                             <td>
                                                 {% if forloop.counter == 1 %}<strong>{% endif %}
@@ -28,13 +28,16 @@
                                                 <p class="toggle-tooltip" title="{% if item.fully_updated %}{% trans "Fully updated" %}{% else %}{% trans "Updadet" %}{% endif %}"><span class="fa fa-{% if item.fully_updated %}check-{% endif %}circle"></span></p>
                                             </td>
                                             <td>
+                                                <p><small><span class="label label-default">{{ item.fk_status.name }}</span></small></p>
+                                            </td>
+                                            <td>
                                                 <p>
-                                                {% if item.id != activity.id %}
+                                                {% if item.id == activity.id %}
+                                                    {% trans "This version" %}
+                                                {% else %}
                                                 <a type="button" href="{% url 'deal_detail' deal_id=item.activity_identifier history_id=item.id %}">
                                                     <i class="glyphicon glyphicon-eye-open"></i> {% trans "Show this version" %}
                                                 </a>
-                                                {% else %}
-                                                {% trans "This version" %}
                                                 {% endif %}
                                                 </p>
                                             </td>
