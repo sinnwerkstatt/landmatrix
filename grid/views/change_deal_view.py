@@ -52,7 +52,7 @@ class ChangeDealView(SaveDealView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         activity = self.get_object()
-        if not activity.is_editable(user):
+        if not activity.is_editable(request.user):
             # Redirect to deal detail
             args = {'deal_id': activity.activity_identifier}
             if 'history_id' in kwargs:
