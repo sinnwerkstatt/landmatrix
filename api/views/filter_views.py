@@ -11,11 +11,14 @@ from grid.views.browse_filter_conditions import get_field_label
 
 
 class FilterView(APIView):
-
     def get_object(self):
         return self.request.session.get('filters', {})
 
     def post(self, request, *args, **kwargs):
+        """
+        Set or remove filters to/from current session cookie.
+        Used within the filter section of map, data and chart views.
+        """
         # TODO: make this a PATCH, and more RESTful.
         # TODO: use a serializer for param parsing
         stored_filters = self.get_object()
@@ -76,6 +79,10 @@ class FilterView(APIView):
         return Response(stored_filters)
 
     def get(self, request, *args, **kwargs):
+        """
+        Show filters of current session cookie.
+        Used within the filter section of map, data and chart views.
+        """
         if request.query_params.get('clear') == '1':
             request.session['filters'] = {}
 

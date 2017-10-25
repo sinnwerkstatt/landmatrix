@@ -12,10 +12,18 @@ from api.views.base import FakeQuerySetListView
 
 
 class CountryListView(FakeQuerySetListView):
+    """
+    Get all countries grouped by National Observatories and Others.
+    Used by the navigation.
+    """
     fake_queryset_class = CountriesQuerySet
 
 
 class RegionListView(ListAPIView):
+    """
+    Get all regions.
+    Used by the navigation.
+    """
     # Filter out pages without an assigned region, those just error
     queryset = RegionPage.objects.filter(
         region__isnull=False).order_by('title')
@@ -29,6 +37,9 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 
 class InvestorListView(FakeQuerySetListView):
+    """
+    Get all Operational companies, Parent companies and Tertiary investors/lenders.
+    """
     fake_queryset_class = InvestorsQuerySet
     pagination_class = StandardResultsSetPagination
 

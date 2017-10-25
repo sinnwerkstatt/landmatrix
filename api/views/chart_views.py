@@ -34,6 +34,10 @@ from api.views.base import FakeQuerySetListView, FakeQuerySetRetrieveView
 
 
 class NegotiationStatusListView(ListAPIView):
+    """
+    Get deal aggregations grouped by Negotiation status.
+    Used within the charts section.
+    """
     serializer_class = NegotiationStatusSerializer
 
     def get_queryset(self):
@@ -75,52 +79,102 @@ class NegotiationStatusListView(ListAPIView):
 
 
 class ImplementationStatusListView(FakeQuerySetListView):
+    """
+    Get deal aggregations grouped by Implementation status.
+    Used within the charts section.
+    """
     fake_queryset_class = ImplementationStatusQuerySet
 
 
 class InvestmentIntentionListView(FakeQuerySetListView):
+    """
+    Get deal aggregations grouped by Intention.
+    Used within the charts section.
+    """
     fake_queryset_class = IntentionQuerySet
 
 
 class InvestorCountrySummaryListView(FakeQuerySetListView):
+    """
+    Get deal aggregations grouped by Investor country.
+    """
     fake_queryset_class = InvestorCountrySummariesQuerySet
 
 
 class TargetCountrySummaryListView(FakeQuerySetListView):
+    """
+    Get deal aggregations grouped by Target country.
+    """
     fake_queryset_class = TargetCountrySummariesQuerySet
 
 
 class TransnationalDealListView(FakeQuerySetListView):
+    """
+    Get deal aggregations for transnational deals grouped by country.
+    Used within the charts section.
+    """
     fake_queryset_class = TransnationalDealsQuerySet
 
 
 class Top10CountriesView(FakeQuerySetRetrieveView):
+    """
+    Get top 10 Investor or Target countries.
+    Used within the charts section.
+    """
     fake_queryset_class = Top10CountriesQuerySet
 
 
 class TransnationalDealsByCountryView(FakeQuerySetRetrieveView):
+    """
+    Get deal aggregations for transnational deals of given country grouped by role (Investor or Target country).
+    Used within the charts section.
+    """
     fake_queryset_class = TransnationalDealsByCountryQuerySet
 
 
 class HectaresView(FakeQuerySetRetrieveView):
+    """
+    Get global deal aggregations (no. of deals and size in hectares).
+    Used within the charts section.
+    """
     fake_queryset_class = HectaresQuerySet
 
 
 class AgriculturalProduceListView(FakeQuerySetListView):
+    """
+    Get deal aggregations grouped by Agricultural Produce.
+    Used within the charts section.
+    """
     fake_queryset_class = AllAgriculturalProduceQuerySet
 
 
 class ProduceInfoView(FakeQuerySetRetrieveView):
+    """
+    Get deal aggregations grouped by Animals, Minerals and Crops.
+    Used within the charts section.
+    """
     fake_queryset_class = ProduceInfoQuerySet
 
 
 class ResourceExtractionView(FakeQuerySetListView):
+    """
+    Get deal aggregations for Resource Extraction deals grouped by Negotiation status.
+    Used within the charts section.
+    """
     fake_queryset_class = ResourceExtractionQuerySet
 
 
 class LoggingView(FakeQuerySetRetrieveView):
+    """
+    Get deal aggregations for Logging deals grouped by Negotiation status.
+    Used within the charts section.
+    """
     fake_queryset_class = LoggingQuerySet
 
 
 class ContractFarmingView(FakeQuerySetRetrieveView):
+    """
+    Get deal aggregations for Contract Farming deals grouped by Negotiation status.
+    Used within the charts section.
+    """
     fake_queryset_class = ContractFarmingQuerySet

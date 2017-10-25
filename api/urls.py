@@ -5,7 +5,7 @@ from rest_framework_swagger.views import get_swagger_view
 from api.views import *
 from api.views.list_views import PolygonGeomView
 
-schema_view = get_swagger_view(title='LandMatrix API')
+schema_view = get_swagger_view(title='Land Matrix API')
 
 urlpatterns = [
     url(r'^filter\.json', FilterView.as_view(), {'format': 'json'},
@@ -63,8 +63,8 @@ urlpatterns = [
         name='deals_api'),
     url(r'^country_deals\.json', CountryDealsView.as_view(), {'format': 'json'},
         name='country_deals_api'),
-    url(r'^activities\.json', ActivityListView.as_view(),
-        {'format': 'json'}, name='activities_api'),
+    #url(r'^activities\.json', ActivityListView.as_view(),
+    #    {'format': 'json'}, name='activities_api'),
     url(r'^statistics\.json', StatisticsListView.as_view(),
         {'format': 'json'}, name='statistics_api'),
     url(r'^users\.json', UserListView.as_view(), {'format': 'json'},

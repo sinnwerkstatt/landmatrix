@@ -34,26 +34,31 @@ INTENTION_EXCLUDE = list(INTENTION_AGRICULTURE_MAP.keys())
 INTENTION_EXCLUDE.extend(list(INTENTION_FORESTRY_MAP.keys()))
 
 class UserListView(ListAPIView):
-    '''
+    """
     The users list view is used by the impersonate user feature of the editor.
-    '''
+    """
     queryset = User.objects.all().order_by('first_name')
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
 
 
 class StatisticsListView(FakeQuerySetListView):
+    """
+    Get deal aggregations grouped by Negotiation status.
+    Used by the CMS plugin „statistics“ for homepages and regional/national landing pages.
+    """
     fake_queryset_class = StatisticsQuerySet
 
 
 class ActivityListView(FakeQuerySetListView):
+    """List all activities"""
     fake_queryset_class = ActivityQuerySet
 
 
 class LatestChangesListView(FakeQuerySetListView):
-    '''
+    """
     Lists recent changes to the database (add, change, delete or comment)
-    '''
+    """
     fake_queryset_class = LatestChangesQuerySet
 
 
@@ -240,6 +245,10 @@ class ElasticSearchView(View):
 
 
 class GlobalDealsView(APIView, ElasticSearchView):
+    """
+    Get all deals from elasticsearch index.
+    Used within the map section.
+    """
 
     def create_feature_from_result(self, result):
         """ Create a GeoJSON-conform result. """
@@ -278,7 +287,8 @@ class GlobalDealsView(APIView, ElasticSearchView):
 
 class CountryDealsView(GlobalDealsView, APIView):
     """
-    Group deals by country
+    Get all deals grouped by country.
+    Used within the map section.
     """
 
     def get(self, request, *args, **kwargs):
