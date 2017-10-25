@@ -152,6 +152,7 @@ Structure and Apps schema
 API
 ---
 
+The API documentation can be found at https://dev.landmatrix.org/api/
 
 
 Tests
