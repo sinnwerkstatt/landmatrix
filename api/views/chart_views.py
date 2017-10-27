@@ -94,7 +94,6 @@ class InvestmentIntentionListView(FakeQuerySetListView):
     Get deal aggregations grouped by Intention.
     Used within the charts section.
     """
-    fake_queryset_class = IntentionQuerySet
     schema = ManualSchema(
         fields=[
             coreapi.Field(
@@ -106,6 +105,7 @@ class InvestmentIntentionListView(FakeQuerySetListView):
             ),
         ]
     )
+    fake_queryset_class = IntentionQuerySet
 
 
 class InvestorCountrySummaryView(FakeQuerySetListView):
@@ -124,7 +124,7 @@ class InvestorCountriesForTargetCountryView(FakeQuerySetListView):
             coreapi.Field(
                 "country_id",
                 required=False,
-                location="data",
+                location="query",
                 description="Country ID",
                 schema=coreschema.Integer(),
             ),
@@ -175,7 +175,7 @@ class TransnationalDealListView(FakeQuerySetListView):
             coreapi.Field(
                 "region",
                 required=False,
-                location="data",
+                location="query",
                 description="Region ID",
                 schema=coreschema.Integer(),
             ),

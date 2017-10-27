@@ -92,21 +92,21 @@ class LatestChangesListView(FakeQuerySetListView):
             coreapi.Field(
                 "n",
                 required=False,
-                location="data",
+                location="query",
                 description="Number of changes",
                 schema=coreschema.Integer(),
             ),
             coreapi.Field(
                 "target_country",
                 required=True,
-                location="data",
+                location="query",
                 description="Target country ID",
                 schema=coreschema.Integer(),
             ),
             coreapi.Field(
                 "target_region",
                 required=True,
-                location="data",
+                location="query",
                 description="Target region ID",
                 schema=coreschema.Integer(),
             ),
@@ -307,7 +307,7 @@ class GlobalDealsView(APIView, ElasticSearchView):
             coreapi.Field(
                 "window",
                 required=False,
-                location="request",
+                location="query",
                 description="Longitude min/max and Latitude min/max (e.g. 0,0,0,0)  ",
                 schema=coreschema.String(),
             ),
@@ -412,7 +412,7 @@ class CountryGeomView(APIView):
             coreapi.Field(
                 "country_id",
                 required=False,
-                location="data",
+                location="query",
                 description="Country ID",
                 schema=coreschema.Integer(),
             ),

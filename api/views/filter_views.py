@@ -13,8 +13,6 @@ from api.serializers import FilterPresetSerializer
 from grid.views.browse_filter_conditions import get_field_label
 
 
-
-
 class ManageFilterView(GenericAPIView):
     schema = ManualSchema(
         fields=[
