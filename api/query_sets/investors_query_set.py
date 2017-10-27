@@ -11,7 +11,7 @@ class InvestorsQuerySet(SimpleFakeQuerySet):
         term = self.get_data.GET.get('q', '')
         if term:
             investors = investors.filter(name__icontains=term)
-        role = self.get_data.GET.get('role', '')
+        #role = self.get_data.GET.get('role', '')
         #if role == 'operational_stakeholder':
         #    investors = investors.filter(investoractivityinvolvement__isnull=False)
         #else:

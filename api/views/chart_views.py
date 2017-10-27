@@ -2,6 +2,9 @@
 API calls used for generating charts.
 '''
 from rest_framework.generics import ListAPIView
+from rest_framework.schemas import ManualSchema
+import coreapi
+import coreschema
 
 from landmatrix.models.activity import Activity
 from api.query_sets.filter_query_set import FilterQuerySet
@@ -92,19 +95,73 @@ class InvestmentIntentionListView(FakeQuerySetListView):
     Used within the charts section.
     """
     fake_queryset_class = IntentionQuerySet
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "intention",
+                required=False,
+                location="query",
+                description="Parent intention",
+                schema=coreschema.String(),
+            ),
+        ]
+    )
 
 
-class InvestorCountrySummaryListView(FakeQuerySetListView):
+class InvestorCountrySummaryView(FakeQuerySetListView):
     """
     Get deal aggregations grouped by Investor country.
     """
     fake_queryset_class = InvestorCountrySummariesQuerySet
 
 
-class TargetCountrySummaryListView(FakeQuerySetListView):
+class InvestorCountriesForTargetCountryView(FakeQuerySetListView):
+    """
+    Get deal aggregations grouped for Investor country.
+    """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "country_id",
+                required=False,
+                location="data",
+                description="Country ID",
+                schema=coreschema.Integer(),
+            ),
+        ]
+    )
+    fake_queryset_class = InvestorCountrySummariesQuerySet
+
+
+class TargetCountrySummaryView(FakeQuerySetListView):
     """
     Get deal aggregations grouped by Target country.
     """
+    fake_queryset_class = TargetCountrySummariesQuerySet
+
+
+class TargetCountriesForInvestorCountryView(FakeQuerySetListView):
+    """
+    Get deal aggregations grouped for Target country/region.
+    """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "country_id",
+                required=False,
+                location="data",
+                description="Country ID",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "region_id",
+                required=False,
+                location="data",
+                description="Region ID",
+                schema=coreschema.Integer(),
+            ),
+        ]
+    )
     fake_queryset_class = TargetCountrySummariesQuerySet
 
 
@@ -113,6 +170,17 @@ class TransnationalDealListView(FakeQuerySetListView):
     Get deal aggregations for transnational deals grouped by country.
     Used within the charts section.
     """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "region",
+                required=False,
+                location="data",
+                description="Region ID",
+                schema=coreschema.Integer(),
+            ),
+        ]
+    )
     fake_queryset_class = TransnationalDealsQuerySet
 
 

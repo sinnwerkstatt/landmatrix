@@ -3,11 +3,12 @@ from api.views.nav_views import (
 )
 from api.views.chart_views import (
     HectaresView, ImplementationStatusListView, InvestmentIntentionListView,
-    InvestorCountrySummaryListView, NegotiationStatusListView,
-    TargetCountrySummaryListView, Top10CountriesView,
+    InvestorCountrySummaryView, NegotiationStatusListView,
+    TargetCountrySummaryView, Top10CountriesView,
     TransnationalDealListView, TransnationalDealsByCountryView,
     AgriculturalProduceListView, ProduceInfoView,
-    ResourceExtractionView, LoggingView, ContractFarmingView
+    ResourceExtractionView, LoggingView, ContractFarmingView,
+    TargetCountriesForInvestorCountryView, InvestorCountriesForTargetCountryView
 )
 from api.views.list_views import (
     ActivityListView, LatestChangesListView, StatisticsListView, UserListView,
@@ -16,19 +17,20 @@ from api.views.list_views import (
 )
 from api.views.deal_detail_view import DealDetailView
 from api.views.investor_network_view import InvestorNetworkView
-from api.views.filter_views import FilterView, FilterPresetView
+from api.views.filter_views import ManageFilterView, ClearFilterView, FilterPresetView
 
 
 __all__ = (
     'ActivityListView', 'AgriculturalProduceListView', 'ContractFarmingView',
-    'CountryListView', 'DealDetailView', 'DealListView', 'FilterView',
+    'CountryListView', 'DealDetailView', 'DealListView', 'ManageFilterView',
     'FilterPresetView', 'HectaresView', 'ImplementationStatusListView',
-    'InvestmentIntentionListView', 'InvestorCountrySummaryListView',
+    'InvestmentIntentionListView', 'InvestorCountrySummaryView',
     'InvestorListView', 'InvestorNetworkView', 'LatestChangesListView',
     'LoggingView', 'NegotiationStatusListView', 'ProduceInfoView',
     'RegionListView', 'StatisticsListView',  'ResourceExtractionView',
-    'TargetCountrySummaryListView', 'Top10CountriesView',
+    'TargetCountrySummaryView', 'Top10CountriesView',
     'TransnationalDealListView', 'TransnationalDealsByCountryView',
     'UserListView', 'GlobalDealsView', 'CountryDealsView', 'CountryGeomView',
-    'ElasticSearchView'
+    'ElasticSearchView', 'ClearFilterView', 'InvestorCountriesForTargetCountryView',
+    'TargetCountriesForInvestorCountryView'
 )

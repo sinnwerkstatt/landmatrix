@@ -1,8 +1,11 @@
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.response import Response
 from rest_framework import serializers
+from rest_framework.schemas import ManualSchema
+import coreapi
+import coreschema
 
 from landmatrix.models.filter_preset import FilterPreset as FilterPresetModel
 from api.filters import Filter, PresetFilter
@@ -10,7 +13,63 @@ from api.serializers import FilterPresetSerializer
 from grid.views.browse_filter_conditions import get_field_label
 
 
-class FilterView(APIView):
+
+
+class ManageFilterView(GenericAPIView):
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "action",
+                required=True,
+                location="data",
+                description="Action (set, remove or set_default_filters)",
+                schema=coreschema.String(),
+            ),
+            coreapi.Field(
+                "name",
+                required=False,
+                location="data",
+                description="Internal name (for referral)",
+                schema=coreschema.String(),
+            ),
+            coreapi.Field(
+                "preset",
+                required=False,
+                location="data",
+                description="Preset ID of new preset",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "variable",
+                required=False,
+                location="data",
+                description="Variable name of new filter (e.g. activity_identifier)",
+                schema=coreschema.String(),
+            ),
+            coreapi.Field(
+                "operator",
+                required=False,
+                location="data",
+                description="Operator of new filter (lt, gt, lte, gte, is, is_empty, not_in, in OR contains)",
+                schema=coreschema.String(),
+            ),
+            coreapi.Field(
+                "value",
+                required=False,
+                location="data",
+                description="Value of new filter",
+                schema=coreschema.String(),
+            ),
+            coreapi.Field(
+                "display_value",
+                required=False,
+                location="data",
+                description="Display value of new filter",
+                schema=coreschema.String(),
+            ),
+        ]
+    )
+
     def get_object(self):
         return self.request.session.get('filters', {})
 
@@ -78,25 +137,46 @@ class FilterView(APIView):
 
         return Response(stored_filters)
 
+
+class ClearFilterView(GenericAPIView):
+    def get_object(self):
+        return self.request.session.get('filters', {})
+
     def get(self, request, *args, **kwargs):
         """
         Show filters of current session cookie.
         Used within the filter section of map, data and chart views.
         """
-        if request.query_params.get('clear') == '1':
-            request.session['filters'] = {}
-
+        request.session['filters'] = {}
         filters = self.get_object()
         return Response(filters)
 
 
 class FilterPresetView(ListAPIView):
-    '''
+    """
     The filter preset view returns a list of presets, filtered by group.
     If the show_groups query param is present, it instead returns a list of
     groups.
-    '''
+    """
     serializer_class = FilterPresetSerializer
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "group",
+                required=False,
+                location="query",
+                description="FilterPresetGroup ID",
+                schema=coreschema.String(),
+            ),
+            coreapi.Field(
+                "show_groups",
+                required=False,
+                location="query",
+                description="Show groups if set",
+                schema=coreschema.String(),
+            ),
+        ]
+    )
 
     def get_queryset(self):
         queryset = FilterPresetModel.objects.all()

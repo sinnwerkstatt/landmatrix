@@ -11,10 +11,10 @@ from landmatrix.models import (
 
 
 class PassThruSerializer(serializers.BaseSerializer):
-    '''
+    """
     Read only serializer that does nothing, just passed the JSON object
     we already have through.
-    '''
+    """
     def to_representation(self, obj):
         return obj
 
@@ -37,9 +37,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegionSerializer(serializers.BaseSerializer):
-    '''
+    """
     Returns a region as a list: [id, slug, title].
-    '''
+    """
     def to_representation(self, obj):
         return [obj.region.id, obj.region.slug, obj.title]
 
@@ -52,9 +52,9 @@ class DealLocationSerializer(serializers.Serializer):
     production_area = GeometryField()
 
     def to_representation(self, obj):
-        '''
+        """
         Convert our binary polygon representation to a GEOSGeometry.
-        '''
+        """
         # TODO: DRY, we should have a model with a list of these fields
         for geo_field in ('contract_area', 'intended_area', 'production_area'):
             if geo_field in obj and obj[geo_field]:
@@ -65,9 +65,9 @@ class DealLocationSerializer(serializers.Serializer):
 
 
 class DealSerializer(serializers.Serializer):
-    '''
+    """
     Used to serialize the deal list view.
-    '''
+    """
     deal_id = serializers.IntegerField()
     intention = serializers.CharField()
     intended_size = serializers.IntegerField()
@@ -108,9 +108,9 @@ class DealSerializer(serializers.Serializer):
 
 
 class DealDetailSerializer(serializers.ModelSerializer):
-    '''
+    """
     Returns deal attributes.
-    '''
+    """
     attributes = serializers.SerializerMethodField()
 
     class Meta:
@@ -126,7 +126,7 @@ class DealDetailSerializer(serializers.ModelSerializer):
 
 
 class InvestorNetworkSerializer(serializers.BaseSerializer):
-    '''
+    """
     This serializer takes an investor and outputs a list of involvements
     formatted like:
     {
@@ -158,7 +158,7 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
         ],
     }
     This is not REST, but it maintains compatibility with the existing API.
-    '''
+    """
 
     def to_representation(self, obj, parent_types=['parent_stakeholders', 'parent_investors']):
         response = {

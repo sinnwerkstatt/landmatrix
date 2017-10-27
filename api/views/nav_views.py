@@ -3,6 +3,9 @@ API calls used by the nav menus.
 '''
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.schemas import ManualSchema
+import coreapi
+import coreschema
 
 from wagtailcms.models import RegionPage
 from api.query_sets.countries_query_set import CountriesQuerySet
@@ -40,6 +43,17 @@ class InvestorListView(FakeQuerySetListView):
     """
     Get all Operational companies, Parent companies and Tertiary investors/lenders.
     """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "q",
+                required=False,
+                location="query",
+                description="Search term",
+                schema=coreschema.String(),
+            ),
+        ]
+    )
     fake_queryset_class = InvestorsQuerySet
     pagination_class = StandardResultsSetPagination
 

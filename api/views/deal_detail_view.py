@@ -10,7 +10,7 @@ class DealDetailView(RetrieveAPIView):
     This view returns all attributes related to a deal.
     '''
     serializer_class = DealDetailSerializer
-    lookup_field = 'activity_identifier'
+    lookup_field = 'deal_id'
 
     def get_queryset(self):
         if self.request.user.is_authenticated() and self.request.user.is_staff:

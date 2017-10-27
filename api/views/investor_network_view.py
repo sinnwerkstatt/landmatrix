@@ -3,13 +3,30 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers
+from rest_framework.schemas import ManualSchema
+import coreapi
+import coreschema
 
 from landmatrix.models.investor import Investor
 from api.serializers import InvestorNetworkSerializer
 
 
-
 class InvestorNetworkView(APIView):
+    """
+    Get investor network.
+    Used within charts section.
+    """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "operational_stakeholder",
+                required=True,
+                location="query",
+                description="Operational company ID",
+                schema=coreschema.Integer(),
+            ),
+        ]
+    )
 
     def get_object(self):
         '''
@@ -31,10 +48,8 @@ class InvestorNetworkView(APIView):
         return investor
 
     def get(self, request, format=None):
-        '''
-        TODO: determine what operational_stakeholder_diagram does here -
-        it seems to just be passed back in the response.
-        '''
+        # TODO: determine what operational_stakeholder_diagram does here -
+        # it seems to just be passed back in the response.
         operational_stakeholder = self.get_object()
         serialized_response = InvestorNetworkSerializer(operational_stakeholder)
         #parent_type=request.query_params.get('parent_type', 'parent_stakeholders'))

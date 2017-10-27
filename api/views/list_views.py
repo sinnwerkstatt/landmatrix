@@ -9,6 +9,9 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.schemas import ManualSchema
+import coreapi
+import coreschema
 
 from api.utils import PropertyCounter
 from grid.views.activity_protocol import ActivityQuerySet
@@ -47,6 +50,31 @@ class StatisticsListView(FakeQuerySetListView):
     Get deal aggregations grouped by Negotiation status.
     Used by the CMS plugin „statistics“ for homepages and regional/national landing pages.
     """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "country",
+                required=True,
+                location="query",
+                description="Country ID",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "region",
+                required=False,
+                location="query",
+                description="Region ID",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "disable_filters",
+                required=False,
+                location="query",
+                description="Set to 1 to disable default filters",
+                schema=coreschema.Integer(),
+            ),
+        ]
+    )
     fake_queryset_class = StatisticsQuerySet
 
 
@@ -59,6 +87,31 @@ class LatestChangesListView(FakeQuerySetListView):
     """
     Lists recent changes to the database (add, change, delete or comment)
     """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "n",
+                required=False,
+                location="data",
+                description="Number of changes",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "target_country",
+                required=True,
+                location="data",
+                description="Target country ID",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "target_region",
+                required=True,
+                location="data",
+                description="Target region ID",
+                schema=coreschema.Integer(),
+            ),
+        ]
+    )
     fake_queryset_class = LatestChangesQuerySet
 
 
@@ -249,6 +302,18 @@ class GlobalDealsView(APIView, ElasticSearchView):
     Get all deals from elasticsearch index.
     Used within the map section.
     """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "window",
+                required=False,
+                location="request",
+                description="Longitude min/max and Latitude min/max (e.g. 0,0,0,0)  ",
+                schema=coreschema.String(),
+            ),
+
+        ]
+    )
 
     def create_feature_from_result(self, result):
         """ Create a GeoJSON-conform result. """
@@ -340,8 +405,19 @@ class CountryGeomView(APIView):
     """
     Get minimal geojson of requested country. This works for one country only
     due to response size but can probably be reduced with ST_dump / ST_union for
-    mulitple countries.
+    multiple countries.
     """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "country_id",
+                required=False,
+                location="data",
+                description="Country ID",
+                schema=coreschema.Integer(),
+            ),
+        ]
+    )
 
     http_method_names = ['get']
 
@@ -371,7 +447,17 @@ class PolygonGeomView(GlobalDealsView, APIView):
     Currently no filtering is in place, all polygons encountered are returned.
     If this becomes too big, spatial filtering needs to be implemented.
     """
-
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "polygon_field",
+                required=True,
+                location="path",
+                description="Polygon field (contract_area, intended_area, production_area)",
+                schema=coreschema.String(),
+            ),
+        ]
+    )
     http_method_names = ['get']
 
     def get(self, request, *args, **kwargs):
