@@ -49,7 +49,11 @@ admin.site.register(ReviewDecision)
 admin.site.register(ActivityFeedback)
 admin.site.register(Animal)
 admin.site.register(Mineral)
-admin.site.register(Crop)
+
+class CropAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'slug', 'fk_agricultural_produce')
+admin.site.register(Crop, CropAdmin)
+
 admin.site.register(Currency)
 admin.site.register(Investor)
 admin.site.register(InvestorActivityInvolvement)
