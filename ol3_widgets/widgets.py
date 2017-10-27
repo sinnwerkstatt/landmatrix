@@ -124,15 +124,6 @@ class OSMWidget(OpenLayersWidget):
         if attrs:
             self.attrs.update(attrs)
 
-    @property
-    def map_srid(self):
-        # Use the official spherical mercator projection SRID when GDAL is
-        # available; otherwise, fallback to 900913.
-        if gdal.HAS_GDAL:
-            return 3857
-        else:
-            return 900913
-
 
 class SerializedMapWidget(OSMWidget):
     template_name = 'widgets/map.html'

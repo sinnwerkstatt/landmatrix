@@ -41,7 +41,10 @@ $(document).ready(function () {
     // TODO: allow deleting individual features (#8972)
     (function() {
         'use strict';
-        var jsonFormat = new ol.format.GeoJSON();
+        var jsonFormat = new ol.format.GeoJSON({
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:3857'
+        });
 
         function MapWidget(options) {
             this.map = null;
