@@ -45,7 +45,7 @@
 {% elif activity.fk_status_id == 5 %}
 <p class="alert alert-danger">{% trans "This deal version has been rejected. It is not visible for public users." %}</p>
 {% endif %}
-{% if activity.latest != activity %}
+{% if activity|get_latest:request.user != activity %}
     <p class="alert alert-danger">{% trans "There's a newer version of this deal." %} <a href="{% url "deal_detail" deal_id=activity.activity_identifier %}">{% trans "Click here to show the latest version." %}</a></p>
 {% endif %}
 {% endblock %}

@@ -300,3 +300,8 @@ def history(activity, user):
 @register.filter
 def is_editable(activity, user):
     return activity.is_editable(user)
+
+
+@register.filter
+def get_latest(activity, user):
+    return activity.get_latest(user)

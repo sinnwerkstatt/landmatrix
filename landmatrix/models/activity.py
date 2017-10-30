@@ -186,17 +186,24 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
             return []
 
     def get_history(self, user=None):
-        if user and user.is_authenticated():
-            return HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).all()
-        else:
-            return HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier,
-                                                     fk_status__in=(
-                                                         HistoricalActivity.STATUS_ACTIVE,
-                                                         HistoricalActivity.STATUS_OVERWRITTEN,
-                                                     )).all()
+        """
+        Returns all deal versions
+        """
+        queryset = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).all()
+        if not (user and user.is_authenticated()):
+            queryset = queryset.filter(fk_status__in=(HistoricalActivity.STATUS_ACTIVE,
+                                                      HistoricalActivity.STATUS_OVERWRITTEN))
+        return queryset
+
+    def get_latest(self, user=None):
+        """
+        Returns latest historical activity
+        """
+        queryset = self.get_history(user)
+        return queryset.latest()
 
     def is_editable(self, user=None):
-        if self.latest != self:
+        if self.get_latest(user) != self:
             return False
         if user:
             # Status: Pending
@@ -915,15 +922,6 @@ class HistoricalActivity(ActivityBase):
                 delete_activity.delay(self.id)
             else:
                 index_activity.delay(self.id)
-
-    @property
-    def latest(self):
-        '''
-        Returns latest historical activity for activity identifier
-        '''
-        if not hasattr(self, '_latest'):
-            self._latest = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).latest()
-        return self._latest
 
     class Meta:
         verbose_name = _('Historical activity')
