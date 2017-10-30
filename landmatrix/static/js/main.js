@@ -39,7 +39,11 @@ function EncodeQueryData(data) {
 }
 
 function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    if (x !== null) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    } else {
+        return '0';
+    }
 }
 
 function drawPie(e, d, isDataAvailability) {

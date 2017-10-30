@@ -33,6 +33,7 @@ FIELD_TYPE_MAPPING = {
     'AreaField': 'string',
     'FloatField': 'float',
     'ModelChoiceField': 'keyword',
+    'CountryField': 'keyword',
 }
 
 DOC_TYPES_ACTIVITY = ('deal', 'location', 'data_source', 'contract')
@@ -525,27 +526,26 @@ class ElasticSearch(object):
     def refresh_index(self):
         self.conn.refresh(self.index_name)
 
-    def search(self, elasticsearch_query, doc_type='deal', sort=[]):
+    def search(self, query, doc_type='deal', sort=[]):
         """ Executes paginated queries until all results have been retrieved. 
             @return: The full list of hits. """
         start = 0
-        size = 10000 # 10000 is the default elasticsearch max_window_size (pagination is cheap, so more is not necessarily better)
         raw_result_list = []
         
         done = False
         while not done:
-            query = {
-                'query': elasticsearch_query,
+            es_query = {
+                'query': query,
                 'from': start,
-                'size': size,
+                'size': 10000,
             }
             if sort:
                 query['sort'] = sort
-            query_result = self.conn.search(query, index=self.index_name, doc_type=doc_type)
+            query_result = self.conn.search(es_query, index=self.index_name, doc_type=doc_type)
             raw_result_list.extend(query_result['hits']['hits'])
             results_total = query_result['hits']['total']
             
-            if len(raw_result_list) >= results_total:
+            if len(raw_result_list) >= results_total or size == 0:
                 done = True
             else:
                 start = len(raw_result_list)
@@ -554,6 +554,23 @@ class ElasticSearch(object):
             len(raw_result_list), query_result['hits']['total'])
         )
         return raw_result_list
+
+    def aggregate(self, aggregations, query=None, doc_type='deal'):
+        """
+        Executes aggregation queries
+        @return: The full list of hits.
+        """
+
+        es_query = {
+            'aggregations': aggregations,
+            'query': query,
+            'size': 0,
+        }
+        raw_result = self.conn.search(es_query, index=self.index_name, doc_type=doc_type)
+        result = {}
+        for key in aggregations.keys():
+            result[key] = raw_result['aggregations'][key]['buckets']
+        return result
 
     def delete_activity(self, activity):
         for doc_type in DOC_TYPES_ACTIVITY:

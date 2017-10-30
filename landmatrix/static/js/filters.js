@@ -87,7 +87,8 @@ function updateFilters(data) {
 
 function loadPreset(presetId, label) {
     $.post(
-        "/api/filter.json?action=set&preset=" + presetId,
+        "/api/filter/add/",
+        {preset: presetId},
         function () {
             window.location.reload();
         }
@@ -96,7 +97,8 @@ function loadPreset(presetId, label) {
 
 function removeFilter(filterName) {
     $.post(
-        "/api/filter.json?action=remove&name=" + filterName,
+        "/api/filter/delete/",
+        {name: filterName},
         function () {
             // Check if querystring params contain removed filter
             var url = window.location.href.split("?");
@@ -198,7 +200,7 @@ $(document).ready(function () {
 
     // Get initial filter data for this session
     $.get(
-        "/api/filter.json?action=list",
+        "/api/filter.json",
         updateFilters
     );
 
@@ -248,7 +250,8 @@ $(document).ready(function () {
             data += '&display_value=' + value.filter(':checked').parent().text().trim();
         }
         $.post(
-            '/api/filter.json?action=set&' + data,
+            '/api/filter/add/',
+            data,
             function () {
                 window.location.reload();
             }
@@ -258,7 +261,7 @@ $(document).ready(function () {
     $("#id_set_default_filters").click(function (e) {
         var data = $(this).closest('form').serialize();
         $.post(
-            '/api/filter.json?action=set_default_filters&' + data,
+            '/api/filter/add/default/',
             function () {
                 window.location.reload();
             }

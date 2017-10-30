@@ -13,16 +13,13 @@ from api.serializers import FilterPresetSerializer
 from grid.views.browse_filter_conditions import get_field_label
 
 
-class ManageFilterView(GenericAPIView):
+class FilterCreateView(GenericAPIView):
+    """
+    Add filter (or filter preset) to current session cookie.
+    Used within the filter section of map, data and chart views.
+    """
     schema = ManualSchema(
         fields=[
-            coreapi.Field(
-                "action",
-                required=True,
-                location="data",
-                description="Action (set, remove or set_default_filters)",
-                schema=coreschema.String(),
-            ),
             coreapi.Field(
                 "name",
                 required=False,
@@ -72,10 +69,6 @@ class ManageFilterView(GenericAPIView):
         return self.request.session.get('filters', {})
 
     def post(self, request, *args, **kwargs):
-        """
-        Set or remove filters to/from current session cookie.
-        Used within the filter section of map, data and chart views.
-        """
         # TODO: make this a PATCH, and more RESTful.
         # TODO: use a serializer for param parsing
         stored_filters = self.get_object()
@@ -85,58 +78,161 @@ class ManageFilterView(GenericAPIView):
         request_data = request.query_params.copy()
         request_data.update(request.data)
 
-        action = request_data.get('action', 'nothing').lower()
         name = request_data.get('name', None)
         if not name:
             name = 'filter_%i' % (len(request.session.get('filters', [])) + 1)
 
-        if action == 'set':
-            if 'preset' in request_data:
-                # Check for duplicates
-                for filter_name, stored_filter in stored_filters.items():
-                    if stored_filter.get('preset_id', '') == request_data['preset']:
-                        return Response(stored_filters)
-                new_filter = PresetFilter(request_data['preset'], name=name)
-            else:
-                try:
-                    variable = request_data['variable']
-                    operator = request_data['operator']
-                    value = request_data['value']
-                    display_value = request_data.get('display_value', None)
-                except KeyError as err:
-                    raise serializers.ValidationError(
-                        {err.args[0]: _("This field is required.")})
-                # Check for duplicates
-                for filter_name, stored_filter in stored_filters.items():
-                    if (stored_filter.get('variable', '') == variable and
-                       stored_filter.get('operator', '') == operator and
-                       stored_filter.get('value', '') == value):
-                        return Response(stored_filters)
-                label = get_field_label(variable)
-                new_filter = Filter(
-                    variable=variable, operator=operator, value=value,
-                    label=label, name=name, display_value=display_value)
-            stored_filters[new_filter.name] = new_filter
-        elif action == 'remove':
+        if 'preset' in request_data:
+            # Check for duplicates
+            for filter_name, stored_filter in stored_filters.items():
+                if stored_filter.get('preset_id', '') == request_data['preset']:
+                    return Response(stored_filters)
+            new_filter = PresetFilter(request_data['preset'], name=name)
+        else:
             try:
-                del stored_filters[name]
-                # Default filter?
-                if 'default_preset' in name:
-                    # Convert default filters to custom filters
-                    stored_filters = dict((k.replace('default_', ''), v)
-                        for k, v in stored_filters.items())
-                    # Disable default filters
-                    request.session['set_default_filters'] = False
-            except KeyError:
-                pass
-        elif action == 'set_default_filters':
-            request.session['set_default_filters'] = 'set_default_filters' in request_data
+                variable = request_data['variable']
+                operator = request_data['operator']
+                value = request_data['value']
+                display_value = request_data.get('display_value', None)
+            except KeyError as err:
+                raise serializers.ValidationError(
+                    {err.args[0]: _("This field is required.")})
+            # Check for duplicates
+            for filter_name, stored_filter in stored_filters.items():
+                if (stored_filter.get('variable', '') == variable and
+                   stored_filter.get('operator', '') == operator and
+                   stored_filter.get('value', '') == value):
+                    return Response(stored_filters)
+            label = get_field_label(variable)
+            new_filter = Filter(
+                variable=variable, operator=operator, value=value,
+                label=label, name=name, display_value=display_value)
+        stored_filters[new_filter.name] = new_filter
         request.session['filters'] = stored_filters
 
         return Response(stored_filters)
 
 
-class ClearFilterView(GenericAPIView):
+class FilterDeleteView(GenericAPIView):
+    """
+    Delete filter (or filter preset) from current session cookie.
+    Used within the filter section of map, data and chart views.
+    """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "name",
+                required=False,
+                location="data",
+                description="Internal name (for referral)",
+                schema=coreschema.String(),
+            ),
+            coreapi.Field(
+                "preset",
+                required=False,
+                location="data",
+                description="Preset ID of new preset",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "variable",
+                required=False,
+                location="data",
+                description="Variable name of new filter (e.g. activity_identifier)",
+                schema=coreschema.String(),
+            ),
+            coreapi.Field(
+                "operator",
+                required=False,
+                location="data",
+                description="Operator of new filter (lt, gt, lte, gte, is, is_empty, not_in, in OR contains)",
+                schema=coreschema.String(),
+            ),
+            coreapi.Field(
+                "value",
+                required=False,
+                location="data",
+                description="Value of new filter",
+                schema=coreschema.String(),
+            ),
+            coreapi.Field(
+                "display_value",
+                required=False,
+                location="data",
+                description="Display value of new filter",
+                schema=coreschema.String(),
+            ),
+        ]
+    )
+
+    def get_object(self):
+        return self.request.session.get('filters', {})
+
+    def post(self, request, *args, **kwargs):
+        # TODO: make this a PATCH, and more RESTful.
+        # TODO: use a serializer for param parsing
+        stored_filters = self.get_object()
+
+        # TODO: This works, but it's not very standard DRF.
+        # Maybe convert to using the POST body for args in future?
+        request_data = request.query_params.copy()
+        request_data.update(request.data)
+
+        name = request_data.get('name', None)
+        if not name:
+            name = 'filter_%i' % (len(request.session.get('filters', [])) + 1)
+
+
+        try:
+            del stored_filters[name]
+            # Default filter?
+            if 'default_preset' in name:
+                # Convert default filters to custom filters
+                stored_filters = dict((k.replace('default_', ''), v)
+                    for k, v in stored_filters.items())
+                # Disable default filters
+                request.session['set_default_filters'] = False
+        except KeyError:
+            pass
+        request.session['filters'] = stored_filters
+
+        return Response(stored_filters)
+
+
+class SetDefaultFiltersView(GenericAPIView):
+    """
+    Set default filters for current session cookie.
+    Used within the filter section of map, data and chart views.
+    """
+
+    def get_object(self):
+        return self.request.session.get('filters', {})
+
+    def post(self, request, *args, **kwargs):
+        request.session['set_default_filters'] = True
+
+        return Response({})
+
+
+class FilterListView(GenericAPIView):
+    """
+    List filters in current session cookie.
+    Used within the filter section of map, data and chart views.
+    """
+
+    def get_object(self):
+        return self.request.session.get('filters', {})
+
+    def get(self, request, *args, **kwargs):
+        """
+        Show filters of current session cookie.
+        Used within the filter section of map, data and chart views.
+        """
+        filters = self.get_object()
+        return Response(filters)
+
+
+class FilterClearView(GenericAPIView):
     def get_object(self):
         return self.request.session.get('filters', {})
 

@@ -17,20 +17,24 @@ from api.views.list_views import (
 )
 from api.views.deal_detail_view import DealDetailView
 from api.views.investor_network_view import InvestorNetworkView
-from api.views.filter_views import ManageFilterView, ClearFilterView, FilterPresetView
+from api.views.filter_views import (
+    FilterCreateView, FilterDeleteView, FilterListView, SetDefaultFiltersView,
+    FilterClearView, FilterPresetView
+)
 
 
 __all__ = (
     'ActivityListView', 'AgriculturalProduceListView', 'ContractFarmingView',
-    'CountryListView', 'DealDetailView', 'DealListView', 'ManageFilterView',
-    'FilterPresetView', 'HectaresView', 'ImplementationStatusListView',
-    'InvestmentIntentionListView', 'InvestorCountrySummaryView',
+    'CountryListView', 'DealDetailView', 'DealListView', 'HectaresView',
+    'ImplementationStatusListView', 'InvestmentIntentionListView', 'InvestorCountrySummaryView',
     'InvestorListView', 'InvestorNetworkView', 'LatestChangesListView',
     'LoggingView', 'NegotiationStatusListView', 'ProduceInfoView',
     'RegionListView', 'StatisticsListView',  'ResourceExtractionView',
     'TargetCountrySummaryView', 'Top10CountriesView',
     'TransnationalDealListView', 'TransnationalDealsByCountryView',
     'UserListView', 'GlobalDealsView', 'CountryDealsView', 'CountryGeomView',
-    'ElasticSearchView', 'ClearFilterView', 'InvestorCountriesForTargetCountryView',
-    'TargetCountriesForInvestorCountryView'
+    'ElasticSearchView', 'InvestorCountriesForTargetCountryView',
+    'TargetCountriesForInvestorCountryView',
+    'FilterCreateView', 'FilterDeleteView', 'FilterListView', 'SetDefaultFiltersView',
+    'FilterClearView', 'FilterPresetView',
 )
