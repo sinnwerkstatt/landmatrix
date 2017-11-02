@@ -70,7 +70,6 @@ class DealDetailView(PDFViewMixin, TemplateView):
             if history_id:
                 activity = queryset.get(id=history_id)
             else:
-                queryset = queryset.exclude(fk_status_id=HistoricalActivity.STATUS_REJECTED)
                 activity = queryset.filter(activity_identifier=deal_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404('Activity %s does not exist (%s)' % (deal_id, str(e)))
