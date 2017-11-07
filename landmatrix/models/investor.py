@@ -130,8 +130,8 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         '''
         If we have an unknown (blank) name, get the correct generic text.
         '''
-        if self.is_operational_company:
-            name = _("Unknown operational company (#%s)") % (self.pk,)
+        if self.is_operating_company:
+            name = _("Unknown operating company (#%s)") % (self.pk,)
         elif self.is_parent_company:
             name = _("Unknown parent company (#%s)") % (self.pk,)
         elif self.is_parent_investor:
@@ -152,7 +152,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         return self.fk_status_id == self.STATUS_DELETED
 
     @property
-    def is_operational_company(self):
+    def is_operating_company(self):
         '''
         Moved this logic from the view. Not sure though if we should
         determine this using classification in future.
@@ -259,7 +259,7 @@ class InvestorVentureQuerySet(models.QuerySet):
 class InvestorVentureInvolvement(models.Model):
     '''
     InvestorVentureInvolvement links investors to each other.
-    Generally fk_venture links to the Operational Company, and fk_investor
+    Generally fk_venture links to the Operating company, and fk_investor
     links to investors or parent stakeholders in that company (depending
     on the role).
     '''
@@ -315,9 +315,9 @@ class InvestorActivityInvolvement(models.Model):
     InvestorActivityInvolvments link Operational Companies (Investor model)
     to activities.
 
-    There should only be one Operational Company per activity,
+    There should only be one Operating company per activity,
     although this is not enforced by the model currently. Other investors
-    are then linked to the Operational Company through
+    are then linked to the Operating company through
     InvestorVentureInvolvement.
     '''
     # FIXME: Replace fk_status with Choice Field
@@ -389,7 +389,7 @@ class InvestorActivitySize(models.Model):
     Deal size split by investor (required for fast aggregation e.g. in charts)
 
     Rule:
-    Operational company with no parent companies gets assigned complete deal size
+    Operating company with no parent companies gets assigned complete deal size
     OR
     All Parent companies with no parent companies of a deal get assigned the complete deal size each
     """

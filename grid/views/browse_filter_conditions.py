@@ -155,9 +155,9 @@ def get_field_by_key(key):
         form = hasattr(form, "form") and form.form or form
         if key in form.base_fields:
             return form().fields[key]
-    # Operational company fields
+    # Operating company fields
     investor_forms = {
-        'operational_company_': OperationalCompanyForm,
+        'operating_company_': OperationalCompanyForm,
         'parent_stakeholder_': ParentStakeholderForm,
         'parent_investor_': ParentInvestorForm,
     }
@@ -178,7 +178,7 @@ def get_field_label(key):
     field = get_field_by_key(key)
     if field:
         investor_labels = {
-            'operational_company_': _('Operational company'),
+            'operating_company_': _('Operating company'),
             'parent_stakeholder_': _('Parent company'),
             'parent_investor_': _('Tertiary investor/lender'),
         }

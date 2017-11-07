@@ -455,9 +455,9 @@ class Activity(ActivityBase):
         involvements = self.investoractivityinvolvement_set.all()
         if involvements.count() == 0:
             return False
-        # 4. Invalid Operational company name?
+        # 4. Invalid Operating company name?
         # 5. Invalid Parent companies/investors?
-        if self.has_invalid_operational_company(involvements) and self.has_invalid_parents(involvements):
+        if self.has_invalid_operating_company(involvements) and self.has_invalid_parents(involvements):
             return False
         # 6. High income country?
         if self.is_high_income_target_country():
@@ -483,13 +483,13 @@ class Activity(ActivityBase):
         involvements = self.investoractivityinvolvement_set.all()
         if involvements.count() == 0:
             return '3. involvements missing'
-        # 4. Invalid Operational company name?
-        if self.has_invalid_operational_company(involvements):
+        # 4. Invalid Operating company name?
+        if self.has_invalid_operating_company(involvements):
             return ''
-        # 4. Invalid Operational company name?
+        # 4. Invalid Operating company name?
         # 5. Invalid Parent companies/investors?
-        if self.has_invalid_operational_company(involvements) and self.has_invalid_parents(involvements):
-            return '4. Invalid Operational company name or 5. Invalid Parent companies/investors'
+        if self.has_invalid_operating_company(involvements) and self.has_invalid_parents(involvements):
+            return '4. Invalid Operating company name or 5. Invalid Parent companies/investors'
         # 6. High income country
         if self.is_high_income_target_country():
             return '6. High income country'
@@ -509,7 +509,7 @@ class Activity(ActivityBase):
     #    is_mining_deal = len(mining) > 0 and len(intentions) == 1
     #    return is_mining_deal
 
-    def has_invalid_operational_company(self, involvements):
+    def has_invalid_operating_company(self, involvements):
         for i in involvements:
             if not i.fk_investor:
                 continue
@@ -523,7 +523,7 @@ class Activity(ActivityBase):
         for i in involvements:
             if not i.fk_investor:
                 continue
-            # Operational company name given?
+            # Operating company name given?
             # investor_name = i.fk_investor.name
             # invalid_name = "(unknown|unnamed)"
             # if not investor_name:
@@ -630,10 +630,10 @@ class Activity(ActivityBase):
                     parents.append(investor)
             return parents
 
-        # Operational company
-        operational_companies = Investor.objects.filter(
+        # Operating company
+        operating_companies = Investor.objects.filter(
             investoractivityinvolvement__fk_activity__activity_identifier=self.activity_identifier)
-        top_investors = list(set(get_parent_companies(operational_companies)))
+        top_investors = list(set(get_parent_companies(operating_companies)))
         return top_investors
 
     def format_investors(self, investors):

@@ -65,39 +65,39 @@ class SQLBuilderData:
         join(Investor, 'stakeholders', on='ivi.fk_investor_id = stakeholders.id'),
     ]
     COLUMNS = DefaultDict(default_column, {
-        # Operational stakeholders (= Operational companies)
+        # Operational stakeholders (= Operating companies)
         'operational_stakeholder': [
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id')
         ],
-        'operational_company_country': [
+        'operating_company_country': [
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
             join(Country, 'operational_stakeholder_country', on='operational_stakeholder_country.id = operational_stakeholder.fk_country_id'),
         ],
-        'operational_company_region': [
+        'operating_company_region': [
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
             join(Country, 'operational_stakeholder_country', on='operational_stakeholder_country.id = operational_stakeholder.fk_country_id'),
             join(Region, 'operational_stakeholder_region', on='operational_stakeholder_region.id = operational_stakeholder_country.fk_region_id')
         ],
-        "operational_company_classification": [
+        "operating_company_classification": [
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
         ],
-        "operational_company_homepage": [
+        "operating_company_homepage": [
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
         ],
-        "operational_company_opencorporates_link": [
+        "operating_company_opencorporates_link": [
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
         ],
-        "operational_company_comment": [
+        "operating_company_comment": [
             join(InvestorActivityInvolvement, 'iai', on='a.id = iai.fk_activity_id'),
             join(Investor, 'operational_stakeholder', on='iai.fk_investor_id = operational_stakeholder.id'),
         ],
-        # Parent stakeholders (= Parent companies and investors of Operational company)
+        # Parent stakeholders (= Parent companies and investors of Operating company)
         'investor_name': INVESTOR_COLUMNS,
         'investor_country': INVESTOR_COLUMNS + [
             join(Country, 'investor_country', on='investor_country.id = stakeholders.fk_country_id'),
@@ -156,7 +156,7 @@ class SQLBuilderData:
         ],
     })
     SQL_COLUMN_MAP = DefaultDict(default_column_map, {
-        # Operational stakeholder (= Operational company)
+        # Operational stakeholder (= Operating company)
         #"operational_stakeholder_name": [
         #    "ARRAY_AGG(DISTINCT CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier)) AS operational_stakeholder_name",
         #    "CONCAT(stakeholders.name, '#!#', stakeholders.investor_identifier) AS operational_stakeholder_name"
@@ -164,27 +164,27 @@ class SQLBuilderData:
         "operational_stakeholder_name": [
             "ARRAY_AGG(DISTINCT operational_stakeholder.name) AS operational_stakeholder_name",
         ],
-        "operational_company_country": [
-            "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_country.name, '#!#', operational_stakeholder_country.code_alpha3)) AS operational_company_country",
-            "CONCAT(operational_stakeholder_country.name, '#!#', operational_stakeholder_country.code_alpha3) AS operational_company_country"
+        "operating_company_country": [
+            "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_country.name, '#!#', operational_stakeholder_country.code_alpha3)) AS operating_company_country",
+            "CONCAT(operational_stakeholder_country.name, '#!#', operational_stakeholder_country.code_alpha3) AS operating_company_country"
         ],
-        "operational_company_region": [
-            "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id)) AS operational_company_region",
-            "CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id) AS operational_company_region"
+        "operating_company_region": [
+            "ARRAY_AGG(DISTINCT CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id)) AS operating_company_region",
+            "CONCAT(operational_stakeholder_region.name, '#!#', operational_stakeholder_region.id) AS operating_company_region"
         ],
-        "operational_company_classification": [
-            "ARRAY_AGG(DISTINCT operational_stakeholder.classification) AS operational_company_classification",
+        "operating_company_classification": [
+            "ARRAY_AGG(DISTINCT operational_stakeholder.classification) AS operating_company_classification",
         ],
-        "operational_company_homepage": [
-            "ARRAY_AGG(DISTINCT operational_stakeholder.homepage) AS operational_company_homepage",
+        "operating_company_homepage": [
+            "ARRAY_AGG(DISTINCT operational_stakeholder.homepage) AS operating_company_homepage",
         ],
-        "operational_company_opencorporates_link": [
-            "ARRAY_AGG(DISTINCT operational_stakeholder.opencorporates_link) AS operational_company_opencorporates_link",
+        "operating_company_opencorporates_link": [
+            "ARRAY_AGG(DISTINCT operational_stakeholder.opencorporates_link) AS operating_company_opencorporates_link",
         ],
-        "operational_company_comment": [
-            "ARRAY_AGG(DISTINCT operational_stakeholder.comment) AS operational_company_comment",
+        "operating_company_comment": [
+            "ARRAY_AGG(DISTINCT operational_stakeholder.comment) AS operating_company_comment",
         ],
-        # Parent stakeholders (= Parent companies and investors of Operational company)
+        # Parent stakeholders (= Parent companies and investors of Operating company)
         "investor_id": [
             "ARRAY_AGG(DISTINCT stakeholders.investor_identifier) AS investor_id",
             "stakeholders.investor_identifier AS investor_id"

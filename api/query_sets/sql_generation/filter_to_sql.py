@@ -359,7 +359,7 @@ class FilterToSQL:
                 operation = 'is'
 
             if operation == "is_empty" or not value or (value and not value[0]):
-                where_inv += " AND operational_company_{count}.id IS NULL ".format(count)
+                where_inv += " AND operating_company_{count}.id IS NULL ".format(count)
             elif operation in ("in", "not_in"):
                 value = value[0].split(",")
                 in_values = ",".join(["'%s'" % v.strip().replace("'", "\\'") for v in value])
@@ -369,7 +369,7 @@ class FilterToSQL:
                 elif 'country' in 'variable':
                     where_inv += "AND investor_country_{count}.id {op}".format(count=i, op=op_sql)
                 else:
-                    where_inv += "AND operational_company_{count}.id {op}".format(count=i, op=op_sql)
+                    where_inv += "AND operating_company_{count}.id {op}".format(count=i, op=op_sql)
             else:
                 if not isinstance(value, list):
                     value = [value]
@@ -388,8 +388,8 @@ class FilterToSQL:
                         where_inv += ' AND sh.investor_identifier = {}'.format(v)
                     elif variable == 'operational_stakeholder' and operation != 'contains':
                         where_inv += " AND operational_stakeholder_%i.id %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
-                    elif 'operational_company_' in variable:
-                        variable = variable.replace('operational_company_', '')
+                    elif 'operating_company_' in variable:
+                        variable = variable.replace('operating_company_', '')
                         where_inv += " AND operational_stakeholder_%i.%s %s" % (i, variable, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
                     elif 'parent_stakeholder_' in variable:
                         variable = variable.replace('parent_stakeholder_', '')
@@ -414,7 +414,7 @@ class FilterToSQL:
                 variable = tag.split("__")[0]
 
             INVESTOR_JOINS = {
-                'operational_company': [
+                'operating_company': [
                     join_expression(
                         'landmatrix_investoractivityinvolvement',
                         'iai_{count}'.format(count=i), 'a.id', 'fk_activity_id'),
@@ -446,14 +446,14 @@ class FilterToSQL:
                         'ivi_{count}.fk_investor_id'.format(count=i)),
                 ],
             }
-            role = re.match('^(operational_company|parent_stakeholder|parent_investor)_', variable).groups()[0]
-            if role == 'operational_company':
-                investor_tables.extend(INVESTOR_JOINS['operational_company'])
+            role = re.match('^(operating_company|parent_stakeholder|parent_investor)_', variable).groups()[0]
+            if role == 'operating_company':
+                investor_tables.extend(INVESTOR_JOINS['operating_company'])
             elif role == 'parent_stakeholder':
-                investor_tables.extend(INVESTOR_JOINS['operational_company'])
+                investor_tables.extend(INVESTOR_JOINS['operating_company'])
                 investor_tables.extend(INVESTOR_JOINS['parent_stakeholder'])
             elif role == 'parent_investor':
-                investor_tables.extend(INVESTOR_JOINS['operational_company'])
+                investor_tables.extend(INVESTOR_JOINS['operating_company'])
                 investor_tables.extend(INVESTOR_JOINS['parent_investor'])
 
             if 'country' in variable:

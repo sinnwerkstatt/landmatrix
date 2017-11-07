@@ -54,15 +54,15 @@ def get_variable_table():
     if group_title and group_items:
         variable_table[group_title] = group_items
 
-    # Add operational company attributes
-    if _('Operational company') not in variable_table:
-        variable_table[str(_('Operational company'))] = []
+    # Add operating company attributes
+    if _('Operating company') not in variable_table:
+        variable_table[str(_('Operating company'))] = []
     for field_name, field in OperationalCompanyForm.base_fields.items():
         if field_name == 'id':
             continue
-        variable_table[str(_('Operational company'))].append({
-            'name': 'operational_company_%s' % field_name,
-            'label': '%s %s' % (str(_('Operational company')), str(field.label)),
+        variable_table[str(_('Operating company'))].append({
+            'name': 'operating_company_%s' % field_name,
+            'label': '%s %s' % (str(_('Operating company')), str(field.label)),
         })
 
     # Add parent company attributes

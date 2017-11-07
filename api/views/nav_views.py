@@ -41,7 +41,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 class InvestorListView(FakeQuerySetListView):
     """
-    Get all Operational companies, Parent companies and Tertiary investors/lenders.
+    Get all Operating companies, Parent companies and Tertiary investors/lenders.
     """
     schema = ManualSchema(
         fields=[

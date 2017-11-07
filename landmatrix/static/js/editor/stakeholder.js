@@ -178,7 +178,7 @@ function createInvestorNetwork() {
           text = (d.parent_type == "investor" && "Tertiary investor/lender" || "Parent company");
           text += inv.percentage && " ("+inv.percentage+"%"+(inv.investment_type && " "+inv.investment_type || "")+")" || "";
         } else {
-          text = "Operational company";
+          text = "Operating company";
         }
         return text;
       })

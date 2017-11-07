@@ -16,9 +16,9 @@ class OperationalStakeholderForm(BaseForm):
     form_title = _('Investor info')
 
     tg_operational_stakeholder = TitleField(
-        required=False, label="", initial=_("Operational company"))
+        required=False, label="", initial=_("Operating company"))
     operational_stakeholder = ModelChoiceField(
-        required=False, label=_("Operational company"),
+        required=False, label=_("Operating company"),
         queryset=Investor.objects.none(),
         widget=Select(attrs={'class': 'form-control investorfield'}))
     actors = ActorsField(
@@ -28,7 +28,7 @@ class OperationalStakeholderForm(BaseForm):
     project_name = forms.CharField(
         required=False, label=_("Name of investment project"), max_length=255)
     tg_operational_stakeholder_comment = forms.CharField(
-        required=False, label=_("Comment on Operational company"),
+        required=False, label=_("Comment on Investment chain"),
         widget=CommentInput)
 
     @classmethod

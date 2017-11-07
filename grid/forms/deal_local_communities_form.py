@@ -88,7 +88,7 @@ class DealLocalCommunitiesForm(BaseForm):
         required=False, label=_("Name of indigenous people"),
         widget=forms.TextInput)
     tg_affected_comment = forms.CharField(
-        required=False, label=_("Comment on Names of affected people"),
+        required=False, label=_("Comment on communities / indigenous peoples affected"),
         widget=CommentInput)
 
     # Recognitions status of community land tenure

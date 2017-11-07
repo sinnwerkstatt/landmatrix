@@ -187,14 +187,14 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             'deal_id': _('ID'),
             'deal_count': _('Deals'),
             'availability': _('Availability'),
-            #'operational_stakeholder_country': _('Operational company country'),
-            #'operational_stakeholder_region': _('Operational company region'),
-            'operational_stakeholder': _('Operational company'),
+            #'operational_stakeholder_country': _('Operating company country'),
+            #'operational_stakeholder_region': _('Operating company region'),
+            'operational_stakeholder': _('Operating company'),
             'investor_country': _('Investor country'),
             'investor_region': _('Investor region'),
             'investor_id': _('Investor ID'),
             'investor_name': _('Investor name'),
-            'operational_stakeholder_name': _('Operational company name'),
+            'operational_stakeholder_name': _('Operating company name'),
             'parent_stakeholder': _('Parent investors'),
             'parent_stakeholder_country': _('Parent investor country'),
             'parent_stakeholder_region': _('Parent investor region'),
@@ -207,12 +207,12 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
             'parent_stakeholder_comment': _('Comment on parent investor'),
             'crop': _('Crop'),
             'data_source_type': _('Data source type'),
-            'operational_company_country': _("Operational company country of registration/origin"),
-            'operational_company_region': _("Operational company region of registration/origin"),
-            'operational_company_classification': _("Operational company classification"),
-            'operational_company_homepage': _("Operational company homepage"),
-            'operational_company_opencorporates_link': _("Operational company Opencorporates link"),
-            'operational_company_comment': _("Additional comment on Operational company"),
+            'operating_company_country': _("Operating company country of registration/origin"),
+            'operating_company_region': _("Operating company region of registration/origin"),
+            'operating_company_classification': _("Operating company classification"),
+            'operating_company_homepage': _("Operating company homepage"),
+            'operating_company_opencorporates_link': _("Operating company Opencorporates link"),
+            'operating_company_comment': _("Additional comment on Operating company"),
         }
         columns = OrderedDict()
         for name in self.columns:
@@ -302,10 +302,10 @@ class TableGroupView(FilterWidgetMixin, TemplateView):
         if not value: return None
         process_functions = {
             'operational_stakeholder_name': self._process_investor_name,
-            'operational_company_country': self._process_stitched_together_field,
-            'operational_company_region': self._process_stitched_together_field,
-            'operational_company_classification': self._process_investor_classification,
-            # Parent stakeholder (= Parent companies and investors of Operational company)
+            'operating_company_country': self._process_stitched_together_field,
+            'operating_company_region': self._process_stitched_together_field,
+            'operating_company_classification': self._process_investor_classification,
+            # Parent stakeholder (= Parent companies and investors of Operating company)
             'investor_name': self._process_investor_name,
             'investor_country': self._process_stitched_together_field,
             'investor_region': self._process_stitched_together_field,

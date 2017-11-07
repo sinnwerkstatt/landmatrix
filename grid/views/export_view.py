@@ -308,12 +308,12 @@ class ExportView(ElasticSearchView):
             exclude = []
             if hasattr(ExportInvestorForm, 'exclude_in_export'):
                 exclude = ExportInvestorForm.exclude_in_export
-            # Append operational company attributes to investor info
+            # Append operating company attributes to investor info
             if form.Meta.name == 'investor_info':
                 for field_name, field in ExportInvestorForm.base_fields.items():
                     if field_name in exclude:
                         continue
-                    headers.append('%s: %s' % (_('Operational company'), str(field.label)))
+                    headers.append('%s: %s' % (_('Operating company'), str(field.label)))
         data['deals']['headers'] = headers
 
         # Get deals
@@ -350,7 +350,7 @@ class ExportView(ElasticSearchView):
                         if field_name.startswith('tg_') and not field_name.endswith('_comment'):
                             continue
                         row.append(self.get_export_value(field_name, item, format=format))
-                # Append operational company attributes to investor info
+                # Append operating company attributes to investor info
                 if form.Meta.name == 'investor_info':
                     exclude = []
                     if hasattr(ExportInvestorForm, 'exclude_in_export'):
@@ -358,7 +358,7 @@ class ExportView(ElasticSearchView):
                     for field_name, field in ExportInvestorForm.base_fields.items():
                         if field_name in exclude:
                             continue
-                        row.append(self.get_export_value('operational_company_%s' % field_name, item, format=format))
+                        row.append(self.get_export_value('operating_company_%s' % field_name, item, format=format))
             rows.append(row)
         data['deals']['items'] = rows
 

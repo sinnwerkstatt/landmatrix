@@ -22,7 +22,7 @@ class InvestorNetworkView(APIView):
                 "operational_stakeholder",
                 required=True,
                 location="query",
-                description="Operational company ID",
+                description="Operating company ID",
                 schema=coreschema.Integer(),
             ),
         ]

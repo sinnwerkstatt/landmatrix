@@ -21,7 +21,7 @@ class InvestorFormsMixin:
         # Check current role of investor
         role = self.request.GET.get('role', '')
         if not role:
-            if investor and investor.is_operational_company:
+            if investor and investor.is_operating_company:
                 role = 'operational_stakeholder'
             else:
                 role = 'parent_investor'
@@ -89,16 +89,16 @@ class InvestorFormsMixin:
         if not role:
             # Guess role
             investor = self.get_object()
-            if investor and investor.is_operational_company:
+            if investor and investor.is_operating_company:
                 context['role'] = 'operational_stakeholder'
             else:
                 context['role'] = 'parent_investor'
         ROLE_MAP = {
-            'operational_stakeholder': _('Operational company'),
+            'operational_stakeholder': _('Operating company'),
             'parent_company': _('Parent company'),
             'parent_investor': _('Tertiary investor/lender'),
         }
-        context['role'] = ROLE_MAP.get(role, _('Operational company'))
+        context['role'] = ROLE_MAP.get(role, _('Operating company'))
         return context
 
     def form_invalid(self, investor_form, stakeholders_formset,

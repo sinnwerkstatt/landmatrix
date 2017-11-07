@@ -87,7 +87,7 @@ class MapLOInvolvements(MapLOModel):
         )
 
         if new_investor:
-            # Primary investors are now operational companies
+            # Primary investors are now operating companies
             if is_primary:
                 new_record = cls._map_primary_investor(
                     old_activity, new_investor, save=save, verbose=verbose)
