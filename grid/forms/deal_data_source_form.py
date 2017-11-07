@@ -18,7 +18,7 @@ from wkhtmltopdf import wkhtmltopdf
 
 from landmatrix.storage import data_source_storage
 from grid.forms.base_form import BaseForm
-from grid.fields import TitleField, FileFieldWithInitial
+from grid.fields import TitleField, FileFieldWithInitial, YearMonthDateField
 from grid.widgets import CommentInput
 
 
@@ -56,7 +56,7 @@ class DealDataSourceForm(BaseForm):
     publication_title = forms.CharField(
         required=False, label=_("Publication title")
     )
-    date = forms.CharField(
+    date = YearMonthDateField(
         required=False, label=_("Date"), help_text="[YYYY-MM-DD]",
     #    input_formats=["%d.%m.%Y", "%d:%m:%Y", "%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"]
     )

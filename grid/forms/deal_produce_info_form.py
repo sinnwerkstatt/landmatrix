@@ -22,11 +22,14 @@ class DealProduceInfoForm(BaseForm):
         required=False, label="",
         initial=_("Detailed crop, animal and mineral information"))
     crops = YearBasedModelMultipleChoiceIntegerField(
-        required=False, label=_("Crops area"), queryset=Crop.objects.all())
+        required=False, label=_("Crops area"), queryset=Crop.objects.all(),
+        placeholder=_('Size'))
     crops_yield = YearBasedModelMultipleChoiceIntegerField(
-        required=False, label=_("Crops yield"), queryset=Crop.objects.all())
+        required=False, label=_("Crops yield"), queryset=Crop.objects.all(),
+        placeholder=_('Tons'))
     crops_export = YearBasedModelMultipleChoiceIntegerField(
-        required=False, label=_("Crops export"), queryset=Crop.objects.all())
+        required=False, label=_("Crops export"), queryset=Crop.objects.all(),
+        placeholder=_('%'))
     tg_crops_comment = forms.CharField(
         required=False, label=_("Comment on Crops"), widget=CommentInput)
     animals = YearBasedModelMultipleChoiceIntegerField(

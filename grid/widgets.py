@@ -181,15 +181,18 @@ class YearBasedSelectMultiple(YearBasedWidget):
 
 
 class YearBasedSelectMultipleNumber(YearBasedWidget):
+    placeholder = _('Size')
 
     def __init__(self, *args, **kwargs):
         self.choices = kwargs.pop("choices")
+        if 'placeholder' in kwargs.get('attrs', {}):
+            self.placeholder = kwargs['attrs'].pop("placeholder")
         super(YearBasedSelectMultipleNumber, self).__init__(*args, **kwargs)
 
     def get_widgets(self):
         return [
             forms.SelectMultiple(choices=self.choices, attrs={"class": "year-based"}),
-            forms.NumberInput(attrs={"class": "year-based", "placeholder": _("Size")}),
+            forms.NumberInput(attrs={"class": "year-based", "placeholder": self.placeholder}),
             forms.TextInput(attrs={"class": "year-based-year"}),
             forms.CheckboxInput(attrs={"class": "year-based-is-current"})
         ]

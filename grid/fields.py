@@ -237,8 +237,13 @@ class YearBasedModelMultipleChoiceField(YearBasedField):
 
 
 class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
+    placeholder = _('Size')
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop("queryset")
+        if 'placeholder' in kwargs:
+            attrs = {'placeholder': kwargs.pop("placeholder")}
+        else:
+            attrs = {}
         kwargs["fields"] = [
             forms.ModelMultipleChoiceField(queryset=self.queryset, required=False),
             forms.IntegerField(required=False),
@@ -248,7 +253,7 @@ class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
         kwargs["widget"] = YearBasedSelectMultipleNumber(
             choices=kwargs['fields'][0].choices,
             help_text=kwargs.pop("help_text", ""),
-            attrs={}
+            attrs=attrs
         )
         super(YearBasedModelMultipleChoiceIntegerField, self).__init__(*args, **kwargs)
 
