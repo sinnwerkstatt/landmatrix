@@ -209,7 +209,10 @@ class SetDefaultFiltersView(GenericAPIView):
         return self.request.session.get('filters', {})
 
     def post(self, request, *args, **kwargs):
-        request.session['set_default_filters'] = True
+        if request.POST.get('set_default_filters', False):
+            request.session['set_default_filters'] = True
+        else:
+            request.session['set_default_filters'] = False
 
         return Response({})
 

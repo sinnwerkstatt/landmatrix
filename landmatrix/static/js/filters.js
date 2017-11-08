@@ -262,6 +262,7 @@ $(document).ready(function () {
         var data = $(this).closest('form').serialize();
         $.post(
             '/api/filter/add/default/',
+            data,
             function () {
                 window.location.reload();
             }

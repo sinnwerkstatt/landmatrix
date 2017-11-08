@@ -7,8 +7,6 @@ from grid.widgets import CommentInput
 from .base_form import BaseForm
 
 
-
-
 class DealContractForm(BaseForm):
 
     form_title = _('Contracts')
