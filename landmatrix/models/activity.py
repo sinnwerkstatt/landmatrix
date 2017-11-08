@@ -749,7 +749,7 @@ class HistoricalActivity(ActivityBase):
         assert self.fk_status_id == HistoricalActivity.STATUS_PENDING
         self.fk_status_id = HistoricalActivity.STATUS_REJECTED
         self.save(update_fields=['fk_status'])
-        self.update_public_activity()
+        #self.update_public_activity() - don't update public activity
 
         try:
             investor = InvestorActivityInvolvement.objects.get(
