@@ -199,7 +199,7 @@ class FilterDeleteView(GenericAPIView):
         return Response(stored_filters)
 
 
-class SetDefaultFiltersView(GenericAPIView):
+class SetDefaultFiltersView(APIView):
     """
     Set default filters for current session cookie.
     Used within the filter section of map, data and chart views.
