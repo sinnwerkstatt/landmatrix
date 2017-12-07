@@ -381,6 +381,15 @@ class ElasticSearch(object):
             group_match = re.match('(?P<doc_type>location|data_source|contract)_(?P<count>\d+)', group_match)
             if group_match:
                 dt, count = group_match.groupdict()['doc_type'], int(group_match.groupdict()['count'])
+                if count == 0:
+                    # Fixme: This should not happen
+                    self.stderr and self.stderr.write(
+                        _('Attribute group "%s" is invalid counter (groups should start with 1) for historical activity %i (Activity identifier: #%i)' % (
+                            a.fk_group and a.fk_group.name or '',
+                            activity.id,
+                            activity.activity_identifier
+                        )))
+                    continue
                 if doc_type == dt:
                     while len(docs) < count:
                         docs.append({
