@@ -232,7 +232,7 @@ class ElasticSearchView(View):
         # filter results
         result_list = self.filter_returned_results(raw_result_list)
         # parse results
-        features = [self.create_feature_from_result(result) for result in result_list]
+        features = filter(None, [self.create_feature_from_result(result) for result in result_list])
         response = Response(FeatureCollection(features))
         return response
     
@@ -330,7 +330,10 @@ class GlobalDealsView(APIView, ElasticSearchView):
         # Remove subcategories from intention
         intention = filter(lambda i: i not in INTENTION_EXCLUDE, result.get('intention', ['Unknown']))
 
-        geometry = (float(result['point_lon']), float(result['point_lat']))
+        try:
+            geometry = (float(result['point_lon']), float(result['point_lat']))
+        except ValueError:
+            return None
         return Feature(
             # Do not use ID for feature. Duplicate IDs lead to problems in
             # Openlayers.
