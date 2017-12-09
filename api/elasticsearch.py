@@ -57,6 +57,20 @@ def get_elasticsearch_properties(doc_type=None):
                 'activity_identifier': {'type': 'integer'},
                 'geo_point': {'type': 'geo_point'},
                 'status': {'type': 'integer'},
+                'is_public': {'type': 'string'},
+                'is_public_export': {'type': 'string'},
+                'deal_scope': {'type': 'string'},
+                'deal_scope_export': {'type': 'string'},
+                'deal_size': {'type': 'string'},
+                'deal_size_export': {'type': 'string'},
+                'init_date': {'type': 'string'},
+                'init_date_export': {'type': 'string'},
+                'current_negotiation_status': {'type': 'string'},
+                'current_negotiation_status_export': {'type': 'string'},
+                'deal_country': {'type': 'string'},
+                'deal_country_export': {'type': 'string'},
+                'top_investors': {'type': 'string'},
+                'top_investors_export': {'type': 'string'},
                 'fully_updated_date': {'type': 'string'},
                 'fully_updated_date_export': {'type': 'string'},
             }
@@ -549,12 +563,12 @@ class ElasticSearch(object):
                 'size': 10000,
             }
             if sort:
-                query['sort'] = sort
+                es_query['sort'] = sort
             query_result = self.conn.search(es_query, index=self.index_name, doc_type=doc_type)
             raw_result_list.extend(query_result['hits']['hits'])
             results_total = query_result['hits']['total']
             
-            if len(raw_result_list) >= results_total or size == 0:
+            if len(raw_result_list) >= results_total:
                 done = True
             else:
                 start = len(raw_result_list)

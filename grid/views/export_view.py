@@ -35,6 +35,7 @@ class ExportView(ElasticSearchView):
 
         deal_id = kwargs.pop('deal_id', None)
         if deal_id:
+            # Check if activity exists
             activity = Activity.objects.get(activity_identifier=deal_id)
             query = {
                 "constant_score" : {
