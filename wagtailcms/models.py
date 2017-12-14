@@ -42,7 +42,8 @@ class LinkBlock(StructBlock):
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['href'] = value.get('url')
+        context['href'] = get_country_or_region_link(value.get('url'), request=parent_context.get('request'),
+                                                     page=parent_context.get('page'))
         context['text'] = value.get('text')
         context['class'] = value.get('cls')
         return context
@@ -167,7 +168,8 @@ class LinkedImageBlock(StructBlock):
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
-        context['href'] = value.get('url')
+        context['href'] = get_country_or_region_link(value.get('url'), request=parent_context.get('request'),
+                                                     page=parent_context.get('page'))
         context['url'] = value.get('image').get_rendition('max-1200x1200').url
         #context['name'] = value.get('caption')
         return context
@@ -260,7 +262,8 @@ class TitleWithIconBlock(StructBlock):
         context = super().get_context(value, parent_context)
         context['value'] = value.get('value')
         context['fa_icon'] = value.get('fa_icon')
-        context['url'] = value.get('url')
+        context['url'] = get_country_or_region_link(value.get('url'), request=parent_context.get('request'),
+                                                     page=parent_context.get('page'))
         return context
 
     class Meta:
@@ -308,6 +311,15 @@ def get_country_or_region(request, page=None):
         elif 'country_slug' in kwargs:
             result['country'] = DataCountry.objects.get(slug=kwargs.get('country_slug'))
     return result
+
+
+def get_country_or_region_link(link, request=None, page=None):
+    data = get_country_or_region(request, page=page)
+    if data.get('region', None):
+        link = '%s?region=%s' % (link, data['region'].id)
+    elif data.get('country', None):
+        link = '%s?country=%s' % (link, data['country'].id)
+    return link
 
 
 class LatestNewsBlock(StructBlock):
