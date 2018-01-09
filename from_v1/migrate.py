@@ -111,7 +111,7 @@ if __name__ == '__main__':
             MapLandObservatory.map_all(save=options.save, verbose=options.verbose)
 
         if options.old_comment:
-            MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
+            MapActivityAttributeGroup.map_all(save=options.save,     verbose=options.verbose)
             MapComment.map_all(save=options.save, verbose=options.verbose)
             MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
             MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)

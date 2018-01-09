@@ -1,4 +1,5 @@
 import os
+import re
 from functools import lru_cache
 
 from django.db import connections
@@ -174,7 +175,7 @@ class MapLOActivities(MapLOModel):
             new.save(using=V2)
 
         # existing records already have a historical version
-        if hasattr(newnew.historical_version:
+        if hasattr(new, 'historical_version') and new.historical_version:
             historical_activity = new.historical_version
         else:
             historical_activity = landmatrix.models.HistoricalActivity(
@@ -493,14 +494,21 @@ class MapLOActivities(MapLOModel):
     @lru_cache(maxsize=32, typed=True)
     def get_or_create_attribute_group(cls, name, save=False):
         # I think aags should be distinct, but they aren't, so just go with it
+        # Update counter (0>1)
+        name_match = re.match('(.*?)_(\d)', a)
+        if name_match:
+            key, cnt = name_match.groups()
+            group_name = '%s_%02i' % format(key, int(cnt) + 1)
+        else:
+            group_name = name
         try:
             aag = landmatrix.models.ActivityAttributeGroup.objects.using(
-                V2).get(name=name)
+                V2).get(name=group_name)
         except landmatrix.models.ActivityAttributeGroup.MultipleObjectsReturned:
             aag = landmatrix.models.ActivityAttributeGroup.objects.using(
-                V2).filter(name=name).last()
+                V2).filter(name=group_name).last()
         except landmatrix.models.ActivityAttributeGroup.DoesNotExist:
-            aag = landmatrix.models.ActivityAttributeGroup(name=name)
+            aag = landmatrix.models.ActivityAttributeGroup(name=group_name)
             if save:
                 aag.save(using=V2)
 

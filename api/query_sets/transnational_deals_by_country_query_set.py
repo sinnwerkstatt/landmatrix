@@ -10,7 +10,7 @@ class TransnationalDealsQuerySetBase(FakeQuerySetWithSubquery):
         ('region_id', 'sub.region_id'),
         ('region',    'sub.region'),
         ('deals',     'COUNT(DISTINCT a.activity_identifier)'),
-        ('hectares',  'ROUND(SUM(iai.deal_size))'),
+        ('hectares',  'ROUND(SUM(sub.deal_size))'),
     ]
     GROUP_BY = ['sub.region_id', 'sub.region']
 
@@ -29,7 +29,8 @@ class TransnationalDealsByTargetCountryQuerySet(TransnationalDealsQuerySetBase):
 
     SUBQUERY_FIELDS = [
         ('region_id', "deal_region.id"),
-        ('region',    "deal_region.name")
+        ('region',    "deal_region.name"),
+        ('deal_size',    "SUM(ias.deal_size)")
     ]
     COUNTRY_FIELD = 'investor_country'
     ADDITIONAL_JOINS = [
@@ -40,7 +41,7 @@ class TransnationalDealsByTargetCountryQuerySet(TransnationalDealsQuerySetBase):
         "LEFT JOIN landmatrix_country                   AS investor_country ON stakeholder.fk_country_id = investor_country.id",
         "LEFT JOIN landmatrix_activityattribute         AS target_country   ON a.id = target_country.fk_activity_id AND target_country.name = 'target_country'",
         "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.value AS NUMERIC) = deal_country.id",
-        "LEFT JOIN landmatrix_region                    AS deal_region      ON  deal_country.fk_region_id = deal_region.id",
+        "LEFT JOIN landmatrix_region                    AS deal_region      ON deal_country.fk_region_id = deal_region.id",
     ]
     ADDITIONAL_WHERES = ["deal_region.name IS NOT NULL", "investor_country.id <> deal_country.id"]
 
@@ -49,7 +50,8 @@ class TransnationalDealsByInvestorCountryQuerySet(TransnationalDealsQuerySetBase
 
     SUBQUERY_FIELDS = [
         ('region_id', "investor_region.id"),
-        ('region',    "investor_region.name")
+        ('region',    "investor_region.name"),
+        ('deal_size', "SUM(ias.deal_size)")
     ]
 
     COUNTRY_FIELD = 'deal_country'
@@ -66,7 +68,8 @@ class TransnationalDealsByInvestorCountryQuerySet(TransnationalDealsQuerySetBase
     ]
     ADDITIONAL_WHERES = ["investor_country.name IS NOT NULL", "investor_country.id <> deal_country.id"]
 
-class TransnationalDealsByCountryQuerySet:
+
+class TransnationalDealsByCountryQuerySet():
 
     def __init__(self, request):
         self.request = request

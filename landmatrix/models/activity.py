@@ -623,7 +623,7 @@ class Activity(ActivityBase):
                     fk_venture=investor,
                     fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
                     fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
-                    role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)]
+                    role=InvestorVentureInvolvement.STAKEHOLDER_ROLE).exclude(fk_investor=investor)]
                 if parent_companies:
                     parents.extend(get_parent_companies(parent_companies))
                 elif investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
