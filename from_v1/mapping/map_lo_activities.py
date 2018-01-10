@@ -498,7 +498,7 @@ class MapLOActivities(MapLOModel):
         name_match = re.match('(.*?)_(\d)', name)
         if name_match:
             key, cnt = name_match.groups()
-            group_name = '%s_%02i' % format(key, int(cnt) + 1)
+            group_name = '%s_%02i' % (key, int(cnt) + 1)
         else:
             group_name = name
         try:
