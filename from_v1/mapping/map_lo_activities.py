@@ -495,7 +495,7 @@ class MapLOActivities(MapLOModel):
     def get_or_create_attribute_group(cls, name, save=False):
         # I think aags should be distinct, but they aren't, so just go with it
         # Update counter (0>1)
-        name_match = re.match('(.*?)_(\d)', a)
+        name_match = re.match('(.*?)_(\d)', name)
         if name_match:
             key, cnt = name_match.groups()
             group_name = '%s_%02i' % format(key, int(cnt) + 1)
