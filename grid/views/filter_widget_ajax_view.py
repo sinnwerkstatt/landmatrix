@@ -104,12 +104,13 @@ class FilterWidgetAjaxView(View):
                 widget = field.widget.render(request.GET.get("name", ""), len(value) > 0 and value[0] or "", attrs=attrs)
             elif operation in ("in", "not_in"):
                 if type(widget) == YearBasedSelect:
-                    field.widget = YearBasedMultipleSelect(choices=field.widget.choices)
+                    widget = CheckboxSelectMultiple()
                     # FIXME: multiple value parameters can arrive like "value=1&value=2" or "value=1,2", not very nice
                     value = type(value) in (list, tuple) and value or request.GET.getlist("value", [])
                     value = [value, ""]
-                    widget = field.widget.render(request.GET.get("name", ""), value, attrs=attrs)
-
+                    # FIXME: There must be a more reliable way to remove the blank choice
+                    widget.choices = field.widget.choices[1:]
+                    widget = widget.render(request.GET.get("name", ""), value)
                 elif type(widget) == YearBasedTextInput:
                     widget = widget.render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
                 elif type(widget) == RadioSelect:
