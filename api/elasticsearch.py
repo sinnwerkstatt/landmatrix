@@ -22,6 +22,8 @@ from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 from grid.utils import get_spatial_properties
+from landmatrix.models.country import Country
+
 
 FIELD_TYPE_MAPPING = {
     'IntegerField': 'integer',
@@ -73,6 +75,8 @@ def get_elasticsearch_properties(doc_type=None):
                 'top_investors_export': {'type': 'string'},
                 'fully_updated_date': {'type': 'string'},
                 'fully_updated_date_export': {'type': 'string'},
+                'target_region': {'type': 'string'},
+                'target_region_export': {'type': 'string'},
             }
         }
         _landmatrix_mappings['location'] = {
@@ -486,6 +490,9 @@ class ElasticSearch(object):
                 doc['point_lat'] = '0'
                 doc['point_lon'] = '0'
                 doc['geo_point'] = '0,0'
+            # Set target region
+            if 'target_country' in doc and doc['target_country']:
+                doc['target_region'] = Country.objects.get(pk=doc['target_country']).fk_region_id
             # FIXME: we dont really need 'point_lat' and 'point_lon' here,
             # so we should pop them from doc when adding 'geo_point'
             docs.append(doc)

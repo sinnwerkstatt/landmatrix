@@ -14,7 +14,7 @@ from .base_form import BaseForm
 
 
 class DealSpatialForm(BaseForm):
-    exclude_in_export = ['target_region', 'contract_area', 'intended_area', 'production_area']
+    exclude_in_export = ['contract_area', 'intended_area', 'production_area']
     ACCURACY_CHOICES = (
         ("", _("---------")),
         ("Country", _("Country")),
@@ -47,9 +47,9 @@ class DealSpatialForm(BaseForm):
         required=False, label=_("Facility name"), widget=forms.TextInput,
         initial="")
     target_country = CountryField(required=False, label=_("Target Country"))
-    target_region = forms.ModelChoiceField(
-        required=False, label=_("Target Region"), widget=forms.HiddenInput,
-        queryset=Region.objects.all().order_by("name"))
+    #target_region = forms.ModelChoiceField(
+    #    required=False, label=_("Target Region"), widget=forms.HiddenInput,
+    #    queryset=Region.objects.all().order_by("name"))
     location_description = forms.CharField(
         required=False, label=_("Location description"),
         widget=forms.TextInput, initial="")
