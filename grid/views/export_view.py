@@ -31,7 +31,8 @@ class ExportView(FilterWidgetMixin, ElasticSearchView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.GET:
-            self.set_country_region_filter(request.GET)
+            data = request.GET.copy()
+            self.set_country_region_filter(data)
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
