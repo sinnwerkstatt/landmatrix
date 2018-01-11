@@ -30,7 +30,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchView):
     FORMATS = ['csv', 'xml', 'xls', 'xlsx']
 
     def dispatch(self, request, *args, **kwargs):
-        self.remove_country_region_filter()
+        self.set_country_region_filter(request.data)
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
