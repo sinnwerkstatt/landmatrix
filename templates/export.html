@@ -15,37 +15,37 @@
     {% if activity %}
     <a href="{% url "export" deal_id=activity.activity_identifier format="xml" %}?{{ request.GET.urlencode }}" class="btn-media xml">
     {% else %}
-    <a href="{% url "export" format="xml" %}?{% regional_params %}" class="btn-media xml">
+    <a href="{% url "export" format="xml" %}{% regional_params %}" class="btn-media xml">
     {% endif %}
   {% endif %}
     <i class=""></i>XML
   </a>
   {% if group_slug %}
     {% if group_value %}
-    <a href="{% url "export" group=group_slug group_value=group_value format="csv" %}?{% regional_params %}" class="btn-media csv">
+    <a href="{% url "export" group=group_slug group_value=group_value format="csv" %}{% regional_params %}" class="btn-media csv">
     {% else %}
-    <a href="{% url "export" group=group_slug format="csv" %}?{% regional_params %}" class="btn-media csv">
+    <a href="{% url "export" group=group_slug format="csv" %}{% regional_params %}" class="btn-media csv">
     {% endif %}
   {% else %}
     {% if activity %}
     <a href="{% url "export" deal_id=activity.activity_identifier format="csv" %}?{{ request.GET.urlencode }}" class="btn-media csv">
     {% else %}
-    <a href="{% url "export" format="csv" %}?{% regional_params %}" class="btn-media csv">
+    <a href="{% url "export" format="csv" %}{% regional_params %}" class="btn-media csv">
     {% endif %}
   {% endif %}
     <i class=""></i>CSV
   </a>
   {% if group_slug %}
     {% if group_value %}
-    <a href="{% url "export" group=group_slug group_value=group_value format="xls" %}?{% regional_params %}" class="btn-media xls">
+    <a href="{% url "export" group=group_slug group_value=group_value format="xls" %}{% regional_params %}" class="btn-media xls">
     {% else %}
-    <a href="{% url "export" group=group_slug format="xls" %}?{% regional_params %}" class="btn-media xls">
+    <a href="{% url "export" group=group_slug format="xls" %}{% regional_params %}" class="btn-media xls">
     {% endif %}
   {% else %}
     {% if activity %}
     <a href="{% url "export" deal_id=activity.activity_identifier format="xls" %}?{{ request.GET.urlencode }}" class="btn-media xls">
     {% else %}
-    <a href="{% url "export" format="xls" %}?{% regional_params %}" class="btn-media xls">
+    <a href="{% url "export" format="xls" %}{% regional_params %}" class="btn-media xls">
     {% endif %}
   {% endif %}
     <i class=""></i>XLS

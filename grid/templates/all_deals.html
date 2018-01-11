@@ -1,5 +1,5 @@
 {% extends "global_base.html" %}
-{% load i18n custom_tags filter_tags wagtailcore_tags custom_tags %}
+{% load i18n custom_tags filter_tags wagtailcore_tags %}
 {% load humanize %}
 
 {% block page_title %}{% if group == "all" %}{% trans "All deals" %}{% elif filters.group_value %}{{ name }}{% else %}
