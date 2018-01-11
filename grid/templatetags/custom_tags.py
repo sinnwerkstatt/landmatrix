@@ -305,3 +305,22 @@ def is_editable(activity, user):
 @register.filter
 def get_latest(activity, user):
     return activity.get_latest(user)
+
+
+@register.simple_tag(takes_context=True)
+def regional_params(context):
+    country = context.get('country', '')
+    region = context.get('region', '')
+    page = context.get('page', '')
+    request = context.get('request', '')
+    if country:
+        return 'country={}'.format(country.id)
+    elif region:
+        return 'region={}'.format(region.id)
+    elif hasattr(page, 'country'):
+        return 'country={}'.format(page.country.id)
+    elif hasattr(page, 'region'):
+        return 'region={}'.format(page.region.id)
+    elif request.GET:
+        return request.GET.urlencode()
+    return ''
