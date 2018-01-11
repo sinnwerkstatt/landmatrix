@@ -600,11 +600,6 @@ class RegionPage(TranslationMixin, Page):
     ] + Page.promote_panels
     parent_page_types = ['wagtailcms.RegionIndex']
 
-    def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request, *args, **kwargs)
-        context.update(get_country_or_region(request))
-        return context
-
 
 class CountryIndex(TranslationMixin, Page):
     template = 'wagtailcms/country_page.html'
@@ -635,12 +630,6 @@ class CountryPage(TranslationMixin, Page):
         FieldPanel('country')
     ] + Page.promote_panels
     parent_page_types = ['wagtailcms.CountryIndex']
-
-    def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request, *args, **kwargs)
-        context.update(get_country_or_region(request))
-        return context
-
 
 
 #FIXME: Move hooks to wagtail_hooks.py

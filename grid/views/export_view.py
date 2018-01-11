@@ -16,6 +16,7 @@ from grid.views.all_deals_view import AllDealsView
 from grid.views.table_group_view import TableGroupView
 from grid.views.deal_detail_view import DealDetailView
 from grid.views.change_deal_view import ChangeDealView
+from grid.views.filter_widget_mixin import FilterWidgetMixin
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from api.views.list_views import ElasticSearchView
@@ -24,9 +25,13 @@ from landmatrix.models import Activity, InvestorVentureInvolvement
 from landmatrix.models.investor import InvestorBase
 
 
-class ExportView(ElasticSearchView):
+class ExportView(FilterWidgetMixin, ElasticSearchView):
     # TODO: XLS is deprecated, should be removed in templates
     FORMATS = ['csv', 'xml', 'xls', 'xlsx']
+
+    def dispatch(self, request, *args, **kwargs):
+        self.remove_country_region_filter()
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         format = kwargs.pop('format').lower()
