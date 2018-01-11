@@ -1,8 +1,6 @@
-{% extends "base.html" custom_tags %}
+{% extends "base.html" %}
 
-{% load i18n %}
-{% load sekizai_tags %}
-{% load static %}
+{% load i18n sekizai_tags static custom_tags %}
 
 {% block head %}
   {% addtoblock "css" %}
