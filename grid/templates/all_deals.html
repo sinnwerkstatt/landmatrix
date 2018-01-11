@@ -23,13 +23,13 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation"><a href="{% url 'map' %}{% filter_query_params %}">
+    <li role="presentation"><a href="{% url 'map' %}{% regional_params %}">
         <i class="fa fa-map-marker"></i> {% trans "Map" %}
     </a></li>
     <li role="presentation" class="active"><span>
         <i class="fa fa-table"></i> {% trans "Data" %}
     </span></li>
-    <li role="presentation"><a href="{% url 'charts' %}{% filter_query_params %}">
+    <li role="presentation"><a href="{% url 'charts' %}{% regional_params %}">
         <i class="fa fa-bar-chart"></i> {% trans "Charts" %}
     </a></li>
     <li class="divider"></li>
