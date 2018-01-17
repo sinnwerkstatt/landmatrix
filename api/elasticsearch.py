@@ -567,6 +567,7 @@ class ElasticSearch(object):
             es_query = {
                 'query': query,
                 'from': start,
+                'size': 10000,
             }
             if sort:
                 es_query['sort'] = sort
