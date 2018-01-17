@@ -573,7 +573,7 @@ class ElasticSearch(object):
             query_result = self.conn.search(es_query,
                                             index=self.index_name,
                                             doc_type=doc_type,
-                                            size=10000)
+                                            size=100000)
             raw_result_list.extend(query_result['hits']['hits'])
             results_total = query_result['hits']['total']
             
