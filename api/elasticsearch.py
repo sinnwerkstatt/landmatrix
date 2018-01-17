@@ -567,11 +567,13 @@ class ElasticSearch(object):
             es_query = {
                 'query': query,
                 'from': start,
-                'size': 10000,
             }
             if sort:
                 es_query['sort'] = sort
-            query_result = self.conn.search(es_query, index=self.index_name, doc_type=doc_type)
+            query_result = self.conn.search(es_query,
+                                            index=self.index_name,
+                                            doc_type=doc_type,
+                                            size=10000)
             raw_result_list.extend(query_result['hits']['hits'])
             results_total = query_result['hits']['total']
             
