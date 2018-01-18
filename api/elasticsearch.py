@@ -559,33 +559,42 @@ class ElasticSearch(object):
     def search(self, query, doc_type='deal', sort=[]):
         """ Executes paginated queries until all results have been retrieved. 
             @return: The full list of hits. """
-        start = 0
         raw_result_list = []
         
-        done = False
-        while not done:
-            es_query = {
-                'query': query,
-                'from': start,
-                'size': 10000,
-            }
-            if sort:
-                es_query['sort'] = sort
-            query_result = self.conn.search(es_query,
-                                            index=self.index_name,
-                                            doc_type=doc_type,
-                                            size=10000)
-            raw_result_list.extend(query_result['hits']['hits'])
-            results_total = query_result['hits']['total']
-            
-            if len(raw_result_list) >= results_total:
-                done = True
+        scroll_id = None 
+        while True:
+            print("Scroll: "+str(scroll_id))
+            if scroll_id:
+                es_query = scroll_id
+                body = {
+                    'scroll': '1m',
+                    'scroll_id': scroll_id,
+                }
+                query_result = self.conn.send_request(
+                    'GET',
+                    ['_search', 'scroll'],
+                    body)
+                scroll_id = None
             else:
-                start = len(raw_result_list)
-        
-        print('\nElasticsearch returned %i documents from a total of %i \n\n' % (
-            len(raw_result_list), query_result['hits']['total'])
-        )
+                es_query = {
+                    'query': query,
+                    'size': 1000,
+                }
+                if sort:
+                    es_query['sort'] = sort
+                query_params = {'scroll':'1m'}
+                query_result = self.conn.search(es_query,
+                                        index=self.index_name,
+                                        doc_type=doc_type,
+                                        query_params=query_params)
+            scroll_id = query_result.get('_scroll_id')
+            hits = query_result['hits']['hits']
+            if len(hits) > 0:
+                # DELETE scroll
+                raw_result_list.extend(hits)
+            else:
+                break
+            
         return raw_result_list
 
     def aggregate(self, aggregations, query=None, doc_type='deal'):
