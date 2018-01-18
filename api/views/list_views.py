@@ -206,7 +206,7 @@ class ElasticSearchView(View):
                 "bool": {
                     "filter": {
                         "term": {
-                            "is_public": True
+                            "is_public": 'true'
                         }
                     }
                 }

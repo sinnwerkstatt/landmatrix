@@ -59,7 +59,7 @@ def get_elasticsearch_properties(doc_type=None):
                 'activity_identifier': {'type': 'integer'},
                 'geo_point': {'type': 'geo_point'},
                 'status': {'type': 'integer'},
-                'is_public': {'type': 'string'},
+                'is_public': {'type': 'boolean'},
                 'is_public_export': {'type': 'string'},
                 'deal_scope': {'type': 'string'},
                 'deal_scope_export': {'type': 'string'},
@@ -563,7 +563,6 @@ class ElasticSearch(object):
         
         scroll_id = None 
         while True:
-            print("Scroll: "+str(scroll_id))
             if scroll_id:
                 es_query = scroll_id
                 body = {
