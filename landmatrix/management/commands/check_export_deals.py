@@ -32,7 +32,6 @@ class Command(BaseCommand):
         export_deals = list(deals)
         export_ids = set(row['activity_identifier'] for row in export_deals)
         export_count = len(export_ids)
-        self.stdout.write("{} deals found in export".format(str(export_count)))
 
         # Get grid
         rf = RequestFactory()
@@ -47,6 +46,8 @@ class Command(BaseCommand):
         grid_deals = grid._get_items(query_result)
         grid_ids = set(row['deal_id'] for row in grid_deals)
         grid_count = len(grid_ids)
+
+        self.stdout.write("{} deals found in export".format(str(export_count)))
         self.stdout.write("{} deals found in grid".format(str(grid_count)))
 
         missing_grid = export_ids - grid_ids
