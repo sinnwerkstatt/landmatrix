@@ -155,7 +155,7 @@ class FilterToSQL:
             where.append(condition)
 
         for index, (tag, value) in enumerate(tags.items()):
-            if not value:
+            if not value and not tag.endswith('__is_empty'):
                 continue
 
             i = start_index + index
