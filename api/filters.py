@@ -322,14 +322,14 @@ def format_filters_elasticsearch(filters, initial_query=None):
                 if filter_query.get('must', None) or filter_query.get('should', ''):
                     query['must'].append({
                         'bool': {
-                            'must': filter_query['must'] + filter_query['should']
+                            'should': filter_query['must'] + filter_query['should']
                         },
                         '_filter_name': preset_name
                     })
                 if filter_query.get('must_not', None):
                     query['must_not'].append({
                         'bool': {
-                            'must': filter_query['must_not']
+                            'should': filter_query['must_not']
                         },
                         '_filter_name': preset_name
                     })
