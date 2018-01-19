@@ -511,12 +511,13 @@ class ElasticSearch(object):
             return InvestorVentureInvolvementForm.export(doc)
         else:
             properties = {
-                'deal_scope_export': doc.get('deal_scope', ''),
                 'is_public_export': doc.get('is_public', False) and str(_('Yes')) or str(_('No')),
+                'deal_scope_export': doc.get('deal_scope', ''),
                 'deal_size_export': doc.get('deal_size', ''),
+                'init_date_export': doc.get('init_date', None),
                 'current_negotiation_status_export': doc.get('current_negotiation_status', ''),
                 'top_investors_export': doc.get('top_investors', ''),
-                'fully_updated_date_export': doc.get('fully_updated_date', ''),
+                'fully_updated_date_export': doc.get('fully_updated_date', None),
             }
             # Doc types: deal, location, contract and data_source
             for form in ChangeDealView.FORMS:
