@@ -88,7 +88,13 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
     if operator == 'lte': return ('must', {'range': {variable_name: {'lte': value}}})
     if operator == 'lt': return ('must', {'range': {variable_name: {'lt': value}}})
     if operator == 'contains': return ('must', {'match': {variable_name: value}})
-    if operator == 'is_empty': return ('must', {'match_phrase': {variable_name: ''}})
+    if operator == 'is_empty':
+        if 'date' in variable_name:
+            # Check for null values
+            return ('must_not', {'bool': {'exists': {'field': variable_name}}})
+        else:
+            # Check for empty strings
+            return ('must', {'match_phrase': {variable_name: ''}})
 
 # TODO: this counter is shared by all users, and is per thread.
 # It should probably be moved to the session
