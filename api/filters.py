@@ -66,11 +66,11 @@ FILTER_VARIABLE_NAMES = set(
 FILTER_OPERATION_MAP = OrderedDict([
     ("is", ("{variable} = {value}", "{variable} = '{value}'", _("is"))),
     ("in", ("{variable} IN ({value})", "{variable} IN ({value})", _("is one of"))),
-    ("not_in", ("{variable} NOT IN (%s)", "{variable} NOT IN ({value})", _("isn't any of"))),
-    ("gte", ("{variable} >= %s", "{variable} >= '{value}'", _("is >="))),
-    ("gt", ("{variable} > %s", "{variable} > '{value}'", _("is >"))),
-    ("lte", ("{variable} <= %s", "{variable} <= '{value}'", _("is <="))),
-    ("lt", ("{variable} < %s", "{variable} < '{value}'", _("is <"))),
+    ("not_in", ("{variable} NOT IN ({value})", "{variable} NOT IN ({value})", _("isn't any of"))),
+    ("gte", ("{variable} >= {value}", "{variable} >= '{value}'", _("is >="))),
+    ("gt", ("{variable} > {value}", "{variable} > '{value}'", _("is >"))),
+    ("lte", ("{variable} <= {value}", "{variable} <= '{value}'", _("is <="))),
+    ("lt", ("{variable} < {value}", "{variable} < '{value}'", _("is <"))),
     ("contains", (
         "{variable} LIKE '%%%%%%%%{value}%%%%%%%%'", "{variable} LIKE '%%%%%%%%{value}%%%%%%%%'",
         _("contains")
