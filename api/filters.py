@@ -64,22 +64,26 @@ FILTER_VARIABLE_NAMES = set(
 # This is an ordered dict as the keys are used to generate model choices.
 # It is here in order to resolve circular imports
 FILTER_OPERATION_MAP = OrderedDict([
-    ("is", ("= %s", "= '%s'", _("is"))),
-    ("in", ("IN (%s)", "IN (%s)", _("is one of"))),
-    ("not_in", ("NOT IN (%s)", "NOT IN (%s)", _("isn't any of"))),
-    ("gte", (">= %s", ">= '%s'", _("is >="))),
-    ("gt", ("> %s", "> '%s'", _("is >"))),
-    ("lte", ("<= %s", "<= '%s'", _("is <="))),
-    ("lt", ("< %s", "< '%s'", _("is <"))),
+    ("is", ("{variable} = {value}", "{variable} = '{value}'", _("is"))),
+    ("in", ("{variable} IN ({value})", "{variable} IN ({value})", _("is one of"))),
+    ("not_in", ("{variable} NOT IN (%s)", "{variable} NOT IN ({value})", _("isn't any of"))),
+    ("gte", ("{variable} >= %s", "{variable} >= '{value}'", _("is >="))),
+    ("gt", ("{variable} > %s", "{variable} > '{value}'", _("is >"))),
+    ("lte", ("{variable} <= %s", "{variable} <= '{value}'", _("is <="))),
+    ("lt", ("{variable} < %s", "{variable} < '{value}'", _("is <"))),
     ("contains", (
-        "LIKE '%%%%%%%%%s%%%%%%%%'", "LIKE '%%%%%%%%%s%%%%%%%%'",
+        "{variable} LIKE '%%%%%%%%{value}%%%%%%%%'", "{variable} LIKE '%%%%%%%%{value}%%%%%%%%'",
         _("contains")
     )),
     ("not_contains", (
-        "NOT LIKE '%%%%%%%%%s%%%%%%%%'", "NOT LIKE '%%%%%%%%%s%%%%%%%%'",
+        "{variable} NOT LIKE '%%%%%%%%{value}%%%%%%%%'", "{variable} NOT LIKE '%%%%%%%%{value}%%%%%%%%'",
         _("not contains")
     )),
-    ("is_empty", ("IS NULL", "IS NULL", _("is empty"))),
+    ("is_empty", ("{variable} IS NULL", "{variable} IS NULL", _("is empty"))),
+    ("list_not_contains", (
+        "{value} NOT IN ARRAY_AGG({variable})", "'{value}' NOT IN ARRAY_AGG({variable})",
+        _("not contains (list)")
+    )),
 ])
 
 def get_elasticsearch_match_operation(operator, variable_name, value):
@@ -93,6 +97,7 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
     if operator == 'lt': return ('must', {'range': {variable_name: {'lt': value}}})
     if operator == 'contains': return ('must', {'match': {variable_name: value}})
     if operator == 'not_contains': return ('must_not', {'match': {variable_name: value}})
+    if operator == 'list_not_contains': return ('must_not', {'match': {variable_name: value}})
     if operator == 'is_empty':
         if 'date' in variable_name:
             # Check for null values

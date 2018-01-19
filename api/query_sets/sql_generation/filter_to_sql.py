@@ -64,20 +64,17 @@ class WhereCondition:
         return quoted_value
 
     def __str__(self):
-        if self.operator == 'is_empty':
-            operator_with_value = self.operator_sql
-        else:
-            quoted_value = self.quote_value(self.value)
-            operator_with_value = self.operator_sql % quoted_value
-
         if self.is_value_numeric and not self.is_id_column and not self.column_name == 'date' and not self.column_name == 'deal_size':
             column = "CAST(COALESCE(NULLIF({}.{}, ''), '0') AS FLOAT)".format(
                 self.table_name, self.column_name)
         else:
             column = "{}.{}".format(self.table_name, self.column_name)
 
-        sql = "{column} {operation}".format(
-            column=column, operation=operator_with_value)
+        value = self.quote_value(self.value)
+        sql = self.operator_sql.format(
+            variable=column,
+            value=value
+        )
 
         if self.operator == 'not_in':
             sql = '({} OR {} IS NULL)'.format(sql, column)
