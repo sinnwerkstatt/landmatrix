@@ -80,7 +80,7 @@ FILTER_OPERATION_MAP = OrderedDict([
 
 def get_elasticsearch_match_operation(operator, variable_name, value):
     """ Returns an elasticsearch-conform Match phrase for each SQL-operator """
-    if operator == 'is': return ('must', {'s': {variable_name: value}})
+    if operator == 'is': return ('must', {'match_phrase': {variable_name: value}})
     if operator == 'in': return ('should', {'match_phrase': {variable_name: value}})
     if operator == 'not_in': return ('must_not', {'match_phrase': {variable_name: value}})
     if operator == 'gte': return ('must', {'range': {variable_name: {'gte': value}}})
