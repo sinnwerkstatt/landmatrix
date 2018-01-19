@@ -92,6 +92,7 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
     if operator == 'lte': return ('must', {'range': {variable_name: {'lte': value}}})
     if operator == 'lt': return ('must', {'range': {variable_name: {'lt': value}}})
     if operator == 'contains': return ('must', {'match': {variable_name: value}})
+    if operator == 'not_contains': return ('must_not', {'match': {variable_name: value}})
     if operator == 'is_empty':
         if 'date' in variable_name:
             # Check for null values
