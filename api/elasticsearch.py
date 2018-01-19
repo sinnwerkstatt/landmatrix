@@ -60,23 +60,23 @@ def get_elasticsearch_properties(doc_type=None):
                 'geo_point': {'type': 'geo_point'},
                 'status': {'type': 'integer'},
                 'is_public': {'type': 'boolean'},
-                #'is_public_export': {'type': 'string'},
+                'is_public_export': {'type': 'string'},
                 'deal_scope': {'type': 'string'},
-                #'deal_scope_export': {'type': 'string'},
+                'deal_scope_export': {'type': 'string'},
                 'deal_size': {'type': 'string'},
-                #'deal_size_export': {'type': 'string'},
+                'deal_size_export': {'type': 'string'},
                 'init_date': {'type': 'date', 'format': "yyyy-MM-dd||yyyy-MM||yyyy"},
-                #'init_date_export': {'type': 'date', 'format': "yyyy-MM-dd||yyyy-MM||yyyy"},
+                'init_date_export': {'type': 'date', 'format': "yyyy-MM-dd||yyyy-MM||yyyy"},
                 'current_negotiation_status': {'type': 'string'},
-                #'current_negotiation_status_export': {'type': 'string'},
+                'current_negotiation_status_export': {'type': 'string'},
                 'deal_country': {'type': 'string'},
-                #'deal_country_export': {'type': 'string'},
+                'deal_country_export': {'type': 'string'},
                 'top_investors': {'type': 'string'},
-                #'top_investors_export': {'type': 'string'},
+                'top_investors_export': {'type': 'string'},
                 'fully_updated_date': {'type': 'string'},
-                #'fully_updated_date_export': {'type': 'string'},
+                'fully_updated_date_export': {'type': 'string'},
                 'target_region': {'type': 'string'},
-                #'target_region_export': {'type': 'string'},
+                'target_region_export': {'type': 'string'},
             }
         }
         _landmatrix_mappings['location'] = {
@@ -518,6 +518,7 @@ class ElasticSearch(object):
                 'current_negotiation_status_export': doc.get('current_negotiation_status', ''),
                 'top_investors_export': doc.get('top_investors', ''),
                 'fully_updated_date_export': doc.get('fully_updated_date', None),
+                'target_region_export': doc.get('target_region', None),
             }
             # Doc types: deal, location, contract and data_source
             for form in ChangeDealView.FORMS:
