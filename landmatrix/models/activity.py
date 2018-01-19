@@ -398,17 +398,29 @@ class Activity(ActivityBase):
         contract_size = self._get_current("contract_size")
         production_size = self._get_current("production_size")
 
+        # 1) IF Negotiation status IS Intended
         if self.negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
-            # intended deal
+            # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size or 0
+        # 2) IF Negotiation status IS Concluded
         elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
-            # concluded deal
+            # USE Contract size or Production size (in the given order)
             value = contract_size or production_size or 0
+        # 3) IF Negotiation status IS Failed (Negotiations failed)
         elif self.negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
-            # intended but failed deal
+            # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size or 0
-        elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_FAILED:
-            # concluded but failed
+        # 4) IF Negotiation status IS Failed (Contract canceled)
+        elif self.negotiation_status in Activity.NEGOTIATION_STATUS_CONTRACT_CANCELLED:
+            # USE Contract size OR Production size (in the given order)
+            value = contract_size or production_size or 0
+        # 5) IF Negotiation status IS Contract expired
+        elif self.negotiation_status in Activity.NEGOTIATION_STATUS_CONTRACT_EXPIRED:
+            # USE Contract size OR Production size (in the given order)
+            value = contract_size or production_size or 0
+        # 6) IF Negotiation status IS Change of ownership
+        elif self.negotiation_status in Activity.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP:
+            # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size or 0
         else:
             value = 0

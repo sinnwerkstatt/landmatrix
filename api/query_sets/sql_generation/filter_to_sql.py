@@ -202,7 +202,10 @@ class FilterToSQL:
                     WhereCondition(table_name, 'name', 'is', 'type'),
                     "{}.value = data_source_type.value".format(table_name))
                 where.append(conditions)
-            elif variable in ('negotiation_status', 'implementation_status', 'deal_size', 'deal_scope', 'init_date') and key == 'value':
+            elif variable in ('current_negotiation_status', 'implementation_status', 'deal_size',
+                              'deal_scope', 'init_date') and key == 'value':
+                if variable == 'current_negotiation_status':
+                    variable = 'negotiation_status'
                 # Special cases in that we need to filter on the activity table
                 # (as the most recent status is cached there)
                 condition = WhereCondition('a', variable, operation, value)
