@@ -318,18 +318,25 @@ def format_filters_elasticsearch(filters, initial_query=None):
                 preset_name = filter_obj.filter.name
                 # we are constructing a regular query, but because this is an OR order, we will take 
                 # all the matches in the 'must' slot and add them to the 'should' list
-                or_query = format_filters_elasticsearch(preset_filters)
-                if or_query.get('must', None) or or_query.get('should', ''):
+                filter_query = format_filters_elasticsearch(preset_filters)
+                if filter_query.get('must', None):
                     query['must'].append({
                         'bool': {
-                            'should': or_query['must'] + or_query['should']
+                            'must': filter_query['must']
                         },
                         '_filter_name': preset_name
                     })
-                if or_query.get('must_not', None):
+                if filter_query.get('should', ''):
+                    query['must'].append({
+                        'bool': {
+                            'should': filter_query['should']
+                        },
+                        '_filter_name': preset_name
+                    })
+                if filter_query.get('must_not', None):
                     query['must_not'].append({
                         'bool': {
-                            'must': or_query['must_not']
+                            'must': filter_query['must_not']
                         },
                         '_filter_name': preset_name
                     })
