@@ -67,8 +67,10 @@ def get_elasticsearch_properties(doc_type=None):
                 'deal_size_export': {'type': 'integer'},
                 'init_date': {'type': 'date', 'format': "yyyy-MM-dd||yyyy-MM||yyyy"},
                 'init_date_export': {'type': 'date', 'format': "yyyy-MM-dd||yyyy-MM||yyyy"},
-                'current_negotiation_status': {'type': 'string', 'index': 'not_analyzed'},
-                'current_negotiation_status_export': {'type': 'string', 'index': 'not_analyzed'},
+                'current_negotiation_status': {'type': 'string',
+                                               'analyzer': 'no_lowercase'},
+                'current_negotiation_status_export': {'type': 'string',
+                                                      'analyzer': 'no_lowercase'},
                 'deal_country': {'type': 'string'},
                 'deal_country_export': {'type': 'string'},
                 'top_investors': {'type': 'string'},
@@ -173,7 +175,18 @@ class ElasticSearch(object):
             except ElasticHttpNotFoundError as e:
                 pass 
         mappings = dict((k, v) for k, v in get_elasticsearch_properties().items())
-        self.conn.create_index(self.index_name, settings={'mappings': mappings})
+        settings = {
+            "analysis": {
+                "analyzer": {
+                    "no_lowercase": {
+                        "type": "custom",
+                        "tokenizer": "standard"
+                    }
+                }
+            }
+        }
+        self.conn.create_index(self.index_name, settings={'mappings': mappings,
+                                                          'settings': settings})
 
     def index_activity_by_id(self, activity_id):
         activity = HistoricalActivity.objects.get(pk=activity_id)
