@@ -50,7 +50,7 @@ class WhereCondition:
             if '##!##' in sanitized_value:
                 sanitized_value = sanitized_value.split('##!##')[0]
             should_quote_string = False
-            if self.operator != 'contains':
+            if 'contains' not in self.operator:
                 if not (self.is_value_numeric or self.is_id_column):
                     should_quote_string = True
                 elif self.column_name == 'date':
@@ -389,7 +389,7 @@ class FilterToSQL:
                         where_inv += "AND investor_country_{count}.id {op}".format(count=i, op=op_sql)
                     elif variable == 'investor':
                         where_inv += ' AND sh.investor_identifier = {}'.format(v)
-                    elif variable == 'operational_stakeholder' and operation != 'contains':
+                    elif variable == 'operational_stakeholder' and 'contains' not in operation:
                         where_inv += " AND operational_stakeholder_%i.id %s" % (i, self.OPERATION_MAP[operation][operation_type] % v.replace("'", "\\'"))
                     elif 'operating_company_' in variable:
                         variable = variable.replace('operating_company_', '')
