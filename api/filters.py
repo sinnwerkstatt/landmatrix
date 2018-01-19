@@ -80,14 +80,14 @@ FILTER_OPERATION_MAP = OrderedDict([
 
 def get_elasticsearch_match_operation(operator, variable_name, value):
     """ Returns an elasticsearch-conform Match phrase for each SQL-operator """
-    if operator == 'is': return ('must', {'match_phrase': {variable_name: value}})
-    if operator == 'in': return ('should', {'match_phrase': {variable_name: value}})
-    if operator == 'not_in': return ('must_not', {'match_phrase': {variable_name: value}})
+    if operator == 'is': return ('must', {'term': {variable_name: value}})
+    if operator == 'in': return ('should', {'term': {variable_name: value}})
+    if operator == 'not_in': return ('must_not', {'term': {variable_name: value}})
     if operator == 'gte': return ('must', {'range': {variable_name: {'gte': value}}})
     if operator == 'gt': return ('must', {'range': {variable_name: {'gt': value}}})
     if operator == 'lte': return ('must', {'range': {variable_name: {'lte': value}}})
     if operator == 'lt': return ('must', {'range': {variable_name: {'lt': value}}})
-    if operator == 'contains': return ('must', {'match': {variable_name: value}})
+    if operator == 'contains': return ('must', {'match_phrase': {variable_name: value}})
     if operator == 'is_empty':
         if 'date' in variable_name:
             # Check for null values
@@ -352,32 +352,34 @@ def format_filters_elasticsearch(filters, initial_query=None):
                                                                         '_filter_name',
                                                                         current_filter_name)
             # if no filter exists for this yet, add it
-            if existing_match_phrase is None:
-                branch_list.append(elastic_match)
-            else:
-                # if match phrase exists for this filter, and it is a bool,
-                # add the generated match(es) to its list
-                if 'bool' in existing_match_phrase:
-                    inside_operator = [key_name for key_name in existing_match_phrase.keys()
-                                       if not key_name == '_filter_name'][0]
-                    if 'bool' in elastic_match:
-                        existing_match_phrase[inside_operator].extend(elastic_match[inside_operator])
-                    else:
-                        existing_match_phrase[inside_operator].append(elastic_match)
-                else:
-                    # if match phrase exists and is a single match, pop it
-                    existing_single_match = branch_list.pop(existing_i)
-                    if 'bool' in elastic_match:
-                        inside_operator = [key_name for key_name in elastic_match.keys()
-                                           if not key_name == '_filter_name'][0]
-                        # if we have a bool, add the bool, add the popped match to bool
-                        elastic_match[inside_operator].append(existing_single_match)
-                        query['must'].append(elastic_match)
-                    else:
-                        # if  we have a single match, make new bool, add popped match and single match
-                        matches = [existing_single_match, elastic_match]
-                        query['must'].append({'bool': {elastic_operator: matches},
-                                              '_filter_name': current_filter_name})
+            #if existing_match_phrase is None:
+            branch_list.append(elastic_match)
+            #else:
+            #    # if match phrase exists for this filter, and it is a bool,
+            #    # add the generated match(es) to its list
+            #    if 'bool' in existing_match_phrase:
+            #        inside_operator = [key_name for key_name in existing_match_phrase.keys()
+            #                           if not key_name == '_filter_name'][0]
+            #        if 'bool' in elastic_match:
+            #            existing_match_phrase[inside_operator].extend(elastic_match[
+            # inside_operator])
+            #        else:
+            #            existing_match_phrase[inside_operator].append(elastic_match)
+            #    else:
+            #        # if match phrase exists and is a single match, pop it
+            #        existing_single_match = branch_list.pop(existing_i)
+            #        if 'bool' in elastic_match:
+            #            inside_operator = [key_name for key_name in elastic_match.keys()
+            #                               if not key_name == '_filter_name'][0]
+            #            # if we have a bool, add the bool, add the popped match to bool
+            #            elastic_match[inside_operator].append(existing_single_match)
+            #            query['must'].append(elastic_match)
+            #        else:
+            #            # if  we have a single match, make new bool, add popped match and
+            # single match
+            #            matches = [existing_single_match, elastic_match]
+            #            query['must'].append({'bool': {elastic_operator: matches},
+            #                                  '_filter_name': current_filter_name})
     # remove our meta attribute so the query is elaticsearch-conform
     if initial_query is None:
         remove_all_dict_keys_from_mixed_dict(query, '_filter_name')

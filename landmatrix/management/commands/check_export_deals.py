@@ -32,7 +32,6 @@ class Command(BaseCommand):
         export_deals = list(deals)
         export_ids = set(row['activity_identifier'] for row in export_deals)
         export_count = len(export_ids)
-
         # Get grid
         rf = RequestFactory()
         request = rf.get('/data/')
