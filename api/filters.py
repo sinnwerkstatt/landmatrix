@@ -80,21 +80,21 @@ FILTER_OPERATION_MAP = OrderedDict([
 
 def get_elasticsearch_match_operation(operator, variable_name, value):
     """ Returns an elasticsearch-conform Match phrase for each SQL-operator """
-    if operator == 'is': return ('must', {'term': {variable_name: value}})
-    if operator == 'in': return ('should', {'term': {variable_name: value}})
-    if operator == 'not_in': return ('must_not', {'term': {variable_name: value}})
+    if operator == 'is': return ('must', {'match_phrase': {variable_name: value}})
+    if operator == 'in': return ('should', {'match_phrase': {variable_name: value}})
+    if operator == 'not_in': return ('must_not', {'match_phrase': {variable_name: value}})
     if operator == 'gte': return ('must', {'range': {variable_name: {'gte': value}}})
     if operator == 'gt': return ('must', {'range': {variable_name: {'gt': value}}})
     if operator == 'lte': return ('must', {'range': {variable_name: {'lte': value}}})
     if operator == 'lt': return ('must', {'range': {variable_name: {'lt': value}}})
-    if operator == 'contains': return ('must', {'match_phrase': {variable_name: value}})
+    if operator == 'contains': return ('must', {'match': {variable_name: value}})
     if operator == 'is_empty':
         if 'date' in variable_name:
             # Check for null values
             return ('must', {'bool': {'must_not': {'exists': {'field': variable_name}}}})
         else:
             # Check for empty strings
-            return ('must', {'term': {variable_name: ''}})
+            return ('must', {'match_phrase': {variable_name: ''}})
 
 # TODO: this counter is shared by all users, and is per thread.
 # It should probably be moved to the session
