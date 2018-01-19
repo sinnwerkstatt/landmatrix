@@ -91,7 +91,7 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
     if operator == 'is_empty':
         if 'date' in variable_name:
             # Check for null values
-            return ('must_not', {'bool': {'exists': {'field': variable_name}}})
+            return ('must', {'bool': {'must_not': {'exists': {'field': variable_name}}}})
         else:
             # Check for empty strings
             return ('must', {'match_phrase': {variable_name: ''}})
