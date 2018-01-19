@@ -26,7 +26,7 @@ class FilterCondition(models.Model):
     variable = models.CharField(_("Variable"), max_length=32)
     key = models.CharField(_("Key"), choices=KEY_CHOICES, max_length=32,
                             default=KEY_CHOICE_VALUE)
-    operator = models.CharField(_("Operator"), max_length=10,
+    operator = models.CharField(_("Operator"), max_length=20,
                                 choices=OPERATOR_CHOICES)
     value = models.CharField(_("Value"), max_length=1024, null=True, blank=True)
 
