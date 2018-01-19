@@ -75,6 +75,10 @@ FILTER_OPERATION_MAP = OrderedDict([
         "LIKE '%%%%%%%%%s%%%%%%%%'", "LIKE '%%%%%%%%%s%%%%%%%%'",
         _("contains")
     )),
+    ("not_contains", (
+        "NOT LIKE '%%%%%%%%%s%%%%%%%%'", "NOT LIKE '%%%%%%%%%s%%%%%%%%'",
+        _("not contains")
+    )),
     ("is_empty", ("IS NULL", "IS NULL", _("is empty"))),
 ])
 
