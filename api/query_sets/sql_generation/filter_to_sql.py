@@ -310,14 +310,14 @@ class FilterToSQL:
             elif variable in ('target_region', 'deal_country'):
                 tables_from.append(
                     """
-                    INNER JOIN landmatrix_activityattribute AS attr_%(count)i
+                    LEFT JOIN landmatrix_activityattribute AS attr_%(count)i
                     ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.name = 'target_country')
                     """ % {
                         'count': i,
                     })
                 tables_from.append(
                     """
-                    INNER JOIN landmatrix_country AS ac%(count)i
+                    LEFT JOIN landmatrix_country AS ac%(count)i
                     ON CAST(NULLIF(attr_%(count)i.value, '0') AS NUMERIC) = ac%(count)i.id
                     """ % {
                         'count': i,
@@ -325,22 +325,21 @@ class FilterToSQL:
                 if variable == 'target_region':
                     tables_from.append(
                         """
-                        INNER JOIN landmatrix_region AS ar%(count)i
+                        LEFT JOIN landmatrix_region AS ar%(count)i
                         ON ar%(count)i.id = ac%(count)i.fk_region_id
                         """ % {
                             'count': i,
                         })
             elif variable.isdigit():
                 tables_from.append(
-                    "INNER JOIN landmatrix_activityattribute AS attr_%(count)i\n" \
+                    "LEFT JOIN landmatrix_activityattribute AS attr_%(count)i\n" \
                     " ON (a.id = attr_%(count)i.fk_activity_id AND attr_%(count)i.key_id = '%(key)s')" % {
                         "count": i,
                         "key": variable
                     }
                 )
             else:
-                tables_from.append(join_attributes("attr_%(count)i" % {"count": i}, variable,
-                                                   type='INNER'))
+                tables_from.append(join_attributes("attr_%(count)i" % {"count": i}, variable))
         return '\n'.join(tables_from)
 
     def where_investor(self):

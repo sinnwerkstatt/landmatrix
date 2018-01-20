@@ -11,10 +11,10 @@ def get_join_columns(columns, group, group_value):
     return join_columns
 
 
-def join(table_or_model, alias, on, type='LEFT'):
+def join(table_or_model, alias, on):
     if not isinstance(table_or_model, str):
         table_or_model = table_or_model._meta.db_table
-    return "%s JOIN %-36s AS %-21s ON %s " % (type, table_or_model, alias, on)
+    return "LEFT JOIN %-36s AS %-21s ON %s " % (table_or_model, alias, on)
 
 
 def join_expression(table_or_model, alias, local_field, foreign_field='id'):
@@ -29,8 +29,7 @@ def local_table_alias(model):
     else: raise RuntimeError('Model not recognized: '+str(model))
 
 
-def join_attributes(alias, attribute='', attributes_model=ActivityAttribute,
-                    attribute_field='fk_activity_id', type='LEFT'):
+def join_attributes(alias, attribute='', attributes_model=ActivityAttribute, attribute_field='fk_activity_id'):
     if not attribute: attribute = alias
     return join(
         attributes_model, alias,
@@ -40,8 +39,7 @@ def join_attributes(alias, attribute='', attributes_model=ActivityAttribute,
             attribute_field,
             alias,
             attribute
-        ),
-        type=type
+        )
     )
 
 
