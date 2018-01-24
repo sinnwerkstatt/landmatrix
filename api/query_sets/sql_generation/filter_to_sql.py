@@ -73,7 +73,8 @@ class WhereCondition:
         value = self.quote_value(self.value)
         sql = self.operator_sql.format(
             variable=column,
-            value=value
+            value=value,
+            table=self.table_name
         )
 
         if self.operator == 'not_in':
@@ -172,8 +173,13 @@ class FilterToSQL:
                 variable = tag
                 key = 'value'
                 operation = None
-
-            table_name = 'attr_{}'.format(i)
+            # No join required for exists, since it uses subselect
+            if operation == 'exists':
+                continue
+            elif operation == 'excludes':
+                table_name = 'landmatrix_activityattribute'
+            else:
+                table_name = 'attr_{}'.format(i)
 
             if variable == 'activity_identifier':
                 condition = WhereCondition(
@@ -298,11 +304,11 @@ class FilterToSQL:
             variable_operation = tag.split("__")
             variable = variable_operation[0]
             key = variable_operation[1]
-
+            operator = variable_operation[2]
             no_join_required = (
-                variable == 'activity_identifier' or (
-                    variable in ('negotiation_status', 'implementation_status') and
-                    key == 'value')
+                variable == 'activity_identifier' or
+                (variable in ('negotiation_status', 'implementation_status') and key == 'value') or
+                operator == 'excludes'
             )
 
             if no_join_required:

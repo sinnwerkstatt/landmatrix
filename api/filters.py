@@ -80,9 +80,10 @@ FILTER_OPERATION_MAP = OrderedDict([
         _("not contains")
     )),
     ("is_empty", ("{variable} IS NULL", "{variable} IS NULL", _("is empty"))),
-    ("list_not_contains", (
-        "{value} NOT IN ARRAY_AGG({variable})", "'{value}' NOT IN ARRAY_AGG({variable})",
-        _("not contains (list)")
+    ("excludes", (
+        "NOT EXISTS (SELECT * from {table} where a.id = fk_activity_id AND value = {value})",
+        "NOT EXISTS (SELECT * from {table} where a.id = fk_activity_id AND value = '{value}')",
+        _("excludes")
     )),
 ])
 
@@ -97,7 +98,7 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
     if operator == 'lt': return ('must', {'range': {variable_name: {'lt': value}}})
     if operator == 'contains': return ('must', {'match': {variable_name: value}})
     if operator == 'not_contains': return ('must_not', {'match': {variable_name: value}})
-    if operator == 'list_not_contains': return ('must_not', {'match': {variable_name: value}})
+    if operator == 'excludes': return ('must_not', {'match': {variable_name: value}})
     if operator == 'is_empty':
         if 'date' in variable_name:
             # Check for null values
