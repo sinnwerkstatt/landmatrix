@@ -81,8 +81,10 @@ FILTER_OPERATION_MAP = OrderedDict([
     )),
     ("is_empty", ("{variable} IS NULL", "{variable} IS NULL", _("is empty"))),
     ("excludes", (
-        "NOT EXISTS (SELECT * from {table} where a.id = fk_activity_id AND value = {value})",
-        "NOT EXISTS (SELECT * from {table} where a.id = fk_activity_id AND value = '{value}')",
+        "NOT EXISTS (SELECT * from {table} where a.id = fk_activity_id AND name = '{variable}' "
+        "AND value = {value})",
+        "NOT EXISTS (SELECT * from {table} where a.id = fk_activity_id AND name = '{variable}' "
+        "AND value = '{value}')",
         _("excludes")
     )),
 ])
