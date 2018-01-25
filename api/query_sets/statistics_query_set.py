@@ -24,38 +24,37 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
         "LEFT JOIN landmatrix_country                   AS deal_country     ON CAST(target_country.value AS NUMERIC) = deal_country.id",
     ]
 
-    def __init__(self, request):
-        self.disable_filters = request.GET.get('disable_filters', False)
-        if self.disable_filters:
-            # Backup
-            request.session['disabled_filters'] = request.session.get('filters')
-            request.session['disabled_set_default_filters'] = request.session.get(
-                'set_default_filters', None)
+    request = None
 
-            request.session['filters'] = {}
-            if 'set_default_filters' in request.session:
-                del(request.session['set_default_filters'])
-            # TODO: This is ugly, move set_default_filters to somewhere else
-            f = FilterWidgetMixin()
-            f.request = request
-            f.set_country_region_filter(request.GET.copy())
-            f.set_default_filters(None, disabled_presets=[2,])
+    def __init__(self, request):
+        self.request = request
         super().__init__(request)
         self.country = request.GET.get('country')
         self.region = request.GET.get('region')
         self.request = request
 
     def all(self):
+        disable_filters = self.request.GET.get('disable_filters', False)
+        if disable_filters:
+            # Backup
+            disabled_filters = self.request.session.get('filters')
+            disabled_set_default_filters = self.request.session.get('set_default_filters', None)
+
+            self.request.session['filters'] = {}
+            if 'set_default_filters' in self.request.session:
+                del(self.request.session['set_default_filters'])
+            # TODO: This is ugly, move set_default_filters to somewhere else
+            f = FilterWidgetMixin()
+            f.request = self.request
+            f.set_country_region_filter(self.request.GET.copy())
+            f.set_default_filters(None, disabled_presets=[2,])
         self._filter_sql += self.regional_condition()
         output = [[r['negotiation_status'], r['deals'], r['deal_size']] for r in super().all()]
-        if self.disable_filters:
+        if disable_filters:
             # restore original filters
-            self.request.session['filters'] = self.request.session.get('disabled_filters')
-            if self.request.session['disabled_set_default_filters'] is not None:
-                self.request.session['set_default_filters'] = self.request.session[
-                    'disabled_set_default_filters']
-            del(self.request.session['disabled_filters'])
-            del(self.request.session['disabled_set_default_filters'])
+            self.request.session['filters'] = disabled_filters
+            if disabled_set_default_filters is not None:
+                self.request.session['set_default_filters'] = disabled_set_default_filters
         #raise IOError(self.sql_query())
         return output
 
