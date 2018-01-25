@@ -42,6 +42,8 @@ from landmatrix.views import *
 from landmatrix.forms import CustomRegistrationForm
 
 
+handler500 = 'landmatrix.views.handler500'
+
 CACHE_TIMEOUT = 24*3600
 
 urlpatterns = [
