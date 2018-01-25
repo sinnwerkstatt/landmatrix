@@ -35,8 +35,8 @@ class FilterCondition(models.Model):
 
     def to_filter(self):
         return Filter(
-            self.variable, self.operator, self.parsed_value, str(self),
-            key=self.key)
+            self.variable, self.operator, self.parsed_value,
+            label=str(self), key=self.key)
 
     def __getitem__(self, item):
         if item == 'variable':

@@ -275,28 +275,34 @@ def format_filters(filters):
         else:
             tags = filter_dict[name]['tags']
 
-        if tags.get(definition_key) and isinstance(tags[definition_key], list):
-            tags[definition_key].extend(definition[definition_key])
+        if tags.get(definition_key):
+            if isinstance(tags[definition_key], list):
+                tags[definition_key].extend(definition[definition_key])
+            else:
+                asdf
         else:
             tags.update(definition)
 
-    for filter_name, filter_obj in filters.items():
+    for i, item in enumerate(filters.items()):
+        filter_name, filter_obj = item
+
         if isinstance(filter_obj, PresetFilter):
             conditions = filter_obj.filter.conditions.all()
-            for i, condition in enumerate(conditions):
+            for j, condition in enumerate(conditions):
                 if filter_obj.filter.relation == filter_obj.filter.RELATION_OR:
                     group = filter_obj.filter.name
                 else:
-                    group = None
+                    group = '{}_{}'.format(filter_obj.filter.name, i)
                 _update_filters(
                     formatted_filters,
-                    ('{}_{}'.format(filter_obj.name, i), condition.to_filter()),
+                    ('{}_{}'.format(filter_obj.name, j), condition.to_filter()),
                     group=group
                 )
         else:
             _update_filters(
                 formatted_filters,
-                (filter_name, filter_obj)
+                (filter_name, filter_obj),
+                group='{}_{}'.format(filter_name, i)
             )
     return formatted_filters
 

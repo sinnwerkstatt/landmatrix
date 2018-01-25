@@ -216,7 +216,6 @@ LEFT JOIN landmatrix_investor                  AS operational_stakeholder ON iai
         # self._add_order_by_columns()
 
         self.filters.update(load_filters(request))
-
         self.filter_to_sql = FilterToSQL(self.filters, self.columns())
         additional_sql = self.filter_to_sql.filter_where()
         filter_sql += additional_sql
