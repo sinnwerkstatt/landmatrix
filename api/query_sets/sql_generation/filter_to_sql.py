@@ -65,7 +65,10 @@ class WhereCondition:
         return quoted_value
 
     def __str__(self):
-        if self.is_value_numeric and not self.is_id_column and not self.column_name == 'date' and not self.column_name == 'deal_size':
+        if self.operator == 'excludes':
+            column = self.column_name
+        elif self.is_value_numeric and not self.is_id_column and not self.column_name == 'date' \
+            and not self.column_name == 'deal_size':
             column = "CAST(COALESCE(NULLIF({}.{}, ''), '0') AS FLOAT)".format(
                 self.table_name, self.column_name)
         else:
