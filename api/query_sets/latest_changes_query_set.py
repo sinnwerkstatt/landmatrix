@@ -15,6 +15,7 @@ class LatestChangesQuerySet:
         self.num_changes = int(request.GET.get('n', self.DEFAULT_NUM_CHANGES))
         self.country = request.GET.get('target_country')
         self.region = request.GET.get('target_region')
+        self.request = request
 
     def all(self):
         deal_data = [
@@ -47,7 +48,8 @@ class LatestChangesQuerySet:
         return base_query.exists()
 
     def get_latest_activities(self):
-        all_activities = HistoricalActivity.objects.filter(fk_status_id__in=(2, 3, 4))
+        all_activities = HistoricalActivity.objects.filter(id__in=self.activity_ids_by_public())\
+            .filter(fk_status_id__in=HistoricalActivity.PUBLIC_STATUSES)
         if self.country:
             all_activities = all_activities.filter(id__in=self.activity_ids_by_country())
         if self.region:
@@ -60,10 +62,15 @@ class LatestChangesQuerySet:
         ).values_list('fk_activity_id', flat=True).distinct()
 
     def activity_ids_by_region(self):
-        countries_in_region = Country.objects.defer('geom').filter(fk_region_id=self.region).values_list('id', flat=True).distinct()
+        countries_in_region = Country.objects.defer('geom').filter(fk_region_id=self.region)\
+            .values_list('id', flat=True).distinct()
         return ActivityAttribute.objects.filter(
             name='target_country', value__in=list(countries_in_region)
         ).values_list('fk_activity_id', flat=True).distinct()
+
+    def activity_ids_by_public(self):
+        return Activity.objects.filter(is_public=True).values_list('id', flat=True)
+
 
 def remove_duplicates(deal_data):
     deal_ids = []
