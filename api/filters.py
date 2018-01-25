@@ -278,8 +278,6 @@ def format_filters(filters):
         if tags.get(definition_key):
             if isinstance(tags[definition_key], list):
                 tags[definition_key].extend(definition[definition_key])
-            else:
-                asdf
         else:
             tags.update(definition)
 
