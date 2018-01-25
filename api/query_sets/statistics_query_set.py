@@ -27,7 +27,11 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
     def __init__(self, request):
         self.disable_filters = request.GET.get('disable_filters', False)
         if self.disable_filters:
-            self.disabled_filters = request.session.get('filters')
+            # Backup
+            request.session['disabled_filters'] = request.session.get('filters')
+            request.session['disabled_set_default_filters'] = request.session.get(
+                'set_default_filters', None)
+
             request.session['filters'] = {}
             if 'set_default_filters' in request.session:
                 del(request.session['set_default_filters'])
@@ -45,8 +49,13 @@ class StatisticsQuerySet(FakeQuerySetWithSubquery):
         self._filter_sql += self.regional_condition()
         output = [[r['negotiation_status'], r['deals'], r['deal_size']] for r in super().all()]
         if self.disable_filters:
-            # Reenable original filters
-            self.request.session['filters'] = self.disabled_filters
+            # restore original filters
+            self.request.session['filters'] = self.request.session.get('disabled_filters')
+            if self.request.session['disabled_set_default_filters'] is not None:
+                self.request.session['set_default_filters'] = self.request.session[
+                    'disabled_set_default_filters']
+            del(self.request.session['disabled_filters'])
+            del(self.request.session['disabled_set_default_filters'])
         #raise IOError(self.sql_query())
         return output
 
