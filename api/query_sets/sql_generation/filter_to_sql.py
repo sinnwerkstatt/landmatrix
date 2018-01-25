@@ -14,12 +14,13 @@ class WhereCondition:
     WhereCondition objects build simple SQL strings, but there's a lot of
     logic around that.
     '''
-    def __init__(self, table_name, column_name, operator, value):
+    def __init__(self, table_name, column_name, operator, value, variable=None):
         self.table_name = table_name
         self.column_name = column_name
         self.operator = operator
         self.operator_sql = FILTER_OPERATION_MAP[operator][0]
         self.value = value
+        self.variable = variable
 
     @property
     def is_value_numeric(self):
@@ -72,9 +73,10 @@ class WhereCondition:
 
         value = self.quote_value(self.value)
         sql = self.operator_sql.format(
-            variable=column,
+            column=column,
             value=value,
-            table=self.table_name
+            table=self.table_name,
+            variable=self.variable
         )
 
         if self.operator == 'not_in':
@@ -182,18 +184,17 @@ class FilterToSQL:
                 table_name = 'attr_{}'.format(i)
 
             if variable == 'activity_identifier':
-                condition = WhereCondition(
-                    'a', 'activity_identifier', operation, value)
+                condition = WhereCondition('a', 'activity_identifier', operation, value, variable)
                 where.append(condition)
             elif variable == 'target_region':
                 table_name = 'ar{}'.format(i)
                 condition = WhereCondition(
-                    table_name, 'id', operation, value)
+                    table_name, 'id', operation, value, variable)
                 where.append(condition)
             elif variable == 'deal_country':
                 table_name = 'ac{}'.format(i)
                 condition = WhereCondition(
-                    table_name, key, operation, value)
+                    table_name, key, operation, value, variable)
                 where.append(condition)
             elif variable == 'type' and 'data_source_type' in self.columns:
                 # Special hack for weird results in data source filtering
@@ -202,7 +203,7 @@ class FilterToSQL:
                 # without major surgery. Works by lining up the
                 # columns that we're joining twice :(
                 conditions = WhereConditions(
-                    WhereCondition(table_name, 'name', 'is', 'type'),
+                    WhereCondition(table_name, 'name', 'is', 'type', variable),
                     "{}.value = data_source_type.value".format(table_name))
                 where.append(conditions)
             elif variable in ('current_negotiation_status', 'implementation_status', 'deal_size',
@@ -211,19 +212,19 @@ class FilterToSQL:
                     variable = 'negotiation_status'
                 # Special cases in that we need to filter on the activity table
                 # (as the most recent status is cached there)
-                condition = WhereCondition('a', variable, operation, value)
+                condition = WhereCondition('a', variable, operation, value, variable)
                 where.append(condition)
             elif variable == 'fully_updated':
-                condition = WhereCondition('a', variable, operation, value)
+                condition = WhereCondition('a', variable, operation, value, variable)
                 where.append(condition)
             elif operation not in ('in', 'not_in') and isinstance(value, list):
                 for subvalue in value:
                     conditions = WhereConditions(
-                        WhereCondition(table_name, key, operation, subvalue))
+                        WhereCondition(table_name, key, operation, subvalue, variable))
                     where.append(conditions)
             else:
                 conditions = WhereConditions(
-                    WhereCondition(table_name, key, operation, value))
+                    WhereCondition(table_name, key, operation, value, variable))
                 where.append(conditions)
 
             is_operation_limits = self._where_activity_filter_is_operator(

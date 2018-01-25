@@ -64,27 +64,27 @@ FILTER_VARIABLE_NAMES = set(
 # This is an ordered dict as the keys are used to generate model choices.
 # It is here in order to resolve circular imports
 FILTER_OPERATION_MAP = OrderedDict([
-    ("is", ("{variable} = {value}", "{variable} = '{value}'", _("is"))),
-    ("in", ("{variable} IN ({value})", "{variable} IN ({value})", _("is one of"))),
-    ("not_in", ("{variable} NOT IN ({value})", "{variable} NOT IN ({value})", _("isn't any of"))),
-    ("gte", ("{variable} >= {value}", "{variable} >= '{value}'", _("is >="))),
-    ("gt", ("{variable} > {value}", "{variable} > '{value}'", _("is >"))),
-    ("lte", ("{variable} <= {value}", "{variable} <= '{value}'", _("is <="))),
-    ("lt", ("{variable} < {value}", "{variable} < '{value}'", _("is <"))),
+    ("is", ("{column} = {value}", "{column} = '{value}'", _("is"))),
+    ("in", ("{column} IN ({value})", "{column} IN ({value})", _("is one of"))),
+    ("not_in", ("{column} NOT IN ({value})", "{column} NOT IN ({value})", _("isn't any of"))),
+    ("gte", ("{column} >= {value}", "{column} >= '{value}'", _("is >="))),
+    ("gt", ("{column} > {value}", "{column} > '{value}'", _("is >"))),
+    ("lte", ("{column} <= {value}", "{column} <= '{value}'", _("is <="))),
+    ("lt", ("{column} < {value}", "{column} < '{value}'", _("is <"))),
     ("contains", (
-        "{variable} LIKE '%%%%%%%%{value}%%%%%%%%'", "{variable} LIKE '%%%%%%%%{value}%%%%%%%%'",
+        "{column} LIKE '%%%%%%%%{value}%%%%%%%%'", "{column} LIKE '%%%%%%%%{value}%%%%%%%%'",
         _("contains")
     )),
     ("not_contains", (
-        "{variable} NOT LIKE '%%%%%%%%{value}%%%%%%%%'", "{variable} NOT LIKE '%%%%%%%%{value}%%%%%%%%'",
+        "{column} NOT LIKE '%%%%%%%%{value}%%%%%%%%'", "{column} NOT LIKE '%%%%%%%%{value}%%%%%%%%'",
         _("not contains")
     )),
-    ("is_empty", ("{variable} IS NULL", "{variable} IS NULL", _("is empty"))),
+    ("is_empty", ("{column} IS NULL", "{column} IS NULL", _("is empty"))),
     ("excludes", (
         "NOT EXISTS (SELECT * from {table} where a.id = fk_activity_id AND name = '{variable}' "
-        "AND value = {value})",
+        "AND {column} = {value})",
         "NOT EXISTS (SELECT * from {table} where a.id = fk_activity_id AND name = '{variable}' "
-        "AND value = '{value}')",
+        "AND {column} = '{value}')",
         _("excludes")
     )),
 ])
