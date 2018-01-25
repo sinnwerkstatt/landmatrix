@@ -209,7 +209,8 @@ class FilterToSQL:
                     WhereCondition(table_name, 'name', 'is', 'type', variable),
                     "{}.value = data_source_type.value".format(table_name))
                 where.append(conditions)
-            elif variable in ('current_negotiation_status', 'implementation_status', 'deal_size',
+            elif variable in ('current_negotiation_status', 'negotiation_status',
+                               'implementation_status', 'deal_size',
                               'deal_scope', 'init_date') and key == 'value':
                 if variable == 'current_negotiation_status':
                     variable = 'negotiation_status'
@@ -311,7 +312,8 @@ class FilterToSQL:
             operator = variable_operation[2]
             no_join_required = (
                 variable == 'activity_identifier' or
-                (variable in ('negotiation_status', 'implementation_status') and key == 'value') or
+                (variable in ('negotiation_status', 'implementation_status') and key ==
+                 'value') or
                 operator == 'excludes'
             )
 
