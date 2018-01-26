@@ -21,44 +21,12 @@ from landmatrix.models.filter_preset import FilterPreset
 FILTER_FORMATS_SQL = 0
 FILTER_FORMATS_ELASTICSEARCH = 1
 
-
-FILTER_VAR_ACT = [
-    "target_country", "location", "intention", "intended_size", "contract_size", "production_size",
-    "negotiation_status", "implementation_status", "crops", "nature", "contract_farming", "url", "type", "company",
-    "type"
-]
-FILTER_NEW = [
-    "agreement_duration", "animals", "annual_leasing_fee", "annual_leasing_fee_area",
-    "annual_leasing_fee_currency", "annual_leasing_fee_type", "community_benefits",
-    "community_compensation", "community_consultation", "community_reaction",
-    "company", "contract_date", "contract_farming", "contract_number", "contract_size",
-    "crops", "date", "deal_scope", "domestic_jobs_created", "domestic_jobs_current",
-    "domestic_jobs_current_daily_workers", "domestic_jobs_current_employees",
-    "domestic_jobs_planned", "domestic_jobs_planned_daily_workers",
-    "domestic_jobs_planned_employees", "domestic_use", "email", "export",
-    "export_country1", "export_country1_ratio", "export_country2", "export_country2_ratio",
-    "export_country3", "file", "foreign_jobs_created", "foreign_jobs_current",
-    "foreign_jobs_current_employees", "foreign_jobs_planned", "foreign_jobs_planned_employees",
-    "has_domestic_use", "has_export", "implementation_status", "includes_in_country_verified_information",
-    "in_country_processing", "intended_size", "intention", "land_cover", "land_owner", "land_use",
-    "level_of_accuracy", "location", "minerals", "name", "nature", "negotiation_status", "not_public",
-    "not_public_reason", "number_of_displaced_people", "off_the_lease", "off_the_lease_area",
-    "off_the_lease_farmers", "on_the_lease", "on_the_lease_area", "on_the_lease_farmers",
-    "phone", "point_lat", "point_lon", "production_size", "project_name", "purchase_price",
-    "purchase_price_area", "purchase_price_currency", "purchase_price_type",
-    "source_of_water_extraction", "target_country", "total_jobs_created", "total_jobs_current",
-    "total_jobs_current_daily_workers", "total_jobs_current_employees", "total_jobs_planned",
-    "total_jobs_planned_daily_workers", "total_jobs_planned_employees", "type", "url",
-    "water_extraction_amount", "water_extraction_envisaged"
-]
+# Deprecated?
 FILTER_VAR_INV = [
     "investor", "operational_stakeholder", "operational_stakeholder_name",
     "operational_stakeholder_country", "operational_stakeholder_region",
     "country",
 ]
-# Anything in this set is allowed to be passed around in the URL.
-FILTER_VARIABLE_NAMES = set(
-    FILTER_VAR_ACT + FILTER_NEW + FILTER_VAR_INV + ['status'])
 
 # operation => (numeric operand, character operand, description )
 # This is an ordered dict as the keys are used to generate model choices.
@@ -465,13 +433,10 @@ def load_statuses_from_url(request):
 
 def clean_filter_query_string(request):
     whitelist = QueryDict(mutable=True)
-    has_allowed_param = any(
-        key in request.GET for key in FILTER_VARIABLE_NAMES)
 
-    if request.GET and has_allowed_param:
+    if request.GET:
         for key in request.GET.keys():
-            if key in FILTER_VARIABLE_NAMES:
-                whitelist.setlist(key, request.GET.getlist(key))
+            whitelist.setlist(key, request.GET.getlist(key))
 
     return whitelist
 

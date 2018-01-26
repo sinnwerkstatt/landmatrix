@@ -2,7 +2,8 @@
     <!-- Indicators -->
     <ol class="carousel-indicators">
     	{% for image in images %}
-		<li data-target="#carousel-explanation" data-slide-to="{{ forloop.counter }}"{% if forloop.first %} class="active"{% endif %}></li>
+		<li data-target="#carousel-explanation" data-slide-to="{{ forloop.counter0 }}
+"{% if forloop.first %} class="active"{% endif %}></li>
 		{% endfor %}
     </ol>
     <div class="center">

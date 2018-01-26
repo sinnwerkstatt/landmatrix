@@ -10,7 +10,7 @@ var currentVariable = "";
 //        return
 //    }
 //
-//    presets = JSON.parse(json);
+//    presets = JSON.parse(json);f
 //    console.log("These are the presets:", presets);
 //}
 
@@ -112,7 +112,8 @@ function removeFilter(filterName) {
 }
 
 function createFilter(variable, label) {
-    $("#filterrow .filtercontrolbox,#filterrow .filtervaluebox").show()
+    $("#filterrow .filtercontrolbox,#filterrow .filtervaluebox").show();
+    $("#filter_operator").val("is");
     get_filter_options($("#filter_operator"), $("#filter_value"), variable);
     $('#filter_variable').val(variable);
     currentVariable = variable;
@@ -130,39 +131,24 @@ function get_filter_options(operatorfield, variablefield, key_id) {
     const request = {key_id: key_id, value: "", name: 'value', operation: op_value};
     $.get("/ajax/widget/values", request, function (data) {
         //console.log('Got this from django:', data);
-        variablefield.html(data);
-        var is_number = (variablefield.find(":input[type=number]:not(.year-based-year)").length > 0);
-        var is_date = (variablefield.find(".date").length > 0);
-        var is_list = (variablefield.find("select,ul").length > 0);
-        var is_yearbased = (variablefield.find(".year-based").length > 0);
+        variablefield.html(data.widget);
 
-        //variablefield.find(":first").addClass("filtervalueheight");
-
-        if (is_yearbased == true) {
-            variablefield.find('a').each(function(index) {
-                $(this).remove();
-            });
-            variablefield.find('.year-based-year').each(function(index) {
-                $(this).remove();
-            });
-            var valuefield = variablefield.find("#id_value_0");
-            valuefield.attr('id', 'id_value');
-            valuefield.attr('name', 'value');
-            valuefield.removeClass('year-based');
-            valuefield.addClass('form-control');
-        }
+        //if (is_yearbased == true) {
+        //    variablefield.find('a').each(function(index) {
+        //        $(this).remove();
+        //    });
+        //    variablefield.find('.year-based-year').each(function(index) {
+        //        $(this).remove();
+        //    });
+        //    var valuefield = variablefield.find("#id_value_0");
+        //    valuefield.attr('id', 'id_value');
+        //    valuefield.attr('name', 'value');
+        //    valuefield.removeClass('year-based');
+        //    valuefield.addClass('form-control');
+        //}
 
         operatorfield.find('option').each(function (index) {
-            if (is_number) {
-                var state = (jQuery.inArray($(this).val(), numeric_operators) == -1);
-            } else if (is_date) {
-                var state = (jQuery.inArray($(this).val(), date_operators) == -1);
-            } else if (is_list) {
-                var state = (jQuery.inArray($(this).val(), list_operators) == -1);
-            } else {
-                var state = (jQuery.inArray($(this).val(), string_operators) == -1);
-            }
-
+            var state = (jQuery.inArray($(this).val(), data.allowed_operations) == -1);
             $(this).attr("disabled", state);
             if (state == true) {
                 $(this).hide();
@@ -175,11 +161,11 @@ function get_filter_options(operatorfield, variablefield, key_id) {
         // Init country widget
         variablefield.find('.investorfield').each(function () {
             initInvestorField($(this), false);
-        })
+        });
         // Init investor widget
         variablefield.find('.countryfield').each(function () {
             initCountryField($(this));
-        })
+        });
     });
 }
 

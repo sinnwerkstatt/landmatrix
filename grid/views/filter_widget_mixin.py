@@ -36,10 +36,13 @@ def get_variable_table():
         'name': 'activity_identifier',
         'label': _("Deal ID"),
     }]
+    exclude = ('intended_area', 'contract_area', 'production_area')
 
     # Add deal attributes
     for form in deal_forms:
         for field_name, field in form.base_fields.items():
+            if field_name in exclude:
+                continue
             if isinstance(field, TitleField):
                 if group_title and group_items:
                     variable_table[group_title] = group_items

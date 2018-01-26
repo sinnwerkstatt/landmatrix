@@ -1,139 +1,340 @@
 import datetime
+from collections import OrderedDict
 
+from django import forms
 from django.contrib.auth.models import User
-from django.http import HttpResponse
-from django.views.generic.edit import View
-from django.forms import (
-    TextInput, CheckboxSelectMultiple, HiddenInput, SelectMultiple,
-    RadioSelect, Select,
-)
+from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
+from rest_framework.views import APIView
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from ol3_widgets.widgets import LocationWidget
 from grid.views.browse_filter_conditions import get_field_by_key
-from grid.widgets import (
-    YearBasedSelect, YearBasedMultipleSelect, YearBasedTextInput, NumberInput,
-    YearBasedSelectMultipleNumber
-)
-from grid.forms.choices import intention_choices, int_choice_to_string
+from grid.fields import YearMonthDateField
 
+class FilterWidgetAjaxView(APIView):
 
-class FilterWidgetAjaxView(View):
-    def dispatch(self, request, *args, **kwargs):
+    renderer_classes = (JSONRenderer,)
+
+    TYPE_STRING = 'string'
+    TYPE_NUMERIC = 'numeric'
+    TYPE_BOOLEAN = 'boolean'
+    TYPE_LIST = 'list'
+    TYPE_LIST_MULTIPLE = 'multiple'
+    TYPE_DATE = 'date'
+    FIELD_TYPE_MAPPING = OrderedDict((
+        (YearMonthDateField, TYPE_DATE), # Placed before CharField since it inherits from CharField
+        (forms.CharField, TYPE_STRING),
+        (forms.IntegerField, TYPE_NUMERIC),
+        (forms.BooleanField, TYPE_BOOLEAN),
+        (forms.ChoiceField, TYPE_LIST),
+        (forms.MultipleChoiceField, TYPE_LIST_MULTIPLE),
+    ))
+    FIELD_NAME_TYPE_MAPPING = {
+        'activity_identifier': TYPE_NUMERIC,
+        'fully_updated': TYPE_DATE,
+        'last_modification': TYPE_DATE,
+        'fully_updated_by': TYPE_LIST,
+    }
+    TYPE_OPERATION_MAPPING = {
+        TYPE_STRING: ('contains', 'is', 'is_empty'),
+        TYPE_NUMERIC: ('lt', 'gt', 'gte', 'lte', 'is', 'is_empty'),
+        TYPE_BOOLEAN: ('is', 'is_empty'),
+        TYPE_LIST: ('is', 'not_in', 'in', 'is_empty'),
+        TYPE_LIST_MULTIPLE: ('is', 'not_in', 'in', 'is_empty'),
+        TYPE_DATE: ('lt', 'gt', 'gte', 'lte', 'is', 'is_empty'),
+    }
+    OPERATION_WIDGET_MAPPING = {
+        'is_empty': None,
+    }
+    TYPE_WIDGET_MAPPING = {
+        TYPE_STRING: [
+            {
+                'operations': ('contains', 'is'),
+                'widget': forms.TextInput,
+            }
+        ],
+        TYPE_NUMERIC: [
+            {
+                'operations': ('lt', 'gt', 'gte', 'lte', 'is'),
+                'widget': forms.NumberInput,
+            }
+        ],
+        TYPE_BOOLEAN: [
+            {
+                'operations': ('is',),
+                'widget': forms.CheckboxInput,
+            }
+        ],
+        TYPE_LIST: [
+            {
+                'operations': ('is',),
+                'widget': forms.Select,
+            },
+            {
+                'operations': ('not_in', 'in'),
+                'widget': forms.CheckboxSelectMultiple,
+            }
+        ],
+        TYPE_LIST_MULTIPLE: [
+            {
+                'operations': ('is',),
+                'widget': forms.CheckboxSelectMultiple,
+            },
+            {
+                'operations': ('not_in', 'in'),
+                'widget': forms.CheckboxSelectMultiple,
+            }
+        ],
+        TYPE_DATE: [
+            {
+                'operations': ('lt', 'gt', 'gte', 'lte', 'is'),
+                'widget': DateTimePicker,
+            }
+        ],
+    }
+    field_name = ''
+    name = ''
+    operation = ''
+
+    def get(self, *args, **kwargs):
         """ render form to enter values for the requested field in the filter widget for the grid view
             form to select operations is updated by the javascript function update_widget() in /media/js/main.js
         """
-        action = kwargs.get("action", "values")
-        if action == "values":
-            return self.render_widget_values(request)
+        self.field_name = self.request.GET.get('key_id', '')
+        self.name = self.request.GET.get('name', '')
+        self.operation = self.request.GET.get('operation', '')
 
-    def render_widget_values(self, request):
-        # TODO: Cleanup this hog of a method
+        return Response({
+            'allowed_operations': self.get_allowed_operations(),
+            'widget': self.render_widget()
+        })
 
-        def merge_attrs(attrs_1, attrs_2):
-            for key, value in attrs_2.items():
-                if key in attrs_1 and key == 'class':
-                    attrs_1[key] += ' %s' % attrs_2[key]
+    @property
+    def field(self):
+        if not hasattr(self, '_field'):
+            if self.field_name:
+                # Deprecated?
+                if "inv_" in self.field_name:
+                    field = get_field_by_key(self.field_name[4:])
                 else:
-                    attrs_1[key] = attrs_2[key]
-            return attrs_1
+                    field = get_field_by_key(self.field_name)
+                # MultiValueField?
+                if isinstance(field, forms.MultiValueField):
+                    # Get first field instead
+                    field = field.fields[0]
+                self._field = field
+        return self._field
 
-        attrs = {'class': 'valuefield form-control'}
+    @property
+    def type(self):
+        field = self.field
+        if not hasattr(self, '_type'):
+            # Get type by field class
+            for field_class, field_type in self.FIELD_TYPE_MAPPING.items():
+                if isinstance(field, field_class):
+                    self._type = field_type
+                    break
+            if not hasattr(self, '_type'):
+                # Get type by field name
+                self._type = self.FIELD_NAME_TYPE_MAPPING.get(self.field_name, self.TYPE_STRING)
+        return self._type
 
-        value = request.GET.get("value", "")
-        key_id = request.GET.get("key_id", "")
-        operation = request.GET.get("operation", "")
-        field = None
-        value = value and value.split(",") or []
-        widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
-
-        # Get widget if there's no form field
-        if key_id == 'activity_identifier':
-            if operation in ("in", "not_in"):
-                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
-            else:
-                widget = NumberInput().render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
-        elif key_id == "fully_updated" or key_id == "last_modification":
-            value = len(value) > 0 and value[0] or ""
+    @property
+    def value(self):
+        if not hasattr(self, '_value'):
+            value = self.request.GET.get('value', '')
             if value:
-                try:
+                # Date?
+                if self.type == self.TYPE_DATE:
                     value = datetime.strptime(value, "%Y-%m-%d")
-                except ValueError:
-                    value = ""
-            widgetObject = DateTimePicker(options={
+            # Make list
+            if self.type in (self.TYPE_LIST, self.TYPE_LIST_MULTIPLE):
+                self._value = value and value.split(',') or []
+            else:
+                self._value = value
+        return self._value
+
+    def get_allowed_operations(self):
+        return self.TYPE_OPERATION_MAPPING[self.type]
+
+    def get_attrs(self):
+        # Merge custom with existing field attributes
+        attrs = {
+            'id': 'id_{}'.format(self.name),
+        }
+        if not self.field or not hasattr(self.field.widget, 'attrs'):
+            return attrs
+        if not self.type == self.TYPE_LIST_MULTIPLE and \
+           not (self.type == self.TYPE_LIST and self.operation in ('in', 'not_in')):
+            attrs['class'] = 'valuefield form-control'
+        field_attrs = self.field.widget.attrs
+        for key, value in field_attrs.items():
+            if key in ('readonly',):
+                continue
+            if key in attrs and key == 'class':
+                attrs[key] += ' %s' % field_attrs[key]
+            else:
+                attrs[key] = field_attrs[key]
+        return attrs
+
+    def get_widget_init_kwargs(self):
+        kwargs = {}
+        # Get choices
+        if self.type in (self.TYPE_LIST, self.TYPE_LIST_MULTIPLE):
+            if self.field_name == 'fully_updated_by':
+                users = User.objects.filter(groups__name__in=("Research admins",
+                                            "Research assistants")).order_by("username")
+                kwargs['choices'] = [(u.id, u.get_full_name() or u.username) for u in users]
+            else:
+                kwargs['choices'] = self.field.choices
+        # Get date options
+        if self.type == self.TYPE_DATE:
+            kwargs['options'] = {
                 "format": "YYYY-MM-DD",
                 "inline": True,
-            })
+            }
+        return kwargs
 
+    def get_widget_render_kwargs(self):
+        return {
+            'name': self.name,
+            'value': self.value,
+            'attrs': self.get_attrs()
+        }
+
+    def get_widget_class(self):
+        operation_mappings = self.TYPE_WIDGET_MAPPING[self.type]
+        widget = None
+        for operation_mapping in operation_mappings:
+            if self.operation in operation_mapping['operations']:
+                widget = operation_mapping['widget']
+        return widget
+
+    def render_widget(self):
+        widget = self.get_widget_class()
+        if widget:
+            widget = widget(**self.get_widget_init_kwargs())
+            widget = self._pre_render_widget(widget)
+            widget = widget.render(**self.get_widget_render_kwargs())
+            widget = self._post_render_widget(widget)
+        return widget
+
+    def _pre_render_widget(self, widget):
+        if self.type == self.TYPE_DATE:
             # See here: https://github.com/jorgenpt/django-bootstrap3-datetimepicker/commit/042dd1da3a7ff21010c1273c092cba108d95baeb#commitcomment-16877308
-            widgetObject.js_template = """<script>
-                    $(function(){$("#%(picker_id)s:has(input:not([readonly],[disabled]))").datetimepicker(%(options)s);});
-            </script>"""
-            widget = widgetObject.render(
-                    request.GET.get("name", ""), value=value, attrs={"id": "id_%s" % request.GET.get("name", "")}
-            )
+            widget.js_template = """
+            <script>
+                    $(function(){$("#%(picker_id)s:has(input:not([readonly],[disabled]))")
+                    .datetimepicker(%(options)s);});
+            </script>
+            """
+        return widget
 
-        elif key_id == "fully_updated_by":
-            users = User.objects.filter(groups__name__in=("Research admins", "Research assistants")).order_by(
-                "username")
-            if operation in ("in", "not_in"):
-                widget = SelectMultiple(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(
-                    request.GET.get("name", ""), value, attrs={"id": "id_%s" % request.GET.get("name", ""), "class": "form-control"})
-            else:
-                widget = Select(choices=[(u.id, u.get_full_name() or u.username) for u in users]).render(
-                    request.GET.get("name", ""), len(value) == 1 and value[0] or value,
-                    attrs={"id": "id_%s" % request.GET.get("name", "")})
-        # Deprecated?
-        if "inv_" in key_id:
-            field = get_field_by_key(key_id[4:])
-        else:
-            field = get_field_by_key(key_id)
+    def _post_render_widget(self, widget):
+        return widget
+
+            # def get_widget(self):
+            #    pass
+            # TODO: Cleanup this hog of a method
+            ##value = self.request.GET.get("value", "")
+            ##key_id = self.request.GET.get("key_id", "")
+            ##operation = self.request.GET.get("operation", "")
+            ##field = None
+            ##value = value and value.split(",") or []
+            ##widget = TextInput().render(self.request.GET.get("name", ""), ",".join(value),
+            # attrs=attrs)
+
+            # Get widget if there's no form field
+            # if key_id == 'activity_identifier':
+            #    if operation in ("in", "not_in"):
+            #        widget = TextInput().render(self.request.GET.get("name", ""), ",".join(value),
+            #                                    attrs=attrs)
+            #    else:
+            #        widget = NumberInput().render(self.request.GET.get("name", ""), ",".join(value),
+            #                                      attrs=attrs)
+            # elif key_id == "fully_updated" or key_id == "last_modification":
+            #    value = len(value) > 0 and value[0] or ""
+            #    if value:
+            #        try:
+            #            value = datetime.strptime(value, "%Y-%m-%d")
+            #        except ValueError:
+            #            value = ""
+            #    widgetObject = DateTimePicker(options={
+            #        "format": "YYYY-MM-DD",
+            #        "inline": True,
+            #    })
+        #
+        # See here: https://github.com/jorgenpt/django-bootstrap3-datetimepicker/commit/042dd1da3a7ff21010c1273c092cba108d95baeb#commitcomment-16877308
+        #    widgetObject.js_template = """<script>
+        #            $(function(){$("#%(picker_id)s:has(input:not([readonly],
+        # [disabled]))").datetimepicker(%(options)s);});
+        #    </script>"""
+        #    widget = widgetObject.render(self.request.GET.get("name", ""), value=value,
+        #                                 attrs={"id": "id_%s" % self.request.GET.get("name", "")})
+
+        # elif key_id == "fully_updated_by":
+        #    users = User.objects.filter(groups__name__in=("Research admins",
+        #                                "Research assistants")).order_by("username")
+        #    choices=[(u.id, u.get_full_name() or u.username) for u in users])
+        # field = self.field
+        #
+        # Operator
+        # if operation == 'is_empty':
+        #    widget = ''
 
         # Get widget by form field
-        if field:
-            widget = field.widget
-            attrs = merge_attrs(attrs, field.widget.attrs)
-            attrs["id"] = "id_%s" % request.GET.get("name", "")
-            if widget.attrs.get("readonly", ""):
-                del widget.attrs["readonly"]
-            if type(widget) == HiddenInput:
-                field.widget = Select(choices=field.choices)
-                widget = Select(choices=field.choices)
-            if type(widget) == LocationWidget:
-                field.widget = TextInput()
-                widget = field.widget.render(request.GET.get("name", ""), len(value) > 0 and value[0] or "", attrs=attrs)
-            elif operation in ("in", "not_in"):
-                if type(widget) == YearBasedSelect:
-                    widget = CheckboxSelectMultiple()
-                    # FIXME: multiple value parameters can arrive like "value=1&value=2" or "value=1,2", not very nice
-                    value = type(value) in (list, tuple) and value or request.GET.getlist("value", [])
-                    value = [value, ""]
-                    # FIXME: There must be a more reliable way to remove the blank choice
-                    widget.choices = field.widget.choices[1:]
-                    widget = widget.render(request.GET.get("name", ""), value)
-                elif type(widget) == YearBasedTextInput:
-                    widget = widget.render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
-                elif type(widget) == RadioSelect:
-                    widget = CheckboxSelectMultiple()
-                    widget.choices = field.widget.choices
-                    widget = widget.render(request.GET.get("name", ""), value)
-                elif issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple)):
-                    widget = widget.render(request.GET.get("name", ""), value)
-                elif isinstance(widget, Select):
-                    widget = SelectMultiple()
-                    widget.choices = field.widget.choices
-                    widget = widget.render(request.GET.get("name", ""), value)
-                else:
-                    widget = widget.render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
-            elif operation in ("contains",):
-                widget = TextInput().render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
-            else:
-                if issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple, RadioSelect)):
-                    widget = widget.render(request.GET.get("name", ""), value)
-                elif issubclass(type(field.widget), (YearBasedMultipleSelect, YearBasedSelect, YearBasedTextInput,
-                                                     YearBasedSelectMultipleNumber)):
-                    widget = widget.render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
-                else:
-                    widget = widget.render(request.GET.get("name", ""), ",".join(value), attrs=attrs)
-
-        return HttpResponse(widget, content_type="text/plain")
+        # if field:
+        #    widget = field.widget
+        #    attrs["id"] = "id_%s" % self.request.GET.get("name", "")
+        # if widget.attrs.get("readonly", ""):
+        #    del widget.attrs["readonly"]
+        #    if type(widget) == HiddenInput:
+        #        field.widget = Select(choices=field.choices)
+        #        widget = Select(choices=field.choices)
+        #    if type(widget) == LocationWidget:
+        #        field.widget = TextInput()
+        #        widget = field.widget.render(self.request.GET.get("name", ""), len(value) > 0 and
+        #                                     value[0] or "", attrs=attrs)
+        ##   elif operation in ("in", "not_in"):
+        ##       if type(widget) == YearBasedSelect:
+        ##           widget = CheckboxSelectMultiple()
+        ##           # FIXME: multiple value parameters can arrive like "value=1&value=2" or
+        # "value=1,2", not very nice
+        ##           value = type(value) in (list, tuple) and value or self.request.GET.getlist(
+        ##               "value", [])
+        ##           value = [value, ""]
+        ##           # FIXME: There must be a more reliable way to remove the blank choice
+        ##           widget.choices = field.widget.choices[1:]
+        ##           widget = widget.render(self.request.GET.get("name", ""), value)
+        ##       elif type(widget) == YearBasedTextInput:
+        ##           widget = widget.render(self.request.GET.get("name", ""), ",".join(value),
+        ##                                  attrs=attrs)
+        ##       elif type(widget) == RadioSelect:
+        ##           widget = CheckboxSelectMultiple()
+        ##           widget.choices = field.widget.choices
+        ##           widget = widget.render(self.request.GET.get("name", ""), value)
+        ##       elif issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple)):
+        ##           widget = widget.render(self.request.GET.get("name", ""), value)
+        ##       elif isinstance(widget, Select):
+        ##           widget = SelectMultiple()
+        ##           widget.choices = field.widget.choices
+        ##           widget = widget.render(self.request.GET.get("name", ""), value)
+        ##       else:
+        ##           widget = widget.render(self.request.GET.get("name", ""), ",".join(value),
+        ##                                  attrs=attrs)
+        #    elif operation in ("contains",):
+        #        widget = TextInput().render(self.request.GET.get("name", ""), ",".join(value),
+        #                                    attrs=attrs)
+        #    else:
+        #        if issubclass(type(field.widget), (CheckboxSelectMultiple, SelectMultiple,
+        # RadioSelect)):
+        #            widget = widget.render(self.request.GET.get("name", ""), value)
+        #        elif issubclass(type(field.widget), (YearBasedMultipleSelect, YearBasedSelect,
+        # YearBasedTextInput,
+        #                                             YearBasedSelectMultipleNumber)):
+        #            widget = widget.render(self.request.GET.get("name", ""), ",".join(value),
+        #                                   attrs=attrs)
+        #        else:
+        #            widget = widget.render(self.request.GET.get("name", ""), ",".join(value),
+        #                                   attrs=attrs)
+        # return widget

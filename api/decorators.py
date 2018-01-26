@@ -2,7 +2,7 @@ import functools
 
 from django.http import HttpResponseRedirect
 
-from api.filters import FILTER_VARIABLE_NAMES, clean_filter_query_string
+from api.filters import clean_filter_query_string
 
 
 def save_filter_query_params(session_id='filter_query_params'):
@@ -18,7 +18,6 @@ def save_filter_query_params(session_id='filter_query_params'):
 
     def valid_params(request):
         return [
-            #key for key in request.GET.keys() if key in FILTER_VARIABLE_NAMES
             'status',
         ]
 

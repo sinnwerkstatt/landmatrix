@@ -632,7 +632,8 @@ small input {
   width: 95%; }
 
 #filter_value .bootstrap-datetimepicker-widget {
-  display: flex !important; }
+  display: table-cell !important;
+  vertical-align: top; }
 
 #filter_value > ul:nth-child(1) {
   overflow-y: auto;
@@ -646,7 +647,6 @@ small input {
 
 .in
 .valuefield {
-  max-width: 95%;
   width: 100% !important; }
 
 .valuefield option {
