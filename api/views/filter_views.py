@@ -92,7 +92,9 @@ class FilterCreateView(GenericAPIView):
             try:
                 variable = request_data['variable']
                 operator = request_data['operator']
-                value = request_data['value']
+                value = request_data.getlist('value')
+                if len(value) == 1:
+                    value = value[0]
                 display_value = request_data.get('display_value', None)
             except KeyError as err:
                 raise serializers.ValidationError(

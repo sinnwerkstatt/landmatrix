@@ -222,7 +222,7 @@ $(document).ready(function () {
         if (html) {
             $(this).data('toggle-text', $(this).html()).html(html);
         }
-    })
+    });
 
 
     $("#filterrow form").submit(function (e) {
@@ -233,7 +233,12 @@ $(document).ready(function () {
         if (value.is('select')) {
             data += '&display_value=' + value.find(':selected').text();
         } else if (value.is(':checkbox,:radio')) {
-            data += '&display_value=' + value.filter(':checked').parent().text().trim();
+            data += '&display_value='
+            value.filter(':checked').each(function (index, element) {
+                if (index !== 0)
+                    data += ' or ';
+                data += $(element).parent().text().trim();
+            });
         }
         $.post(
             '/api/filter/add/',

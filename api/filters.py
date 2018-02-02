@@ -169,7 +169,7 @@ class Filter(BaseFilter):
         # only the starting operator of this match or query-match is important for the logical operation,
         # we now map which one
         elastic_operator = None
-        
+
         if 'in' in self['operator'] and isinstance(value, list) and len(value) > 1: # 
             # generate multiple matches
             matches = []

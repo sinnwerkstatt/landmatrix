@@ -254,42 +254,42 @@ class FilterToSQL:
         where = ''
         # TODO: optimize SQL? This query seems painful, it could be
         # better as an array_agg possibly
-        excluded_variables = (
-            'deal_country', 'target_country', 'target_region',
-            'investor_country', 'investor_region', 'negotiation_status',
-            'implementation_status', 'not_public',
-            'deal_scope', 'init_date'
-        )
-        if operation == 'is' and variable not in excluded_variables:
-            # 'Is' operations requires that we exclude other values,
-            # otherwise it's just the same as contains
-
-            allowed_values = None
-            if variable == 'intention':
-                # intentions can be nested, for example all biofuels
-                # deals are also agriculture (parent of biofuels)
-                parent_value = get_choice_parent(value[-1], intention_choices)
-                if parent_value:
-                    allowed_values = (
-                        parent_value,
-                        value[-1].replace("'", "\\'"),
-                    )
-
-            if not allowed_values:
-                allowed_values = (value[-1].replace("'", "\\'"),)
-
-            # Exclude deals with given AND other values
-            where = """
-                a.id NOT IN (
-                    SELECT fk_activity_id
-                    FROM landmatrix_activityattribute
-                    WHERE landmatrix_activityattribute.name = '%(variable)s'
-                    AND landmatrix_activityattribute.value NOT IN ('%(value)s')
-                )
-                """ % {
-                'variable': variable,
-                'value': "', '".join([str(v) for v in allowed_values]),
-            }
+        # excluded_variables = (
+        #     'deal_country', 'target_country', 'target_region',
+        #     'investor_country', 'investor_region', 'negotiation_status',
+        #     'implementation_status', 'not_public',
+        #     'deal_scope', 'init_date'
+        # )
+        # if operation == 'is' and variable not in excluded_variables:
+        #     # 'Is' operations requires that we exclude other values,
+        #     # otherwise it's just the same as contains
+        #
+        #     allowed_values = None
+        #     if variable == 'intention':
+        #         # intentions can be nested, for example all biofuels
+        #         # deals are also agriculture (parent of biofuels)
+        #         parent_value = get_choice_parent(value[-1], intention_choices)
+        #         if parent_value:
+        #             allowed_values = (
+        #                 parent_value,
+        #                 value[-1].replace("'", "\\'"),
+        #             )
+        #
+        #     if not allowed_values:
+        #         allowed_values = (value[-1].replace("'", "\\'"),)
+        #
+        #     # Exclude deals with given AND other values
+        #     where = """
+        #         a.id NOT IN (
+        #             SELECT fk_activity_id
+        #             FROM landmatrix_activityattribute
+        #             WHERE landmatrix_activityattribute.name = '%(variable)s'
+        #             AND landmatrix_activityattribute.value NOT IN ('%(value)s')
+        #         )
+        #         """ % {
+        #         'variable': variable,
+        #         'value': "', '".join([str(v) for v in allowed_values]),
+        #     }
 
         return where
 
