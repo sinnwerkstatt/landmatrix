@@ -52,9 +52,9 @@ class DealActionCommentForm(BaseForm):
 
     tg_imported = TitleField(
         required=False, label="", initial=_("Import history"))
-    source = forms.CharField(
-        required=False, label=_("Import source"),
-        widget=forms.TextInput(attrs={'readonly': True}))
+    #source = forms.CharField(
+    #    required=False, label=_("Import source"),
+    #    widget=forms.TextInput(attrs={'readonly': True}))
     id = forms.CharField(
         required=False, label=_("Previous identifier"),
         widget=forms.TextInput(attrs={'size': '64', 'readonly': True}))
