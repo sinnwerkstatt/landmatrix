@@ -517,13 +517,14 @@ class ElasticSearch(object):
                     for name in spatial_names:
                         if name not in doc:
                             continue
+                        name_display = '%s_display' % name
                         if len(deal_attrs[name]) > i:
                             doc[name] = deal_attrs[name][i]
-                            if '%s_display' % name in deal_attrs:
-                                doc['%s_display' % name] = deal_attrs['%s_display' % name][i]
+                            if name_display in deal_attrs and len(deal_attrs[name_display]) > i:
+                                doc[name_display] = deal_attrs[name_display][i]
                         else:
                             doc[name] = ''
-                            if '%s_display' % name in deal_attrs:
+                            if name_display in deal_attrs and len(deal_attrs[name_display]) > i:
                                 doc['%s_display' % name] = deal_attrs['%s_display' % name][i]
                     # Set unique ID for location (deals can have multiple locations)
                     doc['id'] = '%s_%i' % (doc['activity_identifier'], i)
