@@ -561,9 +561,12 @@ class ElasticSearch(object):
                 properties['point_lon'].append('0')
             # Set target region
             if len(target_country) > i and target_country[i]:
-                region = Country.objects.get(pk=target_country[i]).fk_region
-                properties['target_region'].append(region.id)
-                properties['target_region_display'].append(region.name)
+                try:
+                    region = Country.objects.get(pk=target_country[i]).fk_region
+                    properties['target_region'].append(region.id)
+                    properties['target_region_display'].append(region.name)
+                except Country.DoesNotExist:
+                    pass
         return properties
 
     def get_display_properties(self, doc, doc_type='deal'):
