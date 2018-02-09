@@ -26,8 +26,8 @@ def get_display_value(field, values, attributes=None, formset=None):
                 if len(choice) > 2 and choice[2]:
                     choices.update(dict((i[:2] for i in choice[2])))
         output = [value and choices.get(str(value), '') or '' for value in values]
-    #elif 'AreaField' in str(type(field)):
-    #    pass
+    elif 'AreaField' in str(type(field)): # Area is a MultiValueField too
+        pass
     elif isinstance(field, forms.MultiValueField) and attributes:
         delimiter = '|'
         # Group all attributes by date
