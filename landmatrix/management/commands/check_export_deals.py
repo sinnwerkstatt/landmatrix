@@ -28,7 +28,6 @@ class Command(BaseCommand):
         deals = export.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
                                                   sort=sort)
         deals = export.filter_returned_results(deals)
-        deals = export.merge_deals(deals)
         export_deals = list(deals)
         export_ids = set(row['activity_identifier'] for row in export_deals)
         export_count = len(export_ids)

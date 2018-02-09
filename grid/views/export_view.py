@@ -11,6 +11,7 @@ from collections import OrderedDict
 
 from django.http.response import HttpResponse
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import View
 
 from grid.views.all_deals_view import AllDealsView
 from grid.views.table_group_view import TableGroupView
@@ -19,13 +20,12 @@ from grid.views.change_deal_view import ChangeDealView
 from grid.views.filter_widget_mixin import FilterWidgetMixin
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
-from api.views.list_views import ElasticSearchView
-from grid.utils import get_spatial_properties
+from api.views.list_views import ElasticSearchMixin
 from landmatrix.models import Activity, InvestorVentureInvolvement
 from landmatrix.models.investor import InvestorBase
 
 
-class ExportView(FilterWidgetMixin, ElasticSearchView):
+class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
     # TODO: XLS is deprecated, should be removed in templates
     FORMATS = ['csv', 'xml', 'xls', 'xlsx']
 
@@ -63,8 +63,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchView):
         results = {}
         # Search deals
         deals = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False, sort=sort)
-        deals = self.filter_returned_results(deals)
-        results['deals'] = self.merge_deals(deals)
+        results['deals'] = self.filter_returned_results(deals)
 
         # Get all involvements
         if deal_id:
@@ -228,32 +227,6 @@ class ExportView(FilterWidgetMixin, ElasticSearchView):
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
 
-    def merge_deals(self, deals):
-        """
-        Merge multiple deal locations into one deal
-        FIXME:
-            1. Extend the elasticsearch doc_type „location“ with the necessary display variables for the map
-            2. Switch the map to search for doc_type „location“ using the „has_parent“ elasticsearch option
-            3. Merge multiple locations of deals in elasticsearch doc_type „deal“
-            4. Remove this method
-        """
-        result_dict = OrderedDict()
-        spatial_names = list('%s_export' % n for n in get_spatial_properties())
-        for deal in deals:
-            deal_id, location_id = deal.get('id').split('_')
-            if deal_id in result_dict:
-                for name in spatial_names:
-                    value = deal.get(name, None)
-                    result_dict[deal_id][name][int(location_id)] = value and value[0] or ''
-            else:
-                location_count = deal['location_count']
-                result_dict[deal_id] = deal.copy()
-                for name in spatial_names:
-                    result_dict[deal_id][name] = location_count * ['']
-                    value = deal.get(name, None)
-                    result_dict[deal_id][name][int(location_id)] = value and value[0] or ''
-        return result_dict.values()
-
     def get_data(self, results, format=None):
         """
         Get headers and format the data of the items to a proper download format.
@@ -332,11 +305,11 @@ class ExportView(FilterWidgetMixin, ElasticSearchView):
         for item in results['deals']:
             row = [
                 item.get('activity_identifier'),            # ID
-                item.get('is_public_export'),               # Is public
-                item.get('deal_scope_export'),              # Deal Scope
-                item.get('deal_size_export'),               # Deal Size
-                item.get('current_negotiation_status_export'),  # Current negotiation status
-                item.get('fully_updated_date_export'),      # Fully updated date
+                item.get('is_public_display'),              # Is public
+                item.get('deal_scope'),                     # Deal Scope
+                item.get('deal_size'),                      # Deal Size
+                item.get('current_negotiation_status_display'),  # Current negotiation status
+                item.get('fully_updated_date'),             # Fully updated date
                 item.get('top_investors'),                  # Top investors
             ]
             for form in ChangeDealView.FORMS:
@@ -420,7 +393,10 @@ class ExportView(FilterWidgetMixin, ElasticSearchView):
         return data
 
     def get_export_value(self, name, data, formset_index=None, format=None):
-        value = data.get('%s_export' % name) or ''
+        if '%s_display' % name in data:
+            value = data.get('%s_display' % name)
+        else:
+            value = data.get('%s' % name) or ''
         if isinstance(value, (list, tuple)):
             if formset_index is not None:
                 try:

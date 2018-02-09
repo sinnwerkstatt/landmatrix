@@ -11,7 +11,7 @@ from grid.fields import (
     NestedMultipleChoiceField, YearBasedField, MultiCharField, ActorsField,
     AreaField
 )
-from grid.utils import get_export_value
+from grid.utils import get_display_value
 
 
 class BaseForm(forms.Form):
@@ -481,25 +481,27 @@ class BaseForm(forms.Form):
         return count
 
     @classmethod
-    def export(cls, doc, formset=None):
-        """Get field value for export"""
+    def get_display_properties(cls, doc, formset=None):
+        """Get field display values for ES"""
         output = {}
         for name, field in cls.base_fields.items():
             # Title field?
             if name.startswith('tg_') and not name.endswith('_comment'):
                 continue
-            export_key = '%s_export' % name
+            key = '%s_display' % name
 
             values = doc.get(name)
             if not values:
-                output[export_key] = []
+                output[key] = []
                 continue
             if not isinstance(values, (list, tuple)):
                 values = [values,]
             attr_key = '%s_attr' % name
             attributes = attr_key in doc and doc.get(attr_key) or None
 
-            output[export_key] = get_export_value(field, values, attributes, formset=formset)
+            value = get_display_value(field, values, attributes, formset=formset)
+            if value:
+                output[key] = value
         return output
 
     @property

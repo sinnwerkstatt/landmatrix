@@ -1426,19 +1426,24 @@ table tbody {
   margin-top: -4px;
   margin-bottom: 4px; }
 
-.container table thead th {
+.container table thead th,
+.container table thead th a {
   font-weight: bold;
-  padding-left: 10px;
   color: #fcfcfc;
   background-color: #919191; }
 
 table th a {
-  display: block;
-  float: left; }
+  display: inline-block;
+  padding-left:0;}
 
 .popup table th,
 .panel-body table th {
   background-color: inherit; }
+
+table th.number,
+table td.number {
+  text-align: right;
+}
 
 /* ==========================================================================
  *    GRAPHS

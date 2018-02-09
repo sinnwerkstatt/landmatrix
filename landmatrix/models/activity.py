@@ -411,15 +411,15 @@ class Activity(ActivityBase):
             # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size or 0
         # 4) IF Negotiation status IS Failed (Contract canceled)
-        elif self.negotiation_status in Activity.NEGOTIATION_STATUS_CONTRACT_CANCELLED:
+        elif self.negotiation_status == Activity.NEGOTIATION_STATUS_CONTRACT_CANCELLED:
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size or 0
         # 5) IF Negotiation status IS Contract expired
-        elif self.negotiation_status in Activity.NEGOTIATION_STATUS_CONTRACT_EXPIRED:
+        elif self.negotiation_status == Activity.NEGOTIATION_STATUS_CONTRACT_EXPIRED:
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size or 0
         # 6) IF Negotiation status IS Change of ownership
-        elif self.negotiation_status in Activity.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP:
+        elif self.negotiation_status == Activity.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP:
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size or 0
         else:

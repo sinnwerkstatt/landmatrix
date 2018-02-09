@@ -76,7 +76,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     )
 
     investor_identifier = models.IntegerField(
-        _("Investor ID"), db_index=True, default=INVESTOR_IDENTIFIER_DEFAULT)
+        _("ID"), db_index=True, default=INVESTOR_IDENTIFIER_DEFAULT)
     name = models.CharField(_("Name"), max_length=1024)
     fk_country = models.ForeignKey(
         "Country", verbose_name=_("Country of registration/origin"),

@@ -6,7 +6,7 @@ from landmatrix.models.investor import Investor
 from landmatrix.models.country import Country
 from grid.forms.base_model_form import BaseModelForm
 from grid.widgets import CommentInput
-from grid.utils import get_export_value
+from grid.utils import get_display_value
 
 INVESTOR_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
     Investor.INVESTOR_CLASSIFICATIONS)
@@ -92,24 +92,33 @@ class ExportInvestorForm(BaseInvestorForm):
         widget=forms.Select(attrs={'class': 'form-control countryfield'}))
 
     @classmethod
-    def export(cls, doc, prefix=''):
+    def get_display_properties(cls, doc, prefix=''):
         """Get field value for export"""
         output = {}
         for field_name, field in cls.base_fields.items():
             field_name = '%s%s' % (prefix, field_name)
-            export_key = '%s_export' % field_name
-
+            key = '%s_display' % field_name
             values = doc.get('%s' % field_name)
             if not values:
-                output[export_key] = []
+                output[key] = []
                 continue
             if not isinstance(values, (list, tuple)):
                 values = [values,]
             # Remove # in name
             if field_name == '%sname' % prefix:
                 values = [v.replace('#', '') for v in values]
+            value = get_display_value(field, values)
+            if value:
+                output[key] = value
 
-            output[export_key] = get_export_value(field, values)
+            # Set target region
+            if field_name == 'operating_company_fk_country' and values:
+                output['operating_company_region'] = []
+                output['operating_company_region_display'] = []
+                for value in values:
+                    region = Country.objects.get(pk=value).fk_region
+                    output['operating_company_region'].append(region.id)
+                    output['operating_company_region_display'].append(region.name)
 
         return output
 

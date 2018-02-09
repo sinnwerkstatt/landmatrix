@@ -3,7 +3,6 @@ from collections import OrderedDict
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext as _
 
-from .profiling_decorators import print_execution_time_and_num_queries
 from landmatrix.models.filter_preset import FilterPreset, FilterPresetGroup
 from api.filters import Filter, PresetFilter
 from grid.fields import TitleField
@@ -31,11 +30,45 @@ def get_variable_table():
     group_items = []
     group_title = ''
 
-    # Add Deal ID
-    variable_table[_('Deal ID')] = [{
-        'name': 'activity_identifier',
-        'label': _("Deal ID"),
-    }]
+    # Add Activity attributes
+    variable_table[_('Deal')] = [
+        {
+            'name': 'activity_identifier',
+            'label': _("Deal ID"),
+        },
+        {
+            'name': 'deal_size',
+            'label': _("Deal size"),
+        },
+        {
+            'name': 'deal_scope',
+            'label': _("Deal scope"),
+        },
+        {
+            'name': 'init_date',
+            'label': _("Init date"),
+        },
+        {
+            'name': 'fully_updated_date',
+            'label': _("Deal ID"),
+        },
+        {
+            'name': 'is_public',
+            'label': _("Is public"),
+        },
+        {
+            'name': 'top_investors',
+            'label': _("Top investors"),
+        },
+        {
+            'name': 'current_negotiation_status',
+            'label': _("Current negotiation status"),
+        },
+        {
+            'name': 'current_implementation_status',
+            'label': _("Current implementation status"),
+        }
+    ]
     exclude = ('intended_area', 'contract_area', 'production_area')
 
     # Add deal attributes
@@ -258,7 +291,6 @@ class FilterWidgetMixin:
             stored_filters = dict(filter(lambda i: 'default_preset' not in i[0], stored_filters.items()))
         self.request.session['filters'] = stored_filters
 
-    @print_execution_time_and_num_queries
     def get_formset_conditions(self, filter_set, data, group_by=None):
         self.set_country_region_filter(data)
         self.set_default_filters(data)

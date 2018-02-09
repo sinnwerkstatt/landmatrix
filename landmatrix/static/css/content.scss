@@ -836,16 +836,16 @@ table tbody {
   margin-bottom: 4px;
 }
 
-.container table thead th {
+.container table thead th,
+.container table thead th a {
   font-weight: bold;
-  padding-left: 10px;
   color: $lm_offwhite;
   background-color: $lm_medium2;
 }
 
 table th a {
-  display: block;
-  float: left;
+  display: inline-block;
+  padding-left: 0;
 }
 
 .popup table th,
@@ -855,6 +855,11 @@ table th a {
 
 table td.user {
   white-space: nowrap;
+}
+
+table th.number,
+table td.number {
+  text-align: right;
 }
 
 /* ==========================================================================

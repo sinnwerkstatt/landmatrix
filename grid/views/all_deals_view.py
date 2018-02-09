@@ -1,8 +1,6 @@
 from grid.views.table_group_view import TableGroupView
 
 
-
-
 class AllDealsView(TableGroupView):
     template_name = "all_deals.html"
 

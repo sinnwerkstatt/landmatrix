@@ -4,7 +4,6 @@ import collections
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import Http404
-from django.views.generic import View
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -14,17 +13,13 @@ import coreapi
 import coreschema
 
 from api.utils import PropertyCounter
-from grid.views.activity_protocol import ActivityQuerySet
-from api.query_sets.deals_query_set import DealsQuerySet
 from api.query_sets.latest_changes_query_set import LatestChangesQuerySet
 from api.query_sets.statistics_query_set import StatisticsQuerySet
-from api.serializers import DealSerializer, UserSerializer
-from api.pagination import FakeQuerySetPagination
+from api.serializers import UserSerializer
 from api.views.base import FakeQuerySetListView
 from landmatrix.models import Country
 from landmatrix.models.activity import ActivityBase
-
-from django.conf import settings
+from grid.utils import get_spatial_properties
 
 from geojson import FeatureCollection, Feature, Point
 from api.filters import load_filters, FILTER_FORMATS_ELASTICSEARCH
@@ -35,6 +30,7 @@ User = get_user_model()
 
 INTENTION_EXCLUDE = list(INTENTION_AGRICULTURE_MAP.keys())
 INTENTION_EXCLUDE.extend(list(INTENTION_FORESTRY_MAP.keys()))
+
 
 class UserListView(ListAPIView):
     """
@@ -78,11 +74,6 @@ class StatisticsListView(FakeQuerySetListView):
     fake_queryset_class = StatisticsQuerySet
 
 
-class ActivityListView(FakeQuerySetListView):
-    """List all activities"""
-    fake_queryset_class = ActivityQuerySet
-
-
 class LatestChangesListView(FakeQuerySetListView):
     """
     Lists recent changes to the database (add, change, delete or comment)
@@ -115,44 +106,26 @@ class LatestChangesListView(FakeQuerySetListView):
     fake_queryset_class = LatestChangesQuerySet
 
 
-class DealListView(FakeQuerySetListView):
-    fake_queryset_class = DealsQuerySet
-    serializer_class = DealSerializer
-    pagination_class = FakeQuerySetPagination
-
-    def get_queryset(self):
-        '''
-        Don't call all on the queryset, so that it is passed to the paginator
-        before evaluation.
-        '''
-        return self.fake_queryset_class(self.request)
-
-
-class ElasticSearchView(View):
+class ElasticSearchMixin(object):
     doc_type = 'deal'
-    
+
     # default status are the public ones. will only get replaced if well formed and allowed
     status_list = ActivityBase.PUBLIC_STATUSES
-    
-    def get_queryset(self):
-        '''
-        Don't call all on the queryset, so that it is passed to the paginator
-        before evaluation.
-        '''
-        return self.fake_queryset_class(self.request)
-    
+
     def create_query_from_filters(self):
         # load filters from session
-        elasticsearch_query = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
+        query = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
         # add filters from request
-        elasticsearch_query = self.add_request_filters_to_elasticsearch_query(elasticsearch_query)
-        
-        query = {'bool': elasticsearch_query}
+        query = self.add_request_filters_to_elasticsearch_query(query)
+
+        query = {
+            'bool': query,
+        }
         return query
-    
+
     def add_request_filters_to_elasticsearch_query(self, elasticsearch_query):
         request = self.request
-        
+
         window = None
         if self.request.GET.get('window', None):
             lon_min, lat_min, lon_max, lat_max = self.request.GET.get('window').split(',')
@@ -167,7 +140,7 @@ class ElasticSearchView(View):
                 window = (lon_min, lat_min, lon_max, lat_max)
             except ValueError:
                 pass
-        
+
         # add geo_point window match:
         if window:
             elasticsearch_query['filter'].append({
@@ -184,14 +157,14 @@ class ElasticSearchView(View):
                     }
                 }
             })
-        
+
         # collect a proper and authorized-for-that-user status list from the requet paramert
-        request_status_list = self.request.GET.getlist('status', []) 
+        request_status_list = self.request.GET.getlist('status', [])
         if self.request.user.is_staff:
             status_list_get = [int(status) for status in request_status_list if (status.isnumeric() and int(status) in dict(ActivityBase.STATUS_CHOICES).keys())]
             if status_list_get:
                 self.status_list = status_list_get
-                
+
         elasticsearch_query['filter'].append({
             "bool": {
                 'should': [
@@ -211,7 +184,7 @@ class ElasticSearchView(View):
                     }
                 }
             })
-        
+
         # TODO: these were at some point in the UI. add the missing filters!
         request_filters = {
             'deal_scope': request.GET.getlist('deal_scope', ['domestic', 'transnational']),
@@ -222,34 +195,24 @@ class ElasticSearchView(View):
             'target_region': request.GET.get('target_region'),
             'attributes': request.GET.getlist('attributes', []),
         }
-        
+
         return elasticsearch_query
-        
-    def get(self, request, *args, **kwargs):
-        query = self.create_query_from_filters()
-        raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
-        
-        # filter results
-        result_list = self.filter_returned_results(raw_result_list)
-        # parse results
-        features = filter(None, [self.create_feature_from_result(result) for result in result_list])
-        response = Response(FeatureCollection(features))
-        return response
-    
-    def execute_elasticsearch_query(self, query, doc_type='deal', fallback=True, sort=[]):
+
+    def execute_elasticsearch_query(self, query, doc_type='deal', fallback=True, sort=[], aggs={}):
         from api.elasticsearch import es_search as es
         es.refresh_index()
-        
-        print('\n\n\n>> This is the executed elasticsearch query:\n')
+
+        print('Elasticsearch query executed:\n')
         from pprint import pprint
         pprint(query)
-        
+        pprint(aggs)
+
         try:
-            raw_result_list = es.search(query, doc_type=doc_type, sort=sort)
+            results = es.search(query, doc_type=doc_type, sort=sort, aggs=aggs)
         except Exception as e:
             raise
-        return raw_result_list
-    
+        return results
+
     def filter_returned_results(self, raw_result_list):
         """ Additional filtering and exclusion of unwanted results """
         result_list = []
@@ -264,7 +227,7 @@ class ElasticSearchView(View):
             result['id'] = raw_result['_id']
             result_list.append(result)
 
-        # we have a special filter mode for status=STATUS_PENDING type searches, 
+        # we have a special filter mode for status=STATUS_PENDING type searches,
         # if pending deals are to be shown, matched deals with status PENDING hide all other deals
         # with the same activity_identifier that are not PENDING
         if ActivityBase.STATUS_PENDING in self.status_list:
@@ -272,20 +235,22 @@ class ElasticSearchView(View):
             for i in reversed(range(len(result_list))):
                 res = result_list[i]
                 if not res['status'] == ActivityBase.STATUS_PENDING:
-                    actitvity_identifier = res['activity_identifier']
+                    activity_identifier = res['activity_identifier']
                     # this match might be hidden if there is a pending match of PENDING status
-                    if actitvity_identifier in pending_act_ids:
-                        print('removed ', res)
+                    if activity_identifier in pending_act_ids:
                         result_list = result_list[:-1]
-        
+
         return result_list
 
 
-class GlobalDealsView(APIView, ElasticSearchView):
+class GlobalDealsView(ElasticSearchMixin, APIView):
+
     """
     Get all deals from elasticsearch index.
     Used within the map section.
     """
+    doc_type = 'location'
+
     schema = ManualSchema(
         fields=[
             coreapi.Field(
@@ -295,13 +260,24 @@ class GlobalDealsView(APIView, ElasticSearchView):
                 description="Longitude min/max and Latitude min/max (e.g. 0,0,0,0)  ",
                 schema=coreschema.String(),
             ),
-
         ]
     )
 
+    def get(self, request, *args, **kwargs):
+        query = self.create_query_from_filters()
+        raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
+
+        # filter results
+        result_list = self.filter_returned_results(raw_result_list)
+        # parse results
+        features = filter(None,
+                          [self.create_feature_from_result(result) for result in result_list])
+        response = Response(FeatureCollection(features))
+        return response
+
     def create_feature_from_result(self, result):
         """ Create a GeoJSON-conform result. """
-        
+
         intended_size = result.get('intended_size', None)
         intended_size = intended_size and intended_size[0] # saved as an array currently?
         contract_size = result.get('contract_size', None)

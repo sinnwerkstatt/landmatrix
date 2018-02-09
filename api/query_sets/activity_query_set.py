@@ -3,8 +3,6 @@ from pprint import pprint
 
 from api.query_sets.sql_generation.record_reader import RecordReader
 from api.filters import load_filters
-from grid.views.profiling_decorators import print_execution_time_and_num_queries
-
 
 
 class ActivityQuerySet:
@@ -20,7 +18,6 @@ class ActivityQuerySet:
         if 'columns' not in self.data:
             self.data['columns'] = {}
 
-    @print_execution_time_and_num_queries
     def all(self):
         # if filters.get('group_value') == '':
         reader = RecordReader(self.data["filters"], self.data["columns"], self.data["status"], is_staff=self.is_staff)

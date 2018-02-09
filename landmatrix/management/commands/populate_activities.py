@@ -4,7 +4,6 @@ import sys
 from django.core.management import BaseCommand
 
 from landmatrix.models.activity import Activity
-from grid.views.activity_protocol import ActivityProtocol
 
 
 class Command(BaseCommand):

@@ -168,11 +168,11 @@ class DashboardView(LatestActivitiesMixin, PendingChangesMixin, TemplateView):
         feedback = self.get_feedback_queryset()
 
         context.update({
-            'statistics': {
-                'overall_deal_count': deal_count,
-                'public_deal_count': public_count,
-                'not_public_deal_count': private_count,
-            },
+            #'statistics': {
+            #    'overall_deal_count': deal_count,
+            #    'public_deal_count': public_count,
+            #    'not_public_deal_count': private_count,
+            #},
             'view': 'dashboard',
             'latest_added': map(
                 activity_to_template, latest_added[:self.paginate_by]),

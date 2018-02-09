@@ -5,8 +5,7 @@ from uuid import uuid4
 from django import template
 from django.forms.fields import MultiValueField, ChoiceField, BooleanField
 from django.template import Node, resolve_variable, Variable
-from django.template.defaultfilters import slugify
-from django.template.defaultfilters import stringfilter
+from django.template.defaultfilters import slugify, title, stringfilter
 from django.contrib.humanize.templatetags.humanize import naturaltime, intcomma
 from django.utils.safestring import mark_safe
 from django import forms
@@ -305,3 +304,8 @@ def is_editable(activity, user):
 @register.filter
 def get_latest(activity, user):
     return activity.get_latest(user)
+
+
+@register.filter
+def deslugify(slug):
+    return title(slug.replace('_', ' ').replace('-', ' '))

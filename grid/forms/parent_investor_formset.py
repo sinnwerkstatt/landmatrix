@@ -4,28 +4,27 @@ from django import forms
 from landmatrix.models.investor import Investor, InvestorVentureInvolvement
 from grid.fields import TitleField
 from grid.widgets import CommentInput
-from grid.utils import get_export_value
+from grid.utils import get_display_value
 
 
 class InvestorVentureInvolvementForm(forms.ModelForm):
     exclude_in_export = ('id', 'fk_status', 'timestamp')
 
     @classmethod
-    def export(cls, doc):
+    def get_display_properties(cls, doc):
         """Get field value for export"""
         output = {}
         for field_name, field in cls.base_fields.items():
-            export_key = '%s_export' % field_name
-
+            key = '%s_display' % field_name
             values = doc.get(field_name)
             if not values:
-                output[export_key] = ''
+                output[key] = ''
                 continue
             if not isinstance(values, (list, tuple)):
                 values = [values,]
-
-            output[export_key] = get_export_value(field, values)
-
+            value = get_display_value(field, values)
+            if value:
+                output[key] = value
         return output
 
     class Meta:
