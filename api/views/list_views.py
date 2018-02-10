@@ -218,8 +218,8 @@ class ElasticSearchMixin(object):
         result_list = []
         for raw_result in raw_result_list:
             result = raw_result['_source']
-            if not raw_result['_type'] == 'deal':
-                continue
+            #if not raw_result['_type'] in ('deal', 'location'):
+            #    continue
             #if not 'point_lat' in result or not 'point_lon' in result:
             #    continue
             #if not result.get('intention', None): # TODO: should we hide results with no intention field value?
