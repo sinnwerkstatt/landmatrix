@@ -236,7 +236,7 @@ class MapLOActivities(MapLOModel):
             'not_public_reason': 'Land Observatory Import (new)' if not imported else 'Land Observatory Import (duplicate)',
         }
         imported_attrs = {
-            'source': 'Land Observatory',
+            #'source': 'Land Observatory',
             'id': str(old['activity_identifier']),
             'timestamp': timezone.now().isoformat(),
         }
@@ -556,7 +556,6 @@ class MapLOActivities(MapLOModel):
 
         return attr
 
-
     @classmethod
     def is_current_version(cls, tag_group):
         return tag_group.fk_activity == cls.matching_activity_id(tag_group)
@@ -644,6 +643,9 @@ def transform_attributes(attrs, group_name=''):
             attrs['tg_use_of_produce_comment'] = remark
         elif 'benefits' in remark:
             attrs['tg_materialized_benefits_comment'] = remark
+
+    if 'ORIGINAL_REFERENCE_NUMBER' in attrs:
+        attrs.pop('ORIGINAL_REFERENCE_NUMBER')
 
     # If we got any jobs created attrs, also set the boolean for that
     # section

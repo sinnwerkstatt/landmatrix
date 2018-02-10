@@ -173,12 +173,13 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
         results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
                                                  sort=order_by, aggs=aggs)
 
-        self.num_results = len(results)
-
         if aggs:
             results = results[self.group]['buckets']
         else:
             results = self.filter_returned_results(results)
+
+        self.num_results = len(results)
+
         if self.limit_query():
             results = results[:self._load_more()]
 
