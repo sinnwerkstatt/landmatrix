@@ -84,8 +84,8 @@ def get_elasticsearch_properties(doc_type=None):
                 'deal_scope': {'type': 'text'},
                 'init_date': {'type': 'date',
                               'format': "yyyy-MM-dd||yyyy-MM||yyyy"},
-                'current_negotiation_status': {'type': 'keyword'},
-                'current_implementation_status': {'type': 'keyword'},
+                'current_negotiation_status': {'type': 'keyword',
+                                               'analyzer': 'no_lowercase'},
                 'deal_country': {'type': 'keyword'},
                 'top_investors': {'type': 'keyword'},
                 'fully_updated_date': {'type': 'text'},
@@ -517,14 +517,13 @@ class ElasticSearch(object):
                     for name in spatial_names:
                         if name not in doc:
                             continue
-                        name_display = '%s_display' % name
                         if len(deal_attrs[name]) > i:
                             doc[name] = deal_attrs[name][i]
-                            if name_display in deal_attrs and len(deal_attrs[name_display]) > i:
-                                doc[name_display] = deal_attrs[name_display][i]
+                            if '%s_display' % name in deal_attrs:
+                                doc['%s_display' % name] = deal_attrs['%s_display' % name][i]
                         else:
                             doc[name] = ''
-                            if name_display in deal_attrs and len(deal_attrs[name_display]) > i:
+                            if '%s_display' % name in deal_attrs:
                                 doc['%s_display' % name] = deal_attrs['%s_display' % name][i]
                     # Set unique ID for location (deals can have multiple locations)
                     doc['id'] = '%s_%i' % (doc['activity_identifier'], i)
@@ -547,7 +546,7 @@ class ElasticSearch(object):
         point_lon = doc.get('point_lon', [])
         target_country = doc.get('target_country', [])
         for i in range(doc.get('location_count', 0)):
-            if len(point_lat) > i and len(point_lon) > i:
+            if len(point_lat) > i and len(point_lon) > 1:
                 # Parse values
                 try:
                     parsed_lat, parsed_lon = float(point_lat[i]), float(point_lon[i])
@@ -562,12 +561,9 @@ class ElasticSearch(object):
                 properties['point_lon'].append('0')
             # Set target region
             if len(target_country) > i and target_country[i]:
-                try:
-                    region = Country.objects.get(pk=target_country[i]).fk_region
-                    properties['target_region'].append(region.id)
-                    properties['target_region_display'].append(region.name)
-                except Country.DoesNotExist:
-                    pass
+                region = Country.objects.get(pk=target_country[i]).fk_region
+                properties['target_region'].append(region.id)
+                properties['target_region_display'].append(region.name)
         return properties
 
     def get_display_properties(self, doc, doc_type='deal'):

@@ -404,7 +404,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 except IndexError:
                     value = ''
             else:
-                value = value[0]
+                value = value[0] if len(value) > 0 else ''
         if format == 'xlsx':
             return value.encode('unicode_escape').decode('utf-8')
         else:
