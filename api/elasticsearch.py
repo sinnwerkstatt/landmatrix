@@ -378,7 +378,7 @@ class ElasticSearch(object):
     def get_activity_documents(self, activity, doc_type='deal'):
         docs = []
         deal_attrs = {
-            'id': activity.activity_identifier,
+            'id': activity.id,
             'activity_identifier': activity.activity_identifier,
             'historical_activity_id': activity.id,
             'status': activity.fk_status_id,
