@@ -272,7 +272,7 @@ class ElasticSearch(object):
                 HistoricalActivity.STATUS_ACTIVE, HistoricalActivity.STATUS_PENDING, 
                 HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED
             )).values_list('activity_identifier', flat=True).distinct())
-        #activity_identifiers = list(activity_identifiers)[:5]
+        activity_identifiers = list(activity_identifiers)[:5]
         for doc_type in doc_types:
             docs = []
             # Collect documents
@@ -519,15 +519,13 @@ class ElasticSearch(object):
                             continue
                         if len(deal_attrs[name]) > i:
                             doc[name] = deal_attrs[name][i]
-                            if '%s_display' % name in deal_attrs:
-                                doc['%s_display' % name] = deal_attrs['%s_display' % name][i]
                         else:
                             doc[name] = ''
-                            if '%s_display' % name in deal_attrs:
-                                doc['%s_display' % name] = deal_attrs['%s_display' % name][i]
+                        name_display = '%s_display' % name
+                        if name_display in deal_attrs and len(deal_attrs[name_display]) > i:
+                            doc[name_display] = deal_attrs[name_display][i]
                     # Set unique ID for location (deals can have multiple locations)
                     doc['id'] = '%s_%i' % (doc['activity_identifier'], i)
-                    doc.update(self.get_spatial_properties(doc, doc_type=doc_type))
                     docs.append(doc)
             elif doc_type == 'deal':
                 docs.append(deal_attrs)
@@ -561,9 +559,12 @@ class ElasticSearch(object):
                 properties['point_lon'].append('0')
             # Set target region
             if len(target_country) > i and target_country[i]:
-                region = Country.objects.get(pk=target_country[i]).fk_region
-                properties['target_region'].append(region.id)
-                properties['target_region_display'].append(region.name)
+                try:
+                    region = Country.objects.get(pk=target_country[i]).fk_region
+                    properties['target_region'].append(region.id)
+                    properties['target_region_display'].append(region.name)
+                except:
+                    pass
         return properties
 
     def get_display_properties(self, doc, doc_type='deal'):
