@@ -400,13 +400,13 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         if isinstance(value, (list, tuple)):
             if formset_index is not None:
                 try:
-                    value = str(value[formset_index])
+                    value = value[formset_index]
                 except IndexError:
                     value = ''
             else:
-                value = str(value[0]) if len(value) > 0 else ''
+                value = value[0] if len(value) > 0 else ''
         if format == 'xlsx':
-            return value.encode('unicode_escape').decode('utf-8')
+            return str(value).encode('unicode_escape').decode('utf-8')
         else:
             return value
 
