@@ -409,22 +409,22 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                     'display': result['key'],
                     'value': result['key'],
                 }
+                column = column.replace('_display', '')
                 if '_display' in columns[i]:
                     value['value'] = result[column]['buckets'][0]['key']
                 if value and hasattr(self, 'clean_{}'.format(column)):
                     value = getattr(self, 'clean_{}'.format(column))(value)
-                column = column.replace('_display', '')
                 item[column] = value
             else:
                 if column in result:
                     value = [i['key'] for i in result[column]['buckets']]
                 else:
                     value = ''
+                column = column.replace('_display', '')
                 if value and hasattr(self, 'clean_{}'.format(column)):
                     value = getattr(self, 'clean_{}'.format(column))(value)
                 if not isinstance(value, (list, tuple)):
                     value = [value, ]
-                column = column.replace('_display', '')
                 item[column] = value
         item['deal_count'] = [result['doc_count'],]
         item['deal_size'] = [int(result['deal_size_sum']['value']),]
