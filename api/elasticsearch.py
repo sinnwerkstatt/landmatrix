@@ -86,6 +86,7 @@ def get_elasticsearch_properties(doc_type=None):
                               'format': "yyyy-MM-dd||yyyy-MM||yyyy"},
                 'current_negotiation_status': {'type': 'keyword'},
                 'current_implementation_status': {'type': 'keyword'},
+                'deal_size': {'type': 'integer'},
                 'deal_country': {'type': 'keyword'},
                 'top_investors': {'type': 'keyword'},
                 'fully_updated_date': {'type': 'text'},
