@@ -252,11 +252,12 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                 }
             }
         # Exclude empty
-        query['bool']['must_not'].append({
-            'term': {
-                fields[0]: ""
-            }
-        })
+        if self.group != 'investor_name':
+            query['bool']['must_not'].append({
+                'term': {
+                    fields[0]: ""
+                }
+            })
         return query, aggs
 
     def limit_query(self):
@@ -484,7 +485,14 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                 return value
 
     def clean_crops(self, value):
-        return Crop.objects.get(pk=value).name
+        if isinstance(value, dict):
+            crop = Crop.objects.get(pk=value['value']).name
+            return {
+                'value': crop,
+                'display': crop,
+            }
+        else:
+            return Crop.objects.get(pk=value).name
 
     # def _process_investor_name(self, value):
     #     if not isinstance(value, list):
