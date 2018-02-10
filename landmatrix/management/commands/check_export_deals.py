@@ -6,7 +6,7 @@ from django.contrib.auth.models import AnonymousUser
 from openpyxl import load_workbook
 
 from grid.views.export_view import ExportView
-from grid.views.all_deals_view import AllDealsView
+from grid.views.table_group_view import OldTableGroupView
 
 
 class Command(BaseCommand):
@@ -34,10 +34,10 @@ class Command(BaseCommand):
 
         # Get grid
         rf = RequestFactory()
-        request = rf.get('/data/')
+        request = rf.get('/')
         request.session = {}
         request.user = AnonymousUser()
-        grid = AllDealsView()
+        grid = OldTableGroupView()
         grid.group = 'all'
         grid.request = request
         grid._limit_query = lambda: False

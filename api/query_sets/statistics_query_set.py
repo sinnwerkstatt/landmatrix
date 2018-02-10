@@ -4,6 +4,7 @@ from api.query_sets.fake_query_set_with_subquery import FakeQuerySetWithSubquery
 from landmatrix.models.activity import Activity
 from grid.views.filter_widget_mixin import FilterWidgetMixin
 
+
 class StatisticsQuerySet(FakeQuerySetWithSubquery):
 
     DEBUG = False
