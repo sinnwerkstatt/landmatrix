@@ -23,8 +23,8 @@ FILTER_FORMATS_ELASTICSEARCH = 1
 
 # Deprecated?
 FILTER_VAR_INV = [
-    "investor", "operational_stakeholder", "operational_stakeholder_name",
-    "operational_stakeholder_country", "operational_stakeholder_region",
+    "investor", "operational_company", "operational_company_name",
+    "operational_company_country", "operational_company_region",
     "country",
 ]
 
@@ -66,7 +66,7 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
     if operator == 'gt': return ('must', {'range': {variable_name: {'gt': value}}})
     if operator == 'lte': return ('must', {'range': {variable_name: {'lte': value}}})
     if operator == 'lt': return ('must', {'range': {variable_name: {'lt': value}}})
-    if operator == 'contains': return ('must', {'match': {variable_name: value}})
+    if operator == 'contains': return ('must', {'wildcard': {variable_name: '*{}*'.format(value)}})
     if operator == 'not_contains': return ('must_not', {'match': {variable_name: value}})
     if operator == 'excludes': return ('must_not', {'match': {variable_name: value}})
     if operator == 'is_empty':
@@ -108,12 +108,19 @@ class BaseFilter(dict):
 
 class Filter(BaseFilter):
 
-    def __init__(self, variable, operator, value, name=None, label=None, key=None, display_value=None):
+    VARIABLE_MAPPING = {
+        'operational_stakeholder': 'operating_company_id',
+    }
+
+    def __init__(self, variable, operator, value, name=None, label=None, key=None,
+                 display_value=None):
         if operator not in FILTER_OPERATION_MAP:
             raise ValueError('No such operator: {}'.format(operator))
 
         if not display_value:
             display_value = value
+
+        variable = self.VARIABLE_MAPPING.get(variable, variable)
 
         super().__init__(name=name, variable=variable, operator=operator,
                          value=value, label=label, key=key, display_value=display_value)
@@ -150,8 +157,10 @@ class Filter(BaseFilter):
         return formatted_filter
     
     def to_elasticsearch_match(self):
-        """ Will return an elasticsearch operator term and an elasticsearch-format Match or Bool (for multiple matches) dictionary object.
-            Example: ('must', {'match': {'intention__value': 3}, '_filter_name': 'intention__value__is'})
+        """ Will return an elasticsearch operator term and an elasticsearch-format Match or Bool
+            (for multiple matches) dictionary object.
+            Example: ('must', {'match': {'intention__value': 3},
+                                         '_filter_name': 'intention__value__is'})
             Example2: ('must_not', {'bool': 
                           {'should': [
                               {'match': {'intention__value': 3}},
@@ -159,23 +168,24 @@ class Filter(BaseFilter):
                           ]},
                        '_filter_name': 'intention__value__not_in'
                       })
-            Note: This comes with an added '_filter_name' attribute for internal aggregation which needs to be removed. """
+            Note: This comes with an added '_filter_name' attribute for internal aggregation
+                  which needs to be removed. """
             
         key = self['key'] or 'value'
-        # TODO: hopefully _parse_value is no longer required
         value = _parse_value(self['value'], variable=self['variable'], key=key)
         definition_key = '__'.join((self['variable'], key, self['operator']))
         
         # only the starting operator of this match or query-match is important for the logical operation,
         # we now map which one
         elastic_operator = None
-
-        if 'in' in self['operator'] and isinstance(value, list) and len(value) > 1: # 
+        if 'in' in self['operator'] and isinstance(value, list) and len(value) > 1: #
             # generate multiple matches
             matches = []
             inside_operator = None
             for single_value in value:
-                operator, partial_match = get_elasticsearch_match_operation(self['operator'], self['variable'], single_value)
+                operator, partial_match = get_elasticsearch_match_operation(self['operator'],
+                                                                            self['variable'],
+                                                                            single_value)
                 inside_operator = operator
                 matches.append(partial_match) 
             match = {'bool': {inside_operator: matches}, '_filter_name': definition_key}
@@ -186,8 +196,11 @@ class Filter(BaseFilter):
                 if len(value) > 1:
                     print('WARNING: converting a filter without "in" with 2 or more values into a single match!')
                 value = value[0]
+            if self['operator'] == 'in':
+                self['operator'] = 'is'
             # generate single value match
-            elastic_operator, match = get_elasticsearch_match_operation(self['operator'], self['variable'], value)
+            elastic_operator, match = get_elasticsearch_match_operation(self['operator'],
+                                                                        self['variable'], value)
             match.update({'_filter_name': definition_key})
 
         return (elastic_operator, match)
@@ -276,15 +289,16 @@ def format_filters(filters):
             )
     return formatted_filters
 
-
+# Deprecated
 def format_filters_elasticsearch(filters, initial_query=None):
     """
         Generates an elasticsearch-conform `bool` query from session filters.
         This acts recursively for nested OR filter groups from preset filters
         @param filters: A list of Filter or PresetFilter
-        @param query: (Optional) a dict resembling an elasticsearch bool query - filters will be added to this query
-            instead of a new query. Use this for recursive calls.
-        @return: a dict resembling an elasticsearch bool query, without the "{'bool': query}" wrapper
+        @param query: (Optional) a dict resembling an elasticsearch bool query - filters will be
+            added to this query instead of a new query. Use this for recursive calls.
+        @return: a dict resembling an elasticsearch bool query, without the "{'bool': query}"
+            wrapper
     """
     from api.elasticsearch import get_elasticsearch_properties
         
@@ -327,12 +341,9 @@ def format_filters_elasticsearch(filters, initial_query=None):
                 format_filters_elasticsearch(preset_filters, initial_query=query)
         else:
             # add a single filter to our query
-            # note: 
-            if filter_obj['variable'] not in get_elasticsearch_properties('deal').get('properties', {}):
-                print('>> Ignored filter variable "%s" because it was not found in the elasticsearch document properties' % filter_obj['variable'])
-                continue
             
-            # example: ('should', {'match': {'intention__value': 3}, '_filter_name': 'intention__value__not_in'})
+            # example: ('should', {'match': {'intention__value': 3},
+            #                      '_filter_name': 'intention__value__not_in'})
             elastic_operator, elastic_match = filter_obj.to_elasticsearch_match()
             
             branch_list = query[elastic_operator]
@@ -350,7 +361,8 @@ def format_filters_elasticsearch(filters, initial_query=None):
                     inside_operator = [key_name for key_name in existing_match_phrase.keys()
                                        if not key_name == '_filter_name'][0]
                     if 'bool' in elastic_match:
-                        existing_match_phrase[inside_operator].extend(elastic_match[inside_operator])
+                        existing_match_phrase[inside_operator].extend(
+                            elastic_match[inside_operator])
                     else:
                         existing_match_phrase[inside_operator].append(elastic_match)
                 else:
@@ -363,7 +375,8 @@ def format_filters_elasticsearch(filters, initial_query=None):
                         elastic_match[inside_operator].append(existing_single_match)
                         query['must'].append(elastic_match)
                     else:
-                        # if  we have a single match, make new bool, add popped match and single match
+                        # if  we have a single match, make new bool,
+                        # add popped match and single match
                         matches = [existing_single_match, elastic_match]
                         query['must'].append({'bool': {elastic_operator: matches},
                                               '_filter_name': current_filter_name})
@@ -372,15 +385,24 @@ def format_filters_elasticsearch(filters, initial_query=None):
         remove_all_dict_keys_from_mixed_dict(query, '_filter_name')
     return query
     
-
+# Deprecated
 def load_filters(request, filter_format=FILTER_FORMATS_SQL):
     filters = {}
     session_filters = request.session.get('filters', {}) or {}  # Can be None in some cases
     for filter_name, filter_dict in session_filters.items():
         if 'preset_id' in filter_dict:
-            filters[filter_name] = PresetFilter.from_session(filter_dict)
+            filter = PresetFilter.from_session(filter_dict)
         else:
-            filters[filter_name] = Filter.from_session(filter_dict)
+            filter = Filter.from_session(filter_dict)
+        import pdb
+        pdb.set_trace()
+        # Create subquery for investor variable queries
+        if filter['variable'].startswith('parent_company_'):
+            filters[filter_name] = filter
+        elif filter['variable'].startswith('tertiary_investor_'):
+            filters[filter_name] = filter
+        else:
+            filters[filter_name] = filter
     filters.update(load_filters_from_url(request))
     
     if filter_format == FILTER_FORMATS_ELASTICSEARCH:
@@ -391,7 +413,7 @@ def load_filters(request, filter_format=FILTER_FORMATS_SQL):
 
     return formatted_filters
 
-
+# Deprecated
 def load_filters_from_url(request):
     '''
     Read any querystring param filters. Preset filters not allowed.
@@ -470,7 +492,10 @@ def _parse_value(filter_value, variable=None, key=None):
 
 
 def get_list_element_by_key(the_list, key, value):
-    """ returns the *first* dictionary in a list whose value of a key matches the given value, or None """
+    """
+    Returns the *first* dictionary in a list whose value of a key matches the given value,
+    or None
+    """
     if value is not None and not value == '':
         for i, dict_element in enumerate(the_list):
             if dict_element.get(key, None) == value:
@@ -478,7 +503,10 @@ def get_list_element_by_key(the_list, key, value):
     return None, None
 
 def remove_all_dict_keys_from_mixed_dict(maybe_dict, key_name):
-    """ Recursively removes all occurences of one key from a dictionary. The recursion if continued in all lists the dictionary contains """
+    """
+    Recursively removes all occurences of one key from a dictionary. The recursion if continued
+    in all lists the dictionary contains
+    """
     if isinstance(maybe_dict, dict):
         if key_name in maybe_dict:
             del maybe_dict[key_name]

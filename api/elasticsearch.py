@@ -614,6 +614,16 @@ class ElasticSearch(object):
                     doc[field.name] = getattr(investor, '%s_id' % field.name)
                 else:
                     doc[field.name] = getattr(investor, field.name)
+
+            # Append involvements for quicker queries
+            ivis = InvestorVentureInvolvement.objects.filter(fk_investor=investor)
+            doc['parent_company_of'] = []
+            doc['tertiary_investor_of'] = []
+            for ivi in ivis:
+                if ivi.role == InvestorVentureInvolvement.STAKEHOLDER_ROLE:
+                    doc['parent_company_of'].append(ivi.fk_venture_id)
+                elif ivi.role == InvestorVentureInvolvement.INVESTOR_ROLE:
+                    doc['tertiary_investor_of'].append(ivi.fk_venture_id)
             docs.append(doc)
 
         # Update docs with export values

@@ -1,6 +1,7 @@
 import json
-
 import collections
+from copy import deepcopy
+
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import Http404
@@ -19,12 +20,12 @@ from api.serializers import UserSerializer
 from api.views.base import FakeQuerySetListView
 from landmatrix.models import Country
 from landmatrix.models.activity import ActivityBase
-from grid.utils import get_spatial_properties
 
 from geojson import FeatureCollection, Feature, Point
-from api.filters import load_filters, FILTER_FORMATS_ELASTICSEARCH
 from grid.forms.choices import INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 from map.views import MapSettingsMixin
+from api.filters import Filter, PresetFilter, remove_all_dict_keys_from_mixed_dict, \
+    get_list_element_by_key
 
 User = get_user_model()
 
@@ -107,14 +108,171 @@ class LatestChangesListView(FakeQuerySetListView):
 
 
 class ElasticSearchMixin(object):
+
     doc_type = 'deal'
+    request = None
 
     # default status are the public ones. will only get replaced if well formed and allowed
     status_list = ActivityBase.PUBLIC_STATUSES
 
+    def load_filters_from_url(self):
+        '''
+        Read any querystring param filters. Preset filters not allowed.
+        '''
+        variables = self.request.GET.getlist('variable')
+        operators = self.request.GET.getlist('operator')
+        values = self.request.GET.getlist('value')
+        combined = zip(variables, operators, values)
+
+        filters = {f[0]: Filter(f[0], f[1], f[2]) for f in combined}
+
+        return filters
+
+    def load_filters(self):
+        filters = {}
+        parent_company_filters, tertiary_investor_filters = {}, {}
+        session_filters = self.request.session.get('filters', {}) or {}  # Can be None
+                                                                         # in some cases
+        for filter_name, filter_dict in session_filters.items():
+            if 'preset_id' in filter_dict:
+                filter = PresetFilter.from_session(filter_dict)
+            else:
+                filter = Filter.from_session(filter_dict)
+            if filter['variable'].startswith('parent_stakeholder_'):
+                filter['variable'] = filter['variable'].replace('parent_stakeholder_', '')
+                parent_company_filters[filter_name] = filter
+                filter['variable'] = filter['variable'].replace('tertiary_investor_', '')
+            elif filter['variable'].startswith('tertiary_investor_'):
+                tertiary_investor_filters[filter_name] = filter
+            else:
+                filters[filter_name] = filter
+        # Create subquery for investor variable queries
+        if parent_company_filters:
+            query = {'bool': self.format_filters(parent_company_filters.values())}
+            raw_result_list = self.execute_elasticsearch_query(query, 'investor')
+            operational_companies = []
+            for result in raw_result_list:
+                ids = result['_source']['parent_company_of']
+                operational_companies.extend([str(id) for id in ids])
+            filters['parent_company'] = Filter(variable='operational_stakeholder',
+                operator='in', value=operational_companies)
+        if tertiary_investor_filters:
+            query = self.format_filters(tertiary_investor_filters.values())
+            raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
+            operational_companies = []
+            for result in raw_result_list:
+                ids = result['_source']['tertiary_investor_of']
+                operational_companies.extend([str(id) for id in ids])
+            filters['tertiary_investor'] = Filter(variable='operational_stakeholder',
+                operator='in', value=operational_companies)
+
+        filters.update(self.load_filters_from_url())
+
+        # note: passing only Filters, not (name, filter) dict!
+        formatted_filters = self.format_filters(filters.values())
+
+
+        return formatted_filters
+
+    def format_filters(self, filters, initial_query=None):
+        """
+            Generates an elasticsearch-conform `bool` query from session filters.
+            This acts recursively for nested OR filter groups from preset filters
+            @param filters: A list of Filter or PresetFilter
+            @param query: (Optional) a dict resembling an elasticsearch bool query - filters will be
+                added to this query instead of a new query. Use this for recursive calls.
+            @return: a dict resembling an elasticsearch bool query, without the "{'bool': query}"
+                wrapper
+        """
+        from api.elasticsearch import get_elasticsearch_properties
+
+        proto_filters = {
+            '_filter_name': None,
+            'must': [],  # AND
+            'filter': [],  # EXCLUDE ALL OTHERS
+            'must_not': [],  # AND NOT
+            'should': [],  # OR
+        }
+        query = initial_query or deepcopy(proto_filters)
+
+        # TODO: what about 'activity' or 'investor' filter type? (filter_obj.type)
+        for filter_obj in filters:
+            if isinstance(filter_obj, PresetFilter):
+                # we here have multiple filters coming from a preset filter, add them recursively
+                preset_filters = [condition.to_filter() for condition in
+                                  filter_obj.filter.conditions.all()]
+                if filter_obj.filter.relation == filter_obj.filter.RELATION_OR:
+                    # for OR relations we build a new subquery that is ORed and add it to the must matches
+                    preset_name = filter_obj.filter.name
+                    # we are constructing a regular query, but because this is an OR order, we will take
+                    # all the matches in the 'must' slot and add them to the 'should' list
+                    filter_query = self.format_filters(preset_filters)
+                    if filter_query.get('must', None) or filter_query.get('should', ''):
+                        query['must'].append({
+                            'bool': {
+                                'should': filter_query['must'] + filter_query['should']
+                            },
+                            '_filter_name': preset_name
+                        })
+                    if filter_query.get('must_not', None):
+                        query['must_not'].append({
+                            'bool': {
+                                'should': filter_query['must_not']
+                            },
+                            '_filter_name': preset_name
+                        })
+                else:
+                    # for AND relations we just extend the filters into our current query
+                    self.format_filters(preset_filters, initial_query=query)
+            else:
+                # add a single filter to our query
+
+                # example: ('should', {'match': {'intention__value': 3},
+                #                      '_filter_name': 'intention__value__not_in'})
+                elastic_operator, elastic_match = filter_obj.to_elasticsearch_match()
+
+                branch_list = query[elastic_operator]
+                current_filter_name = elastic_match['_filter_name']
+                existing_match_phrase, existing_i = get_list_element_by_key(branch_list,
+                                                                            '_filter_name',
+                                                                            current_filter_name)
+                # if no filter exists for this yet, add it
+                if existing_match_phrase is None:
+                    branch_list.append(elastic_match)
+                else:
+                    # if match phrase exists for this filter, and it is a bool,
+                    # add the generated match(es) to its list
+                    if 'bool' in existing_match_phrase:
+                        inside_operator = [key_name for key_name in existing_match_phrase.keys()
+                                           if not key_name == '_filter_name'][0]
+                        if 'bool' in elastic_match:
+                            existing_match_phrase[inside_operator].extend(
+                                elastic_match[inside_operator])
+                        else:
+                            existing_match_phrase[inside_operator].append(elastic_match)
+                    else:
+                        # if match phrase exists and is a single match, pop it
+                        existing_single_match = branch_list.pop(existing_i)
+                        if 'bool' in elastic_match:
+                            inside_operator = [key_name for key_name in elastic_match.keys()
+                                               if not key_name == '_filter_name'][0]
+                            # if we have a bool, add the bool, add the popped match to bool
+                            elastic_match[inside_operator].append(existing_single_match)
+                            query['must'].append(elastic_match)
+                        else:
+                            # if  we have a single match, make new bool,
+                            # add popped match and single match
+                            matches = [existing_single_match, elastic_match]
+                            query['must'].append({'bool': {elastic_operator: matches},
+                                                  '_filter_name': current_filter_name})
+        # remove our meta attribute so the query is elaticsearch-conform
+        if initial_query is None:
+            remove_all_dict_keys_from_mixed_dict(query, '_filter_name')
+        return query
+
     def create_query_from_filters(self):
         # load filters from session
-        query = load_filters(self.request, filter_format=FILTER_FORMATS_ELASTICSEARCH)
+        query = self.load_filters()
         # add filters from request
         query = self.add_request_filters_to_elasticsearch_query(query)
 

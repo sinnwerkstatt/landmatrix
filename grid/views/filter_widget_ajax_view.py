@@ -92,6 +92,9 @@ class FilterWidgetAjaxView(APIView):
             }
         ],
     }
+    FIELD_NAME_MAPPING = {
+        'operational_stakeholder': 'operating_company_id',
+    }
     field_name = ''
     name = ''
     operation = ''
