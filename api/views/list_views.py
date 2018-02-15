@@ -138,11 +138,12 @@ class ElasticSearchMixin(object):
                 filter = PresetFilter.from_session(filter_dict)
             else:
                 filter = Filter.from_session(filter_dict)
-            if filter['variable'].startswith('parent_stakeholder_'):
+            # FIXME: Make this work for filters presets too (no variable set)
+            if 'variable' in filter and filter['variable'].startswith('parent_stakeholder_'):
                 filter['variable'] = filter['variable'].replace('parent_stakeholder_', '')
                 parent_company_filters[filter_name] = filter
                 filter['variable'] = filter['variable'].replace('tertiary_investor_', '')
-            elif filter['variable'].startswith('tertiary_investor_'):
+            elif 'variable' in filter and filter['variable'].startswith('tertiary_investor_'):
                 tertiary_investor_filters[filter_name] = filter
             else:
                 filters[filter_name] = filter
