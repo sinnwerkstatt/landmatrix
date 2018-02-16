@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext as _
+from django import forms
 
 from landmatrix.models.filter_preset import FilterPreset, FilterPresetGroup
 from api.filters import Filter, PresetFilter
@@ -11,7 +12,10 @@ from grid.views.save_deal_view import SaveDealView
 from grid.views.browse_filter_conditions import BrowseFilterConditions
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
+from landmatrix.models.activity import Activity
+from landmatrix.forms import ActivityFilterForm
 from grid.forms.investor_form import OperationalCompanyForm, ParentInvestorForm, ParentStakeholderForm
+
 
 def get_variable_table():
     '''
@@ -31,47 +35,17 @@ def get_variable_table():
     group_title = ''
 
     # Add Activity attributes
-    variable_table[_('Deal')] = [
-        {
-            'name': 'activity_identifier',
-            'label': _("Deal ID"),
-        },
-        {
-            'name': 'deal_size',
-            'label': _("Deal size"),
-        },
-        {
-            'name': 'deal_scope',
-            'label': _("Deal scope"),
-        },
-        {
-            'name': 'init_date',
-            'label': _("Init date"),
-        },
-        {
-            'name': 'fully_updated_date',
-            'label': _("Deal ID"),
-        },
-        {
-            'name': 'is_public',
-            'label': _("Is public"),
-        },
-        {
-            'name': 'top_investors',
-            'label': _("Top investors"),
-        },
-        {
-            'name': 'current_negotiation_status',
-            'label': _("Current negotiation status"),
-        },
-        {
-            'name': 'current_implementation_status',
-            'label': _("Current implementation status"),
-        }
-    ]
-    exclude = ('intended_area', 'contract_area', 'production_area')
+    variable_table[str(_('Deal'))] = []
+    for field_name, field in ActivityFilterForm.base_fields.items():
+        if field_name == 'id':
+            continue
+        variable_table[str(_('Deal'))].append({
+            'name': field_name,
+            'label': str(field.label),
+        })
 
     # Add deal attributes
+    exclude = ('intended_area', 'contract_area', 'production_area')
     for form in deal_forms:
         for field_name, field in form.base_fields.items():
             if field_name in exclude:

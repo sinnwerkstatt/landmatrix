@@ -14,97 +14,20 @@ import coreapi
 import coreschema
 
 from api.utils import PropertyCounter
-from api.query_sets.latest_changes_query_set import LatestChangesQuerySet
-from api.query_sets.statistics_query_set import StatisticsQuerySet
 from api.serializers import UserSerializer
-from api.views.base import FakeQuerySetListView
 from landmatrix.models import Country
 from landmatrix.models.activity import ActivityBase
-
 from geojson import FeatureCollection, Feature, Point
 from grid.forms.choices import INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 from map.views import MapSettingsMixin
 from api.filters import Filter, PresetFilter, remove_all_dict_keys_from_mixed_dict, \
     get_list_element_by_key
+from grid.views.filter_widget_mixin import FilterWidgetMixin
 
 User = get_user_model()
 
 INTENTION_EXCLUDE = list(INTENTION_AGRICULTURE_MAP.keys())
 INTENTION_EXCLUDE.extend(list(INTENTION_FORESTRY_MAP.keys()))
-
-
-class UserListView(ListAPIView):
-    """
-    The users list view is used by the impersonate user feature of the editor.
-    """
-    queryset = User.objects.all().order_by('first_name')
-    serializer_class = UserSerializer
-    permission_classes = (IsAdminUser,)
-
-
-class StatisticsListView(FakeQuerySetListView):
-    """
-    Get deal aggregations grouped by Negotiation status.
-    Used by the CMS plugin „statistics“ for homepages and regional/national landing pages.
-    """
-    schema = ManualSchema(
-        fields=[
-            coreapi.Field(
-                "country",
-                required=True,
-                location="query",
-                description="Country ID",
-                schema=coreschema.Integer(),
-            ),
-            coreapi.Field(
-                "region",
-                required=False,
-                location="query",
-                description="Region ID",
-                schema=coreschema.Integer(),
-            ),
-            coreapi.Field(
-                "disable_filters",
-                required=False,
-                location="query",
-                description="Set to 1 to disable default filters",
-                schema=coreschema.Integer(),
-            ),
-        ]
-    )
-    fake_queryset_class = StatisticsQuerySet
-
-
-class LatestChangesListView(FakeQuerySetListView):
-    """
-    Lists recent changes to the database (add, change, delete or comment)
-    """
-    schema = ManualSchema(
-        fields=[
-            coreapi.Field(
-                "n",
-                required=False,
-                location="query",
-                description="Number of changes",
-                schema=coreschema.Integer(),
-            ),
-            coreapi.Field(
-                "target_country",
-                required=True,
-                location="query",
-                description="Target country ID",
-                schema=coreschema.Integer(),
-            ),
-            coreapi.Field(
-                "target_region",
-                required=True,
-                location="query",
-                description="Target region ID",
-                schema=coreschema.Integer(),
-            ),
-        ]
-    )
-    fake_queryset_class = LatestChangesQuerySet
 
 
 class ElasticSearchMixin(object):
@@ -400,6 +323,164 @@ class ElasticSearchMixin(object):
                         result_list = result_list[:-1]
 
         return result_list
+
+    def disable_filters(self):
+        """
+        Disable current filters temporarily and set default filters
+        :param request: 
+        :return: 
+        """
+        # Backup
+        self.request.session['disabled_filters'] = self.request.session.get('filters')
+        self.request.session['disabled_set_default_filters'] = self.request.session.get(
+            'set_default_filters', None)
+        self.request.session['filters'] = {}
+        if 'set_default_filters' in self.request.session:
+            del(self.request.session['set_default_filters'])
+        # FIXME: Move FilterWidgetMixin.set_default_filters to utils
+        f = FilterWidgetMixin()
+        f.request = self.request
+        f.set_country_region_filter(self.request.GET.copy())
+        f.set_default_filters(None, disabled_presets=[2,])
+
+    def enable_filters(self):
+        """
+        Restore filters after being disabled by disable_filters()
+        :return:
+        """
+        # Restore original filters
+        self.request.session['filters'] = self.request.session.get('disabled_filters')
+        if self.request.session['disabled_set_default_filters'] is not None:
+            self.request.session['set_default_filters'] = self.request.session[
+                'disabled_set_default_filters']
+        del(self.request.session['disabled_filters'])
+        del(self.request.session['disabled_set_default_filters'])
+
+
+class UserListView(ListAPIView):
+    """
+    The users list view is used by the impersonate user feature of the editor.
+    """
+    queryset = User.objects.all().order_by('first_name')
+    serializer_class = UserSerializer
+    permission_classes = (IsAdminUser,)
+
+
+class StatisticsView(ElasticSearchMixin,
+                     APIView):
+    """
+    Get deal aggregations grouped by Negotiation status.
+    Used by the CMS plugin „statistics“ for homepages and regional/national landing pages.
+    """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "country",
+                required=True,
+                location="query",
+                description="Country ID",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "region",
+                required=False,
+                location="query",
+                description="Region ID",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "disable_filters",
+                required=False,
+                location="query",
+                description="Set to 1 to disable default filters",
+                schema=coreschema.Integer(),
+            ),
+        ]
+    )
+
+    def get(self, request):
+        if request.GET.get('disable_filters', '') == '1':
+            self.disable_filters()
+        query = self.create_query_from_filters()
+        # Order by is set in aggregation
+        aggs = {
+            'negotiation_status': {
+                'terms': {
+                    'field': 'negotiation_status',
+                    'size': 100,
+                },
+                'aggs': {
+                    'deal_size_sum': {
+                        'sum': {
+                            'field': 'deal_size'
+                        }
+                    }
+                }
+            }
+        }
+
+        # Search deals
+        results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
+                                                   aggs=aggs)
+        results = results['negotiation_status']['buckets']
+        results = [[r['key'], r['doc_count'], r['deal_size_sum']['value']] for r in results]
+
+        if request.GET.get('disable_filters', '') == '1':
+            self.enable_filters()
+        return Response(results)
+
+
+class LatestChangesView(ElasticSearchMixin,
+                        APIView):
+    """
+    Lists recent changes to the database (add, change, delete or comment)
+    """
+    schema = ManualSchema(
+        fields=[
+            coreapi.Field(
+                "n",
+                required=False,
+                location="query",
+                description="Number of changes",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "target_country",
+                required=True,
+                location="query",
+                description="Target country ID",
+                schema=coreschema.Integer(),
+            ),
+            coreapi.Field(
+                "target_region",
+                required=True,
+                location="query",
+                description="Target region ID",
+                schema=coreschema.Integer(),
+            ),
+        ]
+    )
+
+    def get(self, request):
+        query = self.create_query_from_filters()
+
+        # Search deals
+        raw_results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
+                                                       sort={'history_date': 'desc'})
+        results = []
+        for raw_result in raw_results[:20]:
+            result = raw_result['_source']
+            target_country = result['target_country_display']
+            if len(target_country) > 0:
+                target_country = target_country[0]
+            results.append({
+                "action": "add" if result['status'] == 2 else "change",
+                "deal_id": result['activity_identifier'],
+                "change_date": result['history_date'],
+                "target_country": target_country
+            })
+
+        return Response(results)
 
 
 class GlobalDealsView(ElasticSearchMixin, APIView):

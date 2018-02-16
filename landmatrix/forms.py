@@ -3,6 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from registration.forms import RegistrationForm
 from captcha.fields import ReCaptchaField
+from .models.activity import Activity
+from .models.region import Region
 
 
 class CustomRegistrationForm(RegistrationForm):
@@ -28,3 +30,17 @@ class CustomRegistrationForm(RegistrationForm):
     class Meta(RegistrationForm.Meta):
         fields = ('username', 'first_name', 'last_name', 'email', 'phone',
                   'information', 'password1', 'password2', 'captcha')
+
+
+class ActivityFilterForm(forms.ModelForm):
+    activity_identifier = forms.IntegerField(label=_("Deal ID"))
+    target_region = forms.ModelChoiceField(label=_("Target region"), queryset=Region.objects.all())
+    current_negotiation_status = forms.ChoiceField(label=_("Current negotiation status"),
+                                                   choices=Activity.NEGOTIATION_STATUS_CHOICES)
+    current_implementation_status = forms.ChoiceField(label=_("Current implementation status"),
+                                                    choices=Activity.IMPLEMENTATION_STATUS_CHOICES)
+
+    class Meta:
+        model = Activity
+        fields = ('activity_identifier', 'is_public', 'deal_scope', 'deal_size', 'init_date',
+                  'negotiation_status', 'implementation_status', 'fully_updated_date')

@@ -2,9 +2,11 @@ from django import forms
 from django.db.models.fields import IntegerField
 from django.utils.translation import ugettext_lazy as _
 
+from landmatrix.forms import ActivityFilterForm
 from grid.fields import NestedMultipleChoiceField
 from grid.views.change_deal_view import ChangeDealView
-from grid.forms.investor_form import OperationalCompanyForm, ParentInvestorForm, ParentStakeholderForm
+from grid.forms.investor_form import OperationalCompanyForm, ParentInvestorForm, \
+    ParentStakeholderForm
 
 
 class BrowseFilterConditions:
@@ -150,6 +152,10 @@ class BrowseFilterConditions:
 def get_field_by_key(key):
     if key.isnumeric():
         key = get_key_from_id(int(key))
+
+    # Deal fields
+    if key in ActivityFilterForm.base_fields:
+        return ActivityFilterForm().fields[key]
     # Deal fields
     for form in ChangeDealView.FORMS:
         form = hasattr(form, "form") and form.form or form

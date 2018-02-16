@@ -76,6 +76,7 @@ def get_elasticsearch_properties(doc_type=None):
             'properties': {
                 'id': {'type': 'text'}, # use 'exact_value' instead of string?
                 'historical_activity_id': {'type': 'integer'},
+                'history_date': {'type': 'date'},
                 'activity_identifier': {'type': 'integer'},
                 'geo_point': {'type': 'geo_point'},
                 'status': {'type': 'integer'},
@@ -274,6 +275,7 @@ class ElasticSearch(object):
                 HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED
             )).values_list('activity_identifier', flat=True).distinct())
         #activity_identifiers = list(activity_identifiers)[:5]
+        activity_identifiers = [352,]
         for doc_type in doc_types:
             docs = []
             # Collect documents
@@ -382,6 +384,7 @@ class ElasticSearch(object):
             'id': activity.id,
             'activity_identifier': activity.activity_identifier,
             'historical_activity_id': activity.id,
+            'history_date': activity.history_date.isoformat(),
             'status': activity.fk_status_id,
         }
         # Todo: Is there a nice way to prevent this extra Activity query?
@@ -426,7 +429,6 @@ class ElasticSearch(object):
                     'is_current': a.is_current,
                 }
             value = a.value.strip() if a.value else None
-
             # Area field?
             if a.name and 'area' in a.name and a.polygon is not None:
                 # Get polygon
@@ -539,13 +541,15 @@ class ElasticSearch(object):
             'geo_point': [],
             'point_lat': [],
             'point_lon': [],
+            'target_country': [],
+            'target_country_display': [],
             'target_region': [],
             'target_region_display': [],
         }
         point_lat = doc.get('point_lat', [])
         point_lon = doc.get('point_lon', [])
         target_country = doc.get('target_country', [])
-        for i in range(doc.get('location_count', 0)):
+        for i in range(doc.get('location_count', 1)):
             if len(point_lat) > i and len(point_lon) > 1:
                 # Parse values
                 try:
@@ -561,12 +565,12 @@ class ElasticSearch(object):
                 properties['point_lon'].append('0')
             # Set target region
             if len(target_country) > i and target_country[i]:
-                try:
-                    region = Country.objects.get(pk=target_country[i]).fk_region
-                    properties['target_region'].append(region.id)
-                    properties['target_region_display'].append(region.name)
-                except:
-                    pass
+                country = Country.objects.get(pk=target_country[i])
+                properties['target_country'].append(country.id)
+                properties['target_country_display'].append(country.name)
+                region = country.fk_region
+                properties['target_region'].append(region.id)
+                properties['target_region_display'].append(region.name)
         return properties
 
     def get_display_properties(self, doc, doc_type='deal'):

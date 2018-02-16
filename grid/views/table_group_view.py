@@ -156,7 +156,6 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
         return context
 
     def get_records(self):
-        # TODO: Filter status
         query = self.create_query_from_filters()
         aggs = {}
         if self.group == 'all':

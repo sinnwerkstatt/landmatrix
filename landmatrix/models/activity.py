@@ -344,7 +344,7 @@ class Activity(ActivityBase):
         ),
     )
 
-    is_public = models.BooleanField(_('Is this a public deal?'), default=False, db_index=True)
+    is_public = models.BooleanField(_('Is public'), default=False, db_index=True)
     deal_scope = models.CharField(_('Deal scope'), max_length=16, choices=DEAL_SCOPE_CHOICES,
         blank=True, null=True, db_index=True)
     negotiation_status = models.CharField(_('Negotiation status'), max_length=64,

@@ -394,8 +394,6 @@ def load_filters(request, filter_format=FILTER_FORMATS_SQL):
             filter = PresetFilter.from_session(filter_dict)
         else:
             filter = Filter.from_session(filter_dict)
-        import pdb
-        pdb.set_trace()
         # Create subquery for investor variable queries
         if filter['variable'].startswith('parent_company_'):
             filters[filter_name] = filter
