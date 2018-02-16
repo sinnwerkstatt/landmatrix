@@ -399,9 +399,26 @@ class StatisticsView(ElasticSearchMixin,
     )
 
     def get(self, request):
-        if request.GET.get('disable_filters', '') == '1':
+        target_country = request.GET.get('country', False)
+        target_region = request.GET.get('region', False)
+        disable_filters = request.GET.get('disable_filters', '') == '1'
+
+        if disable_filters:
             self.disable_filters()
         query = self.create_query_from_filters()
+        if target_country:
+            query['bool']['filter'].append({
+                'term': {
+                    'target_country': target_country
+                }
+            })
+        if target_region:
+            query['bool']['filter'].append({
+                'term': {
+                    'target_region': target_region
+                }
+            })
+
         # Order by is set in aggregation
         aggs = {
             'negotiation_status': {
@@ -425,7 +442,7 @@ class StatisticsView(ElasticSearchMixin,
         results = results['negotiation_status']['buckets']
         results = [[r['key'], r['doc_count'], r['deal_size_sum']['value']] for r in results]
 
-        if request.GET.get('disable_filters', '') == '1':
+        if disable_filters:
             self.enable_filters()
         return Response(results)
 
