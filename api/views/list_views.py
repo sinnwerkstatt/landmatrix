@@ -421,9 +421,9 @@ class StatisticsView(ElasticSearchMixin,
 
         # Order by is set in aggregation
         aggs = {
-            'negotiation_status': {
+            'current_negotiation_status': {
                 'terms': {
-                    'field': 'negotiation_status',
+                    'field': 'current_negotiation_status',
                     'size': 100,
                 },
                 'aggs': {
@@ -435,11 +435,10 @@ class StatisticsView(ElasticSearchMixin,
                 }
             }
         }
-
         # Search deals
         results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
                                                    aggs=aggs)
-        results = results['negotiation_status']['buckets']
+        results = results['current_negotiation_status']['buckets']
         results = [[r['key'], r['doc_count'], r['deal_size_sum']['value']] for r in results]
 
         if disable_filters:

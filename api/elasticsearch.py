@@ -275,7 +275,7 @@ class ElasticSearch(object):
                 HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED
             )).values_list('activity_identifier', flat=True).distinct())
         #activity_identifiers = list(activity_identifiers)[:5]
-        activity_identifiers = [352,]
+        #activity_identifiers = [352,]
         for doc_type in doc_types:
             docs = []
             # Collect documents
