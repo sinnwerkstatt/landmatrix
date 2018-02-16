@@ -481,7 +481,7 @@ class LatestChangesView(ElasticSearchMixin,
     def get(self, request):
         target_country = request.GET.get('target_country', False)
         target_region = request.GET.get('target_region', False)
-        n = request.GET.get('n', 20)
+        n = int(request.GET.get('n', '20'))
 
         query = self.create_query_from_filters()
         if target_country:
