@@ -462,13 +462,30 @@ class LatestChangesView(ElasticSearchMixin,
     )
 
     def get(self, request):
+        target_country = request.GET.get('target_country', False)
+        target_region = request.GET.get('target_region', False)
+        limit = request.GET.get('n', 20)
+
         query = self.create_query_from_filters()
+        if target_country:
+            query['bool']['filter'].append({
+                'term': {
+                    'target_country': target_country
+                }
+            })
+        if target_region:
+            query['bool']['filter'].append({
+                'term': {
+                    'target_region': target_region
+                }
+            })
+
 
         # Search deals
         raw_results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
                                                        sort={'history_date': 'desc'})
         results = []
-        for raw_result in raw_results[:20]:
+        for raw_result in raw_results[:limit]:
             result = raw_result['_source']
             target_country = result['target_country_display']
             if len(target_country) > 0:
