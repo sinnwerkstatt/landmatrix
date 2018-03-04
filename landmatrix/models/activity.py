@@ -626,26 +626,16 @@ class Activity(ActivityBase):
             return None
 
     def get_top_investors(self):
-        """Get list of highest parent companies (all right-hand side parent companies of the network visualisation)"""
-        def get_parent_companies(investors):
-            parents = []
-            for investor in investors:
-                # Check if there are parent companies for investor
-                parent_companies = [ivi.fk_investor for ivi in InvestorVentureInvolvement.objects.filter(
-                    fk_venture=investor,
-                    fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
-                    fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
-                    role=InvestorVentureInvolvement.STAKEHOLDER_ROLE).exclude(fk_investor=investor)]
-                if parent_companies:
-                    parents.extend(get_parent_companies(parent_companies))
-                elif investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
-                    parents.append(investor)
-            return parents
-
+        """
+        Get list of highest parent companies (all right-hand side parent companies of the network
+        visualisation)
+        """
         # Operating company
         operating_companies = Investor.objects.filter(
             investoractivityinvolvement__fk_activity__activity_identifier=self.activity_identifier)
-        top_investors = list(set(get_parent_companies(operating_companies)))
+        top_investors = []
+        if len(operating_companies) > 0:
+            top_investors = operating_companies[0].get_top_investors()
         return top_investors
 
     def format_investors(self, investors):

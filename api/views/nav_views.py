@@ -1,17 +1,16 @@
-'''
-API calls used by the nav menus.
-'''
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.schemas import ManualSchema
+from rest_framework.response import Response
+from rest_framework.views import APIView
 import coreapi
 import coreschema
 
 from wagtailcms.models import RegionPage
 from api.query_sets.countries_query_set import CountriesQuerySet
-from api.query_sets.investors_query_set import InvestorsQuerySet
 from api.serializers import RegionSerializer
 from api.views.base import FakeQuerySetListView
+from .list_views import ElasticSearchMixin
 
 
 class CountryListView(FakeQuerySetListView):
@@ -39,7 +38,8 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 1000
 
 
-class InvestorListView(FakeQuerySetListView):
+class InvestorListView(ElasticSearchMixin,
+                       ListAPIView):
     """
     Get all Operating companies, Parent companies and Tertiary investors/lenders.
     """
@@ -54,6 +54,40 @@ class InvestorListView(FakeQuerySetListView):
             ),
         ]
     )
-    fake_queryset_class = InvestorsQuerySet
     pagination_class = StandardResultsSetPagination
+
+    def get_serializer(self, page, many=False):
+        return None
+
+    def get_queryset(self):
+        results = []
+
+        term = self.request.GET.get('q', '')
+        if term:
+            query = {
+                'wildcard': {'name': '*%s*' % term},
+            }
+            # Search deals
+            raw_results = self.execute_elasticsearch_query(query, doc_type='investor',
+                                                           fallback=False,
+                                                           sort='name')
+            results = []
+            for raw_result in raw_results:
+                result = raw_result['_source']
+                results.append({
+                    "id": raw_result["_id"],
+                    "text": result["name"],
+                    "investor_identifier": result["investor_identifier"],
+                    "country": result["fk_country_display"],
+                    "top_investors": result["top_investors"],
+                })
+
+        return results
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            return self.get_paginated_response(page)
+        return Response(queryset)
 

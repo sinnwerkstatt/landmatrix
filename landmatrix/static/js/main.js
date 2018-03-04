@@ -397,6 +397,33 @@ function initCountryField(field) {
     });
 }
 
+function formatInvestor(result) {
+    // Show country and top investors for unknown investors
+    if (result.text && result.text.startsWith('Unknown')) {
+        investor = $('<span>', {'text': result.text});
+        meta_info = 'in ' + result.country;
+
+        if (result.top_investors) {
+            parent_companies = '';
+            top_investors = result.top_investors.split("|");
+            for (var i = 0; i < top_investors.length; i++) {
+                top_investor = top_investors[i].split('#');
+                if (parent_companies) {
+                    parent_companies += ', ' + top_investor[1];
+                } else {
+                    parent_companies += top_investor[1];
+                }
+            }
+            meta_info += ', Top parent companies: ' + parent_companies;
+        }
+        meta = $('<small>', {'text': meta_info});
+        meta.appendTo(investor);
+        return investor;
+    } else {
+        return result.text;
+    }
+}
+
 function initInvestorField(field, set_events) {
     set_events = typeof set_events !== 'undefined' ? set_events : true;
 
@@ -426,11 +453,12 @@ function initInvestorField(field, set_events) {
                   }
                 };
             },
-            cache: true,
+            cache: true
         },
         minimumInputLength: 3,
         allowClear: true,
-        placeholder: ""
+        placeholder: "",
+        templateResult: formatInvestor
     }).on("select2:unselecting", function (e) {
         $(this).val("");
         $(this).find('option:selected').removeAttr('selected');

@@ -220,6 +220,32 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
         self.save(update_fields=['fk_status'])
 
+    def get_top_investors(self):
+        """
+        Get list of highest parent companies (all right-hand side parent companies of the network
+        visualisation)
+        """
+        def get_parent_companies(investors):
+            parents = []
+            for investor in investors:
+                # Check if there are parent companies for investor
+                parent_companies = [ivi.fk_investor for ivi in InvestorVentureInvolvement.objects.filter(
+                    fk_venture=investor,
+                    fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
+                    fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
+                    role=InvestorVentureInvolvement.STAKEHOLDER_ROLE).exclude(fk_investor=investor)]
+                if parent_companies:
+                    parents.extend(get_parent_companies(parent_companies))
+                elif investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
+                    parents.append(investor)
+            return parents
+        top_investors = list(set(get_parent_companies([self,])))
+        return top_investors
+
+    def format_investors(self, investors):
+        return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '').replace("\n", '')])
+                         for i in investors])
+
 
 class Investor(InvestorBase):
     subinvestors = models.ManyToManyField(

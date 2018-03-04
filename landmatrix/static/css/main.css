@@ -163,6 +163,11 @@
 .navbar-main .select2-container--open .select2-selection--single .select2-selection__placeholder {
   color: #fc941f !important; }
 
+.select2-results__option small {
+  color: #919191;
+  padding-left: 5px;
+}
+
 .navbar-default .navbar-nav > .open,
 .navbar-default .navbar-nav > .open > a:focus,
 .navbar-default .navbar-nav > .open > a:hover {

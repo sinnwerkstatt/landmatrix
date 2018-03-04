@@ -90,7 +90,6 @@ urlpatterns = [
         name='api_investor_network'),
     url(r'^investors\.json',
         InvestorListView.as_view(),
-        {'format': 'json'},
         name='investors_api'),
     url(r'^logging\.json',
         LoggingView.as_view(),

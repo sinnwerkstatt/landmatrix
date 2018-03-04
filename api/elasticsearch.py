@@ -619,6 +619,10 @@ class ElasticSearch(object):
                 else:
                     doc[field.name] = getattr(investor, field.name)
 
+            # Append top_investors
+            top_investors = investor.get_top_investors()
+            doc['top_investors'] = investor.format_investors(top_investors)
+
             # Append involvements for quicker queries
             ivis = InvestorVentureInvolvement.objects.filter(fk_investor=investor)
             doc['parent_company_of'] = []
