@@ -54,8 +54,11 @@ class ElasticSearchMixin(object):
     def load_filters(self):
         filters = {}
         parent_company_filters, tertiary_investor_filters = {}, {}
-        session_filters = self.request.session.get('filters', {}) or {}  # Can be None
-                                                                         # in some cases
+        if self.request:
+            session_filters = self.request.session.get('filters', {}) or {}
+        else:
+            session_filters = {}
+
         for filter_name, filter_dict in session_filters.items():
             if 'preset_id' in filter_dict:
                 filter = PresetFilter.from_session(filter_dict)
