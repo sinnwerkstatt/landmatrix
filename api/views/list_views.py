@@ -214,8 +214,6 @@ class ElasticSearchMixin(object):
         return query
 
     def add_request_filters_to_elasticsearch_query(self, elasticsearch_query):
-        request = self.request
-
         window = None
         if self.request and self.request.GET.get('window', None):
             lon_min, lat_min, lon_max, lat_max = self.request.GET.get('window').split(',')
@@ -280,13 +278,14 @@ class ElasticSearchMixin(object):
         # TODO: these were at some point in the UI. add the missing filters!
         if self.request:
             request_filters = {
-                'deal_scope': request.GET.getlist('deal_scope', ['domestic', 'transnational']),
-                'limit': request.GET.get('limit'),
-                'investor_country': request.GET.get('investor_country'),
-                'investor_region': request.GET.get('investor_region'),
-                'target_country': request.GET.get('target_country'),
-                'target_region': request.GET.get('target_region'),
-                'attributes': request.GET.getlist('attributes', []),
+                'deal_scope': self.request.GET.getlist('deal_scope', ['domestic',
+                                                                      'transnational']),
+                'limit': self.request.GET.get('limit'),
+                'investor_country': self.request.GET.get('investor_country'),
+                'investor_region': self.request.GET.get('investor_region'),
+                'target_country': self.request.GET.get('target_country'),
+                'target_region': self.request.GET.get('target_region'),
+                'attributes': self.request.GET.getlist('attributes', []),
             }
         else:
             request_filters = {

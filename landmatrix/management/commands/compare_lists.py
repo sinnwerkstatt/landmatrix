@@ -159,17 +159,31 @@ class Command(ElasticSearchMixin,
         """
         cursor = connections['v1_my'].cursor()
         cursor.execute(sql)
-        return [a[0] for a in cursor.fetchall()]
+        results = [a[0] for a in cursor.fetchall()]
+        self.stdout.write('-- Found %i old deals' % len(results))
+        return results
 
     def get_new_activities(self):
+        from django.test.client import RequestFactory
+        from django.contrib.sessions.middleware import SessionMiddleware
+        from django.contrib.auth.models import AnonymousUser
+        rf = RequestFactory()
+        request = rf.get('/')
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
+        request.user = AnonymousUser()
+
+        self.request = request
         self.disable_filters()
         query = self.create_query_from_filters()
         query['bool']['filter'].append({
             'terms': {
-                'current_negotiation_status': ['Concluded (Oral Agreement)',
-                                               'Concluded (Contract signed)']
+                'current_negotiation_status': ['Oral agreement',
+                                               'Contract signed']
             }
         })
         results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False)
-        results = [[r['source']['activity_identifier']] for r in results]
+        results = [[r['_source']['activity_identifier']] for r in results]
+        self.stdout.write('-- Found %i new deals' % len(results))
         return results
