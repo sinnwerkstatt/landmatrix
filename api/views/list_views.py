@@ -47,9 +47,9 @@ class ElasticSearchMixin(object):
             operators = self.request.GET.getlist('operator')
             values = self.request.GET.getlist('value')
         else:
-            variables = None
-            operators = None
-            values = None
+            variables = []
+            operators = []
+            values = []
         combined = zip(variables, operators, values)
 
         filters = {f[0]: Filter(f[0], f[1], f[2]) for f in combined}
