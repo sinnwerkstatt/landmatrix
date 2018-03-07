@@ -184,6 +184,6 @@ class Command(ElasticSearchMixin,
             }
         })
         results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False)
-        results = [[r['_source']['activity_identifier']] for r in results]
+        results = [r['_source']['activity_identifier'] for r in results]
         self.stdout.write('-- Found %i new deals' % len(results))
         return results
