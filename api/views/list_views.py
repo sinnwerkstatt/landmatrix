@@ -217,11 +217,8 @@ class ElasticSearchMixin(object):
         request = self.request
 
         window = None
-        if self.request.GET.get('window', None):
-            if self.request:
-                lon_min, lat_min, lon_max, lat_max = self.request.GET.get('window').split(',')
-            else:
-                lon_min, lat_min, lon_max, lat_max = None, None, None, None
+        if self.request and self.request.GET.get('window', None):
+            lon_min, lat_min, lon_max, lat_max = self.request.GET.get('window').split(',')
             try:
                 lat_min, lat_max = float(lat_min), float(lat_max)
                 lon_min, lon_max = float(lon_min), float(lon_max)
