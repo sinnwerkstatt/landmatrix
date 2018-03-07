@@ -218,7 +218,10 @@ class ElasticSearchMixin(object):
 
         window = None
         if self.request.GET.get('window', None):
-            lon_min, lat_min, lon_max, lat_max = self.request.GET.get('window').split(',')
+            if self.request:
+                lon_min, lat_min, lon_max, lat_max = self.request.GET.get('window').split(',')
+            else:
+                lon_min, lat_min, lon_max, lat_max = None, None, None, None
             try:
                 lat_min, lat_max = float(lat_min), float(lat_max)
                 lon_min, lon_max = float(lon_min), float(lon_max)
@@ -249,9 +252,11 @@ class ElasticSearchMixin(object):
             })
 
         # collect a proper and authorized-for-that-user status list from the requet paramert
-        request_status_list = self.request.GET.getlist('status', [])
+        request_status_list = self.request.GET.getlist('status', []) if self.request else []
         if self.request.user.is_staff:
-            status_list_get = [int(status) for status in request_status_list if (status.isnumeric() and int(status) in dict(ActivityBase.STATUS_CHOICES).keys())]
+            status_list_get = [int(status) for status in request_status_list
+                               if (status.isnumeric() and
+                                   int(status) in dict(ActivityBase.STATUS_CHOICES).keys())]
             if status_list_get:
                 self.status_list = status_list_get
 
@@ -264,7 +269,7 @@ class ElasticSearchMixin(object):
         })
 
         # Public user?
-        if request.user.is_anonymous():
+        if not self.request or self.request.user.is_anonymous():
             elasticsearch_query['filter'].append({
                 "bool": {
                     "filter": {
@@ -276,15 +281,26 @@ class ElasticSearchMixin(object):
             })
 
         # TODO: these were at some point in the UI. add the missing filters!
-        request_filters = {
-            'deal_scope': request.GET.getlist('deal_scope', ['domestic', 'transnational']),
-            'limit': request.GET.get('limit'),
-            'investor_country': request.GET.get('investor_country'),
-            'investor_region': request.GET.get('investor_region'),
-            'target_country': request.GET.get('target_country'),
-            'target_region': request.GET.get('target_region'),
-            'attributes': request.GET.getlist('attributes', []),
-        }
+        if self.request:
+            request_filters = {
+                'deal_scope': request.GET.getlist('deal_scope', ['domestic', 'transnational']),
+                'limit': request.GET.get('limit'),
+                'investor_country': request.GET.get('investor_country'),
+                'investor_region': request.GET.get('investor_region'),
+                'target_country': request.GET.get('target_country'),
+                'target_region': request.GET.get('target_region'),
+                'attributes': request.GET.getlist('attributes', []),
+            }
+        else:
+            request_filters = {
+                'deal_scope': ['domestic', 'transnational'],
+                'limit': '',
+                'investor_country': '',
+                'investor_region': '',
+                'target_country': '',
+                'target_region': '',
+                'attributes': [],
+            }
 
         return elasticsearch_query
 
