@@ -42,9 +42,14 @@ class ElasticSearchMixin(object):
         '''
         Read any querystring param filters. Preset filters not allowed.
         '''
-        variables = self.request.GET.getlist('variable')
-        operators = self.request.GET.getlist('operator')
-        values = self.request.GET.getlist('value')
+        if self.request:
+            variables = self.request.GET.getlist('variable')
+            operators = self.request.GET.getlist('operator')
+            values = self.request.GET.getlist('value')
+        else:
+            variables = None
+            operators = None
+            values = None
         combined = zip(variables, operators, values)
 
         filters = {f[0]: Filter(f[0], f[1], f[2]) for f in combined}
