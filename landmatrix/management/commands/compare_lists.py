@@ -33,6 +33,8 @@ class Command(ElasticSearchMixin,
         additional.sort()
         missing_deals = OrderedDict()
         missing_deals['status'] = []
+        missing_deals['deal_size'] = []
+        missing_deals['init_date'] = []
         missing_deals['unknown'] = []
         additional_deals = OrderedDict()
         additional_deals['no_inv'] = []
@@ -44,6 +46,10 @@ class Command(ElasticSearchMixin,
             inv = a.investoractivityinvolvement_set.all()
             if a.fk_status_id not in (2,3):
                 missing_deals['status'].append(a)
+            elif a.init_date < "1999-12-31":
+                missing_deals['deal_size'].append(a)
+            elif a.deal_status < 200:
+                missing_deals['deal_size'].append(a)
             else:
                 missing_deals['unknown'].append(a)
 
@@ -65,9 +71,11 @@ class Command(ElasticSearchMixin,
                     investor_name = inv[0].fk_investor.name
                 else:
                     investor_name = ''
-                self.stdout.write('%s (%s, %s, %s, %s, %s) --> %s' % (
+                self.stdout.write('%s (%s, %s, %s, %s, %s, %s, %s) --> %s' % (
                     a.activity_identifier,
                     a.is_public and 'public' or 'not public',
+                    a.deal_size,
+                    a.init_date,
                     a.deal_scope,
                     a.negotiation_status,
                     a.fk_status.name,
