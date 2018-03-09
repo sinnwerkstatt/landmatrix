@@ -34,7 +34,7 @@
                         <li{% if chart == "chart_map_of_investments" %} class="active"{% endif %}><a href="{% url "chart_map_of_investments" %}{% filter_query_params %}">{% trans "Global map of investments" %}</a></li>
                         <li{% if chart == "chart_perspective" %} class="active"{% endif %}><a href="{% url "chart_perspective" %}{% filter_query_params %}">{% trans "It's a big deal" %}</a></li>
                         {% endif %}
-                        <li class="dropdown">
+                        <!--li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 {% trans "Special Interest" %}
                                 <span class="caret"></span>
@@ -48,7 +48,7 @@
                                 <li{% if chart == 'chart_logging' %} class="active"{% endif %}><a href="{% url "chart_logging" %}{% filter_query_params %}">{% trans "Forest concessions" %}</a></li>
                                 <li{% if chart == 'chart_contract_farming' %} class="active"{% endif %}><a href="{% url "chart_contract_farming" %}{% filter_query_params %}">{% trans "Contract Farming" %}</a></li>
                             </ul>
-                        </li>
+                        </li !-->
                     </ul>
                 </div>
             </div>

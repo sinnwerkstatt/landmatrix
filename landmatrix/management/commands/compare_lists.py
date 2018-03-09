@@ -46,9 +46,9 @@ class Command(ElasticSearchMixin,
             inv = a.investoractivityinvolvement_set.all()
             if a.fk_status_id not in (2,3):
                 missing_deals['status'].append(a)
-            elif a.init_date < "1999-12-31":
+            elif a.init_date and a.init_date < "1999-12-31":
                 missing_deals['deal_size'].append(a)
-            elif a.deal_status < 200:
+            elif a.deal_size < 200:
                 missing_deals['deal_size'].append(a)
             else:
                 missing_deals['unknown'].append(a)
