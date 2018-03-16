@@ -73,6 +73,12 @@ $(document).ready(function () {
             // Altering using user-provided options
             for (var property in options) {
                 if (options.hasOwnProperty(property)) {
+                    if (property == 'boundLonField' || property == 'boundLatField') {
+                        if (typeof options[property] == 'string') {
+                            this.options[property] = $(options[property]);
+                            continue;
+                        }
+                    }
                     this.options[property] = options[property];
                 }
             }
