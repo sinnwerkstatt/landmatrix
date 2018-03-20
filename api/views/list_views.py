@@ -626,7 +626,7 @@ class CountryDealsView(GlobalDealsView, APIView):
 
         for result in result_list:
             if result.get('target_country'):
-                target_countries[result['target_country']].increment(**result)
+                target_countries[str(result['target_country'])].increment(**result)
 
         filter_country = self.request.GET.get('country_id')
         country_ids = [filter_country] if filter_country else target_countries.keys()
