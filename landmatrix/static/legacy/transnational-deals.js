@@ -404,11 +404,22 @@ function mouseup(d) {
                 }
                 if (data.target_country.length > 1) {
                     var investor_regions = "";
-                    for (i = 0; i < data.target_country.length; i++) {
+
+                    for (var i = 0; i < data.target_country.length; i++) {
+                        var total_deals = 0,
+                            total_hectares = 0;
                         r = data.target_country[i];
-                        if (data.target_country.length == 2 && r.region == "Total") continue;
-                        investor_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") + "></tr>";
+                        investor_regions += "<tr><th>" + r.region + "</th>";
+                        investor_regions += "<td style=\"text-align: right;\">";
+                        investor_regions += numberWithCommas(r.hectares) + " ha (";
+                        investor_regions += r.deals + " deals)</td></tr>";
+                        total_deals += r.deals;
+                        total_hectares += r.hectares;
                     }
+                    investor_regions += "<tr><th><strong>Total<strong></th>";
+                    investor_regions += "<th style=\"text-align: right;\"><strong>";
+                    investor_regions += numberWithCommas(total_hectares) + " ha (";
+                    investor_regions += total_deals + " deals)</strong></th></tr>";
                     info.find("a.outbound").attr("href", "/data/by-investor-country/" + n.slug + "/");
                     info.find("table.outbound tbody").html(investor_regions);
                     info.find(".outbound").show()
