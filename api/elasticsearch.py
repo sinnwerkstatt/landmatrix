@@ -422,6 +422,9 @@ class ElasticSearch(object):
                     'top_investors': public_activity.format_investors(top_investors),
                     'investor_country': [c.id for c in investor_countries],
                     'investor_country_display': [c.name for c in investor_countries],
+                    'investor_region': list(set(c.fk_region_id for c in investor_countries)),
+                    'investor_region_display': list(set(c.fk_region.name for c in
+                                                       investor_countries)),
                     'fully_updated_date': public_activity.get_fully_updated_date(),
                     'agricultural_produce': public_activity.get_agricultural_produce(),
                 })

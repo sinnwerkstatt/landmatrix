@@ -45,7 +45,8 @@
 {% block after %}
 {{ block.super }}
 <script type="text/javascript">
-var mapDisableDeals = true;
+var mapDisableDeals = true,
+    mapDisableControls = true;
 </script>
 
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAFunDF4IlD4SSDRdCcRNVqnzPu2UdXSOk&libraries=places"></script>
@@ -71,7 +72,8 @@ function drawCircleInMeters(map, coords, hectares) {
 
     bigDealVectorSource.clear();
     bigDealVectorSource.addFeature(feature);
-};
+    map.getView().setCenter(ol.proj.transform(coords, 'EPSG:4326', projection));
+}
 
 $(document).ready(function () {
     var autocomplete = new google.maps.places.Autocomplete(
@@ -93,7 +95,7 @@ $(document).ready(function () {
     $.get("/api/hectares.json", function (data) {
         hectares = parseFloat(data["hectares"]);
         $(".legend li .hectares").text(number_format(hectares, 0));
-        drawCircleInMeters(map, [0, 0], hectares);
+        drawCircleInMeters(map, [-3.703790, 40.416775], hectares);
     });
     map.on('singleclick', function (evt) {
         var point = new ol.geom.Point(evt.coordinate);
@@ -107,7 +109,7 @@ $(document).ready(function () {
         ];
         drawCircleInMeters(map, coords, hectares);
     });
-});
+})
 </script>
 <script type="text/javascript" src="{% static "js/main.js" %}"></script>
 

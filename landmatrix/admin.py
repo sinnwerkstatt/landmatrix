@@ -52,6 +52,7 @@ admin.site.register(Mineral)
 
 class CropAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'slug', 'fk_agricultural_produce')
+    list_filter = ('fk_agricultural_produce',)
 admin.site.register(Crop, CropAdmin)
 
 admin.site.register(Currency)

@@ -196,7 +196,7 @@ function buildPieChart() {
         {label: 'On The Lease', value: 0.3, col: '#fc941f'},
         {label: 'Off The Lease', value: 0.35, col: '#44b7b6'},
         {label: 'Pure Contract Farming', value: 0.1, col: '#1f7bfc'},
-        {label: 'Both', value: 0.15, col: '#ad1ffc'},
+        {label: 'Both', value: 0.15, col: '#f84242'},
         {label: 'None', value: 0.1, col: '#fcd41f'}
     ];
 
@@ -350,7 +350,7 @@ function buildDotChart() {
         "intentions": [[0, 4], [1, 8], [2, 3]],
         "total": 15,
         "name": "Tourism",
-        "color": '#ad1ffc',
+        "color": '#f84242',
     }];
 
     d3.json('', function (data) {
@@ -464,7 +464,7 @@ function buildAgriculturalPies() {
             pie_data.push(data[i]["agricultural_produce"]["multiple_use"]);
 
             var pie = new RGraph.Pie('pie-' + data[i]["region"], pie_data);
-            pie.Set('chart.colors', ['#fc941f', '#44b7b6', '#1f7bfc', '#ad1ffc']);
+            pie.Set('chart.colors', ['#fc941f', '#44b7b6', '#1f7bfc', '#f84242']);
             pie.Set('chart.strokestyle', '#bbb');
             pie.Set('chart.text.font', 'Open Sans');
             pie.Set('chart.text.size', '9');

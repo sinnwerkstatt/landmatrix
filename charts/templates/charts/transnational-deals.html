@@ -36,63 +36,63 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h3>{% trans "Top Countries" %}</h3>
                 </div>
-                <div class="row">
-                    <div class="chart-box-content">
-                        <ul class="nav nav-tabs">
-                            <li class="active"><a style="color: #44b7b6"
-                                                  href="#investor-countries">{% trans "Investor countries" %}</a></li>
-                            <li><a style="color: #ed881b" href="#target-countries">{% trans "Target countries" %}</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div id="investor-countries" class="tab-pane active">
-                                <table class="table">
-                                </table>
-                            </div>
-                            <div id="target-countries" class="tab-pane">
-                                <table class="table">
-                                </table>
-                            </div>
-                        </div>
+                <p></p>
+                <ul class="nav nav-tabs">
+                    <li class="active"><a style="color: #44b7b6"
+                                          href="#investor-countries">{% trans "Investor countries" %}</a></li>
+                    <li><a style="color: #ed881b" href="#target-countries">{% trans "Target countries" %}</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="investor-countries" class="tab-pane active">
+                        <table class="table">
+                        </table>
+                    </div>
+                    <div id="target-countries" class="tab-pane">
+                        <table class="table">
+                        </table>
                     </div>
                 </div>
             </div>
             <div class="chart-box col-md-4 col-md-offset-2 well country-info" style="display: none">
-                <div class="modal-header">
+                <div class="modal-header inbound">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h3 class="country">{% trans "Country" %}</h3>
                 </div>
-                <div class="row">
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active">
-                            <a href="#inbound" aria-controls="inbound" role="tab" data-toggle="tab">
-                                <div style="color: #44b7b6">{% trans "Regions investing in " %}
-                                    <span class="country">{% trans "Country" %}</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li role="presentation">
-                            <a href="#outbound" aria-controls="outbound" role="tab" data-toggle="tab">
-                                <div style="color: #ed881b">{% trans "Regions" %}
-                                    <span class="country">{% trans "Country" %}</span>
-                                    {% trans "invests in" %}
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane target-regions active" id="inbound">
-                            <table class="table">
-                            </table>
-                            <p><a class="btn btn-primary" href="" class="inbound">{% trans "Show all inbound deals" %}</a></p>
-                        </div>
-                        <div role="tabpanel" class="tab-pane investor-regions" id="outbound">
-                            <table class="table">
-                            </table>
-                            <p><a class="btn btn-primary" href="" class="outbound">{% trans "Show all outbound deals" %}</a></p>
-                        </div>
-                    </div>
-                </div>
+                <p></p>
+                <h6 class="modal-header" style="color: #44b7b6">
+                    {% trans "Regions investing in " %}
+                    <span class="country">{% trans "Country" %}</span>
+                </h6>
+                <table class="table table-condensed inbound">
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2">
+                                <a href="" class="inbound">
+                                    {% trans "Show all inbound deals" %}
+                                </a>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <h6 class="modal-header outbound" style="color: #ed881b">
+                    {% trans "Regions" %}
+                    <span class="country">{% trans "Country" %}</span>
+                    {% trans "invests in" %}
+                </h6>
+                <table class="table table-condensed outbound">
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2">
+                                <a href="" class="outbound">
+                                    {% trans "Show all outbound deals" %}
+                                </a>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
         </div>
 

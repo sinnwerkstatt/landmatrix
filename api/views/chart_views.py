@@ -580,7 +580,7 @@ class Top10CountriesView(BaseChartView):
             'target_country': {
                 'terms': {
                     'field': 'target_country',
-                    'size': 300,
+                    'size': 10,
                     'order': {'deal_size_sum': 'desc'},
                 },
                 'aggs': {
@@ -599,7 +599,7 @@ class Top10CountriesView(BaseChartView):
             'investor_country': {
                 'terms': {
                     'field': 'investor_country',
-                    'size': 300,
+                    'size': 10,
                     'order': {'deal_size_sum': 'desc'},
                 },
                 'aggs': {

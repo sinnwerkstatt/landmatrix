@@ -60,9 +60,7 @@ function create_d3(diameter) {
     var query_params = "?deal_scope=transnational";
     var json_query = "/api/transnational_deals.json" + query_params;
 
-    console.log("Beginning d3 setup.");
     d3.json(json_query, function (error, classes) {
-        console.log("Setting up d3.");
         if (error) {
             throw error;
         }
@@ -210,7 +208,6 @@ function init_canvas() {
         boxleft = chartwidth / 2 - boxwidth / 2,
         boxheight = diameter * 1 / 3,
         boxtop = diameter * 2 / 3;
-    console.log(width, height, boxleft, boxtop, diameter);
     $("div.canvas").empty();
     $(".chart-box")
         .css("left", boxleft)
@@ -317,7 +314,6 @@ function mouse(e) {
 function mousedown(d) {
     m0 = mouse(d3.event);
     m0obj = d;
-    console.log(m0, d, d3.event);
     d3.event.preventDefault();
 }
 
@@ -349,7 +345,6 @@ function mouseup(d) {
     if (m0) {
         var m1 = mouse(d3.event),
             dm = Math.atan2(cross(m0, m1), dot(m0, m1)) * 180 / Math.PI;
-        console.log("Movement:", m1, dm);
         rotate += dm;
         if (rotate > 360) rotate -= 360;
         else if (rotate < 0) rotate += 360;
@@ -373,31 +368,39 @@ function mouseup(d) {
         // country clicked: show country info box
         var n;
         n = m0obj; // ('toElement' in d3.event && d3.event.toElement.parentElement) || (d3.event.relatedTarget && d3.event.relatedTarget.parentNode) || (d3.event.target.parentNode);
-        console.log('Hmm:', n);
         var info = $(".country-info");
         info.hide();
         $(".top-10-countries").hide();
         $(".show-all").removeClass("disabled");
-        console.log("Country clicked, working..");
         if (n.id !== "" && parent) {
-            console.log("Country selecting..", n, info);
             info.find(".country").text(n.key);
 
             var jsonquery = "/api/transnational_deals_by_country.json?country=" + n.id;
 
             jQuery.getJSON(jsonquery, function (data) {
-                console.log('Got some JSON for the detail tables:', data);
                 var target_regions = "",
                     r;
                 if (data.investor_country.length > 1) {
+                    var total_deals = 0,
+                        total_hectares = 0;
                     for (var i = 0; i < data.investor_country.length; i++) {
                         r = data.investor_country[i];
-                        if (data.investor_country.length == 2 && r.region == "Total") continue;
-                        target_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") + "></tr>";
-
+                        target_regions += "<tr><th>" + r.region + "</th>";
+                        target_regions += "<td style=\"text-align: right;\">";
+                        target_regions += numberWithCommas(r.hectares) + " ha (";
+                        target_regions += r.deals + " deals)</td></tr>";
+                        total_deals += r.deals;
+                        total_hectares += r.hectares;
                     }
-                    info.find(".target-regions a.inbound").attr("href", "/data/by-target-country/" + n.slug + "/");
-                    info.find(".target-regions").find("table").html(target_regions);
+                    target_regions += "<tr><th><strong>Total<strong></th>";
+                    target_regions += "<th style=\"text-align: right;\"><strong>";
+                    target_regions += numberWithCommas(total_hectares) + " ha (";
+                    target_regions += total_deals + " deals)</strong></th></tr>";
+                    info.find("a.inbound").attr("href", "/data/by-target-country/" + n.slug + "/");
+                    info.find("table.inbound tbody").html(target_regions);
+                    info.find(".inbound").show();
+                } else {
+                    info.find(".inbound").hide();
                 }
                 if (data.target_country.length > 1) {
                     var investor_regions = "";
@@ -406,16 +409,17 @@ function mouseup(d) {
                         if (data.target_country.length == 2 && r.region == "Total") continue;
                         investor_regions += "<tr><th>" + r.region + "</th><" + (r.region == "Total" && "th" || "td") + " style=\"text-align: right;\">" + numberWithCommas(r.hectares) + " ha (" + r.deals + " deals)</" + (r.region == "total" && "th" || "td") + "></tr>";
                     }
-                    info.find(".investor-regions a.outbound").attr("href", "/data/by-investor-country/" + n.slug + "/");
-                    info.find(".investor-regions").find("table").html(investor_regions);
+                    info.find("a.outbound").attr("href", "/data/by-investor-country/" + n.slug + "/");
+                    info.find("table.outbound tbody").html(investor_regions);
+                    info.find(".outbound").show()
+                } else {
+                    info.find(".outbound").hide()
                 }
                 info.show();
             });
 
             // highlight pathes
             var id = n.id;
-            //console.log("path.link.source-" + id);
-            //console.log( svg.selectAll("path.link.source-" + id));
             // deselect (as in mouseout)
 
             link
