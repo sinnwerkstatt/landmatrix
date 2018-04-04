@@ -14,10 +14,10 @@ from landmatrix.models.activity_attribute_group import (
     ActivityAttribute,
 )
 from landmatrix.models.investor import (
-    Investor, InvestorActivityInvolvement, InvestorVentureInvolvement, InvestorBase,
-    InvestorActivitySize
+    Investor, InvestorActivityInvolvement, InvestorVentureInvolvement, InvestorBase
 )
 from landmatrix.models.country import Country
+from landmatrix.models.crop import Crop
 
 
 class ActivityQuerySet(models.QuerySet):
@@ -118,6 +118,102 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         (STATUS_REJECTED, _('Rejected')),
         (STATUS_TO_DELETE, _('To delete')),
     )
+
+    DEAL_SCOPE_DOMESTIC = 'domestic'
+    DEAL_SCOPE_TRANSNATIONAL = 'transnational'
+    DEAL_SCOPE_CHOICES = (
+        (DEAL_SCOPE_DOMESTIC, _('Domestic')),
+        (DEAL_SCOPE_DOMESTIC, _('Transnational')),
+    )
+
+    NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST = 'Expression of interest'
+    NEGOTIATION_STATUS_UNDER_NEGOTIATION = 'Under negotiation'
+    NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING = 'Memorandum of understanding'
+    NEGOTIATION_STATUS_ORAL_AGREEMENT = 'Oral agreement'
+    NEGOTIATION_STATUS_CONTRACT_SIGNED = 'Contract signed'
+    NEGOTIATION_STATUS_NEGOTIATIONS_FAILED = 'Negotiations failed'
+    NEGOTIATION_STATUS_CONTRACT_CANCELLED = 'Contract canceled'
+    NEGOTIATION_STATUS_CONTRACT_EXPIRED = 'Contract expired'
+    NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP = 'Change of ownership'
+
+    # These groupings are used for determining filter behaviour
+    NEGOTIATION_STATUSES_INTENDED = (
+        NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST,
+        NEGOTIATION_STATUS_UNDER_NEGOTIATION,
+        NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING,
+    )
+    NEGOTIATION_STATUSES_CONCLUDED = (
+        NEGOTIATION_STATUS_ORAL_AGREEMENT,
+        NEGOTIATION_STATUS_CONTRACT_SIGNED,
+    )
+    NEGOTIATION_STATUSES_FAILED = (
+        NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
+        NEGOTIATION_STATUS_CONTRACT_CANCELLED,
+        NEGOTIATION_STATUS_CONTRACT_EXPIRED,
+    )
+    NEGOTIATION_STATUS_CHOICES = (
+        BLANK_CHOICE_DASH[0],
+        (
+            NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST,
+            _("Intended (Expression of interest)"),
+        ),
+        (
+            NEGOTIATION_STATUS_UNDER_NEGOTIATION,
+            _("Intended (Under negotiation)"),
+        ),
+        (
+            NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING,
+            _("Intended (Memorandum of understanding)"),
+        ),
+        (
+            NEGOTIATION_STATUS_ORAL_AGREEMENT,
+            _("Concluded (Oral Agreement)"),
+        ),
+        (
+            NEGOTIATION_STATUS_CONTRACT_SIGNED,
+            _("Concluded (Contract signed)"),
+        ),
+        (
+            NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
+            _("Failed (Negotiations failed)"),
+        ),
+        (
+            NEGOTIATION_STATUS_CONTRACT_CANCELLED,
+            _("Failed (Contract cancelled)"),
+        ),
+        (
+            NEGOTIATION_STATUS_CONTRACT_EXPIRED, _("Contract expired"),
+        ),
+        (
+            NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP, _("Change of ownership"),
+        )
+    )
+
+    IMPLEMENTATION_STATUS_PROJECT_NOT_STARTED = 'Project not started'
+    IMPLEMENTATION_STATUS_STARTUP_PHASE = 'Startup phase (no production)'
+    IMPLEMENTATION_STATUS_IN_OPERATION = 'In operation (production)'
+    IMPLEMENTATION_STATUS_PROJECT_ABANDONED = 'Project abandoned'
+    IMPLEMENTATION_STATUS_CHOICES = (
+        BLANK_CHOICE_DASH[0],
+        (
+            IMPLEMENTATION_STATUS_PROJECT_NOT_STARTED,
+            _("Project not started"),
+        ),
+        (
+            IMPLEMENTATION_STATUS_STARTUP_PHASE,
+            _("Startup phase (no production)"),
+        ),
+        (
+            IMPLEMENTATION_STATUS_IN_OPERATION,
+            _("In operation (production)"),
+        ),
+        (
+            IMPLEMENTATION_STATUS_PROJECT_ABANDONED,
+            _("Project abandoned"),
+        ),
+    )
+
+    AGRICULTURAL_PRODUCE_MULTI = 'Multi Crop'
 
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
     availability = models.FloatField(_("availability"), blank=True, null=True)
@@ -242,155 +338,30 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
         return attrs
 
+    def get_top_investors(self):
+        """
+        Get list of highest parent companies (all right-hand side parent companies of the network
+        visualisation)
+        """
+        # Operating company
+        operating_companies = Investor.objects.filter(
+            investoractivityinvolvement__fk_activity__activity_identifier=self.activity_identifier)
+        top_investors = []
+        if len(operating_companies) > 0:
+            top_investors = operating_companies[0].get_top_investors()
+        return top_investors
 
-class Activity(ActivityBase):
-    """
-    Just the most recent approved version of an activity
-    (for simple queries in the public interface).
-
-    There should only be one activity per activity_identifier.
-    """
-    DEAL_SCOPE_DOMESTIC = 'domestic'
-    DEAL_SCOPE_TRANSNATIONAL = 'transnational'
-    DEAL_SCOPE_CHOICES = (
-        (DEAL_SCOPE_DOMESTIC, _('Domestic')),
-        (DEAL_SCOPE_DOMESTIC, _('Transnational')),
-    )
-
-    NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST = 'Expression of interest'
-    NEGOTIATION_STATUS_UNDER_NEGOTIATION = 'Under negotiation'
-    NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING = 'Memorandum of understanding'
-    NEGOTIATION_STATUS_ORAL_AGREEMENT = 'Oral agreement'
-    NEGOTIATION_STATUS_CONTRACT_SIGNED = 'Contract signed'
-    NEGOTIATION_STATUS_NEGOTIATIONS_FAILED = 'Negotiations failed'
-    NEGOTIATION_STATUS_CONTRACT_CANCELLED = 'Contract canceled'
-    NEGOTIATION_STATUS_CONTRACT_EXPIRED = 'Contract expired'
-    NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP = 'Change of ownership'
-
-    # These groupings are used for determining filter behaviour
-    NEGOTIATION_STATUSES_INTENDED = (
-        NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST,
-        NEGOTIATION_STATUS_UNDER_NEGOTIATION,
-        NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING,
-    )
-    NEGOTIATION_STATUSES_CONCLUDED = (
-        NEGOTIATION_STATUS_ORAL_AGREEMENT,
-        NEGOTIATION_STATUS_CONTRACT_SIGNED,
-    )
-    NEGOTIATION_STATUSES_FAILED = (
-        NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
-        NEGOTIATION_STATUS_CONTRACT_CANCELLED,
-        NEGOTIATION_STATUS_CONTRACT_EXPIRED,
-    )
-    NEGOTIATION_STATUS_CHOICES = (
-        BLANK_CHOICE_DASH[0],
-        (
-            NEGOTIATION_STATUS_EXPRESSION_OF_INTEREST,
-            _("Intended (Expression of interest)"),
-        ),
-        (
-            NEGOTIATION_STATUS_UNDER_NEGOTIATION,
-            _("Intended (Under negotiation)"),
-        ),
-        (
-            NEGOTIATION_STATUS_MEMO_OF_UNDERSTANDING,
-            _("Intended (Memorandum of understanding)"),
-        ),
-        (
-            NEGOTIATION_STATUS_ORAL_AGREEMENT,
-            _("Concluded (Oral Agreement)"),
-        ),
-        (
-            NEGOTIATION_STATUS_CONTRACT_SIGNED,
-            _("Concluded (Contract signed)"),
-        ),
-        (
-            NEGOTIATION_STATUS_NEGOTIATIONS_FAILED,
-            _("Failed (Negotiations failed)"),
-        ),
-        (
-            NEGOTIATION_STATUS_CONTRACT_CANCELLED,
-            _("Failed (Contract cancelled)"),
-        ),
-        (
-            NEGOTIATION_STATUS_CONTRACT_EXPIRED, _("Contract expired"),
-        ),
-        (
-            NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP, _("Change of ownership"),
-        )
-    )
-
-    IMPLEMENTATION_STATUS_PROJECT_NOT_STARTED = 'Project not started'
-    IMPLEMENTATION_STATUS_STARTUP_PHASE = 'Startup phase (no production)'
-    IMPLEMENTATION_STATUS_IN_OPERATION = 'In operation (production)'
-    IMPLEMENTATION_STATUS_PROJECT_ABANDONED = 'Project abandoned'
-    IMPLEMENTATION_STATUS_CHOICES = (
-        BLANK_CHOICE_DASH[0],
-        (
-            IMPLEMENTATION_STATUS_PROJECT_NOT_STARTED,
-            _("Project not started"),
-        ),
-        (
-            IMPLEMENTATION_STATUS_STARTUP_PHASE,
-            _("Startup phase (no production)"),
-        ),
-        (
-            IMPLEMENTATION_STATUS_IN_OPERATION,
-            _("In operation (production)"),
-        ),
-        (
-            IMPLEMENTATION_STATUS_PROJECT_ABANDONED,
-            _("Project abandoned"),
-        ),
-    )
-
-    is_public = models.BooleanField(_('Is public'), default=False, db_index=True)
-    deal_scope = models.CharField(_('Deal scope'), max_length=16, choices=DEAL_SCOPE_CHOICES,
-        blank=True, null=True, db_index=True)
-    negotiation_status = models.CharField(_('Negotiation status'), max_length=64,
-        choices=NEGOTIATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
-    implementation_status = models.CharField(
-        verbose_name=_('Implementation status'), max_length=64,
-        choices=IMPLEMENTATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
-    deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
-    init_date = models.CharField(verbose_name=_('Initiation year or date'), max_length=10,
-                                 blank=True, null=True, db_index=True)
-    fully_updated_date = models.DateField(_("Fully updated date"), blank=True, null=True)
-    top_investors = models.TextField(verbose_name=_("Top parent companies"), blank=True)
-
-    def refresh_cached_attributes(self):
-        self.implementation_status = self.get_implementation_status()
-        self.negotiation_status = self.get_negotiation_status()
-        self.deal_size = self.get_deal_size()
-        self.deal_scope = self.get_deal_scope()
-        self.init_date = self.get_init_date()
-        self.fully_updated_date = self.get_fully_updated_date()
-        self.is_public = self.is_public_deal()
-        top_investors = self.get_top_investors()
-        self.top_investors = self.format_investors(top_investors)
-        self.save()
-
-        self.create_investoractivitysizes(top_investors)
-
-    def create_investoractivitysizes(self, top_investors):
-        sizes = InvestorActivitySize.objects.filter(fk_activity__activity_identifier=self.activity_identifier).delete()
-        for investor in top_investors:
-            InvestorActivitySize.objects.create(
-                fk_activity=self,
-                fk_investor=investor,
-                deal_size=self.deal_size,
-            )
-
-
-    def get_negotiation_status(self):
-        NEGOTIATION_STATUS_ORDER = dict(
-            [(c[0], i) for i, c in enumerate(self.NEGOTIATION_STATUS_CHOICES)])
-        return self._get_current('negotiation_status', NEGOTIATION_STATUS_ORDER)
-
-    def get_implementation_status(self):
-        IMPLEMENTATION_STATUS_ORDER = dict(
-            [(c[0], i) for i, c in enumerate(self.IMPLEMENTATION_STATUS_CHOICES)])
-        return self._get_current('implementation_status', IMPLEMENTATION_STATUS_ORDER)
+    def get_investor_countries(self):
+        countries = []
+        country_ids = set(i.fk_country_id for i in self.get_top_investors())
+        for country_id in country_ids:
+            try:
+                country = Country.objects.defer('geom').select_related('fk_region')
+                country = country.get(id=country_id)
+                countries.append(country)
+            except Country.DoesNotExist:
+                pass
+        return countries
 
     def get_deal_size(self):
         # FIXME: This should probably not sort by -date but by -id (latest element instead of newest)
@@ -398,28 +369,29 @@ class Activity(ActivityBase):
         contract_size = self._get_current("contract_size")
         production_size = self._get_current("production_size")
 
+        negotiation_status = self.get_negotiation_status()
         # 1) IF Negotiation status IS Intended
-        if self.negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
+        if negotiation_status in Activity.NEGOTIATION_STATUSES_INTENDED:
             # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size or 0
         # 2) IF Negotiation status IS Concluded
-        elif self.negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
+        elif negotiation_status in Activity.NEGOTIATION_STATUSES_CONCLUDED:
             # USE Contract size or Production size (in the given order)
             value = contract_size or production_size or 0
         # 3) IF Negotiation status IS Failed (Negotiations failed)
-        elif self.negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
+        elif negotiation_status == Activity.NEGOTIATION_STATUS_NEGOTIATIONS_FAILED:
             # USE Intended size OR Contract size OR Production size (in the given order)
             value = intended_size or contract_size or production_size or 0
         # 4) IF Negotiation status IS Failed (Contract canceled)
-        elif self.negotiation_status == Activity.NEGOTIATION_STATUS_CONTRACT_CANCELLED:
+        elif negotiation_status == Activity.NEGOTIATION_STATUS_CONTRACT_CANCELLED:
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size or 0
         # 5) IF Negotiation status IS Contract expired
-        elif self.negotiation_status == Activity.NEGOTIATION_STATUS_CONTRACT_EXPIRED:
+        elif negotiation_status == Activity.NEGOTIATION_STATUS_CONTRACT_EXPIRED:
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size or 0
         # 6) IF Negotiation status IS Change of ownership
-        elif self.negotiation_status == Activity.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP:
+        elif negotiation_status == Activity.NEGOTIATION_STATUS_CHANGE_OF_OWNERSHIP:
             # USE Contract size OR Production size (in the given order)
             value = contract_size or production_size or 0
         else:
@@ -455,6 +427,62 @@ class Activity(ActivityBase):
         #            current_value = attr.value
         #            current_ranking = attr_ranking
         return current_value
+
+    def get_negotiation_status(self):
+        NEGOTIATION_STATUS_ORDER = dict(
+            [(c[0], i) for i, c in enumerate(self.NEGOTIATION_STATUS_CHOICES)])
+        return self._get_current('negotiation_status', NEGOTIATION_STATUS_ORDER)
+
+    def get_implementation_status(self):
+        IMPLEMENTATION_STATUS_ORDER = dict(
+            [(c[0], i) for i, c in enumerate(self.IMPLEMENTATION_STATUS_CHOICES)])
+        return self._get_current('implementation_status', IMPLEMENTATION_STATUS_ORDER)
+
+    def get_agricultural_produce(self):
+        crop_ids = set(a.value for a in self.attributes.filter(name='crops'))
+        crops = Crop.objects.select_related('fk_agricultural_produce').filter(id__in=crop_ids)
+        agricultural_produce = set(c.fk_agricultural_produce.name for c in crops if
+                                   c.fk_agricultural_produce)
+        if len(agricultural_produce) > 0:
+            return self.AGRICULTURAL_PRODUCE_MULTI
+        else:
+            return list(agricultural_produce)
+
+
+class Activity(ActivityBase):
+    """
+    Just the most recent approved version of an activity
+    (for simple queries in the public interface).
+
+    There should only be one activity per activity_identifier.
+    """
+
+    is_public = models.BooleanField(_('Is public'), default=False, db_index=True)
+    deal_scope = models.CharField(_('Deal scope'), max_length=16,
+                                  choices=ActivityBase.DEAL_SCOPE_CHOICES, blank=True,
+                                  null=True, db_index=True)
+    negotiation_status = models.CharField(_('Negotiation status'), max_length=64,
+        choices=ActivityBase.NEGOTIATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
+    implementation_status = models.CharField(
+        verbose_name=_('Implementation status'), max_length=64,
+        choices=ActivityBase.IMPLEMENTATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
+    deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
+    init_date = models.CharField(verbose_name=_('Initiation year or date'), max_length=10,
+                                 blank=True, null=True, db_index=True)
+    fully_updated_date = models.DateField(_("Fully updated date"), blank=True, null=True)
+    top_investors = models.TextField(verbose_name=_("Top parent companies"), blank=True)
+
+    def refresh_cached_attributes(self):
+        self.implementation_status = self.get_implementation_status()
+        self.negotiation_status = self.get_negotiation_status()
+        self.deal_size = self.get_deal_size()
+        self.deal_scope = self.get_deal_scope()
+        self.init_date = self.get_init_date()
+        self.fully_updated_date = self.get_fully_updated_date()
+        self.is_public = self.is_public_deal()
+        top_investors = self.get_top_investors()
+        self.top_investors = self.format_investors(top_investors)
+        self.save()
 
     def is_public_deal(self):
         # 1. Flag „not public“ set?
@@ -624,19 +652,6 @@ class Activity(ActivityBase):
             return activity.history_date
         except:
             return None
-
-    def get_top_investors(self):
-        """
-        Get list of highest parent companies (all right-hand side parent companies of the network
-        visualisation)
-        """
-        # Operating company
-        operating_companies = Investor.objects.filter(
-            investoractivityinvolvement__fk_activity__activity_identifier=self.activity_identifier)
-        top_investors = []
-        if len(operating_companies) > 0:
-            top_investors = operating_companies[0].get_top_investors()
-        return top_investors
 
     def format_investors(self, investors):
         return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '').replace("\n", '')])

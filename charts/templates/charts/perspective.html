@@ -1,11 +1,11 @@
 {% extends "charts/base_chart.html" %}
 {% load i18n static wagtailcore_tags sass_tags %}
 
-{% block page_title %}{% trans "Perspective" %}{% endblock %}
-{% block title %}{% trans "Perspective" %}{% endblock %}
+{% block page_title %}{% trans "It's a big deal" %}{% endblock %}
+{% block title %}{% trans "It's a big deal" %}{% endblock %}
 {% block breadcrumb_inner %}
     {{ block.super }}
-    <li>{% trans "Perspective" %}</li>
+    <li>{% trans "It's a big deal" %}</li>
 {% endblock %}
 
 {% block head %}
@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block data %}
-<div id="map" class="map" title='{% trans "Perspective" %}'></div>
+<div id="map" class="map" title='{% trans "It's a big deal" %}'></div>
 
 <div id="popup" class="ol-popup">
     <a href="#" id="popup-closer" class="noul ol-popup-closer"></a>

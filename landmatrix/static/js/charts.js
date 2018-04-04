@@ -447,6 +447,10 @@ function buildAgriculturalPies() {
 
         var pie_data = [];
         for (var i = 0; i < data.length; i++) {
+            // Pie exists?
+            if ($('#pie-' + data[i]["region"]).size() == 0) {
+                continue;
+            }
             pie_data = [];
             $('#pie-' + data[i]["region"]).parent().next().find('.food-crop').text(data[i]["agricultural_produce"]["food_crop"] + "% (" + numberWithCommas(data[i]["hectares"]["food_crop"]) + " ha)");
             $('#pie-' + data[i]["region"]).parent().next().find('.non-food-crop').text(data[i]["agricultural_produce"]["non_food"] + "% (" + numberWithCommas(data[i]["hectares"]["non_food"]) + " ha)");

@@ -58,7 +58,7 @@ FIELD_TYPE_MAPPING = {
 }
 FIELD_TYPE_FALLBACK = 'text'
 
-DOC_TYPES_ACTIVITY = ('deal', 'location', 'data_source', 'contract')
+DOC_TYPES_ACTIVITY = ('deal', 'location', 'data_source', 'contract', 'involvement_size')
 DOC_TYPES_INVESTOR = ('investor', 'involvement')
 
 _landmatrix_mappings = None
@@ -82,7 +82,7 @@ def get_elasticsearch_properties(doc_type=None):
                 'status': {'type': 'integer'},
                 'is_public': {'type': 'boolean'},
                 'is_public_display': {'type': 'text'},
-                'deal_scope': {'type': 'text'},
+                'deal_scope': {'type': 'keyword'},
                 'init_date': {'type': 'date',
                               'format': "yyyy-MM-dd||yyyy-MM||yyyy"},
                 'current_negotiation_status': {'type': 'keyword'},
@@ -90,11 +90,14 @@ def get_elasticsearch_properties(doc_type=None):
                 'deal_size': {'type': 'integer'},
                 'deal_country': {'type': 'keyword'},
                 'top_investors': {'type': 'keyword'},
+                'investor_country': {'type': 'keyword'},
+                'investor_region': {'type': 'keyword'},
                 'fully_updated_date': {'type': 'text'},
                 'target_region': {'type': 'keyword'},
                 'target_region_display': {'type': 'keyword'},
                 'operating_company_region': {'type': 'keyword'},
                 'operating_company_region_display': {'type': 'keyword'},
+                'agricultural_produce': {'type': 'keyword'},
             }
         }
         _landmatrix_mappings['location'] = {
@@ -113,6 +116,20 @@ def get_elasticsearch_properties(doc_type=None):
             '_parent': {'type': 'deal'},
             'properties': {
                 'id': {'type': 'keyword'},
+            }
+        }
+        _landmatrix_mappings['involvement_size'] = {
+            '_parent': {'type': 'deal'},
+            'properties': {
+                'id': {'type': 'keyword'},
+                'deal_id': {'type': 'keyword'},
+                'deal_scope': {'type': 'keyword'},
+                'target_country': {'type': 'keyword'},
+                'target_region': {'type': 'keyword'},
+                'investor_id': {'type': 'keyword'},
+                'investor_country': {'type': 'keyword'},
+                'investor_region': {'type': 'keyword'},
+                'deal_size': {'type': 'integer'},
             }
         }
         _landmatrix_mappings['involvement'] = {
@@ -378,161 +395,205 @@ class ElasticSearch(object):
         return versions
 
     def get_activity_documents(self, activity, doc_type='deal'):
+        # TODO: Split this method into smaller chunks
         docs = []
-        deal_attrs = {
-            # don't use activity identifier as ID, since we need to save multiple stati of a deal
-            'id': activity.id,
-            'activity_identifier': activity.activity_identifier,
-            'historical_activity_id': activity.id,
-            'history_date': activity.history_date.isoformat(),
-            'status': activity.fk_status_id,
-        }
-        # Todo: Is there a nice way to prevent this extra Activity query?
-        # e.g. if we save is_public/deal_scope as ActivityAttributes
-        public_activity = Activity.objects.filter(activity_identifier=activity.activity_identifier).order_by('-id').first()
-        if public_activity:
-            top_investors = public_activity.get_top_investors()
-            deal_attrs.update({
-                'is_public': public_activity.is_public_deal(),
-                'deal_scope': public_activity.get_deal_scope(),
-                'deal_size': public_activity.get_deal_size(),
-                'init_date': public_activity.get_init_date() or None,
-                'current_negotiation_status': public_activity.get_negotiation_status(),
-                'current_implementation_status': public_activity.get_implementation_status(),
-                'top_investors': public_activity.format_investors(top_investors),
-                'fully_updated_date': public_activity.get_fully_updated_date(),
-            })
-        else:
-            # Fixme: This should not happen
-            self.stderr and self.stderr.write(_('Missing activity for historical activity %i (Activity identifier: #%i)' % (
-                activity.id,
-                activity.activity_identifier
-            )))
-        #except Activity.MultipleObjectsReturned:
-        #    # Fixme: This should not happen
-        #    self.stderr and self.stderr.write(_('Too much activities for historical activity %i (Activity identifier: #%i)' % (
-        #        activity.id,
-        #        activity.activity_identifier
-        #    )))
-
-        for a in activity.attributes.select_related('fk_group__name').order_by('fk_group__name'):
-            # do not include the django object id
-            if a.name == 'id': 
-                continue
-            attribute = None
-            attribute_key = '%s_attr' % a.name
-            if attribute_key in get_elasticsearch_properties()['deal']['properties'].keys():
-                attribute = {
-                    'value': a.value.strip() if a.value else None,
-                    'value2': a.value2.strip() if a.value2 else None,
-                    'date': a.date,
-                    'is_current': a.is_current,
-                }
-            value = a.value.strip() if a.value else None
-            # Area field?
-            if a.name and 'area' in a.name and a.polygon is not None:
-                # Get polygon
-                #value = json.loads(a.polygon.json)
-                # Apparently this is case sensitive: MultiPolygon as provided by the GeoJSON does not work
-                #value['type'] = 'multipolygon'
-                value = a.polygon.json or ''
-            # do not include empty values
-            if value is None or value == '':
-                continue
-
-            # Doc types: location, data_source or contract
-            group_match = a.fk_group and a.fk_group.name or ''
-            group_match = re.match('(?P<doc_type>location|data_source|contract)_(?P<count>\d+)', group_match)
-            if group_match:
-                dt, count = group_match.groupdict()['doc_type'], int(group_match.groupdict()['count'])
-                if count == 0:
-                    # Fixme: This should not happen
-                    self.stderr and self.stderr.write(
-                        _('Attribute group "%s" is invalid counter (groups should start with 1) for historical activity %i (Activity identifier: #%i)' % (
-                            a.fk_group and a.fk_group.name or '',
-                            activity.id,
-                            activity.activity_identifier
-                        )))
-                    continue
-                if doc_type in ('data_source', 'contract'):
-                    if doc_type == dt:
-                        while len(docs) < count:
-                            docs.append({
-                                '_parent': activity.activity_identifier,
-                                'id': a.id,#'%i_%i' % (a.id, count),
-                            })
-                        docs[count-1][a.name] = [value,]
-                # Set doc type counter within deal doc type (for data_source/contract)
-                elif doc_type in ('deal', 'location'):
-                    # Set counter
-                    key = '%s_count' % dt
-                    if key not in deal_attrs.keys():
-                        deal_attrs[key] = count
-                    elif deal_attrs[key] < count:
-                        deal_attrs[key] = count
-
-                    # Create list with correct length to ensure formset values have the same index
-                    if not a.name in deal_attrs:
-                        deal_attrs[a.name] = [''] * count
-                        if attribute:
-                            deal_attrs[attribute_key] = [''] * count
-                    else:
-                        while len(deal_attrs[a.name]) < count:
-                            deal_attrs[a.name].append('')
-                            if attribute:
-                                deal_attrs[attribute_key].append('')
-                    deal_attrs[a.name][count-1] = value
-                    if attribute:
-                        deal_attrs['%s_attr' % a.name][count-1]= attribute
-
-            # Doc type: deal/location
-            if doc_type in ('deal', 'location'):
-                if a.name in deal_attrs:
-                    deal_attrs[a.name].append(value)
-                    if '%s_attr' % a.name in get_elasticsearch_properties()['deal']['properties'].keys():
-                        deal_attrs['%s_attr' % a.name].append(attribute)
-                else:
-                    deal_attrs[a.name] = [value,]
-                    if '%s_attr' % a.name in get_elasticsearch_properties()['deal']['properties'].keys():
-                        deal_attrs['%s_attr' % a.name] = [attribute,]
-
-        if doc_type in ('deal', 'location'):
-            # Additionally save operating company attributes
-            oc = Investor.objects.filter(investoractivityinvolvement__fk_activity__activity_identifier=activity.activity_identifier)
-            if oc.count() > 0:
-                oc = oc.first()
-                for field in Investor._meta.fields:
-                    if isinstance(field, ForeignKey):
-                        deal_attrs['operating_company_%s' % field.name] = getattr(oc, '%s_id' % field.name)
-                    else:
-                        deal_attrs['operating_company_%s' % field.name] = getattr(oc, field.name)
+        if doc_type in ('deal', 'location', 'data_source', 'contract'):
+            deal_attrs = {
+                # don't use activity identifier as ID, since we need to save multiple stati of a deal
+                'id': activity.id,
+                'activity_identifier': activity.activity_identifier,
+                'historical_activity_id': activity.id,
+                'history_date': activity.history_date.isoformat(),
+                'status': activity.fk_status_id,
+            }
+            # TODO: Prevent extra Activity query
+            # e.g. if we save is_public/deal_scope as ActivityAttributes
+            public_activity = Activity.objects.filter(activity_identifier=activity.activity_identifier).order_by('-id').first()
+            if public_activity:
+                top_investors = public_activity.get_top_investors()
+                investor_countries = public_activity.get_investor_countries()
+                deal_attrs.update({
+                    'is_public': public_activity.is_public_deal(),
+                    'deal_scope': public_activity.get_deal_scope(),
+                    'deal_size': public_activity.get_deal_size(),
+                    'init_date': public_activity.get_init_date() or None,
+                    'current_negotiation_status': public_activity.get_negotiation_status(),
+                    'current_implementation_status': public_activity.get_implementation_status(),
+                    'top_investors': public_activity.format_investors(top_investors),
+                    'investor_country': [c.id for c in investor_countries],
+                    'investor_country_display': [c.name for c in investor_countries],
+                    'fully_updated_date': public_activity.get_fully_updated_date(),
+                    'agricultural_produce': public_activity.get_agricultural_produce(),
+                })
             else:
-                pass
-                #self.stderr and self.stderr.write("Missing operating company for deal #%i" % activity.activity_identifier)
+                # Fixme: This should not happen
+                self.stderr and self.stderr.write(_('Missing activity for historical activity %i (Activity identifier: #%i)' % (
+                    activity.id,
+                    activity.activity_identifier
+                )))
+            #except Activity.MultipleObjectsReturned:
+            #    # Fixme: This should not happen
+            #    self.stderr and self.stderr.write(_('Too much activities for historical activity %i (Activity identifier: #%i)' % (
+            #        activity.id,
+            #        activity.activity_identifier
+            #    )))
 
-        if doc_type in ('deal', 'location'):
-            deal_attrs.update(self.get_display_properties(deal_attrs, doc_type=doc_type))
-            deal_attrs.update(self.get_spatial_properties(deal_attrs, doc_type=doc_type))
-            if doc_type ==  'location':
-                # Create single document for each location
-                spatial_names = list(get_spatial_properties()) + ['target_region', 'geo_point']
-                for i in range(deal_attrs.get('location_count', 0)):
-                    doc = deal_attrs.copy()
-                    for name in spatial_names:
-                        if name not in doc:
-                            continue
-                        if len(deal_attrs[name]) > i:
-                            doc[name] = deal_attrs[name][i]
+            for a in activity.attributes.select_related('fk_group__name').order_by('fk_group__name'):
+                # do not include the django object id
+                if a.name == 'id':
+                    continue
+                attribute = None
+                attribute_key = '%s_attr' % a.name
+                if attribute_key in get_elasticsearch_properties()['deal']['properties'].keys():
+                    attribute = {
+                        'value': a.value.strip() if a.value else None,
+                        'value2': a.value2.strip() if a.value2 else None,
+                        'date': a.date,
+                        'is_current': a.is_current,
+                    }
+                value = a.value.strip() if a.value else None
+                # Area field?
+                if a.name and 'area' in a.name and a.polygon is not None:
+                    # Get polygon
+                    #value = json.loads(a.polygon.json)
+                    # Apparently this is case sensitive: MultiPolygon as provided by the GeoJSON does not work
+                    #value['type'] = 'multipolygon'
+                    value = a.polygon.json or ''
+                # do not include empty values
+                if value is None or value == '':
+                    continue
+
+                # Doc types: location, data_source or contract
+                group_match = a.fk_group and a.fk_group.name or ''
+                group_match = re.match('(?P<doc_type>location|data_source|contract)_(?P<count>\d+)', group_match)
+                if group_match:
+                    dt, count = group_match.groupdict()['doc_type'], int(group_match.groupdict()['count'])
+                    if count == 0:
+                        # Fixme: This should not happen
+                        self.stderr and self.stderr.write(
+                            _('Attribute group "%s" is invalid counter (groups should start with 1) for historical activity %i (Activity identifier: #%i)' % (
+                                a.fk_group and a.fk_group.name or '',
+                                activity.id,
+                                activity.activity_identifier
+                            )))
+                        continue
+                    if doc_type in ('data_source', 'contract'):
+                        if doc_type == dt:
+                            while len(docs) < count:
+                                docs.append({
+                                    '_parent': activity.id,
+                                    'id': a.id,#'%i_%i' % (a.id, count),
+                                })
+                            docs[count-1][a.name] = [value,]
+                    # Set doc type counter within deal doc type (for data_source/contract)
+                    elif doc_type in ('deal', 'location'):
+                        # Set counter
+                        key = '%s_count' % dt
+                        if key not in deal_attrs.keys():
+                            deal_attrs[key] = count
+                        elif deal_attrs[key] < count:
+                            deal_attrs[key] = count
+
+                        # Create list with correct length to ensure formset values have the same index
+                        if not a.name in deal_attrs:
+                            deal_attrs[a.name] = [''] * count
+                            if attribute:
+                                deal_attrs[attribute_key] = [''] * count
                         else:
-                            doc[name] = ''
-                        name_display = '%s_display' % name
-                        if name_display in deal_attrs and len(deal_attrs[name_display]) > i:
-                            doc[name_display] = deal_attrs[name_display][i]
-                    # Set unique ID for location (deals can have multiple locations)
-                    doc['id'] = '%s_%i' % (doc['activity_identifier'], i)
+                            while len(deal_attrs[a.name]) < count:
+                                deal_attrs[a.name].append('')
+                                if attribute:
+                                    deal_attrs[attribute_key].append('')
+                        deal_attrs[a.name][count-1] = value
+                        if attribute:
+                            deal_attrs['%s_attr' % a.name][count-1]= attribute
+
+                # Doc type: deal/location
+                if doc_type in ('deal', 'location'):
+                    if a.name in deal_attrs:
+                        deal_attrs[a.name].append(value)
+                        if '%s_attr' % a.name in get_elasticsearch_properties()['deal']['properties'].keys():
+                            deal_attrs['%s_attr' % a.name].append(attribute)
+                    else:
+                        deal_attrs[a.name] = [value,]
+                        if '%s_attr' % a.name in get_elasticsearch_properties()['deal']['properties'].keys():
+                            deal_attrs['%s_attr' % a.name] = [attribute,]
+
+            if doc_type in ('deal', 'location'):
+                # Additionally save operating company attributes
+                oc = Investor.objects.filter(investoractivityinvolvement__fk_activity__activity_identifier=activity.activity_identifier)
+                if oc.count() > 0:
+                    oc = oc.first()
+                    for field in Investor._meta.fields:
+                        if isinstance(field, ForeignKey):
+                            deal_attrs['operating_company_%s' % field.name] = getattr(oc, '%s_id' % field.name)
+                        else:
+                            deal_attrs['operating_company_%s' % field.name] = getattr(oc, field.name)
+                else:
+                    pass
+                    #self.stderr and self.stderr.write("Missing operating company for deal #%i" % activity.activity_identifier)
+
+            if doc_type in ('deal', 'location'):
+                deal_attrs.update(self.get_display_properties(deal_attrs, doc_type=doc_type))
+                deal_attrs.update(self.get_spatial_properties(deal_attrs, doc_type=doc_type))
+                if doc_type ==  'location':
+                    # Create single document for each location
+                    spatial_names = list(get_spatial_properties()) + ['target_region', 'geo_point']
+                    for i in range(deal_attrs.get('location_count', 0)):
+                        doc = deal_attrs.copy()
+                        for name in spatial_names:
+                            if name not in doc:
+                                continue
+                            if len(deal_attrs[name]) > i:
+                                doc[name] = deal_attrs[name][i]
+                            else:
+                                doc[name] = ''
+                            name_display = '%s_display' % name
+                            if name_display in deal_attrs and len(deal_attrs[name_display]) > i:
+                                doc[name_display] = deal_attrs[name_display][i]
+                        # Set unique ID for location (deals can have multiple locations)
+                        doc['id'] = '%s_%i' % (doc['activity_identifier'], i)
+                        docs.append(doc)
+                elif doc_type == 'deal':
+                    docs.append(deal_attrs)
+        elif doc_type == 'involvement_size':
+            # Deal size split by investor (required for fast aggregation e.g. in charts)
+            # A) Operating company with no parent companies gets assigned complete deal size
+            # B) All Parent companies with no parents get assigned the complete deal size each
+            # Exception: Parent company multiple roles, assign deal size only once.
+            public_activity = Activity.objects.filter(
+                activity_identifier=activity.activity_identifier).order_by('-id').first()
+            if public_activity:
+                country = public_activity.target_country
+                deal_attrs = {
+                    '_parent': activity.id,
+                    'deal_id': activity.id,
+                    'activity_identifier': activity.id,
+                    'target_country': country.id if country else None,
+                    'target_country_display': country.name if country else None,
+                    'target_region': country.fk_region_id if country else None,
+                    'target_region_display': country.fk_region.name if country else None,
+                    'deal_size': public_activity.get_deal_size(),
+                    'deal_scope': public_activity.get_deal_scope(),
+                }
+                for investor in public_activity.get_top_investors():
+                    country = None
+                    if investor.fk_country_id:
+                        try:
+                            # Use defer, because direct access to ForeignKey is very slow sometimes
+                            country = Country.objects.defer('geom').get(id=investor.fk_country_id)
+                        except Country.DoesNotExist:
+                            pass
+                    doc = deal_attrs.copy()
+                    doc.update({
+                        'id': '%i-%i' % (activity.id, investor.id),
+                        'investor_id': investor.id,
+                        'investor_country': investor.fk_country_id,
+                        'investor_country_display': country.name if country else None,
+                        'investor_region': country.fk_region_id if country else None,
+                        'investor_region_display': country.fk_region.name if country else None,
+                    })
                     docs.append(doc)
-            elif doc_type == 'deal':
-                docs.append(deal_attrs)
 
         return docs
 

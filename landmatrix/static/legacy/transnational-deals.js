@@ -383,7 +383,7 @@ function mouseup(d) {
             console.log("Country selecting..", n, info);
             info.find(".country").text(n.key);
 
-            var jsonquery = "/api/transnational_deals_by_country.json&country=" + n.id;
+            var jsonquery = "/api/transnational_deals_by_country.json?country=" + n.id;
 
             jQuery.getJSON(jsonquery, function (data) {
                 console.log('Got some JSON for the detail tables:', data);

@@ -1,3 +1,5 @@
+from django.utils.translation import ugettext_lazy as _
+
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.schemas import ManualSchema
@@ -6,19 +8,33 @@ from rest_framework.views import APIView
 import coreapi
 import coreschema
 
-from wagtailcms.models import RegionPage
-from api.query_sets.countries_query_set import CountriesQuerySet
 from api.serializers import RegionSerializer
 from api.views.base import FakeQuerySetListView
+from landmatrix.models import Country
+from wagtailcms.models import CountryPage, RegionPage
 from .list_views import ElasticSearchMixin
 
 
-class CountryListView(FakeQuerySetListView):
+class CountryListView(APIView):
     """
     Get all countries grouped by National Observatories and Others.
     Used by the navigation.
     """
-    fake_queryset_class = CountriesQuerySet
+    def get(self, request):
+        response = []
+        countries = CountryPage.objects.filter(live=True).order_by('title')
+        response.append({
+            'text': _('Observatories'),
+            'children': [[country.country.id, country.slug, country.title] for country in countries]
+        })
+        countries = Country.objects.filter(is_target_country=True).exclude(
+            id__in=[c.country.id for c in countries]
+        ).only('id', 'slug', 'name').order_by('name')
+        response.append({
+            'text': _('Other'),
+            'children': [[country.id, country.slug, country.name] for country in countries]
+        })
+        return Response(response)
 
 
 class RegionListView(ListAPIView):

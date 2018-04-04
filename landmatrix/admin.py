@@ -58,6 +58,5 @@ admin.site.register(Currency)
 admin.site.register(Investor)
 admin.site.register(InvestorActivityInvolvement)
 admin.site.register(InvestorVentureInvolvement)
-admin.site.register(InvestorActivitySize)
 
 

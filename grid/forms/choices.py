@@ -4,38 +4,57 @@ choices from them.
 '''
 from django.utils.translation import ugettext_lazy as _
 
-
-
+# Agriculture
+INTENTION_BIOFUELS = "Biofuels"
+INTENTION_FOOD_CROPS = "Food crops"
+INTENTION_FODDER = "Fodder"
+INTENTION_LIVESTOCK = "Livestock"
+INTENTION_NON_FOOD_AGRI = "Non-food agricultural commodities"
+INTENTION_AGRI_UNSPECIFIED = "Agriculture unspecified"
+# Forestry
+INTENTION_TIMBER_PLANTATION = "Timber plantation"
+INTENTION_FOREST_LOGGING = "Forest logging / management"
+INTENTION_CARBON = "For carbon sequestration/REDD"
+INTENTION_FORESTRY_UNSPECIFIED = "Forestry unspecified"
+# Other
+INTENTION_MINING = "Mining"
+INTENTION_OIL_GAS_EXTRACTION = "Oil / Gas extraction"
+INTENTION_TOURISM = "Tourism"
+INTENTION_INDUSTRY = "Industry"
+INTENTION_CONVERSATION = "Conservation"
+INTENTION_LAND_SPECULATION = "Land speculation"
+INTENTION_RENEWABLE_ENERGY = "Renewable Energy"
+INTENTION_OTHER = "Other"
 
 intention_agriculture_choices = (
-    ("Biofuels", _("Biofuels")),
-    ("Food crops", _("Food crops")),
-    ("Fodder", _("Fodder")),
-    ("Livestock", _("Livestock")),
-    ("Non-food agricultural commodities", _("Non-food agricultural commodities")),
-    ("Agriculture unspecified", _("Agriculture unspecified")),
+    (INTENTION_BIOFUELS, _("Biofuels")),
+    (INTENTION_FOOD_CROPS, _("Food crops")),
+    (INTENTION_FODDER, _("Fodder")),
+    (INTENTION_LIVESTOCK, _("Livestock")),
+    (INTENTION_NON_FOOD_AGRI, _("Non-food agricultural commodities")),
+    (INTENTION_AGRI_UNSPECIFIED, _("Agriculture unspecified")),
 )
 
 INTENTION_AGRICULTURE_MAP = dict(intention_agriculture_choices)
 
 intention_forestry_choices = (
-    ("Timber plantation", _("Timber plantation (for wood and fibre)")),
-    ("Forest logging / management", _("Forest logging / management (for wood and fibre)")),  # new
-    ("For carbon sequestration/REDD", _("For carbon sequestration/REDD")),
-    ("Forestry unspecified", _("Forestry unspecified")),
+    (INTENTION_TIMBER_PLANTATION, _("Timber plantation (for wood and fibre)")),
+    (INTENTION_FOREST_LOGGING, _("Forest logging / management (for wood and fibre)")),  # new
+    (INTENTION_CARBON, _("For carbon sequestration/REDD")),
+    (INTENTION_FORESTRY_UNSPECIFIED, _("Forestry unspecified")),
 )
 
 INTENTION_FORESTRY_MAP = dict(intention_forestry_choices)
 
 intention_other_choices = (
-    ("Mining", _("Mining")),
-    ("Oil / Gas extraction", _("Oil / Gas extraction")),
-    ("Tourism", _("Tourism")),
-    ("Industry", _("Industry")),
-    ("Conservation", _("Conservation")),
-    ("Land speculation", _("Land speculation")),
-    ("Renewable Energy", _("Renewable Energy")),
-    ("Other", _("Other (please specify)")),
+    (INTENTION_MINING, _("Mining")),
+    (INTENTION_OIL_GAS_EXTRACTION, _("Oil / Gas extraction")),
+    (INTENTION_TOURISM, _("Tourism")),
+    (INTENTION_INDUSTRY, _("Industry")),
+    (INTENTION_CONVERSATION, _("Conservation")),
+    (INTENTION_LAND_SPECULATION, _("Land speculation")),
+    (INTENTION_RENEWABLE_ENERGY, _("Renewable Energy")),
+    (INTENTION_OTHER, _("Other (please specify)")),
 )
 
 intention_choices = intention_agriculture_choices + intention_forestry_choices + intention_other_choices
@@ -48,12 +67,17 @@ grouped_intention_choices = (
     ("Other", intention_other_choices),
 )
 
+NATURE_OUTRIGHT_PURCHASE = "Outright Purchase"
+NATURE_LEASE = "Lease"
+NATURE_CONCESSION = "Concession"
+NATURE_EXPLOITATION_PERMIT = "Exploitation permit / license / concession"
+NATURE_CONTRACT_FARMING = "Pure contract farming"
 nature_choices = (
-    ("Outright Purchase", _("Outright Purchase")),
-    ("Lease", _("Lease")),
-    ("Concession", _("Concession")),
-    ("Exploitation permit / license / concession", _("Exploitation permit / license / concession (for mineral resources)")),
-    ("Pure contract farming", _("Pure contract farming")),
+    (NATURE_OUTRIGHT_PURCHASE, _("Outright Purchase")),
+    (NATURE_LEASE, _("Lease")),
+    (NATURE_CONCESSION, _("Concession")),
+    (NATURE_EXPLOITATION_PERMIT, _("Exploitation permit / license / concession (for mineral resources)")),
+    (NATURE_CONTRACT_FARMING, _("Pure contract farming")),
 )
 
 price_type_choices = (

@@ -7,9 +7,9 @@ from django.core.urlresolvers import reverse
 from django.http import Http404
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
-from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.schemas import ManualSchema
+from rest_framework.response import Response
 import coreapi
 import coreschema
 
@@ -38,7 +38,7 @@ class ElasticSearchMixin(object):
     # default status are the public ones. will only get replaced if well formed and allowed
     status_list = ActivityBase.PUBLIC_STATUSES
 
-    def load_filters_from_url(self):
+    def load_filters_from_url(self, exclude=[]):
         '''
         Read any querystring param filters. Preset filters not allowed.
         '''
@@ -52,11 +52,11 @@ class ElasticSearchMixin(object):
             values = []
         combined = zip(variables, operators, values)
 
-        filters = {f[0]: Filter(f[0], f[1], f[2]) for f in combined}
+        filters = {f[0]: Filter(f[0], f[1], f[2]) for f in combined if f[0] not in exclude}
 
         return filters
 
-    def load_filters(self):
+    def load_filters(self, exclude=[]):
         filters = {}
         parent_company_filters, tertiary_investor_filters = {}, {}
         if self.request:
@@ -69,6 +69,8 @@ class ElasticSearchMixin(object):
                 filter = PresetFilter.from_session(filter_dict)
             else:
                 filter = Filter.from_session(filter_dict)
+                if filter['variable'] in exclude:
+                    continue
             # FIXME: Make this work for filters presets too (no variable set)
             if 'variable' in filter and filter['variable'].startswith('parent_stakeholder_'):
                 filter['variable'] = filter['variable'].replace('parent_stakeholder_', '')
@@ -98,15 +100,15 @@ class ElasticSearchMixin(object):
             filters['tertiary_investor'] = Filter(variable='operational_stakeholder',
                 operator='in', value=operational_companies)
 
-        filters.update(self.load_filters_from_url())
+        filters.update(self.load_filters_from_url(exclude=exclude))
 
         # note: passing only Filters, not (name, filter) dict!
-        formatted_filters = self.format_filters(filters.values())
+        formatted_filters = self.format_filters(filters.values(), exclude=exclude)
 
 
         return formatted_filters
 
-    def format_filters(self, filters, initial_query=None):
+    def format_filters(self, filters, initial_query=None, exclude=[]):
         """
             Generates an elasticsearch-conform `bool` query from session filters.
             This acts recursively for nested OR filter groups from preset filters
@@ -132,13 +134,13 @@ class ElasticSearchMixin(object):
             if isinstance(filter_obj, PresetFilter):
                 # we here have multiple filters coming from a preset filter, add them recursively
                 preset_filters = [condition.to_filter() for condition in
-                                  filter_obj.filter.conditions.all()]
+                                  filter_obj.filter.conditions.exclude(variable__in=exclude)]
                 if filter_obj.filter.relation == filter_obj.filter.RELATION_OR:
                     # for OR relations we build a new subquery that is ORed and add it to the must matches
                     preset_name = filter_obj.filter.name
                     # we are constructing a regular query, but because this is an OR order, we will take
                     # all the matches in the 'must' slot and add them to the 'should' list
-                    filter_query = self.format_filters(preset_filters)
+                    filter_query = self.format_filters(preset_filters, exclude=exclude)
                     if filter_query.get('must', None) or filter_query.get('should', ''):
                         query['must'].append({
                             'bool': {
@@ -155,12 +157,14 @@ class ElasticSearchMixin(object):
                         })
                 else:
                     # for AND relations we just extend the filters into our current query
-                    self.format_filters(preset_filters, initial_query=query)
+                    self.format_filters(preset_filters, initial_query=query, exclude=exclude)
             else:
                 # add a single filter to our query
 
                 # example: ('should', {'match': {'intention__value': 3},
                 #                      '_filter_name': 'intention__value__not_in'})
+                if filter_obj['variable'] in exclude:
+                    continue
                 elastic_operator, elastic_match = filter_obj.to_elasticsearch_match()
 
                 branch_list = query[elastic_operator]
@@ -202,18 +206,18 @@ class ElasticSearchMixin(object):
             remove_all_dict_keys_from_mixed_dict(query, '_filter_name')
         return query
 
-    def create_query_from_filters(self):
+    def create_query_from_filters(self, exclude=[]):
         # load filters from session
-        query = self.load_filters()
+        query = self.load_filters(exclude=exclude)
         # add filters from request
-        query = self.add_request_filters_to_elasticsearch_query(query)
+        query = self.add_request_filters_to_elasticsearch_query(query, exclude=exclude)
 
         query = {
             'bool': query,
         }
         return query
 
-    def add_request_filters_to_elasticsearch_query(self, elasticsearch_query):
+    def add_request_filters_to_elasticsearch_query(self, elasticsearch_query, exclude=[]):
         window = None
         if self.request and self.request.GET.get('window', None):
             lon_min, lat_min, lon_max, lat_max = self.request.GET.get('window').split(',')
@@ -447,6 +451,11 @@ class StatisticsView(ElasticSearchMixin,
                     'size': 100,
                 },
                 'aggs': {
+                    'deal_count': {
+                        'cardinality': {
+                            'field': 'activity_identifier',
+                        }
+                    },
                     'deal_size_sum': {
                         'sum': {
                             'field': 'deal_size'
@@ -459,7 +468,8 @@ class StatisticsView(ElasticSearchMixin,
         results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
                                                    aggs=aggs)
         results = results['current_negotiation_status']['buckets']
-        results = [[r['key'], r['doc_count'], r['deal_size_sum']['value']] for r in results]
+        results = [[r['key'], r['deal_count']['value'], int(r['deal_size_sum']['value'])]
+                   for r in results]
 
         if disable_filters:
             self.enable_filters()

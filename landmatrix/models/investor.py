@@ -408,28 +408,3 @@ def update_public_investor():
         investor.timestamp = hinvestor.timestamp
         investor.comment = hinvestor.comment
         investor.save()
-
-
-class InvestorActivitySize(models.Model):
-    """
-    Deal size split by investor (required for fast aggregation e.g. in charts)
-
-    Rule:
-    Operating company with no parent companies gets assigned complete deal size
-    OR
-    All Parent companies with no parent companies of a deal get assigned the complete deal size each
-    """
-    fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"), db_index=True)
-    fk_investor = models.ForeignKey("Investor", verbose_name=_("Investor"), db_index=True)
-    deal_size = models.IntegerField(verbose_name=_('Deal size'))
-
-    class Meta:
-        verbose_name = _('Investor activity size')
-        verbose_name_plural = _('Investor activity sizes')
-
-    def __str__(self):
-        return '%s-%s: %s' % (
-            str(self.fk_activity),
-            str(self.fk_investor),
-            self.deal_size
-        )

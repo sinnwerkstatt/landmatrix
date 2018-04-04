@@ -194,9 +194,3 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             response['stakeholders'].extend(parents)
 
         return response
-
-
-class NegotiationStatusSerializer(serializers.Serializer):
-    name = serializers.CharField()
-    deals = serializers.IntegerField()
-    hectares = serializers.IntegerField()
