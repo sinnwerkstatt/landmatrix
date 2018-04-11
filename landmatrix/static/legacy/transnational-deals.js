@@ -108,32 +108,7 @@ function create_d3(diameter) {
 
     function mouseovered(d) {
         if (clicked) return;
-        node
-            .each(function (n) {
-                n.target = n.source = false;
-            });
-
-        link
-            .classed("link--target", function (l) {
-                if (l.target === d) return l.source.source = true;
-            })
-            .classed("link--source", function (l) {
-                if (l.source === d) return l.target.target = true;
-            })
-            .filter(function (l) {
-                return l.target === d || l.source === d;
-            })
-            .each(function () {
-                this.parentNode.appendChild(this);
-            });
-
-        node
-            .classed("node--target", function (n) {
-                return n.target;
-            })
-            .classed("node--source", function (n) {
-                return n.source;
-            });
+        highlightCountry();
     }
 
     function mouseouted(d) {
@@ -295,8 +270,8 @@ function draw_transnational_deals(callback, classes) {
         .text(function (d) {
             return d.key;
         })
-        .on("mouseover", mouseover)
-        .on("mouseout", mouseout);
+        //.on("mouseover", mouseover)
+        //.on("mouseout", mouseout);
 
     d3.select("input[type=range]").on("change", function () {
         line.tension(this.value / 100);
@@ -379,6 +354,7 @@ function mouseup(d) {
 
             jQuery.getJSON(jsonquery, function (data) {
                 var target_regions = "",
+                    investor_regions = "",
                     r;
                 if (data.investor_country.length > 1) {
                     var total_deals = 0,
@@ -403,11 +379,10 @@ function mouseup(d) {
                     info.find(".inbound").hide();
                 }
                 if (data.target_country.length > 1) {
-                    var investor_regions = "";
+                    var total_deals = 0,
+                        total_hectares = 0;
 
                     for (var i = 0; i < data.target_country.length; i++) {
-                        var total_deals = 0,
-                            total_hectares = 0;
                         r = data.target_country[i];
                         investor_regions += "<tr><th>" + r.region + "</th>";
                         investor_regions += "<td style=\"text-align: right;\">";
@@ -429,73 +404,12 @@ function mouseup(d) {
                 info.show();
             });
 
-            // highlight pathes
-            var id = n.id;
-            // deselect (as in mouseout)
-
-            link
-                .classed("link--target", false)
-                .classed("link--source", false)
-                .style('display', 'none');
-
-            node
-                .classed("node--target", false)
-                .classed("node--source", false);
-
-            node
-                .each(function (n) {
-                    n.target = n.source = false;
-                });
-
-            link
-                .classed("link--target", function (l) {
-                    if (l.target === m0obj) return l.source.source = true;
-                })
-                .classed("link--source", function (l) {
-                    if (l.source === m0obj) return l.target.target = true;
-                })
-                .filter(function (l) {
-                    return l.target === m0obj || l.source === m0obj;
-                })
-                .style('display', 'block')
-                .each(function () {
-                    this.parentNode.appendChild(this);
-                });
-
-
-            node
-                .classed("node--target", function (n) {
-                    return n.target;
-                })
-                .classed("node--source", function (n) {
-                    return n.source;
-                });
-
+            // highlight pathes and nodes
+            clicked = n.id;
+            deselectCountry();
+            mouseovered(n);
         }
     }
-    clicked = id;
-}
-
-function mouseover(d) {
-    if (clicked) return;
-    svg.selectAll("path.link.target-" + d.id)
-        .classed("target", true)
-        .each(updateNodes("source", true));
-
-    svg.selectAll("path.link.source-" + d.id)
-        .classed("source", true)
-        .each(updateNodes("target", true));
-}
-
-function mouseout(d) {
-    if (clicked) return;
-    svg.selectAll("path.link.source-" + d.id)
-        .classed("source", false)
-        .each(updateNodes("target", false));
-
-    svg.selectAll("path.link.target-" + d.id)
-        .classed("target", false)
-        .each(updateNodes("source", false));
 }
 
 function updateNodes(name, value) {

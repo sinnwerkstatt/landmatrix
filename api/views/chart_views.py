@@ -743,7 +743,7 @@ class TransnationalDealListView(BaseChartView):
                 investor_country = countries.get(raw_term['key'])
                 imports.append(self.get_country_name(investor_country))
             results.append({
-                'id': raw_result['key'],
+                'id': str(raw_result['key']),
                 'imports': imports,
                 'name': self.get_country_name(target_country),
                 'size': 1,
@@ -756,7 +756,7 @@ class TransnationalDealListView(BaseChartView):
         for country_id in countries_missing:
             country = countries.get(country_id)
             results.append({
-                'id': country.id,
+                'id': str(country.id),
                 'imports': [],
                 'size': 1,
                 'name': self.get_country_name(country),

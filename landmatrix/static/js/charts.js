@@ -6,7 +6,7 @@
 var datatype = 'size';
 
 var d3_lmcolors = [
-    "#fc941f", "#b9d635", "#1f7bfc", "#179961", "#7c9a61",
+    "#fc941f", "#44b7b6", "#1f7bfc", "#179961", "#7c9a61",
     "#c6c6c6", "#919191", "#ebebeb"
 ];
 
@@ -48,30 +48,30 @@ function buildTreeChart() {
         "name": "",
         "children": [
             {
-                "name": "Animals",
+                "name": "Crops",
                 "color": "#fc941f",
                 "children": [
                 ]
             },
             {
-                "name": "Minerals",
+                "name": "Mineral Resources",
                 "color": "#44b7b6",
                 "children": [
                 ]
             },
             {
-                "name": "Crops",
+                "name": "Livestock",
                 "color": "#1f7bfc",
                 "children": [
                 ]
-            }
+            },
         ]
     };
 
     d3.json("/api/produce-info.json", function (data) {
-        treedata.children[0].children = data.animals;
+        treedata.children[0].children = data.crops;
         treedata.children[1].children = data.minerals;
-        treedata.children[2].children = data.crops;
+        treedata.children[2].children = data.animals;
         node = root = treedata;
 
         var nodes = treemap.nodes(root)

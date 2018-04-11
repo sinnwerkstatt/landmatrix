@@ -141,17 +141,20 @@ class ElasticSearchMixin(object):
                     # we are constructing a regular query, but because this is an OR order, we will take
                     # all the matches in the 'must' slot and add them to the 'should' list
                     filter_query = self.format_filters(preset_filters, exclude=exclude)
-                    if filter_query.get('must', None) or filter_query.get('should', ''):
+                    if filter_query.get('must', []) or filter_query.get('should', []):
+                        conditions = filter_query.get('must', []) + filter_query.get('should', [])
                         query['must'].append({
                             'bool': {
-                                'should': filter_query['must'] + filter_query['should']
+                                'should': conditions,
+                                'minimum_should_match': 1,
                             },
-                            '_filter_name': preset_name
+                            '_filter_name': preset_name,
                         })
-                    if filter_query.get('must_not', None):
+                    if filter_query.get('must_not', []):
                         query['must_not'].append({
                             'bool': {
-                                'should': filter_query['must_not']
+                                'should': filter_query['must_not'],
+                                'minimum_should_match': 1,
                             },
                             '_filter_name': preset_name
                         })
@@ -175,17 +178,16 @@ class ElasticSearchMixin(object):
                 # if no filter exists for this yet, add it
                 if existing_match_phrase is None:
                     branch_list.append(elastic_match)
+                    #if elastic_operator == 'should':
+                    #    query['minimum_should_match'] = 1
                 else:
                     # if match phrase exists for this filter, and it is a bool,
                     # add the generated match(es) to its list
                     if 'bool' in existing_match_phrase:
-                        inside_operator = [key_name for key_name in existing_match_phrase.keys()
-                                           if not key_name == '_filter_name'][0]
-                        if 'bool' in elastic_match:
-                            existing_match_phrase[inside_operator].extend(
-                                elastic_match[inside_operator])
+                        if 'must' in existing_match_phrase['bool']:
+                            existing_match_phrase['bool']['must'].append(elastic_match)
                         else:
-                            existing_match_phrase[inside_operator].append(elastic_match)
+                            existing_match_phrase['bool']['must'] = [elastic_match,]
                     else:
                         # if match phrase exists and is a single match, pop it
                         existing_single_match = branch_list.pop(existing_i)
@@ -194,6 +196,8 @@ class ElasticSearchMixin(object):
                                                if not key_name == '_filter_name'][0]
                             # if we have a bool, add the bool, add the popped match to bool
                             elastic_match[inside_operator].append(existing_single_match)
+                            #if inside_operator == 'should':
+                            #    elastic_match['minimum_should_match'] = 1
                             query['must'].append(elastic_match)
                         else:
                             # if  we have a single match, make new bool,
@@ -263,7 +267,8 @@ class ElasticSearchMixin(object):
             "bool": {
                 'should': [
                     {'match': {'status': status}} for status in self.status_list
-                ]
+                ],
+                'minimum_should_match': 1,
             }
         })
 

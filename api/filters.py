@@ -189,6 +189,8 @@ class Filter(BaseFilter):
                 inside_operator = operator
                 matches.append(partial_match) 
             match = {'bool': {inside_operator: matches}, '_filter_name': definition_key}
+            if inside_operator == 'should':
+                match['bool']['minimum_should_match'] = 1
             elastic_operator = 'must' 
             # 'must' is always right here, because the list makes the query already a composite, and the inner operator has effect
         else:
@@ -201,6 +203,7 @@ class Filter(BaseFilter):
             # generate single value match
             elastic_operator, match = get_elasticsearch_match_operation(self['operator'],
                                                                         self['variable'], value)
+
             match.update({'_filter_name': definition_key})
 
         return (elastic_operator, match)

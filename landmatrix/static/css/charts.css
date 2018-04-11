@@ -16,7 +16,7 @@
   font-weight: 700; }
 
 .node--source {
-  fill: #fc941f; }
+  fill: #44b7b6; }
 
 .node--target {
   fill: #fc941f; }
@@ -30,7 +30,7 @@
   stroke: #fc941f; }
 
 .link--target {
-  stroke: #fc941f; }
+  stroke: #44b7b6; }
 
 .chart-box {
   position: relative;

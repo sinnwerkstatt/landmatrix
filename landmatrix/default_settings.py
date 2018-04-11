@@ -131,12 +131,8 @@ MIDDLEWARE_CLASSES = (
     # populate the history user automatically
     'simple_history.middleware.HistoryRequestMiddleware',
 
-    'django.middleware.locale.LocaleMiddleware',
-    # 'django.middleware.doc.XViewMiddleware',
-    #'cms.middleware.user.CurrentUserMiddleware',
-    #'cms.middleware.page.CurrentPageMiddleware',
-    #'cms.middleware.toolbar.ToolbarMiddleware',
-    #'cms.middleware.language.LanguageCookieMiddleware'
+    # FIXME: Temp. disabled because there's just one language in the frontend
+    #'django.middleware.locale.LocaleMiddleware',
 
     # wagtail and dependencies
     'wagtail.wagtailcore.middleware.SiteMiddleware',

@@ -1,6 +1,6 @@
 {% load i18n wagtailcore_tags %}
-<div id="news" class="col-md-12">
-    <h3 class="center">{% trans "Latest News" %}</h3>
+<div id="news" class="block col-md-12">
+    <h3 class="center">{% trans "News and Publications" %}</h3>
 
     <div class="row row-flex">
         {% for item in news %}
@@ -18,4 +18,10 @@
         </div>
         {% endfor %}
     </div>
+
+    <div class="text-center">
+        <p><a class="btn"
+              href="{% if tag %}{% url "news:tag" tag=tag %}{% else %}/news/{% endif %}">{% trans "All News and Publications" %}</a></p>
+    </div>
+
 </div> <!-- News -->

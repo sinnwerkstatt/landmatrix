@@ -346,6 +346,7 @@ class LatestNewsBlock(StructBlock):
             else:
                 queryset = queryset.filter(tags__isnull=True)
         limit = value.get('limit')
+        context['tag'] = tag
         context['news'] = queryset[:int(limit)]
         return context
 
