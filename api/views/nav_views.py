@@ -27,7 +27,8 @@ class CountryListView(APIView):
             'text': _('Observatories'),
             'children': [[country.country.id, country.slug, country.title] for country in countries]
         })
-        countries = Country.objects.filter(is_target_country=True).exclude(
+        countries = Country.objects.filter(is_target_country=True,
+                                           high_income=False).exclude(
             id__in=[c.country.id for c in countries]
         ).only('id', 'slug', 'name').order_by('name')
         response.append({
