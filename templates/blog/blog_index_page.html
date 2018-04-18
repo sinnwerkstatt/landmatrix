@@ -50,7 +50,7 @@
     </div>
     <div class="col-sm-2">
         <ul class="nav nav-pills nav-stacked">
-            <li role="presentation"{% if not category %} class="active"{% endif %}><a href="/news/">{% trans "All categories" %}</a></li>
+            <li role="presentation"{% if not category %} class="active"{% endif %}><a href="./">{% trans "All categories" %}</a></li>
         {% for cat in all_categories %}
             <li role="presentation"{% if category == cat %} class="active"{% endif %}><a href="./?category={{ cat.slug }}">{{ cat.name }}</a></li>
         {% endfor %}
