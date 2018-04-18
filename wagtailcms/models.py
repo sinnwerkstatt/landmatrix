@@ -337,8 +337,10 @@ class LatestNewsBlock(StructBlock):
         tag = None
         if context.get('country'):
             tag = context.get('country').slug
+            context['name'] = context.get('country').name
         elif context.get('region'):
             tag = context.get('region').slug
+            context['name'] = context.get('region').name
         if tag:
             filter_queryset = queryset.filter(tags__slug=tag)
             if filter_queryset.count() > 0:
