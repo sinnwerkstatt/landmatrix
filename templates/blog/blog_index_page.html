@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load wagtailcore_tags static i18n %}
 
-{% block page_title %}{{ self.title }}{% if category %}{{ category }}{% else %}{{ self.title }}{% endif %}{% if tag %}: {{ tag|title }}{% endif %}{% endblock %}
+{% block page_title %}{% if category %}{{ category }}{% else %}{{ self.title }}{% endif %}{% if tag %}: {{ tag|title }}{% endif %}{% endblock %}
 {% block title %}{% if category %}{{ category }}{% else %}{{ self.title }}{% endif %}{% if tag %}: {{ tag|title }}{% endif %}{% endblock %}
 
 {% block content %}
