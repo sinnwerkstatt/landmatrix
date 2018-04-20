@@ -13,7 +13,7 @@
     <li><i class="icon icon-none" style="background-color: #b96c12;"></i><span>{% trans "Intended" %}</span></li>
     <li><i class="icon icon-none" style="background-color: #884e0e;"></i><span>{% trans "Failed" %}</span></li>
 </ul>
-{% endblock %}    
+{% endblock %}
 
 {% block chart %}
 <div id="stats">
@@ -64,6 +64,7 @@
 <script type="text/javascript">
 $(document).ready(function () {
   $.get('/api/resource-extraction.json{% if country %}?target_country={{ country.id }}{% elif region %}?target_region={{ region.id }}{% endif %}', function (data) {
+    debugger;
     var stats = $('#stats'),
         size = stats.find('.size'),
         deals = stats.find('.deals'),
