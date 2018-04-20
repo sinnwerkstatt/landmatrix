@@ -165,6 +165,7 @@ TEMPLATES = [
                 'sekizai.context_processors.sekizai',
                 'wagtailcms.context_processors.add_root_page',
                 'wagtailcms.context_processors.add_data_source_dir',
+                'wagtailcms.context_processors.add_countries_and_regions',
             ],
         },
     },

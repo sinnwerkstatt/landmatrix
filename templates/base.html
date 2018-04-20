@@ -104,12 +104,22 @@
                     <li class="dropdown">
                         <span>
                             <select class="nav-select" id="nav-region-select" style="display:none">
+                                {% for region in nav_regions %}
+                                <option value="{{ region.id }}">{{ region.name }}</option>
+                                {% endfor %}
                             </select>
                         </span>
                     </li>
                     <li class="dropdown">
                         <span>
                             <select class="nav-select" id="nav-country-select" style="display:none">
+                                {% for country_group in nav_countries %}
+                                <optgroup label="{{ country_group.text }}">
+                                    {% for country in country_group.children %}
+                                    <option value="{{ country.1 }}">{{ country.2 }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                                {% endfor %}
                             </select>
                         </span>
                     </li>
@@ -287,58 +297,70 @@
         function select2_close (e) {
             $(this).parents("li").removeClass("open")
         }
-        // Regions
-        var region_select = $('#nav-region-select').select2({
-            placeholder: "{% trans 'Regions' %}",
-            dropdownCssClass: "select2-main"
-        }).on('select2:open', select2_open)
-          .on('select2:close', select2_close);
-        var region_request = $.ajax({
-            url: '/api/regions.json',
-            cache: true
-        });
-        region_request.then(function (data) {
-          for (var d = 0; d < data.length; d++) {
-            var item = data[d];
-            var option = new Option(item[2], item[1], false, false);
-            region_select.append(option);
-          }
-          region_select.select2('val', '');
-          region_select.on('change', function () {
-            location.href = '/region/' + $(this).val();
-          });
-          //$element.trigger('change');
-        });
-        // Countries
-        var country_select = $('#nav-country-select').select2({
-            placeholder: "{% trans 'Countries' %}",
-            dropdownCssClass: "select2-main",
-            //allowClear: true
-        }).on('select2:open', select2_open)
-          .on('select2:close', select2_close);
-        var country_request = $.ajax({
-            url: '/api/countries.json',
-            cache: true
-        }),
-            group, opt_group,
-            item, option;
-        country_request.then(function (data) {
-            country_select.data(data);
-          for (var d = 0; d < data.length; d++) {
-            group = data[d];
-            opt_group = $('<optgroup label="' + group.text + '"></optgroup>');
-            for (var o = 0; o < group.children.length; o++) {
-                item = group.children[o];
-                option = new Option(item[2], item[1], false, false);
-                opt_group.append(option);
-            }
-            country_select.append(opt_group);
-          }
-          country_select.select2('val', '');
-          country_select.on('change', function (e) {
-            location.href = '/country/' + $(this).val();
-          });
-          //$element.trigger('change');
+        $(document).ready(function () {
+            // Regions
+            var region_select = $('#nav-region-select').select2({
+                placeholder: "{% trans 'Regions' %}",
+                dropdownCssClass: "select2-main"
+            }).on('select2:open', select2_open)
+              .on('select2:close', select2_close);
+            /*var region_request = $.ajax({
+                url: '/api/regions.json',
+                cache: true
+            });
+            region_request.then(function (data) {
+              for (var d = 0; d < data.length; d++) {
+                var item = data[d];
+                var option = new Option(item[2], item[1], false, false);
+                region_select.append(option);
+              }
+              region_select.select2('val', '');
+              region_select.on('change', function () {
+                location.href = '/region/' + $(this).val();
+              });
+              //$element.trigger('change');
+            });
+            */
+
+            region_select.select2('val', '');
+            region_select.on('change', function () {
+              location.href = '/region/' + $(this).val();
+            });
+            // Countries
+            var country_select = $('#nav-country-select').select2({
+                placeholder: "{% trans 'Countries' %}",
+                dropdownCssClass: "select2-main",
+                //allowClear: true
+            }).on('select2:open', select2_open)
+              .on('select2:close', select2_close);
+            /*var country_request = $.ajax({
+                url: '/api/countries.json',
+                cache: true
+            }),
+                group, opt_group,
+                item, option;
+            country_request.then(function (data) {
+                country_select.data(data);
+              for (var d = 0; d < data.length; d++) {
+                group = data[d];
+                opt_group = $('<optgroup label="' + group.text + '"></optgroup>');
+                for (var o = 0; o < group.children.length; o++) {
+                    item = group.children[o];
+                    option = new Option(item[2], item[1], false, false);
+                    opt_group.append(option);
+                }
+                country_select.append(opt_group);
+              }
+              country_select.select2('val', '');
+              country_select.on('change', function (e) {
+                location.href = '/country/' + $(this).val();
+              });
+            });
+            */
+            country_select.select2('val', '');
+            country_select.on('change', function (e) {
+              location.href = '/country/' + $(this).val();
+            });
         });
     </script>
     <!-- Piwik -->
