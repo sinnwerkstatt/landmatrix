@@ -295,7 +295,8 @@
             }).on('select2:open', select2_open)
               .on('select2:close', select2_close);
             var region_request = $.ajax({
-              url: '/api/regions.json'
+                url: '/api/regions.json',
+                cache: true
             });
             region_request.then(function (data) {
               for (var d = 0; d < data.length; d++) {
@@ -317,7 +318,8 @@
             }).on('select2:open', select2_open)
               .on('select2:close', select2_close);
             var country_request = $.ajax({
-              url: '/api/countries.json'
+                url: '/api/countries.json',
+                cache: true
             }),
                 group, opt_group,
                 item, option;
