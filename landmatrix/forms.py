@@ -43,4 +43,4 @@ class ActivityFilterForm(forms.ModelForm):
     class Meta:
         model = Activity
         fields = ('activity_identifier', 'is_public', 'deal_scope', 'deal_size', 'init_date',
-                  'negotiation_status', 'implementation_status', 'fully_updated_date')
+                  'fully_updated_date')
