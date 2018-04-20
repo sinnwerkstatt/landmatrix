@@ -286,61 +286,59 @@
         } 
         function select2_close (e) {
             $(this).parents("li").removeClass("open")
-        } 
-        $(document).ready(function () {
-            // Regions
-            var region_select = $('#nav-region-select').select2({
-                placeholder: "{% trans 'Regions' %}",
-                dropdownCssClass: "select2-main"
-            }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);
-            var region_request = $.ajax({
-                url: '/api/regions.json',
-                cache: true
-            });
-            region_request.then(function (data) {
-              for (var d = 0; d < data.length; d++) {
-                var item = data[d];
-                var option = new Option(item[2], item[1], false, false);
-                region_select.append(option);
-              }
-              region_select.select2('val', '');
-              region_select.on('change', function () {
-                location.href = '/region/' + $(this).val();
-              });
-              //$element.trigger('change');
-            });
-            // Countries
-            var country_select = $('#nav-country-select').select2({
-                placeholder: "{% trans 'Countries' %}",
-                dropdownCssClass: "select2-main",
-                //allowClear: true
-            }).on('select2:open', select2_open)
-              .on('select2:close', select2_close);
-            var country_request = $.ajax({
-                url: '/api/countries.json',
-                cache: true
-            }),
-                group, opt_group,
-                item, option;
-            country_request.then(function (data) {
-                country_select.data(data);
-              for (var d = 0; d < data.length; d++) {
-                group = data[d];
-                opt_group = $('<optgroup label="' + group.text + '"></optgroup>');
-                for (var o = 0; o < group.children.length; o++) {
-                    item = group.children[o];
-                    option = new Option(item[2], item[1], false, false);
-                    opt_group.append(option);
-                }
-                country_select.append(opt_group);
-              }
-              country_select.select2('val', '');
-              country_select.on('change', function (e) {
-                location.href = '/country/' + $(this).val();
-              });
-              //$element.trigger('change');
-            });
+        }
+        // Regions
+        var region_select = $('#nav-region-select').select2({
+            placeholder: "{% trans 'Regions' %}",
+            dropdownCssClass: "select2-main"
+        }).on('select2:open', select2_open)
+          .on('select2:close', select2_close);
+        var region_request = $.ajax({
+            url: '/api/regions.json',
+            cache: true
+        });
+        region_request.then(function (data) {
+          for (var d = 0; d < data.length; d++) {
+            var item = data[d];
+            var option = new Option(item[2], item[1], false, false);
+            region_select.append(option);
+          }
+          region_select.select2('val', '');
+          region_select.on('change', function () {
+            location.href = '/region/' + $(this).val();
+          });
+          //$element.trigger('change');
+        });
+        // Countries
+        var country_select = $('#nav-country-select').select2({
+            placeholder: "{% trans 'Countries' %}",
+            dropdownCssClass: "select2-main",
+            //allowClear: true
+        }).on('select2:open', select2_open)
+          .on('select2:close', select2_close);
+        var country_request = $.ajax({
+            url: '/api/countries.json',
+            cache: true
+        }),
+            group, opt_group,
+            item, option;
+        country_request.then(function (data) {
+            country_select.data(data);
+          for (var d = 0; d < data.length; d++) {
+            group = data[d];
+            opt_group = $('<optgroup label="' + group.text + '"></optgroup>');
+            for (var o = 0; o < group.children.length; o++) {
+                item = group.children[o];
+                option = new Option(item[2], item[1], false, false);
+                opt_group.append(option);
+            }
+            country_select.append(opt_group);
+          }
+          country_select.select2('val', '');
+          country_select.on('change', function (e) {
+            location.href = '/country/' + $(this).val();
+          });
+          //$element.trigger('change');
         });
     </script>
     <!-- Piwik -->
