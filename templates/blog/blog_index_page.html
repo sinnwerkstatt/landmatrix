@@ -27,7 +27,6 @@
         </div>
         {% if forloop.last %}
             {% if not forloop.counter|divisibleby:3 %}<div class="col-sm-6 col-md-4"></div>{% endif %}
-            {% if not forloop.counter|add:1|divisibleby:3 %}<div class="col-sm-6 col-md-4"></div>{% endif %}
         {% else %}
             {% if forloop.counter|divisibleby:3 %}</div><div class="row row-flex">{% endif %}
         {% endif %}

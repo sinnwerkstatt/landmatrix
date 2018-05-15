@@ -443,7 +443,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         crops = Crop.objects.select_related('fk_agricultural_produce').filter(id__in=crop_ids)
         agricultural_produce = set(c.fk_agricultural_produce.name for c in crops if
                                    c.fk_agricultural_produce)
-        if len(agricultural_produce) > 0:
+        if len(agricultural_produce) > 1:
             return self.AGRICULTURAL_PRODUCE_MULTI
         else:
             return list(agricultural_produce)

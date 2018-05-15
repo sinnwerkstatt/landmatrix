@@ -12,7 +12,7 @@ import coreapi
 import coreschema
 
 from landmatrix.models import Country, Region, AgriculturalProduce, Animal, Mineral, Crop
-from grid.forms.choices import (INTENTION_OIL_GAS_EXTRACTION, INTENTION_FOREST_LOGGING,
+from grid.forms.choices import (INTENTION_MINING, INTENTION_FOREST_LOGGING,
     NATURE_CONCESSION, NATURE_CONTRACT_FARMING, INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP)
 from .list_views import ElasticSearchMixin
 
@@ -122,7 +122,7 @@ class ResourceExtractionView(NegotiationStatusListView):
         query = self.create_query_from_filters(exclude=self.exclude_filters)
         query['bool']['filter'].append({
             'term': {
-                'intention': INTENTION_OIL_GAS_EXTRACTION
+                'intention': INTENTION_MINING
             }
         })
         return query
