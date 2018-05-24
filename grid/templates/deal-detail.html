@@ -122,6 +122,11 @@
                                 {# TODO: move next into the form logic #}
                                 <input type="hidden" name="next" value="{% url 'deal_detail' activity.activity_identifier %}">
                                 {% include "form.html" with form=comment_form %}
+                                <p>
+                                    <input type="checkbox" required name="terms">
+                                    {% blocktrans %}I've read and agree to the <a href="/terms-of-service" target="_blank">Terms of Service</a>.{% endblocktrans %}
+                                    <br><br>
+                                </p>
                                 <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
                                 <a href="#c0" id="cancel-reply" style="display:none">{% trans "Cancel reply" %}</a>
                             </form>

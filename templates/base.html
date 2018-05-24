@@ -267,15 +267,12 @@
                     <a target="_blank" href="https://www.facebook.com/LandMatrix"><i class="lm-footer lm-facebook-square"></i></a>
                 </div>
                 <div class="col-md-2 center">
+                </div>
+                <div class="col-md-5 text-right">
                     <h4>{% trans "Share and adapt" %}</h4>
                     <a target="_blank" href="http://creativecommons.org/licenses/by/4.0/"><span
                             class="lm-footer lm-creative-commons"></span></a>
                     <a target="_blank" href="https://github.com/sinnwerkstatt/landmatrix"><i class="lm-footer lm-github"></i></a>
-                </div>
-                <div class="col-md-5 text-right">
-                    <h4 class="toobigtofail">{% trans "Sign up to receive updates" %}</h4>
-                    <h4 class="toosmalltofail">{% trans "Stay up to date" %}</h4>
-                    <a target="_blank" href="http://eepurl.com/AHK0r"><i class="lm-footer lm-envelope"></i></a>
                 </div>
             </div>
         </div>
@@ -386,15 +383,6 @@
 {% endblock %}
 {% block js %}
 {% endblock %}
-<script type="text/javascript">
-window._urq = window._urq || [];
-_urq.push(['initSite', '076e0082-9cd3-4945-91f7-b3678e84373e']);
-(function() {
-var ur = document.createElement('script'); ur.type = 'text/javascript'; ur.async = true;
-ur.src = ('https:' == document.location.protocol ? 'https://cdn.userreport.com/userreport.js' : 'http://cdn.userreport.com/userreport.js');
-var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ur, s);
-})();
-</script>
 {% render_block "js" %}
 </body>
 </html>

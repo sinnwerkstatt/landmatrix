@@ -1615,7 +1615,6 @@ table td.number {
     height: 48px;
     display: block; }
   .widget-twitter-timeline .twitter-timeline-meta {
-    margin-left: 63px;
     margin-bottom: 5px;
     color: #777; }
   .widget-twitter-timeline .twitter-timeline-username {
@@ -1628,12 +1627,9 @@ table td.number {
     color: inherit;
     font-size: 90%; }
   .widget-twitter-timeline .twitter-timeline-text {
-    margin-left: 63px;
     font-size: 110%;
     margin-bottom: 10px;
     word-wrap: break-word; }
-  .widget-twitter-timeline .twitter-timeline-media {
-    margin-left: 63px; }
   .widget-twitter-timeline .twitter-timeline-imagecontainer {
     max-width: 400px;
     margin: 0 auto; }
@@ -1642,7 +1638,6 @@ table td.number {
     max-width: 100%;
     max-height: 400px; }
   .widget-twitter-timeline .twitter-timeline-quote {
-    margin-left: 63px;
     border: 1px solid #777;
     padding: 15px;
     word-wrap: break-word; }
