@@ -97,7 +97,7 @@
 {% elif column == "deal_size" %}
     <td class="{{ column }} number">{{ item.deal_size.0|intcomma }}</td>
 {% elif column == "availability" %}
-    <td class="{{ column }} number">{{ item.availability.0|default:0|intcomma }}%</td>
+    <td class="{{ column }} number">{{ item.availability.0|default:0|floatformat }}%</td>
 {% else %}
 <td class="{{ column }}">
     {% if value %}

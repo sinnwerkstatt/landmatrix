@@ -91,13 +91,16 @@ def get_elasticsearch_properties(doc_type=None):
                 'deal_country': {'type': 'keyword'},
                 'top_investors': {'type': 'keyword'},
                 'investor_country': {'type': 'keyword'},
+                'investor_country_display': {'type': 'keyword'},
                 'investor_region': {'type': 'keyword'},
+                'investor_region_display': {'type': 'keyword'},
                 'fully_updated_date': {'type': 'text'},
                 'target_region': {'type': 'keyword'},
                 'target_region_display': {'type': 'keyword'},
                 'operating_company_region': {'type': 'keyword'},
                 'operating_company_region_display': {'type': 'keyword'},
                 'agricultural_produce': {'type': 'keyword'},
+                'availability': {'type': 'float'},
             }
         }
         _landmatrix_mappings['location'] = {
@@ -427,6 +430,7 @@ class ElasticSearch(object):
                                                        investor_countries)),
                     'fully_updated_date': public_activity.get_fully_updated_date(),
                     'agricultural_produce': public_activity.get_agricultural_produce(),
+                    'availability': public_activity.get_availability(),
                 })
             else:
                 # Fixme: This should not happen

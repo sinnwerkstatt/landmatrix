@@ -434,52 +434,6 @@ class BaseForm(forms.Form):
         else:
             return ''
 
-    def get_availability(self):
-        available_field_count = 0.0
-        if self.data.get(self.prefix and "%s-TOTAL_FORMS"%self.prefix or "TOTAL_FORMS", 1) < 1:
-            return 0
-        for i, (n, f) in enumerate(self.fields.items()):
-            value, year = None, None
-            if not n.startswith("tg_"):
-                if isinstance(f, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
-                    value = self.data.getlist(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
-                elif isinstance(f, forms.ChoiceField):
-                    value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-                    #filter default selection of choice fields
-                    value = value != "0" and value or None
-                    if value and isinstance(f.choices,(list, tuple)) and f.choices[0][0] != 0:
-                        value = None
-                # Year based data?
-                elif isinstance(f, forms.MultiValueField):
-                    keys = filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n) ,o), self.data.keys())
-                    keys.sort()
-                    for i in range(len(keys)):
-                        if i % 2 == 0:
-                            value = self.data.get(len(keys) > i and keys[i] or "-", "")
-                            if value == "0" and isinstance(f.fields[0], forms.ChoiceField):
-                                #filter default selection of choice fields
-                                value = None
-                            year = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
-                            if value or year:
-                                break
-                elif isinstance(f, forms.FileField):
-                    value = self.is_valid() and self.cleaned_data.get(n) and hasattr(self.cleaned_data.get(n), "name") and self.cleaned_data.get(n).name or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-                else:
-                    value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
-            if value or year:
-                available_field_count = available_field_count + 1
-        return available_field_count
-
-    def get_availability_total(self):
-        count = 0
-        for n in self.fields:
-            f = self.fields[n]
-            if isinstance(f, TitleField) or isinstance(f.widget, CommentInput) or isinstance(f.widget, forms.HiddenInput) or "readonly" in f.widget.attrs:
-                pass
-            else:
-                count = count + 1
-        return count
-
     @classmethod
     def get_display_properties(cls, doc, formset=None):
         """Get field display values for ES"""

@@ -116,58 +116,28 @@
 
     <script type="text/javascript">
 
-        $("button.close").click(function () {
-            $(this).parents("div.well").hide();
-        });
-
-        function get_top_10() {
-            $(".top-10-countries .table").empty();
-            var json_query = "/api/top-10-countries.json";
-            jQuery.getJSON(json_query, function (data) {
-                var investor_countries = $(".top-10-countries #investor-countries .table");
-                var i;
-
-                for (i = 0; i < data.investor_country.length; i++) {
-                    investor_countries.append('<tr><td><a href="/data/by-investor-country/' + data.investor_country[i]["slug"] + '/">' + data.investor_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.investor_country[i]["hectares"]) + ' ha</td></tr>');
-                }
-
-                var target_countries = $(".top-10-countries #target-countries .table");
-                for (i = 0; i < data.target_country.length; i++) {
-                    target_countries.append('<tr><td><a href="/data/by-target-country/' + data.target_country[i]["slug"] + '/">' + data.target_country[i]["name"] + '</a></td><td style="text-align:right;">' + numberWithCommas(data.target_country[i]["hectares"]) + ' ha</td></tr>');
-                }
-            });
-        }
-
-
-        $(".show-all").click(function (e) {
-            e.preventDefault();
-            clicked = false;
-            $(".country-info").css("display", "none");
-            $(".top-10-countries").css("display", "block");
-            $(".show-all").addClass("disabled");
-            return false;
-        });
-
-
-        var clicked = false;
         function draw() {
-            init_canvas();
-
+            initCanvas();
             d3.select("div.canvas")
                     .on("mousemove", mousemove)
                     .on("mouseup", mouseup);
-
         }
 
-        $(".top-10-countries .nav-tabs a").click(function (e) {
-            e.preventDefault();
-            $(this).tab("show");
-            $(this).parents("li").addClass("active").siblings().removeClass("active");
-            return false;
-        });
         $(document).ready(function () {
             draw(function () {});
             $(".deal_scope").hide();
+
+            // Init modal buttons
+            $("button.close").click(function () {
+                $(this).parents("div.well").hide();
+            });
+
+            $(".top-10-countries .nav-tabs a").click(function (e) {
+                e.preventDefault();
+                $(this).tab("show");
+                $(this).parents("li").addClass("active").siblings().removeClass("active");
+                return false;
+            });
         });
     </script>
 {% endblock %}

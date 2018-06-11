@@ -691,12 +691,12 @@ class TransnationalDealListView(BaseChartView):
                     }
                 }
             },
-            'investor_country': {
-                'terms': {
-                    'field': 'investor_country',
-                    'size': 300,
-                },
-            },
+            #'investor_country': {
+            #    'terms': {
+            #        'field': 'investor_country',
+            #        'size': 300,
+            #    },
+            #},
         }
 
     def get_query(self):
@@ -719,9 +719,13 @@ class TransnationalDealListView(BaseChartView):
         region_id = str(country.fk_region_id)
         if region_id in self.request.GET.getlist("region", []):
             region_id = -1
+        country_name = LONG_COUNTRIES.get(country.name, country.name)
+        forbidden_chars = [',', '.']
+        for char in forbidden_chars:
+            country_name = country_name.replace(char, '')
         return '%s.%s' % (
             region_id,
-            LONG_COUNTRIES.get(country.name, country.name)
+            country_name
         )
 
     def get(self, request):
@@ -734,7 +738,7 @@ class TransnationalDealListView(BaseChartView):
         countries = Country.objects.defer('geom').select_related('fk_region').all()
         countries = dict([(str(c.id), c) for c in countries])
         results = []
-        target_countries = []
+        target_countries, investor_countries = set(), set()
         # Add target countries
         for raw_result in response['target_country']['buckets']:
             target_country = countries.get(raw_result['key'])
@@ -742,6 +746,7 @@ class TransnationalDealListView(BaseChartView):
             for raw_term in raw_result['investor_country']['buckets']:
                 investor_country = countries.get(raw_term['key'])
                 imports.append(self.get_country_name(investor_country))
+                investor_countries.add(raw_term['key'])
             results.append({
                 'id': str(raw_result['key']),
                 'imports': imports,
@@ -749,10 +754,9 @@ class TransnationalDealListView(BaseChartView):
                 'size': 1,
                 'slug': target_country.slug,
             })
-            target_countries.append(raw_result['key'])
-        # Add countries with no deals
-        investor_countries = [r['key'] for r in response['investor_country']['buckets']]
-        countries_missing = set(investor_countries) - set(target_countries)
+            target_countries.add(raw_result['key'])
+        # Add investor countries (that are not target_countries)
+        countries_missing = investor_countries - target_countries
         for country_id in countries_missing:
             country = countries.get(country_id)
             results.append({
@@ -761,7 +765,6 @@ class TransnationalDealListView(BaseChartView):
                 'size': 1,
                 'name': self.get_country_name(country),
                 'slug': country.slug,
-
             })
         return Response(results)
 
@@ -800,8 +803,9 @@ class TransnationalDealsByCountryView(BaseChartView):
                         },
                         'aggs': {
                             'deal_count': {
-                                'cardinality': {
+                                'terms': {
                                     'field': 'activity_identifier',
+                                    'size': 10000,
                                 }
                             },
                             'deal_size_sum': {
@@ -828,8 +832,9 @@ class TransnationalDealsByCountryView(BaseChartView):
                         },
                         'aggs': {
                             'deal_count': {
-                                'cardinality': {
+                                'terms': {
                                     'field': 'activity_identifier',
+                                    'size': 10000,
                                 }
                             },
                             'deal_size_sum': {
@@ -861,7 +866,7 @@ class TransnationalDealsByCountryView(BaseChartView):
                 'slug': target_region.slug,
                 'region': target_region.name,
                 'hectares': raw_result['deal_size_sum']['value'],
-                'deals': raw_result['deal_count']['value'],
+                'deals': len(raw_result['deal_count']['buckets']),
             })
 
         # Get investor regions
@@ -873,7 +878,7 @@ class TransnationalDealsByCountryView(BaseChartView):
                 'slug': investor_region.slug,
                 'region': investor_region.name,
                 'hectares': raw_result['deal_size_sum']['value'],
-                'deals': raw_result['deal_count']['value'],
+                'deals': len(raw_result['deal_count']['buckets']),
             })
 
         return Response({

@@ -216,6 +216,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     AGRICULTURAL_PRODUCE_MULTI = 'Multi Crop'
 
     activity_identifier = models.IntegerField(_("Activity identifier"), db_index=True)
+    # FIXME: Availability should be moved to HistoricalActivity
     availability = models.FloatField(_("availability"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
 
@@ -482,6 +483,7 @@ class Activity(ActivityBase):
         self.is_public = self.is_public_deal()
         top_investors = self.get_top_investors()
         self.top_investors = self.format_investors(top_investors)
+        self.availability = self.get_availability()
         self.save()
 
     def is_public_deal(self):
@@ -656,6 +658,49 @@ class Activity(ActivityBase):
     def format_investors(self, investors):
         return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '').replace("\n", '')])
                          for i in investors])
+
+    def get_availability(self):
+        return 1 / self.get_availability_total() * 100
+        #available_field_count = 0.0
+        #if self.data.get(self.prefix and "%s-TOTAL_FORMS"%self.prefix or "TOTAL_FORMS", 1) < 1:
+        #    return 0
+        #for i, (n, f) in enumerate(self.fields.items()):
+        #    value, year = None, None
+        #    if not n.startswith("tg_"):
+        #        if isinstance(f, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
+        #            value = self.data.getlist(self.prefix and "%s-%s"%(self.prefix, n) or n, [])
+        #        elif isinstance(f, forms.ChoiceField):
+        #            value = self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+        #            #filter default selection of choice fields
+        #            value = value != "0" and value or None
+        #            if value and isinstance(f.choices,(list, tuple)) and f.choices[0][0] != 0:
+        #                value = None
+        #        # Year based data?
+        #        elif isinstance(f, forms.MultiValueField):
+        #            keys = filter(lambda o: re.match(r'%s_\d+'% (self.prefix and "%s-%s"%(
+        # self.prefix, n) or "%s"%n) ,o), self.data.keys())
+        #            keys.sort()
+        #            for i in range(len(keys)):
+        #                if i % 2 == 0:
+        #                    value = self.data.get(len(keys) > i and keys[i] or "-", "")
+        #                    if value == "0" and isinstance(f.fields[0], forms.ChoiceField):
+        #                        #filter default selection of choice fields
+        #                        value = None
+        #                    year = self.data.get(len(keys) > i+1 and keys[i+1] or "-", "")
+        #                    if value or year:
+        #                        break
+        #        elif isinstance(f, forms.FileField):
+        #            value = self.is_valid() and self.cleaned_data.get(n) and hasattr(
+        # self.cleaned_data.get(n), "name") and self.cleaned_data.get(n).name or self.data.get(self.prefix and "%s-%s"%(self.prefix, n) or n)
+        #        else:
+        #            value = self.is_valid() and self.cleaned_data.get(n) or self.data.get(
+        # self.prefix and "%s-%s"%(self.prefix, n) or n)
+        #    if value or year:
+        #        available_field_count = available_field_count + 1
+        #return available_field_count
+
+    def get_availability_total(self):
+        return 10
 
     class Meta:
         verbose_name = _('Activity')
@@ -870,8 +915,6 @@ class HistoricalActivity(ActivityBase):
             activity = Activity.objects.create(
                 activity_identifier=self.activity_identifier)
 
-        # Update activity (keeping comments)
-        activity.availability = self.availability
         activity.fully_updated = self.fully_updated
         activity.fk_status_id = self.fk_status_id
         activity.save()
