@@ -205,8 +205,6 @@ def clean_attribute(key, value, old_values={}):
         return clean_intention(key, value, old_values=old_values)
     elif key == 'land_use':
         return clean_land_use(key, value)
-    elif key == 'tg_negotiation_status_comment':
-        return 'tg_contract_comment', value
     elif key == 'tg_primary_investor_comment':
         return 'tg_operational_stakeholder_comment', value
     elif key == 'tg_community_benefits_comment':
