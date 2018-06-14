@@ -5,7 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.gis.db import models as geomodels
 
 
-
 class ActivityAttributeGroup(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     
@@ -15,6 +14,7 @@ class ActivityAttributeGroup(models.Model):
     class Meta:
         verbose_name = _('Activity attribute group')
         verbose_name_plural = _('Activity attribute groups')
+
 
 class ActivityAttributeBase(DefaultStringRepresentation, geomodels.Model):
     fk_group = models.ForeignKey(ActivityAttributeGroup, blank=True, null=True, verbose_name=_("Activity Attribute Group"))
@@ -35,6 +35,7 @@ class ActivityAttributeBase(DefaultStringRepresentation, geomodels.Model):
     class Meta:
         abstract = True
 
+
 class ActivityAttribute(ActivityAttributeBase):
     """Just the attributes for most recent approved version of activites"""
     fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"), related_name="attributes")
@@ -42,6 +43,7 @@ class ActivityAttribute(ActivityAttributeBase):
     class Meta:
         verbose_name = _('Activity attribute')
         verbose_name_plural = _('Activity attributes')
+
 
 class HistoricalActivityAttribute(ActivityAttributeBase):
     """All versions (including the current) of activity attributes"""

@@ -1,12 +1,9 @@
-
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from grid.fields import TitleField
 from grid.widgets import CommentInput
 from .base_form import BaseForm
-
-
 
 
 class DealGenderRelatedInfoForm(BaseForm):

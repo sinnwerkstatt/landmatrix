@@ -2,15 +2,11 @@ from django.contrib.gis import forms
 from django.forms.models import formset_factory, BaseFormSet
 from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.models.country import Country
-from landmatrix.models.region import Region
 from ol3_widgets.widgets import LocationWidget, MapWidget
 from grid.fields import TitleField, CountryField, AreaField
 from grid.widgets import CommentInput, AreaWidget
 from grid.gis import parse_shapefile
 from .base_form import BaseForm
-
-
 
 
 class DealSpatialForm(BaseForm):

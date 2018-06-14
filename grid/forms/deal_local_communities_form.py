@@ -6,8 +6,6 @@ from grid.fields import TitleField, MultiCharField
 from grid.widgets import CommentInput, NumberInput
 
 
-
-
 class DealLocalCommunitiesForm(BaseForm):
     RECOGNITION_STATUS_CHOICES = (
         (

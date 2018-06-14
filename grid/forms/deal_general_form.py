@@ -12,8 +12,6 @@ from .choices import grouped_intention_choices, intention_choices, nature_choice
 from .base_form import BaseForm
 
 
-
-
 class DealGeneralForm(BaseForm):
     # TODO: why not boolean here? Maybe because there are three options: Yes, No or Unknown.
     CONTRACT_FARMING_CHOICES = (

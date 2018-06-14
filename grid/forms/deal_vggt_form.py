@@ -6,8 +6,6 @@ from grid.widgets import CommentInput
 from .base_form import BaseForm
 
 
-
-
 class DealVGGTForm(BaseForm):
     '''
     Voluntary Guidelines on the Responsible Governance of Tenure Form.

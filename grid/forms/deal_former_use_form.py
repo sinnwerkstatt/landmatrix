@@ -6,8 +6,6 @@ from grid.fields import TitleField
 from grid.widgets import CommentInput
 
 
-
-
 class DealFormerUseForm(BaseForm):
     FORMER_LAND_OWNER_CHOICES = (
         ("State", _("State")),

@@ -6,8 +6,6 @@ from grid.widgets import CommentInput
 from .base_form import BaseForm
 
 
-
-
 class DealOverallCommentForm(BaseForm):
     form_title = _('Overall Comment')
     # Coordinators and reviewers overall comments

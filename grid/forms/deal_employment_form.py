@@ -6,8 +6,6 @@ from grid.fields import TitleField, YearBasedIntegerField
 from grid.widgets import CommentInput, NumberInput
 
 
-
-
 class DealEmploymentForm(BaseForm):
 
     form_title = _('Employment')

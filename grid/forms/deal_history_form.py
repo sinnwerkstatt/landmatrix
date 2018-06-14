@@ -3,8 +3,6 @@ from django.utils.translation import ugettext_lazy as _
 from .base_form import BaseForm
 
 
-
-
 class DealHistoryForm(BaseForm):
     '''
     Apparently this is a placeholder form for history,

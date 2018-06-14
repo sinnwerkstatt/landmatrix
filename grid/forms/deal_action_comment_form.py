@@ -1,11 +1,7 @@
-from inspect import currentframe, getframeinfo
-
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from django.utils.dateformat import DateFormat
 from django.contrib.auth import get_user_model
 
-from landmatrix.models.activity import Activity
 from grid.fields import TitleField, UserModelChoiceField
 from grid.widgets import CommentInput
 from .base_form import BaseForm

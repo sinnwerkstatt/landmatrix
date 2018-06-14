@@ -6,8 +6,6 @@ from grid.widgets import CommentInput
 from .base_form import BaseForm
 
 
-
-
 class ManageDealForm(BaseForm):
     '''
     TODO: where is this actually used/ what is it for?
