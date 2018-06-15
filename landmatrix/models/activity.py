@@ -409,7 +409,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         else:
             return 0
 
-    def _get_current(self, attribute, ranking=None):
+    def _get_current(self, attribute):
         """
         Returns the relevant state for the deal.
         Uses
@@ -422,20 +422,16 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         if attributes.count() == 0:
             return None
         current = attributes.first()
-        if not current.is_current and not current.date:
+        if not current.is_current and current.date:
             attributes = attributes.extra(order_by=['-is_current', '-date'])
             current = attributes.first()
         return current.value
 
     def get_negotiation_status(self):
-        NEGOTIATION_STATUS_ORDER = dict(
-            [(c[0], i) for i, c in enumerate(self.NEGOTIATION_STATUS_CHOICES)])
-        return self._get_current('negotiation_status', NEGOTIATION_STATUS_ORDER)
+        return self._get_current('negotiation_status')
 
     def get_implementation_status(self):
-        IMPLEMENTATION_STATUS_ORDER = dict(
-            [(c[0], i) for i, c in enumerate(self.IMPLEMENTATION_STATUS_CHOICES)])
-        return self._get_current('implementation_status', IMPLEMENTATION_STATUS_ORDER)
+        return self._get_current('implementation_status')
 
     def get_agricultural_produce(self):
         crop_ids = set(a.value for a in self.attributes.filter(name='crops'))
@@ -495,8 +491,8 @@ class Activity(ActivityBase):
         involvements = self.investoractivityinvolvement_set.all()
         if involvements.count() == 0:
             return False
-        # 4. Invalid Operating company name?
-        # 5. Invalid Parent companies/investors?
+        # 4A. Invalid Operating company name?
+        # 4B. Invalid Parent companies/investors?
         if self.has_invalid_operating_company(involvements) and self.has_invalid_parents(involvements):
             return False
         # 6. High income country?
