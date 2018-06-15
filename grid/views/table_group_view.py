@@ -380,11 +380,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
 
     def get_deal_item(self, result):
         item = OrderedDict()
-        if self.group_value:
-            columns = self.GROUP_COLUMNS_LIST
-        else:
-            columns = self.COLUMN_GROUPS[self.group]
-        for column in columns:
+        for column in self.columns:
             value = result.get(column, None)
             if value and hasattr(self, 'clean_{}'.format(column)):
                 value = getattr(self, 'clean_{}'.format(column))(value)

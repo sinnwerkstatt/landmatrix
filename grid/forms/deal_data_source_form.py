@@ -43,7 +43,6 @@ class DealDataSourceForm(BaseForm):
     )
     url = forms.URLField(
         required=False, label=_("URL"),
-        help_text=_("PDF will be generated automatically, leave empty for file upload")
     )
     file = FileFieldWithInitial(
         required=False, label=_("File"),
