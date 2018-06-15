@@ -274,8 +274,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             return int(self._load_more()) + self.LOAD_MORE_AMOUNT
         return None
 
-    @property
-    def columns(self):
+    def get_columns(self):
         columns = []
         if self.request.GET.get('columns'):
             columns = self.request.GET.getlist('columns')
@@ -291,8 +290,11 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             except KeyError:
                 raise Http404(
                     _("Unknown group '%(group)s'.") % {'group': self.group})
-        columns = [c.replace('_display', '') for c in columns]
         return columns
+
+    @property
+    def columns(self):
+        return [c.replace('_display', '') for c in self.get_columns()]
 
     @property
     def columns_dict(self):
@@ -380,7 +382,10 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
 
     def get_deal_item(self, result):
         item = OrderedDict()
-        for column in self.columns:
+        for column in self.get_columns():
+            if column in ('target_country', 'current_negotiation_status',
+                          'current_implementation_status'):
+                column += '_display'
             value = result.get(column, None)
             if value and hasattr(self, 'clean_{}'.format(column)):
                 value = getattr(self, 'clean_{}'.format(column))(value)
