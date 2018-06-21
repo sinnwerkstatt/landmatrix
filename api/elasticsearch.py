@@ -241,10 +241,6 @@ class ElasticSearch(object):
         activity = HistoricalActivity.objects.get(pk=activity_id)
         return self.index_activity(activity)
 
-    def delete_activity_by_id(self, activity_id):
-        activity = HistoricalActivity.objects.get(pk=activity_id)
-        return self.delete_activity(activity)
-
     def index_activity(self, activity):
         for doc_type in DOC_TYPES_ACTIVITY:
             docs = self.get_activity_documents(activity, doc_type=doc_type)
@@ -776,19 +772,19 @@ class ElasticSearch(object):
             result[key] = raw_result['aggregations'][key]['buckets']
         return result
 
-    def delete_activity(self, activity):
+    def delete_activity(self, activity_identifier):
         for doc_type in DOC_TYPES_ACTIVITY:
             try:
                 if doc_type == 'deal':
                     self.conn.delete(
-                        id=activity.activity_identifier,
+                        id=activity_identifier,
                         index=self.index_name,
                         doc_type=doc_type)
                 else:
                     self.conn.delete_by_query(query={
                         "parent_id": {
                             "type": "deal",
-                            "id": str(activity.activity_identifier),
+                            "id": str(activity_identifier),
                             }
                         },
                         index=self.index_name,

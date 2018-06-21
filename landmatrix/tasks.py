@@ -9,5 +9,5 @@ def index_activity(activity_id):
 
 
 @shared_task
-def delete_activity(activity_id):
-    es_save.delete_activity_by_id(activity_id=activity_id)
+def delete_activity(activity_identifier):
+    es_save.delete_activity(activity_identifier=activity_identifier)
