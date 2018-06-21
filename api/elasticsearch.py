@@ -194,7 +194,7 @@ def get_elasticsearch_properties(doc_type=None):
             _landmatrix_mappings['investor']['properties'].update(field_mappings)
 
         # FIXME: Location = Deal for now, that should be changed in the future
-        _landmatrix_mappings['location'] = _landmatrix_mappings['deal']
+        _landmatrix_mappings['location']['properties'] = _landmatrix_mappings['deal']['properties']
     if doc_type:
         return _landmatrix_mappings[doc_type]
     else:
@@ -306,7 +306,10 @@ class ElasticSearch(object):
                 paginator = Paginator(docs, 1000)
                 for page in paginator.page_range:
                     try:
-                        self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id'), parent=doc.pop('_parent', None)) for doc in paginator.page(page)),
+                        self.conn.bulk((self.conn.index_op(doc,
+                                                           id=doc.pop('id'),
+                                                           parent=doc.pop('_parent', None))
+                                        for doc in paginator.page(page)),
                             index=self.index_name,
                             doc_type=doc_type)
                     except BulkError as e:
