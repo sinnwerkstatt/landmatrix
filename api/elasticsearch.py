@@ -79,7 +79,6 @@ def get_elasticsearch_properties(doc_type=None):
                 'historical_activity_id': {'type': 'integer'},
                 'history_date': {'type': 'date'},
                 'activity_identifier': {'type': 'integer'},
-                'nature': {'type': 'keyword', 'analyzer': 'no_lowercase'},
                 'geo_point': {'type': 'geo_point'},
                 'status': {'type': 'integer'},
                 'is_public': {'type': 'boolean'},
