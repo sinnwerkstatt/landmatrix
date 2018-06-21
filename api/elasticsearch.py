@@ -777,29 +777,31 @@ class ElasticSearch(object):
         return result
 
     def delete_activity(self, activity_identifier):
+        query = {
+            "term": {
+                "activity_identifier": activity_identifier,
+            }
+        }
+        # Collect activity IDs (required for routing)
+        activity_ids = self.conn.search(query, index=self.index_name, doc_type='deal')
+        activity_ids = [h['_id'] for h in activity_ids['hits']['hits']]
         for doc_type in DOC_TYPES_ACTIVITY:
             try:
                 if doc_type == 'deal':
-                    self.conn.delete_by_query(query={
-                        "term": {
-                            "activity_identifier": activity_identifier,
-                        }
-                    },
-                    index=self.index_name,
-                    doc_type=doc_type)
+                    self.conn.delete_by_query(query=query,
+                        index=self.index_name,
+                        doc_type=doc_type)
                 else:
-                    self.conn.delete_by_query(query={
-                        "has_parent": {
-                            "parent_type": "deal",
-                            "query": {
-                                "term": {
-                                    "activity_identifier": activity_identifier,
+                    for activity_id in activity_ids:
+                        self.conn.delete_by_query(query={
+                                "has_parent": {
+                                    "type": doc_type,
+                                    "id": activity_id,
                                 }
-                            }
-                        }
-                    },
-                    index=self.index_name,
-                    doc_type=doc_type)
+                            },
+                            query_params={'routing': activity_id},
+                            index=self.index_name,
+                            doc_type=doc_type)
             except ElasticHttpNotFoundError as e:
                 pass
 
