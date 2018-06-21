@@ -783,7 +783,7 @@ class ElasticSearch(object):
             }
         }
         # Collect activity IDs (required for routing)
-        activity_ids = self.conn.search(query, index=self.index_name, doc_type='deal')
+        activity_ids = self.conn.search({"query": query}, index=self.index_name, doc_type='deal')
         activity_ids = [h['_id'] for h in activity_ids['hits']['hits']]
         for doc_type in DOC_TYPES_ACTIVITY:
             try:
@@ -794,9 +794,9 @@ class ElasticSearch(object):
                 else:
                     for activity_id in activity_ids:
                         self.conn.delete_by_query(query={
-                                "has_parent": {
+                                "parent_id": {
                                     "type": doc_type,
-                                    "id": activity_id,
+                                    "id": str(activity_id),
                                 }
                             },
                             query_params={'routing': activity_id},

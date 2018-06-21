@@ -36,6 +36,7 @@ country-bounding-boxes==0.2.*
 tweepy
 django-jstemplate==1.3.*
 elasticsearch==1.9.*
+git+git://github.com/simonline/pyelasticsearch@1.4.2#egg=pyelasticsearch
 celery[redis]
 geojson==1.3.4
 #libmysqlclient
