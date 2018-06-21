@@ -164,9 +164,7 @@ def get_elasticsearch_properties(doc_type=None):
                 # Additionally save complete attribute (including value2, date, is_current) for all MultiValueFields
                 if isinstance(field, MultiValueField):
                     field_mappings['%s_attr' % name] = {'type': 'nested'}
-                for property, value in field_mappings.items():
-                    if property not in _landmatrix_mappings['deal']['properties']:
-                        _landmatrix_mappings['deal']['properties'][property] = value
+                _landmatrix_mappings['deal']['properties'].update(field_mappings)
                 if formset_name:
                     _landmatrix_mappings[formset_name]['properties'].update(field_mappings)
         for field_name, field in ExportInvestorForm.base_fields.items():
@@ -176,9 +174,7 @@ def get_elasticsearch_properties(doc_type=None):
             field_mappings[field_name] = {'type': field_type}
             if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField, BooleanField)):
                 field_mappings['%s_display' % field_name] = {'type': field_type}
-            for property, value in field_mappings.items():
-                if property not in _landmatrix_mappings['deal']['properties']:
-                    _landmatrix_mappings['deal']['properties'][property] = value
+            _landmatrix_mappings['deal']['properties'].update(field_mappings)
 
         # Doc type: involvement
         for field_name, field in InvestorVentureInvolvementForm.base_fields.items():
@@ -187,9 +183,7 @@ def get_elasticsearch_properties(doc_type=None):
             field_mappings[field_name] = {'type': field_type}
             if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField, BooleanField)):
                 field_mappings['%s_display' % field_name] = {'type': field_type}
-            for property, value in field_mappings.items():
-                if property not in _landmatrix_mappings['involvement']['properties']:
-                    _landmatrix_mappings['involvement']['properties'][property] = value
+            _landmatrix_mappings['involvement']['properties'].update(field_mappings)
         # Doc type: investor
         for field_name, field in ExportInvestorForm.base_fields.items():
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
@@ -197,9 +191,7 @@ def get_elasticsearch_properties(doc_type=None):
             field_mappings[field_name] = {'type': field_type}
             if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField, BooleanField)):
                 field_mappings['%s_display' % field_name] = {'type': field_type}
-            for property, value in field_mappings.items():
-                if property not in _landmatrix_mappings['investor']['properties']:
-                    _landmatrix_mappings['investor']['properties'][property] = value
+            _landmatrix_mappings['investor']['properties'].update(field_mappings)
 
         # FIXME: Location = Deal for now, that should be changed in the future
         _landmatrix_mappings['location'] = _landmatrix_mappings['deal']
