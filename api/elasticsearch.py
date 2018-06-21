@@ -556,6 +556,7 @@ class ElasticSearch(object):
                             if name_display in deal_attrs and len(deal_attrs[name_display]) > i:
                                 doc[name_display] = deal_attrs[name_display][i]
                         # Set unique ID for location (deals can have multiple locations)
+                        doc['_parent'] = activity.id
                         doc['id'] = '%s_%i' % (doc['activity_identifier'], i)
                         docs.append(doc)
                 elif doc_type == 'deal':
