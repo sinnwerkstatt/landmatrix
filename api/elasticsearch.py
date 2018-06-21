@@ -785,9 +785,13 @@ class ElasticSearch(object):
                     doc_type=doc_type)
                 else:
                     self.conn.delete_by_query(query={
-                        "parent_id": {
-                            "type": "deal",
-                            "id": str(activity_identifier),
+                        "has_parent": {
+                            "parent_type": "deal",
+                            "query": {
+                                "term": {
+                                    "activity_identifier": activity_identifier,
+                                }
+                            }
                         }
                     },
                     index=self.index_name,
