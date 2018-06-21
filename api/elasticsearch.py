@@ -776,19 +776,22 @@ class ElasticSearch(object):
         for doc_type in DOC_TYPES_ACTIVITY:
             try:
                 if doc_type == 'deal':
-                    self.conn.delete(
-                        id=activity_identifier,
-                        index=self.index_name,
-                        doc_type=doc_type)
+                    self.conn.delete_by_query(query={
+                        "term": {
+                            "activity_identifier": activity_identifier,
+                        }
+                    },
+                    index=self.index_name,
+                    doc_type=doc_type)
                 else:
                     self.conn.delete_by_query(query={
                         "parent_id": {
                             "type": "deal",
                             "id": str(activity_identifier),
-                            }
-                        },
-                        index=self.index_name,
-                        doc_type=doc_type)
+                        }
+                    },
+                    index=self.index_name,
+                    doc_type=doc_type)
             except ElasticHttpNotFoundError as e:
                 pass
 
