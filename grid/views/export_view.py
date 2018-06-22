@@ -184,8 +184,11 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 field = ET.SubElement(row, "field")
                 field.text = str(value)
                 field.set("name", data['investors']['headers'][i])
-
-        xml = parseString(ET.tostring(root)).toprettyxml()
+        xml = ET.tostring(root)
+        try:
+            xml = parseString(xml).toprettyxml()
+        except:
+            pass
         response = HttpResponse(xml, content_type='text/xml')
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
