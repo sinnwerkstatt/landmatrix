@@ -186,15 +186,14 @@ def clean_attribute(key, value, old_values={}):
     if key == 'crops':
         return clean_crops(key, value)
     elif key == 'animals':
-        return clean_animals(key, value)
+        key, value = clean_animals(key, value)
+        return replace_obsolete_animals(key, value)
     elif key == 'minerals':
         return clean_minerals(key, value)
     elif key in ('point_lat', 'point_lon'):
         return clean_coordinates(key, value)
     elif key == 'target_country':
         return clean_target_country(key, value)
-    elif key == 'animals':
-        return replace_obsolete_animals(key, value)
     elif key == 'negotiation_status':
         return rename_negotiation_status(key, value)
     elif key == 'level_of_accuracy':
