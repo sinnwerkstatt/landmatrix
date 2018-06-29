@@ -74,6 +74,7 @@ def clean_crops(key, value):
     key, value = replace_obsolete_crops(key, value)
     return key, value
 
+
 def clean_animals(key, value):
     from old_editor.models import Animal
     #if value == ' Tilapia Fish':
@@ -186,8 +187,8 @@ def clean_attribute(key, value, old_values={}):
     if key == 'crops':
         return clean_crops(key, value)
     elif key == 'animals':
-        key, value = clean_animals(key, value)
-        return replace_obsolete_animals(key, value)
+        key, value = replace_obsolete_animals(key, value)
+        return clean_animals(key, value)
     elif key == 'minerals':
         return clean_minerals(key, value)
     elif key in ('point_lat', 'point_lon'):
