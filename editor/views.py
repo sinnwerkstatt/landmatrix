@@ -71,13 +71,16 @@ class FilteredQuerysetMixin:
 class LatestActivitiesMixin(FilteredQuerysetMixin):
 
     def get_latest_added_queryset(self):
-        return self.get_filtered_activity_queryset().active().distinct()
+        added = self.get_filtered_activity_queryset().active()
+        return added.filter(id__in=added.latest_only())
 
     def get_latest_modified_queryset(self):
-        return self.get_filtered_activity_queryset().overwritten().distinct()
+        modified = self.get_filtered_activity_queryset().overwritten()
+        return modified.filter(id__in=modified.latest_only())
 
     def get_latest_deleted_queryset(self):
-        return self.get_filtered_activity_queryset().deleted().distinct()
+        deleted = self.get_filtered_activity_queryset().deleted()
+        return deleted.filter(id__in=deleted.latest_only())
 
 
 class PendingChangesMixin(FilteredQuerysetMixin):
