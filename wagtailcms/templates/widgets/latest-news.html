@@ -11,7 +11,7 @@
               <h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h3>
               <p>{{ item.body|richtext|truncatewords_html:50 }}</p>
               <p>
-                <a href="{{ item.get_absolute_url }}" class="btn">{% trans "Read more" %}</a>
+                <a href="/news/{{ item.slug }}/" class="btn">{% trans "Read more" %}</a>
               </p>
             </div>
           </div>
