@@ -137,7 +137,7 @@ if __name__ == '__main__':
             MapActivityAttributeGroup.map_all(save=options.save, verbose=options.verbose)
             #MapActivityAttributeGroup._done = True
             #MapPublicInterfaceCache.map_all(save=options.save, verbose=options.verbose)
-            #MapComment.map_all(save=options.save, verbose=options.verbose)
+            MapComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.country or options.all:
             pass
@@ -155,10 +155,9 @@ if __name__ == '__main__':
             MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
 
             MapStakeholderVentureInvolvement.map_all(save=options.save, verbose=options.verbose)
-            #MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)
+            MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.comment or options.all:
-            MapComment.map_all(save=options.save, verbose=options.verbose)
             MapDjangoComments.map_all(save=options.save, verbose=options.verbose)
             MapThreadedComments.map_all(save=options.save, verbose=options.verbose)
 
