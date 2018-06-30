@@ -68,10 +68,7 @@ class MapStakeholderComment(MapComment):
         investor = landmatrix.models.Investor.objects.using(V2).get(
             pk=sh_tag_group.fk_stakeholder_id
         )
-        if investor.comment:
-            investor.comment += '\n%s' % record['comment']
-        else:
-            investor.comment = record['comment']
+        investor.comment = record['comment']
         if save:
             investor.save(using=V2)
 
