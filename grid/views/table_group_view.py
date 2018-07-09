@@ -302,22 +302,23 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
         # Labels for all custom fields (fields that are not part of any form)
         columns = OrderedDict()
         order_by = self.get_order_by_field()[0]
-        for i, name in enumerate(self.columns):
+        for i, name in enumerate(self.get_columns()):
             label = None
-            if name in self.COLUMN_LABELS_MAP.keys():
-                label = self.COLUMN_LABELS_MAP[name]
+            column = name.replace('_display', '')
+            if column in self.COLUMN_LABELS_MAP.keys():
+                label = self.COLUMN_LABELS_MAP[column]
             else:
-                label = get_field_label(name)
-            columns[name] = {
+                label = get_field_label(column)
+            columns[column] = {
                 'label': label,
-                'name': name,
+                'name': column,
             }
             if self.group != 'all' and not self.group_value:
                 order_by_columns = ('deal_count', 'deal_size', 'availability')
                 if i == 0 or name in order_by_columns:
-                    columns[name]['order_by'] = '-'+name if name == order_by else name
+                    columns[column]['order_by'] = '-'+name if name == order_by else name
             else:
-                columns[name]['order_by'] = '-'+name if name == order_by else name
+                columns[column]['order_by'] = '-'+name if name == order_by else name
 
         return columns
 
