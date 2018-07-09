@@ -388,7 +388,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                 column += '_display'
             value = result.get(column, None)
             if value and hasattr(self, 'clean_{}'.format(column)):
-                value = getattr(self, 'clean_{}'.format(column))(value)
+                value = getattr(self, 'clean_{}'.format(column))(value, result)
             if not isinstance(value, (list, tuple)):
                 value = [value,]
             column = column.replace('_display', '')
@@ -408,7 +408,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                 if '_display' in columns[i]:
                     value['value'] = result[column]['buckets'][0]['key']
                 if value and hasattr(self, 'clean_{}'.format(column)):
-                    value = getattr(self, 'clean_{}'.format(column))(value)
+                    value = getattr(self, 'clean_{}'.format(column))(value, result)
                 item[column] = value
             else:
                 if column in result:
@@ -417,7 +417,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                     value = ''
                 column = column.replace('_display', '')
                 if value and hasattr(self, 'clean_{}'.format(column)):
-                    value = getattr(self, 'clean_{}'.format(column))(value)
+                    value = getattr(self, 'clean_{}'.format(column))(value, result)
                 if not isinstance(value, (list, tuple)):
                     value = [value, ]
                 item[column] = value
@@ -455,14 +455,14 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
         order_by = {order_by: dir}
         return order_by
 
-    def clean_top_investors(self, value, group=False):
+    def clean_top_investors(self, value, result):
         investors = []
         for investor in value.split('|'):
             investor = investor.split('#')
             investors.append({'id': investor[0], 'name': investor[1]})
         return investors
 
-    def clean_intention(self, value):
+    def clean_intention(self, value, result):
         if isinstance(value, (list, tuple)):
             intentions = [INTENTION_MAP.get(intention) for intention in value]
             return list(filter(None, intentions))
@@ -478,7 +478,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                 value['is_parent'] = True
                 return value
 
-    def clean_crops(self, value):
+    def clean_crops(self, value, result):
         if isinstance(value, dict):
             crop = Crop.objects.get(pk=value['value']).name
             return {
@@ -487,6 +487,22 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             }
         else:
             return Crop.objects.get(pk=value).name
+
+    #def clean_target_country_display(self, value, result):
+    #    values = list(zip(result.get('target_country', []), value))
+    #    return values
+
+    #def clean_target_region_display(self, value, result):
+    #    values = list(zip(result.get('target_region', []), value))
+    #    return values
+
+    #def clean_investor_country_display(self, value, result):
+    #    values = list(zip(result.get('investor_country', []), value))
+    #    return values
+
+    #def clean_investor_region_display(self, value, result):
+    #    values = list(zip(result.get('investor_region', []), value))
+    #    return values
 
     # def _process_investor_name(self, value):
     #     if not isinstance(value, list):
