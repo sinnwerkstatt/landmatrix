@@ -657,7 +657,8 @@ class Activity(ActivityBase):
     def get_availability(self):
         queryset = self.attributes
         queryset = queryset.filter(models.Q(value__isnull=False) | models.Q(value2__isnull=False))
-        return queryset.count() / self.get_availability_total() * 100
+        queryset = set(queryset.values_list(name, flat=True))
+        return len(queryset) / self.get_availability_total() * 100
 
     def get_availability_total(self):
         from django.apps import apps
