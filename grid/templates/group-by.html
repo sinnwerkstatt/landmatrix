@@ -105,20 +105,20 @@
                     </a>
                     {% endwith %}
                 </td>
-              {% elif "operating_company_fk_country" == column %}
+              {% elif "investor_country" == column %}
                 <td class="{{ column }} investor-country">
-                  {% if item.operating_company_fk_country %}
-                    <a href="{% url 'table_list' group='by-investor-country' %}{{ item.operating_company_fk_country.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
-                        {{ item.operating_company_fk_country.display }}</a><br/>
+                  {% if item.investor_country %}
+                    <a href="{% url 'table_list' group='by-investor-country' %}{{ item.investor_country.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                        {{ item.investor_country.display }}</a><br/>
                   {% else %}
                       {% trans "Unknown" %}
                   {% endif %}
                 </td>
-              {% elif "operating_company_region" == column %}
+              {% elif "investor_region" == column %}
                 <td class="{{ column }} investor-region">
-                  {% if item.operating_company_region %}
-                    <a href="{% url 'table_list' group='by-investor-region' %}{{ item.operating_company_region.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
-                        {{ item.operating_company_region.display }}</a><br/>
+                  {% if item.investor_region %}
+                    <a href="{% url 'table_list' group='by-investor-region' %}{{ item.investor_region.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                        {{ item.investor_region.display }}</a><br/>
                   {% else %}
                       {% trans "Unknown" %}
                   {% endif %}
