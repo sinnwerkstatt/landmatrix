@@ -102,6 +102,8 @@ def get_elasticsearch_properties(doc_type=None):
                 'operating_company_region_display': {'type': 'keyword'},
                 'agricultural_produce': {'type': 'keyword'},
                 'availability': {'type': 'float'},
+                'operating_company_name': {'type': 'keyword'},
+                'operating_company_fk_country_display': {'type': 'keyword'},
             }
         }
         _landmatrix_mappings['location'] = {
@@ -286,13 +288,12 @@ class ElasticSearch(object):
                         self.stderr and self.stderr.write(msg)
 
     def index_activity_documents(self, activity_identifiers=[], doc_types=DOC_TYPES_ACTIVITY):
-        activity_identifiers = activity_identifiers or set(HistoricalActivity.objects.filter(
-            fk_status__in=(
-                HistoricalActivity.STATUS_ACTIVE, HistoricalActivity.STATUS_PENDING, 
-                HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED
-            )).values_list('activity_identifier', flat=True).distinct())
-        #activity_identifiers = list(activity_identifiers)[:5]
-        #activity_identifiers = [352,]
+        if not activity_identifiers:
+            activity_identifiers = activity_identifiers or set(HistoricalActivity.objects.filter(
+                fk_status__in=(
+                    HistoricalActivity.STATUS_ACTIVE, HistoricalActivity.STATUS_PENDING,
+                    HistoricalActivity.STATUS_OVERWRITTEN, HistoricalActivity.STATUS_DELETED
+                )).values_list('activity_identifier', flat=True).distinct())
         for doc_type in doc_types:
             docs = []
             # Collect documents

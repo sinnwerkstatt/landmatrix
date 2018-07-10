@@ -21,8 +21,8 @@
                                aria-haspopup="true"
                                aria-expanded="false"><span>{% trans "By Target" %} <span class="caret"></span></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="{% url 'table_list' group='by-target-region' %}{% filter_query_params %}">{% trans "By Target Region" %}</a></li>
-                                <li><a href="{% url 'table_list' group='by-target-country' %}{% filter_query_params %}">{% trans "By Target Country" %}</a></li>
+                                <li><a href="{% url 'table_list' group='by-target-region' %}{% regional_params %}">{% trans "By Target Region" %}</a></li>
+                                <li><a href="{% url 'table_list' group='by-target-country' %}{% regional_params %}">{% trans "By Target Country" %}</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -30,23 +30,23 @@
                                aria-haspopup="true"
                                aria-expanded="false"><span>{% trans "By Investor" %} <span class="caret"></span></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="{% url 'table_list' group='by-investor-name' %}{% filter_query_params %}">{% trans "By Investor" %}</a></li>
-                                <li><a href="{% url 'table_list' group='by-investor-region' %}{% filter_query_params %}">{% trans "By Investor Region" %}</a></li>
-                                <li><a href="{% url 'table_list' group='by-investor-country' %}{% filter_query_params %}">{% trans "By Investor Country" %}</a></li>
+                                <li><a href="{% url 'table_list' group='by-investor-name' %}{% regional_params %}">{% trans "By Investor" %}</a></li>
+                                <li><a href="{% url 'table_list' group='by-investor-region' %}{% regional_params %}">{% trans "By Investor Region" %}</a></li>
+                                <li><a href="{% url 'table_list' group='by-investor-country' %}{% regional_params %}">{% trans "By Investor Country" %}</a></li>
                             </ul>
                         </li>
                         <li>
-                            <a href="{% url 'table_list' group='by-data-source-type' %}{% filter_query_params %}" role="button">
+                            <a href="{% url 'table_list' group='by-data-source-type' %}{% regional_params %}" role="button">
                                 {% trans "By Data Source" %}
                             </a>
                         </li>
                         <li>
-                            <a href="{% url 'table_list' group='by-intention' %}{% filter_query_params %}" role="button">
+                            <a href="{% url 'table_list' group='by-intention' %}{% regional_params %}" role="button">
                                {% trans "By Intention" %}
                            </a>
                         </li>
                         <li>
-                            <a href="{% url 'table_list' group='by-crop' %}{% filter_query_params %}" role="button">
+                            <a href="{% url 'table_list' group='by-crop' %}{% regional_params %}" role="button">
                                 {% trans "By Crop" %}
                             </a>
                         </li>
@@ -54,7 +54,7 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a href="{% url 'data' %}{% filter_query_params %}" role="button"><span>{% trans "All deals" %}</span></a>
+                            <a href="{% url 'data' %}{% regional_params %}" role="button"><span>{% trans "All deals" %}</span></a>
                         </li>
                     </ul>
                 </div>

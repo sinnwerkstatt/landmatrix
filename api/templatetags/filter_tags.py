@@ -26,18 +26,29 @@ def filter_query_params(context):
 
 @register.simple_tag(takes_context=True)
 def regional_params(context):
+    # Check for country/region in context
     country = context.get('country', '')
-    region = context.get('region', '')
-    page = context.get('page', '')
-    request = context.get('request', '')
     if country:
         return '?country={}'.format(country.id)
-    elif region:
+    region = context.get('region', '')
+    if region:
         return '?region={}'.format(region.id)
-    elif hasattr(page, 'country'):
+
+    # Check for country/region in page
+    page = context.get('page', '')
+    if hasattr(page, 'country'):
         return '?country={}'.format(page.country.id)
     elif hasattr(page, 'region'):
         return '?region={}'.format(page.region.id)
-    elif request.GET:
-        return '?{}'.format(request.GET.urlencode())
+
+    # Check for country/region in request params or fallback to all params
+    request = context.get('request', '')
+    if request.GET:
+        if 'country' in request.GET:
+            return '?country={}'.format(request.GET.get('country'))
+        elif 'region' in request.GET:
+            return '?region={}'.format(request.GET.get('region'))
+        else:
+            return '?{}'.format(request.GET.urlencode())
+
     return ''
