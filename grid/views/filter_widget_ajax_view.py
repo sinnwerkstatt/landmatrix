@@ -32,6 +32,7 @@ class FilterWidgetAjaxView(APIView):
     FIELD_NAME_TYPE_MAPPING = {
         'activity_identifier': TYPE_NUMERIC,
         'fully_updated': TYPE_DATE,
+        'fully_updated_date': TYPE_DATE,
         'last_modification': TYPE_DATE,
         'fully_updated_by': TYPE_LIST,
     }
