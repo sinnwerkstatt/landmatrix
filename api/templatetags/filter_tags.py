@@ -49,6 +49,7 @@ def regional_params(context):
         elif 'region' in request.GET:
             return '?region={}'.format(request.GET.get('region'))
         else:
-            return '?{}'.format(request.GET.urlencode())
+            return ''
+            #return '?{}'.format(request.GET.urlencode())
 
     return ''
