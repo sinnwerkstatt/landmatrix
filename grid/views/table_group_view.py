@@ -178,6 +178,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
         return results
 
     def get_group_value_query(self, query):
+        # FIXME: Merge with ExportView.get_group_value_query into Mixin
         if not 'bool' in query:
             query['bool'] = {}
         if not 'filter' in query['bool']:

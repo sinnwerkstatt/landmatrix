@@ -21,7 +21,7 @@ from grid.views.filter_widget_mixin import FilterWidgetMixin
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from api.views.list_views import ElasticSearchMixin
-from landmatrix.models import Activity, InvestorVentureInvolvement
+from landmatrix.models import Activity, InvestorVentureInvolvement, Crop, Country, Region
 from landmatrix.models.investor import InvestorBase
 
 
@@ -37,6 +37,40 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             self.remove_country_region_filter()
         self.set_default_filters(data)
         return super().dispatch(request, *args, **kwargs)
+
+    def get_group_value_query(self, query):
+        # FIXME: Merge with TableGroupView.get_group_value_query into Mixin
+        group = self.kwargs.get('group', '')
+        group_value = self.kwargs.get('group_value', '')
+        if not (group and group_value):
+            return query
+
+        if not 'bool' in query:
+            query['bool'] = {}
+        if not 'filter' in query['bool']:
+            query['bool']['filter'] = []
+        # Deslugify model choices
+        if 'country' in group:
+            country = Country.objects.get(slug=group_value)
+            filter_value = country.id
+        elif 'region' in group:
+            region = Region.objects.get(slug=group_value)
+            filter_value = region.id
+        elif 'crop' in group:
+            crop = Crop.objects.get(slug=group_value)
+            filter_value = crop.id
+        else:
+            filter_value = group_value
+        query['bool']['filter'].append({
+            'bool': {
+                'filter': {
+                    'term': {
+                        group: filter_value
+                    }
+                }
+            }
+        })
+        return query
 
     def get(self, request, *args, **kwargs):
         format = kwargs.pop('format').lower()
@@ -58,6 +92,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             }
         else:
             query = self.create_query_from_filters()
+            query = self.get_group_value_query(query)
         sort = ['activity_identifier',]
 
         results = {}
@@ -412,6 +447,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             return str(value).encode('unicode_escape').decode('utf-8')
         else:
             return value
+
 
 class AllDealsExportView(AllDealsView, ExportView):
     def dispatch(self, request, *args, **kwargs):
