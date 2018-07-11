@@ -53,8 +53,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
     COLUMN_GROUPS = {
         "target_country": ["target_country_display", "target_region_display", "intention"],
         "target_region": ["target_region_display", "intention"],
-        "investor_name": ["operating_company_investor_identifier", "operating_company_name",
-                          "operating_company_fk_country_display", "intention"],
+        "investor_name": ["investor_id", "investor_name", "investor_country_display", "intention"],
         "investor_country": ["investor_country_display", "intention"],
         "investor_region": ["investor_region_display",],
         "intention": ["intention",],

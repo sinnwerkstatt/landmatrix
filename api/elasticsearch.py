@@ -60,7 +60,7 @@ FIELD_TYPE_MAPPING = {
 FIELD_TYPE_FALLBACK = 'text'
 
 DOC_TYPES_ACTIVITY = ('deal', 'location', 'data_source', 'contract', 'involvement_size')
-DOC_TYPES_INVESTOR = ('investor', 'involvement')
+DOC_TYPES_INVESTOR = ('investor', 'involvement', 'top_investor')
 
 _landmatrix_mappings = None
 
@@ -91,6 +91,8 @@ def get_elasticsearch_properties(doc_type=None):
                 'deal_size': {'type': 'integer'},
                 'deal_country': {'type': 'keyword'},
                 'top_investors': {'type': 'keyword'},
+                'investor_id': {'type': 'keyword'},
+                'investor_name': {'type': 'keyword'},
                 'investor_country': {'type': 'keyword'},
                 'investor_country_display': {'type': 'keyword'},
                 'investor_region': {'type': 'keyword'},
@@ -102,8 +104,6 @@ def get_elasticsearch_properties(doc_type=None):
                 'operating_company_region_display': {'type': 'keyword'},
                 'agricultural_produce': {'type': 'keyword'},
                 'availability': {'type': 'float'},
-                'operating_company_name': {'type': 'keyword'},
-                'operating_company_fk_country_display': {'type': 'keyword'},
             }
         }
         _landmatrix_mappings['location'] = {
@@ -424,6 +424,8 @@ class ElasticSearch(object):
                     'current_negotiation_status': public_activity.get_negotiation_status(),
                     'current_implementation_status': public_activity.get_implementation_status(),
                     'top_investors': public_activity.format_investors(top_investors),
+                    'investor_id': [i.investor_identifier for i in top_investors],
+                    'investor_name': [i.name for i in top_investors],
                     'investor_country': [c.id for c in investor_countries],
                     'investor_country_display': [c.name for c in investor_countries],
                     'investor_region': list(set(c.fk_region_id for c in investor_countries)),
