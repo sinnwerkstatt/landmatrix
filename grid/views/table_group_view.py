@@ -213,7 +213,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             self.group: {
                 'terms': {
                     'field': fields[0],
-                    'size': 1000,
+                    'size': 10000,
                     'order': self.order_by,
                 },
                 'aggs': {
