@@ -118,6 +118,8 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
     group = None
     group_value = None
 
+    group_values = {}
+
     def get_context_data(self, group, group_value=None):
         self.group = group or self.DEFAULT_GROUP
         self.group = self.group.replace("by-", "").replace("-", "_")
@@ -166,6 +168,17 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
 
         if aggs:
             results = results[self.group]['buckets']
+
+            # Cache investors (for name and country)
+            if self.group == 'investor_name':
+                investors = {}
+                for investor in self.execute_elasticsearch_query({}, doc_type='investor'):
+                    investor = investor['_source']
+                    investors[str(investor['investor_identifier'])] = {
+                        'name': investor['name'],
+                        'fk_country_display': investor['fk_country_display'],
+                    }
+                self.group_values = investors
         else:
             results = self.filter_returned_results(results)
 
@@ -225,7 +238,12 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                         'avg': {
                             'field': 'availability'
                         }
-                    }
+                    },
+                    'all': {
+                        'terms': {
+                            'field': fields[0]
+                        }
+                    },
                 }
             }
         }
@@ -488,6 +506,26 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             }
         else:
             return Crop.objects.get(pk=value).name
+
+    def clean_investor_name(self, value, result):
+        if self.group_values:
+            investor = self.group_values.get(result['key'], None)
+            if investor:
+                return investor['name']
+            else:
+                return ''
+        else:
+            return value
+
+    def clean_investor_country(self, value, result):
+        if self.group_values:
+            investor = self.group_values.get(result['key'], None)
+            if investor:
+                return investor['fk_country_display']
+            else:
+                return ''
+        else:
+            return value
 
     #def clean_target_country_display(self, value, result):
     #    values = list(zip(result.get('target_country', []), value))

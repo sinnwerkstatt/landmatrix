@@ -96,9 +96,9 @@
                     {% trans "Unknown" %}
                   {% endif %}
                 </td>
-              {% elif column == "operating_company_investor_identifier" %}
+              {% elif column == "investor_id" %}
                 <td class="{{ column }}">
-                    {% with item.operating_company_investor_identifier as id %}
+                    {% with item.investor_id as id %}
                     <a href="{% url 'table_list' group='by-investor-name' %}{{ id.value }}/?{% add_or_update_param request.GET 'order_by' '' %}"
                        class="label label-default">
                         {{ id.value }}
