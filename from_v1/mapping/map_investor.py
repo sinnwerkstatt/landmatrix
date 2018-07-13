@@ -12,9 +12,9 @@ from django.db import connections
 
 
 def get_country_for_primary_investor(pi_id):
-    inv = old_editor.models.Involvement.objects.using(V1).filter(fk_primary_investor_id=pi_id)
-    if inv.count() > 0:
-        activity = inv[0].fk_activity
+    invs = old_editor.models.Involvement.objects.using(V1).filter(fk_primary_investor_id=pi_id)
+    for inv in invs:
+        activity = inv.fk_activity
         if activity:
             target_country = old_editor.models.A_Key_Value_Lookup.objects.using(V1).filter(activity_identifier=activity.activity_identifier, key="target_country")
             if target_country:

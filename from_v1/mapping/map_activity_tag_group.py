@@ -139,8 +139,8 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
         for tag in tag_group.a_tag_set.all():
             key = tag.fk_a_key.key
             value = tag.fk_a_value.value
-            if key in attributes:
-                old_values[key]['values'].append(value)
+            if key in old_values:
+                old_values[key].append(value)
             else:
                 old_values[key] = [value]
         for tag in tag_group.a_tag_set.all():
