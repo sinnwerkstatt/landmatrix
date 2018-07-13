@@ -240,7 +240,7 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
                     # id=cls.get_last_id() + 1,
                     fk_activity_id=activity_id,
                     fk_language_id=1,
-                    fk_group=tag_aag.id,
+                    fk_group_id=tag_aag.id,
                     name='intention',
                     value='Concession',
                     date=None,
