@@ -136,13 +136,14 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
 
         attributes = {}
         old_values = {}
-        for tag in tag_group.a_tag_set.all():
-            key = tag.fk_a_key.key
-            value = tag.fk_a_value.value
-            if key in old_values:
-                old_values[key].append(value)
-            else:
-                old_values[key] = [value]
+        for tg in A_Tag_Group.objects.using(V1).filter(fk_activity=activity_id):
+            for tag in tg.a_tag_set.all():
+                key = tag.fk_a_key.key
+                value = tag.fk_a_value.value
+                if key in old_values:
+                    old_values[key].append(value)
+                else:
+                    old_values[key] = [value]
         for tag in tag_group.a_tag_set.all():
             key = tag.fk_a_key.key
             value = tag.fk_a_value.value
