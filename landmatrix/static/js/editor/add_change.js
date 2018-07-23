@@ -362,4 +362,10 @@ $(document).ready(function(){
         return false;
       }
     });
+
+    // Mark section as invalid on HTML5 validation error
+    $('form input').on('invalid', function(e) {
+        $(e.target).parents('.panel-default,.dynamic-form,.control-group').addClass('with-error');
+        $(e.target).parents('.panel-collapse').collapse('show');
+    });
 });
