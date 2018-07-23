@@ -61,6 +61,7 @@ ORDER BY activity_identifier
 
         versions = get_activity_versions(new)
         for i, version in enumerate(versions):
+            changeset = get_changeset(version)
             landmatrix.models.HistoricalActivity.objects.create(
                 id=version['id'],
                 activity_identifier=version['activity_identifier'],
@@ -68,7 +69,10 @@ ORDER BY activity_identifier
                 fk_status_id=version['fk_status_id'],
                 fully_updated=get_fully_updated(version['fully_updated']),
                 history_date=get_history_date(versions, i),
-                history_user=get_history_user(version)
+                history_user=changeset and changeset.fk_user or None,
+                comment=changeset and changeset.comment or None
+                #history_user=get_history_user(version),
+                #comment=get_comment(version)
             )
             # Overwrite with latest active
             if version['fk_status_id'] not in (1, 5, 6):
@@ -115,6 +119,12 @@ def get_activity_versions(activity):
 
 
 def get_history_user(activity_record):
+    changeset = get_changeset(activity_record)
+    if changeset:
+        return changeset.fk_user
+
+
+def get_comment(activity_record):
     changeset = get_changeset(activity_record)
     if changeset:
         return changeset.fk_user

@@ -130,7 +130,6 @@ if __name__ == '__main__':
             #MapReviewDecision._done = True
             MapActivity.map_all(save=options.save, verbose=options.verbose)
             #MapActivity._done = True
-            #MapActivityChangeset._done = True
             MapActivityChangesetReview.map_all(save=options.save, verbose=options.verbose)
             #MapActivityChangesetReview._done = True
             MapActivityFeedback.map_all(save=options.save, verbose=options.verbose)
@@ -141,7 +140,7 @@ if __name__ == '__main__':
             MapComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.country or options.all:
-            MapActivityChangeset.map_all(save=options.save, verbose=options.verbose)
+            pass
             #MapCountry.map_all(save=options.save, verbose=options.verbose)
 
         if options.investor or options.all:
