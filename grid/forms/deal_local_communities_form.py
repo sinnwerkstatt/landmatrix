@@ -28,14 +28,9 @@ class DealLocalCommunitiesForm(BaseForm):
     COMMUNITY_CONSULTATION_CHOICES = (
         ("Not consulted", _("Not consulted")),
         ("Limited consultation", _("Limited consultation")),
-        (
-            "Free, Prior and Informed Consent (FPIC)",
-            _("Free, Prior and Informed Consent (FPIC)")
-        ),
-        (
-            "Certified Free, Prior and Informed Consent (FPIC)",
-            _("Certified Free, Prior and Informed Consent (FPIC)")
-        ),
+        ("Free prior and informed consent",  _("Free, Prior and Informed Consent (FPIC)")),
+        ("Certified Free, Prior and Informed Consent (FPIC)",
+         _("Certified Free, Prior and Informed Consent (FPIC)")),
         ("Other", _("Other")),
     )
     COMMUNITY_REACTION_CHOICES = (
