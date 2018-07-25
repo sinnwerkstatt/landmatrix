@@ -40,7 +40,6 @@ class OperationalStakeholderForm(BaseForm):
             data['operational_stakeholder'] = str(op.fk_investor.id)
         return data
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

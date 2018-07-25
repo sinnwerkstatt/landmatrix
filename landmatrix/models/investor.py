@@ -99,7 +99,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         abstract = True
 
     def __str__(self):
-        return self.name
+        return '%s (#%i)' % (self.name, self.investor_identifier)
 
     def save(self, *args, **kwargs):
         '''

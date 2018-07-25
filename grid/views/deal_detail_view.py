@@ -29,7 +29,6 @@ from grid.views.view_aux_functions import render_to_string, render_to_response
 from grid.forms.country_specific_forms import get_country_specific_form_classes
 
 
-
 FORMS = [
     ("location", PublicViewDealSpatialFormSet),
     ("general_information", DealGeneralForm),
