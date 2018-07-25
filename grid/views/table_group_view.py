@@ -333,10 +333,10 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             }
             if self.group != 'all' and not self.group_value:
                 order_by_columns = ('deal_count', 'deal_size', 'availability')
-                if i == 0 or name in order_by_columns:
-                    columns[column]['order_by'] = '-'+name if name == order_by else name
+                if i == 0 or column in order_by_columns:
+                    columns[column]['order_by'] = '-'+column if column == order_by else column
             else:
-                columns[column]['order_by'] = '-'+name if name == order_by else name
+                columns[column]['order_by'] = '-'+column if column == order_by else column
 
         return columns
 
