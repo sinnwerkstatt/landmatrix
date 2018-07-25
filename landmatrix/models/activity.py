@@ -652,7 +652,7 @@ class Activity(ActivityBase):
 
     def format_investors(self, investors):
         # First name, then ID to be able to sort by name
-        return '|'.join(['#'.join([i.name.replace('#', '').replace("\n", ''),
+        return '|'.join(['#'.join([i.name.replace('#', '').replace("\n", '').strip(),
                                    str(i.investor_identifier)])
                          for i in investors])
 
