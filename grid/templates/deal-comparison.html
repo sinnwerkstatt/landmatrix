@@ -23,10 +23,10 @@
       <div class="row">
         <div class="col-md-12">
           <div class="col-md-6">
-            <h4>{% trans "Selected version" %} <small>({{ deals.0.id }})</small></h4>
+            <h4>{% trans "Previous version" %} <small>({{ deals.1.id }})</small></h4>
           </div>
           <div class="col-md-6">
-            <h4>{% trans "Previous version" %} <small>({{ deals.1.id }})</small></h4>
+            <h4>{% trans "Selected version" %} <small>({{ deals.0.id }})</small></h4>
           </div>
         </div>
       </div>
@@ -47,21 +47,21 @@
                class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
             <div class="panel-body{% if not comparison_forms.2 %} bg-warning{% endif %}">
               <div class="col-md-6">
-              {% if comparison_forms.0.forms %}
-                {% for form in comparison_forms.0.forms %}
-                  {% include "includes/dealpanels-comparison.html" with form=form form_count=forloop.counter %}
-                {% endfor %}
-              {% else %}
-                {% include "includes/dealpanels-comparison.html" with form=comparison_forms.0 %}
-              {% endif %}
-              </div>
-              <div class="col-md-6">
               {% if comparison_forms.1.forms %}
                 {% for form in comparison_forms.1.forms %}
                   {% include "includes/dealpanels-comparison.html" with form=form form_count=forloop.counter %}
                 {% endfor %}
               {% else %}
                 {% include "includes/dealpanels-comparison.html" with form=comparison_forms.1 %}
+              {% endif %}
+              </div>
+              <div class="col-md-6">
+              {% if comparison_forms.0.forms %}
+                {% for form in comparison_forms.0.forms %}
+                  {% include "includes/dealpanels-comparison.html" with form=form form_count=forloop.counter %}
+                {% endfor %}
+              {% else %}
+                {% include "includes/dealpanels-comparison.html" with form=comparison_forms.0 %}
               {% endif %}
               </div>
             </div>
