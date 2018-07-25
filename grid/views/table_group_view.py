@@ -478,7 +478,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
         investors = []
         for investor in value.split('|'):
             investor = investor.split('#')
-            investors.append({'id': investor[0], 'name': investor[1]})
+            investors.append({'id': investor[1], 'name': investor[0]})
         return investors
 
     def clean_intention(self, value, result):

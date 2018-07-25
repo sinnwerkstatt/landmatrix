@@ -651,7 +651,9 @@ class Activity(ActivityBase):
             return None
 
     def format_investors(self, investors):
-        return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '').replace("\n", '')])
+        # First name, then ID to be able to sort by name
+        return '|'.join(['#'.join([i.name.replace('#', '').replace("\n", ''),
+                                   str(i.investor_identifier)])
                          for i in investors])
 
     def get_availability(self):
