@@ -9,6 +9,39 @@ from grid.forms.choices import actor_choices
 from grid.fields import TitleField, ActorsField
 from grid.widgets import CommentInput
 
+from django.utils.encoding import force_text
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
+
+
+class InvestorSelect(Select):
+    """Custom select to add data attributes to options"""
+    data = {}
+
+    def __init__(self, *args, **kwargs):
+        data = kwargs.pop('data', {})
+        if data:
+            self.data = data
+        super(InvestorSelect, self).__init__(*args, **kwargs)
+
+    def render_option(self, selected_choices, option_value, option_label):
+        if option_value is None:
+            option_value = ''
+        option_value = force_text(option_value)
+        if option_value in selected_choices:
+            selected_html = mark_safe(' selected="selected"')
+            if not self.allow_multiple_selected:
+                # Only allow for a single selection.
+                selected_choices.remove(option_value)
+        else:
+            selected_html = ''
+        data_attributes = self.data.get(option_value, {})
+        return format_html('<option value="{}"{}{}>{}</option>',
+                           option_value,
+                           ' '.join('data-%s=%s' % d for d in data_attributes.items()),
+                           selected_html,
+                           force_text(option_label))
+
 
 class OperationalStakeholderForm(BaseForm):
     exclude_in_export = ('operational_stakeholder',)
@@ -20,7 +53,7 @@ class OperationalStakeholderForm(BaseForm):
     operational_stakeholder = ModelChoiceField(
         required=False, label=_("Operating company"),
         queryset=Investor.objects.none(),
-        widget=Select(attrs={'class': 'form-control investorfield'}))
+        widget=InvestorSelect(attrs={'class': 'form-control investorfield'}))
     actors = ActorsField(
         required=False,
         label=_("Actors involved in the negotiation / admission process"),
@@ -34,8 +67,7 @@ class OperationalStakeholderForm(BaseForm):
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
         data = super().get_data(activity, group, prefix)
-        op = InvestorActivityInvolvement.objects.filter(
-            fk_activity__activity_identifier=activity.activity_identifier).first()
+        op = activity.involvements.order_by('-id')[0]
         if op:
             data['operational_stakeholder'] = str(op.fk_investor.id)
         return data
@@ -46,7 +78,13 @@ class OperationalStakeholderForm(BaseForm):
         # Show given/current value only, rest happens via ajax
         valid_choice = self.data.get('operational_stakeholder', self.initial.get('operational_stakeholder', None))
         if valid_choice:
-            self.fields['operational_stakeholder'].queryset = Investor.objects.filter(pk=valid_choice)
+            field = self.fields['operational_stakeholder']
+            field.queryset = Investor.objects.filter(pk=valid_choice)
+            field.widget.data = {
+                valid_choice: {
+                    'investor-identifier': field.queryset[0].investor_identifier
+                }
+            }
 
     class Meta:
         name = 'investor_info'

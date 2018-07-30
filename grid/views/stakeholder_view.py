@@ -1,14 +1,13 @@
-from django.views.generic.edit import CreateView, UpdateView
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic.edit import CreateView, UpdateView
 
 from grid.forms.investor_form import ParentInvestorForm, ParentStakeholderForm, OperationalCompanyForm
-from grid.forms.parent_investor_formset import (
-    ParentCompanyFormSet, ParentInvestorFormSet,
-)
-from landmatrix.models.investor import Investor, InvestorVentureInvolvement
+from grid.forms.parent_investor_formset import ParentCompanyFormSet, ParentInvestorFormSet
+from landmatrix.models.investor import HistoricalInvestor, HistoricalInvestorVentureInvolvement
 
 
 class InvestorFormsMixin:
@@ -17,11 +16,11 @@ class InvestorFormsMixin:
     '''
 
     def get_form_class(self):
-        investor = self.get_object()
+        hinvestor = self.get_object()
         # Check current role of investor
         role = self.request.GET.get('role', '')
         if not role:
-            if investor and investor.is_operating_company:
+            if hinvestor and hinvestor.is_operating_company:
                 role = 'operational_stakeholder'
             else:
                 role = 'parent_investor'
@@ -46,7 +45,7 @@ class InvestorFormsMixin:
         if self.object:
             queryset = self.object.venture_involvements.active()
         else:
-            queryset = InvestorVentureInvolvement.objects.none()
+            queryset = HistoricalInvestorVentureInvolvement.objects.none()
         queryset = queryset.order_by('fk_investor__name')
 
         return queryset
@@ -55,7 +54,8 @@ class InvestorFormsMixin:
         kwargs = self.get_formset_kwargs()
         kwargs['prefix'] = 'parent-company-form'
 
-        queryset = self.get_venture_involvements_queryset().filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
+        queryset = self.get_venture_involvements_queryset().filter(
+            role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE)
         kwargs['queryset'] = queryset
 
         return kwargs
@@ -64,7 +64,8 @@ class InvestorFormsMixin:
         kwargs = self.get_formset_kwargs()
         kwargs['prefix'] = 'parent-investor-form'
 
-        queryset = self.get_venture_involvements_queryset().filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
+        queryset = self.get_venture_involvements_queryset().filter(
+            role=HistoricalInvestorVentureInvolvement.INVESTOR_ROLE)
         kwargs['queryset'] = queryset
 
         return kwargs
@@ -88,8 +89,8 @@ class InvestorFormsMixin:
         role = self.request.GET.get('role', None)
         if not role:
             # Guess role
-            investor = self.get_object()
-            if investor and investor.is_operating_company:
+            hinvestor = self.get_object()
+            if hinvestor and hinvestor.is_operating_company:
                 context['role'] = 'operational_stakeholder'
             else:
                 context['role'] = 'parent_investor'
@@ -118,18 +119,15 @@ class InvestorFormsMixin:
         investors_formset_kwargs = self.get_investors_formset_kwargs()
 
         investor_form = self.get_form()
-        stakeholders_formset = ParentCompanyFormSet(
-            **stakeholders_formset_kwargs)
+        stakeholders_formset = ParentCompanyFormSet(**stakeholders_formset_kwargs)
         investors_formset = ParentInvestorFormSet(**investors_formset_kwargs)
 
         forms = (investor_form, stakeholders_formset, investors_formset)
 
         if all([form.is_valid() for form in forms]):
-            response = self.form_valid(investor_form, stakeholders_formset,
-                                       investors_formset)
+            response = self.form_valid(investor_form, stakeholders_formset, investors_formset)
         else:
-            response = self.form_invalid(investor_form, stakeholders_formset,
-                                         investors_formset)
+            response = self.form_invalid(investor_form, stakeholders_formset, investors_formset)
 
         return response
 
@@ -137,31 +135,23 @@ class InvestorFormsMixin:
 class ChangeStakeholderView(InvestorFormsMixin, UpdateView):
     template_name = 'stakeholder.html'
     context_object_name = 'investor'
-    model = Investor
+    model = HistoricalInvestor
 
     def get_object(self):
         # TODO: Cache result for user
         investor_id = self.kwargs.get('investor_id')
         history_id = self.kwargs.get('history_id')
+        queryset = HistoricalInvestor.objects
         try:
             if history_id:
-                investor = Investor.objects.get(id=history_id)
+                investor = queryset.get(id=history_id)
             else:
-                investor = Investor.objects.get(investor_identifier=investor_id)
-        except Investor.DoesNotExist as e:
+                investor = queryset.filter(investor_identifier=investor_id).latest()
+        except ObjectDoesNotExist as e:
             raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
-        except Investor.MultipleObjectsReturned as e:
-            # Get latest (this shouldn't happen though)
-            investor = Investor.objects.filter(investor_identifier=investor_id).order_by('-id').first()
-
-        can_change = self.request.user.has_perm('landmatrix.change_investor')
-        if investor.is_deleted and not can_change:
-            raise Http404('Investor %s has been deleted' % investor_id)
-
         return investor
 
-    def form_valid(self, investor_form, stakeholders_formset,
-                   investors_formset):
+    def form_valid(self, investor_form, stakeholders_formset, investors_formset):
         self.object = investor_form.save()
         stakeholders_formset.save(self.object)
         investors_formset.save(self.object)
@@ -190,7 +180,7 @@ class ChangeStakeholderView(InvestorFormsMixin, UpdateView):
 
 
 class AddStakeholderView(InvestorFormsMixin, CreateView):
-    model = Investor
+    model = HistoricalInvestor
     form_class = ParentInvestorForm
     template_name = 'stakeholder.html'
     context_object_name = 'investor'
@@ -225,8 +215,7 @@ class AddStakeholderView(InvestorFormsMixin, CreateView):
         )
         return HttpResponse(result)
 
-    def form_valid(self, investor_form, stakeholders_formset,
-                   investors_formset):
+    def form_valid(self, investor_form, stakeholders_formset, investors_formset):
         self.object = investor_form.save()
         stakeholders_formset.save(self.object)
         investors_formset.save(self.object)

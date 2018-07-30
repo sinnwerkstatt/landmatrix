@@ -66,6 +66,18 @@ class MapLOStakeholder(MapLOModel):
         new.fk_status_id = old.fk_status
         new.timestamp = old.timestamp_entry.replace(tzinfo=timezone.utc)
 
+        landmatrix.models.HistoricalInvestor.objects.create(
+            id=new.id,
+            investor_identifier=new.investor_identifier,
+            name=new.name,
+            fk_country=new.fk_country,
+            classification=new.classification,
+            fk_status=new.fk_status,
+            timestamp=new.timestamp,
+            homepage=new.homepage,
+            comment=new.comment
+        )
+
         if save:
             new.save(using=V2)
 

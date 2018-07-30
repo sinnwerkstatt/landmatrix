@@ -43,7 +43,7 @@ class Command(ElasticSearchMixin,
 
         for deal_id in missing:
             a = Activity.objects.get(activity_identifier=deal_id)
-            inv = a.investoractivityinvolvement_set.all()
+            inv = a.involvements.all()
             if a.fk_status_id not in (2,3):
                 missing_deals['status'].append(a)
             elif a.init_date and a.init_date < "1999-12-31":
@@ -55,7 +55,7 @@ class Command(ElasticSearchMixin,
 
         for deal_id in additional:
             a = Activity.objects.get(activity_identifier=deal_id)
-            inv = a.investoractivityinvolvement_set.all()
+            inv = a.involvements.all()
             if inv.count() == 0:
                 additional_deals['no_inv'].append(a)
             elif inv[0].fk_investor.venture_involvements.count() == 0:
@@ -66,7 +66,7 @@ class Command(ElasticSearchMixin,
         for key, value in missing_deals.items():
             self.stdout.write('-- MISSING: %i %s deals:' % (len(value), key))
             for a in value:
-                inv = a.investoractivityinvolvement_set.all()
+                inv = a.involvements.all()
                 if inv.count() > 0:
                     investor_name = inv[0].fk_investor.name
                 else:
@@ -87,7 +87,7 @@ class Command(ElasticSearchMixin,
         for key, value in additional_deals.items():
             self.stdout.write('-- ADDITIONAL: %i %s deals:' % (len(value), key))
             for a in value:
-                inv = a.investoractivityinvolvement_set.all()
+                inv = a.involvements.all()
                 if inv.count() > 0:
                     investor_name = inv[0].fk_investor.name
                 else:

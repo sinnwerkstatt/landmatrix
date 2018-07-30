@@ -1,12 +1,8 @@
-#from datetime import datetime
-
 from django.views.generic import TemplateView
 from django.db import transaction
 from django.contrib import messages
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User, Group
-from django.conf import settings
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -15,12 +11,11 @@ from django.http import HttpResponseForbidden
 from landmatrix.models.activity_attribute_group import (
     HistoricalActivityAttribute, ActivityAttributeGroup,
 )
-from landmatrix.models.activity import Activity, HistoricalActivity
-from landmatrix.models.investor import InvestorActivityInvolvement
-from landmatrix.models.activity_changeset import ActivityChangeset, ReviewDecision
+from landmatrix.models.activity import HistoricalActivity
+from landmatrix.models.investor import (HistoricalInvestor, InvestorActivityInvolvement,
+                                        HistoricalInvestorActivityInvolvement)
+from landmatrix.models.activity_changeset import ActivityChangeset
 from landmatrix.models.activity_feedback import ActivityFeedback
-from editor.models import UserRegionalInfo
-from grid.forms.public_user_information_form import PublicUserInformationForm
 from grid.forms.deal_employment_form import DealEmploymentForm
 from grid.forms.deal_general_form import DealGeneralForm
 from grid.forms.deal_overall_comment_form import DealOverallCommentForm
@@ -117,9 +112,9 @@ class SaveDealView(TemplateView):
         else:
             hactivity.fully_updated = False
         hactivity.save(update_elasticsearch=False)
+        self.create_involvement(hactivity, investor_form)
         if is_admin:
             hactivity.update_public_activity()
-        self.create_involvement(hactivity, investor_form)
 
         # Create activity feedback
         form = self.get_form_by_type(forms, DealActionCommentForm)
@@ -198,47 +193,20 @@ class SaveDealView(TemplateView):
         return action_comment
 
     def create_involvement(self, hactivity, form):
-        # FIXME
-        # Problem here: Involvements are not historical yet, but activity and investors are.
-        # As an intermediate solution we'll just create another involvement which links
-        # to the public activity, which will replace the current involvement when the
-        # historical activity gets approved.
-        activity = Activity.objects.filter(activity_identifier=hactivity.activity_identifier).first()
-
-        if not activity:
-            # Create a stub
-            activity = Activity.objects.create(activity_identifier=hactivity.activity_identifier)
-            hactivity.public_version = activity
-            hactivity.save()
-
         operational_stakeholder = form.cleaned_data['operational_stakeholder']
-        # Update operational stakeholder (involvement)
-        #involvements = InvestorActivityInvolvement.objects.filter(fk_activity=activity)
-        #if len(involvements) > 1:
-        #    raise MultipleObjectsReturned(
-        #        'More than one operational stakeholder for activity %s' % str(self.get_object())
-        #    )
-        #elif len(involvements):
-        #    involvement = involvements.last()
-        #    involvement.fk_investor = operational_stakeholder
-        #else:
         can_change_activity = self.request.user.has_perm('landmatrix.change_activity')
+        # Operating company given?
         if operational_stakeholder:
-            involvement = InvestorActivityInvolvement.objects.create(
-                fk_activity=activity,
-                fk_investor=operational_stakeholder,
-                fk_status_id=can_change_activity and activity.STATUS_ACTIVE or activity.STATUS_PENDING,
+            hinvestor = HistoricalInvestor.objects.public().order_by('-id')
+            hinvestor = hinvestor.filter(
+                investor_identifier=operational_stakeholder.investor_identifier
+            )[0]
+            hinvolvement = HistoricalInvestorActivityInvolvement.objects.create(
+                fk_activity=hactivity,
+                fk_investor=hinvestor,
+                fk_status_id=can_change_activity and hactivity.STATUS_ACTIVE or
+                             hactivity.STATUS_PENDING,
             )
-            involvement.save()
-        else:
-            involvements = InvestorActivityInvolvement.objects.filter(fk_activity=activity)
-            if involvements.count() > 0:
-                if can_change_activity:
-                    involvements.delete()
-                else:
-                    for involvement in involvements:
-                        involvement.fk_status = involvement.STATUS_TO_DELETE
-                        involvement.save()
 
     def get_form_by_type(self, forms, type):
         form = list(filter(lambda f: isinstance(f, type), forms))

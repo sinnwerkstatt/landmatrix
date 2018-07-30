@@ -1,11 +1,8 @@
-
 from django.utils import timezone
 
 from from_v1.mapping.map_model import MapModel
 import landmatrix.models
 import old_editor.models
-from from_v1.mapping.aux_functions\
-    import get_country_id_for_stakeholder
 from from_v1.migrate import V1, V2
 from from_v1.mapping.map_status import MapStatus
 from django.db import connections
@@ -25,8 +22,10 @@ def get_country_for_primary_investor(pi_id):
 def get_now(_):
     return timezone.now()
 
+
 def get_classification(_):
     return '10'
+
 
 class MapPrimaryInvestor(MapModel):
     @classmethod
@@ -55,21 +54,24 @@ ORDER BY pi.primary_investor_identifier
         if not save:
             return
 
-        landmatrix.models.HistoricalInvestor.objects.create(
-            id=new.id,
-            investor_identifier=new.investor_identifier,
-            name=new.name.strip(),
-            fk_country=new.fk_country,
-            classification=new.classification,
-            parent_relation=new.parent_relation,
-            homepage=new.homepage,
-            opencorporates_link=new.opencorporates_link,
-            fk_status=new.fk_status,
-            timestamp=new.timestamp,
-            comment=new.comment,
-            history_date=new.timestamp,
-            #history_user=get_history_user(new)
-        )
+        versions = get_primary_investor_versions(new)
+        for i, version in enumerate(versions):
+            landmatrix.models.HistoricalInvestor.objects.create(
+                id=version['id'],
+                investor_identifier=version['primary_investor_identifier'],
+                name=version['name'].strip(),
+                fk_country=get_country_for_primary_investor(version['id']),
+                classification=get_classification(version['id']),
+                fk_status_id=version['fk_status_id'],
+                history_date=get_now(version['id']),
+                #parent_relation=version['parent_relation'],
+                #homepage=version['homepage'],
+                #opencorporates_link=version['opencorporates_link'],
+                #comment=version['comment'],
+                #history_date=version['timestamp'],
+                #history_user=get_history_user(new)
+            )
+
         new.save(using=V2)
 
 
@@ -88,3 +90,9 @@ class MapInvestor(MapPrimaryInvestor):
         'fk_status': 'fk_status',
         'name': 'name',
     }
+
+
+def get_primary_investor_versions(investor):
+    return MapInvestor.old_class.objects.using(V1).filter(
+        primary_investor_identifier=investor.investor_identifier).order_by(
+        'version').values()

@@ -55,6 +55,9 @@ class MapLOInvolvements(MapLOModel):
         ivis = new_models.InvestorVentureInvolvement.objects.filter(
             fk_venture__comment__contains='Imported from Land Observatory',
             fk_investor__comment__contains='Imported from Land Observatory')
+        hivis = new_models.HistoricalInvestorVentureInvolvement.objects.filter(
+            fk_venture__comment__contains='Imported from Land Observatory',
+            fk_investor__comment__contains='Imported from Land Observatory')
 
         # Activity involvements between imported activity and investor
         # can be cleared
@@ -63,10 +66,17 @@ class MapLOInvolvements(MapLOModel):
             fk_activity__attributes__name='source',
             fk_activity__attributes__value='Land Observatory',
             fk_investor__comment__contains='Imported from Land Observatory')
+        hiais = new_models.HistoricalInvestorActivityInvolvement.objects.filter(
+            fk_activity__attributes__fk_group__name='imported',
+            fk_activity__attributes__name='source',
+            fk_activity__attributes__value='Land Observatory',
+            fk_investor__comment__contains='Imported from Land Observatory')
 
         if save:
             iais.delete()
+            hiais.delete()
             ivis.delete()
+            hivis.delete()
 
     @classmethod
     def map_record(cls, record, save=False, verbose=False):
@@ -191,12 +201,14 @@ class MapLOInvolvements(MapLOModel):
 
         if new_parent_investor:
             involvement = cls._get_new_venture_involvement(
-                fk_venture=new_parent_investor, fk_investor=new_investor,
+                fk_venture=new_parent_investor,
+                fk_investor=new_investor,
                 role=role)
             if not involvement:
                 involvement = new_models.InvestorVentureInvolvement(
                     fk_venture=new_parent_investor,
-                    fk_investor=new_investor, role=role)
+                    fk_investor=new_investor,
+                    role=role)
 
             if verbose:
                 print('Mapping secondary investor to venture {}'.format(
@@ -231,13 +243,13 @@ class MapLOInvolvements(MapLOModel):
             # Without a parent involvement, we create a new blank
             # operational stakeholder AND link it to the activity
 
-            new_parent_investor = new_models.Investor(
-                name='', fk_status_id=cls.IMPORT_STATUS_ID)
+            new_parent_investor = new_models.Investor(name='', fk_status_id=cls.IMPORT_STATUS_ID)
             if save:
                 new_parent_investor.save(using=V2)
 
             new_activity_involvement = new_models.InvestorActivityInvolvement(
-                fk_activity=new_activity, fk_investor=new_parent_investor,
+                fk_activity=new_activity,
+                fk_investor=new_parent_investor,
                 fk_status_id=cls.IMPORT_STATUS_ID)
             if save:
                 new_activity_involvement.save(using=V2)

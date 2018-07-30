@@ -1,8 +1,9 @@
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
-from landmatrix.models.investor import Investor, InvestorVentureInvolvement
+from landmatrix.models.investor import HistoricalInvestor, HistoricalInvestorVentureInvolvement
 from grid.fields import TitleField
+from grid.forms.base_form import FieldsDisplayFormMixin
 from grid.widgets import CommentInput
 from grid.utils import get_display_value
 
@@ -28,10 +29,12 @@ class InvestorVentureInvolvementForm(forms.ModelForm):
         return output
 
     class Meta:
-        model = InvestorVentureInvolvement
+        model = HistoricalInvestorVentureInvolvement
         exclude = []
 
-class ParentCompanyForm(InvestorVentureInvolvementForm):
+
+class ParentCompanyForm(FieldsDisplayFormMixin,
+                        InvestorVentureInvolvementForm):
 
     form_title = _('Parent companies')
 
@@ -40,7 +43,7 @@ class ParentCompanyForm(InvestorVentureInvolvementForm):
     )
     fk_investor = forms.ModelChoiceField(
         required=False, label=_("Existing parent company"),
-        queryset=Investor.objects.none(),
+        queryset=HistoricalInvestor.objects.none(),
         widget=forms.Select(attrs={'class': 'form-control investorfield'}))
     percentage = forms.DecimalField(
         required=False, max_digits=5, decimal_places=2,
@@ -53,13 +56,15 @@ class ParentCompanyForm(InvestorVentureInvolvementForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Show given/current value only, rest happens via ajax
-        valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get('fk_investor', None))
+        valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get(
+            'fk_investor', None))
         if valid_choice:
-            self.fields['fk_investor'].queryset = Investor.objects.filter(pk=valid_choice)
+            self.fields['fk_investor'].queryset = HistoricalInvestor.objects.filter(
+                pk=valid_choice)
 
     class Meta:
         name = 'parent-company'
-        model = InvestorVentureInvolvement
+        model = HistoricalInvestorVentureInvolvement
         fields = [
             'tg_parent_stakeholder', 'id', 'fk_investor', 'investment_type', 'percentage',
             'loans_amount', 'loans_date',
@@ -76,12 +81,12 @@ class ParentInvestorForm(ParentCompanyForm):
     )
     fk_investor = forms.ModelChoiceField(
         required=False, label=_("Existing investor"),
-        queryset=Investor.objects.none(),
+        queryset=HistoricalInvestor.objects.none(),
         widget=forms.Select(attrs={'class': 'form-control investorfield'}))
 
     class Meta:
         name = 'parent-investor'
-        model = InvestorVentureInvolvement
+        model = HistoricalInvestorVentureInvolvement
         fields = [
             'tg_parent_stakeholder', 'id', 'fk_investor', 'investment_type', 'percentage',
             'loans_amount', 'loans_date',
@@ -91,9 +96,11 @@ class ParentInvestorForm(ParentCompanyForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Show given/current value only, rest happens via ajax
-        valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get('fk_investor', None))
+        valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get(
+            'fk_investor', None))
         if valid_choice:
-            self.fields['fk_investor'].queryset = Investor.objects.filter(pk=valid_choice)
+            self.fields['fk_investor'].queryset = HistoricalInvestor.objects.filter(
+                pk=valid_choice)
 
 
 class BaseInvolvementFormSet(forms.BaseModelFormSet):
@@ -110,14 +117,14 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
                 continue
             instance.fk_venture = fk_venture
             instance.role = self.ROLE
-            instance.fk_status_id = Investor.STATUS_PENDING
+            instance.fk_status_id = HistoricalInvestor.STATUS_PENDING
             if commit:
                 instance.save()
 
         # Soft delete by setting status to deleted
         if self.deleted_objects:
             for deleted in self.deleted_objects:
-                deleted.fk_status_id = Investor.STATUS_DELETED
+                deleted.fk_status_id = HistoricalInvestor.STATUS_DELETED
                 if commit:
                     deleted.save()
 
@@ -126,7 +133,7 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
 
 class BaseCompanyFormSet(BaseInvolvementFormSet):
     form_title = _('Parent companies')
-    ROLE = InvestorVentureInvolvement.STAKEHOLDER_ROLE
+    ROLE = HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE
 
     class Meta:
         name = 'parent-company'
@@ -134,18 +141,18 @@ class BaseCompanyFormSet(BaseInvolvementFormSet):
 
 class BaseInvestorFormSet(BaseInvolvementFormSet):
     form_title = _('Tertiary investors/lenders')
-    ROLE = InvestorVentureInvolvement.INVESTOR_ROLE
+    ROLE = HistoricalInvestorVentureInvolvement.INVESTOR_ROLE
 
     class Meta:
         name = 'parent-investor'
 
 
 ParentCompanyFormSet = forms.modelformset_factory(
-    InvestorVentureInvolvement, form=ParentCompanyForm,
+    HistoricalInvestorVentureInvolvement, form=ParentCompanyForm,
     formset=BaseCompanyFormSet, extra=1, min_num=0, max_num=1,
     can_delete=True)
 
 ParentInvestorFormSet = forms.modelformset_factory(
-    InvestorVentureInvolvement, form=ParentInvestorForm,
+    HistoricalInvestorVentureInvolvement, form=ParentInvestorForm,
     formset=BaseInvestorFormSet, extra=1, min_num=0, max_num=1,
     can_delete=True)

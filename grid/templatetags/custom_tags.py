@@ -292,8 +292,13 @@ def get_user_role(user):
 
 
 @register.filter
-def history(activity, user):
-    return activity.get_history(user)
+def history(item, user):
+    return item.get_history(user)
+
+
+@register.filter
+def history_count(item, user):
+    return len(item.get_history(user))
 
 
 @register.filter

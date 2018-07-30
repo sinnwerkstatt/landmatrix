@@ -5,8 +5,8 @@
 {% endblock %}
 
 
-{% block page_title %}{% trans "Stakeholder history comparison" %}{% endblock %}
-{% block title %}{% trans "Stakeholder history comparison" %}{% endblock %}
+{% block page_title %}{% trans "Investor history comparison" %}{% endblock %}
+{% block title %}{% trans "Investor history comparison" %}{% endblock %}
 
 {% block breadcrumb_inner %}
     <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
@@ -16,68 +16,55 @@
 
 
 {% block content %}
-
-    <div class="row" id="comparison">
-
-        <div class="col-md-6{% if not comparison_forms.2 %} bg-warning{% endif %}">
-
-            <div class="panel-group" id="accordion">
-
-            {% if not comparison_forms.2 %}<strong>{% trans "Different" %}</strong>{% endif %}
-            {% if comparison_forms.0 %}
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                          {{ comparison_forms.0.form_title }}:
-                        </a>
-                      </h4>
-                    </div>
-
-                    <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
-                      <div class="panel-body">
-                          {% include "form.html" with form=comparison_forms.0 %}
-                      </div>
-                    </div>
-                </div>            {# class="panel panel-default" #}
-
-            {% endif %}           {# comparison_forms.0 #}
-
+    <div id="comparison">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="col-md-6">
+            <h4>{% trans "Previous version" %} <small>({{ investors.1.id }})</small></h4>
           </div>
-
-    </div>
-
-    <div class="col-md-6">
-
-        <div class="panel-group" id="accordion">
-
-        {% if not comparison_forms.2 %}<strong>{% trans "Different" %}</strong>{% endif %}
-
-        {% if comparison_forms.1 %}
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}">
-                      {{ comparison_forms.1.form_title }}:
-                    </a>
-                  </h4>
-                </div>
-
-                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
-                  <div class="panel-body">
-                    {% include "form.html" with form=comparison_forms.1 %}
-                  </div>
-                </div>
-
-            </div>            {# class="panel panel-default" #}
-
-            {% endif %}           {# comparison_forms.1 #}
-
+          <div class="col-md-6">
+            <h4>{% trans "Selected version" %} <small>({{ investors.0.id }})</small></h4>
           </div>
         </div>
-
+      </div>
+      <div class="panel-group" id="accordion">
+        {% for comparison_forms in forms %}
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ forloop.counter }}" class="{% if not comparison_forms.2 %}bg-warning{% endif %}" id="{{ comparison_forms.0.form_title|slugify }}">
+              <h5 class="panel-title">
+                  {{ comparison_forms.0.form_title }}
+                  <small>({% if not comparison_forms.2 %}{% trans "changed" %}{% else %}{% trans "no changes" %}{% endif %})</small>
+              <span id="collapsebtn_{{ forloop.counter }}"
+                    class="lm-chevron-circle-down pull-right mgrey1"></span>
+              </h5>
+            </a>
+          </div>
+          <div id="collapse_{{ forloop.counter }}"
+               class="panel-collapse collapse{% if not comparison_forms.2 %} in{% endif %}">
+            <div class="panel-body{% if not comparison_forms.2 %} bg-warning{% endif %}">
+              <div class="col-md-6">
+              {% if comparison_forms.1.forms %}
+                {% for form in comparison_forms.1.forms %}
+                  {% include "includes/investorpanels-comparison.html" with form=form form_count=forloop.counter %}
+                {% endfor %}
+              {% else %}
+                {% include "includes/investorpanels-comparison.html" with form=comparison_forms.1 %}
+              {% endif %}
+              </div>
+              <div class="col-md-6">
+              {% if comparison_forms.0.forms %}
+                {% for form in comparison_forms.0.forms %}
+                  {% include "includes/investorpanels-comparison.html" with form=form form_count=forloop.counter %}
+                {% endfor %}
+              {% else %}
+                {% include "includes/investorpanels-comparison.html" with form=comparison_forms.0 %}
+              {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
     </div>
-
 {% endblock %}

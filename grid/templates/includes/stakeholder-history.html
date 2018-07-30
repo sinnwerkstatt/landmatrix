@@ -1,10 +1,10 @@
 {% load i18n custom_tags %}
-{% if investor.history.count %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <a id="history" data-toggle="collapse" data-parent="#accordion" href="#collapse_history">
                             <h5 class="panel-title">
                                 {% trans "History" %}
+                                <small>({{ investor|history_count:user }} versions)</small>
                                 <span id="collapsebtn_history"
                                       class="lm-chevron-circle-down pull-right mgrey1"></span>
                             </h5>
@@ -15,7 +15,7 @@
                             <div class="col-sm-12">
                                 <table class="table">
                                     <tbody>
-                                    {% for item in investor.history.all %}
+                                    {% for item in investor|history:user %}
                                         <tr>
                                             <td>
                                                 {% if forloop.counter == 1 %}<strong>{% endif %}
@@ -39,7 +39,7 @@
                                             <td>
                                                 <p>
                                                 {% if not forloop.last %}
-                                                <a type="button" href="{% url 'compare_stakeholders' stakeholder_1=item.id %}">
+                                                <a type="button" href="{% url 'compare_investors' investor_1=item.id %}">
                                                     <i class="glyphicon glyphicon-transfer"></i> {% trans "Compare with previous version" %}
                                                 </a>
                                                 {% else %}
@@ -55,4 +55,3 @@
                         </div>
                     </div>
                 </div>
-{% endif %}

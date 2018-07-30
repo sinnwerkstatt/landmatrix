@@ -14,7 +14,211 @@ from grid.fields import (
 from grid.utils import get_display_value
 
 
-class BaseForm(forms.Form):
+class FieldsDisplayFormMixin(object):
+
+    def get_fields_display(self):
+        """Return fields for detail view"""
+        output = []
+        tg_title = ''
+        tg_items = []
+        for i, (field_name, field) in enumerate(self.base_fields.items()):
+
+            if field_name.startswith("tg_") and not field_name.endswith("_comment"):
+                #    value = self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name, [])
+                #    if field_name == 'tg_nature_comment':
+                #        raise IOError(value)
+                #    if value:
+                #        tg_items.append(field.label, value))
+                #    continue
+                if len(tg_items) > 0:
+                    output.append({
+                        'name': 'tg',
+                        'label': '',
+                        'value': tg_title,
+                    })
+                    output.extend(tg_items)
+                tg_title = field.initial
+                tg_items = []
+                continue
+            if isinstance(field, NestedMultipleChoiceField):
+                value = self.get_display_value_nested_multiple_choice_field(field, field_name)
+            elif isinstance(field, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
+                value = self.get_display_value_multiple_choice_field(field, field_name)
+            elif isinstance(field, forms.ModelChoiceField):
+                value = self.get_display_value_model_choice_field(field, field_name)
+            elif isinstance(field, forms.ChoiceField):
+                value = self.get_display_value_choice_field(field, field_name)
+            elif isinstance(field, AreaField):
+                value = self.get_display_value_area_field(field, field_name)
+            elif isinstance(field, forms.MultiValueField):
+                value = self.get_display_value_multi_value_field(field, field_name)
+            elif isinstance(field, forms.FileField):
+                value = self.get_display_value_file_field(field_name)
+            elif isinstance(field, forms.BooleanField):
+                value = self.get_display_value_boolean_field(field_name)
+            else:
+                value = self.initial.get(field_name, '')
+
+            if value:
+                tg_items.append({
+                    'name': field_name,
+                    'label': field.label,
+                    'value': value,
+                    # 'value': '%s %s' % (value, field.help_text),
+                })
+
+        if len(tg_items) > 0:
+            output.append({
+                'name': 'tg',
+                'label': '',
+                'value': tg_title,
+            })
+            output.extend(tg_items)
+        return output
+
+    def get_display_value_boolean_field(self, field_name):
+        data = self.initial.get(field_name,
+                                '')  # self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
+        if data == 'True':
+            return _('Yes')
+        elif data == 'False':
+            return _('No')
+        return ''
+
+    def get_display_value_file_field(self, field_name):
+        value = self.initial.get(field_name, '')
+        return value
+
+    def get_display_value_multi_value_field(self, field, field_name):
+        # todo - fails with historical deals?
+        data = self.initial.get(field_name,
+                                '')  # self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
+        values = []
+        if data:
+            for value in data.split('#'):
+                date_values = value.split(':')
+                current = date_values.pop()
+                date = date_values.pop()
+                if date_values:
+                    # Replace value with label for choice fields
+                    if isinstance(field.fields[0], forms.ChoiceField):
+                        selected = date_values[0].split(',')
+                        # Grouped choice field?
+                        if isinstance(list(field.fields[0].choices)[0][1], (list, tuple)):
+                            date_values[0] = []
+                            for group, items in field.fields[0].choices:
+                                date_value = ', '.join(
+                                    [str(l) for v, l in items if str(v) in selected])
+                                if date_value:
+                                    date_values[0].append(date_value)
+                            date_values[0] = ', '.join(date_values[0])
+                        else:
+                            date_values[0] = ', '.join(
+                                [str(l) for v, l in field.fields[0].choices if str(v) in selected])
+                    value = ''
+                    if date or current:
+                        value += '[%s] ' % ', '.join(
+                            filter(None, [date, (current and 'current' or '')]))
+                    value += date_values[0]
+                    if len(date_values) > 1:
+                        value2 = ', '.join(filter(None, date_values[1:]))
+                        if value2:
+                            value += _(' (%s ha)') % value2
+                else:
+                    value = ''
+                if value:
+                    values.append(value)
+        return '<br>'.join(values)
+
+    def get_display_value_choice_field(self, field, field_name):
+        data = self.initial.get(field_name)
+        if not data:
+            data = []
+        value = '<br>'.join([str(l) for v, l in field.choices if v and str(v) in data])
+        return value
+
+    #    def get_list_from_initial(self, field_name):
+    #        if isinstance(self.initial, MultiValueDict):
+    #            return self.initial.getlist(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+    #        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+    #        if data: data = [data]
+    #        return data
+
+    def get_display_value_area_field(self, field, field_name):
+        data = self.initial.get(field_name,
+                                [])  # self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        if data:
+            # Return serialized value for map
+            widget = field.widget.widgets[0]
+            context = widget.get_context('contract_area', data)
+            return {
+                'srid': widget.map_srid,
+                'serialized': context['serialized'],
+            }
+        else:
+            return {}
+
+    def get_display_value_multiple_choice_field(self, field, field_name):
+        data = self.initial.get(field_name,
+                                [])  # self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        value = '<br>'.join([str(l) for v, l in field.choices if str(v) in data])
+        return value
+
+    def get_display_value_nested_multiple_choice_field(self, field, field_name):
+        data = self.initial.get(field_name,
+                                [])  # self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        values = []
+        for v, l, c in field.choices:
+            value = ''
+            if str(v) in data:
+                value = str(l)
+            if c:
+                choices = ', '.join([str(l) for v, l in c if str(v) in data])
+                value = (value and '%s (%s)' % (value, choices)) or choices
+            if value:
+                values.append(value)
+        value = '<br>'.join(values)
+        return value
+
+    def get_display_value_model_choice_field(self, field, field_name):
+        value = self.initial.get(field_name,
+                                 [])  # self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
+        if value:
+            try:
+                # Use base queryset to handle none() querysets (used with ajax based widgets)
+                return str(field.queryset.model.objects.get(pk=value))
+            except (ValueError, AttributeError, ObjectDoesNotExist):
+                return ''
+        else:
+            return ''
+
+    @classmethod
+    def get_display_properties(cls, doc, formset=None):
+        """Get field display values for ES"""
+        output = {}
+        for name, field in cls.base_fields.items():
+            # Title field?
+            if name.startswith('tg_') and not name.endswith('_comment'):
+                continue
+            key = '%s_display' % name
+
+            values = doc.get(name)
+            if not values:
+                output[key] = []
+                continue
+            if not isinstance(values, (list, tuple)):
+                values = [values, ]
+            attr_key = '%s_attr' % name
+            attributes = attr_key in doc and doc.get(attr_key) or None
+
+            value = get_display_value(field, values, attributes, formset=formset)
+            if value:
+                output[key] = value
+        return output
+
+
+class BaseForm(FieldsDisplayFormMixin,
+               forms.Form):
     DEBUG = False
     error_css_class = "error"
 
@@ -268,195 +472,6 @@ class BaseForm(forms.Form):
     @classmethod
     def get_comments_from_groups(cls, groups):
         return dict([(k, v) for group in [g for g in groups if g] for (k, v) in group.attributes.items() if '_comment' in k])
-
-    def get_fields_display(self):
-        """Return fields for detail view"""
-        output = []
-        tg_title = ''
-        tg_items = []
-        for i, (field_name, field) in enumerate(self.base_fields.items()):
-
-            if field_name.startswith("tg_") and not field_name.endswith("_comment"):
-                #    value = self.initial.get(self.prefix and "%s-%s"%(self.prefix, field_name) or field_name, [])
-                #    if field_name == 'tg_nature_comment':
-                #        raise IOError(value)
-                #    if value:
-                #        tg_items.append(field.label, value))
-                #    continue
-                if len(tg_items) > 0:
-                    output.append({
-                        'name': 'tg',
-                        'label': '',
-                        'value': tg_title,
-                    })
-                    output.extend(tg_items)
-                tg_title = field.initial
-                tg_items = []
-                continue
-            if isinstance(field, NestedMultipleChoiceField):
-                value = self.get_display_value_nested_multiple_choice_field(field, field_name)
-            elif isinstance(field, (forms.ModelMultipleChoiceField, forms.MultipleChoiceField)):
-                value = self.get_display_value_multiple_choice_field(field, field_name)
-            elif isinstance(field, forms.ModelChoiceField):
-                value = self.get_display_value_model_choice_field(field, field_name)
-            elif isinstance(field, forms.ChoiceField):
-                value = self.get_display_value_choice_field(field, field_name)
-            elif isinstance(field, AreaField):
-                value = self.get_display_value_area_field(field, field_name)
-            elif isinstance(field, forms.MultiValueField):
-                value = self.get_display_value_multi_value_field(field, field_name)
-            elif isinstance(field, forms.FileField):
-                value = self.get_display_value_file_field(field_name)
-            elif isinstance(field, forms.BooleanField):
-                value = self.get_display_value_boolean_field(field_name)
-            else:
-                value = self.initial.get(field_name, '')
-
-            if value:
-                tg_items.append({
-                    'name': field_name,
-                    'label': field.label,
-                    'value': value,
-                    #'value': '%s %s' % (value, field.help_text),
-                })
-
-        if len(tg_items) > 0:
-            output.append({
-                'name': 'tg',
-                'label': '',
-                'value': tg_title,
-            })
-            output.extend(tg_items)
-        return output
-
-    def get_display_value_boolean_field(self, field_name):
-        data = self.initial.get(field_name, '')#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
-        if data == 'True':
-            return _('Yes')
-        elif data == 'False':
-            return _('No')
-        return ''
-
-    def get_display_value_file_field(self, field_name):
-        value = self.initial.get(field_name, '')
-        return value
-
-    def get_display_value_multi_value_field(self, field, field_name):
-        # todo - fails with historical deals?
-        data = self.initial.get(field_name, '')#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, '')
-        values = []
-        if data:
-            for value in data.split('#'):
-                date_values = value.split(':')
-                current = date_values.pop()
-                date = date_values.pop()
-                if date_values:
-                    # Replace value with label for choice fields
-                    if isinstance(field.fields[0], forms.ChoiceField):
-                        selected = date_values[0].split(',')
-                        # Grouped choice field?
-                        if isinstance(list(field.fields[0].choices)[0][1], (list, tuple)):
-                            date_values[0] = []
-                            for group, items in field.fields[0].choices:
-                                date_value = ', '.join([str(l) for v, l in items if str(v) in selected])
-                                if date_value:
-                                    date_values[0].append(date_value)
-                            date_values[0] = ', '.join(date_values[0])
-                        else:
-                            date_values[0] = ', '.join([str(l) for v, l in field.fields[0].choices if str(v) in selected])
-                    value = ''
-                    if date or current:
-                        value += '[%s] ' % ', '.join(filter(None, [date, (current and 'current' or '')]))
-                    value += date_values[0]
-                    if len(date_values) > 1:
-                        value2 = ', '.join(filter(None, date_values[1:]))
-                        if value2:
-                            value += _(' (%s ha)') % value2
-                else:
-                    value = ''
-                if value:
-                    values.append(value)
-        return '<br>'.join(values)
-
-    def get_display_value_choice_field(self, field, field_name):
-        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        value = '<br>'.join([str(l) for v, l in field.choices if v and str(v) in data])
-        return value
-
-#    def get_list_from_initial(self, field_name):
-#        if isinstance(self.initial, MultiValueDict):
-#            return self.initial.getlist(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-#        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-#        if data: data = [data]
-#        return data
-
-    def get_display_value_area_field(self, field, field_name):
-        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        if data:
-            # Return serialized value for map
-            widget = field.widget.widgets[0]
-            context = widget.get_context('contract_area', data)
-            return {
-                'srid': widget.map_srid,
-                'serialized': context['serialized'],
-            }
-        else:
-            return {}
-
-    def get_display_value_multiple_choice_field(self, field, field_name):
-        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        value = '<br>'.join([str(l) for v, l in field.choices if str(v) in data])
-        return value
-
-    def get_display_value_nested_multiple_choice_field(self, field, field_name):
-        data = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        values = []
-        for v, l, c in field.choices:
-            value = ''
-            if str(v) in data:
-                value = str(l)
-            if c:
-                choices = ', '.join([str(l) for v, l in c if str(v) in data])
-                value = (value and '%s (%s)' % (value, choices)) or choices
-            if value:
-                values.append(value)
-        value = '<br>'.join(values)
-        return value
-
-    def get_display_value_model_choice_field(self, field, field_name):
-        value = self.initial.get(field_name, [])#self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
-        if value:
-            try:
-                # Use base queryset to handle none() querysets (used with ajax based widgets)
-                return str(field.queryset.model.objects.get(pk=value))
-            except (ValueError, AttributeError, ObjectDoesNotExist):
-                return ''
-        else:
-            return ''
-
-    @classmethod
-    def get_display_properties(cls, doc, formset=None):
-        """Get field display values for ES"""
-        output = {}
-        for name, field in cls.base_fields.items():
-            # Title field?
-            if name.startswith('tg_') and not name.endswith('_comment'):
-                continue
-            key = '%s_display' % name
-
-            values = doc.get(name)
-            if not values:
-                output[key] = []
-                continue
-            if not isinstance(values, (list, tuple)):
-                values = [values,]
-            attr_key = '%s_attr' % name
-            attributes = attr_key in doc and doc.get(attr_key) or None
-
-            value = get_display_value(field, values, attributes, formset=formset)
-            if value:
-                output[key] = value
-        return output
 
     @property
     def meta(self):

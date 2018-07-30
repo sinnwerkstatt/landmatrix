@@ -15,9 +15,13 @@ function initInvestorForm(form) {
 }
 
 function generateButtons(field) {
-    var investorId = field.val(),
-      addLink = '/stakeholder/add/';
+    var investorIdentifier = field.select2('data')[0].investor_identifier,
+      addLink = '/investor/add/',
       role = field.attr('name');
+    if (investorIdentifier === undefined) {
+        // Get initial investor identifier from data attribute
+        investorIdentifier = $(field.select2('data')[0].element).data('investor-identifier');
+    }
     if (role.indexOf('-') > -1) {
       role = role.split('-');
       role = role[0] + '_' + role[1];
@@ -29,7 +33,9 @@ function generateButtons(field) {
 
     var buttons = '<a id="add_' + $(field).attr("id") + '" class="add-investor" href="' + addLink + '?role=' + role + '" class="noul"><i class="lm lm-plus"></i></a>';
     if (field.val() !== '') {
-        buttons += '<a id="change_' + $(field).attr("id") + '" class="change-investor" href="/stakeholder/0/' + investorId + '/?role=' + role + '" class="noul"><i class="lm lm-pencil"></i></a>';
+        buttons += '<a id="change_' + $(field).attr("id") + '" class="change-investor"' +
+            ' href="/investor/' + investorIdentifier + '/?role=' + role +
+            '" class="noul"><i class="lm lm-pencil"></i></a>';
     }
     var wrap = '<span class="investorops">' + buttons + '</span>';
 

@@ -1,17 +1,18 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django import forms
+from django.utils import timezone
 
-from landmatrix.models.investor import Investor
+from landmatrix.models.investor import Investor, HistoricalInvestor
 from landmatrix.models.country import Country
 from grid.forms.base_model_form import BaseModelForm
 from grid.widgets import CommentInput
 from grid.utils import get_display_value
 
 INVESTOR_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
-    Investor.INVESTOR_CLASSIFICATIONS)
+    HistoricalInvestor.INVESTOR_CLASSIFICATIONS)
 STAKEHOLDER_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
-    Investor.STAKEHOLDER_CLASSIFICATIONS)
+    HistoricalInvestor.STAKEHOLDER_CLASSIFICATIONS)
 
 
 # TODO: move to fields.
@@ -22,6 +23,8 @@ class InvestorField(forms.ChoiceField):
 
 
 class BaseInvestorForm(BaseModelForm):
+    form_title = _('Investor')
+
     # We use ID to build related form links
     id = forms.CharField(required=False, label=_("ID"), widget=forms.HiddenInput())
     name = forms.CharField(required=False, label=_("Name"), max_length=255)
@@ -36,8 +39,9 @@ class BaseInvestorForm(BaseModelForm):
         required=False, label=_("Comment"), widget=CommentInput)
 
     class Meta:
-        model = Investor
-        exclude = ('fk_status', 'subinvestors', 'investor_identifier', 'timestamp')
+        model = HistoricalInvestor
+        exclude = ('id', 'fk_status', 'subinvestors', 'investor_identifier', 'history_date',
+                   'history_user')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,7 +56,11 @@ class BaseInvestorForm(BaseModelForm):
         Force status to pending on update.
         '''
         instance = super().save(commit=False)
-        instance.fk_status_id = Investor.STATUS_PENDING
+        instance.fk_status_id = HistoricalInvestor.STATUS_PENDING
+        # Create new historical investor
+        instance.id = None
+        instance.history_date = timezone.now()
+        instance.history_user = None # FIXME: Set current user
         if commit:
             instance.save()
 
@@ -74,9 +82,9 @@ class BaseInvestorForm(BaseModelForm):
         # FIXME: Make model field unique in the future
         name = self.cleaned_data['name']
         duplicates = Investor.objects.filter(name=name)
-        id = cleaned_data.get('id', None)
-        if id:
-            duplicates = duplicates.exclude(id=id)
+        investor_identifier = self.instance.investor_identifier
+        if investor_identifier:
+            duplicates = duplicates.exclude(investor_identifier=investor_identifier)
         if duplicates.count() > 0:
             self.add_error('name', "This name exists already.")
 
@@ -84,7 +92,7 @@ class BaseInvestorForm(BaseModelForm):
 
 
 class ExportInvestorForm(BaseInvestorForm):
-    exclude_in_export = ('id', 'fk_status', 'timestamp', 'subinvestors')
+    exclude_in_export = ('id', 'fk_status', 'subinvestors', 'history_date', 'history_user')
 
     fk_country = forms.ModelChoiceField(
         required=False, label=_("Country of registration/origin"),
@@ -123,30 +131,33 @@ class ExportInvestorForm(BaseInvestorForm):
         return output
 
     class Meta:
-        model = Investor
+        model = HistoricalInvestor
         exclude = ()
 
 
 class ParentInvestorForm(BaseInvestorForm):
+    form_title = _('Tertiary investor/lender')
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
         choices=INVESTOR_CLASSIFICATION_CHOICES)
 
     class Meta:
-        model = Investor
+        model = HistoricalInvestor
         exclude = (
             'fk_status', 'subinvestors', 'investor_identifier',
-            'parent_relation', 'timestamp',
+            'parent_relation', 'history_date', 'history_user'
         )
 
 
 class ParentStakeholderForm(ParentInvestorForm):
+    form_title = _('Parent company')
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
         choices=STAKEHOLDER_CLASSIFICATION_CHOICES)
 
 
 class OperationalCompanyForm(BaseInvestorForm):
+    form_title = _('Operational company')
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
         choices=STAKEHOLDER_CLASSIFICATION_CHOICES)

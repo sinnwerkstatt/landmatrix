@@ -13,8 +13,14 @@
 {% endblock %}
 {% block navutils %}
 {% endblock %}
-{% block page_title %}{% if investor %}{{ investor.name }}{% else %}{% trans "Add" %}{% endif %}{% endblock %}
-{% block title %}{% if investor %}{{ investor.name }}{% else %}{% trans "Add" %}{% endif %}{% endblock %}
+{% block page_title %}
+    {% if investor %}{{ investor.name }} (#{{ investor.investor_identifier }})
+    {% else %}{% trans "Add" %}{% endif %}
+{% endblock %}
+{% block title %}
+    {% if investor %}{{ investor.name }} <small>(#{{ investor.investor_identifier }})</small>
+    {% else %}{% trans "Add" %}{% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="popup">
@@ -125,7 +131,7 @@
                     </div>
                 </div>
             </div>
-        {#% include "includes/stakeholder-history.html" %#}
+        {% include "includes/stakeholder-history.html" %}
 
         <div class="row">
             <div class="col-sm-12">

@@ -10,12 +10,8 @@ from django.utils import timezone
 from django.conf import settings
 
 from landmatrix.models.default_string_representation import DefaultStringRepresentation
-from landmatrix.models.activity_attribute_group import (
-    ActivityAttribute,
-)
-from landmatrix.models.investor import (
-    Investor, InvestorActivityInvolvement, InvestorVentureInvolvement, InvestorBase
-)
+from landmatrix.models.activity_attribute_group import ActivityAttribute
+from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
 
@@ -259,26 +255,19 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     @property
     def operational_stakeholder(self):
-        #involvements = InvestorActivityInvolvement.objects.filter(fk_activity_id=self.id)
-        involvement = InvestorActivityInvolvement.objects.filter(
-            fk_activity__activity_identifier=self.activity_identifier,
-            #fk_status_id__in=(2,3,4), # FIXME: Based upon user permission also show pending
-        )
-        #if len(involvements) > 1:
-        #    raise MultipleObjectsReturned('More than one OP for activity %s: %s' % (str(self), str(involvements)))
-        if not involvement:
+        if self.involvements.count() == 0:
             return
             raise ObjectDoesNotExist('No OP for activity %s: %s' % (str(self), str(involvement)))
         else:
-            involvement = involvement.latest()
-        return Investor.objects.get(pk=involvement.fk_investor_id)
+            involvement = self.involvements.order_by('-id')[0]
+        return involvement.fk_investor
 
     @property
     def stakeholders(self):
         operational_stakeholder = self.operational_stakeholder
         if operational_stakeholder:
-            stakeholder_involvements = InvestorVentureInvolvement.objects.filter(fk_venture=operational_stakeholder.pk)
-            return [Investor.objects.get(pk=involvement.fk_investor_id) for involvement in stakeholder_involvements]
+            return [involvement.fk_investor_id
+                    for involvement in operational_stakeholder.venture_involvements.all()]
         else:
             return []
 
@@ -489,7 +478,7 @@ class Activity(ActivityBase):
         if self.missing_information():
             return False
         # 3. Involvements missing?
-        involvements = self.investoractivityinvolvement_set.all()
+        involvements = self.involvements.all()
         if involvements.count() == 0:
             return False
         # 4A. Invalid Operating company name?
@@ -517,7 +506,7 @@ class Activity(ActivityBase):
         if self.missing_information():
             return '2. Minimum information missing'
         # 3. Involvements missing?
-        involvements = self.investoractivityinvolvement_set.all()
+        involvements = self.involvements.all()
         if involvements.count() == 0:
             return '3. involvements missing'
         # 4. Invalid Operating company name?
@@ -625,7 +614,7 @@ class Activity(ActivityBase):
 
     def get_deal_scope(self):
         target_countries = {c.value for c in self.attributes.filter(name="target_country")}
-        involvements = self.investoractivityinvolvement_set.all()
+        involvements = self.involvements.all()
         investor_countries = set()
         for oc in involvements:
             for i in oc.fk_investor.venture_involvements.stakeholders():
@@ -760,9 +749,8 @@ class HistoricalActivity(ActivityBase):
             self.save(update_fields=['fk_status'])
 
             try:
-                investor = InvestorActivityInvolvement.objects.get(
-                    fk_activity_id=self.pk).fk_investor
-            except InvestorActivityInvolvement.DoesNotExist:
+                investor = self.involvements.all()[0].fk_investor
+            except IndexError:
                 pass
             else:
                 investor.approve()
@@ -778,9 +766,8 @@ class HistoricalActivity(ActivityBase):
         #self.update_public_activity() - don't update public activity
 
         try:
-            investor = InvestorActivityInvolvement.objects.get(
-                fk_activity_id=self.pk).fk_investor
-        except InvestorActivityInvolvement.DoesNotExist:
+            investor = self.involvements.all()[0].fk_investor
+        except IndexError:
             pass
         else:
             investor.reject()
@@ -804,9 +791,8 @@ class HistoricalActivity(ActivityBase):
         self.save(update_fields=['fk_status'])
 
         try:
-            investor = InvestorActivityInvolvement.objects.get(
-                fk_activity_id=self.pk).fk_investor
-        except InvestorActivityInvolvement.DoesNotExist:
+            investor = self.involvements.all()[0].fk_investor
+        except IndexError:
             pass
         else:
             investor.reject()
@@ -886,10 +872,7 @@ class HistoricalActivity(ActivityBase):
         # Delete old and create new activity attributes
         activity.attributes.all().delete()
 
-        has_investor = False
         for hattribute in self.attributes.all():
-            if hattribute.name == 'operational_stakeholder':
-                has_investor = True
             ActivityAttribute.objects.create(
                 fk_activity_id=activity.id,
                 fk_group_id=hattribute.fk_group_id,
@@ -900,18 +883,28 @@ class HistoricalActivity(ActivityBase):
                 date=hattribute.date,
                 is_current=hattribute.is_current,
                 polygon=hattribute.polygon)
-        # Confirm pending Investor activity involvement
-        involvements = InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=activity.activity_identifier)
-        if involvements.count() > 0:
-            latest = involvements.latest()
-            if not latest.fk_status_id == latest.STATUS_TO_DELETE:
-                latest.fk_activity_id = activity.id
-                if latest.fk_status_id not in (latest.STATUS_ACTIVE, latest.STATUS_OVERWRITTEN):
-                    latest.fk_status_id = latest.STATUS_OVERWRITTEN
-                latest.save()
-                involvements = involvements.exclude(id=latest.id)
-            # Delete other involvments for activity, since we don't need a history of involvements
-            involvements.delete()
+
+        # Confirm pending investors and involvement
+        hinvolvement = self.involvements.all()
+        if hinvolvement.count() > 0:
+            # Confirm involvement
+            hinvolvement = hinvolvement[0]
+            hinvolvement.fk_status_id = hinvolvement.STATUS_OVERWRITTEN
+            hinvolvement.save()
+
+            # Confirm pending investors
+            hinvestor = hinvolvement.fk_investor
+            investor = hinvestor.update_public_investor()
+
+            # Update public involvement
+            InvestorActivityInvolvement.objects.filter(
+                fk_activity__activity_identifier=self.activity_identifier
+            ).delete()
+            InvestorActivityInvolvement.objects.create(
+                fk_activity=activity,
+                fk_investor=investor,
+                fk_status_id=InvestorActivityInvolvement.STATUS_OVERWRITTEN
+            )
         activity.refresh_cached_attributes()
 
         # Keep public version relation up to date
@@ -919,7 +912,7 @@ class HistoricalActivity(ActivityBase):
         self.public_version = activity
         self.save(update_fields=['public_version'], update_elasticsearch=True)
 
-        return True
+        return activity
 
     @property
     def changeset_comment(self):

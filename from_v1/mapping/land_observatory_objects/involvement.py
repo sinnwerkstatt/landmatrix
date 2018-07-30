@@ -1,7 +1,6 @@
 from django.db import models
 
 
-
 class Involvement(models.Model):
     id = models.AutoField(primary_key=True)
     fk_activity = models.IntegerField(null=False)
@@ -18,6 +17,7 @@ class Involvement(models.Model):
 
     def __str__(self):
         return "{}: {} ({})".format(self.fk_activity, self.fk_stakeholder, self.role.name)
+
 
 class Stakeholder_Role(models.Model):
     id = models.AutoField(primary_key=True)

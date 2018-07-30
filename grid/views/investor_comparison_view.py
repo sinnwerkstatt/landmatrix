@@ -6,64 +6,45 @@ from django.forms.formsets import BaseFormSet
 from django.template.context import RequestContext
 from django.views.generic.base import TemplateView
 
-from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
+from grid.forms.investor_form import BaseInvestorForm
+from grid.forms.parent_investor_formset import ParentCompanyFormSet, ParentInvestorFormSet
 from grid.views.view_aux_functions import render_to_response
-from landmatrix.models.investor import Investor
-
-
+from landmatrix.models.investor import HistoricalInvestor
 
 
 class InvestorComparisonView(TemplateView):
-
-    def dispatch(self, request, *args, **kwargs):
-        investor_1_id = kwargs.pop('investor_1', None)
-        if investor_1_id is None:
-            raise RuntimeError('investor_1 needed. Got ' + str(kwargs))
-        if '_' in investor_1_id:
-            investor_1 = _investor_from_id_and_timestamp(investor_1_id)
+    def dispatch(self, request, investor_1, investor_2=None):
+        hinvestor_1 = HistoricalInvestor.objects.get(pk=investor_1)
+        if investor_2:
+            hinvestor_2 = HistoricalInvestor.objects.get(pk=investor_2)
         else:
-            investor_1 = Investor.objects.get(pk=investor_1_id).history.last()
-        investor_2 = previous_history_state(investor_1)
-        context = super().get_context_data(**kwargs)
-        context['investors'] = [investor_1, investor_2]
-        context['comparison_forms'] = get_comparison(investor_1, investor_2)
+            hinvestor_2 = HistoricalInvestor.objects.filter(
+                investor_identifier=hinvestor_1.investor_identifier) \
+                .filter(history_date__lt=hinvestor_1.history_date).order_by('history_date').last()
+        context = super().get_context_data()
+        context['investors'] = [hinvestor_1, hinvestor_2]
+        context['forms'] = get_comparison(hinvestor_1, hinvestor_2)
 
-        return render_to_response(
-            'investor-comparison.html', context, RequestContext(request))
-
-
-def investor_from_historical(old_version):
-    if old_version is None:
-        return None
-    return {
-        'investor_identifier': old_version.investor_identifier,
-        'name': old_version.name,
-        'fk_country': old_version.fk_country,
-        'classification': old_version.classification,
-        'homepage': old_version.homepage,
-        'opencorporates_link': old_version.opencorporates_link,
-        'comment': old_version.comment,
-        'fk_status': old_version.fk_status,
-        'timestamp': old_version.timestamp,
-    }
+        return render_to_response('investor-comparison.html', context, RequestContext(request))
 
 
 def get_comparison(investor_1, investor_2):
-    form_1 = get_form(investor_1)
-    form_2 = get_form(investor_2)
-    return (form_1, form_2, is_different(form_1, form_2))
+    forms_1 = get_forms(investor_1)
+    forms_2 = get_forms(investor_2)
+    comparison_forms = []
+    for i in range(len(forms_1)):
+        comparison_forms.append((forms_1[i], forms_2[i], is_different(forms_1[i], forms_2[i])))
+
+    return comparison_forms
 
 
-def get_form(investor):
-    return OperationalStakeholderForm(initial=investor_from_historical(investor))
+def get_forms(hinvestor):
+    return [
+        BaseInvestorForm(instance=hinvestor),
+        ParentCompanyFormSet(queryset=hinvestor.venture_involvements.filter(role='ST')),
+        ParentInvestorFormSet(queryset=hinvestor.venture_involvements.filter(role='IN')),
+    ]
 
-
-def previous_history_state(investor):
-    from datetime import timedelta
-    old_version = Investor.history.filter(id=investor.id).\
-        filter(history_date__lte=investor.history_date - timedelta(microseconds=1)).\
-        order_by('history_date').last()
-    return old_version
 
 def is_different(form_1, form_2):
 
@@ -119,7 +100,7 @@ def investor_from_id(investor_id):
         if '_' in investor_id:
             return _investor_from_id_and_timestamp(investor_id)
         else:
-            return Investor.objects.get(pk=investor_id)
+            return HistoricalInvestor.objects.get(pk=investor_id)
     except ObjectDoesNotExist:
         return None
 
@@ -131,13 +112,14 @@ def _investor_from_id_and_timestamp(id_and_timestamp):
 
     investor_id, timestamp = id_and_timestamp.split('_')
 
-    investor = Investor.objects.get(pk=investor_id)
+    investor = HistoricalInvestor.objects.get(pk=investor_id)
 
     history_date = datetime.datetime.fromtimestamp(
         float(timestamp), tz=tzlocal())
     old_version = investor.history.filter(
         history_date__lte=history_date).last()
     if old_version is None:
-        raise ObjectDoesNotExist('Investor %s as of timestamp %s' % (investor_id, timestamp))
+        raise ObjectDoesNotExist('Historical Investor %s as of timestamp %s' % (investor_id,
+                                                                                timestamp))
 
     return old_version

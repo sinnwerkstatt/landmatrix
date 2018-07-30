@@ -8,6 +8,7 @@ from multiselectfield import MultiSelectField
 from landmatrix.models.default_string_representation import \
     DefaultStringRepresentation
 
+
 class InvestorQuerySet(models.QuerySet):
 
     def public(self):
@@ -89,7 +90,6 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     opencorporates_link = models.URLField(
         _("Opencorporates link"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
-    timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
     comment = models.TextField(_("Comment"), blank=True, null=True)
 
     objects = InvestorQuerySet.as_manager()
@@ -142,10 +142,15 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
 
         return name
 
-    @property
-    def history(self):
-        return HistoricalInvestor.objects.filter(
-            investor_identifier=self.investor_identifier)
+    def get_history(self, user=None):
+        """
+        Returns all deal versions
+        """
+        queryset = HistoricalInvestor.objects.filter(investor_identifier=self.investor_identifier)
+        if not (user and user.is_authenticated()):
+            queryset = queryset.filter(fk_status__in=(HistoricalInvestor.STATUS_ACTIVE,
+                                                      HistoricalInvestor.STATUS_OVERWRITTEN))
+        return queryset
 
     @property
     def is_deleted(self):
@@ -158,8 +163,8 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         determine this using classification in future.
         '''
         return (
-            hasattr(self, 'investoractivityinvolvement_set') and
-            self.investoractivityinvolvement_set.exists())
+            hasattr(self, 'involvements') and
+            self.involvements.exists())
 
     @property
     def is_parent_company(self):
@@ -195,28 +200,10 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
             filter(fk_status__name__in=("active", "overwritten", "deleted")).order_by('-id').first()
 
     def approve(self):
-        '''
-        This should go on HistoricalInvestor, but things are a bit messy
-        right now, and it seems expected behaviour is to update the Investor
-        status.
-        '''
-        # TODO: rethink. this is logic from changesetprotocol, and it looks
-        # broken
-        latest_version = HistoricalInvestor.get_latest_active_investor(
-            self.investor_identifier)
-        if latest_version:
-            self.fk_status_id = HistoricalInvestor.STATUS_OVERWRITTEN
-        else:
-            self.fk_status_id = HistoricalInvestor.STATUS_ACTIVE
-
-        self.save(update_fields=['fk_status'])
+        hinvestor = HistoricalInvestor.get_latest_active_investor(self.investor_identifier)
+        hinvestor.update_public_investor()
 
     def reject(self):
-        '''
-        This should go on HistoricalInvestor, but things are a bit messy
-        right now, and it seems expected behaviour is to update the Investor
-        status.
-        '''
         self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
         self.save(update_fields=['fk_status'])
 
@@ -262,6 +249,59 @@ class HistoricalInvestor(InvestorBase):
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
 
+    def update_public_investor(self):
+        """Recursively update investor chain"""
+        def update_investor(hinv):
+            # Update status of historical investor
+            if hinv.fk_status_id == self.STATUS_PENDING:
+                hinv.fk_status_id = self.STATUS_OVERWRITTEN
+            elif hinv.fk_status_id == self.STATUS_TO_DELETE:
+                hinv.fk_status_id = self.STATUS_DELETED
+            hinv.save()
+
+            # Update public investor (leaving involvements)
+            investor = Investor.objects.filter(investor_identifier=self.investor_identifier)
+            if investor.count() > 0:
+                investor = investor[0]
+            else:
+                investor = Investor(investor_identifier=self.investor_identifier)
+            investor.id = self.id
+            investor.investor_identifier = self.investor_identifier
+            investor.name = self.name
+            investor.fk_country_id = self.fk_country_id
+            investor.classification = self.classification
+            investor.parent_relation = self.parent_relation
+            investor.homepage = self.homepage
+            investor.opencorporates_link = self.opencorporates_link
+            investor.fk_status_id = self.fk_status_id
+            investor.comment = self.comment
+            investor.save()
+
+            # Recreate involvements
+            investor.venture_involvements.all().delete()
+            for hinvolvement in self.venture_involvements.all():
+                # Update InvestorVentureInvolvement
+                hinvolvement.fk_status_id = self.STATUS_OVERWRITTEN
+                hinvolvement.save()
+                # Replace InvestorVentureInvolvement
+                investor.venture_involvements.create(
+                    fk_investor=hinvolvement.fk_investor,
+                    role=hinvolvement.role,
+                    investment_type=hinvolvement.investment_type,
+                    percentage=hinvolvement.percentage,
+                    loans_amount=hinvolvement.loans_amount,
+                    loans_currency=hinvolvement.loans_currency,
+                    loans_date=hinvolvement.loans_date,
+                    comment=hinvolvement.comment,
+                    fk_status=hinvolvement.fk_status
+                )
+                # Update investor
+                update_investor(hinvolvement.fk_investor)
+            return investor
+
+        investor = update_investor(self)
+        return investor
+
     class Meta:
         verbose_name = _("Historical investor")
         verbose_name_plural = _("Historical investors")
@@ -282,7 +322,7 @@ class InvestorVentureQuerySet(models.QuerySet):
         return self.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
 
 
-class InvestorVentureInvolvement(models.Model):
+class InvestorVentureInvolvementBase(models.Model):
     '''
     InvestorVentureInvolvement links investors to each other.
     Generally fk_venture links to the Operating company, and fk_investor
@@ -302,10 +342,6 @@ class InvestorVentureInvolvement(models.Model):
         (DEBT_FINANCING_INVESTMENT_TYPE, _('Debt financing')),
     )
 
-    fk_venture = models.ForeignKey(Investor, verbose_name=_('Investor ID Downstream'), db_index=True,
-                                   related_name='venture_involvements')
-    fk_investor = models.ForeignKey(Investor, verbose_name=_('Investor ID Upstream'), db_index=True,
-                                    related_name='investors')
     role = models.CharField(verbose_name=_("Relation type"), max_length=2, choices=ROLE_CHOICES)
     investment_type = MultiSelectField(
         max_length=255, choices=INVESTMENT_TYPE_CHOICES,
@@ -319,15 +355,37 @@ class InvestorVentureInvolvement(models.Model):
     loans_date = models.CharField("Loan date", max_length=10, blank=True, null=True)
     comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"), default=1)
-    timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
 
     objects = InvestorVentureQuerySet.as_manager()
 
     class Meta:
-        ordering = ('-timestamp',)
-        get_latest_by = 'timestamp'
+        abstract = True
+
+
+class InvestorVentureInvolvement(InvestorVentureInvolvementBase):
+    # FIXME: related names are named the wrong way here
+    fk_venture = models.ForeignKey(Investor, verbose_name=_('Investor ID Downstream'), db_index=True,
+                                   related_name='venture_involvements')
+    fk_investor = models.ForeignKey(Investor, verbose_name=_('Investor ID Upstream'), db_index=True,
+                                    related_name='investors')
+
+    class Meta:
         verbose_name = _('Investor Venture Involvement')
         verbose_name_plural = _('Investor Venture Involvements')
+        ordering = ('-id',)
+
+
+class HistoricalInvestorVentureInvolvement(InvestorVentureInvolvementBase):
+    # FIXME: related names are named the wrong way here
+    fk_venture = models.ForeignKey(HistoricalInvestor, verbose_name=_('Investor ID Downstream'),
+                                   db_index=True, related_name='venture_involvements')
+    fk_investor = models.ForeignKey(HistoricalInvestor, verbose_name=_('Investor ID Upstream'),
+                                    db_index=True, related_name='investors')
+
+    class Meta:
+        verbose_name = _('Historical Investor Venture Involvement')
+        verbose_name_plural = _('Historical Investor Venture Involvements')
+        get_latest_by = '-id'
 
 
 class InvestorActivityInvolvementManager(models.Manager):
@@ -336,7 +394,7 @@ class InvestorActivityInvolvementManager(models.Manager):
             filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE, Investor.STATUS_OVERWRITTEN))
 
 
-class InvestorActivityInvolvement(models.Model):
+class InvestorActivityInvolvementBase(models.Model):
     '''
     InvestorActivityInvolvments link Operational Companies (Investor model)
     to activities.
@@ -362,18 +420,7 @@ class InvestorActivityInvolvement(models.Model):
         STATUS_TO_DELETE, _('To delete'),
     )
 
-    fk_activity = models.ForeignKey(
-        "Activity", verbose_name=_("Activity"), db_index=True)
-    fk_investor = models.ForeignKey(
-        "Investor", verbose_name=_("Investor"), db_index=True)
-    #percentage = models.FloatField(
-    #    _('Percentage'), blank=True, null=True,
-    #    validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
-
-    # investor can only be an Operational Stakeholder in an activity
-    #comment = models.TextField(_("Comment"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
-    timestamp = models.DateTimeField(_("Timestamp"), default=timezone.now)
 
     objects = InvestorActivityInvolvementManager()
 
@@ -384,27 +431,28 @@ class InvestorActivityInvolvement(models.Model):
         )
 
     class Meta:
-        ordering = ('-timestamp',)
-        get_latest_by = 'timestamp'
+        abstract = True
+
+
+class InvestorActivityInvolvement(InvestorActivityInvolvementBase):
+    fk_activity = models.ForeignKey("Activity", verbose_name=_("Activity"),
+                                    related_name='involvements', db_index=True)
+    fk_investor = models.ForeignKey("Investor", verbose_name=_("Investor"),
+                                    related_name='involvements', db_index=True)
+
+    class Meta:
         verbose_name = _('Investor Activity Involvement')
         verbose_name_plural = _('Investor Activity Involvements')
+        ordering = ('-id',)
 
 
-def update_public_investor():
-    # Newer public version of investor available?
-    hinvestor = HistoricalInvestor.objects.public_or_deleted().latest()
-    investor = Investor.objects.get(investor_identifier=hinvestor.investor_identifier)
-    if hinvestor.id != investor.id:
-        # Update investor (maintaining subinvestors)
-        investor.id = hinvestor.id
-        investor.investor_identifier = hinvestor.investor_identifier
-        investor.name = hinvestor.name
-        investor.fk_country_id = hinvestor.fk_country_id
-        investor.classification = hinvestor.classification
-        investor.parent_relation = hinvestor.parent_relation
-        investor.homepage = hinvestor.homepage
-        investor.opencorporates_link = hinvestor.opencorporates_link
-        investor.fk_status_id = hinvestor.fk_status_id
-        investor.timestamp = hinvestor.timestamp
-        investor.comment = hinvestor.comment
-        investor.save()
+class HistoricalInvestorActivityInvolvement(InvestorActivityInvolvementBase):
+    fk_activity = models.ForeignKey("HistoricalActivity", verbose_name=_("Activity"),
+                                    related_name='involvements', db_index=True)
+    fk_investor = models.ForeignKey("HistoricalInvestor", verbose_name=_("Investor"),
+                                    related_name='involvements', db_index=True)
+
+    class Meta:
+        verbose_name = _('Historical Investor Activity Involvement')
+        verbose_name_plural = _('Historical Investor Activity Involvements')
+        ordering = ['-id']

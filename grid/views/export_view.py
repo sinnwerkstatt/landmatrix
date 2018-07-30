@@ -119,7 +119,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             query = {
                 "ids": {
                     "type": "involvement",
-                    "values": get_involvements(activity.investoractivityinvolvement_set.all())
+                    "values": get_involvements(activity.involvements.all())
                 }
             }
         else:
@@ -146,7 +146,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             query = {
                 "ids": {
                     "type": "investor",
-                    "values": get_investors([i.fk_investor for i in activity.investoractivityinvolvement_set.all()])
+                    "values": get_investors([i.fk_investor for i in activity.involvements.all()])
                 }
             }
         else:

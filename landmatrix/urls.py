@@ -161,24 +161,24 @@ urlpatterns = [
 
     url(r'^deal/comments/', include('public_comments.urls')),
 
-    url(r'^stakeholder/add/$', AddStakeholderView.as_view(), name='add_stakeholder_form'),
+    url(r'^investor/add/$', AddStakeholderView.as_view(), name='add_stakeholder_form'),
     url(
-        r'^stakeholder/(?P<investor_id>\d+)/$',
+        r'^investor/(?P<investor_id>\d+)/$',
         ChangeStakeholderView.as_view(),
         name='stakeholder_form'
     ),
     url(
-        r'^stakeholder/(?P<investor_id>\d*)/(?P<history_id>\d+)/$',
+        r'^investor/(?P<investor_id>\d*)/(?P<history_id>\d+)/$',
         ChangeStakeholderView.as_view(),
         name='stakeholder_form'
     ),
     url(
-        r'^stakeholders/compare/(?P<investor_1_id>\d+)/(?P<investor_2_id>\d+)/$',
+        r'^investors/compare/(?P<investor_1_id>\d+)/(?P<investor_2_id>\d+)/$',
         InvestorComparisonView.as_view(),
         name='compare_investors'
     ),
     url(
-        r'^stakeholders/compare/(?P<investor_1>\d+)/$',
+        r'^investors/compare/(?P<investor_1>\d+)/$',
         InvestorComparisonView.as_view(),
         name='compare_investors'
     ),

@@ -2,11 +2,13 @@ from django import forms
 from django.utils.html import conditional_escape
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
+from grid.forms.base_form import FieldsDisplayFormMixin
 
 from crispy_forms.helper import FormHelper
 
 
-class BaseModelForm(forms.ModelForm):
+class BaseModelForm(forms.ModelForm,
+                    FieldsDisplayFormMixin):
 
     def as_ul(self):
         return self._html_output(

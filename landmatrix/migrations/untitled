@@ -1,0 +1,22 @@
+for inv in InvestorActivityInvolvement.objects.all():
+    raise IOError(activity.id)
+    hactivity, created = HistoricalActivity.objects.get_or_create(id=inv.fk_activity_id)
+    try:
+        activity = Activity.objects.filter(activity_identifier=hactivity.activity_identifier).order_by('-id').first()
+    except:
+        activity, created = Activity.objects.get_or_create(id=hactivity.fk_activity_id, activity_identifier=hactivity.activity_identifier)
+    if inv.fk_activity_id != activity.id:
+        inv.fk_activity_id = activity.id
+        inv.save()
+
+for i in inv:
+    try:
+        involvement = InvestorActivityInvolvement.objects.get(id=i[0])
+    except:
+        continue
+    try:
+        activity = Activity.objects.get(id=i[1])
+    except:
+        continue
+    involvement.fk_activity_id = i[1]
+    involvement.save()

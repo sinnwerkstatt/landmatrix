@@ -80,3 +80,26 @@ ORDER BY stakeholder_identifier
         """)
         return [id[0] for id in cursor.fetchall()]
 
+    @classmethod
+    def save_record(cls, new, save):
+        """Save all versions of an activity as HistoricalActivity records."""
+        if not save:
+            return
+
+        versions = get_iainvolvement_versions(new)
+        for i, version in enumerate(versions):
+            landmatrix.models.HistoricalInvestorActivityInvolvement.objects.create(
+                id=version['id'],
+                fk_activity_id=version['fk_activity_id'],
+                fk_investor_id=version['fk_primary_investor_id'],
+                fk_status_id=3
+            )
+
+        new.save(using=V2)
+
+
+def get_iainvolvement_versions(inv):
+    return MapInvestorActivityInvolvement.old_class.objects.using(V1).filter(
+        fk_primary_investor__primary_investor_identifier=inv.fk_investor.investor_identifier,
+        fk_activity__activity_identifier=inv.fk_activity.activity_identifier
+    ).order_by('id').values()

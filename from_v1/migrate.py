@@ -95,17 +95,19 @@ if __name__ == '__main__':
             from django.db import connections
             cursor = connections[V2].cursor()
             cursor.execute("TRUNCATE landmatrix_activity CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalactivity CASCADE;")
             cursor.execute("TRUNCATE landmatrix_activityattributegroup CASCADE;")
             cursor.execute("TRUNCATE landmatrix_activityattribute CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalactivityattribute CASCADE;")
             cursor.execute("TRUNCATE landmatrix_activitychangeset CASCADE;")
             cursor.execute("TRUNCATE landmatrix_activityfeedback CASCADE;")
             cursor.execute("TRUNCATE landmatrix_comment CASCADE;")
-            cursor.execute("TRUNCATE landmatrix_historicalactivity CASCADE;")
-            cursor.execute("TRUNCATE landmatrix_historicalactivityattribute CASCADE;")
-            cursor.execute("TRUNCATE landmatrix_historicalinvestor CASCADE;")
             cursor.execute("TRUNCATE landmatrix_investor CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalinvestor CASCADE;")
             cursor.execute("TRUNCATE landmatrix_investoractivityinvolvement CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalinvestoractivityinvolvement CASCADE;")
             cursor.execute("TRUNCATE landmatrix_investorventureinvolvement CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalinvestorventureinvolvement CASCADE;")
 
         if options.lo:
             MapLandObservatory.map_all(save=options.save, verbose=options.verbose)
@@ -144,6 +146,16 @@ if __name__ == '__main__':
             #MapCountry.map_all(save=options.save, verbose=options.verbose)
 
         if options.investor or options.all:
+            ###
+            from django.db import connections
+            cursor = connections[V2].cursor()
+            cursor.execute("TRUNCATE landmatrix_investor CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalinvestor CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_investoractivityinvolvement CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalinvestoractivityinvolvement CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_investorventureinvolvement CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalinvestorventureinvolvement CASCADE;")
+            ###
             #if not MapStatus._done: MapStatus.map_all(save=options.save, verbose=options.verbose)
             MapStatus._done = True
             MapInvestor.map_all(save=options.save, verbose=options.verbose)

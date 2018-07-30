@@ -1,0 +1,15 @@
+{% load custom_tags i18n %}
+{% for field in form.get_fields_display %}
+    {% if field.name == 'tg' %}
+        <h3>{{ field.value }}{% if form_count %} <small>#{{ form_count }}</small>{% endif %}</h3>
+    {% else %}
+        <div class="row {{ field.name }}{% if field.hidden %} hidden{% endif %}">
+            <div class="col-md-3">
+                {{ field.label }}
+            </div>
+            <div class="col-md-9">
+                {{ field.value|safe|decimalgroupstring }}
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}

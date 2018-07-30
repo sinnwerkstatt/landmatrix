@@ -1,24 +1,23 @@
 from from_v1.mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
 from from_v1.mapping.map_activity import MapActivity
 from from_v1.mapping.map_investor import MapPrimaryInvestor
+from from_v1.mapping.map_stakeholder_investor import MapStakeholderInvestor, get_stakeholder_id
 from from_v1.mapping.aux_functions import stakeholder_ids
 import landmatrix.models
 import old_editor.models
-#from from_v1.mapping.map_involvement import MapInvolvement
 from from_v1.migrate import V1, V2
-
-from datetime import datetime
-
+from from_v1.mapping.aux_functions import get_now
 
 
 def get_venture_for_primary_investor(involvement):
-    landmatrix.models.Investor.objects.using(V2).get(pk=involvement['fk_primary_investor_id'])
+    #landmatrix.models.Investor.objects.using(V2).get(pk=involvement['fk_primary_investor_id'])
     return involvement['fk_primary_investor_id']
 
 
 def get_stakeholder_id_for_stakeholder(involvement):
-    landmatrix.models.Investor.objects.using(V2).get(pk=involvement['fk_stakeholder_id'])
-    return involvement['fk_stakeholder_id']
+    stakeholder_id = get_stakeholder_id(involvement['fk_stakeholder_id'])
+    #landmatrix.models.Investor.objects.using(V2).get(pk=stakeholder_id)
+    return stakeholder_id
 
 
 def get_percentage(involvement):
@@ -77,26 +76,52 @@ class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
     def migrate(cls, involvements):
         missing_investors = 0
         for i, involvement in enumerate(involvements):
-            try:
-                fk_venture_id = get_venture_for_primary_investor(involvement)
-                fk_investor_id = get_stakeholder_id_for_stakeholder(involvement)
-                fk_status_id = get_status(involvement)
-                percentage = get_percentage(involvement)
-                inv, created = landmatrix.models.InvestorVentureInvolvement.objects.get_or_create(
-                    fk_investor_id=fk_investor_id,
-                    fk_venture_id=fk_venture_id,
+            fk_venture_id = get_venture_for_primary_investor(involvement)
+            fk_investor_id = get_stakeholder_id_for_stakeholder(involvement)
+            fk_status_id = get_status(involvement)
+            percentage = get_percentage(involvement)
+            inv, created = landmatrix.models.InvestorVentureInvolvement.objects.get_or_create(
+                fk_investor_id=fk_investor_id,
+                fk_venture_id=fk_venture_id,
+                role='ST',
+            )
+            if percentage:
+                inv.percentage = percentage
+            inv.fk_status_id = fk_status_id
+            inv.save()
+
+            versions = get_ivinvolvement_versions(inv)
+            for j, version in enumerate(versions):
+                hinv, created = landmatrix.models.HistoricalInvestorVentureInvolvement.objects\
+                    .get_or_create(
+                    fk_venture_id=get_venture_for_primary_investor(version),
+                    fk_investor_id=get_stakeholder_id_for_stakeholder(version),
                     role='ST',
                 )
+                percentage = get_percentage(version)
                 if percentage:
-                    inv.percentage = percentage
-                inv.fk_status_id = fk_status_id
-                inv.save()
-
-            except landmatrix.models.Investor.DoesNotExist:
-                missing_investors += 1
-
-            #if cls._save:
-            #    stakeholder_venture_involvement.save(using=V2)
+                    hinv.percentage = percentage
+                hinv.fk_status_id = get_status(version)
+                #hinv.history_date = get_now(version['id'])
+                hinv.save()
+                #investment_type=version['investment_type']
+                #loans_amount=version['loans_amount']
+                #loans_currency=version['loans_currency']
+                #loans_date=version['loans_date']
+                #comment=version['comment']
 
             cls._print_status(involvement, i)
-        print('%i missing investors' % missing_investors)
+
+    @classmethod
+    def all_records(cls):
+        return cls.old_class.objects.using(cls.DB).filter(
+            fk_primary_investor_id__in=MapPrimaryInvestor.all_ids(),
+            fk_stakeholder_id__in=MapStakeholderInvestor.all_ids()
+        ).values()
+
+
+def get_ivinvolvement_versions(inv):
+    return MapStakeholderVentureInvolvement.old_class.objects.using(V1).filter(
+        fk_primary_investor__primary_investor_identifier=inv.fk_venture.investor_identifier,
+        fk_stakeholder__stakeholder_identifier=inv.fk_investor.investor_identifier
+    ).order_by('id').values()

@@ -17,7 +17,8 @@ from landmatrix.models.deal_history import DealHistoryItem
 from landmatrix.models.filter_preset import FilterPresetGroup, FilterPreset
 from landmatrix.models.filter_condition import FilterCondition
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement, \
-    InvestorVentureInvolvement, HistoricalInvestor
+    InvestorVentureInvolvement, HistoricalInvestor, HistoricalInvestorActivityInvolvement, \
+    HistoricalInvestorVentureInvolvement
 from landmatrix.models.language import Language
 from landmatrix.models.mineral import Mineral
 from landmatrix.models.region import Region
