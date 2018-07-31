@@ -101,6 +101,12 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     def __str__(self):
         return '%s (#%i)' % (self.name, self.investor_identifier)
 
+    @classmethod
+    def get_next_investor_identifier(cls):
+        queryset = cls.objects.exclude(investor_identifier=cls.INVESTOR_IDENTIFIER_DEFAULT)
+        queryset = queryset.aggregate(models.Max('investor_identifier'))
+        return queryset['investor_identifier__max'] + 1
+
     def save(self, *args, **kwargs):
         '''
         investor_identifier needs to be set to the PK, which we don't yet have
@@ -113,10 +119,14 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         Same thing goes for the name.
         '''
         update_fields = []
+
+        if self.investor_identifier is None:
+            self.investor_identifier = self.INVESTOR_IDENTIFIER_DEFAULT
+
         super().save(*args, **kwargs)
 
         if self.investor_identifier == self.INVESTOR_IDENTIFIER_DEFAULT:
-            self.investor_identifier = self.pk
+            self.investor_identifier = self.__class__.get_next_investor_identifier()
             update_fields.append('investor_identifier')
 
         if not self.name or self.name == 'Unknown (#{})'.format(self.pk):
@@ -249,15 +259,16 @@ class HistoricalInvestor(InvestorBase):
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
 
-    def update_public_investor(self):
+    def update_public_investor(self, approve=True):
         """Recursively update investor chain"""
-        def update_investor(hinv):
-            # Update status of historical investor
-            if hinv.fk_status_id == self.STATUS_PENDING:
-                hinv.fk_status_id = self.STATUS_OVERWRITTEN
-            elif hinv.fk_status_id == self.STATUS_TO_DELETE:
-                hinv.fk_status_id = self.STATUS_DELETED
-            hinv.save()
+        def update_investor(hinv, approve=True):
+            if approve:
+                # Update status of historical investor
+                if hinv.fk_status_id == self.STATUS_PENDING:
+                    hinv.fk_status_id = self.STATUS_OVERWRITTEN
+                elif hinv.fk_status_id == self.STATUS_TO_DELETE:
+                    hinv.fk_status_id = self.STATUS_DELETED
+                hinv.save()
 
             # Update public investor (leaving involvements)
             investor = Investor.objects.filter(investor_identifier=self.investor_identifier)
@@ -296,10 +307,10 @@ class HistoricalInvestor(InvestorBase):
                     fk_status=hinvolvement.fk_status
                 )
                 # Update investor
-                update_investor(hinvolvement.fk_investor)
+                update_investor(hinvolvement.fk_investor, approve=approve)
             return investor
 
-        investor = update_investor(self)
+        investor = update_investor(self, approve=approve)
         return investor
 
     class Meta:

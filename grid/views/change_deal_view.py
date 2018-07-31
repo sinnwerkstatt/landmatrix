@@ -115,6 +115,9 @@ class ChangeDealView(SaveDealView):
     def get_form(self, form_class, data=None, files=None):
         prefix = issubclass(form_class, BaseFormSet) and form_class.Meta.name or None
         initial = form_class.get_data(self.get_object())
+        #if 'OperationalStakeholderForm' in str(form_class):
+        #    import pdb
+        #    pdb.set_trace()
         return form_class(initial=initial, files=files, data=data, prefix=prefix)
 
     #def render_to_response(self, *args, **kwargs):

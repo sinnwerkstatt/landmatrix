@@ -74,17 +74,19 @@ class OperationalStakeholderForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         # Show given/current value only, rest happens via ajax
-        valid_choice = self.data.get('operational_stakeholder', self.initial.get('operational_stakeholder', None))
+        valid_choice = self.data.get('operational_stakeholder',
+                                     self.initial.get('operational_stakeholder', None))
         if valid_choice:
             field = self.fields['operational_stakeholder']
             field.queryset = Investor.objects.filter(pk=valid_choice)
-            field.widget.data = {
-                valid_choice: {
-                    'investor-identifier': field.queryset[0].investor_identifier
+            # Add investor identifier as data attribute
+            if field.queryset.count() > 0:
+                field.widget.data = {
+                    valid_choice: {
+                        'investor-identifier': field.queryset[0].investor_identifier
+                    }
                 }
-            }
 
     class Meta:
         name = 'investor_info'

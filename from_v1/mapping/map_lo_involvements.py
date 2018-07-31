@@ -229,7 +229,7 @@ class MapLOInvolvements(MapLOModel):
         new_activity = cls._get_new_activity(old_activity.activity_identifier)
         involvement = cls._get_new_venture_involvement(
             fk_investor=new_investor, role=role,
-            fk_venture__investoractivityinvolvement__fk_activity=new_activity)
+            fk_venture__involvements__fk_activity=new_activity)
 
         if involvement and verbose:
             print(

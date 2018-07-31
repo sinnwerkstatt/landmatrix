@@ -197,7 +197,7 @@ class SaveDealView(TemplateView):
         can_change_activity = self.request.user.has_perm('landmatrix.change_activity')
         # Operating company given?
         if operational_stakeholder:
-            hinvestor = HistoricalInvestor.objects.public().order_by('-id')
+            hinvestor = HistoricalInvestor.objects.order_by('-id')
             hinvestor = hinvestor.filter(
                 investor_identifier=operational_stakeholder.investor_identifier
             )[0]

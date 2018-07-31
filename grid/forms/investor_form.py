@@ -55,16 +55,19 @@ class BaseInvestorForm(BaseModelForm):
         '''
         Force status to pending on update.
         '''
-        instance = super().save(commit=False)
-        instance.fk_status_id = HistoricalInvestor.STATUS_PENDING
+        hinvestor = super().save(commit=False)
+        hinvestor.fk_status_id = HistoricalInvestor.STATUS_PENDING
         # Create new historical investor
-        instance.id = None
-        instance.history_date = timezone.now()
-        instance.history_user = None # FIXME: Set current user
+        hinvestor.id = None
+        hinvestor.history_date = timezone.now()
+        hinvestor.history_user = None # FIXME: Set current user
         if commit:
-            instance.save()
+            hinvestor.save()
+            # Create investor instance if not existing
+            # (necessary for form field validation)
+            investor = hinvestor.update_public_investor(approve=False)
 
-        return instance
+        return hinvestor
 
     def get_attributes(self, **kwargs):
         return {

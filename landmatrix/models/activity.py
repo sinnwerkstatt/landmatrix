@@ -237,9 +237,15 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
         if self.activity_identifier == self.ACTIVITY_IDENTIFIER_DEFAULT:
             kwargs['update_fields'] = ['activity_identifier']
-            self.activity_identifier = self.id
+            self.activity_identifier = self.__class__.get_next_activity_identifier()
             # re-save
             self.save(*args, **kwargs)
+
+    @classmethod
+    def get_next_activity_identifier(cls):
+        queryset = cls.objects.exclude(activity_identifier=cls.ACTIVITY_IDENTIFIER_DEFAULT)
+        queryset = queryset.aggregate(models.Max('activity_identifier'))
+        return queryset['activity_identifier__max'] + 1
 
     @classmethod
     def get_latest_activity(cls, activity_identifier):
@@ -334,8 +340,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         visualisation)
         """
         # Operating company
-        operating_companies = Investor.objects.filter(
-            investoractivityinvolvement__fk_activity__activity_identifier=self.activity_identifier)
+        operating_companies = [i.fk_investor for i in self.involvements.all()]
         top_investors = []
         if len(operating_companies) > 0:
             top_investors = operating_companies[0].get_top_investors()

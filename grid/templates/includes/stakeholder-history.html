@@ -1,4 +1,5 @@
 {% load i18n custom_tags %}
+{% if investor|history_count:user > 0 %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <a id="history" data-toggle="collapse" data-parent="#accordion" href="#collapse_history">
@@ -55,3 +56,4 @@
                         </div>
                     </div>
                 </div>
+{% endif %}
