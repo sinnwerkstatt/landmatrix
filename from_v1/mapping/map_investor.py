@@ -29,8 +29,8 @@ def get_classification(_):
 
 
 def get_history_data(record):
-    changeset = old_editor.models.SH_Changeset.objects.using(V1)
-    changeset = changeset.filter(fk_stakeholder_id=record['id']).last()
+    changeset = old_editor.models.PI_Changeset.objects.using(V1)
+    changeset = changeset.filter(fk_primary_investor_id=record['id']).last()
     history_user_id = None
     if changeset:
         history_date = changeset.timestamp
@@ -71,6 +71,8 @@ ORDER BY pi.primary_investor_identifier
         versions = get_primary_investor_versions(new)
         for i, version in enumerate(versions):
             history_date, history_user_id = get_history_data(version)
+            import pdb
+            pdb.set_trace()
             landmatrix.models.HistoricalInvestor.objects.create(
                 id=version['id'],
                 investor_identifier=version['primary_investor_identifier'],
