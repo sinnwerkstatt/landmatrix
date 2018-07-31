@@ -56,6 +56,7 @@ FIELD_TYPE_MAPPING = {
     'CountryField': 'keyword',
     'ActorsField': 'keyword',
     'MultiFileField': 'keyword',
+    'DateTimeField': 'date',
 }
 FIELD_TYPE_FALLBACK = 'text'
 
