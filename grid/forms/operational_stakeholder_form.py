@@ -67,9 +67,11 @@ class OperationalStakeholderForm(BaseForm):
     @classmethod
     def get_data(cls, activity, group=None, prefix=""):
         data = super().get_data(activity, group, prefix)
-        op = activity.involvements.order_by('-id')[0]
-        if op:
-            data['operational_stakeholder'] = str(op.fk_investor.id)
+
+        # Get operating company
+        queryset = activity.involvements.order_by('-id')
+        if queryset.count() > 0:
+            data['operational_stakeholder'] = str(queryset[0].fk_investor.id)
         return data
 
     def __init__(self, *args, **kwargs):

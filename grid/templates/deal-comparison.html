@@ -14,8 +14,10 @@
 
 {% block breadcrumb_inner %}
   <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
-    <li><a href="{% url 'deal_details' deal_id=deal.activity_id %}">{% trans "Deal Details" %}</a></li>
-    <li>{% trans "Compare deal history" %}</li>
+    <li><a href="{% url 'deal_detail' deal_id=deals.0.activity_identifier %}">{% trans "Deal" %}
+        #{{ deals.0.activity_identifier }}
+    </a></li>
+    <li>{% trans "Deal history comparison" %} #{{ deals.0.activity_identifier }}</li>
 {% endblock %}
 
 {% block content %}

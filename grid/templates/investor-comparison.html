@@ -5,13 +5,19 @@
 {% endblock %}
 
 
-{% block page_title %}{% trans "Investor history comparison" %}{% endblock %}
-{% block title %}{% trans "Investor history comparison" %}{% endblock %}
+{% block page_title %}
+    {% trans "Investor history comparison" %} #{{ investors.0.investor_identifier }}
+{% endblock %}
+{% block title %}
+    {% trans "Investor history comparison" %} #{{ investors.0.investor_identifier }}
+{% endblock %}
 
 {% block breadcrumb_inner %}
     <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
-    <li><a href="{% url 'stakeholder_form' investor_id=deal.activity_id %}">{% trans "Investor Details" %}</a></li>
-  <li>{% trans "Compare investor history" %}</li>
+    <li><a href="{% url 'stakeholder_form' investor_id=investors.0.investor_identifier %}">
+        {{ investors.0.name }}
+    </a></li>
+  <li>{% trans "Investor history comparison" %} #{{ investors.0.investor_identifier }}</li>
 {% endblock %}
 
 

@@ -36,7 +36,7 @@ def get_comparison(deal_1, deal_2):
         )
     comparison_forms = []
     for i in range(len(forms_1)):
-        comparison_forms.append((forms_1[i], forms_2[i], is_different(forms_1[i], forms_2[i])))
+        comparison_forms.append((forms_1[i], forms_2[i], has_changed(forms_1[i], forms_2[i])))
 
     return comparison_forms
 
@@ -64,12 +64,13 @@ def deal_from_activity_id(history_id):
 #
 #    raise RuntimeError('should contain _ separating activity id and timestamp: ' + id_and_timestamp)
 
-def is_different(form_1, form_2):
+def has_changed(form_1, form_2):
+    ignore_fields = ('id',)
 
-    if not isinstance(form_1, form_2.__class__):
-        return False
+    #if not isinstance(form_1, form_2.__class__):
+    #    return False
 
-    if not form_1.is_valid() == form_2.is_valid():
+    if form_1.is_valid() != form_2.is_valid():
         return False
 
     # OMG this is so hacky but I can't help myself
@@ -81,16 +82,19 @@ def is_different(form_1, form_2):
     BaseFormSet._construct_form = _construct_form
 
     if isinstance(form_1, BaseFormSet):
-        print(form_1.forms)
         if len(form_1) != len(form_2):
             return False
+        for i, subform_1 in enumerate(form_1.forms):
+            subform_2 = form_2.forms[i]
+            for j, field in enumerate(list(subform_1)):
+                if field.name in ignore_fields:
+                    continue
+                if str(field) != str(list(subform_2)[j]):
+                    return False
     else:
-        if len(form_1.fields) != len(form_2.fields):
-            return False
-
-    for i, field in enumerate(list(form_1)):
-        if str(field) != str(list(form_2)[i]):
-            return False
+        for i, field in enumerate(list(form_1)):
+            if str(field) != str(list(form_2)[i]):
+                return False
 
     return True
 

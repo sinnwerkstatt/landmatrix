@@ -33,7 +33,7 @@ def get_comparison(investor_1, investor_2):
     forms_2 = get_forms(investor_2)
     comparison_forms = []
     for i in range(len(forms_1)):
-        comparison_forms.append((forms_1[i], forms_2[i], is_different(forms_1[i], forms_2[i])))
+        comparison_forms.append((forms_1[i], forms_2[i], has_changed(forms_1[i], forms_2[i])))
 
     return comparison_forms
 
@@ -46,9 +46,10 @@ def get_forms(hinvestor):
     ]
 
 
-def is_different(form_1, form_2):
+def has_changed(form_1, form_2):
+    ignore_fields = ('id',)
 
-    if not form_1.is_valid() == form_2.is_valid():
+    if form_1.is_valid() != form_2.is_valid():
         return False
 
     # OMG this is so hacky but I can't help myself
@@ -59,9 +60,20 @@ def is_different(form_1, form_2):
     # catches the KeyError here.
     BaseFormSet._construct_form = _construct_form
 
-    for i, field in enumerate(list(form_1)):
-        if str(field) != str(list(form_2)[i]):
+    if isinstance(form_1, BaseFormSet):
+        if len(form_1) != len(form_2):
             return False
+        for i, subform_1 in enumerate(form_1.forms):
+            subform_2 = form_2.forms[i]
+            for j, field in enumerate(list(subform_1)):
+                if field.name in ignore_fields:
+                    continue
+                if str(field) != str(list(subform_2)[j]):
+                    return False
+    else:
+        for i, field in enumerate(list(form_1)):
+            if str(field) != str(list(form_2)[i]):
+                return False
 
     return True
 

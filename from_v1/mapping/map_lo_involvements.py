@@ -89,48 +89,101 @@ class MapLOInvolvements(MapLOModel):
             pk=record['fk_stakeholder'])
         # Grab the first match in case of duplicate data here
         uuid_match = 'UUID: {}'.format(old_stakeholder.stakeholder_identifier)
-        new_investor = new_models.Investor.objects.using(V2) \
-            .filter(comment__contains=uuid_match).order_by('id').first()
+        investors = list(filter(None, [
+            new_models.HistoricalInvestor.objects.using(V2).filter(comment__contains=uuid_match)
+                                .order_by('-id').first(),
+            new_models.Investor.objects.using(V2).filter(comment__contains=uuid_match)
+                                .order_by('-id').first(),
+        ]))
 
         is_primary = (
             record['fk_stakeholder_role'] == cls.PRIMARY_INVESTOR_ROLE_ID
         )
 
-        if new_investor:
+        if investors:
             # Primary investors are now operating companies
             if is_primary:
-                new_record = cls._map_primary_investor(
-                    old_activity, new_investor, save=save, verbose=verbose)
+                new_records = cls._map_primary_investor(
+                    old_activity, investors, save=save, verbose=verbose)
             else:
-                new_record = cls._map_secondary_investor(
-                    record, new_investor, old_activity, save=save,
+                new_records = cls._map_secondary_investor(
+                    record, investors, old_activity, save=save,
                     verbose=verbose)
 
-            if new_record:
-                new_record.fk_status_id = cls.IMPORT_STATUS_ID
-                cls.save_record(new_record, record, save)
+            if new_records:
+                for new_record in new_records:
+                    new_record.fk_status_id = cls.IMPORT_STATUS_ID
+                    cls.save_record(new_record, record, save)
 
         elif verbose:
             print('No investor found for record')
 
     @classmethod
     def _get_new_activity(cls, activity_identifier):
-        return new_models.Activity.objects.using(V2) \
+        return list(filter(None, [
+            new_models.Activity.objects.using(V2) \
             .filter(
                 attributes__fk_group__name='imported',
                 attributes__name='id',
                 attributes__value=str(activity_identifier)) \
-            .distinct().order_by('id').first()
+            .distinct().order_by('-id').first(),
+            new_models.HistoricalActivity.objects.using(V2) \
+                .filter(
+                attributes__fk_group__name='imported',
+                attributes__name='id',
+                attributes__value=str(activity_identifier)) \
+                .distinct().order_by('-id').first()
+        ]))
 
     @classmethod
-    def _get_new_activity_involvement(cls, **filters):
-        return new_models.InvestorActivityInvolvement.objects \
-            .using(V2).filter(**filters).order_by('id').first()
+    def _get_new_activity_involvements(cls, activities, investors):
+        involvements = list(filter(None, [
+            new_models.HistoricalInvestorActivityInvolvement.objects.using(V2)\
+                .filter(fk_activity=activities[0],
+                        fk_investor=investors[0]).order_by('-id').first(),
+            new_models.InvestorActivityInvolvement.objects.using(V2)\
+                .filter(fk_activity=activities[1],
+                        fk_investor=investors[1]).order_by('-id').first(),
+        ]))
+        if not involvements:
+            involvements = [
+                new_models.HistoricalInvestorActivityInvolvement(fk_activity=activities[0],
+                                                                 fk_investor=investors[0]),
+                new_models.InvestorActivityInvolvement(fk_activity=activities[1],
+                                                       fk_investor=investors[1]),
+            ]
+        return involvements
 
     @classmethod
-    def _get_new_venture_involvement(cls, **filters):
-        return new_models.InvestorVentureInvolvement.objects \
-            .using(V2).filter(**filters).order_by('id').first()
+    def _get_new_venture_involvement(cls, ventures, investors, role):
+        involvements = list(filter(None, [
+            new_models.HistoricalInvestorVentureInvolvement.objects.using(V2)\
+                .filter(fk_venture=ventures[0], role=role,
+                        fk_investor=investors[0]).order_by('-id').first(),
+            new_models.InvestorVentureInvolvement.objects.using(V2)\
+                .filter(fk_venture=ventures[1], role=role,
+                        fk_investor=investors[1]).order_by('-id').first(),
+        ]))
+        if not involvements:
+            involvements = [
+                new_models.HistoricalInvestorVentureInvolvement(fk_venture=ventures[0], role=role,
+                                                                fk_investor=investors[0]),
+                new_models.InvestorVentureInvolvement(fk_venture=ventures[1], role=role,
+                                                      fk_investor=investors[1]),
+            ]
+        return involvements
+
+    @classmethod
+    def _get_new_venture_involvement_by_activity(cls, activities, investors, role):
+        involvements = list(filter(None, [
+            new_models.HistoricalInvestorVentureInvolvement.objects.using(V2)\
+                .filter(fk_venture__involvements__fk_activity=activities[0], role=role,
+                        fk_investor=investors[1]).order_by('-id').first(),
+            new_models.InvestorVentureInvolvement.objects.using(V2)\
+                .filter(fk_venture__involvements__fk_activity=activities[1], role=role,
+                        fk_investor=investors[0]).order_by('-id').first(),
+        ]))
+        return involvements
 
     @classmethod
     def _get_old_primary_investor(cls, activity_id):
@@ -149,106 +202,108 @@ class MapLOInvolvements(MapLOModel):
         return stakeholder
 
     @classmethod
-    def _map_primary_investor(
-            cls, old_activity, new_investor, save=False, verbose=False):
-        involvement = None
-        new_activity = cls._get_new_activity(old_activity.activity_identifier)
+    def _map_primary_investor(cls, old_activity, investors, save=False, verbose=False):
+        involvements = []
+        activities = cls._get_new_activity(old_activity.activity_identifier)
 
-        if new_activity:
-            involvement = cls._get_new_activity_involvement(
-                fk_activity=new_activity, fk_investor=new_investor)
-            if not involvement:
-                involvement = new_models.InvestorActivityInvolvement(
-                    fk_activity=new_activity, fk_investor=new_investor)
+        if activities:
+            involvements = cls._get_new_activity_involvement(activities=activities,
+                                                             investors=investors)
             if verbose:
                 print('Mapping primary investor to activity {}'.format(
-                    involvement.__dict__))
+                    involvements[0].__dict__))
 
         elif verbose:
             print('Missing imported activity with ID {}'.format(
                 old_activity.activity_identifier))
 
-        return involvement
+        return involvements
 
     @classmethod
-    def _map_secondary_investor(
-            cls, old_record, new_investor, old_activity, save=False,
-            verbose=False):
-        involvement = None
+    def _map_secondary_investor(cls, old_record, investors, old_activity, save=False,
+                                verbose=False):
+        involvements = []
         role = new_models.InvestorVentureInvolvement.STAKEHOLDER_ROLE
 
-        parent_stakeholder = cls._get_old_primary_investor(
-            old_record['fk_activity'])
+        parent_stakeholder = cls._get_old_primary_investor(old_record['fk_activity'])
 
         if parent_stakeholder:
-            involvement = cls._map_secondary_investor_with_parent(
-                parent_stakeholder, new_investor, role, save=save,
-                verbose=verbose)
+            involvements = cls._map_secondary_investor_with_parent(parent_stakeholder, investors,
+                                                                   role, save=save,
+                                                                   verbose=verbose)
         else:
-            involvement = cls._map_secondary_investor_without_parent(
-                new_investor, role, old_activity, save=save, verbose=verbose)
+            involvements = cls._map_secondary_investor_without_parent(investors, role,
+                                                                      old_activity, save=save,
+                                                                      verbose=verbose)
 
-        return involvement
+        return involvements
 
     @classmethod
-    def _map_secondary_investor_with_parent(
-            cls, parent_stakeholder, new_investor, role, save=False,
+    def _map_secondary_investor_with_parent(cls, parent_stakeholder, investors, role, save=False,
             verbose=False):
-        involvement = None
+        involvements = []
         uuid = str(parent_stakeholder.stakeholder_identifier)
-        new_parent_investor = new_models.Investor.objects.using(V2) \
-            .filter(comment__contains=uuid).order_by('id').first()
+        new_parent_investors = list(filter(None, [
+            new_models.HistoricalInvestor.objects.using(V2).filter(comment__contains=uuid)
+                .order_by('-id').first(),
+            new_models.Investor.objects.using(V2).filter(comment__contains=uuid)
+                .order_by('-id').first(),
+        ]))
 
-        if new_parent_investor:
-            involvement = cls._get_new_venture_involvement(
-                fk_venture=new_parent_investor,
-                fk_investor=new_investor,
+        if new_parent_investors:
+            involvements = cls._get_new_venture_involvements(
+                ventures=new_parent_investors,
+                investors=investors,
                 role=role)
-            if not involvement:
-                involvement = new_models.InvestorVentureInvolvement(
-                    fk_venture=new_parent_investor,
-                    fk_investor=new_investor,
-                    role=role)
 
             if verbose:
                 print('Mapping secondary investor to venture {}'.format(
-                    involvement.__dict__))
+                    involvements[0].__dict__))
 
         elif verbose:
             print(
                 "Couldn't find a previously imported Investor with"
                 "UUID {}".format(uuid))
 
-        return involvement
+        return involvements
 
     @classmethod
     def _map_secondary_investor_without_parent(
-            cls, new_investor, role, old_activity, save=False, verbose=False):
+            cls, investors, role, old_activity, save=False, verbose=False):
         # Check if the investor already has an operational stakeholder
         # connecting it to this activity
-        new_activity = cls._get_new_activity(old_activity.activity_identifier)
-        involvement = cls._get_new_venture_involvement(
-            fk_investor=new_investor, role=role,
-            fk_venture__involvements__fk_activity=new_activity)
+        activities = cls._get_new_activity(old_activity.activity_identifier)
+        involvements = cls._get_new_venture_involvement_by_activity(activities=activities,
+                                                        investors=investors, role=role)
 
-        if involvement and verbose:
+        if involvements and verbose:
             print(
                 'Found existing venture involvement {}'.format(
-                    involvement.__dict__))
-        elif not new_activity and verbose:
+                    involvements[0].__dict__))
+        elif not activities and verbose:
             print(
                 'No imported activity with identifier {}'.format(
                     old_activity.activity_identifier))
-        elif new_activity and involvement is None:
+        elif activities and not involvements:
             # Without a parent involvement, we create a new blank
             # operational stakeholder AND link it to the activity
+            new_parent_hinvestor = new_models.HistoricalInvestor(name='',
+                                                                 fk_status_id=cls.IMPORT_STATUS_ID)
+            if save:
+                new_parent_hinvestor.save(using=V2)
+            new_hactivity_involvement = new_models.InvestorActivityInvolvement(
+                fk_activity=activities[0],
+                fk_investor=new_parent_hinvestor,
+                fk_status_id=cls.IMPORT_STATUS_ID)
+            if save:
+                new_hactivity_involvement.save(using=V2)
 
             new_parent_investor = new_models.Investor(name='', fk_status_id=cls.IMPORT_STATUS_ID)
             if save:
+                new_parent_investor.investor_identifier = new_parent_hinvestor.investor_identifier
                 new_parent_investor.save(using=V2)
-
             new_activity_involvement = new_models.InvestorActivityInvolvement(
-                fk_activity=new_activity,
+                fk_activity=activities[1],
                 fk_investor=new_parent_investor,
                 fk_status_id=cls.IMPORT_STATUS_ID)
             if save:
@@ -260,13 +315,18 @@ class MapLOInvolvements(MapLOModel):
                 print('Created new activity involvement {}'.format(
                     new_activity_involvement.__dict__))
 
-            involvement = new_models.InvestorVentureInvolvement(
-                fk_venture=new_parent_investor, fk_investor=new_investor,
-                role=role)
+            involvements = [
+                new_models.HistoricalInvestorVentureInvolvement(fk_venture=new_parent_hinvestor,
+                                                                fk_investor=investors[0],
+                                                                role=role),
+                new_models.InvestorVentureInvolvement(fk_venture=new_parent_investor,
+                                                      fk_investor=investors[1],
+                                                      role=role)
+            ]
 
             if verbose:
                 print(
                     'Mapping secondary investor to venture (no parent)'
-                    ' {}'.format(involvement.__dict__))
+                    ' {}'.format(involvements[0].__dict__))
 
-        return involvement
+        return involvements
