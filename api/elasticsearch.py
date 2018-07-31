@@ -146,6 +146,7 @@ def get_elasticsearch_properties(doc_type=None):
         _landmatrix_mappings['investor'] = {
             'properties': {
                 'id': {'type': 'keyword'},
+                'history_date': {'type': 'date'},
             }
         }
         # Doc types: deal, location, contract and data_source
