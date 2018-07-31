@@ -210,8 +210,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
             filter(fk_status__name__in=("active", "overwritten", "deleted")).order_by('-id').first()
 
     def approve(self):
-        hinvestor = HistoricalInvestor.get_latest_active_investor(self.investor_identifier)
-        hinvestor.update_public_investor()
+        self.update_public_investor()
 
     def reject(self):
         self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
