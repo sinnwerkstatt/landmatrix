@@ -71,8 +71,6 @@ ORDER BY pi.primary_investor_identifier
         versions = get_primary_investor_versions(new)
         for i, version in enumerate(versions):
             history_date, history_user_id = get_history_data(version)
-            import pdb
-            pdb.set_trace()
             landmatrix.models.HistoricalInvestor.objects.create(
                 id=version['id'],
                 investor_identifier=version['primary_investor_identifier'],
