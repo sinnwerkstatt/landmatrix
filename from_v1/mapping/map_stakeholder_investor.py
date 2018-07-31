@@ -4,6 +4,7 @@ import old_editor.models
 from from_v1.mapping.aux_functions import get_first_stakeholder_tag_value, get_country_id_for_stakeholder, get_now
 from from_v1.migrate import V1, V2
 from django.db import connections
+from django.contrib.auth.models import User
 
 
 def get_stakeholder_id(stakeholder_id):
@@ -13,6 +14,19 @@ def get_stakeholder_id(stakeholder_id):
 def get_name_for_stakeholder(stakeholder_id):
     investor_name = get_first_stakeholder_tag_value(stakeholder_id, 'investor_name')
     return '' if investor_name is None else investor_name
+
+
+def get_history_data(record):
+    changeset = old_editor.models.SH_Changeset.objects.using(V1)
+    changeset = changeset.filter(fk_stakeholder_id=record['id']).last()
+    history_user_id = None
+    if changeset:
+        history_date = changeset.timestamp
+        if User.objects.filter(id=changeset.fk_user_id).count() > 0:
+            history_user_id = changeset.fk_user_id
+    else:
+        history_date = get_now(record['id'])
+    return history_date, history_user_id
 
 
 def get_classification_for_stakeholder(stakeholder_id):
@@ -51,6 +65,7 @@ class MapStakeholderInvestor(MapModel):
 
         versions = get_stakeholder_versions(new)
         for i, version in enumerate(versions):
+            history_date, history_user_id = get_history_data(version)
             landmatrix.models.HistoricalInvestor.objects.create(
                 id=get_stakeholder_id(version['id']),
                 investor_identifier=version['stakeholder_identifier'],
@@ -58,7 +73,8 @@ class MapStakeholderInvestor(MapModel):
                 fk_country_id=get_country_id_for_stakeholder(version['id']),
                 classification=get_classification_for_stakeholder(version['id']),
                 fk_status_id=version['fk_status_id'],
-                history_date=get_now(version['id']),
+                history_date=history_date,
+                history_user_id=history_user_id,
                 #parent_relation=version['parent_relation'],
                 #homepage=version['homepage'],
                 #opencorporates_link=version['opencorporates_link'],

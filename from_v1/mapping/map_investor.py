@@ -6,6 +6,7 @@ import old_editor.models
 from from_v1.migrate import V1, V2
 from from_v1.mapping.map_status import MapStatus
 from django.db import connections
+from django.contrib.auth.models import User
 
 
 def get_country_for_primary_investor(pi_id):
@@ -25,6 +26,19 @@ def get_now(_):
 
 def get_classification(_):
     return '10'
+
+
+def get_history_data(record):
+    changeset = old_editor.models.SH_Changeset.objects.using(V1)
+    changeset = changeset.filter(fk_stakeholder_id=record['id']).last()
+    history_user_id = None
+    if changeset:
+        history_date = changeset.timestamp
+        if User.objects.filter(id=changeset.fk_user_id).count() > 0:
+            history_user_id = changeset.fk_user_id
+    else:
+        history_date = get_now(record['id'])
+    return history_date, history_user_id
 
 
 class MapPrimaryInvestor(MapModel):
@@ -56,6 +70,7 @@ ORDER BY pi.primary_investor_identifier
 
         versions = get_primary_investor_versions(new)
         for i, version in enumerate(versions):
+            history_date, history_user_id = get_history_data(version)
             landmatrix.models.HistoricalInvestor.objects.create(
                 id=version['id'],
                 investor_identifier=version['primary_investor_identifier'],
@@ -63,7 +78,8 @@ ORDER BY pi.primary_investor_identifier
                 fk_country=get_country_for_primary_investor(version['id']),
                 classification=get_classification(version['id']),
                 fk_status_id=version['fk_status_id'],
-                history_date=get_now(version['id']),
+                history_date=history_date,
+                history_user_id=history_user_id,
                 #parent_relation=version['parent_relation'],
                 #homepage=version['homepage'],
                 #opencorporates_link=version['opencorporates_link'],
@@ -83,8 +99,7 @@ class MapInvestor(MapPrimaryInvestor):
         'id': (
             'id',
             ('fk_country', get_country_for_primary_investor),
-            ('timestamp', get_now),
-            ('classification', get_classification)
+            ('classification', get_classification),
         ),
         'primary_investor_identifier': 'investor_identifier',
         'fk_status': 'fk_status',
