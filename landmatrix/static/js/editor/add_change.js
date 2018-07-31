@@ -41,16 +41,19 @@ function showAddInvestorPopup(triggeringLink) {
     return false;
 }
 
-function dismissAddInvestorPopup(win, newId, newRepr) {
+function dismissAddInvestorPopup(win, newId, newRepr, newInvestorIdentifier) {
     // newId and newRepr are expected to have previously been escaped by
     newId = html_unescape(newId);
     newRepr = html_unescape(newRepr);
+    newInvestorIdentifier = html_unescape(newInvestorIdentifier);
     var name = windowname_to_id(win.name);
     var elem = $("#" + name);
 
     if (elem) {
         if (elem[0].nodeName == 'SELECT') {
-            elem.append($('<option></option>').val(newId).html(newRepr));
+            var option = $('<option></option>').val(newId).html(newRepr);
+            option.data('investor-identifier', newInvestorIdentifier);
+            elem.append(option);
             elem.find(':selected').removeAttr('selected');
             elem.val(newId);
             $(elem).select2("destroy").select2();

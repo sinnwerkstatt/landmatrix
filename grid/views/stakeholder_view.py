@@ -207,11 +207,12 @@ class AddStakeholderView(InvestorFormsMixin, CreateView):
     def render_popup(self):
         result = """
         <script type="text/javascript">
-        opener.dismissAddInvestorPopup(window, '%s', '%s')
+        opener.dismissAddInvestorPopup(window, '%s', '%s', '%s')
         </script>
         """ % (
             escape(self.object.id),
-            escape(self.object.name)
+            escape(self.object.name),
+            escape(self.object.investor_identifier)
         )
         return HttpResponse(result)
 

@@ -339,6 +339,21 @@ class InvestorVentureInvolvementBase(models.Model):
     links to investors or parent stakeholders in that company (depending
     on the role).
     '''
+    # FIXME: Replace fk_status with Choice Field
+    STATUS_PENDING = 1
+    STATUS_ACTIVE = 2
+    STATUS_OVERWRITTEN = 3
+    STATUS_DELETED = 4
+    STATUS_REJECTED = 5
+    STATUS_TO_DELETE = 6
+    STATUS_CHOICES = (
+        STATUS_PENDING, _('Pending'),
+        STATUS_ACTIVE, _('Active'),
+        STATUS_OVERWRITTEN, _('Overwritten'),
+        STATUS_DELETED, _('Deleted'),
+        STATUS_REJECTED, _('Rejected'),
+        STATUS_TO_DELETE, _('To delete'),
+    )
     STAKEHOLDER_ROLE = 'ST'
     INVESTOR_ROLE = 'IN'
     ROLE_CHOICES = (

@@ -115,6 +115,7 @@ class BaseInvolvementFormSet(forms.BaseModelFormSet):
         for instance in instances:
             if not hasattr(instance, 'fk_investor'):
                 continue
+            instance.id = None
             instance.fk_venture = fk_venture
             instance.role = self.ROLE
             instance.fk_status_id = HistoricalInvestor.STATUS_PENDING
