@@ -163,7 +163,6 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             order_by = None
 
         # Search deals
-        print(order_by)
         results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
                                                  sort=order_by, aggs=aggs)
 
