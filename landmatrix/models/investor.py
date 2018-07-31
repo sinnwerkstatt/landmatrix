@@ -160,7 +160,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         if not (user and user.is_authenticated()):
             queryset = queryset.filter(fk_status__in=(HistoricalInvestor.STATUS_ACTIVE,
                                                       HistoricalInvestor.STATUS_OVERWRITTEN))
-        return queryset
+        return queryset.order_by('-history_date')
 
     @property
     def is_deleted(self):

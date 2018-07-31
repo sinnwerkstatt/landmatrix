@@ -285,7 +285,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         if not (user and user.is_authenticated()):
             queryset = queryset.filter(fk_status__in=(HistoricalActivity.STATUS_ACTIVE,
                                                       HistoricalActivity.STATUS_OVERWRITTEN))
-        return queryset
+        return queryset.order_by('-history_date')
 
     def get_latest(self, user=None):
         """
