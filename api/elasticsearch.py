@@ -532,7 +532,7 @@ class ElasticSearch(object):
 
             if doc_type in ('deal', 'location'):
                 # Additionally save operating company attributes
-                oc = Investor.objects.filter(investoractivityinvolvement__fk_activity__activity_identifier=activity.activity_identifier)
+                oc = Investor.objects.filter(involvements__fk_activity__activity_identifier=activity.activity_identifier)
                 if oc.count() > 0:
                     oc = oc.first()
                     for field in Investor._meta.fields:
