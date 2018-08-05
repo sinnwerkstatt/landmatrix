@@ -64,14 +64,16 @@ class MapLOStakeholder(MapLOModel):
         new.homepage = old.get_tag_value('Website') or ''
         new.comment = cls.get_comment(old)
         new.fk_status_id = old.fk_status
-
+        #try:
+        #    landmatrix.models.HistoricalInvestor.objects.get(id=new.id).delete()
+        #except:
+        #    pass
         hinvestor = landmatrix.models.HistoricalInvestor.objects.create(
             id=new.id,
             name=new.name,
             fk_country=new.fk_country,
             classification=new.classification,
             fk_status=new.fk_status,
-            timestamp=new.timestamp,
             homepage=new.homepage,
             comment=new.comment,
             history_date=old.timestamp_entry.replace(tzinfo=timezone.utc)

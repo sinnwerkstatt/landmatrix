@@ -121,22 +121,22 @@ class MapLOInvolvements(MapLOModel):
     @classmethod
     def _get_new_activity(cls, activity_identifier):
         return list(filter(None, [
-            new_models.Activity.objects.using(V2) \
-            .filter(
-                attributes__fk_group__name='imported',
-                attributes__name='id',
-                attributes__value=str(activity_identifier)) \
-            .distinct().order_by('-id').first(),
             new_models.HistoricalActivity.objects.using(V2) \
                 .filter(
                 attributes__fk_group__name='imported',
                 attributes__name='id',
                 attributes__value=str(activity_identifier)) \
-                .distinct().order_by('-id').first()
+                .distinct().order_by('-id').first(),
+            new_models.Activity.objects.using(V2) \
+                           .filter(
+                attributes__fk_group__name='imported',
+                attributes__name='id',
+                attributes__value=str(activity_identifier)) \
+                           .distinct().order_by('-id').first(),
         ]))
 
     @classmethod
-    def _get_new_activity_involvements(cls, activities, investors):
+    def _get_new_activity_involvement(cls, activities, investors):
         involvements = list(filter(None, [
             new_models.HistoricalInvestorActivityInvolvement.objects.using(V2)\
                 .filter(fk_activity=activities[0],
@@ -175,14 +175,16 @@ class MapLOInvolvements(MapLOModel):
 
     @classmethod
     def _get_new_venture_involvement_by_activity(cls, activities, investors, role):
-        involvements = list(filter(None, [
-            new_models.HistoricalInvestorVentureInvolvement.objects.using(V2)\
-                .filter(fk_venture__involvements__fk_activity=activities[0], role=role,
-                        fk_investor=investors[1]).order_by('-id').first(),
-            new_models.InvestorVentureInvolvement.objects.using(V2)\
-                .filter(fk_venture__involvements__fk_activity=activities[1], role=role,
-                        fk_investor=investors[0]).order_by('-id').first(),
-        ]))
+        involvements = []
+        if activities:
+            involvements = list(filter(None, [
+                new_models.HistoricalInvestorVentureInvolvement.objects.using(V2)\
+                    .filter(fk_venture__involvements__fk_activity=activities[0], role=role,
+                            fk_investor=investors[1]).order_by('-id').first(),
+                new_models.InvestorVentureInvolvement.objects.using(V2)\
+                    .filter(fk_venture__involvements__fk_activity=activities[1], role=role,
+                            fk_investor=investors[0]).order_by('-id').first(),
+            ]))
         return involvements
 
     @classmethod
@@ -251,7 +253,7 @@ class MapLOInvolvements(MapLOModel):
         ]))
 
         if new_parent_investors:
-            involvements = cls._get_new_venture_involvements(
+            involvements = cls._get_new_venture_involvement(
                 ventures=new_parent_investors,
                 investors=investors,
                 role=role)

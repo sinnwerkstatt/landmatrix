@@ -167,10 +167,8 @@ class MapLOActivities(MapLOModel):
             # Don't need to query this every time
             cls._pending_status = landmatrix.models.Status.objects.using(
                 V2).get(name="pending")
-
         new.activity_identifier = activity_identifier
         new.fk_status = cls._pending_status
-
         if save:
             new.save(using=V2)
 
@@ -178,8 +176,7 @@ class MapLOActivities(MapLOModel):
         if hasattr(new, 'historical_version') and new.historical_version:
             historical_activity = new.historical_version
         else:
-            historical_activity = landmatrix.models.HistoricalActivity(
-                public_version=new)
+            historical_activity = landmatrix.models.HistoricalActivity(public_version=new)
 
         historical_activity.activity_identifier = new.activity_identifier
         historical_activity.fk_status = cls._pending_status

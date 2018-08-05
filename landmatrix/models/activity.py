@@ -239,13 +239,15 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
             kwargs['update_fields'] = ['activity_identifier']
             self.activity_identifier = self.__class__.get_next_activity_identifier()
             # re-save
-            self.save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
     @classmethod
     def get_next_activity_identifier(cls):
-        queryset = cls.objects.exclude(activity_identifier=cls.ACTIVITY_IDENTIFIER_DEFAULT)
+        # FIXME: using(V2) is necessary for the import here, can be removed after
+        queryset = HistoricalActivity.objects.using('v2')
+        queryset = queryset.exclude(activity_identifier=cls.ACTIVITY_IDENTIFIER_DEFAULT)
         queryset = queryset.aggregate(models.Max('activity_identifier'))
-        return queryset['activity_identifier__max'] + 1
+        return (queryset['activity_identifier__max'] or 0) + 1
 
     @classmethod
     def get_latest_activity(cls, activity_identifier):
