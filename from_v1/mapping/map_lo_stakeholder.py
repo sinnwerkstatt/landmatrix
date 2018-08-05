@@ -69,7 +69,7 @@ class MapLOStakeholder(MapLOModel):
         #except:
         #    pass
         hinvestor = landmatrix.models.HistoricalInvestor.objects.create(
-            id=new.id,
+            #id=new.id,
             name=new.name,
             fk_country=new.fk_country,
             classification=new.classification,
