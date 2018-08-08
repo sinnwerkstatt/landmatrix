@@ -261,38 +261,44 @@ class HistoricalInvestor(InvestorBase):
 
     def update_public_investor(self, approve=True):
         """Recursively update investor chain"""
+        # Keep track of investor identifiers to prevent infinite loops
+        investor_identifiers = []
         def update_investor(hinv, approve=True):
             if approve:
                 # Update status of historical investor
-                if hinv.fk_status_id == self.STATUS_PENDING:
-                    hinv.fk_status_id = self.STATUS_OVERWRITTEN
-                elif hinv.fk_status_id == self.STATUS_TO_DELETE:
-                    hinv.fk_status_id = self.STATUS_DELETED
+                if hinv.fk_status_id == hinv.STATUS_PENDING:
+                    hinv.fk_status_id = hinv.STATUS_OVERWRITTEN
+                elif hinv.fk_status_id == hinv.STATUS_TO_DELETE:
+                    hinv.fk_status_id = hinv.STATUS_DELETED
                 hinv.save()
 
             # Update public investor (leaving involvements)
-            investor = Investor.objects.filter(investor_identifier=self.investor_identifier)
+            investor = Investor.objects.filter(investor_identifier=hinv.investor_identifier)
             if investor.count() > 0:
                 investor = investor[0]
             else:
-                investor = Investor(investor_identifier=self.investor_identifier)
-            investor.id = self.id
-            investor.investor_identifier = self.investor_identifier
-            investor.name = self.name
-            investor.fk_country_id = self.fk_country_id
-            investor.classification = self.classification
-            investor.parent_relation = self.parent_relation
-            investor.homepage = self.homepage
-            investor.opencorporates_link = self.opencorporates_link
-            investor.fk_status_id = self.fk_status_id
-            investor.comment = self.comment
+                investor = Investor(investor_identifier=hinv.investor_identifier)
+            if investor.investor_identifier in investor_identifiers:
+                return investor
+            else:
+                investor_identifiers.append(investor.investor_identifier)
+            investor.id = hinv.id
+            investor.investor_identifier = hinv.investor_identifier
+            investor.name = hinv.name
+            investor.fk_country_id = hinv.fk_country_id
+            investor.classification = hinv.classification
+            investor.parent_relation = hinv.parent_relation
+            investor.homepage = hinv.homepage
+            investor.opencorporates_link = hinv.opencorporates_link
+            investor.fk_status_id = hinv.fk_status_id
+            investor.comment = hinv.comment
             investor.save()
 
             # Recreate involvements
             investor.venture_involvements.all().delete()
-            for hinvolvement in self.venture_involvements.all():
+            for hinvolvement in hinv.venture_involvements.all():
                 # Update InvestorVentureInvolvement
-                hinvolvement.fk_status_id = self.STATUS_OVERWRITTEN
+                hinvolvement.fk_status_id = hinv.STATUS_OVERWRITTEN
                 hinvolvement.save()
                 # Replace InvestorVentureInvolvement
                 investor.venture_involvements.create(

@@ -225,7 +225,7 @@
                         <tbody>
                         {% for activity in activities %}
                             <tr>
-                                <td class="deal"><a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }} ({{ activity.id }})</a>
+                                <td class="deal"><a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
                                 </td>
                                 <td class="user">{{ activity.user }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
