@@ -296,7 +296,7 @@ class HistoricalInvestor(InvestorBase):
                 hinvolvement.save()
                 # Replace InvestorVentureInvolvement
                 investor.venture_involvements.create(
-                    fk_investor=hinvolvement.fk_investor,
+                    fk_investor=investor,
                     role=hinvolvement.role,
                     investment_type=hinvolvement.investment_type,
                     percentage=hinvolvement.percentage,
