@@ -184,8 +184,8 @@ class FieldsDisplayFormMixin(object):
         value = self.initial.get(field_name,
                                  [])  # self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
         if value:
-            import pdb
-            pdb.set_trace()
+            #import pdb
+            #pdb.set_trace()
             try:
                 # Use base queryset to handle none() querysets (used with ajax based widgets)
                 return str(field.queryset.model.objects.get(pk=value))
