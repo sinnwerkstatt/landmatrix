@@ -6,6 +6,7 @@ from collections import OrderedDict
 from django.utils.datastructures import MultiValueDict
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 
 from grid.fields import (
     NestedMultipleChoiceField, YearBasedField, MultiCharField, ActorsField,
@@ -184,15 +185,22 @@ class FieldsDisplayFormMixin(object):
         value = self.initial.get(field_name,
                                  [])  # self.prefix and "%s-%s" % (self.prefix, field_name) or field_name, [])
         if value:
-            #import pdb
-            #pdb.set_trace()
             try:
                 # Use base queryset to handle none() querysets (used with ajax based widgets)
-                return str(field.queryset.model.objects.get(pk=value))
+                object = field.queryset.model.objects.get(pk=value)
             except (ValueError, AttributeError, ObjectDoesNotExist):
                 return ''
+
+            # Return links for some specific fields, maybe better move to the respective form
+            if field_name in ('operational_stakeholder', 'fk_investor'):
+                url = reverse('stakeholder_form', args=[object.investor_identifier])
+                return '<a href="%s#history">%s</a>' % (url, str(object))
+            else:
+                return str(object)
         else:
             return ''
+
+        return value
 
     @classmethod
     def get_display_properties(cls, doc, formset=None):
