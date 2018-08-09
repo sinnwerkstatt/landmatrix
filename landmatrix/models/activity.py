@@ -243,8 +243,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     @classmethod
     def get_next_activity_identifier(cls):
-        # FIXME: using(V2) is necessary for the import here, can be removed after
-        queryset = HistoricalActivity.objects.using('v2')
+        queryset = HistoricalActivity.objects#.using('v2')
         queryset = queryset.exclude(activity_identifier=cls.ACTIVITY_IDENTIFIER_DEFAULT)
         queryset = queryset.aggregate(models.Max('activity_identifier'))
         return (queryset['activity_identifier__max'] or 0) + 1

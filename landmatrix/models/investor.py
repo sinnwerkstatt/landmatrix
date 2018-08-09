@@ -103,7 +103,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
 
     @classmethod
     def get_next_investor_identifier(cls):
-        queryset = cls.objects.using('v2')
+        queryset = cls.objects#.using('v2')
         queryset = queryset.exclude(investor_identifier=cls.INVESTOR_IDENTIFIER_DEFAULT)
         queryset = queryset.aggregate(models.Max('investor_identifier'))
         return (queryset['investor_identifier__max'] or 0) + 1
