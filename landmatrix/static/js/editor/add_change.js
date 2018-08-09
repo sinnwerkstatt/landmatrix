@@ -15,16 +15,20 @@ function html_unescape(text) {
 // we use to generate popup window names may contain them, therefore we map them
 // to allowed characters in a reversible way so that we can locate the correct
 // element when the popup window is dismissed.
-function id_to_windowname(text) {
-    text = text.replace(/\./g, '__dot__');
-    text = text.replace(/\-/g, '__dash__');
-    return text;
+function id_to_windowname(id) {
+    var windowname = id.replace(/\./g, '__dot__');
+    windowname = windowname.replace(/\-/g, '__dash__');
+    // Add unique number since there might be multiple popups within each other
+    windowname += new Date().valueOf();
+    return windowname;
 }
 
-function windowname_to_id(text) {
-    text = text.replace(/__dot__/g, '.');
-    text = text.replace(/__dash__/g, '-');
-    return text;
+function windowname_to_id(windowname) {
+    var id = windowname.replace(/__dot__/g, '.');
+    id = id.replace(/__dash__/g, '-');
+    // Remove unique number
+    id = id.replace(/\d+$/, "")
+    return id;
 }
 
 function showAddInvestorPopup(triggeringLink) {

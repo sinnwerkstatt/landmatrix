@@ -45,7 +45,7 @@ function generateButtons(field) {
 
     // Bind handlers
     $('a.add-investor').click(function (e) {
-      e.preventDefault()
+      e.preventDefault();
       showAddInvestorPopup(this);
       return false;
     });
