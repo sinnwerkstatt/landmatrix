@@ -60,8 +60,16 @@ class ParentCompanyForm(FieldsDisplayFormMixin,
         valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get(
             'fk_investor', None))
         if valid_choice:
-            self.fields['fk_investor'].queryset = HistoricalInvestor.objects.filter(
-                pk=valid_choice)
+            field = self.fields['fk_investor']
+            field.queryset = HistoricalInvestor.objects.filter(pk=valid_choice)
+
+            # Add investor identifier as data attribute
+            if field.queryset.count() > 0:
+                field.widget.data = {
+                    valid_choice: {
+                        'investor-identifier': field.queryset[0].investor_identifier
+                    }
+                }
 
     class Meta:
         name = 'parent-company'
@@ -100,8 +108,16 @@ class ParentInvestorForm(ParentCompanyForm):
         valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get(
             'fk_investor', None))
         if valid_choice:
-            self.fields['fk_investor'].queryset = HistoricalInvestor.objects.filter(
-                pk=valid_choice)
+            field = self.fields['fk_investor']
+            field.queryset = HistoricalInvestor.objects.filter(pk=valid_choice)
+
+            # Add investor identifier as data attribute
+            if field.queryset.count() > 0:
+                field.widget.data = {
+                    valid_choice: {
+                        'investor-identifier': field.queryset[0].investor_identifier
+                    }
+                }
 
 
 class BaseInvolvementFormSet(forms.BaseModelFormSet):
