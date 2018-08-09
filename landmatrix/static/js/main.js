@@ -398,6 +398,7 @@ function initCountryField(field) {
 }
 
 function formatInvestor(result) {
+    var investor;
     // Show country and top investors for unknown investors
     if (result.text && result.text.startsWith('Unknown')) {
         investor = $('<span>', {'text': result.text});
@@ -418,9 +419,13 @@ function formatInvestor(result) {
         }
         meta = $('<small>', {'text': meta_info});
         meta.appendTo(investor);
-        return investor;
     } else {
-        return result.text;
+        investor = result.text;
+    }
+    if (result.investor_identifier) {
+        return investor + ' (#' + result.investor_identifier + ')';
+    } else {
+        return investor;
     }
 }
 
