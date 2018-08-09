@@ -51,7 +51,7 @@ class OperationalStakeholderForm(BaseForm):
             # Add investor identifier as data attribute
             if field.queryset.count() > 0:
                 field.widget.data = {
-                    valid_choice: {
+                    str(valid_choice): {
                         'investor-identifier': field.queryset[0].investor_identifier
                     }
                 }

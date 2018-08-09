@@ -53,12 +53,11 @@ class ParentCompanyForm(FieldsDisplayFormMixin,
         required=False, label=_("Comment"),
         widget=CommentInput)
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Show given/current value only, rest happens via ajax
-        valid_choice = self.data.get('%s-fk_investor' % self.prefix, self.initial.get(
-            'fk_investor', None))
+        valid_choice = self.data.get('%s-fk_investor' % self.prefix,
+                                     self.initial.get('fk_investor', None))
         if valid_choice:
             field = self.fields['fk_investor']
             field.queryset = HistoricalInvestor.objects.filter(pk=valid_choice)
@@ -66,7 +65,7 @@ class ParentCompanyForm(FieldsDisplayFormMixin,
             # Add investor identifier as data attribute
             if field.queryset.count() > 0:
                 field.widget.data = {
-                    valid_choice: {
+                    str(valid_choice): {
                         'investor-identifier': field.queryset[0].investor_identifier
                     }
                 }
@@ -114,7 +113,7 @@ class ParentInvestorForm(ParentCompanyForm):
             # Add investor identifier as data attribute
             if field.queryset.count() > 0:
                 field.widget.data = {
-                    valid_choice: {
+                    str(valid_choice): {
                         'investor-identifier': field.queryset[0].investor_identifier
                     }
                 }
