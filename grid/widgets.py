@@ -13,7 +13,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
-from django.utils.html import conditional_escape, escape
+from django.utils.html import conditional_escape, escape, format_html
 from file_resubmit.widgets import ResubmitFileWidget
 
 from ol3_widgets.widgets import SerializedMapWidget
@@ -632,3 +632,32 @@ class AreaWidget(forms.MultiWidget):
             file_label=_('Shapefile upload (select all files, required: .shp, .shx, .dbf, and .prj)'))
 
         return output
+
+
+class InvestorSelect(forms.Select):
+    """Custom select to add data attributes to options"""
+    data = {}
+
+    def __init__(self, *args, **kwargs):
+        data = kwargs.pop('data', {})
+        if data:
+            self.data = data
+        super(InvestorSelect, self).__init__(*args, **kwargs)
+
+    def render_option(self, selected_choices, option_value, option_label):
+        if option_value is None:
+            option_value = ''
+        option_value = force_text(option_value)
+        if option_value in selected_choices:
+            selected_html = mark_safe(' selected="selected"')
+            if not self.allow_multiple_selected:
+                # Only allow for a single selection.
+                selected_choices.remove(option_value)
+        else:
+            selected_html = ''
+        data_attributes = self.data.get(option_value, {})
+        return format_html('<option value="{}"{}{}>{}</option>',
+                           option_value,
+                           ' '.join('data-%s=%s' % d for d in data_attributes.items()),
+                           selected_html,
+                           force_text(option_label))

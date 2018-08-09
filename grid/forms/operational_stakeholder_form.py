@@ -1,46 +1,12 @@
 from django import forms
-from django.forms.widgets import Select
 from django.forms.models import ModelChoiceField
 from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.models.investor import Investor, InvestorActivityInvolvement
+from landmatrix.models.investor import Investor
 from grid.forms.base_form import BaseForm
 from grid.forms.choices import actor_choices
 from grid.fields import TitleField, ActorsField
-from grid.widgets import CommentInput
-
-from django.utils.encoding import force_text
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
-
-
-class InvestorSelect(Select):
-    """Custom select to add data attributes to options"""
-    data = {}
-
-    def __init__(self, *args, **kwargs):
-        data = kwargs.pop('data', {})
-        if data:
-            self.data = data
-        super(InvestorSelect, self).__init__(*args, **kwargs)
-
-    def render_option(self, selected_choices, option_value, option_label):
-        if option_value is None:
-            option_value = ''
-        option_value = force_text(option_value)
-        if option_value in selected_choices:
-            selected_html = mark_safe(' selected="selected"')
-            if not self.allow_multiple_selected:
-                # Only allow for a single selection.
-                selected_choices.remove(option_value)
-        else:
-            selected_html = ''
-        data_attributes = self.data.get(option_value, {})
-        return format_html('<option value="{}"{}{}>{}</option>',
-                           option_value,
-                           ' '.join('data-%s=%s' % d for d in data_attributes.items()),
-                           selected_html,
-                           force_text(option_label))
+from grid.widgets import CommentInput, InvestorSelect
 
 
 class OperationalStakeholderForm(BaseForm):

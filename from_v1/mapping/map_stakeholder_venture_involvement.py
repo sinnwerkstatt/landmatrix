@@ -124,4 +124,5 @@ def get_ivinvolvement_versions(inv):
     return MapStakeholderVentureInvolvement.old_class.objects.using(V1).filter(
         fk_primary_investor__primary_investor_identifier=inv.fk_venture.investor_identifier,
         #fk_stakeholder__stakeholder_identifier=inv.fk_investor.investor_identifier
+        fk_stakeholder__isnull=False
     ).order_by('id').values()

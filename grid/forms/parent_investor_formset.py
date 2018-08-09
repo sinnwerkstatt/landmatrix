@@ -6,6 +6,7 @@ from grid.fields import TitleField
 from grid.forms.base_form import FieldsDisplayFormMixin
 from grid.widgets import CommentInput
 from grid.utils import get_display_value
+from grid.widgets import InvestorSelect
 
 
 class InvestorVentureInvolvementForm(forms.ModelForm):
@@ -44,7 +45,7 @@ class ParentCompanyForm(FieldsDisplayFormMixin,
     fk_investor = forms.ModelChoiceField(
         required=False, label=_("Existing parent company"),
         queryset=HistoricalInvestor.objects.none(),
-        widget=forms.Select(attrs={'class': 'form-control investorfield'}))
+        widget=InvestorSelect(attrs={'class': 'form-control investorfield'}))
     percentage = forms.DecimalField(
         required=False, max_digits=5, decimal_places=2,
         label=_("Ownership share"), help_text=_("%"))
@@ -82,7 +83,7 @@ class ParentInvestorForm(ParentCompanyForm):
     fk_investor = forms.ModelChoiceField(
         required=False, label=_("Existing investor"),
         queryset=HistoricalInvestor.objects.none(),
-        widget=forms.Select(attrs={'class': 'form-control investorfield'}))
+        widget=InvestorSelect(attrs={'class': 'form-control investorfield'}))
 
     class Meta:
         name = 'parent-investor'
