@@ -1,4 +1,3 @@
-import json
 import re
 import logging
 logger = logging.getLogger('elasticsearch')
@@ -26,39 +25,41 @@ from landmatrix.models.country import Country
 
 
 FIELD_TYPE_MAPPING = {
-    'CharField': 'keyword',
-    'TextField': 'text',
-    'FloatField': 'float',
-    'IntegerField': 'integer',
+    # CharField (like investor name): Index text for search, keyword for aggregations
+    # FIXME: Can't change to text, mapper_parsing_exception for some field
+    'CharField': {'type': 'keyword'},# 'fields': {'raw': {'type': 'keyword'}}},
+    'TextField': {'type': 'text'},
+    'FloatField': {'type': 'float'},
+    'IntegerField': {'type': 'integer'},
     # don't use 'geo_shape' for areas (yet?), because elasticsearch takes parsing (too?) seriously,
     # which prevents deals from being indexed because of the following errors:
     # - invalid_shape_exception: Provided shape has duplicate consecutive coordinates
     # - invalid_shape_exception: Self-intersection at or near point
-    'AreaField': 'text',
-    'ChoiceField': 'keyword',
-    'ModelChoiceField': 'keyword',
-    'MultipleChoiceField': 'keyword',
-    'YearMonthDateValidator': 'keyword',
-    'YearMonthDateField': 'keyword',
-    'YearBasedField': 'keyword',
-    'YearBasedBooleanField': 'keyword',
-    'YearBasedIntegerField': 'keyword',
-    'YearBasedFloatField': 'keyword',
-    'YearBasedChoiceField': 'keyword',
-    'YearBasedModelMultipleChoiceField': 'keyword',
-    'YearBasedModelMultipleChoiceIntegerField': 'keyword',
-    'YearBasedMultipleChoiceIntegerField': 'keyword',
-    'MultiCharField': 'keyword',
-    'UserModelChoiceField': 'keyword',
-    'PrimaryInvestorField': 'keyword',
-    'NestedMultipleChoiceField': 'keyword',
-    'FileFieldWithInitial': 'keyword',
-    'CountryField': 'keyword',
-    'ActorsField': 'keyword',
-    'MultiFileField': 'keyword',
-    'DateTimeField': 'date',
+    'AreaField': {'type': 'text'},
+    'ChoiceField': {'type': 'keyword'},
+    'ModelChoiceField': {'type': 'keyword'},
+    'MultipleChoiceField': {'type': 'keyword'},
+    'YearMonthDateValidator': {'type': 'keyword'},
+    'YearMonthDateField': {'type': 'keyword'},
+    'YearBasedField': {'type': 'keyword'},
+    'YearBasedBooleanField': {'type': 'keyword'},
+    'YearBasedIntegerField': {'type': 'keyword'},
+    'YearBasedFloatField': {'type': 'keyword'},
+    'YearBasedChoiceField': {'type': 'keyword'},
+    'YearBasedModelMultipleChoiceField': {'type': 'keyword'},
+    'YearBasedModelMultipleChoiceIntegerField': {'type': 'keyword'},
+    'YearBasedMultipleChoiceIntegerField': {'type': 'keyword'},
+    'MultiCharField': {'type': 'keyword'},
+    'UserModelChoiceField': {'type': 'keyword'},
+    'PrimaryInvestorField': {'type': 'keyword'},
+    'NestedMultipleChoiceField': {'type': 'keyword'},
+    'FileFieldWithInitial': {'type': 'keyword'},
+    'CountryField': {'type': 'keyword'},
+    'ActorsField': {'type': 'keyword'},
+    'MultiFileField': {'type': 'keyword'},
+    'DateTimeField': {'type': 'date'},
 }
-FIELD_TYPE_FALLBACK = 'text'
+FIELD_TYPE_FALLBACK = {'type': 'text'}
 
 DOC_TYPES_ACTIVITY = ('deal', 'location', 'data_source', 'contract', 'involvement_size')
 DOC_TYPES_INVESTOR = ('investor', 'involvement', 'top_investor')
@@ -93,16 +94,17 @@ def get_elasticsearch_properties(doc_type=None):
                 'deal_country': {'type': 'keyword'},
                 'top_investors': {'type': 'keyword'},
                 'investor_id': {'type': 'keyword'},
-                'investor_name': {'type': 'keyword'},
+                'investor_name': {'type': 'text', 'fields': {'raw': {'type': 'keyword'}}},
                 'investor_country': {'type': 'keyword'},
                 'investor_country_display': {'type': 'keyword'},
                 'investor_region': {'type': 'keyword'},
                 'investor_region_display': {'type': 'keyword'},
-                'fully_updated_date': {'type': 'text'},
+                'fully_updated_date': {'type': 'date'},
                 'target_region': {'type': 'keyword'},
                 'target_region_display': {'type': 'keyword'},
                 'operating_company_region': {'type': 'keyword'},
                 'operating_company_region_display': {'type': 'keyword'},
+                'operating_company_name': {'type': 'text', 'fields': {'raw': {'type': 'keyword'}}},
                 'agricultural_produce': {'type': 'keyword'},
                 'availability': {'type': 'float'},
             }
@@ -158,13 +160,12 @@ def get_elasticsearch_properties(doc_type=None):
                 # Title field?
                 if name.startswith('tg_') and not name.endswith('_comment'):
                     continue
-                field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__,
-                                                    FIELD_TYPE_FALLBACK)
+                field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
                 field_mappings = {}
-                field_mappings[name] = {'type': field_type}
+                field_mappings[name] = field_type
                 if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField,
                                       BooleanField)):
-                    field_mappings['%s_display' % name] = {'type': field_type}
+                    field_mappings['%s_display' % name] = field_type
                 # Additionally save complete attribute (including value2, date, is_current) for all MultiValueFields
                 if isinstance(field, MultiValueField):
                     field_mappings['%s_attr' % name] = {'type': 'nested'}
@@ -175,26 +176,26 @@ def get_elasticsearch_properties(doc_type=None):
             field_name = 'operating_company_%s' % field_name
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
             field_mappings = {}
-            field_mappings[field_name] = {'type': field_type}
+            field_mappings[field_name] = field_type
             if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField, BooleanField)):
-                field_mappings['%s_display' % field_name] = {'type': field_type}
+                field_mappings['%s_display' % field_name] = field_type
             _landmatrix_mappings['deal']['properties'].update(field_mappings)
 
         # Doc type: involvement
         for field_name, field in InvestorVentureInvolvementForm.base_fields.items():
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
             field_mappings = {}
-            field_mappings[field_name] = {'type': field_type}
+            field_mappings[field_name] = field_type
             if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField, BooleanField)):
-                field_mappings['%s_display' % field_name] = {'type': field_type}
+                field_mappings['%s_display' % field_name] = field_type
             _landmatrix_mappings['involvement']['properties'].update(field_mappings)
         # Doc type: investor
         for field_name, field in ExportInvestorForm.base_fields.items():
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
             field_mappings = {}
-            field_mappings[field_name] = {'type': field_type}
+            field_mappings[field_name] = field_type
             if isinstance(field, (ChoiceField, ModelChoiceField, MultiValueField, BooleanField)):
-                field_mappings['%s_display' % field_name] = {'type': field_type}
+                field_mappings['%s_display' % field_name] = field_type
             _landmatrix_mappings['investor']['properties'].update(field_mappings)
 
         # FIXME: Location = Deal for now, that should be changed in the future
@@ -226,17 +227,17 @@ class ElasticSearch(object):
             try:
                 self.conn.delete_index(self.index_name)
             except ElasticHttpNotFoundError as e:
-                pass 
+                pass
         mappings = dict((k, v) for k, v in get_elasticsearch_properties().items())
         settings = {
-            "analysis": {
-                "analyzer": {
-                    "no_lowercase": {
-                        "type": "custom",
-                        "tokenizer": "standard"
-                    }
-                }
-            }
+            #"analysis": {
+            #    "analyzer": {
+            #        "no_lowercase": {
+            #            "type": "custom",
+            #            "tokenizer": "standard"
+            #        }
+            #    }
+            #}
         }
         self.conn.create_index(self.index_name, settings={'mappings': mappings,
                                                           'settings': settings})
