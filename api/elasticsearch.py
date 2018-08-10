@@ -26,8 +26,7 @@ from landmatrix.models.country import Country
 
 FIELD_TYPE_MAPPING = {
     # CharField (like investor name): Index text for search, keyword for aggregations
-    # FIXME: Can't change to text, mapper_parsing_exception for some field
-    'CharField': {'type': 'keyword'},# 'fields': {'raw': {'type': 'keyword'}}},
+    'CharField': {'type': 'text', 'fields': {'raw': {'type': 'keyword'}}},
     'TextField': {'type': 'text'},
     'FloatField': {'type': 'float'},
     'IntegerField': {'type': 'integer'},
@@ -77,7 +76,7 @@ def get_elasticsearch_properties(doc_type=None):
         _landmatrix_mappings = OrderedDict()
         _landmatrix_mappings['deal'] = {
             'properties': {
-                'id': {'type': 'text'}, # use 'exact_value' instead of string?
+                'id': {'type': 'keyword'},
                 'historical_activity_id': {'type': 'integer'},
                 'history_date': {'type': 'date'},
                 'activity_identifier': {'type': 'integer'},
@@ -160,6 +159,11 @@ def get_elasticsearch_properties(doc_type=None):
                 # Title field?
                 if name.startswith('tg_') and not name.endswith('_comment'):
                     continue
+                if formset_name:
+                    if name in _landmatrix_mappings[formset_name]['properties']:
+                        continue
+                elif name in _landmatrix_mappings['deal']['properties']:
+                    continue
                 field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
                 field_mappings = {}
                 field_mappings[name] = field_type
@@ -174,6 +178,8 @@ def get_elasticsearch_properties(doc_type=None):
                     _landmatrix_mappings[formset_name]['properties'].update(field_mappings)
         for field_name, field in ExportInvestorForm.base_fields.items():
             field_name = 'operating_company_%s' % field_name
+            if field_name in _landmatrix_mappings['deal']['properties']:
+                continue
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
             field_mappings = {}
             field_mappings[field_name] = field_type
@@ -183,6 +189,8 @@ def get_elasticsearch_properties(doc_type=None):
 
         # Doc type: involvement
         for field_name, field in InvestorVentureInvolvementForm.base_fields.items():
+            if field_name in _landmatrix_mappings['involvement']['properties']:
+                continue
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
             field_mappings = {}
             field_mappings[field_name] = field_type
@@ -191,6 +199,8 @@ def get_elasticsearch_properties(doc_type=None):
             _landmatrix_mappings['involvement']['properties'].update(field_mappings)
         # Doc type: investor
         for field_name, field in ExportInvestorForm.base_fields.items():
+            if field_name in _landmatrix_mappings['investor']['properties']:
+                continue
             field_type = FIELD_TYPE_MAPPING.get(field.__class__.__name__, FIELD_TYPE_FALLBACK)
             field_mappings = {}
             field_mappings[field_name] = field_type

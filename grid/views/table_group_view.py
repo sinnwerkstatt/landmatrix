@@ -66,6 +66,9 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                 "current_implementation_status_display",
                 "deal_size"] #"intended_size", "contract_size", ]
     }
+    AGGREGATE_COLUMNS = {
+        "investor_name": "investor_name.raw",
+    }
     GROUP_COLUMNS_LIST = COLUMN_GROUPS["all"]
     GROUP_NAMES = {
         "operational_stakeholder_name": _("Investor name"),
@@ -241,7 +244,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                     },
                     'all': {
                         'terms': {
-                            'field': fields[0]
+                            'field': self.AGGREGATE_COLUMNS.get(fields[0], fields[0])
                         }
                     },
                 }
@@ -252,14 +255,14 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             field = fields[0].replace('_display', '')
             aggs[self.group]['aggs'][field] = {
                 'terms': {
-                    'field': field
+                    'field': self.AGGREGATE_COLUMNS.get(field, field)
                 }
             }
         # Collect terms for all other fields
         for field in fields[1:]:
             aggs[self.group]['aggs'][field] = {
                 'terms': {
-                    'field': field
+                    'field': self.AGGREGATE_COLUMNS.get(field, field)
                 }
             }
         # Exclude empty
