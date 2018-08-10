@@ -85,12 +85,8 @@ class InvestorListView(ElasticSearchMixin,
                 'bool': {
                     'must': [
                         {'wildcard': {'name': '*%s*' % term}},
-                    ],
-                    'should': [
-                        {'fk_status': 2},
-                        {'fk_status': 3}
-                    ],
-                    'minimum_should_match': 1
+                        {'terms': {'fk_status': [2, 3]}},
+                    ]
                 }
             }
             # Search deals

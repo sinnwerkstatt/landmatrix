@@ -158,11 +158,11 @@ function get_filter_options(operatorfield, variablefield, key_id) {
         });
         operatorfield.find('option:not([disabled=disabled])').first().attr('selected', 'selected');
 
-        // Init country widget
+        // Init investor widget
         variablefield.find('.investorfield').each(function () {
             initInvestorField($(this), false);
         });
-        // Init investor widget
+        // Init country widget
         variablefield.find('.countryfield').each(function () {
             initCountryField($(this));
         });

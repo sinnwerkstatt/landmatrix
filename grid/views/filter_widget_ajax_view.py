@@ -19,6 +19,7 @@ class FilterWidgetAjaxView(APIView):
     TYPE_NUMERIC = 'numeric'
     TYPE_BOOLEAN = 'boolean'
     TYPE_LIST = 'list'
+    TYPE_AUTOCOMPLETE = 'autocomplete'
     TYPE_LIST_MULTIPLE = 'multiple'
     TYPE_DATE = 'date'
     FIELD_TYPE_MAPPING = OrderedDict((
@@ -35,6 +36,8 @@ class FilterWidgetAjaxView(APIView):
         'fully_updated_date': TYPE_DATE,
         'last_modification': TYPE_DATE,
         'fully_updated_by': TYPE_LIST,
+        'operational_stakeholder': TYPE_AUTOCOMPLETE,
+        'target_country': TYPE_AUTOCOMPLETE,
     }
     TYPE_OPERATION_MAPPING = {
         TYPE_STRING: ('contains', 'is', 'is_empty'),
@@ -43,6 +46,7 @@ class FilterWidgetAjaxView(APIView):
         TYPE_LIST: ('is', 'not_in', 'in', 'is_empty'),
         TYPE_LIST_MULTIPLE: ('is', 'not_in', 'in', 'is_empty'),
         TYPE_DATE: ('lt', 'gt', 'gte', 'lte', 'is', 'is_empty'),
+        TYPE_AUTOCOMPLETE: ('is', 'not_in', 'in', 'is_empty'),
     }
     OPERATION_WIDGET_MAPPING = {
         'is_empty': None,
@@ -92,6 +96,16 @@ class FilterWidgetAjaxView(APIView):
                 'widget': DateTimePicker,
             }
         ],
+        TYPE_AUTOCOMPLETE: [
+            {
+                'operations': ('is',),
+                'widget': forms.Select,
+            },
+            {
+                'operations': ('not_in', 'in'),
+                'widget': forms.SelectMultiple,
+            }
+        ],
     }
     FIELD_NAME_MAPPING = {
         'operational_stakeholder': 'operating_company_id',
@@ -138,9 +152,12 @@ class FilterWidgetAjaxView(APIView):
                 if isinstance(field, field_class):
                     self._type = field_type
                     break
+            # Get type by field name
+            if self.field_name in self.FIELD_NAME_TYPE_MAPPING.keys():
+                self._type = self.FIELD_NAME_TYPE_MAPPING.get(self.field_name)
+            # Fallback to string
             if not hasattr(self, '_type'):
-                # Get type by field name
-                self._type = self.FIELD_NAME_TYPE_MAPPING.get(self.field_name, self.TYPE_STRING)
+                self._type = self.TYPE_STRING
         return self._type
 
     @property

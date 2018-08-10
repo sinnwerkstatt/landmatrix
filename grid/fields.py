@@ -450,7 +450,7 @@ class FileFieldWithInitial(forms.FileField):
 
 class CountryField(forms.ModelChoiceField):
 
-    widget = CountrySelect(attrs={"readonly":"readonly"})
+    widget = CountrySelect(attrs={"readonly":"readonly", "class": "countryfield"})
 
     def __init__(self, *args, **kwargs):
         queryset = Country.objects.defer('geom').filter(is_target_country=True).order_by("name")
