@@ -82,7 +82,16 @@ class InvestorListView(ElasticSearchMixin,
         term = self.request.GET.get('q', '')
         if term:
             query = {
-                'wildcard': {'name': '*%s*' % term},
+                'bool': {
+                    'must': [
+                        {'wildcard': {'name': '*%s*' % term}},
+                    ],
+                    'should': [
+                        {'fk_status': 2},
+                        {'fk_status': 3}
+                    ],
+                    'minimum_should_match': 1
+                }
             }
             # Search deals
             raw_results = self.execute_elasticsearch_query(query, doc_type='investor',

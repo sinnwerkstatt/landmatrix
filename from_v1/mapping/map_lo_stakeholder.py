@@ -11,9 +11,6 @@ from from_v1.migrate import V2
 class MapLOStakeholder(MapLOModel):
     old_class = Stakeholder
     new_class = landmatrix.models.Investor
-    attributes = {
-        'fk_status': ('fk_status_id', lambda id: id),
-    }
 
     @classmethod
     def all_records(cls):
@@ -63,7 +60,7 @@ class MapLOStakeholder(MapLOModel):
         new.classification = classification
         new.homepage = old.get_tag_value('Website') or ''
         new.comment = cls.get_comment(old)
-        new.fk_status_id = old.fk_status
+        new.fk_status_id = 1
         #try:
         #    landmatrix.models.HistoricalInvestor.objects.get(id=new.id).delete()
         #except:
@@ -73,7 +70,7 @@ class MapLOStakeholder(MapLOModel):
             name=new.name,
             fk_country=new.fk_country,
             classification=new.classification,
-            fk_status=new.fk_status,
+            fk_status=1,
             homepage=new.homepage,
             comment=new.comment,
             history_date=old.timestamp_entry.replace(tzinfo=timezone.utc)
