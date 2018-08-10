@@ -11,6 +11,9 @@ from from_v1.migrate import V2
 class MapLOStakeholder(MapLOModel):
     old_class = Stakeholder
     new_class = landmatrix.models.Investor
+    attributes = {
+        'fk_status_id': ('fk_status_id', lambda id: id),
+    }
 
     @classmethod
     def all_records(cls):
@@ -70,7 +73,7 @@ class MapLOStakeholder(MapLOModel):
             name=new.name,
             fk_country=new.fk_country,
             classification=new.classification,
-            fk_status=1,
+            fk_status_id=1,
             homepage=new.homepage,
             comment=new.comment,
             history_date=old.timestamp_entry.replace(tzinfo=timezone.utc)

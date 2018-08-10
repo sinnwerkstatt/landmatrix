@@ -44,9 +44,11 @@ FORMS = [
     ("gender-related_info", DealGenderRelatedInfoForm),
     ("vggt", DealVGGTForm),
     ("overall_comment", DealOverallCommentForm),
-    ("action_comment", DealActionCommentForm),
 ]
 
+USER_FORMS = [
+    ("action_comment", DealActionCommentForm),
+]
 
 class DealDetailView(PDFViewMixin, TemplateView):
 
@@ -96,7 +98,7 @@ class DealDetailView(PDFViewMixin, TemplateView):
         activity = self.get_object()
         context['activity'] = activity
         context['public_activity'] = self._get_public_activity()
-        context['forms'] = get_forms(activity)
+        context['forms'] = get_forms(activity, user=self.request.user)
         context['investor'] = activity.stakeholders
         context['history_id'] = history_id
 
@@ -166,8 +168,10 @@ def display_invalid_forms(forms):
             print(form.__class__.__name__, 'INVALID:', form.errors)
 
 
-def get_forms(activity, prefix=None):
+def get_forms(activity, user, prefix=None):
     forms = [get_form(activity, form, prefix) for form in FORMS]
+    if user.is_authenticated():
+        forms.extend([get_form(activity, form, prefix) for form in USER_FORMS])
     if activity:
         for form_class in get_country_specific_form_classes(activity):
             form_tuple = (form_class.Meta.name, form_class)

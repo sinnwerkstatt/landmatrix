@@ -23,12 +23,8 @@ class AddDealView(SaveDealView):
     def get_forms(self, data=None, files=None):
         forms = []
         for form_class in self.FORMS:
-            # Add register form instead of action comment form for non authenticated user
-            if form_class == DealActionCommentForm and not self.request.user.is_authenticated():
-                forms.append(PublicUserInformationForm(data=data))
-            else:
-                prefix = issubclass(form_class, BaseFormSet) and form_class.Meta.name or None
-                forms.append(form_class(data=data, files=files, prefix=prefix))
+            prefix = issubclass(form_class, BaseFormSet) and form_class.Meta.name or None
+            forms.append(form_class(data=data, files=files, prefix=prefix))
         return forms
 
     def form_valid(self, forms):

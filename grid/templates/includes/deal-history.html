@@ -26,7 +26,7 @@
                                                 <p>{% if item.history_user %}{{ item.history_user.get_full_name }}{% else %}{% trans "Unknown user" %}{% endif %}</p>
                                             </td>
                                             <td>
-                                                <p class="toggle-tooltip" title="{% if item.fully_updated %}{% trans "Fully updated" %}{% else %}{% trans "Updadet" %}{% endif %}"><span class="fa fa-{% if item.fully_updated %}check-{% endif %}circle"></span></p>
+                                                <p class="toggle-tooltip" title="{% if item.fully_updated %}{% trans "Fully updated" %}{% else %}{% trans "Updated" %}{% endif %}"><span class="fa fa-{% if item.fully_updated %}check-{% endif %}circle"></span></p>
                                             </td>
                                             <td>
                                                 <p><small><span class="label label-default">{{ item.fk_status.name }}</span></small></p>

@@ -22,13 +22,13 @@ class DealComparisonView(TemplateView):
                 .filter(history_date__lt=deal_1.history_date).order_by('history_date').last()
         context = super().get_context_data()
         context['deals'] = [deal_1, deal_2]
-        context['forms'] = get_comparison(deal_1, deal_2)
+        context['forms'] = get_comparison(deal_1, deal_2, user=request.user)
         return render_to_response('deal-comparison.html', context, RequestContext(request))
 
 
-def get_comparison(deal_1, deal_2):
-    forms_1 = get_forms(deal_1)
-    forms_2 = get_forms(deal_2)
+def get_comparison(deal_1, deal_2, user):
+    forms_1 = get_forms(deal_1, user=user)
+    forms_2 = get_forms(deal_2, user=user)
     if len(forms_1) != len(forms_2):
         raise IndexError(
                 "Compared deals have different number of forms. Deal id(s): %i, %i. History IDs: %i, %i" %

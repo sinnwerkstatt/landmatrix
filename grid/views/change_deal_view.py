@@ -101,12 +101,7 @@ class ChangeDealView(SaveDealView):
     def get_forms(self, data=None, files=None):
         forms = []
         for form_class in self.FORMS:
-            # Add register form instead of action comment form for non authenticated user
-            # FIXME: This should not be possible anymore, remove?
-            if form_class == DealActionCommentForm and not self.request.user.is_authenticated():
-                forms.append(PublicUserInformationForm(data=data))
-            else:
-                forms.append(self.get_form(form_class, data=data, files=files))
+            forms.append(self.get_form(form_class, data=data, files=files))
         # Add country specific forms
         for form_class in get_country_specific_form_classes(self.get_object()):
             forms.append(self.get_form(form_class, data=data, files=files))
@@ -115,9 +110,8 @@ class ChangeDealView(SaveDealView):
     def get_form(self, form_class, data=None, files=None):
         prefix = issubclass(form_class, BaseFormSet) and form_class.Meta.name or None
         initial = form_class.get_data(self.get_object())
-        #if 'OperationalStakeholderForm' in str(form_class):
-        #    import pdb
-        #    pdb.set_trace()
+        if form_class == DealActionCommentForm:
+            del initial['tg_action_comment']
         return form_class(initial=initial, files=files, data=data, prefix=prefix)
 
     #def render_to_response(self, *args, **kwargs):
