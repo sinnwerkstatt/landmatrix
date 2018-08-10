@@ -36,7 +36,7 @@ urlpatterns = [
 
     # needs to come last, regexp catches all expressions
     url(
-        r'^(?P<group>.+)/(?P<group_value>.+)/$',
+        r'^(?P<group>[^/]+)/(?P<group_value>.+)/$',
         save_filter_query_params()(TableGroupView.as_view()),
         name='table_list'
     ),
