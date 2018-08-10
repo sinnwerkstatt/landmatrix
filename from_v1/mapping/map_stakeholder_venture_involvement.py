@@ -1,3 +1,5 @@
+from django.db.models import Max
+
 from from_v1.mapping.map_investor_activity_involvement import MapInvestorActivityInvolvement
 from from_v1.mapping.map_activity import MapActivity
 from from_v1.mapping.map_investor import MapPrimaryInvestor
@@ -120,8 +122,20 @@ class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
 
 
 def get_ivinvolvement_versions(inv):
-    return MapStakeholderVentureInvolvement.old_class.objects.using(V1).filter(
+    # Get newest investor versions for activities
+    newest = MapStakeholderVentureInvolvement.old_class.objects.using(V1).filter(
+        fk_primary_investor__primary_investor_identifier=inv.fk_venture.investor_identifier,
+        # fk_stakeholder__stakeholder_identifier=inv.fk_investor.investor_identifier
+        fk_stakeholder__isnull=False
+    ).values('fk_primary_investor__primary__primary_investor_identifier',
+             'fk_stakeholder__stakeholder_identifier').annotate(Max('id'))
+    import pdb
+    pdb.set_trace()
+    queryset = MapStakeholderVentureInvolvement.old_class.objects.using(V1).filter(
         fk_primary_investor__primary_investor_identifier=inv.fk_venture.investor_identifier,
         #fk_stakeholder__stakeholder_identifier=inv.fk_investor.investor_identifier
         fk_stakeholder__isnull=False
-    ).order_by('id').values()
+    )
+    queryset = queryset.filter(id__in=newest)
+    queryset = queryset.order_by('id').values()
+    return queryset

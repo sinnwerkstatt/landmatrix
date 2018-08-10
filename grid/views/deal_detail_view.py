@@ -27,6 +27,7 @@ from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.forms.deal_overall_comment_form import DealOverallCommentForm
 from grid.views.view_aux_functions import render_to_string, render_to_response
 from grid.forms.country_specific_forms import get_country_specific_form_classes
+from grid.forms.deal_action_comment_form import DealActionCommentForm
 
 
 FORMS = [
@@ -43,6 +44,7 @@ FORMS = [
     ("gender-related_info", DealGenderRelatedInfoForm),
     ("vggt", DealVGGTForm),
     ("overall_comment", DealOverallCommentForm),
+    ("action_comment", DealActionCommentForm),
 ]
 
 

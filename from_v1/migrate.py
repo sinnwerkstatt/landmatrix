@@ -147,14 +147,14 @@ if __name__ == '__main__':
 
         if options.investor or options.all:
             ###
-            #from django.db import connections
-            #cursor = connections[V2].cursor()
-            #cursor.execute("TRUNCATE landmatrix_investor CASCADE;")
-            #cursor.execute("TRUNCATE landmatrix_historicalinvestor CASCADE;")
-            #cursor.execute("TRUNCATE landmatrix_investoractivityinvolvement CASCADE;")
-            #cursor.execute("TRUNCATE landmatrix_historicalinvestoractivityinvolvement CASCADE;")
-            #cursor.execute("TRUNCATE landmatrix_investorventureinvolvement CASCADE;")
-            #cursor.execute("TRUNCATE landmatrix_historicalinvestorventureinvolvement CASCADE;")
+            from django.db import connections
+            cursor = connections[V2].cursor()
+            cursor.execute("TRUNCATE landmatrix_investor CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalinvestor CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_investoractivityinvolvement CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_historicalinvestoractivityinvolvement CASCADE;")
+            cursor.execute("TRUNCATE landmatrix_investorventureinvolvement;")
+            cursor.execute("TRUNCATE landmatrix_historicalinvestorventureinvolvement;")
             ###
             #if not MapStatus._done: MapStatus.map_all(save=options.save, verbose=options.verbose)
             MapStatus._done = True
@@ -162,12 +162,12 @@ if __name__ == '__main__':
             #MapInvestor._done = True
             #if not MapActivity._done: MapActivity.map_all(save=options.save, verbose=options.verbose)
             MapActivity._done = True
-            #MapInvestor._done = True
+            MapInvestor._done = True
             MapInvestorActivityInvolvement.map_all(save=options.save, verbose=options.verbose)
             MapStakeholderInvestor.map_all(save=options.save, verbose=options.verbose)
 
             MapStakeholderVentureInvolvement.map_all(save=options.save, verbose=options.verbose)
-            MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)
+            #MapStakeholderComment.map_all(save=options.save, verbose=options.verbose)
 
         if options.comment or options.all:
             MapDjangoComments.map_all(save=options.save, verbose=options.verbose)
