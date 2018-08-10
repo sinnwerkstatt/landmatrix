@@ -453,7 +453,9 @@ class CountryField(forms.ModelChoiceField):
     widget = CountrySelect(attrs={"readonly":"readonly"})
 
     def __init__(self, *args, **kwargs):
-        kwargs["queryset"] = Country.objects.defer('geom').all().order_by("name")
+        queryset = Country.objects.defer('geom').filter(is_target_country=True).order_by("name")
+        kwargs["queryset"] = queryset
+
         super(CountryField, self).__init__(*args, **kwargs)
 
 
