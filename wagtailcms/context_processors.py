@@ -23,7 +23,7 @@ def add_countries_and_regions(request):
     observatories = CountryPage.objects.filter(live=True).order_by('title')
     countries.append({
         'text': _('Observatories'),
-        'children': [[country.country.id, country.slug, country.title]
+        'children': [[country.country.id if country.country else None, country.slug, country.title]
                      for country in observatories]
     })
     other_countries = Country.objects.filter(is_target_country=True, high_income=False)
