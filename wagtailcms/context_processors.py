@@ -27,7 +27,8 @@ def add_countries_and_regions(request):
                      for country in observatories]
     })
     other_countries = Country.objects.filter(is_target_country=True, high_income=False)
-    other_countries = other_countries.exclude(id__in=[c.country.id for c in observatories])
+    other_countries = other_countries.exclude(id__in=[c.country.id if c.country else None
+                                                      for c in observatories])
     other_countries = other_countries.only('id', 'slug', 'name').order_by('name')
     countries.append({
         'text': _('Other'),
