@@ -1,7 +1,9 @@
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.utils.html import escape
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import CreateView, UpdateView
 
@@ -137,6 +139,10 @@ class ChangeStakeholderView(InvestorFormsMixin, UpdateView):
     context_object_name = 'investor'
     model = HistoricalInvestor
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def get_object(self):
         # TODO: Cache result for user
         investor_id = self.kwargs.get('investor_id')
@@ -184,6 +190,10 @@ class AddStakeholderView(InvestorFormsMixin, CreateView):
     form_class = ParentInvestorForm
     template_name = 'stakeholder.html'
     context_object_name = 'investor'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
     def get_success_url(self):
         return reverse_lazy(
