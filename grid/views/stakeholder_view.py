@@ -158,7 +158,7 @@ class ChangeStakeholderView(InvestorFormsMixin, UpdateView):
         return investor
 
     def form_valid(self, investor_form, stakeholders_formset, investors_formset):
-        self.object = investor_form.save()
+        self.object = investor_form.save(user=self.request.user)
         stakeholders_formset.save(self.object)
         investors_formset.save(self.object)
 
@@ -227,7 +227,7 @@ class AddStakeholderView(InvestorFormsMixin, CreateView):
         return HttpResponse(result)
 
     def form_valid(self, investor_form, stakeholders_formset, investors_formset):
-        self.object = investor_form.save()
+        self.object = investor_form.save(user=self.request.user)
         stakeholders_formset.save(self.object)
         investors_formset.save(self.object)
 

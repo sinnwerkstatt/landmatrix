@@ -51,7 +51,7 @@ class BaseInvestorForm(BaseModelForm):
         if valid_choice:
             self.fields['fk_country'].queryset = Country.objects.filter(pk=valid_choice)
 
-    def save(self, commit=True):
+    def save(self, commit=True, user=None):
         '''
         Force status to pending on update.
         '''
@@ -60,7 +60,7 @@ class BaseInvestorForm(BaseModelForm):
         # Create new historical investor
         hinvestor.id = None
         hinvestor.history_date = timezone.now()
-        hinvestor.history_user = None # FIXME: Set current user
+        hinvestor.history_user = user
         if commit:
             hinvestor.save()
             # Create investor instance if not existing
