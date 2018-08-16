@@ -108,7 +108,10 @@ class MapLOActivities(MapLOModel):
         excluded_country_deal_ids = list([
             deal.pk for deal in deals
             if get_deal_country(deal) in (
-                'China', 'Myanmar', 'Tanzania, United Republic of', 'Viet Nam',
+                'China',
+                'Myanmar',
+                'Tanzania, United Republic of',
+                'Viet Nam',
             )
         ])
         excluded_lm_import_deal_ids = list([
