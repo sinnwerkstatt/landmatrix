@@ -27,7 +27,7 @@ function windowname_to_id(windowname) {
     var id = windowname.replace(/__dot__/g, '.');
     id = id.replace(/__dash__/g, '-');
     // Remove unique number
-    id = id.replace(/\d+$/, "")
+    id = id.replace(/\d+$/, "");
     return id;
 }
 

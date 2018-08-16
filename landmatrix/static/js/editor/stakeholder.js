@@ -38,19 +38,19 @@ function generateButtons(field) {
             '" class="noul"><i class="lm lm-pencil"></i></a>';
     }
     var wrap = '<span class="investorops">' + buttons + '</span>';
-
-    field.parent().find('.investorops').remove();
-    field.parent().append(wrap);
+    var parent = field.parent();
+    parent.find('.investorops').remove();
+    parent.append(wrap);
     //field.parent().parent().parent().append('<div id="chart' + index + '"></div>');
 
     // Bind handlers
-    $('a.add-investor').click(function (e) {
+    parent.find('a.add-investor').click(function (e) {
       e.preventDefault();
       showAddInvestorPopup(this);
       return false;
     });
-    $('a.change-investor').click(function (e) {
-      e.preventDefault()
+    parent.find('a.change-investor').click(function (e) {
+      e.preventDefault();
       showChangeInvestorPopup(this);
       return false;
     });
