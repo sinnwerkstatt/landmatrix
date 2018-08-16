@@ -385,6 +385,7 @@ function initCountryField(field) {
     var group, item, option;
     country_request.then(function (data) {
         country_select.data(data);
+        country_select.empty();
         for (var i = 0; i < data.length; i++) {
             item = data[i];
             option = new Option(item[2], item[0], false, false);
