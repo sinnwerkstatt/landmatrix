@@ -385,10 +385,11 @@ function initCountryField(field) {
     var group, item, option;
     country_request.then(function (data) {
         country_select.data(data);
+        var value = parseInt(country_select.val());
         country_select.empty();
         for (var i = 0; i < data.length; i++) {
             item = data[i];
-            option = new Option(item[2], item[0], false, false);
+            option = new Option(item[2], item[0], false, item[0] === value);
             country_select.append(option);
         }
         country_select.trigger('change');
