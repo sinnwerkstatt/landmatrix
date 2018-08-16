@@ -300,9 +300,11 @@ class HistoricalInvestor(InvestorBase):
                 # Update InvestorVentureInvolvement
                 hinvolvement.fk_status_id = hinv.STATUS_OVERWRITTEN
                 hinvolvement.save()
+                subinvestor = Investor.objects.filter(
+                    investor_identifier=hinvolvement.fk_investor.investor_identifier)[0]
                 # Replace InvestorVentureInvolvement
                 investor.venture_involvements.create(
-                    fk_investor=investor,
+                    fk_investor=subinvestor,
                     role=hinvolvement.role,
                     investment_type=hinvolvement.investment_type,
                     percentage=hinvolvement.percentage,
