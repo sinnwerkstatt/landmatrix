@@ -21,21 +21,23 @@ class CountryListView(APIView):
     Used by the navigation.
     """
     def get(self, request):
-        response = []
-        countries = CountryPage.objects.filter(live=True).order_by('title')
-        response.append({
+        countries = []
+        observatories = CountryPage.objects.filter(live=True).order_by('title')
+        countries.append({
             'text': _('Observatories'),
-            'children': [[country.country.id, country.slug, country.title] for country in countries]
+            'children': [
+                [country.country.id if country.country else None, country.slug, country.title]
+                for country in observatories]
         })
-        countries = Country.objects.filter(is_target_country=True,
-                                           high_income=False).exclude(
-            id__in=[c.country.id for c in countries]
-        ).only('id', 'slug', 'name').order_by('name')
-        response.append({
+        other_countries = Country.objects.filter(is_target_country=True, high_income=False)
+        other_countries = other_countries.exclude(id__in=[c.country.id
+                                                          for c in observatories if c.country])
+        other_countries = other_countries.only('id', 'slug', 'name').order_by('name')
+        countries.append({
             'text': _('Other'),
-            'children': [[country.id, country.slug, country.name] for country in countries]
+            'children': [[country.id, country.slug, country.name] for country in other_countries]
         })
-        return Response(response)
+        return Response(countries)
 
 
 class RegionListView(ListAPIView):
