@@ -17,7 +17,18 @@ from .list_views import ElasticSearchMixin
 
 class CountryListView(APIView):
     """
-    Get all countries grouped by National Observatories and Others.
+    Get all countries.
+    """
+    def get(self, request):
+        queryset = Country.objects.all()
+        queryset = queryset.only('id', 'slug', 'name').order_by('name')
+        response = [[c.id, c.slug, c.name] for c in queryset]
+        return Response(response)
+
+
+class TargetCountryListView(APIView):
+    """
+    Get all target countries grouped by National Observatories and Others.
     Used by the navigation.
     """
     def get(self, request):
@@ -42,7 +53,7 @@ class CountryListView(APIView):
 
 class RegionListView(ListAPIView):
     """
-    Get all regions.
+    Get all target regions.
     Used by the navigation.
     """
     # Filter out pages without an assigned region, those just error

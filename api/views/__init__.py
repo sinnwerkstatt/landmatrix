@@ -7,12 +7,12 @@ from api.views.filter_views import *
 
 
 __all__ = (
-    'AgriculturalProduceListView', 'ContractFarmingView',
-    'CountryListView', 'DealDetailView', 'HectaresView',
+    'AgriculturalProduceListView', 'ContractFarmingView', 'CountryListView',
+    'TargetCountryListView', 'DealDetailView', 'HectaresView',
     'ImplementationStatusListView', 'InvestmentIntentionListView', 'InvestorCountrySummaryView',
     'InvestorListView', 'InvestorNetworkView', 'LatestChangesView',
-    'LoggingView', 'NegotiationStatusListView', 'ProduceInfoView',
-    'RegionListView', 'StatisticsView',  'ResourceExtractionView',
+    'LoggingView', 'NegotiationStatusListView', 'ProduceInfoView', 'RegionListView',
+    'StatisticsView',  'ResourceExtractionView',
     'TargetCountrySummaryView', 'Top10CountriesView',
     'TransnationalDealListView', 'TransnationalDealsByCountryView',
     'UserListView', 'GlobalDealsView', 'CountryDealsView', 'CountryGeomView',

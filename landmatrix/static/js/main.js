@@ -385,13 +385,10 @@ function initCountryField(field) {
     var group, item, option;
     country_request.then(function (data) {
         country_select.data(data);
-        for (var d = 0; d < data.length; d++) {
-            group = data[d];
-            for (var o = 0; o < group.children.length; o++) {
-                item = group.children[o];
-                option = new Option(item[2], item[0], false, false);
-                country_select.append(option);
-            }
+        for (var i = 0; i < data.length; i++) {
+            item = data[i];
+            option = new Option(item[2], item[0], false, false);
+            country_select.append(option);
         }
         country_select.trigger('change');
     });
