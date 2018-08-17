@@ -72,7 +72,7 @@
                     <tbody>
                     {% for feedback in activities %}
                         <tr>
-                            <td class="deal"><a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ feedback.deal_id }}</a></td>
+                            <td class="deal"><a href="{% url 'deal_detail' deal_id=feedback.deal_id %}">#{{ feedback.deal_id }}</a></td>
                             <td class="user">{{ feedback.from_user }}</td>
                             <td class="comment" title="{{ feedback.comment }}">{{ feedback.comment }}</td>
                             <td class="timestamp">{{ feedback.timestamp|naturaltime_from_string }}</td>
