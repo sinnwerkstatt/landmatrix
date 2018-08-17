@@ -16,7 +16,7 @@ class DealDetailView(RetrieveAPIView):
         if self.request.user.is_authenticated() and self.request.user.is_staff:
             queryset = Activity.objects.all()
         else:
-            queryset = Activity.objects.public(user)
+            queryset = Activity.objects.public(self.request.user)
 
         return queryset
 

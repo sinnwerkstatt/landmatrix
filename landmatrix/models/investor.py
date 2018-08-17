@@ -211,9 +211,13 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
             filter(fk_status__name__in=("active", "overwritten", "deleted")).order_by('-id').first()
 
     def approve(self):
+        if self.fk_status_id != HistoricalInvestor.STATUS_PENDING:
+            return
         self.update_public_investor()
 
     def reject(self):
+        if self.fk_status_id != HistoricalInvestor.STATUS_PENDING:
+            return
         self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
         self.save(update_fields=['fk_status'])
 
