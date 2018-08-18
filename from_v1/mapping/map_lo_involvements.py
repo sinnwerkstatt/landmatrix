@@ -5,6 +5,7 @@ from .land_observatory_objects.involvement import Involvement
 from .land_observatory_objects.stakeholder import Stakeholder
 from .map_lo_model import MapLOModel
 from .map_lo_activities import MapLOActivities
+from .map_lo_stakeholder import clean_name
 
 
 class MapLOInvolvements(MapLOModel):
@@ -79,6 +80,17 @@ class MapLOInvolvements(MapLOModel):
             hivis.delete()
 
     @classmethod
+    def get_existing_stakeholder_names(cls):
+        if not hasattr(cls, '_existing_stakeholder_names'):
+            existing_stakeholder_names = {}
+            existing_stakeholders = new_models.Investor.objects.using(V2).all()
+            existing_stakeholders = existing_stakeholders.values('name', 'investor_identifier')
+            for s in existing_stakeholders:
+                existing_stakeholder_names[clean_name(s['name'])] = s['investor_identifier']
+            cls._existing_stakeholder_names = existing_stakeholder_names
+        return cls._existing_stakeholder_names
+
+    @classmethod
     def map_record(cls, record, save=False, verbose=False):
         if verbose:
             print('Mapping involvement record {}'.format(record))
@@ -87,14 +99,26 @@ class MapLOInvolvements(MapLOModel):
             pk=record['fk_activity'])
         old_stakeholder = Stakeholder.objects.using(cls.DB).get(
             pk=record['fk_stakeholder'])
-        # Grab the first match in case of duplicate data here
-        uuid_match = 'UUID: {}'.format(old_stakeholder.stakeholder_identifier)
-        investors = list(filter(None, [
-            new_models.HistoricalInvestor.objects.using(V2).filter(comment__contains=uuid_match)
-                                .order_by('-id').first(),
-            new_models.Investor.objects.using(V2).filter(comment__contains=uuid_match)
-                                .order_by('-id').first(),
-        ]))
+
+        # Get investor
+        name = clean_name(old_stakeholder.get_tag_value('Name'))
+        if name in cls.get_existing_stakeholder_names():
+            id = cls.get_existing_stakeholder_names()[name]
+            investors = list(filter(None, [
+                new_models.HistoricalInvestor.objects.using(V2).filter(investor_identifier=id)
+                                    .order_by('-id').first(),
+                new_models.Investor.objects.using(V2).filter(investor_identifier=id)
+                                    .order_by('-id').first(),
+            ]))
+        else:
+            # Grab the first match in case of duplicate data here
+            uuid_match = 'UUID: {}'.format(old_stakeholder.stakeholder_identifier)
+            investors = list(filter(None, [
+                new_models.HistoricalInvestor.objects.using(V2).filter(comment__contains=uuid_match)
+                                    .order_by('-id').first(),
+                new_models.Investor.objects.using(V2).filter(comment__contains=uuid_match)
+                                    .order_by('-id').first(),
+            ]))
 
         is_primary = (
             record['fk_stakeholder_role'] == cls.PRIMARY_INVESTOR_ROLE_ID
@@ -124,13 +148,13 @@ class MapLOInvolvements(MapLOModel):
             new_models.HistoricalActivity.objects.using(V2) \
                 .filter(
                 attributes__fk_group__name='imported',
-                attributes__name='id',
+                attributes__name='previous_identifier',
                 attributes__value=str(activity_identifier)) \
                 .distinct().order_by('-id').first(),
             new_models.Activity.objects.using(V2) \
                            .filter(
                 attributes__fk_group__name='imported',
-                attributes__name='id',
+                attributes__name='previous_identifier',
                 attributes__value=str(activity_identifier)) \
                            .distinct().order_by('-id').first(),
         ]))
@@ -244,13 +268,25 @@ class MapLOInvolvements(MapLOModel):
     def _map_secondary_investor_with_parent(cls, parent_stakeholder, investors, role, save=False,
             verbose=False):
         involvements = []
-        uuid = str(parent_stakeholder.stakeholder_identifier)
-        new_parent_investors = list(filter(None, [
-            new_models.HistoricalInvestor.objects.using(V2).filter(comment__contains=uuid)
-                .order_by('-id').first(),
-            new_models.Investor.objects.using(V2).filter(comment__contains=uuid)
-                .order_by('-id').first(),
-        ]))
+
+        # Get investor
+        name = clean_name(parent_stakeholder.get_tag_value('Name'))
+        if name in cls.get_existing_stakeholder_names():
+            id = cls.get_existing_stakeholder_names()[name]
+            new_parent_investors = list(filter(None, [
+                new_models.HistoricalInvestor.objects.using(V2).filter(investor_identifier=id)
+                    .order_by('-id').first(),
+                new_models.Investor.objects.using(V2).filter(investor_identifier=id)
+                    .order_by('-id').first(),
+            ]))
+        else:
+            uuid = str(parent_stakeholder.stakeholder_identifier)
+            new_parent_investors = list(filter(None, [
+                new_models.HistoricalInvestor.objects.using(V2).filter(comment__contains=uuid)
+                    .order_by('-id').first(),
+                new_models.Investor.objects.using(V2).filter(comment__contains=uuid)
+                    .order_by('-id').first(),
+            ]))
 
         if new_parent_investors:
             involvements = cls._get_new_venture_involvement(

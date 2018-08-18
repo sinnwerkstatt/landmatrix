@@ -6,6 +6,12 @@ from .map_lo_model import MapLOModel
 from from_v1.migrate import V2
 
 
+def clean_name(name):
+    if name:
+        return name.lower().replace(' ', '')
+    else:
+        return ''
+
 class MapLOStakeholder(MapLOModel):
     old_class = Stakeholder
     new_class = landmatrix.models.Investor
@@ -22,7 +28,7 @@ class MapLOStakeholder(MapLOModel):
         existing_names = cls.get_existing_stakeholder_names()
         existing_stakeholder_ids = [
             stakeholder.id for stakeholder in lo_stakeholders
-            if stakeholder.get_tag_value('Name') in existing_names
+            if clean_name(stakeholder.get_tag_value('Name')) in existing_names
         ]
         filtered_stakeholders = lo_stakeholders.exclude(
             pk__in=existing_stakeholder_ids)
@@ -37,7 +43,7 @@ class MapLOStakeholder(MapLOModel):
         existing_stakeholders = cls.new_class.objects.using(V2).all()
         existing_names = existing_stakeholders.values_list('name', flat=True)
 
-        return set(existing_names)
+        return set([clean_name(n) for n in existing_names])
 
     @classmethod
     def get_existing_record(cls, record):

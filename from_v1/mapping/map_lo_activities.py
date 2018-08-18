@@ -77,7 +77,7 @@ class MapLOActivities(MapLOModel):
 
         previous_imports = landmatrix.models.HistoricalActivity.objects.using(
             V2).filter(
-            attributes__fk_group__name='imported', attributes__name='id',
+            attributes__fk_group__name='imported', attributes__name='previous_identifier',
             attributes__value__in=rejected_ids)
 
         if verbose:
@@ -135,7 +135,7 @@ class MapLOActivities(MapLOModel):
     def get_existing_record(cls, record):
         already_imported = cls.new_class.objects.using(V2)
         already_imported = already_imported.filter(
-            attributes__fk_group__name='imported', attributes__name='id',
+            attributes__fk_group__name='imported', attributes__name='previous_identifier',
             attributes__value=record['activity_identifier']).order_by('id')
 
         return already_imported.first()
@@ -233,11 +233,11 @@ class MapLOActivities(MapLOModel):
             'MockTagGroup', (object,),
             {"fk_activity": historical_activity.id, 'id': None})
         not_public_attrs = {
-            'not_public_reason': 'Land Observatory Import (new)' if not imported else 'Land Observatory Import (duplicate)',
+            'not_public_reason': 'Land Observatory Import',
         }
         imported_attrs = {
             #'source': 'Land Observatory',
-            'id': str(old['activity_identifier']),
+            'previous_identifier': str(old['activity_identifier']),
             'timestamp': timezone.now().isoformat(),
         }
 

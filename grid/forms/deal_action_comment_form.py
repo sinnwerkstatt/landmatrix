@@ -17,11 +17,7 @@ class DealActionCommentForm(BaseForm):
             _("Temporary removal from PI after criticism"),
         ),
         ("Research in progress", _("Research in progress")),
-        ('Land Observatory Import (new)', _('Land Observatory Import (new)')),
-        (
-            'Land Observatory Import (duplicate)',
-            _('Land Observatory Import (duplicate)'),
-        ),
+        ('Land Observatory Import', _('Land Observatory Import')),
     )
 
     form_title = _('Action Comment')
@@ -51,7 +47,7 @@ class DealActionCommentForm(BaseForm):
     #source = forms.CharField(
     #    required=False, label=_("Import source"),
     #    widget=forms.TextInput(attrs={'readonly': True}))
-    id = forms.CharField(
+    previous_identifier = forms.CharField(
         required=False, label=_("Previous identifier"),
         widget=forms.TextInput(attrs={'size': '64', 'readonly': True}))
 
