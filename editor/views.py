@@ -169,12 +169,12 @@ class DashboardView(LatestActivitiesMixin, PendingChangesMixin, TemplateView):
         # Merge and reorder pendings
         pendings = []
         for activity in self.get_pending_adds_queryset():
-            pendings.append({'action': 'add', 'activity': activity})
+            pendings.append({'action': 'add', 'activity': activity_to_template(activity)})
         for activity in self.get_pending_updates_queryset():
-            pendings.append({'action': 'update', 'activity': activity})
+            pendings.append({'action': 'update', 'activity': activity_to_template(activity)})
         for activity in self.get_pending_deletes_queryset():
-            pendings.append({'action': 'delete', 'activity': activity})
-        pendings = sorted(pendings, key=lambda p: p['activity'].history_date)
+            pendings.append({'action': 'delete', 'activity': activity_to_template(activity)})
+        pendings.sort(key=lambda p: p['activity']['timestamp'], reverse=True)
         feedback = self.get_feedback_queryset()
 
         context.update({

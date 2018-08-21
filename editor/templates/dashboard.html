@@ -270,7 +270,7 @@
                             {% trans "Needs your attention" %}
                             <a class="" href="{% url 'manage' %}"><small>{% trans "Show all" %}</small></a>
                         </h3>
-                        {% if manage.activities or manage.investors %}
+                        {% if manage %}
                             <table class="table table-condensed">
                                 <thead>
                                 <th class="deal">{% trans "Deal #" %}</th>
