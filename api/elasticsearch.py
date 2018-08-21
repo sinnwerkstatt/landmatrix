@@ -456,6 +456,7 @@ class ElasticSearch(object):
                     'availability': public_activity.get_availability(),
                 })
             else:
+                pass
                 # Deleted activity
                 #self.stderr and self.stderr.write(_('Missing activity for historical activity
                 # %i (Activity identifier: #%i)' % (
