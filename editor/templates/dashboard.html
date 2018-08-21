@@ -280,45 +280,33 @@
                                 <th class="action">{% trans "Actions" %}</th>
                                 </thead>
                                 <tbody>
-                                {% for activity in manage.activities.updates %}
+                                {% for pending in manage %}
                                     <tr class="update">
                                         <td class="deal"><a
-                                                href="{% if request.user.is_staff %}{% url 'change_deal' deal_id=activity.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
+                                                href="{% if request.user.is_staff %}{% url 'change_deal' deal_id=pending.activity.deal_id %}{% else %}{% url 'deal_detail' pending.activity.deal_id %}{% endif %}">#{{ pending.activity.deal_id }}</a>
                                         </td>
-                                        <td class="user">{{ activity.user }}</td>
-                                        <td class="state">{% trans "Update" %}</td>
-                                        <td class="state">{{ activity.timestamp|naturaltime_from_string }}</td>
+                                        <td class="user">{{ pending.activity.user }}</td>
+                                        <td class="state">
+                                            {% if pending.action == 'add' %}
+                                                {% trans "Add" %}
+                                            {% elif pending.action == 'update' %}
+                                                {% trans "Update" %}
+                                            {% elif pending.action == 'delete' %}
+                                                {% trans "Delete" %}
+                                            {% endif %}
+                                        </td>
+                                        <td class="state">{{ pending.activity.timestamp|naturaltime_from_string }}</td>
                                         <td class="action">
-                                            <a href="{% url 'manage_approve_change_deal' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
-                                            <a href="{% url 'manage_reject_change_deal' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                {% for activity in manage.activities.deletes %}
-                                    <tr class="delete">
-                                        <td class="deal"><a
-                                                href="{% if request.user.is_staff %}{% url 'change_deal' activity.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
-                                        </td>
-                                        <td class="user">{{ activity.user }}</td>
-                                        <td class="state">{% trans "Delete" %}</td>
-                                        <td class="state">{{ activity.timestamp|naturaltime_from_string }}</td>
-                                        <td class="action">
-                                            <a href="{% url 'manage_approve_delete_deal' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
-                                            <a href="{% url 'manage_reject_delete_deal' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                {% for activity in manage.activities.inserts %}
-                                    <tr class="insert">
-                                        <td class="deal"><a
-                                                href="{% if request.user.is_staff %}{% url 'change_deal' activity.deal_id %}{% else %}{% url 'deal_detail' activity.deal_id %}{% endif %}">#{{ activity.deal_id }}</a>
-                                        </td>
-                                        <td class="user">{{ activity.user }}</td>
-                                        <td class="state">{% trans "Add" %}</td>
-                                        <td class="state">{{ activity.timestamp|naturaltime_from_string }}</td>
-                                        <td class="action">
-                                            <a href="{% url 'manage_approve_change_deal' id=activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
-                                            <a href="{% url 'manage_reject_change_deal' id=activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                            {% if pending.action == 'add' %}
+                                                <a href="{% url 'manage_approve_change_deal' id=pending.activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                                <a href="{% url 'manage_reject_change_deal' id=pending.activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                            {% elif pending.action == 'update' %}
+                                                <a href="{% url 'manage_approve_delete_deal' id=pending.activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                                <a href="{% url 'manage_reject_delete_deal' id=pending.activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                            {% elif pending.action == 'delete' %}
+                                                <a href="{% url 'manage_approve_change_deal' id=pending.activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                                <a href="{% url 'manage_reject_change_deal' id=pending.activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}

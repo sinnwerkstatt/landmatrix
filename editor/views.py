@@ -165,9 +165,16 @@ class DashboardView(LatestActivitiesMixin, PendingChangesMixin, TemplateView):
         latest_added = self.get_latest_added_queryset()
         latest_modified = self.get_latest_modified_queryset()
         latest_deleted = self.get_latest_deleted_queryset()
-        pending_adds = self.get_pending_adds_queryset()
-        pending_updates = self.get_pending_updates_queryset()
-        pending_deletes = self.get_pending_deletes_queryset()
+
+        # Merge and reorder pendings
+        pendings = []
+        for activity in self.get_pending_adds_queryset():
+            pendings.append({'action': 'add', 'activity': activity})
+        for activity in self.get_pending_updates_queryset():
+            pendings.append({'action': 'update', 'activity': activity})
+        for activity in self.get_pending_deletes_queryset():
+            pendings.append({'action': 'delete', 'activity': activity})
+        pendings = sorted(pendings, key=lambda p: p['activity'].history_date)
         feedback = self.get_feedback_queryset()
 
         context.update({
@@ -183,18 +190,7 @@ class DashboardView(LatestActivitiesMixin, PendingChangesMixin, TemplateView):
                 activity_to_template, latest_modified[:self.paginate_by]),
             'latest_deleted': map(
                 activity_to_template, latest_deleted[:self.paginate_by]),
-            'manage': {
-                'activities': {
-                    'inserts': map(
-                        activity_to_template, pending_adds[:self.paginate_by]),
-                    'updates': map(
-                        activity_to_template,
-                        pending_updates[:self.paginate_by]),
-                    'deletes': map(
-                        activity_to_template,
-                        pending_deletes[:self.paginate_by]),
-                }
-            },
+            'manage': pendings[:self.paginate_by],
             'feedbacks': {
                 'feeds': map(feedback_to_template, feedback[:self.paginate_by])
             },
