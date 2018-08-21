@@ -940,11 +940,11 @@ class HistoricalActivity(ActivityBase):
         update_elasticsearch = kwargs.pop('update_elasticsearch', True)
         super().save(*args, **kwargs)
         if update_elasticsearch and not settings.CONVERT_DB:
-            from landmatrix.tasks import index_activity, delete_activity
+            from landmatrix.celery import app
             if self.fk_status_id == self.STATUS_DELETED:
-                delete_activity.delay(self.activity_identifier)
+                app.delete_activity.delay(self.activity_identifier)
             else:
-                index_activity.delay(self.id)
+                app.index_activity.delay(self.id)
 
     class Meta:
         verbose_name = _('Historical activity')

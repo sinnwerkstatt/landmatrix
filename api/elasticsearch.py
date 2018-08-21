@@ -431,7 +431,7 @@ class ElasticSearch(object):
                 'status': activity.fk_status_id,
             }
             # TODO: Prevent extra Activity query
-            # e.g. if we save is_public/deal_scope as ActivityAttributes
+            # e.g. move these attributes to BaseActivity
             public_activity = Activity.objects.filter(activity_identifier=activity.activity_identifier).order_by('-id').first()
             if public_activity:
                 top_investors = public_activity.get_top_investors()
@@ -456,11 +456,12 @@ class ElasticSearch(object):
                     'availability': public_activity.get_availability(),
                 })
             else:
-                # Fixme: This should not happen
-                self.stderr and self.stderr.write(_('Missing activity for historical activity %i (Activity identifier: #%i)' % (
-                    activity.id,
-                    activity.activity_identifier
-                )))
+                # Deleted activity
+                #self.stderr and self.stderr.write(_('Missing activity for historical activity
+                # %i (Activity identifier: #%i)' % (
+                #    activity.id,
+                #    activity.activity_identifier
+                #)))
             #except Activity.MultipleObjectsReturned:
             #    # Fixme: This should not happen
             #    self.stderr and self.stderr.write(_('Too much activities for historical activity %i (Activity identifier: #%i)' % (
