@@ -97,7 +97,7 @@ class InvestorListView(ElasticSearchMixin,
             query = {
                 'bool': {
                     'must': [
-                        {'wildcard': {'name': '*%s*' % term.lower()}},
+                        {'wildcard': {'name.raw': '*%s*' % term.lower()}},
                         {'terms': {'fk_status': [2, 3]}},
                     ]
                 }
@@ -105,7 +105,7 @@ class InvestorListView(ElasticSearchMixin,
             # Search deals
             raw_results = self.execute_elasticsearch_query(query, doc_type='investor',
                                                            fallback=False,
-                                                           sort='name')
+                                                           sort='name.raw')
             results = []
             for raw_result in raw_results:
                 result = raw_result['_source']
