@@ -507,6 +507,8 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                 'value': crop,
                 'display': crop,
             }
+        elif isinstance(value, list):
+            return [Crop.objects.get(pk=v).name for v in value]
         else:
             return Crop.objects.get(pk=value).name
 

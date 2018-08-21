@@ -263,6 +263,29 @@ class HistoricalInvestor(InvestorBase):
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
 
+    def get_top_investors(self):
+        """
+        Get list of highest parent companies (all right-hand side parent companies of the network
+        visualisation)
+        """
+        def get_parent_companies(investors):
+            parents = []
+            for investor in investors:
+                # Check if there are parent companies for investor
+                parent_companies = [ivi.fk_investor for ivi in
+                                    HistoricalInvestorVentureInvolvement.objects.filter(
+                    fk_venture=investor,
+                    fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
+                    fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
+                    role=HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE).exclude(fk_investor=investor)]
+                if parent_companies:
+                    parents.extend(get_parent_companies(parent_companies))
+                elif investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
+                    parents.append(investor)
+            return parents
+        top_investors = list(set(get_parent_companies([self,])))
+        return top_investors
+
     def update_public_investor(self, approve=True):
         """Recursively update investor chain"""
         # Keep track of investor identifiers to prevent infinite loops
@@ -286,7 +309,7 @@ class HistoricalInvestor(InvestorBase):
                 return investor
             else:
                 investor_identifiers.append(investor.investor_identifier)
-            investor.id = hinv.id
+            #investor.id = hinv.id
             investor.investor_identifier = hinv.investor_identifier
             investor.name = hinv.name
             investor.fk_country_id = hinv.fk_country_id

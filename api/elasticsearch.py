@@ -19,7 +19,7 @@ from grid.views.change_deal_view import ChangeDealView
 from landmatrix.models.activity import HistoricalActivity, Activity
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
-from landmatrix.models.investor import Investor, InvestorVentureInvolvement
+from landmatrix.models.investor import HistoricalInvestor, HistoricalInvestorVentureInvolvement
 from grid.utils import get_spatial_properties
 from landmatrix.models.country import Country
 
@@ -341,15 +341,22 @@ class ElasticSearch(object):
                             self.stderr and self.stderr.write(msg)
                     self.conn.refresh()
 
-    def index_investor_documents(self, doc_types=DOC_TYPES_INVESTOR):
-        investors = Investor.objects.public().order_by('investor_identifier', '-id').distinct('investor_identifier')
+    def index_investor_documents(self, investor_identifiers=[], doc_types=DOC_TYPES_INVESTOR):
+        if not investor_identifiers:
+            investor_identifiers = investor_identifiers or set(HistoricalInvestor.objects.filter(
+                fk_status__in=(
+                    HistoricalInvestor.STATUS_ACTIVE, HistoricalInvestor.STATUS_PENDING,
+                    HistoricalInvestor.STATUS_OVERWRITTEN, HistoricalInvestor.STATUS_DELETED
+                )).values_list('investor_identifier', flat=True).distinct())
 
         for doc_type in doc_types:
             docs = []
             # Collect documents
-            self.stdout and self.stdout.write('Collect %ss for %i investors...' % (doc_type, investors.count()))
-            for investor in investors:
-                docs.extend(self.get_investor_documents(investor, doc_type=doc_type))
+            self.stdout and self.stdout.write('Collect %ss for %i investors...' % (
+                doc_type, len(investor_identifiers)))
+            for investor_identifier in investor_identifiers:
+                for investor in self.get_investor_versions(investor_identifier):
+                    docs.extend(self.get_investor_documents(investor, doc_type=doc_type))
             # Bulk index documents
             self.stdout and self.stdout.write('Index %i %ss...' % (len(docs), doc_type))
             if len(docs) > 0:
@@ -544,10 +551,11 @@ class ElasticSearch(object):
 
             if doc_type in ('deal', 'location'):
                 # Additionally save operating company attributes
-                oc = Investor.objects.filter(involvements__fk_activity__activity_identifier=activity.activity_identifier)
+                oc = HistoricalInvestor.objects.filter(
+                    involvements__fk_activity__activity_identifier=activity.activity_identifier)
                 if oc.count() > 0:
                     oc = oc.first()
-                    for field in Investor._meta.fields:
+                    for field in HistoricalInvestor._meta.fields:
                         if isinstance(field, ForeignKey):
                             deal_attrs['operating_company_%s' % field.name] = getattr(oc, '%s_id' % field.name)
                         else:
@@ -683,11 +691,35 @@ class ElasticSearch(object):
                                                                         prefix='operating_company_'))
             return properties
 
+    def get_investor_versions(self, investor_identifier):
+        versions = []
+        # get the newest non-pending, readable historic version:
+        try:
+            newest = HistoricalInvestor.objects.filter(investor_identifier=investor_identifier,
+                                                       fk_status__in=(
+                                                           HistoricalInvestor.STATUS_ACTIVE,
+                                                           HistoricalInvestor.STATUS_OVERWRITTEN,
+                                                           HistoricalInvestor.STATUS_DELETED)).distinct().latest()
+            if newest:  # and not newest.fk_status_id == HistoricalActivity.STATUS_DELETED:
+                versions.append(newest)
+        except HistoricalInvestor.DoesNotExist:
+            newest = None
+
+        # get newer pendings
+        pendings = HistoricalInvestor.objects.filter(investor_identifier=investor_identifier,
+                                                     fk_status_id=HistoricalInvestor.STATUS_PENDING).distinct()
+        if newest:
+            pendings.filter(history_date__gt=newest.history_date)
+        versions.extend(pendings)
+
+        return versions
+
     def get_investor_documents(self, investor, doc_type='investor'):
         docs = []
         # Doc types: involvement and investor
         if doc_type == 'involvement':
-            ivis = InvestorVentureInvolvement.objects.filter(Q(fk_venture=investor) | Q(fk_investor=investor))
+            ivis = HistoricalInvestorVentureInvolvement.objects.filter(
+                Q(fk_venture=investor) | Q(fk_investor=investor))
             for ivi in ivis:
                 doc = {}
                 for field in ivi._meta.local_fields:
@@ -709,13 +741,13 @@ class ElasticSearch(object):
             doc['top_investors'] = investor.format_investors(top_investors)
 
             # Append involvements for quicker queries
-            ivis = InvestorVentureInvolvement.objects.filter(fk_investor=investor)
+            ivis = HistoricalInvestorVentureInvolvement.objects.filter(fk_investor=investor)
             doc['parent_company_of'] = []
             doc['tertiary_investor_of'] = []
             for ivi in ivis:
-                if ivi.role == InvestorVentureInvolvement.STAKEHOLDER_ROLE:
+                if ivi.role == HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE:
                     doc['parent_company_of'].append(ivi.fk_venture_id)
-                elif ivi.role == InvestorVentureInvolvement.INVESTOR_ROLE:
+                elif ivi.role == HistoricalInvestorVentureInvolvement.INVESTOR_ROLE:
                     doc['tertiary_investor_of'].append(ivi.fk_venture_id)
             docs.append(doc)
 
