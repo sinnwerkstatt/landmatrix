@@ -152,13 +152,21 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                     # Check if there are parent companies for investor
                     parent_investors = [i.fk_investor for i in
                                         HistoricalInvestorVentureInvolvement.objects.filter(
-                        fk_venture=investor,
-                        fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
-                        fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN)
-                    )]
+                                            fk_venture=investor
+                                        )]
+                    if not request.user.is_authenticated():
+                        parent_investors = parent_investors.filter(
+                            fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE,
+                                                       InvestorBase.STATUS_OVERWRITTEN),
+                            fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE,
+                                                        InvestorBase.STATUS_OVERWRITTEN)
+                        )
                     if parent_investors:
                         parents.extend(get_investors(parent_investors))
-                    if investor.fk_status_id in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
+                    if request.user.is_authenticated():
+                        parents.append(investor.id)
+                    elif investor.fk_status_id in (InvestorBase.STATUS_ACTIVE,
+                                                   InvestorBase.STATUS_OVERWRITTEN):
                         parents.append(investor.id)
                 return parents
             query = {
