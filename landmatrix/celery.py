@@ -7,7 +7,7 @@ from django.conf import settings
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'landmatrix.settings')
 
-app = Celery(namespace=settings.CELERY_NAME)
+app = Celery(settings.CELERY_NAME)
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
