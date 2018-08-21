@@ -260,7 +260,7 @@ $(document).ready(function () {
         );
     });
 
-    //$("#id_columns,#id_status").select2()
+    $("#id_columns,#id_status").select2();
     //    .on('change', function () { $(this).closest("form").find(':submit').show(); });
     
     var selectAllColumns = function (event) {
