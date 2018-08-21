@@ -21,7 +21,8 @@ from grid.views.filter_widget_mixin import FilterWidgetMixin
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
 from api.views.list_views import ElasticSearchMixin
-from landmatrix.models import Activity, InvestorVentureInvolvement, Crop, Country, Region
+from landmatrix.models import HistoricalActivity, HistoricalInvestorVentureInvolvement, Crop, \
+    Country, Region
 from landmatrix.models.investor import InvestorBase
 
 
@@ -80,7 +81,14 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         deal_id = kwargs.pop('deal_id', None)
         if deal_id:
             # Check if activity exists
-            activity = Activity.objects.get(activity_identifier=deal_id)
+            queryset = HistoricalActivity.objects
+            if not request.user.is_authenticated():
+                queryset = queryset.public_or_deleted(self.request.user)
+            queryset = queryset.filter(activity_identifier=deal_id).order_by('-id')
+            if queryset.count() > 0:
+                activity = queryset[0]
+            else:
+                raise HistoricalActivity.DoesNotExist
             query = {
                 "constant_score" : {
                     "filter" : {
@@ -106,7 +114,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 parents = []
                 for involvement in involvements:
                     # Check if there are parent companies for investor
-                    parent_involvements = InvestorVentureInvolvement.objects.filter(
+                    parent_involvements = HistoricalInvestorVentureInvolvement.objects.filter(
                         fk_venture=involvement.fk_investor,
                         fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
                         fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN)
@@ -133,7 +141,8 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 parents = []
                 for investor in investors:
                     # Check if there are parent companies for investor
-                    parent_investors = [i.fk_investor for i in InvestorVentureInvolvement.objects.filter(
+                    parent_investors = [i.fk_investor for i in
+                                        HistoricalInvestorVentureInvolvement.objects.filter(
                         fk_venture=investor,
                         fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN),
                         fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN)
