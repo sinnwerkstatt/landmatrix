@@ -42,14 +42,25 @@ class AddDealView(SaveDealView):
         else:
             hactivity.fk_status_id = hactivity.STATUS_PENDING
         hactivity.save()
+
         # Create new activity attributes
         hactivity.comment = self.create_attributes(hactivity, forms)
-        hactivity.save()
-
+        form = self.get_form_by_type(forms, DealActionCommentForm)
+        if form:
+            hactivity.fully_updated = self.get_fully_updated(form)
+        else:
+            hactivity.fully_updated = False
+        hactivity.save(update_elasticsearch=False)
         self.create_involvement(hactivity, investor_form)
         if can_add_activity:
             # Create new activity (required for involvement)
             hactivity.update_public_activity()
+
+        # Create activity feedback
+        form = self.get_form_by_type(forms, DealActionCommentForm)
+        if form:
+            self.create_activity_feedback(hactivity, form)
+
         if can_add_activity:
             messages.success(
                 self.request,
