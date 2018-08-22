@@ -17,8 +17,8 @@ def delete_activity(self, activity_identifier):
 
 
 @app.task(name='%s.tasks.index_investor' % settings.CELERY_NAME, bind=True)
-def index_investor(self, activity_id):
-    es_save.index_investor_by_id(activity_id=activity_id)
+def index_investor(self, investor_id):
+    es_save.index_investor_by_id(investor_id=investor_id)
 
 
 @app.task(name='%s.tasks.delete_investor' % settings.CELERY_NAME, bind=True)
