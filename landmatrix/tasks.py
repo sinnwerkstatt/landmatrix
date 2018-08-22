@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from celery import app
+from landmatrix.celery import app
 from api.elasticsearch import es_save
 
 
