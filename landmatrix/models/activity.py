@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.db.models.functions import Coalesce
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
