@@ -1,4 +1,5 @@
-from django.db import models
+from django.conf import settings
+from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
@@ -347,6 +348,16 @@ class HistoricalInvestor(InvestorBase):
 
         investor = update_investor(self, approve=approve)
         return investor
+
+    def save(self, *args, **kwargs):
+        update_elasticsearch = kwargs.pop('update_elasticsearch', True)
+        super().save(*args, **kwargs)
+        if update_elasticsearch and not settings.CONVERT_DB:
+            from ..tasks import index_investor, delete_investor
+            if self.fk_status_id == self.STATUS_DELETED:
+                transaction.on_commit(lambda: delete_investor.delay(self.investor_identifier))
+            else:
+                transaction.on_commit(lambda: index_investor.delay(self.id))
 
     class Meta:
         verbose_name = _("Historical investor")

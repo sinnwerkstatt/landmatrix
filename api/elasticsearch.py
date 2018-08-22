@@ -278,6 +278,10 @@ class ElasticSearch(object):
                             )
                         self.stderr and self.stderr.write(msg)
 
+    def index_investor_by_id(self, investor_id):
+        investor = HistoricalInvestor.objects.get(pk=investor_id)
+        return self.index_investor(investor)
+
     def index_investor(self, investor):
         for doc_type in DOC_TYPES_INVESTOR:
             docs = self.get_investor_documents(investor, doc_type=doc_type)
@@ -863,6 +867,43 @@ class ElasticSearch(object):
                 }
             }
         }})
+
+    def delete_investor(self, investor_identifier):
+        query = {
+            "term": {
+                "investor_identifier": investor_identifier,
+            }
+        }
+        # Collect investor IDs (required for routing)
+        activity_ids = self.conn.search({"query": query},
+                                        index=self.index_name,
+                                        doc_type='investor')
+        investor_ids = [h['_id'] for h in activity_ids['hits']['hits']]
+        for doc_type in DOC_TYPES_INVESTOR:
+            try:
+                if doc_type == 'investor':
+                    self.conn.delete_by_query(query=query,
+                        index=self.index_name,
+                        doc_type=doc_type)
+                elif doc_type == 'involvement':
+                    for investor_id in investor_ids:
+                        self.conn.delete_by_query(query={
+                                "bool": {
+                                    {
+                                        "should": {
+                                            {"term": {"fk_venture": investor_id}},
+                                            {"term": {"fk_investor": investor_id}},
+                                        },
+                                        "minimum_should_match": 1
+                                    }
+                                }
+                            },
+                            index=self.index_name,
+                            doc_type=doc_type)
+                #elif doc_type == 'top_investors':
+                # FIXME: Recreate top_investors?
+            except ElasticHttpNotFoundError as e:
+                pass
 
 # Init two connections
 es_search = ElasticSearch()
