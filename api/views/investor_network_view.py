@@ -7,8 +7,8 @@ from rest_framework.schemas import ManualSchema
 import coreapi
 import coreschema
 
-from landmatrix.models.investor import Investor
-from api.serializers import InvestorNetworkSerializer
+from landmatrix.models.investor import HistoricalInvestor
+from api.serializers import HistoricalInvestorNetworkSerializer
 
 
 class InvestorNetworkView(APIView):
@@ -42,7 +42,7 @@ class InvestorNetworkView(APIView):
             raise serializers.ValidationError(
                 {'operational_stakeholder': _("An integer is required.")})
 
-        investor = get_object_or_404(Investor, pk=investor_id)
+        investor = get_object_or_404(HistoricalInvestor, pk=investor_id)
         self.check_object_permissions(self.request, investor)
 
         return investor
@@ -51,7 +51,7 @@ class InvestorNetworkView(APIView):
         # TODO: determine what operational_stakeholder_diagram does here -
         # it seems to just be passed back in the response.
         operational_stakeholder = self.get_object()
-        serialized_response = InvestorNetworkSerializer(operational_stakeholder)
+        serialized_response = HistoricalInvestorNetworkSerializer(operational_stakeholder)
         #parent_type=request.query_params.get('parent_type', 'parent_stakeholders'))
 
         response_data = serialized_response.data.copy()

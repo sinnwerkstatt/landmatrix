@@ -6,7 +6,7 @@ from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
 from landmatrix.models import (
-    Activity, InvestorVentureInvolvement, FilterPreset,
+    Activity, HistoricalInvestorVentureInvolvement, FilterPreset,
 )
 
 
@@ -125,7 +125,7 @@ class DealDetailSerializer(serializers.ModelSerializer):
         return obj.attributes_as_dict
 
 
-class InvestorNetworkSerializer(serializers.BaseSerializer):
+class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
     """
     This serializer takes an investor and outputs a list of involvements
     formatted like:
@@ -172,7 +172,7 @@ class InvestorNetworkSerializer(serializers.BaseSerializer):
             "comment": obj.comment,
             "stakeholders": [],
         }
-        involvements = InvestorVentureInvolvement.objects.filter(fk_venture=obj)
+        involvements = HistoricalInvestorVentureInvolvement.objects.filter(fk_venture=obj)
         for parent_type in parent_types:
             parents = []
             if parent_type == 'parent_investors':
