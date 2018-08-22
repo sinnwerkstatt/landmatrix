@@ -56,7 +56,6 @@ class BaseInvestorForm(BaseModelForm):
         Force status to pending on update.
         '''
         hinvestor = super().save(commit=False)
-        hinvestor.fk_status_id = HistoricalInvestor.STATUS_PENDING
         # Create new historical investor
         hinvestor.id = None
         hinvestor.history_date = timezone.now()
@@ -65,7 +64,10 @@ class BaseInvestorForm(BaseModelForm):
             hinvestor.save()
             # Create investor instance if not existing
             # (necessary for form field validation)
-            investor = hinvestor.update_public_investor(approve=False)
+            if user.has_perm('landmatrix.change_activity'):
+                investor = hinvestor.update_public_investor(approve=True)
+            else:
+                investor = hinvestor.update_public_investor(approve=False)
 
         return hinvestor
 
