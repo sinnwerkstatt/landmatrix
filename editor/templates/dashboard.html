@@ -301,11 +301,11 @@
                                                 <a href="{% url 'manage_approve_change_deal' id=pending.activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
                                                 <a href="{% url 'manage_reject_change_deal' id=pending.activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                             {% elif pending.action == 'update' %}
-                                                <a href="{% url 'manage_approve_delete_deal' id=pending.activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
-                                                <a href="{% url 'manage_reject_delete_deal' id=pending.activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
-                                            {% elif pending.action == 'delete' %}
                                                 <a href="{% url 'manage_approve_change_deal' id=pending.activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
                                                 <a href="{% url 'manage_reject_change_deal' id=pending.activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
+                                            {% elif pending.action == 'delete' %}
+                                                <a href="{% url 'manage_approve_delete_deal' id=pending.activity.id %}" class="approve label label-default"><i class="lm lm-thumbs-up"></i>{% trans "Approve" %}</a>
+                                                <a href="{% url 'manage_reject_delete_deal' id=pending.activity.id %}" class="reject label label-default"><i class="lm lm-thumbs-down"></i>{% trans "Reject" %}</a>
                                             {% endif %}
                                         </td>
                                     </tr>
