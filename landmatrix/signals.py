@@ -1,8 +1,9 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 
 from registration.signals import user_registered
 
 from editor.models import UserRegionalInfo
+
 
 def create_userregionalinfo(sender, user, request, **kwarg):
     group, created = Group.objects.get_or_create(name='Reporters')
@@ -13,3 +14,4 @@ def create_userregionalinfo(sender, user, request, **kwarg):
         information=request.POST.get('information', ''),
     )
 user_registered.connect(create_userregionalinfo)
+

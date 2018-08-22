@@ -940,11 +940,11 @@ class HistoricalActivity(ActivityBase):
         update_elasticsearch = kwargs.pop('update_elasticsearch', True)
         super().save(*args, **kwargs)
         if update_elasticsearch and not settings.CONVERT_DB:
-            from landmatrix.tasks import index_activity, delete_activity
+            from ..tasks import index_activity, delete_activity
             if self.fk_status_id == self.STATUS_DELETED:
-                delete_activity.delay(self.activity_identifier)
+                transaction.on_commit(lambda: delete_activity.delay(self.activity_identifier))
             else:
-                index_activity.delay(self.id)
+                transaction.on_commit(lambda: index_activity.delay(self.id))
 
     class Meta:
         verbose_name = _('Historical activity')
