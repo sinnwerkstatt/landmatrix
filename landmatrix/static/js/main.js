@@ -387,6 +387,8 @@ function initCountryField(field) {
         country_select.data(data);
         var value = parseInt(country_select.val());
         country_select.empty();
+        option = new Option('---------', '', false, false);
+        country_select.append(option);
         for (var i = 0; i < data.length; i++) {
             item = data[i];
             option = new Option(item[2], item[0], false, item[0] === value);

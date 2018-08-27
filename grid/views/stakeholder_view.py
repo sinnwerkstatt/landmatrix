@@ -202,7 +202,7 @@ class AddStakeholderView(InvestorFormsMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy(
-            'stakeholder_form', kwargs={'investor_id': self.object.pk})
+            'stakeholder_form', kwargs={'investor_id': self.object.investor_identifier})
 
     def get_object(self):
         return None
