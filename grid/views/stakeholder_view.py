@@ -155,6 +155,11 @@ class ChangeStakeholderView(InvestorFormsMixin, UpdateView):
                 investor = queryset.filter(investor_identifier=investor_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
+        # Reporters are allow to change only investors they've created
+        user = self.request.user
+        if user.groups.filter(name='Reporters').count() > 0:
+            if investor.history_user != user:
+                raise Http404('You are not allowed to edit investor %s' % investor_id)
         return investor
 
     def form_valid(self, investor_form, stakeholders_formset, investors_formset):

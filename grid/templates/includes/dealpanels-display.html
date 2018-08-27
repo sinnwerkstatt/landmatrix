@@ -43,6 +43,12 @@
 
 {% if form.Meta.name == 'investor_info' %}
     {% include "includes/investor-network.html" %}
+    {% if investor.fk_status_id == 1 %}
+    <p class="alert alert-danger">{% trans "This Operating company is pending." %}</p>
+    {% endif %}
+    {% if investor != investor.get_latest %}
+    <p class="alert alert-danger">{% trans "There's a newer version of this Operating company." %}</p>
+    {% endif %}
 {% endif %}
 
 {% include "map/modals/legend.html" %}

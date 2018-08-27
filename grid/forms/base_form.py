@@ -193,7 +193,10 @@ class FieldsDisplayFormMixin(object):
 
             # Return links for some specific fields, maybe better move to the respective form
             if field_name in ('operational_stakeholder', 'fk_investor'):
-                url = reverse('stakeholder_form', args=[object.investor_identifier])
+                url = reverse('stakeholder_form', kwargs={
+                    'investor_id': object.investor_identifier,
+                    'history_id': object.id,
+                })
                 return '<a href="%s#history">%s</a>' % (url, str(object))
             else:
                 return str(object)

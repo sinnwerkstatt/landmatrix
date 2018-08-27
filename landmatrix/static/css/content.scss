@@ -698,21 +698,25 @@ a.cc-icons:hover {
   background-position: 0 -32px;
 }
 
-.logging,
-.forestry {
+.timber-plantation,
+.forest-logging-management,
+.for-carbon-sequestration-redd,
+.forestry-unspecified {
   background-position: -32px 0;
 }
 
-.logging:hover,
-.forestry:hover {
+.timber-plantation:hover,
+.forest-logging-management:hover,
+.for-carbon-sequestration-redd:hover,
+.forestry-unspecified:hover {
   background-position: -32px -32px;
 }
 
-.resource-extraction {
+.mining {
   background-position: -64px 0;
 }
 
-.resource-extraction:hover {
+.mining:hover {
   background-position: -64px -32px;
 }
 
@@ -756,10 +760,12 @@ a.cc-icons:hover {
   background-position: -224px -32px;
 }
 
+.oil-gas-extraction,
 .other {
   background-position: -256px 0;
 }
 
+.oil-gas-extraction:hover,
 .other:hover {
   background-position: -256px -32px;
 }

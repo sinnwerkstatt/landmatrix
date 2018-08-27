@@ -18,7 +18,11 @@
 {% block subnav_inner %}
     {% if activity|is_editable:user %}
         <li role="presentation">
+            {% if activity|get_latest:request.user == activity %}
             <a href="{% url "change_deal" deal_id=activity.activity_identifier %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
+            {% else %}
+            <a class="text-danger" href="{% url "change_deal" deal_id=activity.activity_identifier history_id=activity.id %}" target="_blank"><i class="fa fa-warning"></i> {% trans "Edit old version" %}</a>
+            {% endif %}
         </li>
     {% endif %}
     <li role="presentation"><a href="#history">

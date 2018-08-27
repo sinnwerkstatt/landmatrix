@@ -297,6 +297,9 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     def is_editable(self, user=None):
         if self.get_latest(user) != self:
+            # Only superuser are allowed to edit old versions
+            if user and user.is_superuser:
+                return True
             return False
         if user:
             # Status: Pending
