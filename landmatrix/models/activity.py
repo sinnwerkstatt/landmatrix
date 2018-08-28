@@ -43,6 +43,13 @@ class ActivityQuerySet(models.QuerySet):
         )
         return self.filter(fk_status_id__in=statuses)
 
+    def public_deleted_or_pending(self):
+        statuses = ActivityBase.PUBLIC_STATUSES + (
+            ActivityBase.STATUS_DELETED,
+            ActivityBase.STATUS_PENDING,
+        )
+        return self.filter(fk_status_id__in=statuses)
+
     def pending(self):
         statuses = (ActivityBase.STATUS_PENDING, ActivityBase.STATUS_TO_DELETE)
         return self.filter(fk_status_id__in=statuses)

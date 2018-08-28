@@ -31,7 +31,9 @@ class InvestorVentureInvolvementForm(forms.ModelForm):
 
     class Meta:
         model = HistoricalInvestorVentureInvolvement
-        exclude = []
+        # Redefine field order for export
+        fields = ('fk_venture', 'fk_investor', 'role', 'investment_type', 'percentage', 'loans_amount',
+                  'loans_currency', 'loans_date', 'comment', 'fk_status')
 
 
 class ParentCompanyForm(FieldsDisplayFormMixin,
