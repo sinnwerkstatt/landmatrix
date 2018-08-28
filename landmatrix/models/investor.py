@@ -344,10 +344,26 @@ class HistoricalInvestor(InvestorBase):
                 )
                 # Update investor
                 update_investor(hinvolvement.fk_investor, approve=approve)
+
             return investor
 
         investor = update_investor(self, approve=approve)
+        self.update_current_involvements(investor)
         return investor
+
+    def update_current_involvements(self, investor):
+        # Update all current involvements (linking to the old investor version) to the new investor version
+        queryset = HistoricalInvestorActivityInvolvement.objects.for_current_activities()
+        queryset = queryset.filter(fk_investor__investor_identifier=self.investor_identifier).exclude(id=self.id)
+        for involvement in queryset:
+            involvement.fk_investor_id = self.id
+            involvement.save()
+
+        queryset = InvestorActivityInvolvement.objects.for_current_activities()
+        queryset = queryset.filter(fk_investor__investor_identifier=self.investor_identifier).exclude(id=self.id)
+        for involvement in queryset:
+            involvement.fk_investor_id = investor.id
+            involvement.save()
 
     def save(self, *args, **kwargs):
         update_elasticsearch = kwargs.pop('update_elasticsearch', True)
@@ -464,6 +480,15 @@ class InvestorActivityInvolvementManager(models.Manager):
     def get_involvements_for_activity(self, activity_identifier):
         return InvestorActivityInvolvement.objects.filter(fk_activity__activity_identifier=activity_identifier).\
             filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE, Investor.STATUS_OVERWRITTEN))
+
+    def for_current_activities(self):
+        """
+        Get involvements for newest versions of activities
+        :return:
+        """
+        activity_class = self.model._meta.get_field('fk_activity').rel.model
+        current_activities = activity_class.objects.current_ids()
+        return self.filter(fk_activity_id__in=current_activities)
 
 
 class InvestorActivityInvolvementBase(models.Model):
