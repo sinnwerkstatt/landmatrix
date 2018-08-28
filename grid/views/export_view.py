@@ -83,7 +83,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             # Check if activity exists
             queryset = HistoricalActivity.objects
             if request.user.is_authenticated():
-                queryset = queryset.public_deleted_or_pending(self.request.user)
+                queryset = queryset.public_deleted_or_pending()
             else:
                 queryset = queryset.public_or_deleted(self.request.user)
             queryset = queryset.filter(activity_identifier=deal_id).order_by('-id')
