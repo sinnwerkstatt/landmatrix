@@ -74,6 +74,9 @@ class ActivityQuerySet(models.QuerySet):
     def public_activity_count(self):
         return self.public().filter(is_public=False).activity_identifier_count()
 
+    def current_ids(self):
+        return self.values('activity_identifier').annotate(models.Max('id')).values_list('id__max', flat=True)
+
 
 class NegotiationStatusManager(models.Manager):
     '''
