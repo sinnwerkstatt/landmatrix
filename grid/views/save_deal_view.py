@@ -193,14 +193,10 @@ class SaveDealView(TemplateView):
         return action_comment
 
     def create_involvement(self, hactivity, form):
-        operational_stakeholder = form.cleaned_data['operational_stakeholder']
+        hinvestor = form.cleaned_data['operational_stakeholder']
         can_change_activity = self.request.user.has_perm('landmatrix.change_activity')
         # Operating company given?
-        if operational_stakeholder:
-            hinvestor = HistoricalInvestor.objects.order_by('-id')
-            hinvestor = hinvestor.filter(
-                investor_identifier=operational_stakeholder.investor_identifier
-            )[0]
+        if hinvestor:
             hinvolvement = HistoricalInvestorActivityInvolvement.objects.create(
                 fk_activity=hactivity,
                 fk_investor=hinvestor,

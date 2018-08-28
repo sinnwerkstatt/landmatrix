@@ -260,9 +260,20 @@ class Investor(InvestorBase):
         verbose_name_plural = _("Investors")
 
 
+class HistoricalActivityQuerySet(InvestorQuerySet):
+
+    def latest_only(self):
+        queryset = HistoricalInvestor.objects.values('activity_identifier').annotate(
+            max_id=models.Max('id'),
+        ).values_list('max_id', flat=True)
+        return queryset
+
+
 class HistoricalInvestor(InvestorBase):
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
+
+    objects = HistoricalActivityQuerySet.as_manager()
 
     def get_top_investors(self):
         """
@@ -359,7 +370,7 @@ class HistoricalInvestor(InvestorBase):
             involvement.fk_investor_id = self.id
             involvement.save()
 
-        queryset = InvestorActivityInvolvement.objects.for_current_activities()
+        queryset = InvestorActivityInvolvement.objects.all()
         queryset = queryset.filter(fk_investor__investor_identifier=self.investor_identifier).exclude(id=self.id)
         for involvement in queryset:
             involvement.fk_investor_id = investor.id
@@ -409,6 +420,7 @@ class InvestorVentureInvolvementBase(models.Model):
     STATUS_DELETED = 4
     STATUS_REJECTED = 5
     STATUS_TO_DELETE = 6
+    PUBLIC_STATUSES = (STATUS_ACTIVE, STATUS_OVERWRITTEN)
     STATUS_CHOICES = (
         STATUS_PENDING, _('Pending'),
         STATUS_ACTIVE, _('Active'),
@@ -487,7 +499,7 @@ class InvestorActivityInvolvementManager(models.Manager):
         :return:
         """
         activity_class = self.model._meta.get_field('fk_activity').rel.model
-        current_activities = activity_class.objects.current_ids()
+        current_activities = activity_class.objects.latest_only()
         return self.filter(fk_activity_id__in=current_activities)
 
 

@@ -2,7 +2,7 @@ from django import forms
 from django.forms.models import ModelChoiceField
 from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.models.investor import Investor
+from landmatrix.models.investor import HistoricalInvestor
 from grid.forms.base_form import BaseForm
 from grid.forms.choices import actor_choices
 from grid.fields import TitleField, ActorsField
@@ -18,7 +18,7 @@ class OperationalStakeholderForm(BaseForm):
         required=False, label="", initial=_("Operating company"))
     operational_stakeholder = ModelChoiceField(
         required=False, label=_("Operating company"),
-        queryset=Investor.objects.none(),
+        queryset=HistoricalInvestor.objects.none(),
         widget=InvestorSelect(attrs={'class': 'form-control investorfield'}))
     actors = ActorsField(
         required=False,
@@ -47,7 +47,7 @@ class OperationalStakeholderForm(BaseForm):
                                      self.initial.get('operational_stakeholder', None))
         if valid_choice:
             field = self.fields['operational_stakeholder']
-            field.queryset = Investor.objects.filter(pk=valid_choice)
+            field.queryset = HistoricalInvestor.objects.filter(pk=valid_choice)
             # Add investor identifier as data attribute
             if field.queryset.count() > 0:
                 field.widget.data = {

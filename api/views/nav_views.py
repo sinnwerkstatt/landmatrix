@@ -9,8 +9,7 @@ import coreapi
 import coreschema
 
 from api.serializers import RegionSerializer
-from api.views.base import FakeQuerySetListView
-from landmatrix.models import Country
+from landmatrix.models import Country, HistoricalInvestor
 from wagtailcms.models import CountryPage, RegionPage
 from .list_views import ElasticSearchMixin
 
@@ -68,7 +67,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 1000
 
 
-class InvestorListView(ElasticSearchMixin,
+class  InvestorListView(ElasticSearchMixin,
                        ListAPIView):
     """
     Get all Operating companies, Parent companies and Tertiary investors/lenders.
@@ -94,28 +93,45 @@ class InvestorListView(ElasticSearchMixin,
 
         term = self.request.GET.get('q', '')
         if term:
-            query = {
-                'bool': {
-                    'must': [
-                        {'wildcard': {'name': '*%s*' % term.lower()}},
-                        {'terms': {'fk_status': [2, 3]}},
-                    ]
-                }
-            }
-            # Search deals
-            raw_results = self.execute_elasticsearch_query(query, doc_type='investor',
-                                                           fallback=False,
-                                                           sort='name.raw')
+            latest_ids = HistoricalInvestor.objects.latest_only()
+            queryset = HistoricalInvestor.objects.filter(id__in=latest_ids)
+            queryset = queryset.filter(name__icontains=term.lower())
             results = []
-            for raw_result in raw_results:
-                result = raw_result['_source']
+            for investor in queryset:
+                top_investors = ""
+                if "unknown" in investor.name.lower():
+                    top_investors = investor.format_investors(investor.get_top_investors())
                 results.append({
-                    "id": raw_result["_id"],
-                    "text": result["name"],
-                    "investor_identifier": result["investor_identifier"],
-                    "country": result["fk_country_display"],
-                    "top_investors": result["top_investors"],
+                    "id": investor.id,
+                    "text": investor.name,
+                    "investor_identifier": investor.investor_identifier,
+                    "country": str(investor.fk_country),
+                    "top_investors": top_investors,
                 })
+
+            # Maybe better switch to elasticsearch in the future:
+            #query = {
+            #    'bool': {
+            #        'must': [
+            #            {'wildcard': {'name': '*%s*' % term.lower()}},
+            #            {'terms': {'fk_status': [2, 3]}},
+            #        ]
+            #    }
+            #}
+            ## Search deals
+            #raw_results = self.execute_elasticsearch_query(query, doc_type='investor',
+            #                                               fallback=False,
+            #                                               sort='name.raw')
+            #results = []
+            #for raw_result in raw_results:
+            #    result = raw_result['_source']
+            #    results.append({
+            #        "id": raw_result["_id"],
+            #        "text": result["name"],
+            #        "investor_identifier": result["investor_identifier"],
+            #        "country": result["fk_country_display"],
+            #        "top_investors": result["top_investors"],
+            #    })
 
         return results
 
