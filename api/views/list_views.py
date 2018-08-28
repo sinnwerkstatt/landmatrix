@@ -256,7 +256,8 @@ class ElasticSearchMixin(object):
 
         # collect a proper and authorized-for-that-user status list from the requet paramert
         request_status_list = self.request.GET.getlist('status', []) if self.request else []
-        if self.request and self.request.user.is_staff:
+        if self.request and (self.request.user.is_staff or
+                             self.request.user.groups.filter(name="Administrators").count() > 0):
             status_list_get = [int(status) for status in request_status_list
                                if (status.isnumeric() and
                                    int(status) in dict(ActivityBase.STATUS_CHOICES).keys())]
