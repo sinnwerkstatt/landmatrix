@@ -407,7 +407,7 @@ function formatInvestor(result) {
     }
     investor = $('<span>', {'text': investor});
     if (result.text && result.text.startsWith('Unknown')) {
-        meta_info = 'in ' + result.country;
+        meta_info = ' in ' + result.country;
 
         if (result.top_investors) {
             parent_companies = '';
