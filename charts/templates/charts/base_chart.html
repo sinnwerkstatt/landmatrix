@@ -14,10 +14,10 @@
 {% endblock %}
 
 {% block subnav_inner %}
-    <li role="presentation"><a href="{% url 'map' %}{% regional_params %}">
+    <li role="presentation"><a href="{% url 'map' %}{% list_params %}">
         <i class="fa fa-map-marker"></i> {% trans "Map" %}
     </a></li>
-    <li role="presentation"><a href="{% url 'data' %}{% regional_params %}">
+    <li role="presentation"><a href="{% url 'data' %}{% list_params %}">
         <i class="fa fa-table"></i> {% trans "Data" %}
     </a></li>
     <li role="presentation" class="active"><span>
