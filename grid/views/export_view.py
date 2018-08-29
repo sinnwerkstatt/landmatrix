@@ -111,6 +111,11 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         results['deals'] = self.filter_deals(deals)
 
         # Get all investors
+        investor_status_list = [InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN]
+        if InvestorBase.STATUS_PENDING in self.status_list:
+            investor_status_list += [InvestorBase.STATUS_PENDING]
+        if InvestorBase.STATUS_DELETED in self.status_list:
+            investor_status_list += [InvestorBase.STATUS_DELETED]
         if deal_id:
             def get_investors(investors):
                 parents = []
@@ -118,17 +123,13 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                     # Check if there are parent companies for investor
                     parent_investors = [i.fk_investor for i in
                                         HistoricalInvestorVentureInvolvement.objects.filter(
-                                            fk_venture=investor
+                                            fk_venture=investor,
+                                            fk_venture__fk_status__in=investor_status_list,
+                                            fk_investor__fk_status__in=investor_status_list
                                         )]
-                    parent_investors = parent_investors.filter(
-                        fk_venture__fk_status__in=self.status_list,
-                        fk_investor__fk_status__in=self.status_list
-                    )
                     if parent_investors:
                         parents.extend(get_investors(parent_investors))
-                    if request.user.is_authenticated():
-                        parents.append(investor.id)
-                    elif investor.fk_status_id in self.status_list:
+                    if investor.fk_status_id in investor_status_list:
                         parents.append(investor.id)
                 return parents
             query = {
@@ -139,7 +140,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             }
         else:
             query = {
-                "terms": {"fk_status": self.status_list}
+                "terms": {"fk_status": investor_status_list}
             }
         sort = ['investor_identifier',]
         investors = self.execute_elasticsearch_query(query, doc_type='investor', fallback=False, sort=sort)
@@ -153,22 +154,13 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 for involvement in involvements:
                     # Check if there are parent companies for investor
                     parent_involvements = HistoricalInvestorVentureInvolvement.objects.filter(
-                        fk_venture=involvement.fk_investor
+                        fk_venture=involvement.fk_investor,
+                        fk_venture__fk_status__in=investor_status_list,
+                        fk_investor__fk_status__in=investor_status_list
                     )
-                    if not request.user.is_authenticated():
-                        parent_involvements = parent_involvements.filter(
-                            fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE,
-                                                       InvestorBase.STATUS_OVERWRITTEN),
-                            fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE,
-                                                        InvestorBase.STATUS_OVERWRITTEN)
-                        )
                     if parent_involvements:
                         parents.extend(get_involvements(parent_involvements))
-
-                    if request.user.is_authenticated():
-                        parents.append(involvement.id)
-                    elif involvement.fk_investor.fk_status_id in (InvestorBase.STATUS_ACTIVE,
-                                                                  InvestorBase.STATUS_OVERWRITTEN):
+                    if involvement.fk_investor.fk_status_id in investor_status_list:
                         parents.append(involvement.id)
                 return parents
             query = {
