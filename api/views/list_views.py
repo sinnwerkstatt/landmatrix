@@ -257,21 +257,15 @@ class ElasticSearchMixin(object):
 
         # collect a proper and authorized-for-that-user status list from the requet paramert
         request_status_list = self.request.GET.getlist('status', []) if self.request else []
-        if self.request and (self.request.user.is_superuser or
-                             self.request.user.has_perm('landmatrix.review_activity')):
+        if request_status_list and (self.request.user.is_superuser or
+                                    self.request.user.has_perm('landmatrix.review_activity')):
             status_list_get = [int(status) for status in request_status_list
-                               if (status.isnumeric() and
-                                   int(status) in dict(ActivityBase.STATUS_CHOICES).keys())]
+                               if (status.isnumeric() and int(status) in dict(ActivityBase.STATUS_CHOICES).keys())]
             if status_list_get:
                 self.status_list = status_list_get
 
         elasticsearch_query['filter'].append({
-            "bool": {
-                'should': [
-                    {'match': {'status': status}} for status in self.status_list
-                ],
-                'minimum_should_match': 1,
-            }
+            "terms": {"status": self.status_list}
         })
 
         # Public user?
