@@ -257,8 +257,8 @@ class ElasticSearchMixin(object):
 
         # collect a proper and authorized-for-that-user status list from the requet paramert
         request_status_list = self.request.GET.getlist('status', []) if self.request else []
-        if self.request and (self.request.user.is_staff or
-                             self.request.user.groups.filter(name="Administrators").count() > 0):
+        if self.request and (self.request.user.is_superuser or
+                             self.request.user.has_perm('landmatrix.review_activity')):
             status_list_get = [int(status) for status in request_status_list
                                if (status.isnumeric() and
                                    int(status) in dict(ActivityBase.STATUS_CHOICES).keys())]
@@ -345,7 +345,7 @@ class ElasticSearchMixin(object):
                     activity_identifier = res['activity_identifier']
                     # this match might be hidden if there is a pending match of PENDING status
                     if activity_identifier in pending_act_ids:
-                        result_list = result_list[:-1]
+                        del result_list[i]
 
         return result_list
 
@@ -358,17 +358,19 @@ class ElasticSearchMixin(object):
             result_list.append(result)
 
         # we have a special filter mode for status=STATUS_PENDING type searches,
-        # if pending invcestors are to be shown, matched deals with status PENDING hide all other deals
+        # if pending investors are to be shown, matched deals with status PENDING hide all other deals
         # with the same investor_identifier that are not PENDING
         if InvestorBase.STATUS_PENDING in self.status_list:
-            pending_inv_ids = [res['investor_identifier'] for res in result_list if res['status'] == InvestorBase.STATUS_PENDING]
+            pending_inv_ids = [res['investor_identifier']
+                               for res in result_list
+                               if res['fk_status'] == InvestorBase.STATUS_PENDING]
             for i in reversed(range(len(result_list))):
                 res = result_list[i]
                 if not res['status'] == InvestorBase.STATUS_PENDING:
                     investor_identifier = res['investor_identifier']
                     # this match might be hidden if there is a pending match of PENDING status
                     if investor_identifier in pending_inv_ids:
-                        result_list = result_list[:-1]
+                        del result_list[i]
 
         return result_list
 
@@ -376,14 +378,26 @@ class ElasticSearchMixin(object):
         """ Additional filtering and exclusion of unwanted results """
         result_list = []
         investor_ids = [int(i['id']) for i in investors]
+        involvements = {}
+
         for raw_result in raw_result_list:
             result = raw_result['_source']
             # Include only involvements for given investors
-            if result['fk_venture'] not in investor_ids:
-                if result['fk_investor'] not in investor_ids:
-                    continue
+            if result['fk_venture'] not in investor_ids or result['fk_investor'] not in investor_ids:
+                continue
+            key = '%s-%s' % (result['fk_venture_display'], result['fk_investor_display'])
             result['id'] = raw_result['_id']
             result_list.append(result)
+            # Save highest ID of duplicates
+            if key not in involvements or involvements[key] < result['id']:
+                involvements[key] = result['id']
+
+        # Remove duplicates (only use highest ID e.g. if there are pending or older versions)
+        for i in reversed(range(len(result_list))):
+            result = result_list[i]
+            key = '%s-%s' % (result['fk_venture_display'], result['fk_investor_display'])
+            if key in involvements and involvements[key] != result['id']:
+                del result_list[i]
 
         return result_list
 

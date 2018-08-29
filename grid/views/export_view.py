@@ -120,19 +120,15 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                                         HistoricalInvestorVentureInvolvement.objects.filter(
                                             fk_venture=investor
                                         )]
-                    if not request.user.is_authenticated():
-                        parent_investors = parent_investors.filter(
-                            fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE,
-                                                       InvestorBase.STATUS_OVERWRITTEN),
-                            fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE,
-                                                        InvestorBase.STATUS_OVERWRITTEN)
-                        )
+                    parent_investors = parent_investors.filter(
+                        fk_venture__fk_status__in=self.status_list,
+                        fk_investor__fk_status__in=self.status_list
+                    )
                     if parent_investors:
                         parents.extend(get_investors(parent_investors))
                     if request.user.is_authenticated():
                         parents.append(investor.id)
-                    elif investor.fk_status_id in (InvestorBase.STATUS_ACTIVE,
-                                                   InvestorBase.STATUS_OVERWRITTEN):
+                    elif investor.fk_status_id in self.status_list:
                         parents.append(investor.id)
                 return parents
             query = {
@@ -142,7 +138,9 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 }
             }
         else:
-            query = {}
+            query = {
+                "terms": {"fk_status": self.status_list}
+            }
         sort = ['investor_identifier',]
         investors = self.execute_elasticsearch_query(query, doc_type='investor', fallback=False, sort=sort)
         investors = self.filter_investors(investors)
