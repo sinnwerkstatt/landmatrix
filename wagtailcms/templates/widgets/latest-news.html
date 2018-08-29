@@ -8,10 +8,10 @@
           <div class="thumbnail flex-col">
             {% if item.header_image %}<img src="{{ item.header_image.file.url }}"/>{% endif %}
             <div class="caption">
-              <h3><a href="/news/{{ item.slug }}/">{{ item.title }}</a></h3>
+              <h3><a href="/stay-informed/{{ item.slug }}/">{{ item.title }}</a></h3>
               <p>{{ item.body|richtext|truncatewords_html:50 }}</p>
               <p>
-                <a href="/news/{{ item.slug }}/" class="btn">{% trans "Read more" %}</a>
+                <a href="/stay-informed/{{ item.slug }}/" class="btn">{% trans "Read more" %}</a>
               </p>
             </div>
           </div>
@@ -21,7 +21,7 @@
 
     <div class="text-center">
         <p><a class="btn"
-              href="{% if tag %}{% url "news:tag" tag=tag %}{% else %}/news/{% endif %}">
+              href="{% if tag %}{% url "news:tag" tag=tag %}{% else %}/stay-informed/{% endif %}">
             {% trans "All News and Publications" %}{% if name %}: {{ name }}{% endif %}
         </a></p>
     </div>
