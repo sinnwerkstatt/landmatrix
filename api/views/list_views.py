@@ -360,7 +360,7 @@ class ElasticSearchMixin(object):
                                if res['fk_status'] == InvestorBase.STATUS_PENDING]
             for i in reversed(range(len(result_list))):
                 res = result_list[i]
-                if not res['status'] == InvestorBase.STATUS_PENDING:
+                if not res['fk_status'] == InvestorBase.STATUS_PENDING:
                     investor_identifier = res['investor_identifier']
                     # this match might be hidden if there is a pending match of PENDING status
                     if investor_identifier in pending_inv_ids:
