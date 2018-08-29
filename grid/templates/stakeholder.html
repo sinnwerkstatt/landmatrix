@@ -11,8 +11,17 @@
 {% endblock %}
 {% block footer %}
 {% endblock %}
-{% block navutils %}
+{% block messages %}
+{% if investor.fk_status_id == 1 or activity.fk_status_id == 6 %}
+<p class="alert alert-danger">{% trans "This investor version is pending." %}</p>
+{% elif investor.fk_status_id == 4 %}
+<p class="alert alert-danger">{% trans "This investor has been deleted. It is not visible for public users." %}</p>
+{% elif investor.fk_status_id == 5 %}
+<p class="alert alert-danger">{% trans "This investor version has been rejected. It is not visible for public users." %}</p>
+{% endif %}
 {% endblock %}
+{% block breadcrumb %}{% endblock %}
+{% block subnav %}{% endblock %}
 {% block page_title %}
     {% if investor %}{{ investor.name }} (#{{ investor.investor_identifier }})
     {% else %}{% trans "Add" %}{% endif %}
@@ -21,6 +30,8 @@
     {% if investor %}{{ investor.name }} <small>(#{{ investor.investor_identifier }})</small>
     {% else %}{% trans "Add" %}{% endif %}
 {% endblock %}
+
+
 
 {% block content %}
 <div class="popup">
