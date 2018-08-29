@@ -30,6 +30,7 @@ from grid.forms.deal_spatial_form import DealSpatialFormSet
 from grid.forms.deal_water_form import DealWaterForm
 from grid.forms.deal_vggt_form import DealVGGTForm
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
+from grid.utils import has_perm_approve_reject
 
 
 class SaveDealView(TemplateView):
@@ -85,13 +86,7 @@ class SaveDealView(TemplateView):
 
         if old_hactivity.fk_status_id == HistoricalActivity.STATUS_PENDING:
             # Only editors and administrators are allowed to edit pending versions
-            if is_editor or is_admin:
-                # Set pending activity to overwritten
-                #old_hactivity.fk_status_id = HistoricalActivity.STATUS_OVERWRITTEN
-                #old_hactivity.save()
-                # Remove changesets
-                pass
-            else:
+            if not is_editor and not is_admin:
                 raise HttpResponseForbidden('Deal version is pending')
 
         # Create new historical activity
@@ -99,9 +94,6 @@ class SaveDealView(TemplateView):
             activity_identifier=old_hactivity.activity_identifier,
             fk_status_id=HistoricalActivity.STATUS_PENDING,
             history_user=self.request.user)
-
-        if is_admin:
-            hactivity.fk_status_id = hactivity.STATUS_OVERWRITTEN
         hactivity.save(update_elasticsearch=False)
 
         # Create new activity attributes
@@ -113,8 +105,6 @@ class SaveDealView(TemplateView):
             hactivity.fully_updated = False
         hactivity.save(update_elasticsearch=False)
         self.create_involvement(hactivity, investor_form)
-        if is_admin:
-            hactivity.update_public_activity()
 
         # Create activity feedback
         form = self.get_form_by_type(forms, DealActionCommentForm)
@@ -128,9 +118,11 @@ class SaveDealView(TemplateView):
             self.create_activity_changeset(hactivity)
             messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 
-        #context = self.get_context_data(**self.kwargs)
-        #context['forms'] = forms
-        #return self.render_to_response(context)
+        if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
+            hactivity.approve_change(self.request.user, '')
+        elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
+            hactivity.reject_change(self.request.user, '')
+
         return redirect('deal_detail', deal_id=hactivity.activity_identifier)
 
     def form_invalid(self, forms):

@@ -12,6 +12,7 @@ from landmatrix.models.activity_changeset import ActivityChangeset
 from grid.forms.operational_stakeholder_form import OperationalStakeholderForm
 from grid.forms.public_user_information_form import PublicUserInformationForm
 from grid.forms.deal_action_comment_form import DealActionCommentForm
+from grid.utils import has_perm_approve_reject
 
 
 class AddDealView(SaveDealView):
@@ -36,11 +37,8 @@ class AddDealView(SaveDealView):
             activity_identifier=activity_identifier,
             history_user=self.request.user,
         )
-        can_add_activity = self.request.user.has_perm('landmatrix.add_activity')
-        if can_add_activity:
-            hactivity.fk_status_id = hactivity.STATUS_ACTIVE
-        else:
-            hactivity.fk_status_id = hactivity.STATUS_PENDING
+        is_admin = self.request.user.has_perm('landmatrix.add_activity')
+        hactivity.fk_status_id = hactivity.STATUS_PENDING
         hactivity.save()
 
         # Create new activity attributes
@@ -52,16 +50,13 @@ class AddDealView(SaveDealView):
             hactivity.fully_updated = False
         hactivity.save(update_elasticsearch=False)
         self.create_involvement(hactivity, investor_form)
-        if can_add_activity:
-            # Create new activity (required for involvement)
-            hactivity.update_public_activity()
 
         # Create activity feedback
         form = self.get_form_by_type(forms, DealActionCommentForm)
         if form:
             self.create_activity_feedback(hactivity, form)
 
-        if can_add_activity:
+        if is_admin:
             messages.success(
                 self.request,
                 self.success_message_admin.format(hactivity.activity_identifier))
@@ -76,5 +71,10 @@ class AddDealView(SaveDealView):
             # reasonable place to redirect to, as these users can't see the
             # deal yet
             redirect_url = reverse('data')
+
+        if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
+            hactivity.approve_change(self.request.user, '')
+        elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
+            hactivity.reject_change(self.request.user, '')
 
         return HttpResponseRedirect(redirect_url)

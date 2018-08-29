@@ -15,6 +15,7 @@ from collections import OrderedDict
 
 # from editor.views import get_display_value_by_field
 from grid.fields import NestedMultipleChoiceField
+from grid.utils import has_perm_approve_reject
 
 register = template.Library()
 
@@ -314,3 +315,8 @@ def get_latest(activity, user):
 @register.filter
 def deslugify(slug):
     return title(slug.replace('_', ' ').replace('-', ' '))
+
+
+@register.filter
+def can_approve_reject(user, activity=None):
+    return has_perm_approve_reject(user, activity)

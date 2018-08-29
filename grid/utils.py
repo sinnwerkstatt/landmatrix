@@ -121,3 +121,21 @@ def get_spatial_properties():
             continue
         keys.append(key)
     return keys
+
+
+def has_perm_approve_reject(user, activity=None):
+    # Superuser or Admin?
+    if user.is_superuser or user.has_perm('landmatrix.change_activity'):
+        return True
+    # Editor
+    elif user.has_perm('landmatrix.review_activity') and activity:
+        # for editors:
+        # only activites that have been added/changed by public users
+        # and not been reviewed by another editor yet
+        if not activity.history_user.has_perm('landmatrix.review_activity'):
+            for changeset in activity.changesets.all():
+                if changeset.fk_user and changeset.fk_user.has_perm('landmatrix.review_activity'):
+                    return False
+                return True
+    # FIXME: Maybe check for country/region here in the future (FilteredQuerysetMixin.get_filtered_activity_queryset)
+    return False
