@@ -61,15 +61,6 @@
 
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% slugurl 'about-land-matrix' %}" role="button"><i class="fa fa-question-circle"></i></a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><i class="fa fa-bell"></i></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/news/">{% trans "News" %}</a></li>
-                            <li><a href="/newsletters/">{% trans "Newsletter" %}</a></li>
-                        </ul>
-                    </li>
                     {#% include "language_chooser.html" %#}
                     {% block user_tools %}
                         {% if request.user.is_authenticated %}
@@ -89,7 +80,10 @@
                             </li>
                         {% else %}
                         <li>
-                            <a href="{% url "auth_login" %}?next=/" role="button" title="{% trans "Login" %}"><i class="fa fa-sign-in"></i></a>
+                            <a href="{% url "auth_login" %}?next=/" role="button" title="{% trans "Login" %}"
+                               class="toggle-tooltip bottom">
+                                <i class="fa fa-user"></i>
+                            </a>
                         </li>
                         {% endif %}
                     {% endblock %}
@@ -123,16 +117,19 @@
                             </select>
                         </span>
                     </li>
+                    <li>
+                        <a href="/get-involved/" role="button">
+                           <span class="nav-text">{% trans "Get Involved" %}</span>
+                        </a>
+                    </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false">
-                           <span class="nav-text">{% trans "Get Involved" %}<span
-                                class="caret"></span></span>
+                            <span class="nav-text">Stay informed<span class="caret"></span></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a></li>
-                            <li><a href="/get-touch/">{% trans "Get in touch" %}</a></li>
-                            <li><a href="/provide-feedback/">{% trans "Provide feedback" %}</a></li>
+                            <li><a href="/news/">{% trans "News" %}</a></li>
+                            <li><a href="/newsletters/">{% trans "Newsletter" %}</a></li>
                         </ul>
                     </li>
                 </ul>

@@ -574,7 +574,7 @@ $(document).ready(function () {
 
     //FIXME cleanup js
     // Replace title attributes to prevent the default tooltip
-    $('a[title]').each(function () {
+    $('a:not(.toggle-tooltip)[title]').each(function () {
         var e = $(this);
         e.data('title', e.attr('title'));
         e.removeAttr('title');
