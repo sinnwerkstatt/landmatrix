@@ -45,7 +45,7 @@ class InvestorFormsMixin:
 
     def get_venture_involvements_queryset(self):
         if self.object:
-            queryset = self.object.venture_involvements.active()
+            queryset = self.object.venture_involvements.all()
         else:
             queryset = HistoricalInvestorVentureInvolvement.objects.none()
         queryset = queryset.order_by('fk_investor__name')
