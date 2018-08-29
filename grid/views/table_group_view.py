@@ -183,7 +183,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                     }
                 self.group_values = investors
         else:
-            results = self.filter_returned_results(results)
+            results = self.filter_deals(results)
 
         self.num_results = len(results)
 

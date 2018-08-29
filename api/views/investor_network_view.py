@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.views import APIView
@@ -7,7 +8,7 @@ from rest_framework.schemas import ManualSchema
 import coreapi
 import coreschema
 
-from landmatrix.models.investor import HistoricalInvestor
+from landmatrix.models.investor import HistoricalInvestor, InvestorBase
 from api.serializers import HistoricalInvestorNetworkSerializer
 
 
@@ -43,6 +44,9 @@ class InvestorNetworkView(APIView):
                 {'operational_stakeholder': _("An integer is required.")})
 
         investor = get_object_or_404(HistoricalInvestor, pk=investor_id)
+        if not self.request.user.is_authenticated():
+            if investor.fk_status_id not in (InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN):
+                raise Http404("Investor is not public")
         self.check_object_permissions(self.request, investor)
 
         return investor

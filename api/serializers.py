@@ -5,9 +5,8 @@ from django.contrib.gis.geos import GEOSGeometry
 from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 
-from landmatrix.models import (
-    Activity, HistoricalInvestorVentureInvolvement, FilterPreset,
-)
+from landmatrix.models import Activity, HistoricalInvestorVentureInvolvement, FilterPreset
+from landmatrix.models.investor import InvestorBase
 
 
 class PassThruSerializer(serializers.BaseSerializer):
@@ -160,7 +159,7 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
     This is not REST, but it maintains compatibility with the existing API.
     """
 
-    def to_representation(self, obj, parent_types=['parent_stakeholders', 'parent_investors']):
+    def to_representation(self, obj, parent_types=['parent_stakeholders', 'parent_investors'], user):
         response = {
             "id": obj.id,
             "name": obj.name,
@@ -179,6 +178,11 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
                 parent_involvements = involvements.investors()
             else:
                 parent_involvements = involvements.stakeholders()
+            if not user.is_authenticated():
+                parent_involvements = parent_involvements.filter(fk_investor__fk_status_id__in=(
+                    InvestorBase.STATUS_ACTIVE,
+                    InvestorBase.STATUS_OVERWRITTEN
+                ))
             for i, involvement in enumerate(parent_involvements):
                 parent = self.to_representation(involvement.fk_investor, parent_types)
                 parent["parent_type"] = parent_type == 'parent_investors' and 'investor' or 'stakeholder'

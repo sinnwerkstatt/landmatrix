@@ -17,6 +17,7 @@ from api.utils import PropertyCounter
 from api.serializers import UserSerializer
 from landmatrix.models import Country
 from landmatrix.models.activity import ActivityBase
+from landmatrix.models.investor import InvestorBase
 from geojson import FeatureCollection, Feature, Point
 from grid.forms.choices import INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 from map.views import MapSettingsMixin
@@ -325,17 +326,11 @@ class ElasticSearchMixin(object):
             raise
         return results
 
-    def filter_returned_results(self, raw_result_list):
+    def filter_deals(self, raw_result_list):
         """ Additional filtering and exclusion of unwanted results """
         result_list = []
         for raw_result in raw_result_list:
             result = raw_result['_source']
-            #if not raw_result['_type'] in ('deal', 'location'):
-            #    continue
-            #if not 'point_lat' in result or not 'point_lon' in result:
-            #    continue
-            #if not result.get('intention', None): # TODO: should we hide results with no intention field value?
-            #    continue
             result['id'] = raw_result['_id']
             result_list.append(result)
 
@@ -351,6 +346,44 @@ class ElasticSearchMixin(object):
                     # this match might be hidden if there is a pending match of PENDING status
                     if activity_identifier in pending_act_ids:
                         result_list = result_list[:-1]
+
+        return result_list
+
+    def filter_investors(self, raw_result_list):
+        """ Additional filtering and exclusion of unwanted results """
+        result_list = []
+        for raw_result in raw_result_list:
+            result = raw_result['_source']
+            result['id'] = raw_result['_id']
+            result_list.append(result)
+
+        # we have a special filter mode for status=STATUS_PENDING type searches,
+        # if pending invcestors are to be shown, matched deals with status PENDING hide all other deals
+        # with the same investor_identifier that are not PENDING
+        if InvestorBase.STATUS_PENDING in self.status_list:
+            pending_inv_ids = [res['investor_identifier'] for res in result_list if res['status'] == InvestorBase.STATUS_PENDING]
+            for i in reversed(range(len(result_list))):
+                res = result_list[i]
+                if not res['status'] == InvestorBase.STATUS_PENDING:
+                    investor_identifier = res['investor_identifier']
+                    # this match might be hidden if there is a pending match of PENDING status
+                    if investor_identifier in pending_inv_ids:
+                        result_list = result_list[:-1]
+
+        return result_list
+
+    def filter_involvements(self, raw_result_list, investors):
+        """ Additional filtering and exclusion of unwanted results """
+        result_list = []
+        investor_ids = [int(i['id']) for i in investors]
+        for raw_result in raw_result_list:
+            result = raw_result['_source']
+            # Include only involvements for given investors
+            if result['fk_venture'] not in investor_ids:
+                if result['fk_investor'] not in investor_ids:
+                    continue
+            result['id'] = raw_result['_id']
+            result_list.append(result)
 
         return result_list
 
@@ -577,7 +610,7 @@ class GlobalDealsView(ElasticSearchMixin, APIView):
         raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
 
         # filter results
-        result_list = self.filter_returned_results(raw_result_list)
+        result_list = self.filter_deals(raw_result_list)
         # parse results
         features = filter(None,
                           [self.create_feature_from_result(result) for result in result_list])
@@ -636,7 +669,7 @@ class CountryDealsView(GlobalDealsView, APIView):
         raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
 
         # filter results
-        result_list = self.filter_returned_results(raw_result_list)
+        result_list = self.filter_deals(raw_result_list)
 
         target_countries = collections.defaultdict(PropertyCounter)
 
@@ -753,7 +786,7 @@ class PolygonGeomView(GlobalDealsView, APIView):
         }
 
         raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
-        result_list = self.filter_returned_results(raw_result_list)
+        result_list = self.filter_deals(raw_result_list)
 
         features = []
         for result in result_list:

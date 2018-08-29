@@ -1,7 +1,8 @@
 from django.core.cache import cache
 from django import forms
 
-from landmatrix.models import Investor
+from landmatrix.models import HistoricalInvestor, Investor
+
 
 def get_display_value(field, values, attributes=None, formset=None):
     output = []
@@ -13,7 +14,7 @@ def get_display_value(field, values, attributes=None, formset=None):
         model_name = field.queryset.model._meta.model_name
         choices = cache.get('%s_choices' % model_name)
         if not choices:
-            if field.queryset.model == Investor:
+            if field.queryset.model in (HistoricalInvestor, Investor):
                 choices = dict(((str(o.pk), str(o.investor_identifier)) for o in field.queryset))
             else:
                 choices = dict(((str(o.pk), str(o)) for o in field.queryset))

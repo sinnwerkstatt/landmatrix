@@ -108,43 +108,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         results = {}
         # Search deals
         deals = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False, sort=sort)
-        results['deals'] = self.filter_returned_results(deals)
-
-        # Get all involvements
-        if deal_id:
-            def get_involvements(involvements):
-                parents = []
-                for involvement in involvements:
-                    # Check if there are parent companies for investor
-                    parent_involvements = HistoricalInvestorVentureInvolvement.objects.filter(
-                        fk_venture=involvement.fk_investor
-                    )
-                    if not request.user.is_authenticated():
-                        parent_involvements = parent_involvements.filter(
-                            fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE,
-                                                       InvestorBase.STATUS_OVERWRITTEN),
-                            fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE,
-                                                        InvestorBase.STATUS_OVERWRITTEN)
-                        )
-                    if parent_involvements:
-                        parents.extend(get_involvements(parent_involvements))
-
-                    if request.user.is_authenticated():
-                        parents.append(involvement.id)
-                    elif involvement.fk_investor.fk_status_id in (InvestorBase.STATUS_ACTIVE,
-                                                                  InvestorBase.STATUS_OVERWRITTEN):
-                        parents.append(involvement.id)
-                return parents
-            query = {
-                "ids": {
-                    "type": "involvement",
-                    "values": get_involvements(activity.involvements.all())
-                }
-            }
-        else:
-            query = {}
-        sort = ['fk_venture', 'fk_investor']
-        results['involvements'] = self.execute_elasticsearch_query(query, doc_type='involvement', fallback=False, sort=sort)
+        results['deals'] = self.filter_deals(deals)
 
         # Get all investors
         if deal_id:
@@ -180,7 +144,47 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         else:
             query = {}
         sort = ['investor_identifier',]
-        results['investors'] = self.execute_elasticsearch_query(query, doc_type='investor', fallback=False, sort=sort)
+        investors = self.execute_elasticsearch_query(query, doc_type='investor', fallback=False, sort=sort)
+        investors = self.filter_investors(investors)
+        results['investors'] = investors
+
+        # Get all involvements
+        if deal_id:
+            def get_involvements(involvements):
+                parents = []
+                for involvement in involvements:
+                    # Check if there are parent companies for investor
+                    parent_involvements = HistoricalInvestorVentureInvolvement.objects.filter(
+                        fk_venture=involvement.fk_investor
+                    )
+                    if not request.user.is_authenticated():
+                        parent_involvements = parent_involvements.filter(
+                            fk_venture__fk_status__in=(InvestorBase.STATUS_ACTIVE,
+                                                       InvestorBase.STATUS_OVERWRITTEN),
+                            fk_investor__fk_status__in=(InvestorBase.STATUS_ACTIVE,
+                                                        InvestorBase.STATUS_OVERWRITTEN)
+                        )
+                    if parent_involvements:
+                        parents.extend(get_involvements(parent_involvements))
+
+                    if request.user.is_authenticated():
+                        parents.append(involvement.id)
+                    elif involvement.fk_investor.fk_status_id in (InvestorBase.STATUS_ACTIVE,
+                                                                  InvestorBase.STATUS_OVERWRITTEN):
+                        parents.append(involvement.id)
+                return parents
+            query = {
+                "ids": {
+                    "type": "involvement",
+                    "values": get_involvements(activity.involvements.all())
+                }
+            }
+        else:
+            # Get involvements for listed investors
+            query = {}
+        sort = ['fk_venture', 'fk_investor']
+        involvements = self.execute_elasticsearch_query(query, doc_type='involvement', fallback=False, sort=sort)
+        results['involvements'] = self.filter_involvements(involvements, investors=investors)
 
         if format not in self.FORMATS:
             raise RuntimeError('Download format not recognized: ' + format)
@@ -425,7 +429,6 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         # Get involvements
         rows = []
         for item in results['involvements']:
-            item = item.get('_source', {})
             row = []
             for field_name, field in InvestorVentureInvolvementForm.base_fields.items():
                 if field_name in exclude:
@@ -447,7 +450,6 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         # Get investors
         rows = []
         for item in results['investors']:
-            item = item.get('_source', {})
             row = []
             for field_name, field in ExportInvestorForm.base_fields.items():
                 if field_name in exclude:

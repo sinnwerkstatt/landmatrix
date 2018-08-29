@@ -27,8 +27,11 @@
                                                 <p>{% if item.history_user %}{{ item.history_user.get_full_name }}{% else %}{% trans "Unknown user" %}{% endif %}</p>
                                             </td>
                                             <td>
+                                                <p><small><span class="label label-default">{{ item.fk_status.name }}</span></small></p>
+                                            </td>
+                                            <td>
                                                 <p>
-                                                {% if item.id != activity.id %}
+                                                {% if item.id != investor.id %}
                                                 <a type="button" href="{% url 'stakeholder_form' investor_id=item.investor_identifier history_id=item.id %}">
                                                     <i class="glyphicon glyphicon-eye-open"></i> {% trans "Show this version" %}
                                                 </a>
