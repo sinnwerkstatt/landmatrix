@@ -57,24 +57,25 @@ class AddDealView(SaveDealView):
             self.create_activity_feedback(hactivity, form)
 
         if is_admin:
-            messages.success(
-                self.request,
-                self.success_message_admin.format(hactivity.activity_identifier))
             redirect_url = reverse(
                 'deal_detail', kwargs={'deal_id': hactivity.activity_identifier})
         else:
             self.create_activity_changeset(hactivity)
-            messages.success(
-                self.request,
-                self.success_message.format(hactivity.activity_identifier))
             # TODO: check that is is correct, but all deals seems like a
             # reasonable place to redirect to, as these users can't see the
             # deal yet
             redirect_url = reverse('data')
 
         if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
+            messages.success(
+                self.request,
+                self.success_message_admin.format(hactivity.activity_identifier))
             hactivity.approve_change(self.request.user, '')
         elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
             hactivity.reject_change(self.request.user, '')
+        else:
+            messages.success(
+                self.request,
+                self.success_message.format(hactivity.activity_identifier))
 
         return HttpResponseRedirect(redirect_url)

@@ -365,13 +365,15 @@ class HistoricalInvestor(InvestorBase):
     def update_current_involvements(self, investor):
         # Update all current involvements (linking to the old investor version) to the new investor version
         queryset = HistoricalInvestorActivityInvolvement.objects.for_current_activities()
-        queryset = queryset.filter(fk_investor__investor_identifier=self.investor_identifier).exclude(id=self.id)
+        queryset = queryset.filter(fk_investor__investor_identifier=self.investor_identifier)
+        queryset = queryset.exclude(fk_investor_id=self.id)
         for involvement in queryset:
             involvement.fk_investor_id = self.id
             involvement.save()
 
         queryset = InvestorActivityInvolvement.objects.all()
-        queryset = queryset.filter(fk_investor__investor_identifier=self.investor_identifier).exclude(id=self.id)
+        queryset = queryset.filter(fk_investor__investor_identifier=self.investor_identifier)
+        queryset = queryset.exclude(fk_investor_id=investor.id)
         for involvement in queryset:
             involvement.fk_investor_id = investor.id
             involvement.save()

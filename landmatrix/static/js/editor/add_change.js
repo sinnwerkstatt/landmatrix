@@ -90,22 +90,37 @@ function showChangeInvestorPopup(triggeringLink) {
     return false;
 }
 
-function dismissChangeInvestorPopup(win, newId, newRepr) {
+function dismissChangeInvestorPopup(win, newId, newRepr, newInvestorIdentifier) {
     // newId and newRepr are expected to have previously been escaped by
     newId = html_unescape(newId);
     newRepr = html_unescape(newRepr);
+    newInvestorIdentifier = html_unescape(newInvestorIdentifier);
     var name = windowname_to_id(win.name);
     var elem = $("#" + name);
 
     if (elem) {
         if (elem[0].nodeName == 'SELECT') {
-            $(elem).find("option[value=" + newId + "]").html(newRepr);
+            // Replace existing option since id might have changed (new investor version)
+            var option = $('<option></option>').val(newId).html(newRepr);
+            option.data('investor-identifier', newInvestorIdentifier);
+            elem.append(option);
+            elem.find(':selected').remove();
+            elem.val(newId);
+            $(elem).select2("destroy").select2();
+
+            var option = $(elem).find("option[value=" + newId + "]");
+            if (option.size() > 0) {
+                option.html(newRepr);
+            } else {
+                $(elem).append($('<option>', {value: newId, text: newRepr}));
+            }
             $(elem).select2("destroy").select2();
             // update list of secondary investors
             //$.get("/ajax/widget/values", {key_id:  "secondary_investor", name: "investor", time: $.now() }, function (data) {
             //  $("ul.form.empty .field.investor div").html(data);
             //  $(elem).change(); // trigger change
             //});
+            generateButtons(elem);
             loadInvestorNetwork(newId);
         }
     } else {

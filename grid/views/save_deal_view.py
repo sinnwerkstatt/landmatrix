@@ -111,17 +111,16 @@ class SaveDealView(TemplateView):
         if form:
             self.create_activity_feedback(hactivity, form)
 
-        # Create success message
-        if is_admin:
-            messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
-        else:
+        if not is_admin:
             self.create_activity_changeset(hactivity)
-            messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 
         if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
+            messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
             hactivity.approve_change(self.request.user, '')
         elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
             hactivity.reject_change(self.request.user, '')
+        else:
+            messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 
         return redirect('deal_detail', deal_id=hactivity.activity_identifier)
 
@@ -186,14 +185,12 @@ class SaveDealView(TemplateView):
 
     def create_involvement(self, hactivity, form):
         hinvestor = form.cleaned_data['operational_stakeholder']
-        can_change_activity = self.request.user.has_perm('landmatrix.change_activity')
         # Operating company given?
         if hinvestor:
             hinvolvement = HistoricalInvestorActivityInvolvement.objects.create(
                 fk_activity=hactivity,
                 fk_investor=hinvestor,
-                fk_status_id=can_change_activity and hactivity.STATUS_ACTIVE or
-                             hactivity.STATUS_PENDING,
+                fk_status_id=hactivity.STATUS_PENDING,
             )
 
     def get_form_by_type(self, forms, type):

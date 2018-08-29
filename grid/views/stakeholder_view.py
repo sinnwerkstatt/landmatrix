@@ -181,11 +181,12 @@ class ChangeStakeholderView(InvestorFormsMixin, UpdateView):
     def render_popup(self):
         result = """
         <script type="text/javascript">
-        opener.dismissChangeInvestorPopup(window, '%s', '%s')
+        opener.dismissChangeInvestorPopup(window, '%s', '%s', '%s')
         </script>
         """ % (
             escape(self.object.id),
-            escape(self.object.name)
+            escape(self.object.name),
+            escape(self.object.investor_identifier),
         )
         return HttpResponse(result)
 

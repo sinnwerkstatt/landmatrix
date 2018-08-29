@@ -50,6 +50,7 @@ USER_FORMS = [
     ("action_comment", DealActionCommentForm),
 ]
 
+
 class DealDetailView(PDFViewMixin, TemplateView):
 
     template_name = 'deal-detail.html'
