@@ -159,7 +159,11 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
     This is not REST, but it maintains compatibility with the existing API.
     """
 
-    def to_representation(self, obj, parent_types=['parent_stakeholders', 'parent_investors'], user):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+
+    def to_representation(self, obj, parent_types=['parent_stakeholders', 'parent_investors']):
         response = {
             "id": obj.id,
             "name": obj.name,
@@ -178,7 +182,7 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
                 parent_involvements = involvements.investors()
             else:
                 parent_involvements = involvements.stakeholders()
-            if not user.is_authenticated():
+            if self.user and not self.user.is_authenticated():
                 parent_involvements = parent_involvements.filter(fk_investor__fk_status_id__in=(
                     InvestorBase.STATUS_ACTIVE,
                     InvestorBase.STATUS_OVERWRITTEN

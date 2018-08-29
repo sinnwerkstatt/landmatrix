@@ -55,7 +55,7 @@ class InvestorNetworkView(APIView):
         # TODO: determine what operational_stakeholder_diagram does here -
         # it seems to just be passed back in the response.
         operational_stakeholder = self.get_object()
-        serialized_response = HistoricalInvestorNetworkSerializer(operational_stakeholder)
+        serialized_response = HistoricalInvestorNetworkSerializer(operational_stakeholder, user=request.user)
         #parent_type=request.query_params.get('parent_type', 'parent_stakeholders'))
 
         response_data = serialized_response.data.copy()
