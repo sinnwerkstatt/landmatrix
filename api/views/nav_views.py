@@ -112,7 +112,7 @@ class  InvestorListView(ElasticSearchMixin,
             query = {
                 'bool': {
                     'must': [
-                        {'wildcard': {'name': '*%s*' % term.lower()}},
+                        {'match_phrase': {'name': '%s' % term.lower()}},
                         {'terms': {'fk_status': [1, 2, 3]}},
                     ]
                 }
