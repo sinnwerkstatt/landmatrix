@@ -6,11 +6,17 @@ from .map_lo_model import MapLOModel
 from from_v1.migrate import V2
 
 
-def clean_name(name):
+def clean_name(name, country):
     if name:
-        return name.lower().replace(' ', '')
+        name = name.lower().replace(' ', '')
     else:
-        return ''
+        name = ''
+    if country:
+        country = country.lower().replace(' ', '')
+    else:
+        country = ''
+    return '%s-%s' % (name, country)
+
 
 class MapLOStakeholder(MapLOModel):
     old_class = Stakeholder
@@ -28,7 +34,8 @@ class MapLOStakeholder(MapLOModel):
         existing_names = cls.get_existing_stakeholder_names()
         existing_stakeholder_ids = [
             stakeholder.id for stakeholder in lo_stakeholders
-            if clean_name(stakeholder.get_tag_value('Name')) in existing_names
+            if clean_name(stakeholder.get_tag_value('Name'),
+                          stakeholder.get_tag_value('Country of origin')) in existing_names
         ]
         filtered_stakeholders = lo_stakeholders.exclude(
             pk__in=existing_stakeholder_ids)
@@ -41,9 +48,9 @@ class MapLOStakeholder(MapLOModel):
     @classmethod
     def get_existing_stakeholder_names(cls):
         existing_stakeholders = cls.new_class.objects.using(V2).all()
-        existing_names = existing_stakeholders.values_list('name', flat=True)
+        existing_names = existing_stakeholders.values_list('name', 'fk_country__name')
 
-        return set([clean_name(n) for n in existing_names])
+        return set([clean_name(n[0], n[1]) for n in existing_names])
 
     @classmethod
     def get_existing_record(cls, record):

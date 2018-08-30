@@ -84,9 +84,9 @@ class MapLOInvolvements(MapLOModel):
         if not hasattr(cls, '_existing_stakeholder_names'):
             existing_stakeholder_names = {}
             existing_stakeholders = new_models.Investor.objects.using(V2).all()
-            existing_stakeholders = existing_stakeholders.values('name', 'investor_identifier')
+            existing_stakeholders = existing_stakeholders.values_list('name', 'fk_country__name', 'investor_identifier')
             for s in existing_stakeholders:
-                existing_stakeholder_names[clean_name(s['name'])] = s['investor_identifier']
+                existing_stakeholder_names[clean_name(s[0], s[1])] = s[2]
             cls._existing_stakeholder_names = existing_stakeholder_names
         return cls._existing_stakeholder_names
 
@@ -101,7 +101,8 @@ class MapLOInvolvements(MapLOModel):
             pk=record['fk_stakeholder'])
 
         # Get investor
-        name = clean_name(old_stakeholder.get_tag_value('Name'))
+        name = clean_name(old_stakeholder.get_tag_value('Name'), old_stakeholder.get_tag_value('Country of origin'))
+        is_lm_investors = False
         if name in cls.get_existing_stakeholder_names():
             id = cls.get_existing_stakeholder_names()[name]
             investors = list(filter(None, [
@@ -110,6 +111,7 @@ class MapLOInvolvements(MapLOModel):
                 new_models.Investor.objects.using(V2).filter(investor_identifier=id)
                                     .order_by('-id').first(),
             ]))
+            is_lm_investors = True
         else:
             # Grab the first match in case of duplicate data here
             uuid_match = 'UUID: {}'.format(old_stakeholder.stakeholder_identifier)
@@ -270,15 +272,10 @@ class MapLOInvolvements(MapLOModel):
         involvements = []
 
         # Get investor
-        name = clean_name(parent_stakeholder.get_tag_value('Name'))
+        name = clean_name(parent_stakeholder.get_tag_value('Name'),
+                          parent_stakeholder.get_tag_value('Country of origin'))
         if name in cls.get_existing_stakeholder_names():
-            id = cls.get_existing_stakeholder_names()[name]
-            new_parent_investors = list(filter(None, [
-                new_models.HistoricalInvestor.objects.using(V2).filter(investor_identifier=id)
-                    .order_by('-id').first(),
-                new_models.Investor.objects.using(V2).filter(investor_identifier=id)
-                    .order_by('-id').first(),
-            ]))
+            return []
         else:
             uuid = str(parent_stakeholder.stakeholder_identifier)
             new_parent_investors = list(filter(None, [
