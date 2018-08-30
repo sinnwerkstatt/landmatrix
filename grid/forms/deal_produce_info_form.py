@@ -49,10 +49,10 @@ class DealProduceInfoForm(BaseForm):
     tg_minerals_comment = forms.CharField(
         required=False, label=_("Comment on Resources"), widget=CommentInput)
 
-    # Detailed contract farming crop, animal and mineral information
+    # Detailed contract farming crop and animal information
     tg_contract_farming_crop_animal_mineral = TitleField(
         required=False,
-        initial=_("Detailed contract farming crop, animal and mineral information"))
+        initial=_("Detailed contract farming crop and animal information"))
     contract_farming_crops = YearBasedModelMultipleChoiceIntegerField(
         required=False, label=_("Contract farming crops"),
         queryset=Crop.objects.all())
