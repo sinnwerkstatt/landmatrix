@@ -86,7 +86,7 @@ class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
                 fk_venture_id=fk_venture_id,
                 role='ST',
             )
-            if inv_percentage:
+            if not inv.percentage and inv_percentage:
                 inv.percentage = inv_percentage
             inv.fk_status_id = fk_status_id
             inv.save()
@@ -99,8 +99,8 @@ class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
                     fk_investor_id=get_stakeholder_id_for_stakeholder(version),
                     role='ST',
                 )
-                percentage = get_percentage(version) or inv_percentage
-                if percentage:
+                percentage = get_percentage(version) or inv_percentage or inv.percentage
+                if not hinv.percentage and percentage:
                     hinv.percentage = percentage
                 hinv.fk_status_id = get_status(version)
                 #hinv.history_date = get_now(version['id'])
