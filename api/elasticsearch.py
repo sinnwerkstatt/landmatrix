@@ -727,7 +727,10 @@ class ElasticSearch(object):
             ivis = HistoricalInvestorVentureInvolvement.objects.filter(
                 Q(fk_venture=investor) | Q(fk_investor=investor))
             for ivi in ivis:
-                doc = {}
+                doc = {
+                    'fk_venture_name': ivi.fk_venture.name,
+                    'fk_investor_name': ivi.fk_investor.name,
+                }
                 for field in ivi._meta.local_fields:
                     if isinstance(field, ForeignKey):
                         doc[field.name] = getattr(ivi, '%s_id' % field.name)

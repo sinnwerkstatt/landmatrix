@@ -415,6 +415,10 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             if field_name in exclude:
                 continue
             headers.append(str(field.label))
+            # Add investor name after ID
+            if field_name in ('fk_venture', 'fk_investor'):
+                label = str(field.label).replace('ID', 'Name')
+                headers.append(str(label))
         data['involvements']['headers'] = headers
         # Get involvements
         rows = []
@@ -424,6 +428,11 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 if field_name in exclude:
                     continue
                 row.append(self.get_export_value(field_name, item, format=format))
+
+                # Add investor name after ID
+                if field_name in ('fk_venture', 'fk_investor'):
+                    field_name += '_name'
+                    row.append(self.get_export_value(field_name, item, format=format))
             rows.append(row)
         data['involvements']['items'] = rows
 
