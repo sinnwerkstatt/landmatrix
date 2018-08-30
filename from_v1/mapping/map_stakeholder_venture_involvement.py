@@ -80,14 +80,14 @@ class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
             fk_venture_id = get_venture_for_primary_investor(involvement)
             fk_investor_id = get_stakeholder_id_for_stakeholder(involvement)
             fk_status_id = get_status(involvement)
-            percentage = get_percentage(involvement)
+            inv_percentage = get_percentage(involvement)
             inv, created = landmatrix.models.InvestorVentureInvolvement.objects.get_or_create(
                 fk_investor_id=fk_investor_id,
                 fk_venture_id=fk_venture_id,
                 role='ST',
             )
-            if percentage:
-                inv.percentage = percentage
+            if inv_percentage:
+                inv.percentage = inv_percentage
             inv.fk_status_id = fk_status_id
             inv.save()
 
@@ -99,7 +99,7 @@ class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
                     fk_investor_id=get_stakeholder_id_for_stakeholder(version),
                     role='ST',
                 )
-                percentage = get_percentage(version)
+                percentage = get_percentage(version) or inv_percentage
                 if percentage:
                     hinv.percentage = percentage
                 hinv.fk_status_id = get_status(version)
@@ -122,20 +122,30 @@ class MapStakeholderVentureInvolvement(MapInvestorActivityInvolvement):
 
 
 def get_ivinvolvement_versions(inv):
+    # Get all venture involvements for primary investor
+    # only latest version of stakeholder (within primary investor version)
+    # only latest version of activity (within primary investor version)
+
     # Get newest investor versions for activities
-    newest = MapStakeholderVentureInvolvement.old_class.objects.using(V1).filter(
+    newest_stakeholder = MapStakeholderVentureInvolvement.old_class.objects.using(V1).filter(
         fk_primary_investor__primary_investor_identifier=inv.fk_venture.investor_identifier,
-        # fk_stakeholder__stakeholder_identifier=inv.fk_investor.investor_identifier
         fk_stakeholder__isnull=False
     )
-    newest = newest.values('fk_primary_investor',
-                           'fk_stakeholder__stakeholder_identifier').annotate(Max('id'))
-    newest = newest.values_list('id__max', flat=True)
+    newest_stakeholder = newest_stakeholder.values('fk_primary_investor',
+                           'fk_stakeholder__stakeholder_identifier').annotate(Max('fk_stakeholder_id'))
+    newest_stakeholder = newest_stakeholder.values_list('fk_stakeholder_id__max', flat=True)
+    newest_activity = MapStakeholderVentureInvolvement.old_class.objects.using(V1).filter(
+        fk_primary_investor__primary_investor_identifier=inv.fk_venture.investor_identifier,
+        fk_stakeholder__isnull=False
+    )
+    newest_activity = newest_activity.values('fk_primary_investor',
+                           'fk_activity__activity_identifier').annotate(Max('fk_activity_id'))
+    newest_activity = newest_activity.values_list('fk_activity_id__max', flat=True)
     queryset = MapStakeholderVentureInvolvement.old_class.objects.using(V1).filter(
         fk_primary_investor__primary_investor_identifier=inv.fk_venture.investor_identifier,
-        #fk_stakeholder__stakeholder_identifier=inv.fk_investor.investor_identifier
         fk_stakeholder__isnull=False
     )
-    queryset = queryset.filter(id__in=newest)
+    queryset = queryset.filter(fk_stakeholder_id__in=newest_stakeholder)
+    queryset = queryset.filter(fk_activity_id__in=newest_activity)
     queryset = queryset.order_by('id').values()
     return queryset

@@ -111,22 +111,17 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         results['deals'] = self.filter_deals(deals)
 
         # Get all investors
-        investor_status_list = [InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN]
-        if InvestorBase.STATUS_PENDING in self.status_list:
-            investor_status_list += [InvestorBase.STATUS_PENDING]
-        if InvestorBase.STATUS_DELETED in self.status_list:
-            investor_status_list += [InvestorBase.STATUS_DELETED]
         if deal_id:
             def get_investors(investors):
                 parents = []
                 for investor in investors:
                     # Check if there are parent companies for investor
-                    parent_investors = [i.fk_investor for i in
-                                        HistoricalInvestorVentureInvolvement.objects.filter(
-                                            fk_venture=investor,
-                                            fk_venture__fk_status__in=investor_status_list,
-                                            fk_investor__fk_status__in=investor_status_list
-                                        )]
+                    parent_investors = HistoricalInvestorVentureInvolvement.objects.filter(fk_venture=investor)
+                    if not request.user.is_authenticated():
+                        parent_investors = parent_investors.filter(
+                            fk_venture__fk_status__in=InvestorBase.PUBLIC_STATUSES,
+                            fk_investor__fk_status__in=InvestorBase.PUBLIC_STATUSES)
+                    parent_investors = [i.fk_investor for i in parent_investors]
                     if parent_investors:
                         parents.extend(get_investors(parent_investors))
                     if investor.fk_status_id in investor_status_list:
@@ -139,6 +134,11 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 }
             }
         else:
+            investor_status_list = [InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN]
+            if InvestorBase.STATUS_PENDING in self.status_list:
+                investor_status_list += [InvestorBase.STATUS_PENDING]
+            if InvestorBase.STATUS_DELETED in self.status_list:
+                investor_status_list += [InvestorBase.STATUS_DELETED]
             query = {
                 "terms": {"fk_status": investor_status_list}
             }
@@ -154,10 +154,13 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 for involvement in involvements:
                     # Check if there are parent companies for investor
                     parent_involvements = HistoricalInvestorVentureInvolvement.objects.filter(
-                        fk_venture=involvement.fk_investor,
-                        fk_venture__fk_status__in=investor_status_list,
-                        fk_investor__fk_status__in=investor_status_list
+                        fk_venture=involvement.fk_investor
                     )
+                    if not request.user.is_authenticated():
+                        parent_involvements = parent_involvements.filter(
+                            fk_venture__fk_status__in=InvestorBase.PUBLIC_STATUSES,
+                            fk_investor__fk_status__in=InvestorBase.PUBLIC_STATUSES
+                        )
                     if parent_involvements:
                         parents.extend(get_involvements(parent_involvements))
                     if involvement.fk_investor.fk_status_id in investor_status_list:

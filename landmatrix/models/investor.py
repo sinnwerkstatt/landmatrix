@@ -37,6 +37,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     STATUS_DELETED = 4
     STATUS_REJECTED = 5
     STATUS_TO_DELETE = 6
+    PUBLIC_STATUSES = (STATUS_ACTIVE, STATUS_OVERWRITTEN)
     STATUS_CHOICES = (
         STATUS_PENDING, _('Pending'),
         STATUS_ACTIVE, _('Active'),
