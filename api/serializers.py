@@ -167,6 +167,7 @@ class HistoricalInvestorNetworkSerializer(serializers.BaseSerializer):
         response = {
             "id": obj.id,
             "name": obj.name,
+            "investor_identifier": obj.investor_identifier,
             "country": str(obj.fk_country),
             "classification": obj.get_classification_display(),
             "parent_relation": obj.get_parent_relation_display(),

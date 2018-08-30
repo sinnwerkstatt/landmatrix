@@ -204,6 +204,7 @@ function createInvestorNetwork() {
         if (d.involvement) {
             var inv = d.involvement;
             var data = [
+                '#' + d.investor_identifier,
                 (d.parent_type == "investor" && "Tertiary investor/lender" || "Parent company") +
                 (inv.percentage && " (" + inv.percentage + "%" + (inv.investment_type && " " + inv.investment_type || "") + ")" || ""),
                 d.classification,
@@ -217,6 +218,7 @@ function createInvestorNetwork() {
             ];
         } else {
             data = [
+                '#' + d.investor_identifier,
                 d.classification,
                 d.country,
                 d.parent_relation,
