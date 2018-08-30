@@ -74,7 +74,7 @@ def get_elasticsearch_match_operation(operator, variable_name, value):
     if operator == 'lt':
         return ('must', {'range': {variable_name: {'lt': value}}})
     if operator == 'contains':
-        return ('must', {'wildcard': {variable_name: '*{}*'.format(value.lower())}})
+        return ('must', {'match_phrase': {variable_name: value.lower()}})
     if operator == 'not_contains':
         return ('must_not', {'match': {variable_name: value}})
     if operator == 'excludes':
