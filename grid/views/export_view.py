@@ -124,7 +124,9 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                     parent_investors = [i.fk_investor for i in parent_investors]
                     if parent_investors:
                         parents.extend(get_investors(parent_investors))
-                    if investor.fk_status_id in (InvestorBase.PUBLIC_STATUSES, InvestorBase.PUBLIC_STATUSES):
+                    if request.user.is_authenticated():
+                        parents.append(investor.id)
+                    elif investor.fk_status_id in InvestorBase.PUBLIC_STATUSES:
                         parents.append(investor.id)
                 return parents
             query = {
@@ -163,7 +165,9 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                         )
                     if parent_involvements:
                         parents.extend(get_involvements(parent_involvements))
-                    if involvement.fk_investor.fk_status_id in investor_status_list:
+                    if request.user.is_authenticated():
+                        parents.append(involvement.id)
+                    elif involvement.fk_investor.fk_status_id in InvestorBase.PUBLIC_STATUSES:
                         parents.append(involvement.id)
                 return parents
             query = {
