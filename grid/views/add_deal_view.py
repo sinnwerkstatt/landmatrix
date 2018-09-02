@@ -60,7 +60,6 @@ class AddDealView(SaveDealView):
             redirect_url = reverse(
                 'deal_detail', kwargs={'deal_id': hactivity.activity_identifier})
         else:
-            self.create_activity_changeset(hactivity)
             # TODO: check that is is correct, but all deals seems like a
             # reasonable place to redirect to, as these users can't see the
             # deal yet
@@ -70,9 +69,9 @@ class AddDealView(SaveDealView):
             messages.success(
                 self.request,
                 self.success_message_admin.format(hactivity.activity_identifier))
-            hactivity.approve_change(self.request.user, '')
+            hactivity.approve_change(self.request.user, hactivity.comment)
         elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
-            hactivity.reject_change(self.request.user, '')
+            hactivity.reject_change(self.request.user, hactivity.comment)
         else:
             messages.success(
                 self.request,

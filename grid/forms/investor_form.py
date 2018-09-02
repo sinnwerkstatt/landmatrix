@@ -65,10 +65,7 @@ class BaseInvestorForm(BaseModelForm):
             hinvestor.save()
             # Create investor instance if not existing
             # (necessary for form field validation)
-            if user.has_perm('landmatrix.change_activity'):
-                investor = hinvestor.update_public_investor(approve=True)
-            else:
-                investor = hinvestor.update_public_investor(approve=False)
+            investor = hinvestor.update_public_investor(approve=False)
 
         return hinvestor
 

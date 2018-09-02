@@ -116,9 +116,9 @@ class SaveDealView(TemplateView):
 
         if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
             messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
-            hactivity.approve_change(self.request.user, '')
+            hactivity.approve_change(self.request.user, hactivity.comment)
         elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
-            hactivity.reject_change(self.request.user, '')
+            hactivity.reject_change(self.request.user, hactivity.comment)
         else:
             messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 

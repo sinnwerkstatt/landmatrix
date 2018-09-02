@@ -134,9 +134,9 @@ def has_perm_approve_reject(user, activity=None):
         # only activites that have been added/changed by public users
         # and not been reviewed by another editor yet
         if not activity.history_user.has_perm('landmatrix.review_activity'):
-            for changeset in activity.changesets.all():
+            for changeset in activity.changesets.exclude(fk_user=user):
                 if changeset.fk_user and changeset.fk_user.has_perm('landmatrix.review_activity'):
                     return False
-                return True
+        return True
     # FIXME: Maybe check for country/region here in the future (FilteredQuerysetMixin.get_filtered_activity_queryset)
     return False

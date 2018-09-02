@@ -37,8 +37,7 @@ class MapLOStakeholder(MapLOModel):
             if clean_name(stakeholder.get_tag_value('Name'),
                           stakeholder.get_tag_value('Country of origin')) in existing_names
         ]
-        filtered_stakeholders = lo_stakeholders.exclude(
-            pk__in=existing_stakeholder_ids)
+        filtered_stakeholders = lo_stakeholders.exclude(pk__in=existing_stakeholder_ids)
 
         # This keeps the printed counters correct
         cls._count = filtered_stakeholders.count()

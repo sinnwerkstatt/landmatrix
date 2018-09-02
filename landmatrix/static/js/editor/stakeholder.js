@@ -253,6 +253,13 @@ function createInvestorNetwork() {
 //    .attr("height", "1.86em")
 //    .style("fill", "#ffffff")
 //    .style("fill-opacity", 1)
+    $("#investor-network .alert").remove();
+    if (tree_data.status == "pending") {
+        var alert = $("<p>", {class: "alert alert-danger"});
+        alert.text("This investor version is pending.");
+        alert.prependTo("#investor-network");
+    }
+
 }
 
 function elbow(d, i) {
