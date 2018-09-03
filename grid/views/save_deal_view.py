@@ -89,30 +89,34 @@ class SaveDealView(TemplateView):
             if not is_editor and not is_admin:
                 raise HttpResponseForbidden('Deal version is pending')
 
-        # Create new historical activity
-        hactivity = HistoricalActivity(
-            activity_identifier=old_hactivity.activity_identifier,
-            fk_status_id=HistoricalActivity.STATUS_PENDING,
-            history_user=self.request.user)
-        hactivity.save(update_elasticsearch=False)
-
-        # Create new activity attributes
-        hactivity.comment = self.create_attributes(hactivity, forms)
-        form = self.get_form_by_type(forms, DealActionCommentForm)
-        if form:
-            hactivity.fully_updated = self.get_fully_updated(form)
+        # Don't create new version if rejected
+        if 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, old_hactivity):
+            hactivity = old_hactivity
         else:
-            hactivity.fully_updated = False
-        hactivity.save(update_elasticsearch=False)
-        self.create_involvement(hactivity, investor_form)
+            # Create new historical activity
+            hactivity = HistoricalActivity(
+                activity_identifier=old_hactivity.activity_identifier,
+                fk_status_id=HistoricalActivity.STATUS_PENDING,
+                history_user=self.request.user)
+            hactivity.save(update_elasticsearch=False)
+
+            # Create new activity attributes
+            hactivity.comment = self.create_attributes(hactivity, forms)
+            form = self.get_form_by_type(forms, DealActionCommentForm)
+            if form:
+                hactivity.fully_updated = self.get_fully_updated(form)
+            else:
+                hactivity.fully_updated = False
+            hactivity.save(update_elasticsearch=False)
+            self.create_involvement(hactivity, investor_form)
+
+            if not is_admin:
+                self.create_activity_changeset(hactivity)
 
         # Create activity feedback
         form = self.get_form_by_type(forms, DealActionCommentForm)
         if form:
             self.create_activity_feedback(hactivity, form)
-
-        if not is_admin:
-            self.create_activity_changeset(hactivity)
 
         if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
             messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
