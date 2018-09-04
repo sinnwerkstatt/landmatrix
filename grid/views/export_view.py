@@ -7,6 +7,7 @@ import unicodecsv as csv
 import zipfile
 from io import BytesIO
 from openpyxl import Workbook
+from openpyxl.utils.exceptions import IllegalCharacterError
 from collections import OrderedDict
 
 from django.http.response import HttpResponse
@@ -202,7 +203,10 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         ws_deals.title = 'Deals'
         ws_deals.append(data['deals']['headers'])
         for item in data['deals']['items']:
-            ws_deals.append(item)
+            try:
+                ws_deals.append(item)
+            except IllegalCharacterError:
+                ws_deals.append([str(i).encode('unicode_escape').decode('utf-8') for i in item])
 
         # Involvements tab
         ws_involvements = wb.create_sheet(title='Involvements')
@@ -479,10 +483,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                     value = ''
             else:
                 value = value[0] if len(value) > 0 else ''
-        if format == 'xlsx':
-            return str(value).encode('unicode_escape').decode('utf-8')
-        else:
-            return value
+        return value
 
 
 class AllDealsExportView(AllDealsView, ExportView):
