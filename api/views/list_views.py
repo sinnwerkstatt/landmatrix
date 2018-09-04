@@ -517,7 +517,6 @@ class StatisticsView(ElasticSearchMixin,
         results = results['current_negotiation_status']['buckets']
         results = [[r['key'], r['deal_count']['value'], int(r['deal_size_sum']['value'])]
                    for r in results]
-
         if disable_filters:
             self.enable_filters()
         return Response(results)

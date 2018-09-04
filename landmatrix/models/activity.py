@@ -633,6 +633,8 @@ class Activity(ActivityBase):
         involvements = self.involvements.all()
         investor_countries = set()
         for oc in involvements:
+            if oc.fk_investor.fk_country_id:
+                investor_countries.add(str(oc.fk_investor.fk_country_id))
             for i in oc.fk_investor.venture_involvements.stakeholders():
                 if i.fk_investor.fk_country_id:
                     investor_countries.add(str(i.fk_investor.fk_country_id))
