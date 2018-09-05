@@ -261,7 +261,7 @@ class Investor(InvestorBase):
         verbose_name_plural = _("Investors")
 
 
-class HistoricalActivityQuerySet(InvestorQuerySet):
+class HistoricalInvestorQuerySet(InvestorQuerySet):
 
     def latest_only(self):
         queryset = HistoricalInvestor.objects.values('investor_identifier').annotate(
@@ -274,7 +274,7 @@ class HistoricalInvestor(InvestorBase):
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
 
-    objects = HistoricalActivityQuerySet.as_manager()
+    objects = HistoricalInvestorQuerySet.as_manager()
 
     def get_top_investors(self):
         """
