@@ -351,7 +351,9 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         visualisation)
         """
         # Operating company
-        operating_companies = [i.fk_investor for i in self.involvements.all()]
+        queryset = self.involvements.filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE,
+                                                                           Investor.STATUS_OVERWRITTEN))
+        operating_companies = [i.fk_investor for i in queryset]
         top_investors = []
         if len(operating_companies) > 0:
             top_investors = operating_companies[0].get_top_investors()
