@@ -730,7 +730,7 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
     def latest_only(self):
         queryset = HistoricalActivity.objects.values('activity_identifier').annotate(
             max_id=models.Max('id'),
-        ).values_list('max_id', flat=True)
+        ).order_by().values_list('max_id', flat=True)
         return queryset
 
 

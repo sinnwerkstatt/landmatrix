@@ -266,7 +266,7 @@ class HistoricalInvestorQuerySet(InvestorQuerySet):
     def latest_only(self):
         queryset = HistoricalInvestor.objects.values('investor_identifier').annotate(
             max_id=models.Max('id'),
-        ).values_list('max_id', flat=True)
+        ).order_by().values_list('max_id', flat=True)
         return queryset
 
 
