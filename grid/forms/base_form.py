@@ -293,7 +293,7 @@ class BaseForm(FieldsDisplayFormMixin,
                 # because of checkboxes not submitting data
                 prefix = self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n
                 keys = [int(k.replace(name+'_', '')) for k in self.data.keys() if re.match('%s_\d' % prefix, k)]
-                count = len(keys) > 0 and max(keys) or 0
+                count = len(keys) > 0 and max(keys)+1 or 0
                 widget_count = len(f.widget.get_widgets())
                 if count % widget_count > 0:
                     count += 1
@@ -443,12 +443,13 @@ class BaseForm(FieldsDisplayFormMixin,
     @classmethod
     def get_year_based_data(cls, field, field_name, attributes):
         # Group all attributes by date
-        attributes_by_date = dict()
+        attributes_by_date = OrderedDict()
         # Some year based fields take 2 values, e.g. crops and area
         widgets = field.widget.get_widgets()
         multiple = field.widget.get_multiple()
         values_count = len(widgets) - 1
         values = []
+
         # Collect all attributes for date (for multiple choice fields)
         if multiple[0]:
             for attribute in attributes:
@@ -458,13 +459,15 @@ class BaseForm(FieldsDisplayFormMixin,
                         attributes_by_date[key][1] += ',' + attribute.value
                 else:
                     is_current = attribute.is_current and '1' or ''
-                    attributes_by_date[key] = [is_current, attribute.value] 
+                    attributes_by_date[key] = [is_current, attribute.value]
             if values_count > 2:
-                values = [':'.join([a[1], d.split(':')[1], d.split(':')[0], a[0]]) for d, a in attributes_by_date.items()]
+                values = [':'.join([a[1], d.split(':')[1], d.split(':')[0], a[0]])
+                          for d, a in attributes_by_date.items()]
             else:
-                values = [':'.join([a[1], d or '', a[0]]) for d, a in attributes_by_date.items()]
+                values = [':'.join([a[1], d or '', a[0]])
+                          for d, a in attributes_by_date.items()]
         else:
-            for attribute in attributes:  
+            for attribute in attributes:
                 is_current = attribute.is_current and '1' or ''
                 # Value:Value2:Date:Is current
                 if values_count > 2:

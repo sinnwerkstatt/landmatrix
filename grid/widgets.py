@@ -78,8 +78,8 @@ class YearBasedWidget(forms.MultiWidget):
         value = []
         # Grab last item and enumerate, since there can be gaps
         # because of checkboxes not submitting data
-        keys = sorted([k for k in data.keys() if re.match(name + '_\d', k)])
-        count = len(keys) > 0 and int(keys[-1].replace(name+'_', ''))+1 or 0
+        keys = [int(k.replace(name+'_', '')) for k in data.keys() if re.match(name + '_\d', k)]
+        count = len(keys) > 0 and max(keys)+1 or 0
         if count % len(widgets) > 0:
             count += 1
         for i in range(count):
