@@ -292,8 +292,8 @@ class BaseForm(FieldsDisplayFormMixin,
                 # Grab last item and enumerate, since there can be gaps
                 # because of checkboxes not submitting data
                 prefix = self.prefix and "%s-%s"%(self.prefix, n) or "%s"%n
-                keys = sorted([k for k in self.data.keys() if re.match('%s_\d' % prefix, k)])
-                count = len(keys) > 0 and int(keys[-1].replace(name+'_', ''))+1 or 0
+                keys = [int(k.replace(name+'_', '')) for k in self.data.keys() if re.match('%s_\d' % prefix, k)]
+                count = len(keys) > 0 and max(keys) or 0
                 widget_count = len(f.widget.get_widgets())
                 if count % widget_count > 0:
                     count += 1
