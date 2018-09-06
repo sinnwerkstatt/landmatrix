@@ -35,10 +35,12 @@ class Command(ElasticSearchMixin,
         missing_deals['status'] = []
         missing_deals['deal_size'] = []
         missing_deals['init_date'] = []
+        missing_deals['deal_scope'] = []
         missing_deals['unknown'] = []
         additional_deals = OrderedDict()
         additional_deals['no_inv'] = []
         additional_deals['oc_only'] = []
+        additional_deals['deal_scope'] = []
         additional_deals['unknown'] = []
 
         for deal_id in missing:
@@ -50,6 +52,8 @@ class Command(ElasticSearchMixin,
                 missing_deals['deal_size'].append(a)
             elif a.deal_size < 200:
                 missing_deals['deal_size'].append(a)
+            elif a.deal_scope == 'domestic':
+                missing_deals['deal_scope'].append(a)
             else:
                 missing_deals['unknown'].append(a)
 
