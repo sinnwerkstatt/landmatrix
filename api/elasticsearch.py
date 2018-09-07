@@ -106,6 +106,7 @@ def get_elasticsearch_properties(doc_type=None):
                 'operating_company_name': {'type': 'text', 'fields': {'raw': {'type': 'keyword'}}},
                 'agricultural_produce': {'type': 'keyword'},
                 'availability': {'type': 'float'},
+                'forest_concession': {'type': 'boolean'},
             }
         }
         _landmatrix_mappings['location'] = {
@@ -458,6 +459,7 @@ class ElasticSearch(object):
                     'fully_updated_date': public_activity.get_fully_updated_date(),
                     'agricultural_produce': public_activity.get_agricultural_produce(),
                     'availability': public_activity.get_availability(),
+                    'forest_concession': public_activity.get_forest_concession()
                 })
             else:
                 pass

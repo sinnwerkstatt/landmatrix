@@ -39,6 +39,7 @@ class ActivityFilterForm(forms.ModelForm):
                                                    choices=Activity.NEGOTIATION_STATUS_CHOICES)
     current_implementation_status = forms.ChoiceField(label=_("Current implementation status"),
                                                     choices=Activity.IMPLEMENTATION_STATUS_CHOICES)
+    forest_concession = forms.BooleanField(label=_("Forest concession"))
 
     class Meta:
         model = Activity

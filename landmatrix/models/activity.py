@@ -14,7 +14,7 @@ from landmatrix.models.activity_attribute_group import ActivityAttribute
 from landmatrix.models.investor import Investor, InvestorActivityInvolvement
 from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
-
+from grid.forms.choices import NATURE_CONCESSION, INTENTION_FOREST_LOGGING
 
 class ActivityQuerySet(models.QuerySet):
     def public(self, user=None):
@@ -474,6 +474,7 @@ class Activity(ActivityBase):
                                  blank=True, null=True, db_index=True)
     fully_updated_date = models.DateField(_("Fully updated date"), blank=True, null=True)
     top_investors = models.TextField(verbose_name=_("Top parent companies"), blank=True)
+    forest_concession = models.BooleanField(_('Forest concession'), default=False)
 
     def refresh_cached_attributes(self):
         self.implementation_status = self.get_implementation_status()
@@ -486,6 +487,7 @@ class Activity(ActivityBase):
         top_investors = self.get_top_investors()
         self.top_investors = self.format_investors(top_investors)
         self.availability = self.get_availability()
+        self.forest_concession = self.get_forest_concession()
         self.save()
 
     def is_public_deal(self):
@@ -678,6 +680,11 @@ class Activity(ActivityBase):
     def get_availability_total(self):
         from django.apps import apps
         return len(apps.get_app_config('grid').VARIABLES.keys())
+
+    def get_forest_concession(self):
+        nature_concession = self.attributes.filter(name='nature', value=NATURE_CONCESSION)
+        intention_logging = self.attributes.filter(name='intention', value=INTENTION_FOREST_LOGGING)
+        return nature_concession.count() > 0 and intention_logging.count() > 0
 
     class Meta:
         verbose_name = _('Activity')
