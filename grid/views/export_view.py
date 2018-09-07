@@ -326,7 +326,10 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             str(_('Is public')),
             str(_('Deal scope')),
             str(_('Deal size')),
+            str(_('Current size under contract')),
+            str(_('Current size in operation (production)')),
             str(_('Current negotiation status')),
+            str(_('Current implementation status')),
             str(_('Fully updated')),
             str(_('Top parent companies')),
         ]
@@ -375,13 +378,16 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
         rows = []
         for item in results['deals']:
             row = [
-                item.get('activity_identifier'),            # ID
-                item.get('is_public_display'),              # Is public
-                item.get('deal_scope'),                     # Deal Scope
-                item.get('deal_size'),                      # Deal Size
-                item.get('current_negotiation_status_display'),  # Current negotiation status
-                item.get('fully_updated_date'),             # Fully updated date
-                item.get('top_investors'),                  # Top investors
+                item.get('activity_identifier'),
+                item.get('is_public_display'),
+                item.get('deal_scope'),
+                item.get('deal_size'),
+                item.get('current_contract_size'),
+                item.get('current_production_size'),
+                item.get('current_negotiation_status_display'),
+                item.get('current_implementation_status_display'),
+                item.get('fully_updated_date'),
+                item.get('top_investors'),
             ]
             for form in ChangeDealView.FORMS:
                 formset_name = hasattr(form, "form") and form.Meta.name or None
