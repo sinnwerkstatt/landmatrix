@@ -442,10 +442,16 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         return self._get_current('implementation_status')
 
     def get_contract_size(self):
-        return int(self._get_current('contract_size') or 0)
+        contract_size = self._get_current('contract_size')
+        if contract_size:
+            return int(float(contract_size))
+        return 0
 
     def get_production_size(self):
-        return int(self._get_current('production_size') or 0)
+        production_size = self._get_current('production_size')
+        if production_size:
+            return int(float(production_size))
+        return 0
 
     def get_agricultural_produce(self):
         crop_ids = set(a.value for a in self.attributes.filter(name='crops'))
