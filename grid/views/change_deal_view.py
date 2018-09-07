@@ -112,6 +112,7 @@ class ChangeDealView(SaveDealView):
         initial = form_class.get_data(self.get_object())
         if form_class == DealActionCommentForm:
             del initial['tg_action_comment']
+            del initial['fully_updated']
         return form_class(initial=initial, files=files, data=data, prefix=prefix)
 
     #def render_to_response(self, *args, **kwargs):
