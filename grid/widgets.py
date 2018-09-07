@@ -154,11 +154,8 @@ class YearBasedTextInput(YearBasedWidget):
 
     def decompress(self, value):
         if value:
-            values = value.split("#")
-
-            sorted_values = sorted(values, key=lambda v: v.split(":")[1] if ':' in v else '0')
             splitted = []
-            for s in sorted_values:
+            for s in value.split("#"):
                 splitted.extend(s.split(":"))
             return len(splitted) == 1 and splitted.append(None) or splitted
         return [None, None]

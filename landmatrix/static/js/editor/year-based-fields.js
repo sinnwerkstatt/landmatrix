@@ -1,7 +1,7 @@
 function cloneYBDfield(link) {
   var wrap = link.parents(".control-group").find(".input-group:last-child"),
     data = wrap.children(':not(a,.select2)').clone(),
-    input_data = data.filter(':input')
+    input_data = data.filter(':input'),
     //input_year = wrap.find('.year-based-year').clone(),
     //helptext = wrap.find(".helptext:last").clone(),
     //remove_link = wrap.find("a.remove-ybd").clone(),
@@ -22,7 +22,7 @@ function cloneYBDfield(link) {
   //}
   //input_year.removeClass('form-control');
   //remove_link.css("display", "inline-block");
-  data.find('').click(removeYBDfield);
+  wrap.find('.remove-ybd').click(removeYBDfield);
   var new_wrap = $("<div class=\"input-group\"></div>");
   new_wrap.append(data);
   //new_wrap.append(input_year);

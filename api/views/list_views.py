@@ -268,17 +268,7 @@ class ElasticSearchMixin(object):
             "terms": {"status": self.status_list}
         })
 
-        # Public user?
-        if not self.request or self.request.user.is_anonymous():
-            elasticsearch_query['filter'].append({
-                "bool": {
-                    "filter": {
-                        "term": {
-                            "is_public": 'true'
-                        }
-                    }
-                }
-            })
+        elasticsearch_query = self.add_public_logic(elasticsearch_query)
 
         # TODO: these were at some point in the UI. add the missing filters!
         if self.request:
@@ -304,6 +294,20 @@ class ElasticSearchMixin(object):
             }
 
         return elasticsearch_query
+
+    def add_public_logic(self, query):
+        # Public user?
+        if not self.request or self.request.user.is_anonymous():
+            query['filter'].append({
+                "bool": {
+                    "filter": {
+                        "term": {
+                            "is_public": 'true'
+                        }
+                    }
+                }
+            })
+        return query
 
     def execute_elasticsearch_query(self, query, doc_type='deal', fallback=True, sort=[], aggs={}):
         from api.elasticsearch import es_search as es
@@ -520,6 +524,19 @@ class StatisticsView(ElasticSearchMixin,
         if disable_filters:
             self.enable_filters()
         return Response(results)
+
+    def add_public_logic(self, query):
+        # Always apply public filter
+        query['filter'].append({
+            "bool": {
+                "filter": {
+                    "term": {
+                        "is_public": 'true'
+                    }
+                }
+            }
+        })
+        return query
 
 
 class LatestChangesView(ElasticSearchMixin,
