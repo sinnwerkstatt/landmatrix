@@ -9,14 +9,14 @@
 
 @media (max-width: 992px) {
   .control-group .input-group {
-    margin-top: 10px;
+    margin-top: 0;
     width: 100%;
   }
 }
 
 @media (min-width: 992px) {
   .control-group .input-group {
-    margin-top: 10px;
+    margin-top: 0;
     width: 30%;
   }
 }
@@ -239,6 +239,7 @@ a.remove-ybd:hover {
   width: 20px;
   float: none;
   height: 15px;
+  margin-left: 5px;
 }
 
 .input-group .select2 {
