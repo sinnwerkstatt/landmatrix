@@ -89,6 +89,8 @@ def get_elasticsearch_properties(doc_type=None):
                               'format': "yyyy-MM-dd||yyyy-MM||yyyy"},
                 'current_negotiation_status': {'type': 'keyword'},
                 'current_implementation_status': {'type': 'keyword'},
+                'contract_size': {'type': 'integer'},
+                'production_size': {'type': 'integer'},
                 'deal_size': {'type': 'integer'},
                 'deal_country': {'type': 'keyword'},
                 'top_investors': {'type': 'keyword'},
@@ -444,6 +446,8 @@ class ElasticSearch(object):
                 deal_attrs.update({
                     'is_public': public_activity.is_public_deal(),
                     'deal_scope': public_activity.get_deal_scope(),
+                    'contract_size': public_activity.get_contract_size(),
+                    'production_size': public_activity.get_production_size(),
                     'deal_size': public_activity.get_deal_size(),
                     'init_date': public_activity.get_init_date() or None,
                     'current_negotiation_status': public_activity.get_negotiation_status(),

@@ -441,6 +441,12 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
     def get_implementation_status(self):
         return self._get_current('implementation_status')
 
+    def get_contract_size(self):
+        return self._get_current('contract_size')
+
+    def get_production_size(self):
+        return self._get_current('production_size')
+
     def get_agricultural_produce(self):
         crop_ids = set(a.value for a in self.attributes.filter(name='crops'))
         crops = Crop.objects.select_related('fk_agricultural_produce').filter(id__in=crop_ids)
@@ -469,6 +475,10 @@ class Activity(ActivityBase):
     implementation_status = models.CharField(
         verbose_name=_('Implementation status'), max_length=64,
         choices=ActivityBase.IMPLEMENTATION_STATUS_CHOICES, blank=True, null=True, db_index=True)
+    contract_size = models.IntegerField(verbose_name=_('Current size under contract'),
+                                        blank=True, null=True, db_index=True)
+    production_size = models.IntegerField(verbose_name=_('Current size in operation (production)'),
+                                          blank=True, null=True, db_index=True)
     deal_size = models.IntegerField(verbose_name=_('Deal size'), blank=True, null=True, db_index=True)
     init_date = models.CharField(verbose_name=_('Initiation year or date'), max_length=10,
                                  blank=True, null=True, db_index=True)
@@ -479,6 +489,8 @@ class Activity(ActivityBase):
     def refresh_cached_attributes(self):
         self.implementation_status = self.get_implementation_status()
         self.negotiation_status = self.get_negotiation_status()
+        self.contract_size = self.get_contract_size()
+        self.production_size = self.get_production_size()
         self.deal_size = self.get_deal_size()
         self.deal_scope = self.get_deal_scope()
         self.init_date = self.get_init_date()

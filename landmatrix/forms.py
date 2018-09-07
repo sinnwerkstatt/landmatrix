@@ -39,6 +39,8 @@ class ActivityFilterForm(forms.ModelForm):
                                                    choices=Activity.NEGOTIATION_STATUS_CHOICES)
     current_implementation_status = forms.ChoiceField(label=_("Current implementation status"),
                                                     choices=Activity.IMPLEMENTATION_STATUS_CHOICES)
+    current_contract_size = forms.IntegerField(label=_("Current size under contract"))
+    current_production_size = forms.IntegerField(label=_("Current size in operation (production)"))
     forest_concession = forms.BooleanField(label=_("Forest concession"))
 
     class Meta:
