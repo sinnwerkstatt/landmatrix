@@ -431,7 +431,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
         current = attributes.first()
         if not current.is_current and current.date:
             attributes = attributes.exclude(date__isnull=True).exclude(date='')
-            attributes = attributes.extra(order_by=['-is_current', '-date'])
+            attributes = attributes.extra(order_by=['-is_current', '-date', '-id'])
             current = attributes.first()
         return current.value
 
