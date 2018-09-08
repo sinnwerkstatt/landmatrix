@@ -47,7 +47,7 @@ class YearBasedBooleanField(YearBasedField):
         # update fields
         if value:
             self.fields = []
-            for i in range(len(value)/3):
+            for i in range(len(value)//3):
                 self.fields.extend([
                     forms.BooleanField(required=False),
                     YearMonthDateField(required=False),
@@ -58,9 +58,9 @@ class YearBasedBooleanField(YearBasedField):
     def compress(self, data_list):
         if data_list:
             yb_data = []
-            for i in range(len(data_list)/3):
+            for i in range(len(data_list)//3):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s" % (
+                    yb_data.append("%s:%s:%s" % (
                         str(data_list[i] or ''),
                         str(data_list[i+1] or ''),
                         str(data_list[i+2] or '')
@@ -275,10 +275,11 @@ class YearBasedModelMultipleChoiceIntegerField(YearBasedField):
             yb_data = []
             for i in range(len(data_list)//4):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s:%s" % (
+                    yb_data.append("%s:%s:%s:%s" % (
                         str(data_list[i] or ''),
                         str(data_list[i+1] or ''),
-                        str(data_list[i+2] or '')
+                        str(data_list[i+2] or ''),
+                        str(data_list[i+3] or '')
                     ))
             return "#".join(yb_data)
         else:
@@ -324,10 +325,11 @@ class YearBasedMultipleChoiceIntegerField(YearBasedField):
             yb_data = []
             for i in range(len(data_list)//4):
                 if data_list[i] or data_list[i+1]:
-                    yb_data.append("%s:%s:%s" % (
+                    yb_data.append("%s:%s:%s:%s" % (
                         str(data_list[i] or ''),
                         str(data_list[i+1] or ''),
-                        str(data_list[i+2] or '')
+                        str(data_list[i+2] or ''),
+                        str(data_list[i+3] or '')
                     ))
             return "#".join(yb_data)
         else:

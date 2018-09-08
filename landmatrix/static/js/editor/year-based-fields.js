@@ -12,7 +12,7 @@ function cloneYBDfield(link) {
   link.parents(".controls").append(new_field);
   new_field.find('.select2-hidden-accessible').select2();
   new_field.find('.remove-ybd').click(function () { removeYBDfield(this); });
-  new_field.find(':input').val("");
+  new_field.find(':input:not(:checkbox)').val("");
   renumberYBDInputs(container);
 }
 
@@ -25,7 +25,7 @@ function removeYBDfield(link) {
 
 function renumberYBDInputs(container) {
   container = $(container);
-  var inputs = container.find(':input'),
+  var inputs = container.find(':input:not([type=search])'),
       counter = 0,
       prefix = inputs.first().attr("name");
   prefix = prefix.slice(0, prefix.lastIndexOf("_")+1);
