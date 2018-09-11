@@ -565,7 +565,7 @@ class ElasticSearch(object):
                 # Additionally save operating company attributes
                 oc = activity.involvements.order_by('-id')
                 if oc.count() > 0:
-                    oc = oc.first()
+                    oc = oc.first().fk_investor
                     for field in HistoricalInvestor._meta.fields:
                         if isinstance(field, ForeignKey):
                             deal_attrs['operating_company_%s' % field.name] = getattr(oc, '%s_id' % field.name)
