@@ -223,7 +223,7 @@ def clean_group(group_name, key, value):
         return 'contract_01'
     if group_name == 'negotiation_status' and key != 'negotiation_status':
         return 'contract_01'
-    match = re.match('(.*?)_(\d)', group_name)
+    match = re.match('(.*?)_(\d+)', group_name)
     if match:
         return '%s_%02i' % (
             match.groups()[0],

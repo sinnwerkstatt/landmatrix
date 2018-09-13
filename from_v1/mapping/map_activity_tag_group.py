@@ -16,6 +16,7 @@ if V1 == 'v1_my':
     from old_editor.models import A_Tag, A_Tag_Group, A_Key_Value_Lookup, Comment
 
 from django.db import transaction
+from django.db.models import Q
 
 
 
@@ -110,6 +111,8 @@ class MapActivityTagGroup(MapTagGroups, MapActivityTagGroupBase):
         # tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')[:10000]
         # to migrate all tag groups including old versions
         tag_groups = A_Tag_Group.objects.using(V1).select_related('fk_activity')#.filter(fk_activity__activity_identifier=4948)
+        tag_groups = tag_groups.filter(Q(fk_a_tag__fk_a_value__value__startswith='location') |
+                                       Q(fk_a_tag__fk_a_value__value__startswith='data_source'))
         #key_value_lookup = A_Key_Value_Lookup
 
     #@classmethod
