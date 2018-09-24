@@ -9,8 +9,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>{% block page_title %}{% endblock %} - LAND MATRIX</title>
-    <meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}{% trans "Landmatrix" %}{% trans 'Default description' %}{% endif %}"/>
-    <meta name="keywords" content="{% if meta_keywords %}{{ meta_keywords }}{% else %}{% trans "Landmatrix" %}{% trans 'Default keywords' %}{% endif %}"/>
+   {% if page.search_description %} <meta name="description" content="{{ page.search_description }}"/>{% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="{% static "vendor/bootstrap/dist/css/bootstrap.min.css" %}">

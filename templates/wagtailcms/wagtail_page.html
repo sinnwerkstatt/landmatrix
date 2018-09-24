@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block title %}{{ page.title }}{% endblock %}
-{% block page_title %}{{ page.title }}{% endblock %}
+{% block page_title %}{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}{% endblock %}
 
 {% block content %}
     {% include_block page.body %}
