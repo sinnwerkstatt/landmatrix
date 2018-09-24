@@ -1100,7 +1100,8 @@ a:focus {
   color: #b9d635;
   text-decoration: none; }
 
-p a {
+p a,
+ul li a {
   color: #fc941f;
   vertical-align: bottom; }
 

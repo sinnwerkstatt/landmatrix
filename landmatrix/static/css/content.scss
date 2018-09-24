@@ -442,7 +442,8 @@ a:focus {
   text-decoration: none;
 }
 
-p a {
+p a,
+ul li a {
   color: $lm_orange;
   vertical-align: bottom;
 }
