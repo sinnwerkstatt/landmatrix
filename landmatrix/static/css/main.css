@@ -235,7 +235,8 @@
 .subnav.nav > li > a {
   padding: 2px 5px;
   border-radius: 4px;
-  display: inline-block; }
+  display: inline-block;
+  color: #4a4a4a; }
 
 .subnav a:hover {
   text-decoration: underline; }
