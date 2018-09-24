@@ -322,4 +322,4 @@ DEBUG_TOOLBAR_PANELS = [
     'template_timings_panel.panels.TemplateTimings.TemplateTimings',
 ]
 
-BLOG_LIMIT_AUTHOR_CHOICES_GROUP = 'CMS Editors'
+BLOG_LIMIT_AUTHOR_CHOICES_GROUP = 'CMS Global (Editors)'
