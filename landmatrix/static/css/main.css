@@ -1796,6 +1796,7 @@ a.btn:hover {
   text-shadow: none !important; }
 
 .breadcrumb > li > a {
+  color: #4a4a4a;
   text-decoration: underline; }
 
 /* ==========================================================================
