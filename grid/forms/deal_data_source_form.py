@@ -71,7 +71,7 @@ class DealDataSourceForm(BaseForm):
         required=False, label=_("OpenLandContracts ID")
     )
     tg_data_source_comment = forms.CharField(
-        required=False, label=_("Comment on Data source"), widget=CommentInput
+        required=False, label=_("Comment on data source"), widget=CommentInput
     )
 
     #def clean_date(self):

@@ -26,7 +26,7 @@ class DealWaterForm(BaseForm):
         required=False, label=_("Water extraction envisaged"),
         choices=BOOLEAN_CHOICES, widget=forms.RadioSelect)
     tg_water_extraction_envisaged_comment = forms.CharField(
-        required=False, label=_("Comment on Water extraction envisaged"),
+        required=False, label=_("Comment on water extraction envisaged"),
         widget=CommentInput)
 
     tg_source_of_water_extraction = TitleField(
@@ -35,7 +35,7 @@ class DealWaterForm(BaseForm):
         required=False, label=_("Source of water extraction"),
         choices=SOURCE_OF_WATER_EXTRACTION_CHOICES)
     tg_source_of_water_extraction_comment = forms.CharField(
-        required=False, label=_("Comment on Source of water extraction"), widget=CommentInput
+        required=False, label=_("Comment on source of water extraction"), widget=CommentInput
     )
 
     tg_how_much_do_investors_pay = TitleField(
@@ -43,7 +43,7 @@ class DealWaterForm(BaseForm):
         initial=_("How much do investors pay for water and the use of water infrastructure?"))
     tg_how_much_do_investors_pay_comment = forms.CharField(
         required=False,
-        label=_("Comment on How much do investors pay for water"),
+        label=_("Comment on how much do investors pay for water"),
         widget=CommentInput)
 
     tg_water_extraction_amount = TitleField(
@@ -52,14 +52,14 @@ class DealWaterForm(BaseForm):
         required=False, label=_("Water extraction amount"),
         help_text=_("m3/year"))
     tg_water_extraction_amount_comment = forms.CharField(
-        required=False, label=_("Comment on How much water is extracted"),
+        required=False, label=_("Comment on how much water is extracted"),
         widget=CommentInput)
 
     use_of_irrigation_infrastructure = forms.ChoiceField(
         required=False, label=_("Use of irrigation infrastructure"),
         choices=BOOLEAN_CHOICES, widget=forms.RadioSelect)
     tg_use_of_irrigation_infrastructure_comment = forms.CharField(
-        required=False, label=_("Comment on Use of irrigation infrastructure"),
+        required=False, label=_("Comment on use of irrigation infrastructure"),
         widget=CommentInput)
 
     water_footprint = forms.CharField(

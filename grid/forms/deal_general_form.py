@@ -19,7 +19,7 @@ class DealGeneralForm(BaseForm):
         ("No", _("No")),
     )
 
-    form_title = _('General Info')
+    form_title = _('General info')
 
     # Land area
     tg_land_area = TitleField(
@@ -35,7 +35,7 @@ class DealGeneralForm(BaseForm):
         required=False, label=_("Size in operation (production, in ha)"),
         help_text=_("ha"), placeholder=_('Size'))
     tg_land_area_comment = forms.CharField(
-        required=False, label=_("Comment on Land area"), widget=CommentInput)
+        required=False, label=_("Comment on land area"), widget=CommentInput)
 
     # Intention of investment
     tg_intention = TitleField(
@@ -44,7 +44,7 @@ class DealGeneralForm(BaseForm):
         required=False, label=_("Intention of the investment"),
         choices=grouped_intention_choices)
     tg_intention_comment = forms.CharField(
-        required=False, label=_("Comment on Intention of investment"),
+        required=False, label=_("Comment on intention of investment"),
         widget=CommentInput)
 
     # Nature of the deal
@@ -54,7 +54,7 @@ class DealGeneralForm(BaseForm):
         required=False, label=_("Nature of the deal"), choices=nature_choices,
         widget=forms.CheckboxSelectMultiple)
     tg_nature_comment = forms.CharField(
-        required=False, label=_("Comment on Nature of the deal"),
+        required=False, label=_("Comment on nature of the deal"),
         widget=CommentInput)
 
     # Negotiation status,
@@ -65,7 +65,7 @@ class DealGeneralForm(BaseForm):
         required=False, label=_("Negotiation status"),
         choices=Activity.NEGOTIATION_STATUS_CHOICES)
     tg_negotiation_status_comment = forms.CharField(
-        required=False, label=_("Comment on Negotiation status"),
+        required=False, label=_("Comment on negotiation status"),
         widget=CommentInput)
 
     # Implementation status
@@ -75,7 +75,7 @@ class DealGeneralForm(BaseForm):
         required=False, label=_("Implementation status"),
         choices=Activity.IMPLEMENTATION_STATUS_CHOICES)
     tg_implementation_status_comment = forms.CharField(
-        required=False, label=_("Comment on Implementation status"),
+        required=False, label=_("Comment on implementation status"),
         widget=CommentInput)
 
     # Purchase price
@@ -94,7 +94,7 @@ class DealGeneralForm(BaseForm):
         required=False, label=_("Purchase price area"), help_text=_("ha"),
         widget=forms.NumberInput(attrs={'placeholder': _('Size')}))
     tg_purchase_price_comment = forms.CharField(
-        required=False, label=_("Comment on Purchase price"),
+        required=False, label=_("Comment on purchase price"),
         widget=CommentInput)
 
     # Leasing fees
@@ -113,7 +113,7 @@ class DealGeneralForm(BaseForm):
         required=False, label=_("Purchase price area"), help_text=_("ha"),
         widget=forms.NumberInput(attrs={'placeholder': _('Size')}))
     tg_leasing_fees_comment = forms.CharField(
-        required=False, label=_("Comment on Leasing fees"), widget=CommentInput)
+        required=False, label=_("Comment on leasing fees"), widget=CommentInput)
 
     # Contract farming
     tg_contract_farming = TitleField(
@@ -146,7 +146,7 @@ class DealGeneralForm(BaseForm):
         label=_("Not on leased / purchased households (out-grower)"),
         help_text=_("households"))
     tg_contract_farming_comment = forms.CharField(
-        required=False, label=_("Comment on Contract farming"),
+        required=False, label=_("Comment on contract farming"),
         widget=CommentInput)
 
     class Meta:

@@ -14,7 +14,7 @@ class DealGenderRelatedInfoForm(BaseForm):
         required=False, label="",
         initial=_("Any gender-specific information about the investment and its impacts"))
     tg_gender_specific_info_comment = forms.CharField(
-        required=False, label=_("Comment on Gender-related info"),
+        required=False, label=_("Comment on gender-related info"),
         widget=CommentInput)
 
     class Meta:

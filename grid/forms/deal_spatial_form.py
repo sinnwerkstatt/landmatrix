@@ -42,7 +42,7 @@ class DealSpatialForm(BaseForm):
     facility_name = forms.CharField(
         required=False, label=_("Facility name"), widget=forms.TextInput,
         initial="")
-    target_country = CountryField(required=False, label=_("Target Country"))
+    target_country = CountryField(required=False, label=_("Target country"))
     #target_region = forms.ModelChoiceField(
     #    required=False, label=_("Target Region"), widget=forms.HiddenInput,
     #    queryset=Region.objects.all().order_by("name"))
@@ -54,7 +54,7 @@ class DealSpatialForm(BaseForm):
     production_area = AreaField(required=False, label=_("Area in operation"))
 
     tg_location_comment = forms.CharField(
-        required=False, label=_("Comment on Location"), widget=CommentInput)
+        required=False, label=_("Comment on location"), widget=CommentInput)
 
     class Meta:
         name = 'location'

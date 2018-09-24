@@ -40,7 +40,7 @@ class DealActionCommentForm(BaseForm):
     not_public_reason = forms.ChoiceField(
         required=False, label=_("Reason"), choices=NOT_PUBLIC_REASON_CHOICES)
     tg_not_public_comment = forms.CharField(
-        required=False, label=_("Comment on Not Public"), widget=CommentInput)
+        required=False, label=_("Comment on not public"), widget=CommentInput)
 
     tg_imported = TitleField(
         required=False, label="", initial=_("Import history"))

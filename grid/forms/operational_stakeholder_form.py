@@ -27,7 +27,7 @@ class OperationalStakeholderForm(BaseForm):
     project_name = forms.CharField(
         required=False, label=_("Name of investment project"), max_length=255)
     tg_operational_stakeholder_comment = forms.CharField(
-        required=False, label=_("Comment on Investment chain"),
+        required=False, label=_("Comment on investment chain"),
         widget=CommentInput)
 
     @classmethod

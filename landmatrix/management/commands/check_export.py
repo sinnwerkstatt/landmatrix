@@ -58,7 +58,7 @@ EMPTY_ALLOWED = (
     'Not on leased / purchased households (out-grower)',
     'Contracts 1: Contract expiration date',
     'Contracts 1: Sold as deal no.',
-    'Contracts 1: Comment on Contract',
+    'Contracts 1: Comment on contract',
     'Planned daily/seasonal workers (foreign)',
     'Current number of daily/seasonal workers (foreign)',
     'Actors involved in the negotiation / admission process',
