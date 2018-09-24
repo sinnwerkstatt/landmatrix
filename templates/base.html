@@ -92,7 +92,7 @@
                             </li>
                         {% else %}
                         <li>
-                            <a href="{% url "auth_login" %}?next=/" role="button" title="{% trans "Login" %}"
+                            <a href="{% url "auth_login" %}?next=/" role="button" title="{% trans "Login/Register" %}"
                                class="toggle-tooltip bottom">
                                 <i class="fa fa-user"></i>
                             </a>
@@ -130,13 +130,13 @@
                         </span>
                     </li>
                     <li>
-                        <a href="/get-involved/" role="button">
-                           <span class="nav-text">{% trans "Get Involved" %}</span>
+                        <a href="/stay-informed/" role="button">
+                            <span class="nav-text">Stay informed</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/stay-informed/" role="button">
-                            <span class="nav-text">Stay informed</span>
+                        <a href="/get-involved/" role="button">
+                           <span class="nav-text">{% trans "Get Involved" %}</span>
                         </a>
                     </li>
                 </ul>
@@ -264,19 +264,14 @@
             {% endblock %}
 
             <div id="footer-etc" class="row">
-                <div class="col-md-5">
-                    <h4 class="toosmalltofail">{% trans "Spread and share LM" %}</h4>
-                    <h4 class="toobigtofail">{% trans "Spread the word and share land matrix" %}</h4>
+                <div class="col-md-6">
+                    <p>
+                        &copy; {% now "Y" %} The Land Matrix | All rights reserved
+                    </p>
+                </div>
+                <div class="col-md-6 text-right">
                     <a target="_blank" href="https://twitter.com/Land_Matrix"><i class="lm-footer lm-twitter-square"></i></a>
                     <a target="_blank" href="https://www.facebook.com/LandMatrix"><i class="lm-footer lm-facebook-square"></i></a>
-                </div>
-                <div class="col-md-2 center">
-                </div>
-                <div class="col-md-5 text-right">
-                    <h4>{% trans "Share and adapt" %}</h4>
-                    <a target="_blank" href="http://creativecommons.org/licenses/by/4.0/"><span
-                            class="lm-footer lm-creative-commons"></span></a>
-                    <a target="_blank" href="https://github.com/sinnwerkstatt/landmatrix"><i class="lm-footer lm-github"></i></a>
                 </div>
             </div>
         </div>
