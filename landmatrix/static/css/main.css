@@ -684,7 +684,8 @@ small input {
 #filters ul.presets.ul.variables li a,
 #filters ul.variables li a {
   display: block;
-  padding: 0px 15px 0px 30px; }
+  padding: 0px 15px 0px 30px;
+ color: #4a4a4a; }
 
 #filters ul.presets.ul.variables > li > ul > li:hover > a,
 #filters ul.variables > li > ul > li:hover > a {
