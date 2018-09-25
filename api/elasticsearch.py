@@ -480,7 +480,7 @@ class ElasticSearch(object):
             #        activity.activity_identifier
             #    )))
 
-            for a in activity.attributes.select_related('fk_group__name').order_by('fk_group__name'):
+            for a in activity.attributes.select_related('fk_group__name').order_by('fk_group__name', 'id'):
                 # do not include the django object id
                 if a.name == 'id':
                     continue
