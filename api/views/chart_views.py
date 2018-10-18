@@ -1036,7 +1036,9 @@ class AgriculturalProduceListView(BaseChartView):
                 'hectares': hectares,
             }
         for ap_slug, hectares in overall['hectares'].items():
-            ratio = round(float(hectares) / overall['available'] * 100)
+            ratio = 0
+            if overall['available'] > 0:
+                ratio = round(float(hectares) / overall['available'] * 100)
             overall['agricultural_produce'][ap_slug] = ratio
         target_regions['overall'] = overall
 
