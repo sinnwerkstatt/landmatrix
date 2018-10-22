@@ -98,6 +98,19 @@ class BaseChartView(ElasticSearchMixin,
 
         return Response(results)
 
+    def add_public_logic(self, query):
+        # Always apply public filter
+        query['filter'].append({
+            "bool": {
+                "filter": {
+                    "term": {
+                        "is_public": 'true'
+                    }
+                }
+            }
+        })
+        return query
+
     class Meta:
         abstract = True
 
