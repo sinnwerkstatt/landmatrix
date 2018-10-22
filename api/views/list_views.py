@@ -503,8 +503,9 @@ class StatisticsView(ElasticSearchMixin,
                 },
                 'aggs': {
                     'deal_count': {
-                        'cardinality': {
+                        'terms': {
                             'field': 'activity_identifier',
+                            'size': 10000
                         }
                     },
                     'deal_size_sum': {
@@ -519,7 +520,7 @@ class StatisticsView(ElasticSearchMixin,
         results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
                                                    aggs=aggs)
         results = results['current_negotiation_status']['buckets']
-        results = [[r['key'], r['deal_count']['value'], int(r['deal_size_sum']['value'])]
+        results = [[r['key'], len(r['deal_count']['buckets']), int(r['deal_size_sum']['value'])]
                    for r in results]
         if disable_filters:
             self.enable_filters()

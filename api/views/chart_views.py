@@ -61,8 +61,9 @@ class BaseChartView(ElasticSearchMixin,
                 },
                 'aggs': {
                     'deal_count': {
-                        'cardinality': {
+                        'terms': {
                             'field': 'activity_identifier',
+                            'size': 10000
                         }
                     },
                     'deal_size_sum': {
@@ -80,7 +81,7 @@ class BaseChartView(ElasticSearchMixin,
     def get_result(self, raw_result):
         return {
             'name': raw_result['key'],
-            'deals': raw_result['deal_count']['value'],
+            'deals': len(raw_result['deal_count']['buckets']),
             'hectares': int(raw_result['deal_size_sum']['value'])
         }
 
@@ -237,7 +238,7 @@ class InvestmentIntentionListView(BaseChartView):
         else:
             return {
                 'name': raw_result['key'],
-                'deals': raw_result['deal_count']['value'],
+                'deals': len(raw_result['deal_count']['buckets']),
                 'hectares': int(raw_result['deal_size_sum']['value']),
                 'parent': self.get_parent_intention(raw_result['key']),
             }
@@ -245,8 +246,9 @@ class InvestmentIntentionListView(BaseChartView):
     def get_multi_aggregations(self):
         return {
             'deal_count': {
-                'cardinality': {
+                'terms': {
                     'field': 'activity_identifier',
+                    'size': 10000,
                 }
             },
             'deal_size_sum': {
@@ -259,19 +261,14 @@ class InvestmentIntentionListView(BaseChartView):
     def get(self, request):
         # First: Filter results with one intention
         query = self.get_query()
-        query['bool']['filter'].append({
-            'bool': {'should': [
-                {'bool': {'must': [
-                    {'terms': {'intention': ['Agriculture', 'Forestry']}},
-                    {'script': {'script': "doc['intention'].values.size() <= 2"}},
-                ]}},
-                {'bool': {'must': [
-                    {'script': {'script': "doc['intention'].values.size() <= 1"}},
-                ], 'must_not': [
-                    {'terms': {'intention': ['Agriculture', 'Forestry']}},
-                ]}},
-            ], 'minimum_should_match': 1
-        }})
+        query['bool']['must'].append({
+            'script': {
+                'script': {
+                    'source': "doc['intention'].values.size() <= 1",
+                    'lang': 'painless'
+                }
+            }
+        })
         response = self.execute_elasticsearch_query(query,
                                                     aggs=self.get_aggregations(),
                                                     doc_type='deal',
@@ -285,26 +282,21 @@ class InvestmentIntentionListView(BaseChartView):
 
         # Then: Filter results with multiple intentions
         query = self.get_query()
-        query['bool']['filter'].append({
-            'bool': {'should': [
-                {'bool': {'must': [
-                    {'terms': {'intention': ['Agriculture', 'Forestry']}},
-                    {'script': {'script': "doc['intention'].values.size() > 2"}},
-                ]}},
-                {'bool': {'must': [
-                    {'script': {'script': "doc['intention'].values.size() > 1"}},
-                ], 'must_not': [
-                    {'terms': {'intention': ['Agriculture', 'Forestry']}},
-                ]}},
-            ], 'minimum_should_match': 1
-        }})
+        query['bool']['must'].append({
+            'script': {
+                'script': {
+                    'source': "doc['intention'].values.size() > 1",
+                    'lang': 'painless'
+                }
+            }
+        })
         response = self.execute_elasticsearch_query(self.get_query(),
                                                     aggs=self.get_multi_aggregations(),
                                                     doc_type='deal',
                                                     fallback=False)
         results.append({
             'name': _('Multiple intentions'),
-            'deals': response['deal_count']['value'],
+            'deals': len(response['deal_count']['buckets']),
             'hectares': int(response['deal_size_sum']['value']),
             'parent': _('Other'),
         })
@@ -368,8 +360,9 @@ class InvestorCountrySummaryView(BaseChartView):
                 },
                 'aggs': {
                     'deal_count': {
-                        'cardinality': {
+                        'terms': {
                             'field': 'activity_identifier',
+                            'size': 10000
                         }
                     },
                     'domestic': {
@@ -396,7 +389,7 @@ class InvestorCountrySummaryView(BaseChartView):
         }
 
     def get_result(self, raw_result):
-        deal_count = raw_result['deal_count']['value']
+        deal_count = len(raw_result['deal_count']['buckets'])
         domestic_count = raw_result['domestic']['domestic_count']['value']
         return {
             'country_id': raw_result['key'],
@@ -484,8 +477,9 @@ class TargetCountrySummaryView(BaseChartView):
                 },
                 'aggs': {
                     'deal_count': {
-                        'cardinality': {
+                        'terms': {
                             'field': 'activity_identifier',
+                            'size': 10000
                         }
                     },
                     'domestic': {
@@ -512,7 +506,7 @@ class TargetCountrySummaryView(BaseChartView):
         }
 
     def get_result(self, raw_result):
-        deal_count = raw_result['deal_count']['value']
+        deal_count = len(raw_result['deal_count']['buckets'])
         domestic_count = raw_result['domestic']['domestic_count']['value']
         return {
             'country_id': raw_result['key'],
@@ -598,8 +592,9 @@ class Top10CountriesView(BaseChartView):
                 },
                 'aggs': {
                     'deal_count': {
-                        'cardinality': {
+                        'terms': {
                             'field': 'activity_identifier',
+                            'size': 10000
                         }
                     },
                     'deal_size_sum': {
@@ -617,8 +612,9 @@ class Top10CountriesView(BaseChartView):
                 },
                 'aggs': {
                     'deal_count': {
-                        'cardinality': {
+                        'terms': {
                             'field': 'activity_identifier',
+                            'size': 10000
                         }
                     },
                     'deal_size_sum': {
@@ -650,7 +646,7 @@ class Top10CountriesView(BaseChartView):
                 'name': LONG_COUNTRIES.get(target_country.name, target_country.name),
                 'hectares': raw_result['deal_size_sum']['value'],
                 'slug': target_country.slug,
-                'deals': raw_result['deal_count']['value'],
+                'deals': len(raw_result['deal_count']['buckets']),
             })
 
         # Get investor countries
@@ -662,7 +658,7 @@ class Top10CountriesView(BaseChartView):
                 'name': LONG_COUNTRIES.get(investor_country.name, investor_country.name),
                 'hectares': raw_result['deal_size_sum']['value'],
                 'slug': investor_country.slug,
-                'deals': raw_result['deal_count']['value'],
+                'deals': len(raw_result['deal_count']['buckets']),
             })
 
         return Response({
@@ -912,7 +908,7 @@ class HectaresView(BaseChartView):
                                                     doc_type='deal',
                                                     fallback=False)
         result = {
-            'deals': response['deal_count']['value'],
+            'deals': len(response['deal_count']['buckets']),
             'hectares': int(response['deal_size_sum']['value']),
         }
         return Response(result)
@@ -920,8 +916,9 @@ class HectaresView(BaseChartView):
     def get_aggregations(self):
         return {
             'deal_count': {
-                'cardinality': {
+                'terms': {
                     'field': 'activity_identifier',
+                    'size': 10000
                 }
             },
             'deal_size_sum': {
@@ -953,8 +950,9 @@ class AgriculturalProduceListView(BaseChartView):
                         },
                         'aggs': {
                             'deal_count': {
-                                'cardinality': {
+                                'terms': {
                                     'field': 'activity_identifier',
+                                    'size': 10000
                                 }
                             },
                             'deal_size_sum': {
@@ -965,8 +963,9 @@ class AgriculturalProduceListView(BaseChartView):
                         }
                     },
                     'deal_count': {
-                        'cardinality': {
+                        'terms': {
                             'field': 'activity_identifier',
+                            'size': 10000
                         }
                     },
                     'deal_size_sum': {
@@ -1168,8 +1167,9 @@ class ProduceInfoView(BaseChartView):
                 },
                 'aggs': {
                     'deal_count': {
-                        'cardinality': {
+                        'terms': {
                             'field': 'activity_identifier',
+                            'size': 10000
                         }
                     },
                     'deal_size_sum': {
@@ -1187,8 +1187,9 @@ class ProduceInfoView(BaseChartView):
                 },
                 'aggs': {
                     'deal_count': {
-                        'cardinality': {
+                        'terms': {
                             'field': 'activity_identifier',
+                            'size': 10000
                         }
                     },
                     'deal_size_sum': {
@@ -1206,8 +1207,9 @@ class ProduceInfoView(BaseChartView):
                 },
                 'aggs': {
                     'deal_count': {
-                        'cardinality': {
+                        'terms': {
                             'field': 'activity_identifier',
+                            'size': 10000
                         }
                     },
                     'deal_size_sum': {
