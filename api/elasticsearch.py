@@ -549,18 +549,18 @@ class ElasticSearch(object):
                                     deal_attrs[attribute_key].append('')
                         deal_attrs[a.name][count-1] = value
                         if attribute:
-                            deal_attrs['%s_attr' % a.name][count-1]= attribute
-
-                # Doc type: deal/location
-                if doc_type in ('deal', 'location'):
-                    if a.name in deal_attrs:
-                        deal_attrs[a.name].append(value)
-                        if '%s_attr' % a.name in get_elasticsearch_properties()['deal']['properties'].keys():
-                            deal_attrs['%s_attr' % a.name].append(attribute)
-                    else:
-                        deal_attrs[a.name] = [value,]
-                        if '%s_attr' % a.name in get_elasticsearch_properties()['deal']['properties'].keys():
-                            deal_attrs['%s_attr' % a.name] = [attribute,]
+                            deal_attrs['%s_attr' % a.name][count-1] = attribute
+                else:
+                    # Doc type: deal/location
+                    if doc_type in ('deal', 'location'):
+                        if a.name in deal_attrs:
+                            deal_attrs[a.name].append(value)
+                            if '%s_attr' % a.name in get_elasticsearch_properties()['deal']['properties'].keys():
+                                deal_attrs['%s_attr' % a.name].append(attribute)
+                        else:
+                            deal_attrs[a.name] = [value,]
+                            if '%s_attr' % a.name in get_elasticsearch_properties()['deal']['properties'].keys():
+                                deal_attrs['%s_attr' % a.name] = [attribute,]
 
             if doc_type in ('deal', 'location'):
                 # Additionally save operating company attributes
@@ -579,7 +579,7 @@ class ElasticSearch(object):
             if doc_type in ('deal', 'location'):
                 deal_attrs.update(self.get_display_properties(deal_attrs, doc_type=doc_type))
                 deal_attrs.update(self.get_spatial_properties(deal_attrs, doc_type=doc_type))
-                if doc_type ==  'location':
+                if doc_type == 'location':
                     # Create single document for each location
                     spatial_names = list(get_spatial_properties()) + ['target_region', 'geo_point']
                     for i in range(deal_attrs.get('location_count', 0)):
