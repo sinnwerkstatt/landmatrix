@@ -11,10 +11,11 @@ from rest_framework.views import APIView
 import coreapi
 import coreschema
 
-from landmatrix.models import Country, Region, AgriculturalProduce, Animal, Mineral, Crop
+from landmatrix.models import Country, Region, AgriculturalProduce, Animal, Mineral, Crop, Activity
 from grid.forms.choices import (INTENTION_MINING, INTENTION_FOREST_LOGGING,
     NATURE_CONCESSION, NATURE_CONTRACT_FARMING, INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP)
 from .list_views import ElasticSearchMixin
+from grid.forms import choices
 
 LONG_COUNTRIES = {
     'United States of America': 'Usa*',
@@ -48,6 +49,7 @@ class BaseChartView(ElasticSearchMixin,
 
     aggregation_field = ''
     exclude_filters = []
+    choices = []
 
     def get_query(self):
         return self.create_query_from_filters(exclude=self.exclude_filters)
@@ -75,15 +77,21 @@ class BaseChartView(ElasticSearchMixin,
             }
         }
 
+    def get_results_dict(self, response):
+        return dict(((b['key'], b) for b in response[self.aggregation_field]['buckets']))
+
     def get_results(self, response):
         return response[self.aggregation_field]['buckets']
 
-    def get_result(self, raw_result):
-        return {
-            'name': raw_result['key'],
-            'deals': len(raw_result['deal_count']['buckets']),
-            'hectares': int(raw_result['deal_size_sum']['value'])
-        }
+    def get_result(self, raw_result, choice_value=None):
+        if raw_result:
+            return {
+                'name': choice_value or raw_result['key'],
+                'deals': len(raw_result['deal_count']['buckets']),
+                'hectares': int(raw_result['deal_size_sum']['value'])
+            }
+        else:
+            return None
 
     def get(self, request):
         response = self.execute_elasticsearch_query(self.get_query(),
@@ -92,10 +100,17 @@ class BaseChartView(ElasticSearchMixin,
                                                     fallback=False)
 
         results = []
-        for raw_result in self.get_results(response):
-            result = self.get_result(raw_result)
-            if result:
-                results.append(result)
+        if self.choices:
+            results_dict = self.get_results_dict(response)
+            for key, value in self.choices:
+                result = self.get_result(results_dict.get(key), value)
+                if result:
+                    results.append(result)
+        else:
+            for raw_result in self.get_results(response):
+                result = self.get_result(raw_result)
+                if result:
+                    results.append(result)
 
         return Response(results)
 
@@ -123,6 +138,7 @@ class NegotiationStatusListView(BaseChartView):
     """
     aggregation_field = 'current_negotiation_status'
     exclude_filters = ['current_negotiation_status', 'negotiation_status']
+    choices = Activity.NEGOTIATION_STATUS_CHOICES
 
 
 class ResourceExtractionView(NegotiationStatusListView):
@@ -185,6 +201,7 @@ class ImplementationStatusListView(BaseChartView):
     """
     aggregation_field = 'current_implementation_status'
     exclude_filters = ['current_implementation_status', 'implementation_status']
+    choices = Activity.IMPLEMENTATION_STATUS_CHOICES
 
 
 class InvestmentIntentionListView(BaseChartView):
@@ -206,6 +223,9 @@ class InvestmentIntentionListView(BaseChartView):
 
     aggregation_field = 'intention'
     exclude_filters = ['intention',]
+    choices = choices.intention_agriculture_choices + \
+              choices.intention_forestry_choices + \
+              choices.intention_other_choices
 
     def get_parent_intention(self, intention):
         if intention in ('Agriculture', 'Forestry'):
@@ -232,16 +252,19 @@ class InvestmentIntentionListView(BaseChartView):
             })
         return query
 
-    def get_result(self, raw_result):
-        if raw_result['key'] in ('Agriculture', 'Forestry'):
-            return {}
+    def get_result(self, raw_result, choice_value):
+        if raw_result:
+            if raw_result['key'] in ('Agriculture', 'Forestry'):
+                return {}
+            else:
+                return {
+                    'name': raw_result['key'],
+                    'deals': len(raw_result['deal_count']['buckets']),
+                    'hectares': int(raw_result['deal_size_sum']['value']),
+                    'parent': self.get_parent_intention(raw_result['key']),
+                }
         else:
-            return {
-                'name': raw_result['key'],
-                'deals': len(raw_result['deal_count']['buckets']),
-                'hectares': int(raw_result['deal_size_sum']['value']),
-                'parent': self.get_parent_intention(raw_result['key']),
-            }
+            return None
 
     def get_multi_aggregations(self):
         return {
@@ -274,8 +297,9 @@ class InvestmentIntentionListView(BaseChartView):
                                                     doc_type='deal',
                                                     fallback=False)
         results = []
-        for raw_result in self.get_results(response):
-            result = self.get_result(raw_result)
+        results_dict = self.get_results_dict(response)
+        for key, value in self.choices:
+            result = self.get_result(results_dict.get(key), value)
             if result:
                 results.append(result)
 
