@@ -615,7 +615,7 @@ class Top10CountriesView(BaseChartView):
             'target_country': {
                 'terms': {
                     'field': 'target_country',
-                    'size': 10,
+                    'size': 300,    # 10 leaves to wrong results here
                     'order': {'deal_size_sum': 'desc'},
                 },
                 'aggs': {
@@ -635,7 +635,7 @@ class Top10CountriesView(BaseChartView):
             'investor_country': {
                 'terms': {
                     'field': 'investor_country',
-                    'size': 10,
+                    'size': 300,    # 10 leaves to wrong results here
                     'order': {'deal_size_sum': 'desc'},
                 },
                 'aggs': {
@@ -667,7 +667,7 @@ class Top10CountriesView(BaseChartView):
 
         # Get target countries
         target_countries = []
-        for raw_result in response['target_country']['buckets']:
+        for raw_result in response['target_country']['buckets'][:10]:
             target_country = countries.get(raw_result['key'])
             target_countries.append({
                 'id': raw_result['key'],
@@ -679,7 +679,7 @@ class Top10CountriesView(BaseChartView):
 
         # Get investor countries
         investor_countries = []
-        for raw_result in response['investor_country']['buckets']:
+        for raw_result in response['investor_country']['buckets'][:10]:
             investor_country = countries.get(raw_result['key'])
             investor_countries.append({
                 'id': raw_result['key'],
