@@ -137,7 +137,7 @@ class NegotiationStatusListView(BaseChartView):
     Used within the charts section.
     """
     aggregation_field = 'current_negotiation_status'
-    exclude_filters = ['current_negotiation_status', 'negotiation_status']
+    exclude_filters = []
     choices = Activity.NEGOTIATION_STATUS_CHOICES
 
 
@@ -203,7 +203,7 @@ class ImplementationStatusListView(BaseChartView):
     Used within the charts section.
     """
     aggregation_field = 'current_implementation_status'
-    exclude_filters = ['current_implementation_status', 'implementation_status']
+    exclude_filters = []
     choices = Activity.IMPLEMENTATION_STATUS_CHOICES
 
 
@@ -225,7 +225,7 @@ class InvestmentIntentionListView(BaseChartView):
     )
 
     aggregation_field = 'intention'
-    exclude_filters = ['intention',]
+    exclude_filters = []
     choices = choices.intention_agriculture_choices + \
               choices.intention_forestry_choices + \
               choices.intention_other_choices

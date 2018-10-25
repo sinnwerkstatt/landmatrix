@@ -65,8 +65,6 @@ class IntentionChartView(ChartPDFView):
     chart = "chart_intention"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
-    disabled_presets = [5,6,7,18,1,19]
-    enabled_presets = [15,16]
 
 
 class NegotiationStatusChartView(ChartPDFView):
@@ -74,8 +72,6 @@ class NegotiationStatusChartView(ChartPDFView):
     chart = "chart_negotiation_status"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
-    disabled_presets = [5,6,7,18,2]
-    enabled_presets = [1,15,16,19]
 
 
 class ImplementationStatusChartView(ChartPDFView):
@@ -83,8 +79,6 @@ class ImplementationStatusChartView(ChartPDFView):
     chart = "chart_implementation_status"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
-    disabled_presets = [5,6,7,18]
-    enabled_presets = [1,15,16,19]
 
 
 class IntentionAgricultureChartView(ChartPDFView):
@@ -92,8 +86,6 @@ class IntentionAgricultureChartView(ChartPDFView):
     chart = "chart_intention_agriculture"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
-    disabled_presets = [5,6,7,18]
-    enabled_presets = [1,15,16,19]
 
 
 class TransnationalDealsChartView(ChartPDFView):
