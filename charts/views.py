@@ -65,8 +65,8 @@ class IntentionChartView(ChartPDFView):
     chart = "chart_intention"
     # This page needs a massive delay for some reason
     pdf_javascript_delay = 4000
-    disabled_presets = [5,6,7,18]
-    enabled_presets = [1,15,16,19]
+    disabled_presets = [5,6,7,18,1,19]
+    enabled_presets = [15,16]
 
 
 class NegotiationStatusChartView(ChartPDFView):

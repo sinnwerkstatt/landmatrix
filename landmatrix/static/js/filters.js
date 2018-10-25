@@ -55,7 +55,8 @@ function updateFilters(data) {
             }
             var tag = data[item].name,
                 label = data[item].label,
-                finalHtml = '<a class="delete-row toggle-tooltip" href="javascript:removeFilter(\'' + item + '\')" title="'
+                disabled = data[item].disabled && ' disabled' || '',
+                finalHtml = '<a class="delete-row toggle-tooltip' + disabled + '" href="javascript:removeFilter(\'' + item + '\')" title="'
 
             finalHtml = finalHtml + '">' + label + '<i class="lm lm-times"></i></a>';
             finalHtml = '<span class="label label-filter">' + finalHtml + '</span>';
