@@ -147,6 +147,7 @@ class ResourceExtractionView(NegotiationStatusListView):
     Used within the charts section.
     """
     exclude_filters = ['current_negotiation_status', 'negotiation_status', 'intention']
+    choices = []
 
     def get_query(self):
         query = self.create_query_from_filters(exclude=self.exclude_filters)
@@ -164,6 +165,7 @@ class LoggingView(NegotiationStatusListView):
     Used within the charts section.
     """
     exclude_filters = ['current_negotiation_status', 'negotiation_status', 'intention', 'nature']
+    choices = []
 
     def get_query(self):
         query = self.create_query_from_filters(exclude=self.exclude_filters)
@@ -183,6 +185,7 @@ class ContractFarmingView(NegotiationStatusListView):
     Used within the charts section.
     """
     exclude_filters = ['current_negotiation_status', 'negotiation_status', 'nature']
+    choices = []
 
     def get_query(self):
         query = self.create_query_from_filters(exclude=self.exclude_filters)
