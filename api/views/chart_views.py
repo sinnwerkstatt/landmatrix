@@ -317,10 +317,11 @@ class InvestmentIntentionListView(BaseChartView):
                 }
             }
         })
-        response = self.execute_elasticsearch_query(self.get_query(),
+        response = self.execute_elasticsearch_query(query,
                                                     aggs=self.get_multi_aggregations(),
                                                     doc_type='deal',
                                                     fallback=False)
+
         results.append({
             'name': _('Multiple intentions'),
             'deals': len(response['deal_count']['buckets']),
