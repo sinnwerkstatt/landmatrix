@@ -255,57 +255,12 @@ class ElasticSearch(object):
         self.conn.create_index(self.index_name, settings={'mappings': mappings,
                                                           'settings': settings})
 
-    def index_activity_by_id(self, activity_id):
-        activity = HistoricalActivity.objects.get(pk=activity_id)
-        return self.index_activity(activity)
-
-    def index_activity(self, activity):
-        for doc_type in DOC_TYPES_ACTIVITY:
-            docs = self.get_activity_documents(activity, doc_type=doc_type)
-            if len(docs) > 0:
-                try:
-                    self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id'), parent=doc.pop('_parent', None)) for doc in docs),
-                        index=self.index_name,
-                        doc_type=doc_type)
-                except BulkError as e:
-                    for error in e.errors:
-                        msg = '%s: %s on ID %s' % (
-                                error['index']['error']['type'],
-                                error['index']['error']['reason'],
-                                error['index']['_id']
-                              )
-                        if 'caused_by' in error['index']['error']:
-                            msg += ' (%s: %s)' % (
-                                error['index']['error']['caused_by']['type'],
-                                error['index']['error']['caused_by']['reason']
-                            )
-                        self.stderr and self.stderr.write(msg)
-
-    def index_investor_by_id(self, investor_id):
-        investor = HistoricalInvestor.objects.get(pk=investor_id)
-        return self.index_investor(investor)
-
-    def index_investor(self, investor):
-        for doc_type in DOC_TYPES_INVESTOR:
-            docs = self.get_investor_documents(investor, doc_type=doc_type)
-            if len(docs) > 0:
-                try:
-                    self.conn.bulk((self.conn.index_op(doc, id=doc.pop('id')) for doc in docs),
-                        index=self.index_name,
-                        doc_type=doc_type)
-                except BulkError as e:
-                    for error in e.errors:
-                        msg = '%s: %s on ID %s' % (
-                            error['index']['error']['type'],
-                            error['index']['error']['reason'],
-                            error['index']['_id']
-                        )
-                        if 'caused_by' in error['index']['error']:
-                            msg += ' (%s: %s)' % (
-                                error['index']['error']['caused_by']['type'],
-                                error['index']['error']['caused_by']['reason']
-                            )
-                        self.stderr and self.stderr.write(msg)
+    def index_activity(self, activity_identifier=None, activity_id=None, activity=None):
+        if activity_id:
+            activity_identifier = HistoricalActivity.objects.get(pk=activity_id).activity_identifier
+        if activity:
+            activity_identifier = activity.activity_identifier
+        return self.index_activity_documents(activity_identifiers=[activity_identifier, ])
 
     def index_activity_documents(self, activity_identifiers=[], doc_types=DOC_TYPES_ACTIVITY):
         if not activity_identifiers:
@@ -347,6 +302,13 @@ class ElasticSearch(object):
                                 )
                             self.stderr and self.stderr.write(msg)
                     self.conn.refresh()
+
+    def index_investor(self, investor_identifier=None, investor_id=None, investor=None):
+        if investor_id:
+            investor_identifier = HistoricalActivity.objects.get(pk=investor_id).investor_identifier
+        if investor:
+            investor_identifier = investor.investor_identifier
+        return self.index_investor_documents(investor_identifiers=[investor_identifier, ])
 
     def index_investor_documents(self, investor_identifiers=[], doc_types=DOC_TYPES_INVESTOR):
         if not investor_identifiers:

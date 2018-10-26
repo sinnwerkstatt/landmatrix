@@ -987,7 +987,7 @@ class HistoricalActivity(ActivityBase):
             if self.fk_status_id == self.STATUS_DELETED:
                 transaction.on_commit(lambda: delete_activity.delay(self.activity_identifier))
             else:
-                transaction.on_commit(lambda: index_activity.delay(self.id))
+                transaction.on_commit(lambda: index_activity.delay(self.activity_identifier))
 
     class Meta:
         verbose_name = _('Historical activity')

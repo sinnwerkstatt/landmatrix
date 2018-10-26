@@ -387,7 +387,7 @@ class HistoricalInvestor(InvestorBase):
             if self.fk_status_id == self.STATUS_DELETED:
                 transaction.on_commit(lambda: delete_investor.delay(self.investor_identifier))
             else:
-                transaction.on_commit(lambda: index_investor.delay(self.id))
+                transaction.on_commit(lambda: index_investor.delay(self.investor_identifier))
 
     class Meta:
         verbose_name = _("Historical investor")
