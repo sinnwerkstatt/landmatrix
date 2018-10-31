@@ -617,7 +617,7 @@ class ElasticSearch(object):
         point_lon = doc.get('point_lon', [])
         target_country = doc.get('target_country', [])
         for i in range(doc.get('location_count', 1)):
-            if len(point_lat) > i and len(point_lon) > 1:
+            if len(point_lat) > i and len(point_lon) > i:
                 # Parse values
                 try:
                     parsed_lat, parsed_lon = float(point_lat[i]), float(point_lon[i])
