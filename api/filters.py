@@ -188,7 +188,7 @@ class Filter(BaseFilter):
         # only the starting operator of this match or query-match is important for the logical operation,
         # we now map which one
         elastic_operator = None
-        if 'in' in self['operator'] and isinstance(value, list) and len(value) > 1: #
+        if 'in' in self['operator'] and isinstance(value, list) and len(value) > 1:
             # generate multiple matches
             matches = []
             inside_operator = None
@@ -210,6 +210,9 @@ class Filter(BaseFilter):
                 value = value[0]
             if self['operator'] == 'in':
                 self['operator'] = 'is'
+            # Boolean fields can be 'False' or not existing. Check for not 'True' instead.
+            if self['operator'] == 'is' and self['value'] == 'False':
+                self['operator'], value = 'not_in', 'True'
             # generate single value match
             elastic_operator, match = get_elasticsearch_match_operation(self['operator'],
                                                                         self['variable'], value)

@@ -7,9 +7,11 @@ from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.views import APIView
 from bootstrap3_datetime.widgets import DateTimePicker
+from django.utils.translation import ugettext_lazy as _
 
 from grid.views.browse_filter_conditions import get_field_by_key
 from grid.fields import YearMonthDateField
+
 
 class FilterWidgetAjaxView(APIView):
 
@@ -67,7 +69,7 @@ class FilterWidgetAjaxView(APIView):
         TYPE_BOOLEAN: [
             {
                 'operations': ('is',),
-                'widget': forms.CheckboxInput,
+                'widget': forms.Select,
             }
         ],
         TYPE_LIST: [
@@ -204,7 +206,13 @@ class FilterWidgetAjaxView(APIView):
 
     def get_widget_init_kwargs(self):
         kwargs = {}
-        # Get choices
+        # Get boolean choices (Yes/No)
+        if self.type == self.TYPE_BOOLEAN:
+            kwargs['choices'] = [
+                ('True', _('Yes')),
+                ('False', _('No')),
+            ]
+        # Get list choices
         if self.type in (self.TYPE_LIST, self.TYPE_LIST_MULTIPLE):
             if self.field_name == 'fully_updated_by':
                 users = User.objects.filter(groups__name__in=("Research admins",
