@@ -674,11 +674,33 @@ class Activity(ActivityBase):
         else:
             return None
 
+    def get_updated_date(self):
+        try:
+            activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).latest()
+            return activity.history_date
+        except:
+            return None
+
+    def get_updated_user(self):
+        try:
+            activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier).latest()
+            return activity.history_user.id
+        except:
+            return None
+
     def get_fully_updated_date(self):
         try:
             activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier,
                                                          fully_updated=True).latest()
             return activity.history_date
+        except:
+            return None
+
+    def get_fully_updated_user(self):
+        try:
+            activity = HistoricalActivity.objects.filter(activity_identifier=self.activity_identifier,
+                                                         fully_updated=True).latest()
+            return activity.history_user.id
         except:
             return None
 

@@ -1,8 +1,10 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth import get_user_model
 
 from registration.forms import RegistrationForm
 from captcha.fields import ReCaptchaField
+from grid.fields import UserModelChoiceField
 from .models.activity import Activity
 from .models.region import Region
 
@@ -33,6 +35,8 @@ class CustomRegistrationForm(RegistrationForm):
 
 
 class ActivityFilterForm(forms.ModelForm):
+    USER_QUERYSET = get_user_model().objects.filter(groups__name__in=("Editors", "Administrators")
+                                                    ).order_by("first_name", "last_name")
     activity_identifier = forms.IntegerField(label=_("Deal ID"))
     target_region = forms.ModelChoiceField(label=_("Target region"), queryset=Region.objects.all())
     current_negotiation_status = forms.ChoiceField(label=_("Current negotiation status"),
@@ -42,8 +46,12 @@ class ActivityFilterForm(forms.ModelForm):
     current_contract_size = forms.IntegerField(label=_("Current size under contract"))
     current_production_size = forms.IntegerField(label=_("Current size in operation (production)"))
     forest_concession = forms.BooleanField(label=_("Forest concession"))
+    updated_date = forms.DateField(label=("Last modification date"))
+    updated_user = UserModelChoiceField(label=("Last modification by"), queryset=USER_QUERYSET)
+    fully_updated_date = forms.DateField(label=("Fully updated date"))
+    fully_updated_user = UserModelChoiceField(label=("Fully updated by"), queryset=USER_QUERYSET)
 
     class Meta:
         model = Activity
         fields = ('activity_identifier', 'is_public', 'deal_scope', 'deal_size', 'init_date',
-                  'fully_updated_date')
+                  'updated_date', 'updated_user', 'fully_updated_date', 'fully_updated_user')

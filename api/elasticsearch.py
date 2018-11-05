@@ -100,7 +100,10 @@ def get_elasticsearch_properties(doc_type=None):
                 'investor_country_display': {'type': 'keyword'},
                 'investor_region': {'type': 'keyword'},
                 'investor_region_display': {'type': 'keyword'},
+                'updated_date': {'type': 'date'},
+                'updated_user': {'type': 'keyword'},
                 'fully_updated_date': {'type': 'date'},
+                'fully_updated_user': {'type': 'keyword'},
                 'target_region': {'type': 'keyword'},
                 'target_region_display': {'type': 'keyword'},
                 'operating_company_region': {'type': 'keyword'},
@@ -422,7 +425,10 @@ class ElasticSearch(object):
                     'investor_region': list(set(c.fk_region_id for c in investor_countries)),
                     'investor_region_display': list(set(c.fk_region.name for c in
                                                        investor_countries)),
+                    'updated_date': public_activity.get_updated_date(),
+                    'updated_user': public_activity.get_updated_user(),
                     'fully_updated_date': public_activity.get_fully_updated_date(),
+                    'fully_updated_user': public_activity.get_fully_updated_user(),
                     'agricultural_produce': public_activity.get_agricultural_produce(),
                     'availability': public_activity.get_availability(),
                     'forest_concession': 'True' if public_activity.get_forest_concession() else 'False'

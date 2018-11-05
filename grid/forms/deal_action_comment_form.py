@@ -64,7 +64,7 @@ class DealActionCommentForm(BaseForm):
     def __init__(self, *args, **kwargs):
         super(DealActionCommentForm, self).__init__(*args, **kwargs)
         self.fields['assign_to_user'].queryset = get_user_model().objects.filter(
-            groups__name__in=("Editors", "Administrators")).order_by("username")
+            groups__name__in=("Editors", "Administrators")).order_by("first_name", "last_name")
 
     def get_attributes(self, request=None):
         # Remove action comment, this field is handled separately in SaveDealView

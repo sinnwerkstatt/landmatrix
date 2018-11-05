@@ -36,7 +36,7 @@ class FilterWidgetAjaxView(APIView):
         'activity_identifier': TYPE_NUMERIC,
         'fully_updated': TYPE_DATE,
         'fully_updated_date': TYPE_DATE,
-        'last_modification': TYPE_DATE,
+        'updated_date': TYPE_DATE,
         'fully_updated_by': TYPE_LIST,
         'operational_stakeholder': TYPE_AUTOCOMPLETE,
         'target_country': TYPE_AUTOCOMPLETE,
