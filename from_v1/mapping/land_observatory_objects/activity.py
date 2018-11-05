@@ -4,7 +4,6 @@ from django.contrib.gis.db import models as gismodels
 from .tag_groups import A_Tag_Group
 
 
-
 class Activity(models.Model):
     id = models.AutoField(primary_key=True)
     activity_identifier = models.CharField(max_length=255, null=False)

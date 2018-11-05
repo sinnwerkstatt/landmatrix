@@ -82,7 +82,7 @@ def get_elasticsearch_properties(doc_type=None):
                 'activity_identifier': {'type': 'integer'},
                 'geo_point': {'type': 'geo_point'},
                 'status': {'type': 'integer'},
-                'is_public': {'type': 'boolean'},
+                'is_public': {'type': 'keyword'},
                 'is_public_display': {'type': 'text'},
                 'deal_scope': {'type': 'keyword'},
                 'init_date': {'type': 'date',
@@ -108,7 +108,7 @@ def get_elasticsearch_properties(doc_type=None):
                 'operating_company_name': {'type': 'text', 'fields': {'raw': {'type': 'keyword'}}},
                 'agricultural_produce': {'type': 'keyword'},
                 'availability': {'type': 'float'},
-                'forest_concession': {'type': 'boolean'},
+                'forest_concession': {'type': 'keyword'},
             }
         }
         _landmatrix_mappings['location'] = {
@@ -406,7 +406,7 @@ class ElasticSearch(object):
                 top_investors = public_activity.get_top_investors()
                 investor_countries = public_activity.get_investor_countries()
                 deal_attrs.update({
-                    'is_public': public_activity.is_public_deal(),
+                    'is_public': 'True' if public_activity.is_public_deal() else 'False',
                     'deal_scope': public_activity.get_deal_scope(),
                     'deal_size': public_activity.get_deal_size(),
                     'current_contract_size': public_activity.get_contract_size(),
@@ -425,7 +425,7 @@ class ElasticSearch(object):
                     'fully_updated_date': public_activity.get_fully_updated_date(),
                     'agricultural_produce': public_activity.get_agricultural_produce(),
                     'availability': public_activity.get_availability(),
-                    'forest_concession': public_activity.get_forest_concession()
+                    'forest_concession': 'True' if public_activity.get_forest_concession() else 'False'
                 })
             else:
                 pass

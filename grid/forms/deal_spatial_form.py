@@ -32,7 +32,7 @@ class DealSpatialForm(BaseForm):
         required=False, label=_("Spatial accuracy level"),
         choices=ACCURACY_CHOICES)
     location = forms.CharField(
-        required=True, label=_("Location"), widget=LocationWidget)
+        required=False, label=_("Location"), widget=LocationWidget)
     point_lat = forms.CharField(
         required=False, label=_("Latitude"), widget=forms.TextInput,
         initial="")

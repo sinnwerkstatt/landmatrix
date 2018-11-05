@@ -471,7 +471,6 @@ class Activity(ActivityBase):
 
     There should only be one activity per activity_identifier.
     """
-
     is_public = models.BooleanField(_('Is public'), default=False, db_index=True)
     deal_scope = models.CharField(_('Deal scope'), max_length=16,
                                   choices=ActivityBase.DEAL_SCOPE_CHOICES, blank=True,

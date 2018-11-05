@@ -302,7 +302,7 @@ class ElasticSearchMixin(object):
                 "bool": {
                     "filter": {
                         "term": {
-                            "is_public": 'true'
+                            "is_public": "true"
                         }
                     }
                 }

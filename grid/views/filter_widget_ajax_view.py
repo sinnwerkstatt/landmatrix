@@ -168,6 +168,10 @@ class FilterWidgetAjaxView(APIView):
                 # Date?
                 if self.type == self.TYPE_DATE:
                     value = datetime.strptime(value, "%Y-%m-%d")
+            else:
+                # Boolean?
+                if self.type == self.TYPE_BOOLEAN:
+                    value = 'True'
             # Make list
             if self.type in (self.TYPE_LIST, self.TYPE_LIST_MULTIPLE):
                 self._value = value and value.split(',') or []

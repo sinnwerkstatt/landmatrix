@@ -479,15 +479,18 @@ def _parse_value(filter_value, variable=None, key=None):
     Necessary due to the different ways single values and lists are stored
     in DB and session.
     """
-    if len(filter_value) > 1:
-        return filter_value
-    if filter_value:
-        value = filter_value[0]
+    if isinstance(filter_value, (list, tuple)):
+        if len(filter_value) > 1:
+            return filter_value
+        if len(filter_value) > 0:
+            value = filter_value[0]
+        else:
+            value = ''
     else:
-        value = ''
+        value = filter_value
     if '[' in value:
         value = [str(v) for v in json.loads(value)]
-    
+
     if variable is not None and key is not None:
         # Is this still required? Why not just always store ids?
         is_country_string = (
@@ -498,7 +501,7 @@ def _parse_value(filter_value, variable=None, key=None):
         if is_country_string:
             country = Country.objects.defer('geom').get(name__iexact=value.replace('-', ' '))
             value = str(country.pk)
-    
+
     return value
 
 
