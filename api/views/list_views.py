@@ -302,7 +302,7 @@ class ElasticSearchMixin(object):
                 "bool": {
                     "filter": {
                         "term": {
-                            "is_public": "true"
+                            "is_public": "True"
                         }
                     }
                 }
@@ -532,7 +532,7 @@ class StatisticsView(ElasticSearchMixin,
             "bool": {
                 "filter": {
                     "term": {
-                        "is_public": 'true'
+                        "is_public": 'True'
                     }
                 }
             }
