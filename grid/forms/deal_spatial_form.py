@@ -184,8 +184,8 @@ class DealSpatialForm(BaseForm):
 
         return data
 
-    def get_fields_display(self):
-        fields = super().get_fields_display()
+    def get_fields_display(self, user=None):
+        fields = super().get_fields_display(user=user)
         # Hide coordinates depending on level of accuracy
         accuracy = self.initial.get('level_of_accuracy', '')
         if accuracy in ('Country', 'Administrative region', 'Approximate location'):

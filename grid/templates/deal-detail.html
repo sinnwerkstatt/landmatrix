@@ -61,7 +61,7 @@
         <div class="panel-group" id="accordion">
             {% if forms %}
                 {% for form in forms %}
-                    {% if form.get_fields_display or form.forms %}
+                    {% if form.forms or form|fields_display:user %}
                         <div class="panel panel-default">
 
                             <div class="panel-heading">
@@ -81,10 +81,10 @@
                                 <div class="panel-body">
                                     {% if form.forms %}
                                         {% for subform in form.forms %}
-                                            {% include "includes/dealpanels-display.html" with form=subform form_count=forloop.counter %}
+                                            {% include "includes/dealpanels-display.html" with form=subform form_count=forloop.counter user=user %}
                                         {% endfor %}
                                     {% else %}
-                                        {% include "includes/dealpanels-display.html" with form=form %}
+                                        {% include "includes/dealpanels-display.html" with form=form user=user %}
                                     {% endif %}
                                 </div>
                             </div>

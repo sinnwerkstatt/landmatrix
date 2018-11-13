@@ -1,5 +1,5 @@
 {% load custom_tags i18n %}
-{% for field in form.get_fields_display %}
+{% for field in form|fields_display:user %}
     {% if field.name == 'tg' %}
         <h3>{{ field.value }}{% if form_count %} <small>#{{ form_count }}</small>{% endif %}</h3>
     {% else %}

@@ -94,10 +94,13 @@ class DealDataSourceForm(BaseForm):
     def get_availability_total(self):
         return 4
 
-    def get_fields_display(self):
-        if self.initial.get('file_not_public', False):
-            self.initial.pop('file')
-        return super().get_fields_display()
+    def get_fields_display(self, user=None):
+        # Remove file field if not Editor/Admin
+        if self.initial.get('file_not_public', False) and not (user and user.has_perm('landmatrix.review_activity')):
+            self.initial.pop('file_not_public')
+            if 'file' in self.initial:
+                self.initial.pop('file')
+        return super().get_fields_display(user=user)
 
     #    #next_group_id = next_group.id if next_group else ActivityAttributeGroup.objects.order_by('pk').last().id
     #    #if hasattr(deal.activity, 'history_date'):  # isinstance(deal, DealHistoryItem):

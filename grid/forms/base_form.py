@@ -17,7 +17,7 @@ from grid.utils import get_display_value
 
 class FieldsDisplayFormMixin(object):
 
-    def get_fields_display(self):
+    def get_fields_display(self, user=None):
         """Return fields for detail view"""
         output = []
         tg_title = ''

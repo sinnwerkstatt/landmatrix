@@ -54,6 +54,11 @@ def ensure_list(value):
         return [value,]
 
 
+@register.filter(name='fields_display')
+def get_fields_display(form, user):
+    return form.get_fields_display(user=user)
+
+
 @register.filter(name='display_values')
 def get_display_values(values, field):
     result = []
@@ -66,6 +71,7 @@ def get_display_values(values, field):
         else:
             result.append(get_display_value_by_field(field, v))
     return result
+
 
 def get_display_value_by_field(field, value):
     choices_dict = {}
@@ -240,6 +246,7 @@ def add_class(field, new_cls):
 @register.filter
 def classname(obj):
     return obj.__class__.__name__
+
 
 @register.filter
 def decimalgroupstring(obj):

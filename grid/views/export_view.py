@@ -529,7 +529,7 @@ class DealDetailExportView(DealDetailView, ExportView):
         for form in context['forms']:
             if hasattr(form, 'forms'):
                 for i, subform in enumerate(form.forms):
-                    for field in subform.get_fields_display():
+                    for field in subform.get_fields_display(user=request.user):
                         if field['name'].startswith('tg_') and not field['name'].endswith('_comment'):
                             continue
                         label = '%s %i %s' % (
@@ -542,7 +542,7 @@ class DealDetailExportView(DealDetailView, ExportView):
                             'value': field['value']
                         })
             else:
-                for field in form.get_fields_display():
+                for field in form.get_fields_display(user=request.user):
                     if field['name'].startswith('tg_') and not field['name'].endswith('_comment'):
                         continue
                     attributes.append({
