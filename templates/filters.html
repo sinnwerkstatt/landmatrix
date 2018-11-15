@@ -77,7 +77,7 @@
             <form class="form" method="POST" action="./">
                 <div class="col-md-3 filterbox filter-variable controls">
                     <h6>{% trans "Create a custom filter" %}</h6>
-                    <select id="filter_variable" name="variable">
+                    <select id="filter_variable" name="variable" autocomplete="off">
                         <option></option>
                     {% for group, items in variables.items %}
                         <optgroup label="{{ group }}">
