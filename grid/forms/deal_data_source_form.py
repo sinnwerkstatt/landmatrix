@@ -95,12 +95,16 @@ class DealDataSourceForm(BaseForm):
         return 4
 
     def get_fields_display(self, user=None):
-        # Remove file field if not Editor/Admin
-        if self.initial.get('file_not_public', False) and \
-                not (user and user.is_authenticated() and user.has_perm('landmatrix.review_activity')):
-            self.initial.pop('file_not_public')
-            if 'file' in self.initial:
-                self.initial.pop('file')
+        if not (user and user.is_authenticated() and user.has_perm('landmatrix.review_activity')):
+            # Remove file field if not Editor/Admin
+            if self.initial.get('file_not_public', False):
+                self.initial.pop('file_not_public')
+                if 'file' in self.initial:
+                    self.initial.pop('file')
+            # Remove personal information fields
+            for field_name in ('name', 'company', 'email', 'phone'):
+                if field_name in self.initial:
+                    self.initial.pop(field_name)
         return super().get_fields_display(user=user)
 
     #    #next_group_id = next_group.id if next_group else ActivityAttributeGroup.objects.order_by('pk').last().id

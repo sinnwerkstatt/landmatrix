@@ -3,13 +3,12 @@ from datetime import datetime
 from fabric.api import cd, run, env, local, hide, settings
 from fabric.contrib import django
 from fabric.operations import get
-from fabvenv import virtualenv
 
 def dev():
     env.name = 'staging'
     env.hosts = ['landmatrix@beta.landmatrix.org']
     env.path = '/home/landmatrix/landmatrix-dev'
-    env.virtualenv_path = '/home/landmatrix/.virtualenvs/landmatrix-dev'
+    env.activate = 'source /home/landmatrix/.virtualenvs/landmatrix-dev/bin/activate'
     env.push_branch = 'master'
     env.push_remote = 'origin'
     env.reload_cmd = 'sudo supervisorctl restart landmatrix-dev'
@@ -21,11 +20,11 @@ def production():
     env.name = 'production'
     env.hosts = ['landmatrix@beta.landmatrix.org']
     env.path = '/home/landmatrix/landmatrix'
-    env.virtualenv_path = '/home/landmatrix/.virtualenvs/landmatrix'
+    env.activate = 'source /home/landmatrix/.virtualenvs/landmatrix-dev/bin/activate'
     env.backup_path = '/srv/lmlo.sinnwerkstatt.com/backups'
     env.push_branch = 'master'
     env.push_remote = 'origin'
-    env.reload_cmd = 'supervisorctl restart landmatrix'
+    env.reload_cmd = 'sudo supervisorctl restart landmatrix'
     env.db_name = 'landmatrix'
     env.db_username = 'landmatrix'
 
@@ -36,7 +35,7 @@ def reload_webserver():
     run("%(reload_cmd)s" % env)
 
 def migrate():
-    with virtualenv(env.virtualenv_path):
+    with prefix(env.activate):
         run("%(path)s/manage.py syncdb" % env)
         run("%(path)s/manage.py migrate" % env)
 
@@ -47,7 +46,7 @@ def deploy():
     with cd(env.path):
         run("git pull %(push_remote)s %(push_branch)s" % env)
         compile_less()
-        with virtualenv(env.virtualenv_path):
+        with prefix(env.activate):
             run("pip install -Ur requirements.txt")
             run("./manage.py collectstatic --noinput")
 
@@ -58,13 +57,13 @@ def deploy():
 def hotdeploy():
     with cd(env.path):
         run("git pull %(push_remote)s %(push_branch)s" % env)
-        compile_less()
-        with virtualenv(env.virtualenv_path):
-            run("./manage.py collectstatic --noinput")
+        #compile_less()
+        #with prefix(env.activate):
+        #    run("./manage.py collectstatic --noinput")
     reload_webserver()
     
 def init_fixtures():
-    with virtualenv(env.virtualenv_path):
+    with prefix(env.activate):
         run("%(path)s/manage.py loaddata init.json" % env)
         
 def update():
@@ -72,7 +71,7 @@ def update():
     with cd(env.path):
         run("git pull %(push_remote)s %(push_branch)s" % env)
         compile_less()
-        with virtualenv(env.virtualenv_path):
+        with prefix(env.activate):
             run("./manage.py collectstatic --noinput")
         
     reload_webserver()
@@ -83,9 +82,9 @@ def backup():
         run("ls -lt")
 
 def rebuild_index():
-    with virtualenv(env.virtualenv_path):
+    with prefix(env.activate):
         run("%(path)s/manage.py rebuild_index -v 2" % env)
 
 def update_index():
-    with virtualenv(env.virtualenv_path):
+    with prefix(env.activate):
         run("%(path)s/manage.py update_index -v 2" % env)
