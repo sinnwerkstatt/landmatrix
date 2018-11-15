@@ -110,6 +110,11 @@ class FilterCreateView(GenericAPIView):
                 variable=variable, operator=operator, value=value,
                 label=label, name=name, display_value=display_value)
         stored_filters[new_filter.name] = new_filter
+        # Convert default filters to custom filters
+        stored_filters = dict((k.replace('default_', ''), v)
+                              for k, v in stored_filters.items())
+        # Disable default filters
+        request.session['set_default_filters'] = False
         request.session['filters'] = stored_filters
 
         return Response(stored_filters)
@@ -187,13 +192,11 @@ class FilterDeleteView(GenericAPIView):
 
         try:
             del stored_filters[name]
-            # Default filter?
-            if 'default_preset' in name:
-                # Convert default filters to custom filters
-                stored_filters = dict((k.replace('default_', ''), v)
-                    for k, v in stored_filters.items())
-                # Disable default filters
-                request.session['set_default_filters'] = False
+            # Convert default filters to custom filters
+            stored_filters = dict((k.replace('default_', ''), v)
+                for k, v in stored_filters.items())
+            # Disable default filters
+            request.session['set_default_filters'] = False
         except KeyError:
             pass
         request.session['filters'] = stored_filters
@@ -212,6 +215,7 @@ class SetDefaultFiltersView(APIView):
 
     def post(self, request, *args, **kwargs):
         if request.POST.get('set_default_filters', False):
+            request.session['filters'] = {}
             request.session['set_default_filters'] = True
         else:
             request.session['set_default_filters'] = False

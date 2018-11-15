@@ -275,16 +275,28 @@ $(document).ready(function () {
         $("#id_columns").trigger("change");
     };
 
-    $("#id_columns").on("change", function(event) {
+    $("#id_columns").on("change", function(e) {
+        e.preventDefault();
         var unselectedColumns = $("#id_columns option:not(:selected)");
         var selectLink = $("#select-all-columns");
         if (unselectedColumns.length) {
-            selectLink.text("Select All").off("click").on("click", selectAllColumns);
+            selectLink.text("all columns").off("click").on("click", selectAllColumns);
         }
         else {
-            selectLink.text("Deselect All").off("click").on("click", deselectAllColumns);
+            selectLink.text("deselect all columns").off("click").on("click", deselectAllColumns);
         }
+        return false;
     });
     $("#select-all-columns").click(selectAllColumns);
+
+    var selectDefaultColumns = function (e) {
+        e.preventDefault();
+        event.preventDefault();
+        $("#id_columns option").prop("selected", false);
+        $("#id_columns option.default").prop("selected", true);
+        $("#id_columns").trigger("change");
+        return false;
+    };
+    $("#select-default-columns").click(selectDefaultColumns);
 
 });

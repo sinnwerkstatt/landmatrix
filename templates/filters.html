@@ -141,14 +141,21 @@
                         {% for group, items in variables.items %}
                         <optgroup label="{{ group }}">
                             {% for variable in items %}
-                            <option value="{{ variable.name }}"{% if variable.name in columns.keys %} selected="selected"{% endif %}>{% trans variable.label %}</option>
+                            <option value="{{ variable.name }}"{% if variable.name in columns.keys %} selected="selected"{% endif %}{% if variable.name in default_columns %} class="default"{% endif %}>{% trans variable.label %}</option>
                             {% endfor %}
                         </optgroup>
                         {% endfor %}
                     </select>
-                    <a id="select-all-columns" class="pull-right" href="#">
-                        {% trans "Select All" %}
-                    </a>
+                    <div class="pull-right">
+                        Select
+                        <a id="select-default-columns" href="#">
+                            {% trans "default columns" %}
+                        </a>
+                        or
+                        <a id="select-all-columns" href="#">
+                            {% trans "all columns" %}
+                        </a>
+                    </div>
                 </div>
             </div>
             {% endif %}

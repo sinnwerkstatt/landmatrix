@@ -144,6 +144,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             },
             "name": self.group_value,
             "columns": self.columns_dict,
+            "default_columns": self.default_columns_dict,
             "load_more": self._load_more_amount(),
             "group_slug": self.group,
             "group_value": self.group_value,
@@ -295,9 +296,9 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             return int(self._load_more()) + self.LOAD_MORE_AMOUNT
         return None
 
-    def get_columns(self):
+    def get_columns(self, default=False):
         columns = []
-        if self.request.GET.get('columns'):
+        if not default and self.request.GET.get('columns'):
             columns = self.request.GET.getlist('columns')
             if 'activity_identifier' not in columns:
                 columns = ['activity_identifier'] + columns
@@ -317,13 +318,12 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
     def columns(self):
         return [c.replace('_display', '') for c in self.get_columns()]
 
-    @property
-    def columns_dict(self):
+    def get_columns_dict(self, default=False):
         """Get column information for template"""
         # Labels for all custom fields (fields that are not part of any form)
         columns = OrderedDict()
         order_by = self.get_order_by_field()[0]
-        for i, name in enumerate(self.get_columns()):
+        for i, name in enumerate(self.get_columns(default=default)):
             label = None
             column = name.replace('_display', '')
             if column in self.COLUMN_LABELS_MAP.keys():
@@ -342,6 +342,16 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                 columns[column]['order_by'] = '-'+column if column == order_by else column
 
         return columns
+
+    @property
+    def columns_dict(self):
+        """Get default column information for template"""
+        return self.get_columns_dict(default=False)
+
+    @property
+    def default_columns_dict(self):
+        """Get default column information for template"""
+        return self.get_columns_dict(default=True)
 
     @property
     def filters(self):
