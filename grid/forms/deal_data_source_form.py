@@ -96,7 +96,8 @@ class DealDataSourceForm(BaseForm):
 
     def get_fields_display(self, user=None):
         # Remove file field if not Editor/Admin
-        if self.initial.get('file_not_public', False) and not (user and user.has_perm('landmatrix.review_activity')):
+        if self.initial.get('file_not_public', False) and \
+                not (user and user.is_authenticated() and user.has_perm('landmatrix.review_activity')):
             self.initial.pop('file_not_public')
             if 'file' in self.initial:
                 self.initial.pop('file')

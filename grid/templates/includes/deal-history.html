@@ -22,7 +22,7 @@
                                                 <p>{{ item.history_date }}</p>
                                                 {% if forloop.counter == 1 %}</strong>{% endif %}
                                             </td>
-                                            {% if user.is_authenticated %}
+                                            {% if user.is_authenticated and perms.landmatrix.review_activity %}
                                             <td>
                                                 <p>{% if item.history_user %}{{ item.history_user.get_full_name }}{% else %}{% trans "Unknown user" %}{% endif %}</p>
                                             </td>
