@@ -9,7 +9,7 @@ def dev():
     env.hosts = ['landmatrix@beta.landmatrix.org']
     env.path = '/home/landmatrix/landmatrix-dev'
     env.activate = 'source /home/landmatrix/.virtualenvs/landmatrix-dev/bin/activate'
-    env.push_branch = 'master'
+    env.push_branch = 'dev'
     env.push_remote = 'origin'
     env.reload_cmd = 'sudo supervisorctl restart landmatrix-dev'
     env.db_name = 'landmatrix'
