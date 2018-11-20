@@ -195,9 +195,8 @@ class PublicViewDealDataSourceFormSet(
 
 
 def get_file_from_upload(files, form_index):
-    try:
-        key = next(k for k in files.keys() if 'form-{}-file'.format(form_index))
-        file = files.getlist(key)[0]
+    key = 'data_source-{}-file-new'.format(form_index)
+    file = files.get(key)
+    if file:
         return data_source_storage.save(file.name, file)
-    except (StopIteration, IndexError, AttributeError):
-        return None
+    return None
