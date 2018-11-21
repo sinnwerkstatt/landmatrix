@@ -654,16 +654,17 @@ class Activity(ActivityBase):
             if not investors:
                 investors = set()
             countries = set()
+            # Check if investor already processed to prevent infinite loops
+            if involvement.fk_investor_id in investors:
+                return countries
+            else:
+                investors.add(involvement.fk_investor_id)
             if involvement.fk_investor.fk_status_id in (Investor.STATUS_ACTIVE, Investor.STATUS_OVERWRITTEN):
-                # Check if investor already processed to prevent infinite loops
-                if involvement.fk_investor_id in investors:
-                    return countries
                 if involvement.fk_investor.fk_country_id:
                     countries.add(str(involvement.fk_investor.fk_country_id))
-                    investors.add(involvement.fk_investor_id)
             sinvolvements = involvement.fk_investor.venture_involvements.stakeholders()
             sinvolvements = sinvolvements.filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE,
-                                                                              Investor.STATUS_OVERWRITTEN))
+                                                                                Investor.STATUS_OVERWRITTEN))
             for sinvolvement in sinvolvements:
                 countries.update(get_investor_countries(sinvolvement, investors))
             return countries
