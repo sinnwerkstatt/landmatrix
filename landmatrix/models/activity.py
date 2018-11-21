@@ -650,19 +650,23 @@ class Activity(ActivityBase):
             return None
 
     def get_deal_scope(self):
+        def get_investor_countries(involvement):
+            countries = set()
+            if involvement.fk_investor.fk_status_id in (Investor.STATUS_ACTIVE, Investor.STATUS_OVERWRITTEN):
+                if involvement.fk_investor.fk_country_id:
+                    countries.add(str(involvement.fk_investor.fk_country_id))
+            sinvolvements = involvement.fk_investor.venture_involvements.stakeholders()
+            sinvolvements = sinvolvements.filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE,
+                                                                              Investor.STATUS_OVERWRITTEN))
+            for sinvolvement in sinvolvements:
+                countries.update(get_investor_countries(sinvolvement))
+            return countries
+
         target_countries = {c.value for c in self.attributes.filter(name="target_country")}
         involvements = self.involvements.all()
         investor_countries = set()
-        for oc in involvements:
-            if oc.fk_investor.fk_status_id in (Investor.STATUS_ACTIVE, Investor.STATUS_OVERWRITTEN):
-                if oc.fk_investor.fk_country_id:
-                    investor_countries.add(str(oc.fk_investor.fk_country_id))
-            stakeholders = oc.fk_investor.venture_involvements.stakeholders()
-            stakeholders = stakeholders.filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE,
-                                                                              Investor.STATUS_OVERWRITTEN))
-            for i in stakeholders:
-                if i.fk_investor.fk_country_id:
-                    investor_countries.add(str(i.fk_investor.fk_country_id))
+        for oc_involvement in involvements:
+            investor_countries.update(get_investor_countries(oc_involvement))
         if len(target_countries) > 0 and len(investor_countries) > 0:
             if len(target_countries.symmetric_difference(investor_countries)) == 0:
                 return "domestic"
