@@ -650,16 +650,22 @@ class Activity(ActivityBase):
             return None
 
     def get_deal_scope(self):
-        def get_investor_countries(involvement):
+        def get_investor_countries(involvement, investors=None):
+            if not investors:
+                investors = set()
             countries = set()
             if involvement.fk_investor.fk_status_id in (Investor.STATUS_ACTIVE, Investor.STATUS_OVERWRITTEN):
+                # Check if investor already processed to prevent infinite loops
+                if involvement.fk_investor_id in investors:
+                    return countries
                 if involvement.fk_investor.fk_country_id:
                     countries.add(str(involvement.fk_investor.fk_country_id))
+                    investors.add(involvement.fk_investor_id)
             sinvolvements = involvement.fk_investor.venture_involvements.stakeholders()
             sinvolvements = sinvolvements.filter(fk_investor__fk_status_id__in=(Investor.STATUS_ACTIVE,
                                                                               Investor.STATUS_OVERWRITTEN))
             for sinvolvement in sinvolvements:
-                countries.update(get_investor_countries(sinvolvement))
+                countries.update(get_investor_countries(sinvolvement, investors))
             return countries
 
         target_countries = {c.value for c in self.attributes.filter(name="target_country")}
