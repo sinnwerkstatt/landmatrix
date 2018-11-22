@@ -146,7 +146,7 @@
               {% elif column == "crops" %}
                   <td class="{{ column }}" style="width:341px">
                   {% if item.crops %}
-                    <a href="{% url 'table_list' group='by-crop' %}{{ item.crops.display|slugify }}/">
+                    <a href="{% url 'table_list' group='by-crop' %}{{ item.crops.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
                         {{ item.crops.display }}
                     </a>
                   {% else %}
