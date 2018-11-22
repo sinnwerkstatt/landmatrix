@@ -1102,10 +1102,15 @@ a:focus {
   color: #b9d635;
   text-decoration: none; }
 
+.rich-text a,
 p a,
 ul li a {
   color: #fc941f;
   vertical-align: bottom; }
+
+#footer-nav .rich-text a {
+  color: #4a4a4a;
+}
 
 .icon-none {
   width: 14px;
