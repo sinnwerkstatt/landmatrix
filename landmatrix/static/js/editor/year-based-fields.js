@@ -1,3 +1,14 @@
+function initYBDfield(container) {
+    // Prevent multiple selection of current checkboxes
+    container.find('.year-based-is-current').click(function () {
+        var checkbox = $(this);
+        if (checkbox.is(':checked')) {
+            // Uncheck other checkboxes
+            checkbox.parents('.controls').find(':checkbox:not(#' + checkbox.attr('id') + ')').attr('checked', false);
+        }
+    });
+}
+
 function cloneYBDfield(link) {
   link = $(link);
   var container = link.parents(".controls"),
@@ -14,6 +25,7 @@ function cloneYBDfield(link) {
   new_field.find('.remove-ybd').click(function () { removeYBDfield(this); });
   new_field.find(':input:not(:checkbox)').val("");
   renumberYBDInputs(container);
+  initYBDfield(container);
 }
 
 function removeYBDfield(link) {
@@ -43,4 +55,5 @@ $(document).ready(function () {
 
   $(".add-ybd").click(function () { cloneYBDfield(this); });
   $(".remove-ybd").click(function () { removeYBDfield(this); });
-})
+  initYBDfield($('.year-based').parents('.controls'));
+});
