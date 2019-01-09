@@ -380,7 +380,7 @@ function update_widget (el, key_id, form) {
       op = el.parents("li").prev().find("option:selected").val();
   // year based fields delete suffix (e.g. _0)
   name = name.replace(/_\d+$/, "");
-  $.get("/ajax/widget/values", {key_id:  key_id, value: value, name: name, operation: op}, function (data) {
+  $.get("/ajax/widget/" + doc_type + "/", {key_id:  key_id, value: value, name: name, operation: op}, function (data) {
     el.html(data);
   });
 };

@@ -1,0 +1,47 @@
+{% load i18n custom_tags filter_tags %}
+{% load humanize %}
+
+        <div class="navbar navbar-default navbar-subnav" role="navigation">
+            <div class="container-fluid">
+
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#subnav" aria-expanded="false">
+                        <span class="sr-only">{% trans "Toggle navigation" %}</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse" id="subnav">
+                    <ul class="nav navbar-nav">
+
+                        <li{% if group == "all" %} class="active"{% endif %}>
+                            <a href="{% url 'investor_list' %}{% list_params %}" role="button"><span>{% trans "All Investors" %}</span></a>
+                        </li>
+                        <li{% if group == "role" %} class="active"{% endif %}>
+                            <a href="{% url 'investor_list' group='by-role' %}{% list_params %}" role="button">
+                                {% trans "By Role" %}
+                            </a>
+                        </li>
+                        <li{% if group == "classification" %} class="active"{% endif %}>
+                            <a href="{% url 'investor_list' group='by-classification' %}{% list_params %}" role="button">
+                               {% trans "By Classification" %}
+                           </a>
+                        </li>
+                        <li{% if group == "by_fk_country" %} class="active"{% endif %}>
+                            <a href="{% url 'investor_list' group='by-fk-country' %}{% list_params %}" role="button">
+                                {% trans "By Country of registration/origin" %}
+                            </a>
+                        </li>
+
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li{% if group == "all" %} class="active"{% endif %}>
+                            <a href="{% url 'data' %}{% list_params %}" role="button"><i class="fa fa-exchange"></i>&nbsp;<span>{% trans "Deals" %}</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>

@@ -2,7 +2,13 @@
 {% if column == "activity_identifier" %}
     <td class="{{ column }} deal-id">
         {% for deal_id in item.activity_identifier %}
-        <a href="{% if request.user.is_staff %}{% url 'change_deal' deal_id%}{% else %}{% url 'deal_detail' deal_id %}{% endif %}" class="label label-default">{{ deal_id}}</a>
+        <a href="{% if request.user.is_staff %}{% url 'change_deal' deal_id%}{% else %}{% url 'deal_detail' deal_id %}{% endif %}" class="label label-default">{{ deal_id }}</a>
+        {% endfor %}
+    </td>
+{% elif column == "investor_identifier" %}
+    <td class="{{ column }} investor-id">
+        {% for investor_id in item.investor_identifier %}
+        <a href="{% url 'investor_detail' investor_id %}" class="label label-default">{{ investor_id }}</a>
         {% endfor %}
     </td>
 {% elif column == "crop" %}

@@ -173,6 +173,7 @@ class MapSettingsMixin:
 
 
 class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
+
     template_name = 'map/map.html'
 
     def get_context_data(self, **kwargs):
@@ -186,7 +187,7 @@ class MapView(MapSettingsMixin, FilterWidgetMixin, TemplateView):
         })
 
         # Target country or region set?
-        filters = self.request.session.get('filters', {})
+        filters = self.request.session.get('deal:filters', {})
         if 'country' in filters:
             target_country_id = filters['country']['value']
             with contextlib.suppress(Country.DoesNotExist, ValueError):

@@ -7,7 +7,7 @@ from django.template.defaultfilters import slugify
 from wagtailcms.models import WagtailRootPage
 
 from grid.views.filter_widget_mixin import FilterWidgetMixin
-from grid.views.browse_filter_conditions import get_field_label
+from grid.views.browse_filter_conditions import get_activity_field_label
 from grid.forms.choices import intention_choices, INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 from landmatrix.models import Country, Region, Crop
 from api.views import ElasticSearchMixin
@@ -44,7 +44,9 @@ for choice, value in intention_choices:
     #    }
 
 
-class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
+class TableGroupView(FilterWidgetMixin,
+                     ElasticSearchMixin,
+                     TemplateView):
 
     LOAD_MORE_AMOUNT = 20
     QUERY_LIMITED_GROUPS = ["target_country", "operational_stakeholder_name",
@@ -116,7 +118,8 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
         'operating_company_comment': _("Additional comment on Operating company"),
     }
 
-    template_name = "group-by.html"
+    template_name = "grid/deals.html"
+    doc_type = "deal"
     debug_query = False
     group = None
     group_value = None
@@ -167,8 +170,8 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             order_by = None
 
         # Search deals
-        results = self.execute_elasticsearch_query(query, doc_type='deal', fallback=False,
-                                                 sort=order_by, aggs=aggs)
+        results = self.execute_elasticsearch_query(query, doc_type=self.doc_type, fallback=False,
+                                                   sort=order_by, aggs=aggs)
 
         if aggs:
             results = results[self.group]['buckets']
@@ -184,7 +187,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
                     }
                 self.group_values = investors
         else:
-            results = self.filter_deals(results)
+            results = getattr(self, 'filter_%ss' % self.doc_type)(results)
 
         self.num_results = len(results)
 
@@ -329,7 +332,7 @@ class TableGroupView(FilterWidgetMixin, ElasticSearchMixin, TemplateView):
             if column in self.COLUMN_LABELS_MAP.keys():
                 label = self.COLUMN_LABELS_MAP[column]
             else:
-                label = get_field_label(column)
+                label = get_activity_field_label(column)
             columns[column] = {
                 'label': label,
                 'name': column,

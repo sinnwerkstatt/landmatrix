@@ -28,7 +28,7 @@ from grid.views.change_deal_view import ChangeDealView
 from grid.views.deal_comparison_view import DealComparisonView
 from grid.views.deal_detail_view import DealDetailView
 from grid.views.filter_widget_ajax_view import FilterWidgetAjaxView
-from grid.views.stakeholder_view import AddStakeholderView, ChangeStakeholderView
+from grid.views.investor import InvestorCreateView, InvestorUpdateView, InvestorDetailView
 from grid.views.investor_comparison_view import InvestorComparisonView
 from grid.views.delete_deal_view import DeleteDealView, RecoverDealView
 from grid.views.export_view import ExportView
@@ -160,16 +160,18 @@ urlpatterns = [
 
     url(r'^deal/comments/', include('public_comments.urls')),
 
-    url(r'^investor/add/$', AddStakeholderView.as_view(), name='add_stakeholder_form'),
+    url(r'^investor/(?P<investor_id>\d*)/$', InvestorDetailView.as_view(), name='investor_detail'),
+    url(r'^investor/(?P<investor_id>\d*)/(?P<history_id>\d+)/$', InvestorDetailView.as_view(), name='investor_detail'),
+    url(r'^investor/add/$', InvestorCreateView.as_view(), name='investor_add'),
     url(
-        r'^investor/(?P<investor_id>\d+)/$',
-        ChangeStakeholderView.as_view(),
-        name='stakeholder_form'
+        r'^investor/edit/(?P<investor_id>\d+)/$',
+        InvestorUpdateView.as_view(),
+        name='investor_update'
     ),
     url(
-        r'^investor/(?P<investor_id>\d*)/(?P<history_id>\d+)/$',
-        ChangeStakeholderView.as_view(),
-        name='stakeholder_form'
+        r'^investor/edit/(?P<investor_id>\d*)/(?P<history_id>\d+)/$',
+        InvestorUpdateView.as_view(),
+        name='investor_update'
     ),
     url(
         r'^investors/compare/(?P<investor_1_id>\d+)/(?P<investor_2_id>\d+)/$',
@@ -183,13 +185,12 @@ urlpatterns = [
     ),
 
     url(r'^editor/', include(editor_urls)),
+    url(r'^ajax/widget/(?P<doc_type>deal|investor)/',
+        FilterWidgetAjaxView.as_view(),
+        name='ajax_widget'),
     #url(r'^filters$', FilterView.as_view(), name='filterdebug'),
     url(r'', include(wagtail_urls)),
 ]
 # Non i18n patterns
-urlpatterns += [
-    url(r'^ajax/widget/(?P<action>operators|values)', FilterWidgetAjaxView.as_view(),
-            name='ajax_widget'),
-]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -16,6 +16,7 @@ from landmatrix.models.country import Country
 from landmatrix.models.crop import Crop
 from grid.forms.choices import NATURE_CONCESSION, INTENTION_FOREST_LOGGING
 
+
 class ActivityQuerySet(models.QuerySet):
     def public(self, user=None):
         '''

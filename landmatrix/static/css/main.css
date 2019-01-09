@@ -181,7 +181,7 @@
   padding-right: 10px;
   display: inline-block; }
 
-.navbar-right .fa {
+#main-navbar-collapse .navbar-right .fa {
   margin-top: 10px;
   color: #919191;
   display: block;

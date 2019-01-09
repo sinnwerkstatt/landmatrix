@@ -13,11 +13,11 @@ from grid.views.browse_filter_conditions import BrowseFilterConditions
 from landmatrix.models.country import Country
 from landmatrix.models.region import Region
 from landmatrix.models.activity import Activity
-from landmatrix.forms import ActivityFilterForm
+from landmatrix.forms import ActivityFilterForm, InvestorFilterForm
 from grid.forms.investor_form import OperationalCompanyForm, ParentInvestorForm, ParentStakeholderForm
 
 
-def get_variable_table():
+def get_activity_variable_table():
     '''
     Create an OrderedDict of group name keys with lists of dicts for each
     variable in the group (each dict contains 'name' and 'label' keys).
@@ -98,12 +98,60 @@ def get_variable_table():
     return variable_table
 
 
+def get_investor_variable_table():
+    '''
+    Create an OrderedDict of group name keys with lists of dicts for each
+    variable in the group (each dict contains 'name' and 'label' keys).
+
+    This whole thing is static, and maybe should just be written out, but
+    for now generate it dynamcially on app load.
+    '''
+    variable_table = OrderedDict()
+    group_items = []
+    group_title = ''
+
+    # Add investor attributes
+    investor_variables = []
+    for field_name, field in InvestorFilterForm.base_fields.items():
+        if field_name == 'id':
+            continue
+        investor_variables.append({
+            'name': field_name,
+            'label': str(field.label),
+        })
+    variable_table[str(_('Investor'))] = investor_variables
+
+    # Add parent company attributes
+    pc_variables = []
+    for field_name, field in ParentStakeholderForm.base_fields.items():
+        if field_name == 'id':
+            continue
+        pc_variables.append({
+            'name': 'parent_stakeholder_%s' % field_name,
+            'label': '%s %s' % (str(_('Parent company')), str(field.label)),
+            })
+    variable_table[str(_('Parent company'))] = pc_variables
+
+    # Add tertiary investors/lenders attributes
+    til_variables = []
+    for field_name, field in ParentInvestorForm.base_fields.items():
+        if field_name == 'id':
+            continue
+        til_variables.append({
+            'name': 'parent_investor_%s' % field_name,
+            'label': '%s %s' % (str(_('Tertiary investor/lender')), str(field.label)),
+         })
+    variable_table[str(_('Tertiary investor/lender'))] = til_variables
+
+    return variable_table
+
 class FilterWidgetMixin:
-    variable_table = get_variable_table()
+
+    doc_type = 'deal'
+    variable_table = get_activity_variable_table()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # TODO: not sure rules is still used - check this and remove
         self.rules = []
 
     @property
@@ -122,7 +170,7 @@ class FilterWidgetMixin:
         context = super().get_context_data(**kwargs)
 
         set_default_filters = True
-        if 'set_default_filters' in self.request.session and not self.request.session.get('set_default_filters'):
+        if not self.request.session.get('%s:set_default_filters' % self.doc_type):
             # Disable and remove all default filters (including hidden)
             set_default_filters = False
             self.remove_default_filters()
@@ -146,6 +194,7 @@ class FilterWidgetMixin:
         filters['order_by'] = order_by # required for table group view
         filters['group_by'] = group_by
         filters['group_value'] = group_value
+
         filters['starts_with'] = starts_with
 
         return filters
@@ -154,7 +203,7 @@ class FilterWidgetMixin:
         filter_values = {}
         # Country or region filter set?
         if data.get('country', None) or data.get('region', None):
-            stored_filters = self.request.session.get('filters', {})
+            stored_filters = self.request.session.get('%s:filters' % self.doc_type, {})
             if not stored_filters:
                 stored_filters = {}
             if data.get('country', None):
@@ -193,32 +242,31 @@ class FilterWidgetMixin:
                     label=filter_values['label'], display_value=filter_values.get('display_value', None)
                 )
                 stored_filters[new_filter.name] = new_filter
-                self.request.session['filters'] = stored_filters
+                self.request.session['%s:filters' % self.doc_type] = stored_filters
         else:
             self.remove_country_region_filter()
 
     def remove_country_region_filter(self):
-        stored_filters = self.request.session.get('filters', {})
+        stored_filters = self.request.session.get('%s:filters' % self.doc_type, {})
         if stored_filters:
             stored_filters = dict(filter(lambda i: i[1].get('name', '') not in ('country', 'region'), stored_filters.items()))
-        self.request.session['filters'] = stored_filters
+        self.request.session['%s:filters' % self.doc_type] = stored_filters
         #stored_filters = self.request.session['filter_query_params']
         #stored_filters = dict(filter(lambda i: i[1].get('variable', '') not in ('target_country', 'target_region'), stored_filters.items()))
-        self.request.session['filter_query_params'] = None
+        self.request.session['%s:filter_query_params' % self.doc_type] = None
 
     def set_default_filters(self, data, disabled_presets=[], enabled_presets=[]):
         self.remove_default_filters()
         # Don't set default filters?
-        if 'set_default_filters' in self.request.session:
-            if not self.request.session.get('set_default_filters'):
-                return
+        if not self.request.session.get('%s:set_default_filters' % self.doc_type):
+            return
         if not disabled_presets:
-            if hasattr(self, 'disabled_presets') and self.disabled_presets:
+            if hasattr(self, '%s:disabled_presets' % self.doc_type) and self.disabled_presets:
                 disabled_presets = self.disabled_presets
         if not enabled_presets:
-            if hasattr(self, 'enabled_presets') and self.enabled_presets:
+            if hasattr(self, '%s:enabled_presets' % self.doc_type) and self.enabled_presets:
                 enabled_presets = self.enabled_presets
-        stored_filters = self.request.session.get('filters', {})
+        stored_filters = self.request.session.get('%s:filters' % self.doc_type, {})
         if not stored_filters:
             stored_filters = {}
         # Target country or region set?
@@ -257,13 +305,13 @@ class FilterWidgetMixin:
                 filter_name = 'default_preset_%i' % preset.id
                 stored_filters[filter_name] = PresetFilter(
                     preset, name=filter_name, hidden=preset.is_hidden)
-        self.request.session['filters'] = stored_filters
+        self.request.session['%s:filters' % self.doc_type] = stored_filters
   
     def remove_default_filters(self):
-        stored_filters = self.request.session.get('filters', {})
+        stored_filters = self.request.session.get('%s:filters' % self.doc_type, {})
         if stored_filters:
             stored_filters = dict(filter(lambda i: 'default_preset' not in i[0], stored_filters.items()))
-        self.request.session['filters'] = stored_filters
+        self.request.session['%s:filters' % self.doc_type] = stored_filters
 
     def get_formset_conditions(self, filter_set, data, group_by=None):
         self.set_country_region_filter(data)
@@ -304,4 +352,4 @@ class FilterWidgetMixin:
     def status(self):
         if self.request.user.is_authenticated() and "status" in self.request.GET:
             return self.request.GET.getlist("status")
-        return ['2','3'] # FIXME: Use Activity.STATUS_ACTIVE + Activity.STATUS_OVERWRITTEN
+        return ['2', '3'] # FIXME: Use Activity.STATUS_ACTIVE + Activity.STATUS_OVERWRITTEN

@@ -269,7 +269,7 @@
                         {% for activity in activities %}
                             <tr class="deletes">
                                 <td class="investor"><a
-                                        href="{% url 'stakeholder_form' investor_id=activity.investor_id %}">#{{ activity.investor_id }}</a>
+                                        href="{% url 'investor_update' investor_id=activity.investor_id %}">#{{ activity.investor_id }}</a>
                                 </td>
                                 <td class="user">{{ activity.user }}</td>
                                 <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>

@@ -400,46 +400,6 @@ def format_filters_elasticsearch(filters, initial_query=None):
     if initial_query is None:
         remove_all_dict_keys_from_mixed_dict(query, '_filter_name')
     return query
-    
-# Deprecated
-def load_filters(request, filter_format=FILTER_FORMATS_SQL):
-    filters = {}
-    session_filters = request.session.get('filters', {}) or {}  # Can be None in some cases
-    for filter_name, filter_dict in session_filters.items():
-        if 'preset_id' in filter_dict:
-            filter = PresetFilter.from_session(filter_dict)
-        else:
-            filter = Filter.from_session(filter_dict)
-        # Create subquery for investor variable queries
-        if filter['variable'].startswith('parent_company_'):
-            filters[filter_name] = filter
-        elif filter['variable'].startswith('tertiary_investor_'):
-            filters[filter_name] = filter
-        else:
-            filters[filter_name] = filter
-    filters.update(load_filters_from_url(request))
-    
-    if filter_format == FILTER_FORMATS_ELASTICSEARCH:
-        # note: passing only Filters, not (name, filter) dict!
-        formatted_filters = format_filters_elasticsearch(filters.values())
-    else:
-        formatted_filters = format_filters(filters)#, filter_format=filter_format)
-
-    return formatted_filters
-
-# Deprecated
-def load_filters_from_url(request):
-    '''
-    Read any querystring param filters. Preset filters not allowed.
-    '''
-    variables = request.GET.getlist('variable')
-    operators = request.GET.getlist('operator')
-    values = request.GET.getlist('value')
-    combined = zip(variables, operators, values)
-
-    filters = {f[0]: Filter(f[0], f[1], f[2]) for f in combined}
-
-    return filters
 
 
 def load_statuses_from_url(request):

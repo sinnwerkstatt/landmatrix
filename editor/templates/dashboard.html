@@ -315,7 +315,7 @@
                                 {% for activity in manage.investors.deletes %}
                                     <tr class="deletes">
                                         <td class="investor"><a
-                                                href="{% url 'stakeholder_form' investor_id=activity.investor_id %}">#{{ activity.investor_id }}</a>
+                                                href="{% url 'investor_update' investor_id=activity.investor_id %}">#{{ activity.investor_id }}</a>
                                         </td>
                                         <td class="user">{{ activity.user }}</td>
                                         <td class="state">{% trans "Delete" %}</td>

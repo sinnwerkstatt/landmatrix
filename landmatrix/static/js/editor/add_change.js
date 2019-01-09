@@ -62,7 +62,7 @@ function dismissAddInvestorPopup(win, newId, newRepr, newInvestorIdentifier) {
             elem.val(newId);
             $(elem).select2("destroy").select2();
             // update list of secondary investors
-            //$.get("/ajax/widget/values", {key_id:  "secondary_investor", name: "investor", time: $.now() }, function (data) {
+            //$.get("/ajax/widget/" + doc_type + "/", {key_id:  "secondary_investor", name: "investor", time: $.now() }, function (data) {
             //  $("ul.form.empty .field.investor div").html(data);
             //  $(elem).change(); // trigger change
             //});
@@ -116,7 +116,7 @@ function dismissChangeInvestorPopup(win, newId, newRepr, newInvestorIdentifier) 
             }
             $(elem).select2("destroy").select2();
             // update list of secondary investors
-            //$.get("/ajax/widget/values", {key_id:  "secondary_investor", name: "investor", time: $.now() }, function (data) {
+            //$.get("/ajax/widget/" + doc_type + "/", {key_id:  "secondary_investor", name: "investor", time: $.now() }, function (data) {
             //  $("ul.form.empty .field.investor div").html(data);
             //  $(elem).change(); // trigger change
             //});

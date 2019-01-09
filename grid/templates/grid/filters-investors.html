@@ -1,19 +1,5 @@
 {% load i18n custom_tags static crispy_forms_tags %}
 {% load humanize %}
-<div class="row">
-    <div class="col-sm-12">
-        <form class="form" method="POST" action="./">
-            <p class="alert alert-warning">
-                <input type="checkbox" id="id_set_default_filters" name="set_default_filters"{% if set_default_filters %} checked="checked"{% endif %} class="pull-right">
-                {% if set_default_filters %}
-                    <strong>{% trans "Default filters are enabled" %}</strong>. {% trans "The data is filtered by global or national filter presets. Please uncheck the checkbox to show all data." %} <a href="/about-land-matrix/#filters">{% trans "Read more" %}</a>
-                {% else %}
-                    <strong>{% trans "Default filters are disabled" %}</strong>. {% trans "You can see all data unfiltered. Please check the checkbox to use our global or national filter presets." %} <a href="/about-land-matrix/#filters">{% trans "Read more" %}</a>
-                {% endif %}
-            </p>
-        </form>
-    </div>
-</div>
 <div id="filters">
     {% csrf_token %}
     <div id="list-filters" class="row">
@@ -50,29 +36,6 @@
     <div id="add-filter" class="clearfix collapse">
         <div id="filterrow" class="row">
             <div class="col-md-3 filterbox presetbox no-pad">
-                <h6>{% trans "Select a filter preset" %}</h6>
-                <ul class="presets variables">
-                    {% for group in presets %}
-                        <li>
-                            <h4>
-                                {{ group.name }}
-                                <a href="#" class="toggle-tooltip pull-right" title="{{ group.name }}">
-                                    <i class="fa fa-question-circle"> </i>
-                                </a>
-                            </h4>
-                            <ul>
-                                {% for preset in group.filter_presets.all %}
-                                    <li class="filter_item">
-                                        <a href="javascript:loadPreset('{{ preset.id }}', '{{ preset.name }}')"
-                                           title="{{ group.name }}: {{ preset.name }}">
-                                            {% trans preset.name %}
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                    {% endfor %}
-                </ul>
             </div>
             <form class="form" method="POST" action="./">
                 <div class="col-md-3 filterbox filter-variable controls">
@@ -180,7 +143,7 @@
 {% block js %}
     <script src="{% static "js/editor/year-based-fields.js" %}" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript">
-        var doc_type = "deal";
+        var doc_type = "investor";
     </script>
     <script src="{% static "js/filters.js" %}" type="text/javascript"></script>
 {% endblock %}

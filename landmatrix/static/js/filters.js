@@ -88,7 +88,7 @@ function updateFilters(data) {
 
 function loadPreset(presetId, label) {
     $.post(
-        "/api/filter/add/",
+        "/api/filter/" + doc_type + "/add/",
         {preset: presetId},
         function () {
             window.location.reload();
@@ -98,7 +98,7 @@ function loadPreset(presetId, label) {
 
 function removeFilter(filterName) {
     $.post(
-        "/api/filter/delete/",
+        "/api/filter/" + doc_type + "/delete/",
         {name: filterName},
         function () {
             // Check if querystring params contain removed filter
@@ -130,7 +130,7 @@ function get_filter_options(operatorfield, variablefield, key_id) {
         op_value = operatorfield.val();
 
     const request = {key_id: key_id, value: "", name: 'value', operation: op_value};
-    $.get("/ajax/widget/values", request, function (data) {
+    $.get("/ajax/widget/" + doc_type + "/", request, function (data) {
         //console.log('Got this from django:', data);
         variablefield.html(data.widget);
 
@@ -187,12 +187,12 @@ $(document).ready(function () {
 
     // Get initial filter data for this session
     $.get(
-        "/api/filter.json",
+        "/api/filter/" + doc_type + "/",
         updateFilters
     );
 
     /*$.get(
-        "/api/filter_preset.json?action=list",
+        "/api/filter_preset/" + doc_type + "/?action=list",
         updatePresets
     );*/
 
@@ -242,7 +242,7 @@ $(document).ready(function () {
             });
         }
         $.post(
-            '/api/filter/add/',
+            "/api/filter/" + doc_type + "/add/",
             data,
             function () {
                 window.location.reload();
@@ -253,7 +253,7 @@ $(document).ready(function () {
     $("#id_set_default_filters").click(function (e) {
         var data = $(this).closest('form').serialize();
         $.post(
-            '/api/filter/add/default/',
+            "/api/filter/" + doc_type + "/add/default/",
             data,
             function () {
                 window.location.reload();

@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
@@ -7,9 +9,13 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import CreateView, UpdateView
 
+from api.filters import Filter
+from grid.views.browse_filter_conditions import get_investor_field_label
+from grid.views.table_group_view import TableGroupView
+from grid.views.filter_widget_mixin import get_investor_variable_table
 from grid.forms.investor_form import ParentInvestorForm, ParentStakeholderForm, OperationalCompanyForm
 from grid.forms.parent_investor_formset import ParentCompanyFormSet, ParentInvestorFormSet
-from landmatrix.models.investor import HistoricalInvestor, HistoricalInvestorVentureInvolvement
+from landmatrix.models.investor import InvestorBase, HistoricalInvestor, HistoricalInvestorVentureInvolvement
 
 
 class InvestorFormsMixin:
@@ -134,8 +140,8 @@ class InvestorFormsMixin:
         return response
 
 
-class ChangeStakeholderView(InvestorFormsMixin, UpdateView):
-    template_name = 'stakeholder.html'
+class InvestorUpdateView(InvestorFormsMixin, UpdateView):
+    template_name = 'investor.html'
     context_object_name = 'investor'
     model = HistoricalInvestor
 
@@ -191,7 +197,7 @@ class ChangeStakeholderView(InvestorFormsMixin, UpdateView):
         return HttpResponse(result)
 
 
-class AddStakeholderView(InvestorFormsMixin, CreateView):
+class InvestorCreateView(InvestorFormsMixin, CreateView):
     model = HistoricalInvestor
     form_class = ParentInvestorForm
     template_name = 'stakeholder.html'
@@ -203,7 +209,7 @@ class AddStakeholderView(InvestorFormsMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy(
-            'stakeholder_form', kwargs={'investor_id': self.object.investor_identifier})
+            'investor_update', kwargs={'investor_id': self.object.investor_identifier})
 
     def get_object(self):
         return None
@@ -244,3 +250,99 @@ class AddStakeholderView(InvestorFormsMixin, CreateView):
             response = HttpResponseRedirect(self.get_success_url())
 
         return response
+
+
+class InvestorDetailView(InvestorUpdateView):
+    pass
+
+
+class InvestorListView(TableGroupView):
+
+    template_name = "grid/investors.html"
+    doc_type = "investor"
+    QUERY_LIMITED_GROUPS = ["all",]
+    DEFAULT_GROUP = "by-role"
+    COLUMN_GROUPS = {
+        "by_role": ["role", ],
+        "by_classification": ["classification_display", ],
+        "by_fk_country": ["fk_country_display", ],
+        "all": ["investor_identifier", "name", "fk_country_display", "classification_display", "top_investors",
+                "deal_count"]
+    }
+    GROUP_COLUMNS_LIST = COLUMN_GROUPS["all"]
+    GROUP_NAMES = {
+    }
+    COLUMN_LABELS_MAP = {
+        'investor_identifier': _('ID'),
+        'investor_count': _('Investors'),
+        'deal_count': _('Deals'),
+        'top_investors': _('Top investors'),
+    }
+    variable_table = get_investor_variable_table()
+
+    def dispatch(self, request, *args, **kwargs):
+        kwargs["group"] = "all"
+        return super(InvestorListView, self).dispatch(request, *args, **kwargs)
+
+    def add_status_logic(self, query):
+        # collect a proper and authorized-for-that-user status list from the requet paramert
+        request_status_list = self.request.GET.getlist('status', []) if self.request else []
+        if request_status_list and (self.request.user.is_superuser or
+                                    self.request.user.has_perm('landmatrix.review_activity')):
+            status_list_get = [int(status) for status in request_status_list
+                               if (status.isnumeric() and int(status) in dict(InvestorBase.STATUS_CHOICES).keys())]
+            if status_list_get:
+                self.status_list = status_list_get
+
+        query['filter'].append({
+            "terms": {"fk_status": self.status_list}
+        })
+        return query
+
+    def add_public_logic(self, query):
+        return query
+
+    def get_columns(self, default=False):
+        columns = []
+        if not default and self.request.GET.get('columns'):
+            columns = self.request.GET.getlist('columns')
+            if 'investor_identifier' not in columns:
+                columns = ['investor_identifier'] + columns
+        elif self.group_value:
+            columns = self.GROUP_COLUMNS_LIST
+        else:
+            try:
+                columns = self.COLUMN_GROUPS[self.group]
+                if self.group != 'all':
+                    columns += ('deal_count', )
+            except KeyError:
+                raise Http404(
+                    _("Unknown group '%(group)s'.") % {'group': self.group})
+        return columns
+
+    def get_columns_dict(self, default=False):
+        """Get column information for template"""
+        # Labels for all custom fields (fields that are not part of any form)
+        columns = OrderedDict()
+        order_by = self.get_order_by_field()[0]
+        for i, name in enumerate(self.get_columns(default=default)):
+            label = None
+            column = name.replace('_display', '')
+            if column in self.COLUMN_LABELS_MAP.keys():
+                label = self.COLUMN_LABELS_MAP[column]
+            else:
+                label = get_investor_field_label(column)
+            columns[column] = {
+                'label': label,
+                'name': column,
+            }
+            if self.group != 'all' and not self.group_value:
+                order_by_columns = ('deal_count', 'deal_size', 'availability')
+                if i == 0 or column in order_by_columns:
+                    columns[column]['order_by'] = '-'+column if column == order_by else column
+            else:
+                columns[column]['order_by'] = '-'+column if column == order_by else column
+        return columns
+
+    def get_investor_filter(self, investors):
+        return Filter(variable='_id', operator='in', value=investors)

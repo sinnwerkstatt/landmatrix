@@ -10,10 +10,21 @@ import coreschema
 from landmatrix.models.filter_preset import FilterPreset as FilterPresetModel
 from api.filters import Filter, PresetFilter
 from api.serializers import FilterPresetSerializer
-from grid.views.browse_filter_conditions import get_field_label
+from grid.views.browse_filter_conditions import get_activity_field_label, get_investor_field_label
 
 
-class FilterCreateView(GenericAPIView):
+class FilterDocTypeMixin:
+
+    doc_type = ''
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'doc_type' in kwargs:
+            self.doc_type = kwargs.get('doc_type')
+        return super().dispatch(request, *args, **kwargs)
+
+
+class FilterCreateView(FilterDocTypeMixin,
+                       GenericAPIView):
     """
     Add filter (or filter preset) to current session cookie.
     Used within the filter section of map, data and chart views.
@@ -66,7 +77,7 @@ class FilterCreateView(GenericAPIView):
     )
 
     def get_object(self):
-        return self.request.session.get('filters', {})
+        return self.request.session.get('%s:filters' % self.doc_type, {})
 
     def post(self, request, *args, **kwargs):
         # TODO: make this a PATCH, and more RESTful.
@@ -80,7 +91,7 @@ class FilterCreateView(GenericAPIView):
 
         name = request_data.get('name', None)
         if not name:
-            name = 'filter_%i' % (len(request.session.get('filters', [])) + 1)
+            name = 'filter_%i' % (len(request.session.get('%s:filters' % self.doc_type, [])) + 1)
 
         if 'preset' in request_data:
             # Check for duplicates
@@ -105,7 +116,10 @@ class FilterCreateView(GenericAPIView):
                    stored_filter.get('operator', '') == operator and
                    stored_filter.get('value', '') == value):
                     return Response(stored_filters)
-            label = get_field_label(variable)
+            if self.doc_type == 'investor':
+                label = get_investor_field_label(variable)
+            else:
+                label = get_activity_field_label(variable)
             new_filter = Filter(
                 variable=variable, operator=operator, value=value,
                 label=label, name=name, display_value=display_value)
@@ -114,13 +128,14 @@ class FilterCreateView(GenericAPIView):
         stored_filters = dict((k.replace('default_', ''), v)
                               for k, v in stored_filters.items())
         # Disable default filters
-        request.session['set_default_filters'] = False
-        request.session['filters'] = stored_filters
+        request.session['%s:set_default_filters' % self.doc_type] = False
+        request.session['%s:filters' % self.doc_type] = stored_filters
 
         return Response(stored_filters)
 
 
-class FilterDeleteView(GenericAPIView):
+class FilterDeleteView(FilterDocTypeMixin,
+                       GenericAPIView):
     """
     Delete filter (or filter preset) from current session cookie.
     Used within the filter section of map, data and chart views.
@@ -173,7 +188,7 @@ class FilterDeleteView(GenericAPIView):
     )
 
     def get_object(self):
-        return self.request.session.get('filters', {})
+        return self.request.session.get('%s:filters' % self.doc_type, {})
 
     def post(self, request, *args, **kwargs):
         # TODO: make this a PATCH, and more RESTful.
@@ -187,7 +202,7 @@ class FilterDeleteView(GenericAPIView):
 
         name = request_data.get('name', None)
         if not name:
-            name = 'filter_%i' % (len(request.session.get('filters', [])) + 1)
+            name = 'filter_%i' % (len(request.session.get('%s:filters' % self.doc_type, [])) + 1)
 
 
         try:
@@ -196,41 +211,43 @@ class FilterDeleteView(GenericAPIView):
             stored_filters = dict((k.replace('default_', ''), v)
                 for k, v in stored_filters.items())
             # Disable default filters
-            request.session['set_default_filters'] = False
+            request.session['%s:set_default_filters' % self.doc_type] = False
         except KeyError:
             pass
-        request.session['filters'] = stored_filters
+        request.session['%s:filters' % self.doc_type] = stored_filters
 
         return Response(stored_filters)
 
 
-class SetDefaultFiltersView(APIView):
+class SetDefaultFiltersView(FilterDocTypeMixin,
+                            APIView):
     """
     Set default filters for current session cookie.
     Used within the filter section of map, data and chart views.
     """
 
     def get_object(self):
-        return self.request.session.get('filters', {})
+        return self.request.session.get('%s:filters' % self.doc_type, {})
 
     def post(self, request, *args, **kwargs):
         if request.POST.get('set_default_filters', False):
-            request.session['filters'] = {}
-            request.session['set_default_filters'] = True
+            request.session['%s:filters' % self.doc_type] = {}
+            request.session['%s:set_default_filters' % self.doc_type] = True
         else:
-            request.session['set_default_filters'] = False
+            request.session['%s:set_default_filters' % self.doc_type] = False
 
         return Response({})
 
 
-class FilterListView(GenericAPIView):
+class FilterListView(FilterDocTypeMixin,
+                     GenericAPIView):
     """
     List filters in current session cookie.
     Used within the filter section of map, data and chart views.
     """
 
     def get_object(self):
-        return self.request.session.get('filters', {})
+        return self.request.session.get('%s:filters' % self.doc_type, {})
 
     def get(self, request, *args, **kwargs):
         """
@@ -241,21 +258,24 @@ class FilterListView(GenericAPIView):
         return Response(filters)
 
 
-class FilterClearView(GenericAPIView):
+class FilterClearView(FilterDocTypeMixin,
+                      GenericAPIView):
+
     def get_object(self):
-        return self.request.session.get('filters', {})
+        return self.request.session.get('%s:filters' % self.doc_type, {})
 
     def get(self, request, *args, **kwargs):
         """
         Show filters of current session cookie.
         Used within the filter section of map, data and chart views.
         """
-        request.session['filters'] = {}
+        request.session['%s:filters' % self.doc_type] = {}
         filters = self.get_object()
         return Response(filters)
 
 
-class FilterPresetView(ListAPIView):
+class FilterPresetView(FilterDocTypeMixin,
+                       ListAPIView):
     """
     The filter preset view returns a list of presets, filtered by group.
     If the show_groups query param is present, it instead returns a list of

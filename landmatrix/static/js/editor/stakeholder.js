@@ -35,7 +35,7 @@ function generateButtons(field) {
     var buttons = '<a id="add_' + $(field).attr("id") + '" class="add-investor" href="' + addLink + '?role=' + role + '" class="noul"><i class="lm lm-plus"></i></a>';
     if (field.val() !== '') {
         buttons += '<a id="change_' + $(field).attr("id") + '" class="change-investor"' +
-            ' href="/investor/' + investorIdentifier + '/' + investorId + '/?role=' + role +
+            ' href="/investor/edit/' + investorIdentifier + '/' + investorId + '/?role=' + role +
             '" class="noul"><i class="lm lm-pencil"></i></a>';
     }
     var wrap = '<span class="investorops">' + buttons + '</span>';

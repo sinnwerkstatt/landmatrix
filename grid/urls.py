@@ -4,6 +4,7 @@ from api.decorators import save_filter_query_params
 from grid.views.all_deals_view import AllDealsView
 from grid.views.export_view import ExportView
 from grid.views.table_group_view import TableGroupView
+from grid.views.investor import InvestorListView
 
 
 CACHE_TIMEOUT = 24*3600
@@ -32,6 +33,22 @@ urlpatterns = [
         r'^(?P<group>.+)\.(?P<format>(csv|xml|xls))/$',
         save_filter_query_params()(ExportView.as_view()),
         name='export'
+    ),
+
+    url(
+        r'^investors/$',
+        save_filter_query_params()(InvestorListView.as_view()),
+        name='investor_list'
+    ),
+    url(
+        r'^investors/(?P<group>[^/]+)/(?P<group_value>.+)/$',
+        save_filter_query_params()(InvestorListView.as_view()),
+        name='investor_list'
+    ),
+    url(
+        r'^investors/(?P<group>.+)/$',
+        save_filter_query_params()(InvestorListView.as_view()),
+        name='investor_list'
     ),
 
     # needs to come last, regexp catches all expressions

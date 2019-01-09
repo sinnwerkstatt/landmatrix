@@ -31,7 +31,7 @@ INTENTION_EXCLUDE = list(INTENTION_AGRICULTURE_MAP.keys())
 INTENTION_EXCLUDE.extend(list(INTENTION_FORESTRY_MAP.keys()))
 
 
-class ElasticSearchMixin(object):
+class ElasticSearchMixin:
 
     doc_type = 'deal'
     request = None
@@ -61,7 +61,7 @@ class ElasticSearchMixin(object):
         filters = {}
         parent_company_filters, tertiary_investor_filters = {}, {}
         if self.request:
-            session_filters = self.request.session.get('filters', {}) or {}
+            session_filters = self.request.session.get('%s:filters' % self.doc_type, {}) or {}
         else:
             session_filters = {}
 
@@ -89,8 +89,7 @@ class ElasticSearchMixin(object):
             for result in raw_result_list:
                 ids = result['_source']['parent_company_of']
                 operational_companies.extend([str(id) for id in ids])
-            filters['parent_company'] = Filter(variable='operational_stakeholder',
-                operator='in', value=operational_companies)
+            filters['parent_company'] = self.get_investor_filter(operational_companies)
         if tertiary_investor_filters:
             query = self.format_filters(tertiary_investor_filters.values())
             raw_result_list = self.execute_elasticsearch_query(query, self.doc_type)
@@ -98,16 +97,17 @@ class ElasticSearchMixin(object):
             for result in raw_result_list:
                 ids = result['_source']['tertiary_investor_of']
                 operational_companies.extend([str(id) for id in ids])
-            filters['tertiary_investor'] = Filter(variable='operational_stakeholder',
-                operator='in', value=operational_companies)
+            filters['tertiary_investor'] = self.get_investor_filter(operational_companies)
 
         filters.update(self.load_filters_from_url(exclude=exclude))
 
         # note: passing only Filters, not (name, filter) dict!
         formatted_filters = self.format_filters(filters.values(), exclude=exclude)
 
-
         return formatted_filters
+
+    def get_investor_filter(self, investors):
+        return Filter(variable='operational_stakeholder', operator='in', value=investors)
 
     def format_filters(self, filters, initial_query=None, exclude=[]):
         """
@@ -255,19 +255,7 @@ class ElasticSearchMixin(object):
                 }
             })
 
-        # collect a proper and authorized-for-that-user status list from the requet paramert
-        request_status_list = self.request.GET.getlist('status', []) if self.request else []
-        if request_status_list and (self.request.user.is_superuser or
-                                    self.request.user.has_perm('landmatrix.review_activity')):
-            status_list_get = [int(status) for status in request_status_list
-                               if (status.isnumeric() and int(status) in dict(ActivityBase.STATUS_CHOICES).keys())]
-            if status_list_get:
-                self.status_list = status_list_get
-
-        elasticsearch_query['filter'].append({
-            "terms": {"status": self.status_list}
-        })
-
+        elasticsearch_query = self.add_status_logic(elasticsearch_query)
         elasticsearch_query = self.add_public_logic(elasticsearch_query)
 
         # TODO: these were at some point in the UI. add the missing filters!
@@ -294,6 +282,21 @@ class ElasticSearchMixin(object):
             }
 
         return elasticsearch_query
+
+    def add_status_logic(self, query):
+        # collect a proper and authorized-for-that-user status list from the requet paramert
+        request_status_list = self.request.GET.getlist('status', []) if self.request else []
+        if request_status_list and (self.request.user.is_superuser or
+                                    self.request.user.has_perm('landmatrix.review_activity')):
+            status_list_get = [int(status) for status in request_status_list
+                               if (status.isnumeric() and int(status) in dict(ActivityBase.STATUS_CHOICES).keys())]
+            if status_list_get:
+                self.status_list = status_list_get
+
+        query['filter'].append({
+            "terms": {"status": self.status_list}
+        })
+        return query
 
     def add_public_logic(self, query):
         # Public user?
@@ -406,17 +409,18 @@ class ElasticSearchMixin(object):
         :return: 
         """
         # Backup
-        self.request.session['disabled_filters'] = self.request.session.get('filters')
-        self.request.session['disabled_set_default_filters'] = self.request.session.get(
-            'set_default_filters', None)
-        self.request.session['filters'] = {}
-        if 'set_default_filters' in self.request.session:
-            del(self.request.session['set_default_filters'])
+        self.request.session['%s:disabled_filters' % self.doc_type] = self.request.session.get('%s:filters' %
+                                                                                               self.doc_type)
+        self.request.session['%s:disabled_set_default_filters' % self.doc_type] = self.request.session.get(
+            '%s:set_default_filters' % self.doc_type, None)
+        self.request.session['%s:filters' % self.doc_type] = {}
+        if '%s:set_default_filters' % self.doc_type in self.request.session:
+            del(self.request.session['%s:set_default_filters' % self.doc_type])
         # FIXME: Move FilterWidgetMixin.set_default_filters to utils
         f = FilterWidgetMixin()
         f.request = self.request
         f.set_country_region_filter(self.request.GET.copy())
-        f.set_default_filters(None, disabled_presets=[2,])
+        f.set_default_filters(None, disabled_presets=[2, ])
 
     def enable_filters(self):
         """
@@ -424,12 +428,13 @@ class ElasticSearchMixin(object):
         :return:
         """
         # Restore original filters
-        self.request.session['filters'] = self.request.session.get('disabled_filters')
-        if self.request.session['disabled_set_default_filters'] is not None:
-            self.request.session['set_default_filters'] = self.request.session[
-                'disabled_set_default_filters']
-        del(self.request.session['disabled_filters'])
-        del(self.request.session['disabled_set_default_filters'])
+        self.request.session['%s:filters' % self.doc_type] = self.request.session.get('%s:disabled_filters' %
+                                                                                      self.doc_type)
+        if self.request.session['%s:disabled_set_default_filters' % self.doc_type] is not None:
+            self.request.session['%s:set_default_filters' % self.doc_type] = self.request.session[
+                '%s:disabled_set_default_filters' % self.doc_type]
+        del(self.request.session['%s:disabled_filters' % self.doc_type])
+        del(self.request.session['%s:disabled_set_default_filters' % self.doc_type])
 
 
 class UserListView(ListAPIView):

@@ -155,6 +155,7 @@ def get_elasticsearch_properties(doc_type=None):
             'properties': {
                 'id': {'type': 'keyword'},
                 'history_date': {'type': 'date'},
+                'deal_count': {'type': 'integer'},
             }
         }
         # Doc types: deal, location, contract and data_source
@@ -719,9 +720,22 @@ class ElasticSearch(object):
                 else:
                     doc[field.name] = getattr(investor, field.name)
 
-            # Append top_investors
             top_investors = investor.get_top_investors()
-            doc['top_investors'] = investor.format_investors(top_investors)
+            doc.update({
+                'top_investors': investor.format_investors(top_investors),
+                'deal_count': investor.get_deal_count(),
+            })
+
+            # Append involvements for quicker queries
+            ivis = HistoricalInvestorVentureInvolvement.objects.filter(fk_investor=investor)
+            doc['parent_company_of'] = []
+            doc['tertiary_investor_of'] = []
+            for ivi in ivis:
+                if ivi.role == HistoricalInvestorVentureInvolvement.STAKEHOLDER_ROLE:
+                    doc['parent_company_of'].append(ivi.fk_venture_id)
+                elif ivi.role == HistoricalInvestorVentureInvolvement.INVESTOR_ROLE:
+                    doc['tertiary_investor_of'].append(ivi.fk_venture_id)
+
 
             # Append involvements for quicker queries
             ivis = HistoricalInvestorVentureInvolvement.objects.filter(fk_investor=investor)

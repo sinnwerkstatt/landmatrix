@@ -2,7 +2,7 @@ from django import forms
 from django.db.models.fields import IntegerField
 from django.utils.translation import ugettext_lazy as _
 
-from landmatrix.forms import ActivityFilterForm
+from landmatrix.forms import ActivityFilterForm, InvestorFilterForm
 from grid.fields import NestedMultipleChoiceField
 from grid.views.change_deal_view import ChangeDealView
 from grid.forms.investor_form import OperationalCompanyForm, ParentInvestorForm, \
@@ -93,7 +93,7 @@ class BrowseFilterConditions:
                 values = fl.get("value")
             self.filters_inv["tags"].update({"%s%s" % (variable, op and "__%s" % op or op): values})
         else:
-            f = get_field_by_key(variable)
+            f = get_activity_field_by_key(variable)
             if year:
                 values = ["%s##!##%s" % (get_display_value_by_field(f, value), year)]
             else:
@@ -138,7 +138,7 @@ class BrowseFilterConditions:
                 field_pre = "-"
                 field = field[1:]
 
-            form = get_field_by_key(field[9:] if "Investor " in field else field)
+            form = get_activity_field_by_key(field[9:] if "Investor " in field else field)
             if isinstance(form, IntegerField):
                 field_GET = "+0"
 
@@ -149,7 +149,7 @@ class BrowseFilterConditions:
             self.data["limit"] = self.limit
 
 
-def get_field_by_key(key):
+def get_activity_field_by_key(key):
     if key.isnumeric():
         key = get_key_from_id(int(key))
 
@@ -175,16 +175,52 @@ def get_field_by_key(key):
     return None
 
 
-def get_field_label(key):
+def get_investor_field_by_key(key):
+    # Investor fields
+    if key in InvestorFilterForm.base_fields:
+        return InvestorFilterForm().fields[key]
+    # Operating company fields
+    investor_forms = {
+        'parent_stakeholder_': ParentStakeholderForm,
+        'parent_investor_': ParentInvestorForm,
+    }
+    for prefix, form in investor_forms.items():
+        if prefix in key:
+            k = key.replace(prefix, '')
+            if k in form.base_fields:
+                return form().fields[k]
+    return None
+
+
+def get_activity_field_label(key):
     CUSTOM_FIELDS = {
         'activity_identifier': _('Deal ID')
     }
     if key in CUSTOM_FIELDS.keys():
         return str(CUSTOM_FIELDS[key])
-    field = get_field_by_key(key)
+    field = get_activity_field_by_key(key)
     if field:
         investor_labels = {
             'operating_company_': _('Operating company'),
+            'parent_stakeholder_': _('Parent company'),
+            'parent_investor_': _('Tertiary investor/lender'),
+        }
+        for prefix, label in investor_labels.items():
+            if prefix in key:
+                return '%s %s' % (str(label), str(field.label))
+        return str(field.label)
+    return None
+
+
+def get_investor_field_label(key):
+    CUSTOM_FIELDS = {
+        'investor_identifier': _('Investor ID')
+    }
+    if key in CUSTOM_FIELDS.keys():
+        return str(CUSTOM_FIELDS[key])
+    field = get_investor_field_by_key(key)
+    if field:
+        investor_labels = {
             'parent_stakeholder_': _('Parent company'),
             'parent_investor_': _('Tertiary investor/lender'),
         }

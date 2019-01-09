@@ -39,12 +39,12 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     STATUS_TO_DELETE = 6
     PUBLIC_STATUSES = (STATUS_ACTIVE, STATUS_OVERWRITTEN)
     STATUS_CHOICES = (
-        STATUS_PENDING, _('Pending'),
-        STATUS_ACTIVE, _('Active'),
-        STATUS_OVERWRITTEN, _('Overwritten'),
-        STATUS_DELETED, _('Deleted'),
-        STATUS_REJECTED, _('Rejected'),
-        STATUS_TO_DELETE, _('To delete'),
+        (STATUS_PENDING, _('Pending')),
+        (STATUS_ACTIVE, _('Active')),
+        (STATUS_OVERWRITTEN, _('Overwritten')),
+        (STATUS_DELETED, _('Deleted')),
+        (STATUS_REJECTED, _('Rejected')),
+        (STATUS_TO_DELETE, _('To delete')),
     )
     INVESTOR_IDENTIFIER_DEFAULT = 2147483647  # max safe int
     STAKEHOLDER_CLASSIFICATIONS = (
@@ -246,8 +246,13 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         return top_investors
 
     def format_investors(self, investors):
-        return '|'.join(['#'.join([str(i.investor_identifier), i.name.replace('#', '').replace("\n", '')])
+        # First name, then ID to be able to sort by name
+        return '|'.join(['#'.join([i.name.replace('#', '').replace("\n", '').strip(),
+                                   str(i.investor_identifier)])
                          for i in investors])
+
+    def get_deal_count(self):
+        return self.involvements.filter(fk_activity__fk_status__in=(2, 3)).count()
 
 
 class Investor(InvestorBase):

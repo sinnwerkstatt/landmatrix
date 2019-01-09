@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from bootstrap3_datetime.widgets import DateTimePicker
 from django.utils.translation import ugettext_lazy as _
 
-from grid.views.browse_filter_conditions import get_field_by_key
+from grid.views.browse_filter_conditions import get_activity_field_by_key, get_investor_field_by_key
 from grid.fields import YearMonthDateField
 
 
@@ -115,11 +115,13 @@ class FilterWidgetAjaxView(APIView):
     field_name = ''
     name = ''
     operation = ''
+    doc_type = 'deal'
 
     def get(self, *args, **kwargs):
         """ render form to enter values for the requested field in the filter widget for the grid view
             form to select operations is updated by the javascript function update_widget() in /media/js/main.js
         """
+        self.doc_type = kwargs.get('doc_type', 'deal')
         self.field_name = self.request.GET.get('key_id', '')
         self.name = self.request.GET.get('name', '')
         self.operation = self.request.GET.get('operation', '')
@@ -135,9 +137,11 @@ class FilterWidgetAjaxView(APIView):
             if self.field_name:
                 # Deprecated?
                 if "inv_" in self.field_name:
-                    field = get_field_by_key(self.field_name[4:])
+                    field = get_activity_field_by_key(self.field_name[4:])
+                elif self.doc_type == 'investor':
+                    field = get_investor_field_by_key(self.field_name)
                 else:
-                    field = get_field_by_key(self.field_name)
+                    field = get_activity_field_by_key(self.field_name)
                 # MultiValueField?
                 if isinstance(field, forms.MultiValueField):
                     # Get first field instead

@@ -14,7 +14,7 @@
 
 {% block breadcrumb_inner %}
     <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
-    <li><a href="{% url 'stakeholder_form' investor_id=investors.0.investor_identifier %}">
+    <li><a href="{% url 'investor_update' investor_id=investors.0.investor_identifier %}">
         {{ investors.0.name }}
     </a></li>
   <li>{% trans "Investor history comparison" %} #{{ investors.0.investor_identifier }}</li>

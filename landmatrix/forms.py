@@ -6,6 +6,7 @@ from registration.forms import RegistrationForm
 from captcha.fields import ReCaptchaField
 from grid.fields import UserModelChoiceField
 from .models.activity import Activity
+from .models.investor import Investor
 from .models.region import Region
 
 
@@ -55,3 +56,10 @@ class ActivityFilterForm(forms.ModelForm):
         model = Activity
         fields = ('activity_identifier', 'is_public', 'deal_scope', 'deal_size', 'init_date',
                   'updated_date', 'updated_user', 'fully_updated_date', 'fully_updated_user')
+
+
+class InvestorFilterForm(forms.ModelForm):
+
+    class Meta:
+        model = Investor
+        exclude = ('fk_status', 'subinvestors')

@@ -357,7 +357,7 @@ var list_operators = ["not_in", "in", "is", "is_empty", "contains"];
 //        op = el.parents("li").prev().find("option:selected"),
 //        op_value = op.val();
 //    name = name.replace("_0", "");
-//    $.get("/ajax/widget/values", {key_id: key_id, value: value, name: name, operation: op_value}, function (data) {
+//    $.get("/ajax/widget/" + doc_type + "/", {key_id: key_id, value: value, name: name, operation: op_value}, function (data) {
 //        el.html(data);
 //        var is_number = (el.find(":input[type=number]:not(.year-based-year)").length > 0);
 //        var is_list = (el.find("select,ul").length > 0);
