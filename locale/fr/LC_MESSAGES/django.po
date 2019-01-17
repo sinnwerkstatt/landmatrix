@@ -1,0 +1,3023 @@
+# Frensh Translation
+# Copyright (C) 2016, Land Matrix
+# This file is distributed under the same license as the main package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-05-24 18:19+0200\n"
+"PO-Revision-Date: 2016-05-24 18:18+0200\n"
+"Last-Translator: Simon Liedtke <simon.liedtke@sinnwerkstatt.com>\n"
+"Language-Team: Spanish <simon.liedtke@sinnwerkstatt.com>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: api/query_sets/countries_query_set.py:19
+msgid "Observatories"
+msgstr ""
+
+#: api/query_sets/countries_query_set.py:24
+#: grid/forms/deal_former_use_form.py:23 grid/forms/deal_former_use_form.py:42
+#: grid/forms/deal_local_communities_form.py:54
+#: grid/forms/deal_local_communities_form.py:139
+#: grid/forms/deal_local_communities_form.py:173
+#: grid/forms/deal_local_communities_form.py:193
+msgid "Other"
+msgstr ""
+
+#: api/query_sets/sql_generation/filter_to_sql.py:14
+#: grid/tests/generate_old_sql.py:139
+msgid "is"
+msgstr ""
+
+#: api/query_sets/sql_generation/filter_to_sql.py:15
+#: grid/tests/generate_old_sql.py:140
+msgid "is one of"
+msgstr ""
+
+#: api/query_sets/sql_generation/filter_to_sql.py:16
+#: grid/tests/generate_old_sql.py:141
+msgid "isn't any of"
+msgstr ""
+
+#: api/query_sets/sql_generation/filter_to_sql.py:17
+#: grid/tests/generate_old_sql.py:142
+msgid "is >="
+msgstr ""
+
+#: api/query_sets/sql_generation/filter_to_sql.py:18
+#: grid/tests/generate_old_sql.py:143
+msgid "is >"
+msgstr ""
+
+#: api/query_sets/sql_generation/filter_to_sql.py:19
+#: grid/tests/generate_old_sql.py:144
+msgid "is <="
+msgstr ""
+
+#: api/query_sets/sql_generation/filter_to_sql.py:20
+#: grid/tests/generate_old_sql.py:145
+msgid "is <"
+msgstr ""
+
+#: api/query_sets/sql_generation/filter_to_sql.py:21
+#: grid/tests/generate_old_sql.py:146
+msgid "contains"
+msgstr ""
+
+#: api/query_sets/sql_generation/filter_to_sql.py:22
+#: grid/tests/generate_old_sql.py:147
+msgid "is empty"
+msgstr ""
+
+#: api/views/deal_detail_view.py:32 api/views/filter_views.py:55
+#: api/views/investor_network_view.py:24 api/views/investor_network_view.py:47
+msgid "This field is required."
+msgstr ""
+
+#: api/views/deal_detail_view.py:35 api/views/investor_network_view.py:27
+msgid "An integer is required."
+msgstr ""
+
+#: api/views/investor_network_view.py:51
+msgid "This field must be an integer."
+msgstr ""
+
+#: charts/templates/charts/agricultural-produce.html:4
+#: charts/templates/charts/agricultural-produce.html:5
+#: charts/templates/charts/agricultural-produce.html:8
+msgid "Agricultural drivers"
+msgstr ""
+
+#: charts/templates/charts/base_chart.html:9
+#: charts/templates/charts/base_chart.html:10
+msgid "Chart"
+msgstr ""
+
+#: charts/templates/charts/base_chart.html:13 grid/templates/all_deals.html:13
+#: grid/templates/deal-comparison.html:12 grid/templates/deal-detail.html:11
+#: grid/templates/global_base.html:80 grid/templates/group-by.html:11
+#: grid/templates/investor-comparison.html:12 map/templates/map/map.html:20
+#: templates/base.html:64
+msgid "Global"
+msgstr ""
+
+#: charts/templates/charts/base_chart.html:14
+#: charts/templates/charts/base_chart.html:25 grid/templates/all_deals.html:34
+#: grid/templates/group-by.html:31 map/templates/map/map.html:32
+#: templates/base.html:166 templates/wagtailcms/country.html:17
+msgid "Charts"
+msgstr ""
+
+#: charts/templates/charts/base_chart.html:19 grid/templates/all_deals.html:28
+#: grid/templates/group-by.html:25 map/templates/map/map.html:17
+#: map/templates/map/map.html.py:18 map/templates/map/map.html:21
+#: map/templates/map/map.html.py:26 templates/base.html:160
+#: templates/wagtailcms/country.html:11
+msgid "Map"
+msgstr ""
+
+#: charts/templates/charts/base_chart.html:22 grid/templates/all_deals.html:31
+#: grid/templates/group-by.html:28 map/templates/map/map.html:29
+#: templates/base.html:163 templates/wagtailcms/country.html:14
+msgid "Data"
+msgstr ""
+
+#: charts/templates/charts/base_chart.html:49
+msgid ""
+"Food-Crop - Crops that be consumed by humans, even if also used as livestock "
+"feed"
+msgstr ""
+
+#: charts/templates/charts/base_chart.html:50
+msgid ""
+"Non-Food - Biofuels, exclusive livestock feed, industrial, cosmetic and "
+"medicinal uses"
+msgstr ""
+
+#: charts/templates/charts/base_chart.html:51
+msgid "Flex-Crop - Potential both biofuel and food uses"
+msgstr ""
+
+#: charts/templates/charts/base_chart.html:52
+#: charts/templates/charts/special-interest.html:47
+msgid "Multiple Use - Several crops in different categories"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:4
+#: charts/templates/charts/investor-target-countries.html:5
+#: charts/templates/charts/investor-target-countries.html:8
+#: charts/templates/charts/subnav.html:31
+msgid "Global map of investments"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:15
+#: charts/templates/charts/transnational-deals.html:62
+#: charts/templates/charts/transnational-deals.html:69
+#: charts/templates/charts/transnational-deals.html:76
+#: charts/templates/charts/transnational-deals.html:99
+#: grid/forms/add_investor_form.py:16
+#: grid/forms/deal_secondary_investor_form.py:21
+#: grid/forms/deal_spatial_form.py:26 grid/forms/investor_form.py:41
+msgid "Country"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:17
+#: charts/templates/charts/transnational-deals.html:101
+msgid "0 acquisitions/targets"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:18
+msgid "to/from Country"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:19
+msgid "whereof 0 with itself"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:21
+#: charts/templates/charts/transnational-deals.html:104
+msgid "Go to Table"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:25
+#: charts/templates/charts/transnational-deals.html:12
+msgid "Reset"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:26
+msgid "Investor&nbsp;Countries"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:27
+msgid "Target&nbsp;Countries"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:36
+#: charts/templates/charts/transnational-deals.html:19
+msgid "Investor Countries"
+msgstr ""
+
+#: charts/templates/charts/investor-target-countries.html:37
+#: charts/templates/charts/transnational-deals.html:20
+msgid "Target Countries"
+msgstr ""
+
+#: charts/templates/charts/overview.html:3
+#: charts/templates/charts/overview.html:4
+#: charts/templates/charts/overview.html:7
+#: charts/templates/charts/special-interest.html:3
+#: charts/templates/charts/special-interest.html:4
+#: charts/templates/charts/special-interest.html:7
+#: charts/templates/charts/subnav.html:21
+msgid "Dynamics Overview"
+msgstr ""
+
+#: charts/templates/charts/overview.html:21
+#: charts/templates/charts/special-interest.html:24
+msgid "Deals divided by intention of investment."
+msgstr ""
+
+#: charts/templates/charts/overview.html:22
+msgid ""
+"Deals divided by negotiation status. Since this chart shows all deals in the "
+"database, there is no option to select concluded, intended or failed deals "
+"separately."
+msgstr ""
+
+#: charts/templates/charts/overview.html:22
+#: charts/templates/charts/overview.html:23
+#: charts/templates/charts/special-interest.html:23
+msgid ""
+"The LM has two key variables to describe the status of a land deal: the "
+"negotiation status and the implementation status. For further information "
+"press the question mark."
+msgstr ""
+
+#: charts/templates/charts/overview.html:23
+#: charts/templates/charts/special-interest.html:23
+msgid ""
+"Deals divided by implementation status. Since this chart shows all deals in "
+"the database, there is no option to select concluded, intended or failed "
+"deals separately."
+msgstr ""
+
+#: charts/templates/charts/overview.html:24
+#: charts/templates/charts/special-interest.html:25
+msgid ""
+"Deals having „agriculture“ as main intention of investment disaggregated "
+"into sub-sections."
+msgstr ""
+
+#: charts/templates/charts/perspective.html:4
+#: charts/templates/charts/perspective.html:5
+#: charts/templates/charts/perspective.html:8
+#: charts/templates/charts/subnav.html:32
+msgid "It's a big deal"
+msgstr ""
+
+#: charts/templates/charts/perspective.html:14
+msgid "Enter location..."
+msgstr ""
+
+#: charts/templates/charts/perspective.html:15
+msgid "Go"
+msgstr ""
+
+#: charts/templates/charts/perspective.html:22
+msgid ""
+"Area equal to the size of the intended, concluded or failed land "
+"acquisitions (<span class=\"hectares\">0</span> ha)"
+msgstr ""
+
+#: charts/templates/charts/special-interest.html:22
+msgid "This is the short info about agricultural drivers"
+msgstr ""
+
+#: charts/templates/charts/special-interest.html:26
+msgid "Wood chopping."
+msgstr ""
+
+#: charts/templates/charts/special-interest.html:44
+msgid "Food-Crops"
+msgstr ""
+
+#: charts/templates/charts/special-interest.html:45
+msgid "Non-Food Crops"
+msgstr ""
+
+#: charts/templates/charts/special-interest.html:46
+msgid "Flex-Crops"
+msgstr ""
+
+#: charts/templates/charts/special-interest.html:228
+msgid "Logging: "
+msgstr ""
+
+#: charts/templates/charts/special-interest.html:231
+#: charts/templates/charts/special-interest.html:280
+#: wagtailcms/templates/widgets/statistics.html:7
+msgid "Size"
+msgstr ""
+
+#: charts/templates/charts/special-interest.html:249
+#: charts/templates/charts/special-interest.html:298
+#: wagtailcms/templates/widgets/statistics.html:25
+msgid "Number of deals"
+msgstr ""
+
+#: charts/templates/charts/special-interest.html:277
+msgid "Resource extraction:"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:9 grid/templates/grid/subnav.html:10
+#: templates/base.html:53
+msgid "Toggle navigation"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:18
+#: charts/templates/charts/transnational-deals.html:3
+#: charts/templates/charts/transnational-deals.html:4
+#: charts/templates/charts/transnational-deals.html:7
+msgid "Web of transnational deals"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:25
+#: grid/forms/add_deal_general_form.py:40
+#: grid/forms/change_deal_general_form.py:40 grid/templates/all_deals.html:71
+#: grid/templates/group-by.html:53
+msgid "Intention of investment"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:26
+#: grid/forms/add_deal_general_form.py:63
+#: grid/forms/add_deal_general_form.py:66
+#: grid/forms/change_deal_general_form.py:63
+#: grid/forms/change_deal_general_form.py:66 grid/templates/all_deals.html:192
+#: grid/templates/group-by.html:89
+#: landmatrix/models/public_interface_cache.py:21
+msgid "Negotiation status"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:27
+#: grid/forms/add_deal_general_form.py:99
+#: grid/forms/add_deal_general_form.py:102
+#: grid/forms/change_deal_general_form.py:71
+#: grid/forms/change_deal_general_form.py:74 grid/templates/all_deals.html:185
+#: grid/templates/group-by.html:87
+#: landmatrix/models/public_interface_cache.py:25
+msgid "Implementation status"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:28
+msgid "Investment in Agriculture"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:35
+msgid "Special Interest"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:39
+msgid "Agricultural Drivers"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:40
+msgid "Produce Info"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:41
+msgid "Resource Extraction"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:42 grid/forms/choices.py:40
+msgid "Logging"
+msgstr ""
+
+#: charts/templates/charts/subnav.html:43
+msgid "Contract Farming"
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:28
+msgid ""
+"<strong>Visualisation not available in your browser:</strong> Unfortunately "
+"this data visualisation uses modern technologies and is therefor not "
+"available for old browsers (lower than Internet Explorer 8). Please update "
+"your browser. "
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:36
+msgid "Top 10 Countries"
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:42
+msgid "Investor countries"
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:43
+msgid "Target countries"
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:68
+msgid "Regions investing in "
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:75
+#: editor/templates/dashboard.html:119 templates/base.html:274
+msgid "Regions"
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:77
+msgid "invests in"
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:86
+msgid "Show all inbound deals"
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:91
+msgid "Show all outbound deals"
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:102
+msgid "to/from"
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:103
+msgid "Region A: 0 hectares"
+msgstr ""
+
+#: charts/templates/charts/transnational-deals.html:103
+msgid "Region B: 0 hectares"
+msgstr ""
+
+#: editor/templates/dashboard.html:7 editor/templates/dashboard.html.py:10
+#: editor/templates/dashboard.html:11 editor/templates/manage.html:5
+#: templates/base.html:108
+msgid "Dashboard"
+msgstr ""
+
+#: editor/templates/dashboard.html:17
+msgid "Overall deals"
+msgstr ""
+
+#: editor/templates/dashboard.html:21
+msgid "Public deals"
+msgstr ""
+
+#: editor/templates/dashboard.html:25
+msgid "Non public deals"
+msgstr ""
+
+#: editor/templates/dashboard.html:50
+msgid "Clear"
+msgstr ""
+
+#: editor/templates/dashboard.html:134 templates/base.html:295
+msgid "Countries"
+msgstr ""
+
+#: editor/templates/dashboard.html:156
+msgid "Users"
+msgstr ""
+
+#: editor/templates/dashboard.html:187
+msgid "Latest added"
+msgstr ""
+
+#: editor/templates/dashboard.html:191 editor/templates/dashboard.html:243
+#: editor/templates/dashboard.html:297 editor/templates/dashboard.html:353
+#: editor/templates/dashboard.html:436 editor/templates/manage.html:59
+#: editor/templates/manage.html.py:105 editor/templates/manage.html:159
+#: editor/templates/manage.html.py:214 editor/templates/manage.html:266
+msgid "Deal #"
+msgstr ""
+
+#: editor/templates/dashboard.html:192
+msgid "Added by"
+msgstr ""
+
+#: editor/templates/dashboard.html:193 editor/templates/dashboard.html:245
+#: editor/templates/dashboard.html:299 editor/templates/dashboard.html:438
+#: editor/templates/manage.html:61 editor/templates/manage.html.py:107
+#: editor/templates/manage.html:162 editor/templates/manage.html.py:216
+#: editor/templates/manage.html:268 editor/templates/manage.html.py:320
+#: editor/templates/manage.html:375 landmatrix/models/activity_changeset.py:46
+#: landmatrix/models/activity_changeset_review.py:18
+#: landmatrix/models/activity_feedback.py:24 landmatrix/models/comment.py:10
+#: landmatrix/models/investor.py:63 landmatrix/models/investor.py:101
+#: landmatrix/models/investor.py:153
+msgid "Comment"
+msgstr ""
+
+#: editor/templates/dashboard.html:194 editor/templates/manage.html:106
+msgid "Added"
+msgstr ""
+
+#: editor/templates/dashboard.html:232
+msgid "No deals have been added lately."
+msgstr ""
+
+#: editor/templates/dashboard.html:239
+msgid "Latest modified"
+msgstr ""
+
+#: editor/templates/dashboard.html:244
+msgid "Modified by"
+msgstr ""
+
+#: editor/templates/dashboard.html:246
+msgid "Modified"
+msgstr ""
+
+#: editor/templates/dashboard.html:284
+msgid "No deals have been modified lately."
+msgstr ""
+
+#: editor/templates/dashboard.html:293
+msgid "Latest deleted"
+msgstr ""
+
+#: editor/templates/dashboard.html:298
+msgid "Deleted by"
+msgstr ""
+
+#: editor/templates/dashboard.html:300
+msgid "Deleted"
+msgstr ""
+
+#: editor/templates/dashboard.html:340
+msgid "No deals have been deleted lately."
+msgstr ""
+
+#: editor/templates/dashboard.html:349
+msgid "Needs your attention"
+msgstr ""
+
+#: editor/templates/dashboard.html:354 editor/templates/manage.html:160
+#: editor/templates/manage.html.py:215 editor/templates/manage.html:267
+#: editor/templates/manage.html.py:319
+msgid "Last revision"
+msgstr ""
+
+#: editor/templates/dashboard.html:355 grid/forms/deal_former_use_form.py:19
+msgid "State"
+msgstr ""
+
+#: editor/templates/dashboard.html:356 editor/templates/manage.html:163
+#: editor/templates/manage.html.py:217 editor/templates/manage.html:269
+#: editor/templates/manage.html.py:321
+msgid "Actions"
+msgstr ""
+
+#: editor/templates/dashboard.html:365
+msgid "Update"
+msgstr ""
+
+#: editor/templates/dashboard.html:368 editor/templates/dashboard.html:383
+#: editor/templates/dashboard.html:398 editor/templates/dashboard.html:413
+#: editor/templates/manage.html:176 editor/templates/manage.html.py:228
+#: editor/templates/manage.html:280 editor/templates/manage.html.py:333
+#: editor/templates/manage_item.html:16 editor/templates/manage_item.html:17
+#: editor/templates/manage_item.html:26
+msgid "Approve"
+msgstr ""
+
+#: editor/templates/dashboard.html:370 editor/templates/dashboard.html:385
+#: editor/templates/dashboard.html:400 editor/templates/dashboard.html:415
+#: editor/templates/manage.html:179 editor/templates/manage.html.py:230
+#: editor/templates/manage.html:282 editor/templates/manage.html.py:335
+#: editor/templates/manage_item.html:16 editor/templates/manage_item.html:17
+#: editor/templates/manage_item.html:26
+msgid "Reject"
+msgstr ""
+
+#: editor/templates/dashboard.html:380 editor/templates/dashboard.html:410
+msgid "Delete"
+msgstr ""
+
+#: editor/templates/dashboard.html:395
+msgid "Add"
+msgstr ""
+
+#: editor/templates/dashboard.html:421 editor/templates/dashboard.html:454
+msgid "Show all"
+msgstr ""
+
+#: editor/templates/dashboard.html:423
+msgid "No pending changesets require your attention."
+msgstr ""
+
+#: editor/templates/dashboard.html:432
+msgid "Feedback requests"
+msgstr ""
+
+#: editor/templates/dashboard.html:437 editor/templates/manage.html:60
+msgid "Request from"
+msgstr ""
+
+#: editor/templates/dashboard.html:439 editor/templates/manage.html:62
+msgid "Requested"
+msgstr ""
+
+#: editor/templates/dashboard.html:456
+msgid "No feedback requests lately."
+msgstr ""
+
+#: editor/templates/manage.html:6
+msgid "Manage deals "
+msgstr ""
+
+#: editor/templates/manage.html:9 editor/templates/manage.html.py:10
+msgid "Manage deals"
+msgstr ""
+
+#: editor/templates/manage.html:28
+#: grid/forms/add_deal_action_comment_form.py:29
+msgid "Feedback"
+msgstr ""
+
+#: editor/templates/manage.html:31
+msgid "My deals"
+msgstr ""
+
+#: editor/templates/manage.html:34
+msgid "Pending updates"
+msgstr ""
+
+#: editor/templates/manage.html:36
+msgid "Pending deletions"
+msgstr ""
+
+#: editor/templates/manage.html:38
+msgid "New deals for approval"
+msgstr ""
+
+#: editor/templates/manage.html:40
+msgid "Pending Stakeholder deletions"
+msgstr ""
+
+#: editor/templates/manage.html:43
+msgid "Rejected changes"
+msgstr ""
+
+#: editor/templates/manage.html:82 editor/templates/manage.html.py:135
+#: editor/templates/manage.html:192 editor/templates/manage.html.py:244
+#: editor/templates/manage.html:296 editor/templates/manage.html.py:350
+#: editor/templates/manage.html:399
+msgid "Page"
+msgstr ""
+
+#: editor/templates/manage.html:82 editor/templates/manage.html.py:135
+#: editor/templates/manage.html:192 editor/templates/manage.html.py:244
+#: editor/templates/manage.html:296 editor/templates/manage.html.py:350
+#: editor/templates/manage.html:399
+msgid "of"
+msgstr ""
+
+#: editor/templates/manage.html:91
+msgid "Currently there are no feedback requests."
+msgstr ""
+
+#: editor/templates/manage.html:108 landmatrix/models/activity.py:16
+#: landmatrix/models/investor.py:64 landmatrix/models/investor.py:102
+#: landmatrix/models/investor.py:154
+msgid "Status"
+msgstr ""
+
+#: editor/templates/manage.html:116
+msgid "Rejected version"
+msgstr ""
+
+#: editor/templates/manage.html:144 editor/templates/manage.html.py:201
+msgid "Currently there are no pending updates."
+msgstr ""
+
+#: editor/templates/manage.html:161
+msgid "Modified areas"
+msgstr ""
+
+#: editor/templates/manage.html:253
+msgid "Currently there are no pending deletions."
+msgstr ""
+
+#: editor/templates/manage.html:305
+msgid "Currently there are no new deals for approval."
+msgstr ""
+
+#: editor/templates/manage.html:318
+msgid "Stakeholder #"
+msgstr ""
+
+#: editor/templates/manage.html:360
+msgid "Currently there are no pending stakeholder deletions."
+msgstr ""
+
+#: editor/templates/manage.html:373
+msgid "Deal ID #"
+msgstr ""
+
+#: editor/templates/manage.html:374
+#: landmatrix/models/activity_changeset_review.py:15
+#: landmatrix/models/comment.py:12
+msgid "User"
+msgstr ""
+
+#: editor/templates/manage.html:376 landmatrix/models/activity_changeset.py:48
+#: landmatrix/models/activity_changeset_review.py:16
+#: landmatrix/models/activity_feedback.py:25 landmatrix/models/comment.py:11
+#: landmatrix/models/investor.py:65 landmatrix/models/investor.py:103
+#: landmatrix/models/investor.py:155
+msgid "Timestamp"
+msgstr ""
+
+#: editor/templates/manage.html:409
+msgid "Currently there are no rejected changes."
+msgstr ""
+
+#: editor/templates/manage_item.html:20 grid/templates/add-deal.html:12
+#: grid/templates/add-deal.html.py:13 grid/templates/add-deal.html:18
+#: grid/templates/all_deals.html:371 grid/templates/deal-detail.html:120
+#: grid/templates/group-by.html:265
+msgid "Add a deal"
+msgstr ""
+
+#: editor/templates/manage_item.html:26 grid/templates/change-deal.html:23
+#: grid/templates/deal-detail.html:7 grid/templates/deal-detail.html.py:8
+#: grid/templates/deal-detail.html:12
+msgid "Deal"
+msgstr ""
+
+#: editor/templates/manage_item.html:26
+#: grid/forms/deal_secondary_investor_form.py:18
+#: landmatrix/models/investor.py:86 landmatrix/models/investor.py:148
+msgid "Investor"
+msgstr ""
+
+#: editor/views/changeset_protocol.py:183
+msgid "Public User"
+msgstr ""
+
+#: editor/views/manage_view.py:76
+#: grid/forms/add_deal_action_comment_form.py:14
+#: grid/forms/add_primary_investor_form.py:15
+#: grid/forms/change_deal_action_comment_form.py:12
+#: grid/forms/change_primary_investor_form.py:15
+#: grid/forms/manage_deal_form.py:13
+msgid "Action comment"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:13
+msgid "Action Comment"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:16
+#: landmatrix/models/activity.py:15
+msgid "Fully updated"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:17
+msgid "Fully updated history"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:20
+msgid "Public deal"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:21
+msgid "Not public"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:21
+msgid "Please specify in additional comment field"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:22
+msgid "Reason"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:23
+#: grid/forms/add_investor_form.py:27 grid/forms/choices.py:6
+#: grid/forms/choices.py:19 grid/forms/choices.py:59
+#: grid/forms/deal_primary_investor_form.py:19
+#: grid/forms/deal_secondary_investor_form.py:80
+#: grid/forms/deal_spatial_form.py:25 grid/forms/investor_form.py:104
+msgid "---------"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:24
+msgid "Temporary removal from PI after criticism"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:25
+msgid "Research in progress"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:27
+#: grid/forms/add_deal_employment_form.py:23
+#: grid/forms/add_deal_employment_form.py:34
+#: grid/forms/add_deal_employment_form.py:45
+#: grid/forms/add_deal_general_form.py:35
+#: grid/forms/add_deal_general_form.py:46
+#: grid/forms/add_deal_general_form.py:58
+#: grid/forms/add_deal_general_form.py:83
+#: grid/forms/add_deal_general_form.py:94
+#: grid/forms/add_deal_general_form.py:105
+#: grid/forms/add_deal_general_form.py:127
+#: grid/forms/add_deal_general_form.py:148
+#: grid/forms/add_deal_general_form.py:192 grid/forms/add_investor_form.py:20
+#: grid/forms/change_deal_employment_form.py:22
+#: grid/forms/change_deal_employment_form.py:32
+#: grid/forms/change_deal_employment_form.py:42
+#: grid/forms/change_deal_general_form.py:35
+#: grid/forms/change_deal_general_form.py:46
+#: grid/forms/change_deal_general_form.py:58
+#: grid/forms/change_deal_general_form.py:77
+#: grid/forms/change_deal_general_form.py:98
+#: grid/forms/change_deal_general_form.py:119
+#: grid/forms/change_deal_general_form.py:163
+#: grid/forms/deal_contract_form.py:40 grid/forms/deal_contract_form.py:51
+#: grid/forms/deal_data_source_form.py:72
+#: grid/forms/deal_former_use_form.py:27 grid/forms/deal_former_use_form.py:46
+#: grid/forms/deal_former_use_form.py:64
+#: grid/forms/deal_local_communities_form.py:25
+#: grid/forms/deal_local_communities_form.py:41
+#: grid/forms/deal_local_communities_form.py:58
+#: grid/forms/deal_local_communities_form.py:73
+#: grid/forms/deal_local_communities_form.py:125
+#: grid/forms/deal_produce_info_form.py:31
+#: grid/forms/deal_produce_info_form.py:40
+#: grid/forms/deal_produce_info_form.py:49
+#: grid/forms/deal_produce_info_form.py:63
+#: grid/forms/deal_produce_info_form.py:72
+#: grid/forms/deal_produce_info_form.py:109
+#: grid/forms/deal_produce_info_form.py:123
+#: grid/forms/deal_secondary_investor_form.py:27
+#: grid/forms/deal_spatial_form.py:56 grid/forms/deal_vggt_form.py:37
+#: grid/forms/deal_vggt_form.py:50 grid/forms/deal_water_form.py:25
+#: grid/forms/deal_water_form.py:42 grid/forms/deal_water_form.py:50
+#: grid/forms/deal_water_form.py:61 grid/forms/investor_form.py:45
+msgid "Additional comments"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:30
+msgid "Assign to"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:30
+msgid "Unassigned"
+msgstr ""
+
+#: grid/forms/add_deal_action_comment_form.py:31
+msgid "Feedback comment"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:12
+#: grid/forms/change_deal_employment_form.py:12
+msgid "Employment"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:15
+#: grid/forms/change_deal_employment_form.py:14
+msgid "Number of total jobs created"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:16
+#: grid/forms/change_deal_employment_form.py:15
+msgid "Total number of jobs created"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:17
+#: grid/forms/change_deal_employment_form.py:16
+msgid "Planned total number of jobs"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:17
+#: grid/forms/add_deal_employment_form.py:20
+#: grid/forms/add_deal_employment_form.py:28
+#: grid/forms/add_deal_employment_form.py:31
+#: grid/forms/add_deal_employment_form.py:39
+#: grid/forms/add_deal_employment_form.py:42
+#: grid/forms/change_deal_employment_form.py:16
+#: grid/forms/change_deal_employment_form.py:19
+#: grid/forms/change_deal_employment_form.py:26
+#: grid/forms/change_deal_employment_form.py:29
+#: grid/forms/change_deal_employment_form.py:36
+#: grid/forms/change_deal_employment_form.py:39
+msgid "jobs"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:18
+#: grid/forms/add_deal_employment_form.py:29
+#: grid/forms/add_deal_employment_form.py:32
+#: grid/forms/add_deal_employment_form.py:40
+#: grid/forms/add_deal_employment_form.py:43
+#: grid/forms/change_deal_employment_form.py:17
+#: grid/forms/change_deal_employment_form.py:27
+#: grid/forms/change_deal_employment_form.py:30
+#: grid/forms/change_deal_employment_form.py:37
+#: grid/forms/change_deal_employment_form.py:40
+msgid "Employees"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:18
+#: grid/forms/add_deal_employment_form.py:21
+#: grid/forms/add_deal_employment_form.py:29
+#: grid/forms/add_deal_employment_form.py:32
+#: grid/forms/add_deal_employment_form.py:40
+#: grid/forms/add_deal_employment_form.py:43
+#: grid/forms/change_deal_employment_form.py:17
+#: grid/forms/change_deal_employment_form.py:20
+#: grid/forms/change_deal_employment_form.py:27
+#: grid/forms/change_deal_employment_form.py:30
+#: grid/forms/change_deal_employment_form.py:37
+#: grid/forms/change_deal_employment_form.py:40
+msgid "employees"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:19
+#: grid/forms/add_deal_employment_form.py:22
+#: grid/forms/change_deal_employment_form.py:18
+#: grid/forms/change_deal_employment_form.py:21
+msgid "Daily/seasonal  workers"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:19
+#: grid/forms/add_deal_employment_form.py:22
+#: grid/forms/add_deal_employment_form.py:30
+#: grid/forms/add_deal_employment_form.py:33
+#: grid/forms/add_deal_employment_form.py:41
+#: grid/forms/add_deal_employment_form.py:44
+#: grid/forms/change_deal_employment_form.py:18
+#: grid/forms/change_deal_employment_form.py:21
+#: grid/forms/change_deal_employment_form.py:28
+#: grid/forms/change_deal_employment_form.py:31
+#: grid/forms/change_deal_employment_form.py:38
+#: grid/forms/change_deal_employment_form.py:41
+msgid "workers"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:20
+#: grid/forms/change_deal_employment_form.py:19
+msgid "Current total number of jobs"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:21
+#: grid/forms/change_deal_employment_form.py:20
+msgid "Current total employees"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:26
+#: grid/forms/add_deal_employment_form.py:27
+#: grid/forms/change_deal_employment_form.py:24
+#: grid/forms/change_deal_employment_form.py:25
+msgid "Number of jobs for foreigners created"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:28
+#: grid/forms/change_deal_employment_form.py:26
+msgid "Planned number of jobs for foreigners"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:30
+#: grid/forms/add_deal_employment_form.py:33
+#: grid/forms/add_deal_employment_form.py:41
+#: grid/forms/add_deal_employment_form.py:44
+#: grid/forms/change_deal_employment_form.py:28
+#: grid/forms/change_deal_employment_form.py:31
+#: grid/forms/change_deal_employment_form.py:38
+#: grid/forms/change_deal_employment_form.py:41
+msgid "Daily/seasonal workers"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:31
+#: grid/forms/change_deal_employment_form.py:29
+msgid "Current number of jobs for foreigners"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:37
+#: grid/forms/add_deal_employment_form.py:38
+#: grid/forms/change_deal_employment_form.py:34
+#: grid/forms/change_deal_employment_form.py:35
+msgid "Number of domestic jobs created"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:39
+#: grid/forms/change_deal_employment_form.py:36
+msgid "Planned number of domestic jobs"
+msgstr ""
+
+#: grid/forms/add_deal_employment_form.py:42
+#: grid/forms/change_deal_employment_form.py:39
+msgid "Current number of domestic jobs"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:17
+#: grid/forms/add_deal_general_public_form.py:10
+#: grid/forms/change_deal_general_form.py:17
+msgid "General Info"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:21
+#: grid/forms/change_deal_general_form.py:21
+#: grid/forms/country_specific_forms.py:36
+msgid "Land area"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:24
+#: grid/forms/change_deal_general_form.py:24
+#: grid/forms/country_specific_forms.py:38
+msgid "Intended size"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:24
+#: grid/forms/add_deal_general_form.py:28
+#: grid/forms/add_deal_general_form.py:31
+#: grid/forms/add_deal_general_form.py:123
+#: grid/forms/add_deal_general_form.py:145
+#: grid/forms/add_deal_general_form.py:165
+#: grid/forms/add_deal_general_form.py:180
+#: grid/forms/change_deal_general_form.py:24
+#: grid/forms/change_deal_general_form.py:28
+#: grid/forms/change_deal_general_form.py:31
+#: grid/forms/change_deal_general_form.py:95
+#: grid/forms/change_deal_general_form.py:116
+#: grid/forms/change_deal_general_form.py:136
+#: grid/forms/change_deal_general_form.py:151
+#: grid/forms/country_specific_forms.py:39
+msgid "ha"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:27
+#: grid/forms/change_deal_general_form.py:27
+msgid "Size under contract (leased or purchased area)"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:31
+#: grid/forms/change_deal_general_form.py:31
+msgid "Size in operation (production)"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:43
+#: grid/forms/change_deal_general_form.py:43
+msgid "Intention of the investment"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:51
+#: grid/forms/add_deal_general_form.py:54
+#: grid/forms/change_deal_general_form.py:51
+#: grid/forms/change_deal_general_form.py:54
+msgid "Nature of the deal"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:69 grid/forms/deal_contract_form.py:26
+msgid "Contract number"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:72 grid/forms/deal_contract_form.py:29
+msgid "Contract date"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:76 grid/forms/deal_contract_form.py:33
+msgid "Contract expiration date"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:80 grid/forms/deal_contract_form.py:37
+msgid "Sold as deal no."
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:88
+#: grid/forms/add_deal_general_form.py:91 grid/forms/deal_contract_form.py:45
+#: grid/forms/deal_contract_form.py:48
+msgid "Duration of the agreement"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:91 grid/forms/deal_contract_form.py:48
+msgid "years"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:110
+#: grid/forms/add_deal_general_form.py:113
+#: grid/forms/change_deal_general_form.py:82
+#: grid/forms/change_deal_general_form.py:85
+msgid "Purchase price"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:116
+#: grid/forms/change_deal_general_form.py:88
+msgid "Purchase price currency"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:120
+#: grid/forms/change_deal_general_form.py:92
+msgid "Purchase price area type"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:123
+#: grid/forms/add_deal_general_form.py:145
+#: grid/forms/change_deal_general_form.py:95
+#: grid/forms/change_deal_general_form.py:116
+msgid "Purchase price area"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:132
+#: grid/forms/change_deal_general_form.py:103
+msgid "Leasing fees"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:135
+#: grid/forms/change_deal_general_form.py:106
+msgid "Annual leasing fee"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:138
+#: grid/forms/change_deal_general_form.py:109
+msgid "Annual leasing fee currency"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:142
+#: grid/forms/change_deal_general_form.py:113
+msgid "Annual leasing fee type"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:153
+#: grid/forms/add_deal_general_form.py:156
+#: grid/forms/change_deal_general_form.py:124
+#: grid/forms/change_deal_general_form.py:127
+msgid "Contract farming"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:157
+#: grid/forms/change_deal_general_form.py:128
+#: grid/forms/deal_local_communities_form.py:82
+#: grid/forms/deal_local_communities_form.py:97
+#: grid/forms/deal_produce_info_form.py:118 grid/forms/deal_vggt_form.py:31
+#: grid/forms/deal_vggt_form.py:44 grid/forms/deal_water_form.py:20
+#: grid/forms/deal_water_form.py:66
+msgid "Yes"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:158
+#: grid/forms/change_deal_general_form.py:129
+#: grid/forms/deal_local_communities_form.py:83
+#: grid/forms/deal_local_communities_form.py:98
+#: grid/forms/deal_produce_info_form.py:119 grid/forms/deal_vggt_form.py:33
+#: grid/forms/deal_vggt_form.py:46 grid/forms/deal_water_form.py:21
+#: grid/forms/deal_water_form.py:67
+msgid "No"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:162
+#: grid/forms/add_deal_general_form.py:165
+#: grid/forms/change_deal_general_form.py:136
+msgid "On leased / purchased area"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:169
+#: grid/forms/change_deal_general_form.py:140
+msgid "On leased / purchased farmers"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:169
+#: grid/forms/add_deal_general_form.py:185
+#: grid/forms/change_deal_general_form.py:140
+#: grid/forms/change_deal_general_form.py:156
+msgid "farmers"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:173
+#: grid/forms/change_deal_general_form.py:144
+msgid "On leased / purchased households"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:173
+#: grid/forms/add_deal_general_form.py:189
+#: grid/forms/change_deal_general_form.py:144
+#: grid/forms/change_deal_general_form.py:160
+msgid "households"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:177
+#: grid/forms/add_deal_general_form.py:180
+#: grid/forms/change_deal_general_form.py:151
+msgid "Not on leased / purchased area (out-grower)"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:184
+#: grid/forms/change_deal_general_form.py:155
+msgid "Not on leased / purchased farmers (out-grower)"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:188
+#: grid/forms/change_deal_general_form.py:159
+msgid "Not on leased / purchased households (out-grower)"
+msgstr ""
+
+#: grid/forms/add_deal_general_form.py:201
+#: grid/forms/change_deal_general_form.py:172
+#: grid/forms/deal_data_source_form.py:81
+msgid "Invalid date. Please enter a date in the format [YYYY-MM-DD]"
+msgstr ""
+
+#: grid/forms/add_deal_overall_comment_form.py:12
+#: grid/forms/change_deal_overall_comment_form.py:11
+msgid "Overall Comment"
+msgstr ""
+
+#: grid/forms/add_deal_overall_comment_form.py:15
+#: grid/forms/change_deal_overall_comment_form.py:13
+msgid "Overall comment"
+msgstr ""
+
+#: grid/forms/add_investor_form.py:14
+msgid "General"
+msgstr ""
+
+#: grid/forms/add_investor_form.py:15 grid/forms/deal_data_source_form.py:61
+#: grid/forms/deal_secondary_investor_form.py:20
+#: grid/forms/investor_form.py:40
+#: grid/forms/public_user_information_form.py:18
+#: landmatrix/models/activity_changeset_review.py:9
+#: landmatrix/models/browse_rule.py:8 landmatrix/models/filter_preset.py:10
+#: landmatrix/models/filter_preset.py:17 landmatrix/models/investor.py:48
+#: landmatrix/models/status.py:8
+msgid "Name"
+msgstr ""
+
+#: grid/forms/add_investor_form.py:18
+#: grid/forms/deal_secondary_investor_form.py:24
+#: grid/forms/investor_form.py:43
+msgid "Classification"
+msgstr ""
+
+#: grid/forms/add_investor_form.py:28
+#: grid/forms/deal_secondary_investor_form.py:81
+#: grid/forms/investor_form.py:105
+msgid "Multinational enterprise (MNE)"
+msgstr ""
+
+#: grid/forms/add_primary_investor_form.py:14
+#: grid/forms/change_primary_investor_form.py:14
+msgid "Name of primary investor"
+msgstr ""
+
+#: grid/forms/add_primary_investor_form.py:26
+msgid "Primary investor name already exists. Please choose a different name."
+msgstr ""
+
+#: grid/forms/change_deal_general_form.py:133
+msgid "On the lease"
+msgstr ""
+
+#: grid/forms/change_deal_general_form.py:148
+msgid "Not on the lease"
+msgstr ""
+
+#: grid/forms/choices.py:7
+msgid "Expression of interest"
+msgstr ""
+
+#: grid/forms/choices.py:8
+msgid "Under negotiation"
+msgstr ""
+
+#: grid/forms/choices.py:9
+msgid "Memorandum of understanding"
+msgstr ""
+
+#: grid/forms/choices.py:10
+msgid "Oral Agreement"
+msgstr ""
+
+#: grid/forms/choices.py:11
+msgid "Contract signed"
+msgstr ""
+
+#: grid/forms/choices.py:12
+msgid "Negotiations failed"
+msgstr ""
+
+#: grid/forms/choices.py:13
+msgid "Contract canceled"
+msgstr ""
+
+#: grid/forms/choices.py:14
+msgid "Contract expired"
+msgstr ""
+
+#: grid/forms/choices.py:15
+msgid "Change of ownership"
+msgstr ""
+
+#: grid/forms/choices.py:20
+msgid "Project not started"
+msgstr ""
+
+#: grid/forms/choices.py:21
+msgid "Startup phase (no production)"
+msgstr ""
+
+#: grid/forms/choices.py:22
+msgid "In operation (production)"
+msgstr ""
+
+#: grid/forms/choices.py:23
+msgid "Project abandoned"
+msgstr ""
+
+#: grid/forms/choices.py:27
+msgid "Agriculture"
+msgstr ""
+
+#: grid/forms/choices.py:28
+msgid "Biofuels"
+msgstr ""
+
+#: grid/forms/choices.py:29
+msgid "Food crops"
+msgstr ""
+
+#: grid/forms/choices.py:30
+msgid "Fodder"
+msgstr ""
+
+#: grid/forms/choices.py:31 grid/forms/deal_produce_info_form.py:34
+msgid "Livestock"
+msgstr ""
+
+#: grid/forms/choices.py:32
+msgid "Non-food agricultural commodities"
+msgstr ""
+
+#: grid/forms/choices.py:35 grid/forms/deal_former_use_form.py:40
+msgid "Forestry"
+msgstr ""
+
+#: grid/forms/choices.py:36
+msgid "For wood and fibre"
+msgstr ""
+
+#: grid/forms/choices.py:37
+msgid "For carbon sequestration/REDD"
+msgstr ""
+
+#: grid/forms/choices.py:41
+msgid "Resource extraction (Oil, Gas, Minerals)"
+msgstr ""
+
+#: grid/forms/choices.py:42
+msgid "Tourism"
+msgstr ""
+
+#: grid/forms/choices.py:43
+msgid "Industry"
+msgstr ""
+
+#: grid/forms/choices.py:44 grid/forms/deal_former_use_form.py:41
+msgid "Conservation"
+msgstr ""
+
+#: grid/forms/choices.py:45
+msgid "Land speculation"
+msgstr ""
+
+#: grid/forms/choices.py:46
+msgid "Renewable Energy"
+msgstr ""
+
+#: grid/forms/choices.py:47
+msgid "Other (please specify)"
+msgstr ""
+
+#: grid/forms/choices.py:51
+msgid "Outright Purchase"
+msgstr ""
+
+#: grid/forms/choices.py:52
+msgid "Lease"
+msgstr ""
+
+#: grid/forms/choices.py:53
+msgid "Resource exploitation license / concession"
+msgstr ""
+
+#: grid/forms/choices.py:54
+msgid "Logging concession"
+msgstr ""
+
+#: grid/forms/choices.py:55
+msgid "Pure contract farming"
+msgstr ""
+
+#: grid/forms/choices.py:60
+msgid "per ha"
+msgstr ""
+
+#: grid/forms/choices.py:61
+msgid "for specified area"
+msgstr ""
+
+#: grid/forms/country_specific_forms.py:35
+msgid "Germany"
+msgstr ""
+
+#: grid/forms/country_specific_forms.py:41
+msgid "Test integer"
+msgstr ""
+
+#: grid/forms/deal_contract_form.py:20 grid/forms/deal_contract_form.py:60
+msgid "Contracts"
+msgstr ""
+
+#: grid/forms/deal_contract_form.py:23 grid/forms/deal_data_source_form.py:35
+msgid "Contract"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:27
+msgid "Data source"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:30
+msgid "Data source type"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:31
+msgid "Media report"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:32
+msgid "Research Paper / Policy Report"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:33
+msgid "Government sources"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:34
+msgid "Company sources"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:36
+msgid "Contract (contract farming agreement)"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:37
+msgid "Personal information"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:38
+msgid "Crowdsourcing"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:39
+msgid "Other (Please specify in comment  field)"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:43
+msgid "New URL"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:44
+msgid "PDF will be generated automatically, leave empty for file upload"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:47
+msgid "New file"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:50
+msgid "Keep PDF not public"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:53
+msgid "Publication title"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:56
+#: landmatrix/models/activity_attribute_group.py:15
+msgid "Date"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:62
+msgid "Organisation"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:63
+#: grid/forms/public_user_information_form.py:19
+msgid "Email"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:64
+#: grid/forms/public_user_information_form.py:20
+msgid "Phone"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:66
+msgid "Includes in-country-verified information"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:69
+msgid "OpenLandContracts ID"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:134
+#: grid/forms/deal_data_source_form.py:239
+msgid "Data sources"
+msgstr ""
+
+#: grid/forms/deal_data_source_form.py:305
+#, python-brace-format
+msgid ""
+"Data source <a target='_blank' href='{0}'>URL</a> could not be uploaded as a "
+"PDF file. {1} <br>Please upload manually."
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:12
+msgid "Former use"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:15
+msgid "Former land owner (not by constitution)"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:18
+msgid "Former land owner"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:20
+msgid "Private (smallholders)"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:21
+msgid "Private (large-scale)"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:22
+msgid "Community"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:31 grid/forms/deal_former_use_form.py:34
+msgid "Former land use"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:35
+msgid "Commercial (large-scale) agriculture"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:36
+msgid "Smallholder agriculture"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:37
+msgid "Shifting cultivation"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:38
+msgid "Pastoralism"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:39
+msgid "Hunting/Gathering"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:50 grid/forms/deal_former_use_form.py:53
+msgid "Former land cover"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:54
+msgid "Cropland"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:55
+msgid "Forest land"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:56
+msgid "Pasture"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:57
+msgid "Shrub land/Grassland (Rangeland)"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:58
+msgid "Marginal land"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:59
+msgid "Wetland"
+msgstr ""
+
+#: grid/forms/deal_former_use_form.py:60
+msgid "Other land[e.g. developed land – specify in comment field]"
+msgstr ""
+
+#: grid/forms/deal_gender_related_info_form.py:12
+msgid "Gender-related info"
+msgstr ""
+
+#: grid/forms/deal_gender_related_info_form.py:15
+msgid "Any gender-specific information about the investment and its impacts"
+msgstr ""
+
+#: grid/forms/deal_history_form.py:9
+msgid "Deal history"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:12
+msgid "Local communities / indigenous peoples"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:16
+msgid "Names of communities / indigenous peoples affected"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:19
+msgid "Name of community"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:22
+msgid "Name of indigenous people"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:30
+msgid "Recognitions status of community land tenure"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:33
+msgid "Recognition status of community land tenure"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:34
+msgid ""
+"Indigenous Peoples traditional or customary rights recognized by government"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:35
+msgid ""
+"Indigenous Peoples traditional or customary rights not recognized by "
+"government"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:36
+msgid "Community traditional or customary rights recognized by government"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:37
+msgid "Community traditional or customary rights not recognized by government"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:46
+msgid "Consultation of local community"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:49
+msgid "Community consultation"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:50
+msgid "Not consulted"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:51
+msgid "Limited consultation"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:52
+msgid "Free, Prior and Informed Consent (FPIC)"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:53
+msgid "Certified Free, Prior and Informed Consent (FPIC)"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:63
+msgid "How did community react?"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:66
+msgid "Community reaction"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:67
+msgid "Consent"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:68
+msgid "Mixed reaction"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:69
+msgid "Rejection"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:78
+#: grid/forms/deal_local_communities_form.py:81
+msgid "Presence of land conflicts"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:87
+msgid "Please specify details in Additional comments"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:93
+#: grid/forms/deal_local_communities_form.py:96
+msgid "Displacement of people"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:102
+msgid "Number of people actually displaced"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:105
+msgid "Number of households actually displaced"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:108
+msgid "Number of people displaced out of their community land"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:112
+msgid "Number of people displaced staying on community land"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:116
+msgid "Number of people displaced \"only\" from their agricultural fields"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:121
+msgid "Number of people facing displacement once project is fully implemented"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:129
+#: grid/forms/deal_local_communities_form.py:132
+msgid "Negative impacts for local communities"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:133
+msgid "Environmental degradation"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:134
+msgid "Socio-economic"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:135
+msgid "Cultural loss"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:136
+msgid "Eviction"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:137
+msgid "Displacement"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:138
+msgid "Violence"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:143
+msgid "Please specify details in additional comments"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:149
+msgid "Promised or received compensation"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:152
+msgid "Promised compensation (e.g. for damages or resettlements)"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:156
+msgid "Received compensation (e.g. for damages or resettlements)"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:162
+#: grid/forms/deal_local_communities_form.py:165
+msgid "Promised benefits for local communities"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:166
+#: grid/forms/deal_local_communities_form.py:186
+msgid "Health"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:167
+#: grid/forms/deal_local_communities_form.py:187
+msgid "Education"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:168
+#: grid/forms/deal_local_communities_form.py:188
+msgid "Productive infrastructure (e.g. irrigation, tractors, machinery...)"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:169
+#: grid/forms/deal_local_communities_form.py:189
+msgid "Roads"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:170
+#: grid/forms/deal_local_communities_form.py:190
+msgid "Capacity Building"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:171
+#: grid/forms/deal_local_communities_form.py:191
+msgid "Financial Support"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:172
+#: grid/forms/deal_local_communities_form.py:192
+msgid "Community shares in the investment project"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:177
+#: grid/forms/deal_local_communities_form.py:197
+#: grid/forms/deal_water_form.py:71
+msgid "Please specify in additional comments"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:182
+#: grid/forms/deal_local_communities_form.py:185
+msgid "Materialized benefits for local communities"
+msgstr ""
+
+#: grid/forms/deal_local_communities_form.py:204
+#: grid/forms/deal_local_communities_form.py:210
+msgid ""
+"Presence of organizations and actions taken (e.g. farmer organizations, "
+"NGOs, etc.)"
+msgstr ""
+
+#: grid/forms/deal_primary_investor_form.py:10
+#: grid/templates/all_deals.html:78 grid/templates/group-by.html:55
+msgid "Primary investor"
+msgstr ""
+
+#: grid/forms/deal_primary_investor_form.py:11
+msgid "Name of the investment project"
+msgstr ""
+
+#: grid/forms/deal_primary_investor_form.py:14
+msgid "Existing primary investor"
+msgstr ""
+
+#: grid/forms/deal_primary_investor_form.py:15
+msgid "Additional comments regarding investors"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:18
+msgid "Produce info"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:22
+msgid "Detailed crop, animal and mineral information"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:25
+msgid "Crops"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:28
+msgid "Other crops"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:37
+msgid "Other livestock"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:43
+msgid "Resources"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:46
+msgid "Other resources"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:52
+msgid "Contract farming crops"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:55
+msgid "Other contract farming crops"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:60
+msgid "Detailed contract farming crop, animal and mineral information"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:66
+msgid "Contract farming livestock"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:69
+msgid "Other contract farming livestock"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:77
+msgid "Use of produce"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:80
+msgid "Has domestic use"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:82
+msgid "Domestic use"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:82
+#: grid/forms/deal_produce_info_form.py:88
+#: grid/forms/deal_produce_info_form.py:94
+#: grid/forms/deal_produce_info_form.py:100
+#: grid/forms/deal_produce_info_form.py:106
+#: grid/forms/deal_secondary_investor_form.py:26
+#: grid/forms/parent_stakeholder_formset.py:29
+#: grid/forms/parent_stakeholder_formset.py:69
+msgid "%"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:85
+msgid "Has export"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:88
+msgid "Export"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:91
+msgid "Country 1"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:94
+msgid "Country 1 ratio"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:97
+msgid "Country 2"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:100
+msgid "Country 2 ratio"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:103
+msgid "Country 3"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:106
+msgid "Country 3 ratio"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:114
+#: grid/forms/deal_produce_info_form.py:117
+msgid "In country processing of produce"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:127
+msgid ""
+"Processing facilities / production infrastructure of the project (e.g. oil "
+"mill, ethanol distillery, biomass power plant etc.)"
+msgstr ""
+
+#: grid/forms/deal_produce_info_form.py:132
+msgid "In-country end products of the project"
+msgstr ""
+
+#: grid/forms/deal_secondary_investor_form.py:19
+#: grid/forms/parent_stakeholder_formset.py:60
+msgid "Existing investor"
+msgstr ""
+
+#: grid/forms/deal_secondary_investor_form.py:22
+#: landmatrix/models/country.py:28
+msgid "Region"
+msgstr ""
+
+#: grid/forms/deal_secondary_investor_form.py:26
+#: grid/forms/parent_stakeholder_formset.py:29
+#: grid/forms/parent_stakeholder_formset.py:69
+msgid "Percentage of investment"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:19 grid/forms/deal_spatial_form.py:21
+#: grid/forms/deal_spatial_form.py:34 grid/forms/deal_spatial_form.py:74
+msgid "Location"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:24
+msgid "Spatial accuracy level"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:27
+msgid "Administrative region"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:28
+msgid "Approximate location"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:29
+msgid "Exact location"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:30
+msgid "Coordinates"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:37
+msgid "Latitude"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:40
+msgid "Longitude"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:43
+msgid "Facility name"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:46
+msgid "Target Country"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:49
+msgid "Target Region"
+msgstr ""
+
+#: grid/forms/deal_spatial_form.py:53
+msgid "Location description"
+msgstr ""
+
+#: grid/forms/deal_vggt_form.py:15 grid/forms/deal_vggt_form.py:21
+msgid ""
+"Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) / "
+"Principles for Responsible Agricultural Investments (PRAI)"
+msgstr ""
+
+#: grid/forms/deal_vggt_form.py:28
+msgid ""
+"Application of Voluntary Guidelines on the Responsible Governance of Tenure "
+"(VGGT)"
+msgstr ""
+
+#: grid/forms/deal_vggt_form.py:32 grid/forms/deal_vggt_form.py:45
+msgid "Partially"
+msgstr ""
+
+#: grid/forms/deal_vggt_form.py:42
+msgid ""
+"Application of Principles for Responsible Agricultural Investments (PRAI)"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:13
+msgid "Water"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:16 grid/forms/deal_water_form.py:19
+msgid "Water extraction envisaged"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:29 grid/forms/deal_water_form.py:32
+msgid "Source of water extraction"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:34
+msgid "Groundwater"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:35
+msgid "Surface water"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:36
+msgid "River"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:37
+msgid "Lake"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:47
+msgid ""
+"How much do investors pay for water and the use of water infrastructure?"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:54
+msgid "How much water is extracted?"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:57
+msgid "Water extraction amount"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:58
+msgid "m&sup3;/year"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:65
+msgid "Use of irrigation infrastructure"
+msgstr ""
+
+#: grid/forms/deal_water_form.py:75
+msgid "Water footprint of the investment project"
+msgstr ""
+
+#: grid/forms/file_field_with_initial.py:45
+msgid "Saved file"
+msgstr ""
+
+#: grid/forms/file_field_with_initial.py:78
+msgid "Uploaded files must be less than 1MB."
+msgstr ""
+
+#: grid/forms/operational_stakeholder_form.py:22
+msgid "Investor info"
+msgstr ""
+
+#: grid/forms/operational_stakeholder_form.py:24
+msgid "Operational Stakeholder"
+msgstr ""
+
+#: grid/forms/operational_stakeholder_form.py:26
+msgid "Existing Operational Stakeholder"
+msgstr ""
+
+#: grid/forms/operational_stakeholder_form.py:35
+#: grid/forms/operational_stakeholder_form.py:38
+msgid "Actors involved in the negotiation / admission process"
+msgstr ""
+
+#: grid/forms/operational_stakeholder_form.py:41
+msgid "Relationship to parent"
+msgstr ""
+
+#: grid/forms/operational_stakeholder_form.py:48
+msgid "Name of investment project"
+msgstr ""
+
+#: grid/forms/parent_stakeholder_formset.py:20
+msgid "Existing stakeholder"
+msgstr ""
+
+#: grid/forms/public_user_information_form.py:14
+msgid "User information"
+msgstr ""
+
+#: grid/forms/public_user_information_form.py:16
+msgid ""
+"Write something about yourself and your company. This won't be published"
+msgstr ""
+
+#: grid/templates/add-deal.html:17
+msgid "Editor"
+msgstr ""
+
+#: grid/templates/add-deal.html:28 grid/templates/change-deal.html:38
+#: grid/templates/stakeholder.html:149
+msgid "Submit"
+msgstr ""
+
+#: grid/templates/all_deals.html:5 grid/templates/all_deals.html.py:7
+#: grid/templates/all_deals.html:15 grid/templates/grid/subnav.html:57
+#: grid/templates/group-by.html:5 grid/templates/group-by.html.py:6
+msgid "All deals"
+msgstr ""
+
+#: grid/templates/all_deals.html:6 grid/templates/all_deals.html.py:8
+#: grid/templates/all_deals.html:17 grid/templates/all_deals.html.py:21
+#: grid/templates/group-by.html:5 grid/templates/group-by.html.py:6
+#: grid/templates/group-by.html:15 grid/templates/group-by.html.py:18
+msgid "By"
+msgstr ""
+
+#: grid/templates/all_deals.html:12 grid/templates/global_base.html:79
+#: grid/templates/group-by.html:10 templates/base.html:148
+msgid "Home"
+msgstr ""
+
+#: grid/templates/all_deals.html:64 grid/templates/group-by.html:51
+msgid "Crop"
+msgstr ""
+
+#: grid/templates/all_deals.html:85
+msgid "Operational stakeholder"
+msgstr ""
+
+#: grid/templates/all_deals.html:92 grid/templates/group-by.html:57
+msgid "Stakeholders"
+msgstr ""
+
+#: grid/templates/all_deals.html:99
+msgid "Stakeholder countries"
+msgstr ""
+
+#: grid/templates/all_deals.html:106 grid/templates/group-by.html:65
+msgid "Secondary&nbsp;investor country"
+msgstr ""
+
+#: grid/templates/all_deals.html:113 grid/templates/group-by.html:67
+msgid "Secondary&nbsp;investor region"
+msgstr ""
+
+#: grid/templates/all_deals.html:120 grid/templates/group-by.html:69
+#: grid/views/filter_widget_mixin.py:74
+msgid "Target country"
+msgstr ""
+
+#: grid/templates/all_deals.html:127 grid/templates/group-by.html:71
+#: grid/views/filter_widget_mixin.py:80
+msgid "Target region"
+msgstr ""
+
+#: grid/templates/all_deals.html:134 grid/templates/group-by.html:73
+msgid "Year"
+msgstr ""
+
+#: grid/templates/all_deals.html:141 grid/templates/group-by.html:75
+msgid "Investment size"
+msgstr ""
+
+#: grid/templates/all_deals.html:148 grid/templates/group-by.html:77
+msgid "Deals"
+msgstr ""
+
+#: grid/templates/all_deals.html:155 grid/templates/group-by.html:79
+msgid "Deal data source type"
+msgstr ""
+
+#: grid/templates/all_deals.html:162 grid/templates/group-by.html:81
+msgid "Availability"
+msgstr ""
+
+#: grid/templates/all_deals.html:164 grid/templates/group-by.html:81
+msgid ""
+"This column shows the percentage of information about deals we have "
+"collected.<br/>Click to read more."
+msgstr ""
+
+#: grid/templates/all_deals.html:171 grid/templates/group-by.html:83
+msgid "Intended size (ha)"
+msgstr ""
+
+#: grid/templates/all_deals.html:178 grid/templates/group-by.html:85
+msgid "Contract size (ha)"
+msgstr ""
+
+#: grid/templates/all_deals.html:213 grid/templates/all_deals.html.py:227
+#: grid/templates/all_deals.html:237 grid/templates/all_deals.html.py:247
+#: grid/templates/all_deals.html:285 grid/templates/all_deals.html.py:296
+#: grid/templates/all_deals.html:305 grid/templates/all_deals.html.py:316
+#: grid/templates/all_deals.html:324 grid/templates/all_deals.html.py:328
+#: grid/templates/all_deals.html:343 grid/templates/all_deals.html.py:356
+#: grid/templates/group-by.html:108 grid/templates/group-by.html.py:118
+#: grid/templates/group-by.html:128 grid/templates/group-by.html.py:137
+#: grid/templates/group-by.html:146 grid/templates/group-by.html.py:188
+#: grid/templates/group-by.html:198 grid/templates/group-by.html.py:206
+#: grid/templates/group-by.html:216 grid/templates/group-by.html.py:222
+#: grid/templates/group-by.html:224 grid/templates/group-by.html.py:239
+#: grid/templates/group-by.html:252
+msgid "unknown"
+msgstr ""
+
+#: grid/templates/all_deals.html:257 grid/templates/all_deals.html.py:266
+#: grid/templates/group-by.html:155 grid/templates/group-by.html.py:171
+msgid "unknown country"
+msgstr ""
+
+#: grid/templates/all_deals.html:275 grid/templates/group-by.html:163
+#: grid/templates/group-by.html.py:179
+msgid "unknown region"
+msgstr ""
+
+#: grid/templates/all_deals.html:367 grid/templates/group-by.html:262
+msgid "More..."
+msgstr ""
+
+#: grid/templates/all_deals.html:370 grid/templates/deal-detail.html:119
+msgid "There are currently no deals matching your search criteria."
+msgstr ""
+
+#: grid/templates/change-deal.html:18 grid/templates/change-deal.html.py:19
+msgid "Change Deal"
+msgstr ""
+
+#: grid/templates/deal-comparison.html:8 grid/templates/deal-comparison.html:9
+msgid "Deal history comparison"
+msgstr ""
+
+#: grid/templates/deal-comparison.html:13
+msgid "Deal Details"
+msgstr ""
+
+#: grid/templates/deal-comparison.html:14
+msgid "Compare deal history"
+msgstr ""
+
+#: grid/templates/deal-comparison.html:28
+#: grid/templates/investor-comparison.html:26
+#: grid/templates/investor-comparison.html:55
+msgid "Different"
+msgstr ""
+
+#: grid/templates/deal-comparison.html:83
+msgid "DIFFERENT"
+msgstr ""
+
+#: grid/templates/deal-detail.html:17
+#: grid/templates/includes/deal-history.html:6
+#: grid/templates/stakeholder.html:90
+msgid "History"
+msgstr ""
+
+#: grid/templates/deal-detail.html:20 grid/templates/deal-detail.html.py:84
+msgid "Comments"
+msgstr ""
+
+#: grid/templates/deal-detail.html:97
+msgid "There are no comments to this deal yet."
+msgstr ""
+
+#: grid/templates/deal-detail.html:109
+msgid "Add comment"
+msgstr ""
+
+#: grid/templates/form.html:13 grid/templates/includes/dealpanels.html:59
+#: grid/templates/stakeholder.html:39 grid/templates/stakeholder.html.py:70
+msgid "Add another"
+msgstr ""
+
+#: grid/templates/form.html:17 grid/templates/includes/dealpanels.html:61
+#: grid/templates/stakeholder.html:43 grid/templates/stakeholder.html.py:74
+msgid "Remove"
+msgstr ""
+
+#: grid/templates/global_base.html:26
+msgid "Get&nbsp;the&nbsp;idea"
+msgstr ""
+
+#: grid/templates/global_base.html:26
+msgid "Get the idea"
+msgstr ""
+
+#: grid/templates/global_base.html:27
+msgid "Get&nbsp;the&nbsp;detail"
+msgstr ""
+
+#: grid/templates/global_base.html:27
+msgid "Get the detail"
+msgstr ""
+
+#: grid/templates/global_base.html:28
+msgid "Get&nbsp;involved"
+msgstr ""
+
+#: grid/templates/global_base.html:28
+msgid "Get involved"
+msgstr ""
+
+#: grid/templates/global_base.html:29
+msgid "About"
+msgstr ""
+
+#: grid/templates/grid/subnav.html:22
+msgid "By Target"
+msgstr ""
+
+#: grid/templates/grid/subnav.html:24
+msgid "By Target Region"
+msgstr ""
+
+#: grid/templates/grid/subnav.html:25
+msgid "By Target Country"
+msgstr ""
+
+#: grid/templates/grid/subnav.html:31 grid/templates/grid/subnav.html.py:33
+msgid "By Stakeholder"
+msgstr ""
+
+#: grid/templates/grid/subnav.html:34
+msgid "By Stakeholder Region"
+msgstr ""
+
+#: grid/templates/grid/subnav.html:35
+msgid "By Stakeholder Country"
+msgstr ""
+
+#: grid/templates/grid/subnav.html:40
+msgid "By Data Source"
+msgstr ""
+
+#: grid/templates/grid/subnav.html:45
+msgid "By Intention"
+msgstr ""
+
+#: grid/templates/grid/subnav.html:50
+msgid "By Crop"
+msgstr ""
+
+#: grid/templates/group-by.html:59
+msgid "Secondary&nbsp;investor"
+msgstr ""
+
+#: grid/templates/group-by.html:61
+msgid "Stakeholder country"
+msgstr ""
+
+#: grid/templates/group-by.html:63
+msgid "Stakeholder region"
+msgstr ""
+
+#: grid/templates/group-by.html:265
+msgid "There are currently no deals matching your search criteria"
+msgstr ""
+
+#: grid/templates/includes/deal-history.html:29
+msgid "Unknown user"
+msgstr ""
+
+#: grid/templates/includes/deal-history.html:37
+#: grid/templates/stakeholder.html:120
+msgid "Show this version"
+msgstr ""
+
+#: grid/templates/includes/deal-history.html:48
+#: grid/templates/stakeholder.html:130
+msgid "Compare with previous version"
+msgstr ""
+
+#: grid/templates/includes/deal-history.html:52
+#: grid/templates/stakeholder.html:134
+msgid "First version"
+msgstr ""
+
+#: grid/templates/investor-comparison.html:8
+#: grid/templates/investor-comparison.html:9
+msgid "Stakeholder history comparison"
+msgstr ""
+
+#: grid/templates/investor-comparison.html:13
+msgid "Investor Details"
+msgstr ""
+
+#: grid/templates/investor-comparison.html:14
+msgid "Compare investor history"
+msgstr ""
+
+#: grid/templates/stakeholder.html:11 grid/templates/stakeholder.html.py:12
+msgid "Add Operational stakeholder"
+msgstr ""
+
+#: grid/templates/stakeholder.html:23
+msgid "Parent stakeholders"
+msgstr ""
+
+#: grid/templates/stakeholder.html:54
+msgid "Investors"
+msgstr ""
+
+#: grid/views/browse_condition_form.py:16
+#: landmatrix/models/browse_condition.py:10
+#: landmatrix/models/filter_condition.py:74
+msgid "Variable"
+msgstr ""
+
+#: grid/views/browse_condition_form.py:18
+#: landmatrix/models/browse_condition.py:11
+#: landmatrix/models/filter_condition.py:77
+msgid "Operator"
+msgstr ""
+
+#: grid/views/browse_condition_form.py:20
+#: landmatrix/models/browse_condition.py:12
+#: landmatrix/models/filter_condition.py:80
+msgid "Value"
+msgstr ""
+
+#: grid/views/save_deal_view.py:53
+msgid ""
+"Your changes to the deal have been submitted successfully. The changes will "
+"be reviewed and published soon."
+msgstr ""
+
+#: grid/views/save_deal_view.py:90
+msgid "Please correct the error below."
+msgstr ""
+
+#: landmatrix/default_settings.py:172
+msgid "English"
+msgstr "English"
+
+#: landmatrix/default_settings.py:173
+msgid "Español"
+msgstr "Español"
+
+#: landmatrix/default_settings.py:174
+msgid "Français"
+msgstr "Français"
+
+#: landmatrix/models/activity.py:13
+msgid "Activity identifier"
+msgstr ""
+
+#: landmatrix/models/activity.py:14
+msgid "availability"
+msgstr ""
+
+#: landmatrix/models/activity_attribute_group.py:13
+#: landmatrix/models/activity_changeset.py:47
+#: landmatrix/models/activity_feedback.py:17 landmatrix/models/comment.py:14
+#: landmatrix/models/investor.py:147
+#: landmatrix/models/public_interface_cache.py:12
+#: notifications/templates/comment_posted.html:5
+#: notifications/templates/comment_posted.txt:5
+msgid "Activity"
+msgstr ""
+
+#: landmatrix/models/activity_attribute_group.py:14
+msgid "Language"
+msgstr ""
+
+#: landmatrix/models/activity_changeset_review.py:10
+#: landmatrix/models/status.py:9
+msgid "Description"
+msgstr ""
+
+#: landmatrix/models/activity_changeset_review.py:14
+msgid "Activity changeset"
+msgstr ""
+
+#: landmatrix/models/activity_changeset_review.py:17
+msgid "Review decision"
+msgstr ""
+
+#: landmatrix/models/activity_feedback.py:19
+msgid "User assigned"
+msgstr ""
+
+#: landmatrix/models/activity_feedback.py:22
+msgid "User created"
+msgstr ""
+
+#: landmatrix/models/browse_rule.py:9
+msgid "Rule type"
+msgstr ""
+
+#: landmatrix/models/comment.py:17
+msgid "Activity attribute group"
+msgstr ""
+
+#: landmatrix/models/country.py:29
+msgid "Code ISO 3166-1 alpha2"
+msgstr ""
+
+#: landmatrix/models/country.py:30
+msgid "Code ISO 3166-1 alpha3"
+msgstr ""
+
+#: landmatrix/models/country.py:34 landmatrix/models/region.py:35
+msgid "Latitude of northernmost point"
+msgstr ""
+
+#: landmatrix/models/country.py:37 landmatrix/models/region.py:38
+msgid "Longitude of westernmost point"
+msgstr ""
+
+#: landmatrix/models/country.py:40 landmatrix/models/region.py:41
+msgid "Latitude of southernmost point"
+msgstr ""
+
+#: landmatrix/models/country.py:43 landmatrix/models/region.py:44
+msgid "Longitude of easternmost point"
+msgstr ""
+
+#: landmatrix/models/country.py:46
+msgid "Democracy index"
+msgstr ""
+
+#: landmatrix/models/country.py:49
+msgid "Corruption perception index"
+msgstr ""
+
+#: landmatrix/models/country.py:51
+msgid "High income"
+msgstr ""
+
+#: landmatrix/models/country.py:52
+msgid "Is target country"
+msgstr ""
+
+#: landmatrix/models/crop.py:8
+msgid "Agricultural produce"
+msgstr ""
+
+#: landmatrix/models/investor.py:21
+msgid "Private company"
+msgstr ""
+
+#: landmatrix/models/investor.py:22
+msgid "Stock-exchange listed company"
+msgstr ""
+
+#: landmatrix/models/investor.py:23
+msgid "Individual entrepreneur"
+msgstr ""
+
+#: landmatrix/models/investor.py:24
+msgid "Investment fund"
+msgstr ""
+
+#: landmatrix/models/investor.py:25
+msgid "Semi state-owned company"
+msgstr ""
+
+#: landmatrix/models/investor.py:26
+msgid "State-/government(owned) company"
+msgstr ""
+
+#: landmatrix/models/investor.py:27
+msgid "Other (please specify in comment field)"
+msgstr ""
+
+#: landmatrix/models/investor.py:29
+msgid "Government"
+msgstr ""
+
+#: landmatrix/models/investor.py:30
+msgid "Government institution"
+msgstr ""
+
+#: landmatrix/models/investor.py:31
+msgid "Multilateral Development Bank(MDB)"
+msgstr ""
+
+#: landmatrix/models/investor.py:32
+msgid "Bilateral Development Bank / Development Finance Institution"
+msgstr ""
+
+#: landmatrix/models/investor.py:33
+msgid "Commercial Bank"
+msgstr ""
+
+#: landmatrix/models/investor.py:34
+msgid "Investment Bank"
+msgstr ""
+
+#: landmatrix/models/investor.py:36
+msgid ""
+"Investment Fund(all types incl.pension, hedge, mutual, private equity funds "
+"etc.)"
+msgstr ""
+
+#: landmatrix/models/investor.py:38
+msgid "Insurance firm"
+msgstr ""
+
+#: landmatrix/models/investor.py:39
+msgid "Private equity firm"
+msgstr ""
+
+#: landmatrix/models/investor.py:40
+msgid "Asset management firm"
+msgstr ""
+
+#: landmatrix/models/investor.py:41
+msgid "Non - Profit organization(e.g.Church, University etc.)"
+msgstr ""
+
+#: landmatrix/models/investor.py:45
+msgid "Investor id"
+msgstr ""
+
+#: landmatrix/models/investor.py:51
+msgid "Country of registration/origin"
+msgstr ""
+
+#: landmatrix/models/investor.py:57
+msgid "Investor homepage"
+msgstr ""
+
+#: landmatrix/models/investor.py:60
+msgid "Opencorporates link"
+msgstr ""
+
+#: landmatrix/models/investor.py:82
+msgid "Ownership share"
+msgstr ""
+
+#: landmatrix/models/investor.py:86
+msgid "Stakeholder"
+msgstr ""
+
+#: landmatrix/models/investor.py:93
+msgid "Loan amount"
+msgstr ""
+
+#: landmatrix/models/investor.py:96
+msgid "Loan curency"
+msgstr ""
+
+#: landmatrix/models/investor.py:150
+msgid "Percentage"
+msgstr ""
+
+#: landmatrix/models/language.py:8
+msgid "English name"
+msgstr ""
+
+#: landmatrix/models/language.py:9
+msgid "Local name"
+msgstr ""
+
+#: landmatrix/models/language.py:10
+msgid "Locale"
+msgstr ""
+
+#: landmatrix/models/public_interface_cache.py:13
+msgid "Is this a deal?"
+msgstr ""
+
+#: landmatrix/models/public_interface_cache.py:15
+msgid "Deal scope"
+msgstr ""
+
+#: landmatrix/models/public_interface_cache.py:28
+msgid "Deal size"
+msgstr ""
+
+#: landmatrix/views/switch_language_view.py:13
+#, python-format
+msgid "The language \"%s\" is not supported"
+msgstr ""
+
+#: map/templates/map/map.html:45 wagtailcms/templates/widgets/map.html:12
+msgid "All Deals"
+msgstr ""
+
+#: notifications/admin.py:32
+msgid "Retry failed notifications"
+msgstr ""
+
+#: notifications/distribution.py:10
+msgid "landmatrix: A comment was posted"
+msgstr ""
+
+#: notifications/models.py:47
+msgid "New"
+msgstr ""
+
+#: notifications/models.py:48
+msgid "Sent"
+msgstr ""
+
+#: notifications/models.py:49
+msgid "Error"
+msgstr ""
+
+#: notifications/models.py:53
+msgid "Created On"
+msgstr ""
+
+#: notifications/models.py:55
+msgid "Sent on"
+msgstr ""
+
+#: notifications/models.py:61
+msgid "To"
+msgstr ""
+
+#: notifications/models.py:62
+msgid "CC"
+msgstr ""
+
+#: notifications/models.py:63
+msgid "BCC"
+msgstr ""
+
+#: notifications/models.py:64
+msgid "Reply To"
+msgstr ""
+
+#: notifications/models.py:66
+msgid "Subject"
+msgstr ""
+
+#: notifications/models.py:68
+msgid "From"
+msgstr ""
+
+#: notifications/models.py:70
+msgid "Body Plain Text"
+msgstr ""
+
+#: notifications/models.py:71
+msgid "Body HTML"
+msgstr ""
+
+#: notifications/templates/comment_posted.html:4
+#: notifications/templates/comment_posted.txt:3
+msgid "Hello"
+msgstr ""
+
+#: notifications/templates/comment_posted.html:5
+#: notifications/templates/comment_posted.txt:5
+msgid "has posted a new comment on"
+msgstr ""
+
+#: notifications/templates/comment_posted.html:12
+#: notifications/templates/comment_posted.txt:11
+msgid "Yours"
+msgstr ""
+
+#: templates/404.html:4 templates/404.html.py:5
+msgid "Page not found"
+msgstr ""
+
+#: templates/404.html:9
+msgid ""
+"The page you are looking for appears to have been moved, deleted or does not "
+"exist."
+msgstr ""
+
+#: templates/500.html:4
+msgid "Server Error"
+msgstr ""
+
+#: templates/500.html:5
+msgid "Looks like something went wrong"
+msgstr ""
+
+#: templates/500.html:9
+msgid ""
+"We track these errors automatically, but if the problem persists feel free "
+"to contact us. In the meantime, try refreshing."
+msgstr ""
+
+#: templates/base.html:12 templates/base.html.py:13
+msgid "Landmatrix"
+msgstr ""
+
+#: templates/base.html:12
+msgid "Default description"
+msgstr ""
+
+#: templates/base.html:13
+msgid "Default keywords"
+msgstr ""
+
+#: templates/base.html:82
+msgid "Get Involved"
+msgstr ""
+
+#: templates/base.html:85
+msgid "Report a deal"
+msgstr ""
+
+#: templates/base.html:86
+msgid "Get in touch"
+msgstr ""
+
+#: templates/base.html:87 templates/export.html:4
+msgid "Download"
+msgstr ""
+
+#: templates/base.html:97
+msgid "News"
+msgstr ""
+
+#: templates/base.html:98
+msgid "Newsletter"
+msgstr ""
+
+#: templates/base.html:106
+msgid "Logged in as"
+msgstr ""
+
+#: templates/base.html:109
+msgid "Manage"
+msgstr ""
+
+#: templates/base.html:110
+msgid "Logout"
+msgstr ""
+
+#: templates/base.html:124
+msgid ""
+"You are using an <strong>outdated</strong> browser. Please <a href=\"http://"
+"browsehappy.com/\">upgrade your browser</a> or <a href=\"http://www.google."
+"com/chromeframe/?redirect=true\">activate Google Chrome Frame</a> to improve "
+"your experience.</p>"
+msgstr ""
+
+#: templates/base.html:235
+msgid "Spread and share LM"
+msgstr ""
+
+#: templates/base.html:236
+msgid "Spread the word and share land matrix"
+msgstr ""
+
+#: templates/base.html:241
+msgid "Share and adapt"
+msgstr ""
+
+#: templates/base.html:247
+msgid "Sign up to receive updates"
+msgstr ""
+
+#: templates/base.html:248
+msgid "Stay up to date"
+msgstr ""
+
+#: templates/comments/base.html:19
+msgid "Responses for page"
+msgstr ""
+
+#: templates/comments/form.html:7
+msgid "Submit Comment"
+msgstr ""
+
+#: templates/comments/form.html:8
+msgid "Cancel reply"
+msgstr ""
+
+#: templates/comments/posted.html:3
+msgid "Thanks for commenting"
+msgstr ""
+
+#: templates/comments/posted.html:11
+msgid "Thanks for posting your comment"
+msgstr ""
+
+#: templates/comments/posted.html:13
+msgid ""
+"\n"
+"      We have received your comment, and posted it on the web site.<br/>\n"
+"      You will be sent back to the article...\n"
+"      "
+msgstr ""
+
+#: templates/comments/posted.html:19
+msgid "Back to the article"
+msgstr ""
+
+#: templates/filters.html:9
+msgid "No active filters"
+msgstr ""
+
+#: templates/filters.html:14
+msgid "Hide filters"
+msgstr ""
+
+#: templates/filters.html:16
+msgid "Manage filters"
+msgstr ""
+
+#: templates/filters.html:27
+msgid "Select a filter preset"
+msgstr ""
+
+#: templates/filters.html:52
+msgid "Create a custom filter"
+msgstr ""
+
+#: templates/filters.html:89
+msgid "Add Filter"
+msgstr ""
+
+#: templates/filters.html:102
+msgid "Select columns for the result table"
+msgstr ""
+
+#: templates/registration/login.html:4 templates/registration/login.html:5
+#: templates/registration/login.html:7 templates/registration/login.html:36
+msgid "Login"
+msgstr ""
+
+#: templates/registration/login.html:13
+msgid "Your username and password didn't match. Please try again."
+msgstr ""
+
+#: templates/registration/login.html:18
+msgid ""
+"Your account doesn't have access to this page. To proceed, please login with "
+"an account that has access."
+msgstr ""
+
+#: templates/registration/login.html:20
+msgid "Please login to see this page."
+msgstr ""
+
+#: templates/registration/login.html:42
+msgid "Lost password?"
+msgstr ""
+
+#: templates/share.html:4
+msgid "Share"
+msgstr ""
+
+#: wagtailcms/models.py:40
+msgid "Content"
+msgstr ""
+
+#: wagtailcms/templates/widgets/latest-news.html:3
+msgid "Latest News"
+msgstr ""
+
+#: wagtailcms/templates/widgets/latest-news.html:18
+msgid "Published on"
+msgstr ""
+
+#: wagtailcms/templates/widgets/latest-news.html:21
+msgid "Read more"
+msgstr ""
+
+#: wagtailcms/templates/widgets/statistics.html:4
+msgid "We currently have information about:"
+msgstr ""

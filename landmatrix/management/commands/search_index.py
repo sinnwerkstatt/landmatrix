@@ -43,9 +43,9 @@ class Command(BaseCommand):
         if rebuild:
             if doc_type:
                 if doc_type in DOC_TYPES_ACTIVITY:
-                    es.index_activity_documents(doc_types=[doc_type,])
+                    es.index_activity_documents(doc_types=[doc_type, ])
                 elif doc_type in DOC_TYPES_INVESTOR:
-                    es.index_investor_documents(doc_types=[doc_type,])
+                    es.index_investor_documents(doc_types=[doc_type, ])
             else:
                 es.index_activity_documents()
                 es.index_investor_documents()

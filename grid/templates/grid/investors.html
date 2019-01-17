@@ -1,24 +1,33 @@
-{% extends "global_base.html" %}
-{% load i18n custom_tags filter_tags wagtailcore_tags humanize %}
+{% extends "grid/global_base.html" %}
+{% load i18n custom_tags filter_tags wagtailcore_tags humanize static %}
 
-{% block page_title %}{% if group == "all" %}{% trans "All investors" %}{% elif filters.group_value %}{{ name }}{% else %}
-    {% trans "By" %} {{ group }}{% endif %}{% endblock %}
-{% block title %}{% if group == "all" %}{% trans "All investors" %}{% elif filters.group_value %}{{ name }}{% else %}
-    {% trans "By" %} {{ group }}{% endif %}{% endblock %}
+{% block page_title %}
+    {% if group == "all" %}{% trans "All deals" %}
+    {% elif filters.group_value %}{{ group_value|deslugify }}
+    {% else %}{% trans "By" %} {{ group|deslugify }}
+    {% endif %}
+{% endblock %}
+{% block title %}
+    {% if group == "all" %}{% trans "All deals" %}
+    {% elif filters.group_value %}{{ group_value|deslugify }}
+    {% else %}{% trans "By" %} {{ group|deslugify }}
+    {% endif %}
+{% endblock %}
 
 {% block breadcrumb %}
-    <ul class="breadcrumb">
-        <li><a href="/">{% trans 'Home' %}</a></li>
-        {% if group == "all" %}
-            <li>{% trans "All investors" %}</li>
-        {% elif filters.group_value %}
-            <li><a href="{% url 'table_list' group=group_slug %}/?{% add_or_update_param request.GET 'order_by' '' %}">{% trans "By" %} {{ group }}</a>
-            </li>
-            <li>{{ name }}</li>
-        {% else %}
-            <li>{% trans "By" %} {{ group }}</li>
-        {% endif %}
-    </ul>
+<ul class="breadcrumb">
+  <li><a href="/">{% trans 'Start' %}</a></li>
+  <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
+  {% if group == "all" %}
+  <li>{{ name|capfirst }}</li>
+  {% elif filters.group_value %}
+  <li><a href="/data/investors/{{ group_slug }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+      {% trans "By" %} {{ group|deslugify }}</a></li>
+  <li>{{ group_value|deslugify }}</li>
+  {% else %}
+  <li>{% trans "By" %} {{ group|deslugify }}</li>
+  {% endif %}
+</ul>
 {% endblock %}
 
 {% block subnav_inner %}
@@ -38,44 +47,84 @@
 {% endblock %}
 
 {% block content %}
-    {% include "grid/subnav-investors.html" %}
-    {{ introduction|safe }}
-    <p></p>
-    {% include "grid/filters-investors.html" %}
+{% include "grid/includes/subnav_investors.html" %}
+{{ introduction|safe }}
+<p></p>
+{% include "grid/includes/search_investors.html" %}
+{% include "grid/includes/filters_investors.html" %}
 
-    {% if data.items %}
-        <div class="summary-wrap">
-            <table id="summary" class="table table-striped">
-                <thead>
-                  <tr>
+{% if data.items %}
+    <div class="summary-wrap">
+        <table id="summary" class="table table-striped">
+            <thead>
+                <tr>
                     {% for name, column in columns.items %}
                         <th class="{{ name }}{% if name == 'deal_size' %} number{% endif %}">
                             <a class="{{ name }}{% if data.order_by == name %} asc{% elif data.order_by == '-'|add:name %} desc{% endif %}" href="?{% add_or_update_param request.GET 'order_by' column.order_by %}">
-                              {{ column.label }}
+                                {{ column.label }}
                             </a>
                         </th>
                     {% endfor %}
-                  </tr>
-                </thead>
-                <tbody>
-                {% for item in data.items %}
-                    <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
-                        {% for column, value in item.items %}
-                            {% include "includes/grid-field.html" %}
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% if load_more %}
-            <a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn pull-left">{% trans "Show more" %}</a>
-        {% endif %}
-        <p class="pull-right"><span class="label label-default">{{ data.count|intcomma }}</span> {% trans "investors" %}</p>
-    {% else %}
-        <p>{% trans "There are currently no investors matching your search criteria." %} <a
-                href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.</p>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in data.items %}
+                <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                    {% for column, value in item.items %}
+                        {% if group_value %}
+                            {% include "grid/includes/grid_field.html" %}
+                        {% elif forloop.first %}
+                            {% if column == "roles" %}
+                            <td class="{{ column }}">
+                                {% if item.roles %}
+                                    <a href="{% url 'investor_list' group='by-role' %}{{ item.roles.value }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                                        {{ item.roles.display }}
+                                    </a><br/>
+                                {% else %}
+                                    {% trans "Unknown" %}
+                                {% endif %}
+                            </td>
+                            {% elif column == "classification" %}
+                            <td class="{{ column }}">
+                                {% if item.classification %}
+                                    <a href="{% url 'investor_list' group='by-classification' %}{{ item.classification.value }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                                        {{ item.classification.display }}
+                                    </a><br/>
+                                {% else %}
+                                    {% trans "Unknown" %}
+                                {% endif %}
+                            </td>
+                            {% elif column == "fk_country" %}
+                                <td class="{{ column }} investor-country">
+                                    {% if item.fk_country %}
+                                      <a href="{% url 'investor_list' group='by-fk-country' %}{{ item.fk_country.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                                          {{ item.fk_country.display }}</a><br/>
+                                    {% else %}
+                                        {% trans "Unknown" %}
+                                    {% endif %}
+                                </td>
+                            {% else %}
+                                {% include "grid/includes/grid_field.html" %}
+                            {% endif %}
+                        {% else %}
+                            {% include "grid/includes/grid_field.html" %}
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if load_more %}
+        <a href="?{% add_or_update_param request.GET 'more' load_more %}" class="btn pull-left">{% trans "Show more" %}</a>
     {% endif %}
+    {% if group_value %}
+        <p class="pull-right"><span class="label label-default">{{ data.count|intcomma }}</span> {% trans "investors" %}</p>
+    {% endif %}
+{% else %}
+    <p>{% trans "There are currently no investors matching your search criteria." %} <a
+            href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.</p>
+{% endif %}
 {% endblock %}
 
 {% block js %}

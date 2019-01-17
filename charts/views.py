@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.views.generic.base import RedirectView
 
 from landmatrix.pdfgen import PDFViewMixin
-from grid.views.filter_widget_mixin import FilterWidgetMixin
+from grid.views.filter import FilterWidgetMixin
 
 
 class ChartView(FilterWidgetMixin, TemplateView):

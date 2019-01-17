@@ -24,7 +24,7 @@
 <form class="form-horizontal" method="post" action="{% url 'auth_login' %}">{% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}" />
 
-    {% include "form.html" with mandatory_label=" " %}
+    {% include "grid/form.html" with mandatory_label=" " %}
 
     <div class="form-group">
         <div class="col-sm-3 col-sm-offset-3">

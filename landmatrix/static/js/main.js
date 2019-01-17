@@ -428,9 +428,7 @@ function formatInvestor(result) {
     return investor;
 }
 
-function initInvestorField(field, set_events) {
-    set_events = typeof set_events !== 'undefined' ? set_events : true;
-
+function initInvestorField(field, callback) {
     field.select2({
         //placeholder: 'Select Investor',
         ajax: {
@@ -461,7 +459,7 @@ function initInvestorField(field, set_events) {
         },
         minimumInputLength: 3,
         allowClear: true,
-        placeholder: "",
+        placeholder: "Search investor",
         templateResult: formatInvestor
     }).on("select2:unselecting", function (e) {
         $(this).val("");
@@ -469,11 +467,8 @@ function initInvestorField(field, set_events) {
         // parent company formset / tertiary investor/lender formset: delete
         $(this).parents('.dynamic-form').find('.DELETE input').val('1')
     });
-    if (set_events) {
-        field.on('change', function () {
-            generateButtons($(this));
-            loadInvestorNetwork($(this).val());
-        }).trigger('change');
+    if (callback) {
+        field.on('change', callback).trigger('change');
     }
 }
 

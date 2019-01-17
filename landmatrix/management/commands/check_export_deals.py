@@ -5,8 +5,8 @@ from django.contrib.auth.models import AnonymousUser
 
 from openpyxl import load_workbook
 
-from grid.views.export_view import ExportView
-from grid.views.table_group_view import OldTableGroupView
+from grid.views.export import ExportView
+from grid.views.base import OldTableGroupView
 
 
 class Command(BaseCommand):

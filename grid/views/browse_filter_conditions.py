@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from landmatrix.forms import ActivityFilterForm, InvestorFilterForm
 from grid.fields import NestedMultipleChoiceField
-from grid.views.change_deal_view import ChangeDealView
+from grid.views.utils import DEAL_FORMS
 from grid.forms.investor_form import OperationalCompanyForm, ParentInvestorForm, \
     ParentStakeholderForm
 
@@ -157,7 +157,7 @@ def get_activity_field_by_key(key):
     if key in ActivityFilterForm.base_fields:
         return ActivityFilterForm().fields[key]
     # Deal fields
-    for form in ChangeDealView.FORMS:
+    for form in DEAL_FORMS:
         form = hasattr(form, "form") and form.form or form
         if key in form.base_fields:
             return form().fields[key]

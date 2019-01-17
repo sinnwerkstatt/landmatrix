@@ -1,0 +1,67 @@
+{% load i18n custom_tags filter_tags %}
+{% load humanize %}
+
+        <div class="navbar navbar-default navbar-subnav" role="navigation">
+            <div class="container-fluid">
+
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#subnav" aria-expanded="false">
+                        <span class="sr-only">{% trans "Toggle navigation" %}</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse" id="subnav">
+                    <ul class="nav navbar-nav">
+
+                        <li{% if group == "all" %} class="active"{% endif %}>
+                            <a href="{% url 'data' %}{% list_params %}" role="button"><span>{% trans "All Deals" %}</span></a>
+                        </li>
+                        <li class="dropdown{% if group == "target_region" or group == "target_country" %} active{% endif %}">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false"><span>{% trans "By Target" %} <span class="caret"></span></span></a>
+                            <ul class="dropdown-menu">
+                                <li{% if group == "target_region" %} class="active"{% endif %}><a href="{% url 'deal_list' group='by-target-region' %}{% list_params %}">{% trans "By Target Region" %}</a></li>
+                                <li{% if group == "target_country" %} class="active"{% endif %}><a href="{% url 'deal_list' group='by-target-country' %}{% list_params %}">{% trans "By Target Country" %}</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown{% if group == "investor_name" or group == "investor_region" or group == "investor_country" %} active{% endif %}">
+                            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false"><span>{% trans "By Investor" %} <span class="caret"></span></span></a>
+                            <ul class="dropdown-menu">
+                                <li{% if group == "invecstor_name" %} class="active"{% endif %}><a href="{% url 'deal_list' group='by-investor-name' %}{% list_params %}">{% trans "By Investor" %}</a></li>
+                                <li{% if group == "investor_region" %} class="active"{% endif %}><a href="{% url 'deal_list' group='by-investor-region' %}{% list_params %}">{% trans "By Investor Region" %}</a></li>
+                                <li{% if group == "investor_country" %} class="active"{% endif %}><a href="{% url 'deal_list' group='by-investor-country' %}{% list_params %}">{% trans "By Investor Country" %}</a></li>
+                            </ul>
+                        </li>
+                        <li{% if group == "data_source_type" %} class="active"{% endif %}>
+                            <a href="{% url 'deal_list' group='by-data-source-type' %}{% list_params %}" role="button">
+                                {% trans "By Data Source" %}
+                            </a>
+                        </li>
+                        <li{% if group == "intention" %} class="active"{% endif %}>
+                            <a href="{% url 'deal_list' group='by-intention' %}{% list_params %}" role="button">
+                               {% trans "By Intention" %}
+                           </a>
+                        </li>
+                        <li{% if group == "crop" %} class="active"{% endif %}>
+                            <a href="{% url 'deal_list' group='by-crop' %}{% list_params %}" role="button">
+                                {% trans "By Crop" %}
+                            </a>
+                        </li>
+
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li{% if group == "all" %} class="active"{% endif %}>
+                            <a href="{% url 'investor_list' %}{% list_params %}" role="button"><i class="fa fa-exchange"></i>&nbsp;<span>{% trans "Investors" %}</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>

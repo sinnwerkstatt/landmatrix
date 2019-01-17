@@ -22,7 +22,7 @@
         {{ hidden }}
     {% endfor %}
     <input type="hidden" name="next" value="{% url 'deal_detail' deal_id=comment.content_object.activity_identifier %}">
-    {% include "form.html" %}
+    {% include "grid/form.html" %}
     <input type="submit" class="btn btn-primary" value="{% trans "Save comment" %}">
 </form>
 {% endblock %}

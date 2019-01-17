@@ -310,13 +310,13 @@ def history_count(item, user):
 
 
 @register.filter
-def is_editable(activity, user):
-    return activity.is_editable(user)
+def is_editable(object, user):
+    return object.is_editable(user)
 
 
 @register.filter
-def get_latest(activity, user):
-    return activity.get_latest(user)
+def get_latest(object, user):
+    return object.get_latest(user)
 
 
 @register.filter
@@ -325,5 +325,10 @@ def deslugify(slug):
 
 
 @register.filter
-def can_approve_reject(user, activity=None):
-    return has_perm_approve_reject(user, activity)
+def can_approve_reject(user, object=None):
+    return has_perm_approve_reject(user, object)
+
+
+@register.filter()
+def field_label(model, field_name):
+    return model._meta.get_field(field_name).verbose_name

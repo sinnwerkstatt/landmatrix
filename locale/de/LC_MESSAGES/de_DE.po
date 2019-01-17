@@ -1,0 +1,3840 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Scalia Wordpress Theme\n"
+"POT-Creation-Date: 2017-01-18 15:06+0100\n"
+"PO-Revision-Date: 2017-03-01 18:31+0100\n"
+"Last-Translator: \n"
+"Language-Team: Tobias Kauer\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: style.css\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Language: de_DE\n"
+"X-Source-Language: C\n"
+
+#: 404.php:16
+msgid "It looks like nothing was found at this location. Maybe try a search?"
+msgstr ""
+"Unter dieser Adresse wurde leider nichts gefunden. Vielleicht hilft dir die "
+"Suchfunktion weiter."
+
+#: comments.php:20
+#, php-format
+msgid "1 comment"
+msgid_plural "%1$s comments"
+msgstr[0] "1 Kommentar"
+msgstr[1] "%1$s Kommentare"
+
+#: comments.php:26 comments.php:46
+msgid "Comment navigation"
+msgstr "Kommentar-Navigation"
+
+#: comments.php:27 comments.php:47
+msgid "&larr; Older Comments"
+msgstr "&larr; Ältere Kommentare"
+
+#: comments.php:28 comments.php:48
+msgid "Newer Comments &rarr;"
+msgstr "Neuere Kommentare &rarr"
+
+#: comments.php:53
+msgid "Comments are closed."
+msgstr "Kommentare sind geschlossen"
+
+#: comments.php:61 woocommerce/single-product-reviews.php:65
+msgid "Name"
+msgstr "Name"
+
+#: comments.php:61 comments.php:62 woocommerce/single-product-reviews.php:65
+#: woocommerce/single-product-reviews.php:66
+msgid " <em>(required)</em>"
+msgstr " <em>(erforderlich)</em>"
+
+#: comments.php:62 woocommerce/single-product-reviews.php:66
+msgid "Mail"
+msgstr "E-Mail"
+
+#: comments.php:63 inc/options.php:1864
+msgid "Website"
+msgstr ""
+
+#: comments.php:67 woocommerce/single-product-reviews.php:84
+msgid "Your Message"
+msgstr "Deine Nachricht"
+
+#: comments.php:68 comments.php:73
+#, php-format
+msgid "You must be <a href=\"%s\">logged in</a> to post a comment."
+msgstr "Du musst dich <a href=\"%s\">anmelden</a> um zu kommentieren"
+
+#: comments.php:69
+#, php-format
+msgid "Logged in as <a href=\"%1$s\">%2$s</a>."
+msgstr "Angemeldet als <a href=\"%1$s\">%2$s</a> "
+
+#: comments.php:69
+msgid "Log out of this account"
+msgstr "Von diesem Account abmelden"
+
+#: comments.php:69
+msgid "Log out &raquo;"
+msgstr "Abmelden &raquo"
+
+#: comments.php:70
+msgid "Send Comment"
+msgstr "Kommentar senden"
+
+#: comments.php:71
+msgid "Leave a reply"
+msgstr "Eine Antwort hinterlassen"
+
+#: comments.php:72
+#, php-format
+msgid "Comment to %s"
+msgstr "Kommenar zu %s"
+
+#: content-blog-item.php:76 content-blog-item.php:168 inc/content.php:253
+#: inc/content.php:273
+#, php-format
+msgid "View all posts in %s"
+msgstr "Zeige alle Einträge zu %s"
+
+#: content-blog-item.php:93 content-blog-item.php:206
+#: content-portfolio-item.php:220 inc/content.php:284
+msgid "Read more"
+msgstr "Weiterlesen"
+
+#: content-blog-item.php:101
+msgid "Sticky"
+msgstr "Fest"
+
+#: content-blog-item.php:203 content-portfolio-item.php:218
+msgid "Leave a comment"
+msgstr "Kommentar hinterlassen"
+
+#: content-blog-item.php:203 content-portfolio-item.php:218
+msgid "1 Comment"
+msgstr "1 Kommentar"
+
+#: content-blog-item.php:203 content-portfolio-item.php:218
+msgid "% Comments"
+msgstr "% Kommentare"
+
+#: content-blog.php:49 content-page-content-block.php:42 content-page.php:145
+#: content-shop.php:47 content.php:54
+msgid "Pages:"
+msgstr "Seiten: "
+
+#: content-none.php:2
+msgid "Nothing Found"
+msgstr ""
+
+#: content-none.php:8
+#, php-format
+msgid ""
+"Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+
+#: content-none.php:12
+msgid ""
+"Sorry, but nothing matched your search terms. Please try again with some "
+"different keywords."
+msgstr ""
+
+#: content-none.php:17
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr ""
+
+#: content-page.php:166
+msgid "Previous Project"
+msgstr "Vorheriges Projekt"
+
+#: content-page.php:167
+msgid "Next Project"
+msgstr "Nächstes Projekt"
+
+#: content-page.php:170
+msgid "Previous news"
+msgstr "Vorheriger Artikel"
+
+#: content-page.php:171
+msgid "Next news"
+msgstr "Nächster Artikel"
+
+#: content-page.php:174
+msgid "Previous post"
+msgstr "Vorheriger Post"
+
+#: content-page.php:175
+msgid "Next post"
+msgstr "Nächster Post"
+
+#: content-team-person.php:35
+msgid "Send Message"
+msgstr ""
+
+#: content.php:52
+msgid "Continue reading <span class=\"meta-nav\">&rarr;</span>"
+msgstr "Weiterlesen"
+
+#: functions.php:28
+msgid "Top primary menu"
+msgstr ""
+
+#: functions.php:29
+msgid "Footer menu"
+msgstr ""
+
+#: functions.php:86
+#, php-format
+msgid ""
+"Scalia's styles cannot be customized because file \"%s\" is not writebale. "
+"Please change file permissions. Then click \"Save Changes\" button."
+msgstr ""
+
+#: functions.php:104
+msgid "Link"
+msgstr ""
+
+#: functions.php:112
+msgid "Show as Highlight?"
+msgstr ""
+
+#: functions.php:166 inc/post-types/init.php:23 inc/post-types/init.php:36
+#: inc/woocommerce.php:345
+msgid "Page Sidebar"
+msgstr ""
+
+#: functions.php:168
+msgid "Main sidebar that appears on the left."
+msgstr ""
+
+#: functions.php:175
+msgid "Footer Widget Area"
+msgstr ""
+
+#: functions.php:177
+msgid "Footer Widget Area."
+msgstr ""
+
+#: functions.php:184
+msgid "Shop sidebar"
+msgstr ""
+
+#: functions.php:186 functions.php:195
+msgid ""
+"Appears on posts and pages except the optional Front Page template, which "
+"has its own widgets"
+msgstr ""
+
+#: functions.php:193
+msgid "Shop widget area"
+msgstr ""
+
+#: functions.php:746
+#, php-format
+msgid "Search Results%1$s \"%2$s\""
+msgstr ""
+
+#: functions.php:751
+msgid "Page not found"
+msgstr "Die Seite wurde nicht gefunden"
+
+#: functions.php:979
+msgid "Prev"
+msgstr "Vorheriger"
+
+#: functions.php:980
+msgid "Next"
+msgstr "Nächster"
+
+#: functions.php:1189
+msgid "TTF Font"
+msgstr ""
+
+#: functions.php:1189
+msgid "Manage TTFs"
+msgstr ""
+
+#: functions.php:1189
+#, php-format
+msgid "TTF <span class=\"count\">(%s)</span>"
+msgid_plural "TTFs <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions.php:1190
+msgid "EOT Font"
+msgstr ""
+
+#: functions.php:1190
+msgid "Manage EOTs"
+msgstr ""
+
+#: functions.php:1190
+#, php-format
+msgid "EOT <span class=\"count\">(%s)</span>"
+msgid_plural "EOTs <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions.php:1191
+msgid "WOFF Font"
+msgstr ""
+
+#: functions.php:1191
+msgid "Manage WOFFs"
+msgstr ""
+
+#: functions.php:1191
+#, php-format
+msgid "WOFF <span class=\"count\">(%s)</span>"
+msgid_plural "WOFFs <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions.php:1192
+msgid "SVG Font"
+msgstr ""
+
+#: functions.php:1192
+msgid "Manage SVGs"
+msgstr ""
+
+#: functions.php:1192
+#, php-format
+msgid "SVG <span class=\"count\">(%s)</span>"
+msgid_plural "SVGs <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions.php:1200
+msgid "Fonts Manager"
+msgstr ""
+
+#: functions.php:1217
+msgid "Font Manager"
+msgstr ""
+
+#: functions.php:1221 functions.php:1250
+#: inc/megamenu/edit-megamenu-walker.class.php:369 inc/options.php:2210
+msgid "Remove"
+msgstr ""
+
+#: functions.php:1223 functions.php:1252
+msgid "Font name"
+msgstr ""
+
+#: functions.php:1227 functions.php:1256
+msgid "Font file EOT url"
+msgstr ""
+
+#: functions.php:1231 functions.php:1260
+msgid "Font file SVG url"
+msgstr ""
+
+#: functions.php:1235 functions.php:1264
+msgid "ID inside SVG"
+msgstr ""
+
+#: functions.php:1239 functions.php:1268
+msgid "Font file TTF url"
+msgstr ""
+
+#: functions.php:1243 functions.php:1272
+msgid "Font file WOFF url"
+msgstr ""
+
+#: functions.php:1278
+msgid "+ Add new"
+msgstr ""
+
+#: functions.php:1279 woocommerce/myaccount/form-change-password.php:29
+#: woocommerce/myaccount/form-lost-password.php:51
+msgid "Save"
+msgstr ""
+
+#: header.php:105 header.php:112
+msgid "Primary Menu"
+msgstr ""
+
+#: inc/content.php:20
+msgid "Scalia Theme"
+msgstr ""
+
+#: inc/content.php:22
+#, php-format
+msgid ""
+"Log in to <a href=\"%s\">wordpress</a> admin and set up your starting page "
+"using <a href=\"%s\">Home Constructor</a>."
+msgstr ""
+
+#: inc/content.php:23
+msgid ""
+"Please refer to Scalia documentation <b>(Getting Started &mdash; Setting Up "
+"Homepage)</b> in order to learn how to use Home Constructor."
+msgstr ""
+
+#: inc/content.php:24
+msgid ""
+"Additionally you can use demo content included in Scalia to quickly setup a "
+"demo of your starting page."
+msgstr ""
+
+#: inc/content.php:120
+msgid "Phone:"
+msgstr "Telefon:"
+
+#: inc/content.php:123
+msgid "Fax:"
+msgstr ""
+
+#: inc/content.php:126 woocommerce/order/order-details.php:137
+msgid "Email:"
+msgstr "E-Mail:"
+
+#: inc/content.php:129
+msgid "Website:"
+msgstr ""
+
+#: inc/content.php:154
+msgid "Related Posts"
+msgstr "Ähnliche Posts"
+
+#: inc/content.php:193
+#, php-format
+msgid "<span class=\"fn\">%s</span>"
+msgstr "<span class=\"fn\">%s</span"
+
+#: inc/content.php:197
+#, php-format
+msgid "%1$s at %2$s"
+msgstr "%1$s um %2$s"
+
+#: inc/content.php:197
+msgid "(Edit)"
+msgstr "(Bearbeiten)"
+
+#: inc/content.php:206
+msgid "Your comment is awaiting moderation."
+msgstr "Dein Kommentar wird moderiert."
+
+#: inc/content.php:224 inc/content.php:489
+#: woocommerce/product-searchform.php:28
+msgctxt "submit button"
+msgid "Search"
+msgstr "Suchen"
+
+#: inc/content.php:247
+msgid "in"
+msgstr ""
+
+#: inc/content.php:282
+#, php-format
+msgid "<b>%d</b> comments"
+msgstr ""
+
+#: inc/content.php:332
+msgid "<span class=\"sep\">|</span>"
+msgstr ""
+
+#: inc/content.php:464
+msgid "Load more"
+msgstr "Mehr laden"
+
+#: inc/megamenu/edit-megamenu-walker.class.php:91
+#, php-format
+msgid "%s (Invalid)"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:95
+#, php-format
+msgid "%s (Pending)"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:118
+msgid "sub item"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:133
+msgid "Move up"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:146
+msgid "Move down"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:148
+#: inc/megamenu/edit-megamenu-walker.class.php:150
+msgid "Edit Menu Item"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:159
+msgid "URL"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:166
+msgid "Navigation Label"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:172
+msgid "Title Attribute"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:179
+msgid "Open link in a new window/tab"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:184
+msgid "CSS Classes (optional)"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:190
+msgid "Link Relationship (XFN)"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:196 inc/woocommerce.php:399
+msgid "Description"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:198
+msgid ""
+"The description will be displayed in the menu if the current theme supports "
+"it."
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:206
+msgid "Make clickable on mobile"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:217 inc/post-types/init.php:94
+msgid "Icon"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:219 inc/post-types/init.php:96
+msgid "Enter icon code"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:219 inc/post-types/init.php:96
+msgid "Icons info"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:219 inc/post-types/init.php:96
+msgid "Show Icon Codes"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:227
+msgid "Enable Mega Menu"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:234
+msgid "Mega Menu Masonry Style"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:240
+msgid "Number of columns: "
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:251
+msgid "Background image"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:253 inc/options.php:2248
+#: inc/options.php:2257 inc/options.php:2270 inc/options.php:2282
+#: inc/options.php:2294
+msgid "Select"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:259
+msgid "Position: "
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:269
+msgid "Padding: "
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:273 inc/options.php:140
+#: inc/post-types/init.php:426
+msgid "Left"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:280 inc/options.php:141
+#: inc/post-types/init.php:426
+msgid "Right"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:287
+msgid "Top"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:294
+msgid "Bottom"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:304
+msgid "Column width"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:312
+msgid "Don't link"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:319
+msgid "Don't show"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:326
+msgid "This item should start a new row"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:333
+msgid "Label"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:344
+msgid "Move"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:345
+msgid "Up one"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:346
+msgid "Down one"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:349
+msgid "To the top"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:356
+#, php-format
+msgid "Original: %s"
+msgstr ""
+
+#: inc/megamenu/edit-megamenu-walker.class.php:370
+#: woocommerce/myaccount/my-orders.php:83
+msgid "Cancel"
+msgstr ""
+
+#: inc/megamenu/megamenu.class.php:15
+msgid "Left Top"
+msgstr ""
+
+#: inc/megamenu/megamenu.class.php:16
+msgid "Left Center"
+msgstr ""
+
+#: inc/megamenu/megamenu.class.php:17
+msgid "Left Bottom"
+msgstr ""
+
+#: inc/megamenu/megamenu.class.php:18
+msgid "Center Top"
+msgstr ""
+
+#: inc/megamenu/megamenu.class.php:19
+msgid "Center Bottom"
+msgstr ""
+
+#: inc/megamenu/megamenu.class.php:20
+msgid "Center Center"
+msgstr ""
+
+#: inc/megamenu/megamenu.class.php:21
+msgid "Right Top"
+msgstr ""
+
+#: inc/megamenu/megamenu.class.php:22
+msgid "Right Center"
+msgstr ""
+
+#: inc/megamenu/megamenu.class.php:23
+msgid "Right Bottom"
+msgstr ""
+
+#: inc/options.php:6
+msgid "General"
+msgstr ""
+
+#: inc/options.php:9
+msgid "Theme Layout"
+msgstr ""
+
+#: inc/options.php:12
+msgid "Page Layout Style"
+msgstr ""
+
+#: inc/options.php:15
+msgid "Fullwidth Layout"
+msgstr ""
+
+#: inc/options.php:16
+msgid "Boxed Layout"
+msgstr ""
+
+#: inc/options.php:19
+msgid "Select theme layout style"
+msgstr ""
+
+#: inc/options.php:22
+msgid "Disable Fixed Header"
+msgstr ""
+
+#: inc/options.php:28
+msgid "Header On Slideshow"
+msgstr ""
+
+#: inc/options.php:34
+msgid "Menu appearance on tablets (portrait orientation)"
+msgstr ""
+
+#: inc/options.php:37 inc/options.php:48
+msgid "Responsive"
+msgstr ""
+
+#: inc/options.php:38 inc/options.php:49
+msgid "Centered"
+msgstr ""
+
+#: inc/options.php:39 inc/options.php:50 inc/post-types/init.php:270
+#: inc/post-types/init.php:365 inc/post-types/init.php:445
+#: inc/post-types/init.php:827
+msgid "Default"
+msgstr ""
+
+#: inc/options.php:42
+msgid ""
+"Select the menu appearance style on tablet screens in portrait orientation"
+msgstr ""
+
+#: inc/options.php:45
+msgid "Menu appearance on tablets (landscape orientation)"
+msgstr ""
+
+#: inc/options.php:53
+msgid ""
+"Select the menu appearance style on tablet screens in landscape orientation"
+msgstr ""
+
+#: inc/options.php:56
+msgid "Disable Scroll Top Button"
+msgstr ""
+
+#: inc/options.php:57
+msgid "Disable on-scroll \"to the top\" button"
+msgstr ""
+
+#: inc/options.php:65
+msgid "Top Area"
+msgstr ""
+
+#: inc/options.php:68
+msgid "Top Area Style"
+msgstr ""
+
+#: inc/options.php:75
+msgid ""
+"Select the style of top area (contacts & socials bar above main menu and "
+"logo) or disable it"
+msgstr ""
+
+#: inc/options.php:78
+msgid "Show Search"
+msgstr ""
+
+#: inc/options.php:84
+msgid "Show Contacts"
+msgstr ""
+
+#: inc/options.php:90
+msgid "Show Socilas"
+msgstr ""
+
+#: inc/options.php:98
+msgid "Identity"
+msgstr ""
+
+#: inc/options.php:101
+msgid "Logo"
+msgstr ""
+
+#: inc/options.php:104
+msgid "Default Logo"
+msgstr ""
+
+#: inc/options.php:107
+msgid "Small Logo"
+msgstr ""
+
+#: inc/options.php:110
+msgid "Smaller Logo For Fixed Header & Mobile Devices"
+msgstr ""
+
+#: inc/options.php:113
+msgid "Logo 2x"
+msgstr ""
+
+#: inc/options.php:116
+msgid "2x Retina Logo"
+msgstr ""
+
+#: inc/options.php:119
+msgid "Small Logo 2x"
+msgstr ""
+
+#: inc/options.php:122
+msgid "2x Smaller Retina Logo For Mobile Devices"
+msgstr ""
+
+#: inc/options.php:125
+msgid "Logo 3x"
+msgstr ""
+
+#: inc/options.php:128
+msgid "3x Retina Logo"
+msgstr ""
+
+#: inc/options.php:131
+msgid "Small Logo 3x"
+msgstr ""
+
+#: inc/options.php:134
+msgid "3x Smaller Retina Logo For Mobile Devices"
+msgstr ""
+
+#: inc/options.php:137
+msgid "Logo Position"
+msgstr ""
+
+#: inc/options.php:142
+msgid "Center"
+msgstr ""
+
+#: inc/options.php:145
+msgid "Select position of your logo in website header"
+msgstr ""
+
+#: inc/options.php:148
+msgid "Favicon"
+msgstr ""
+
+#: inc/options.php:150
+msgid "Upload or select file for your favicon"
+msgstr ""
+
+#: inc/options.php:155
+msgid "Advanced"
+msgstr ""
+
+#: inc/options.php:158
+msgid "Preloader Style"
+msgstr ""
+
+#: inc/options.php:161
+msgid "Preloader 1"
+msgstr ""
+
+#: inc/options.php:162
+msgid "Preloader 2"
+msgstr ""
+
+#: inc/options.php:163
+msgid "Preloader 3"
+msgstr ""
+
+#: inc/options.php:166
+msgid "Choose preloader you wish to use on your website"
+msgstr ""
+
+#: inc/options.php:169
+msgid "Custom CSS"
+msgstr ""
+
+#: inc/options.php:171
+msgid ""
+"Type your custom css here, which you would like to add to theme's css (or "
+"overwrite it)"
+msgstr ""
+
+#: inc/options.php:174
+msgid "Custom JS"
+msgstr ""
+
+#: inc/options.php:176
+msgid ""
+"Type your custom javascript here, which you would like to add to theme's js"
+msgstr ""
+
+#: inc/options.php:184
+msgid "Fonts"
+msgstr ""
+
+#: inc/options.php:187
+msgid "Google Fonts"
+msgstr ""
+
+#: inc/options.php:190
+msgid "Google Fonts File"
+msgstr ""
+
+#: inc/options.php:192
+msgid ""
+"Upload or select you own google fonts file if you would like to use a "
+"different version than the theme's default"
+msgstr ""
+
+#: inc/options.php:197
+msgid "Main Menu Font"
+msgstr ""
+
+#: inc/options.php:200 inc/options.php:237 inc/options.php:274
+#: inc/options.php:311 inc/options.php:348 inc/options.php:385
+#: inc/options.php:422 inc/options.php:459 inc/options.php:496
+#: inc/options.php:533 inc/options.php:570 inc/options.php:607
+#: inc/options.php:644 inc/options.php:681 inc/options.php:718
+#: inc/options.php:755 inc/options.php:792 inc/options.php:829
+#: inc/options.php:866 inc/options.php:903 inc/options.php:940
+#: inc/options.php:977 inc/options.php:1014 inc/options.php:1051
+#: inc/options.php:1088 inc/options.php:1125
+msgid "Font Family"
+msgstr ""
+
+#: inc/options.php:202 inc/options.php:239 inc/options.php:276
+#: inc/options.php:313 inc/options.php:350 inc/options.php:387
+#: inc/options.php:424 inc/options.php:461 inc/options.php:498
+#: inc/options.php:535 inc/options.php:572 inc/options.php:609
+#: inc/options.php:646 inc/options.php:683 inc/options.php:720
+#: inc/options.php:757 inc/options.php:794 inc/options.php:831
+#: inc/options.php:868 inc/options.php:905 inc/options.php:942
+#: inc/options.php:979 inc/options.php:1016 inc/options.php:1053
+#: inc/options.php:1090 inc/options.php:1127
+msgid ""
+"Select font family you would like to use. On the top of the fonts list "
+"you'll find web safe fonts"
+msgstr ""
+
+#: inc/options.php:205 inc/options.php:242 inc/options.php:279
+#: inc/options.php:316 inc/options.php:353 inc/options.php:390
+#: inc/options.php:427 inc/options.php:464 inc/options.php:501
+#: inc/options.php:538 inc/options.php:575 inc/options.php:612
+#: inc/options.php:649 inc/options.php:686 inc/options.php:723
+#: inc/options.php:760 inc/options.php:797 inc/options.php:834
+#: inc/options.php:871 inc/options.php:908 inc/options.php:945
+#: inc/options.php:982 inc/options.php:1019 inc/options.php:1056
+#: inc/options.php:1093 inc/options.php:1130
+msgid "Font Style"
+msgstr ""
+
+#: inc/options.php:207 inc/options.php:244 inc/options.php:281
+#: inc/options.php:318 inc/options.php:355 inc/options.php:392
+#: inc/options.php:429 inc/options.php:466 inc/options.php:503
+#: inc/options.php:540 inc/options.php:577 inc/options.php:614
+#: inc/options.php:651 inc/options.php:688 inc/options.php:725
+#: inc/options.php:762 inc/options.php:799 inc/options.php:836
+#: inc/options.php:873 inc/options.php:910 inc/options.php:947
+#: inc/options.php:984 inc/options.php:1021 inc/options.php:1058
+#: inc/options.php:1095 inc/options.php:1132
+msgid "Select font style for your font"
+msgstr ""
+
+#: inc/options.php:210 inc/options.php:247 inc/options.php:284
+#: inc/options.php:321 inc/options.php:358 inc/options.php:395
+#: inc/options.php:432 inc/options.php:469 inc/options.php:506
+#: inc/options.php:543 inc/options.php:580 inc/options.php:617
+#: inc/options.php:654 inc/options.php:691 inc/options.php:728
+#: inc/options.php:765 inc/options.php:802 inc/options.php:839
+#: inc/options.php:876 inc/options.php:913 inc/options.php:950
+#: inc/options.php:987 inc/options.php:1024 inc/options.php:1061
+#: inc/options.php:1098 inc/options.php:1135
+msgid "Font Sets"
+msgstr ""
+
+#: inc/options.php:212 inc/options.php:249 inc/options.php:286
+#: inc/options.php:323 inc/options.php:360 inc/options.php:397
+#: inc/options.php:434 inc/options.php:471 inc/options.php:508
+#: inc/options.php:545 inc/options.php:582 inc/options.php:619
+#: inc/options.php:656 inc/options.php:693 inc/options.php:730
+#: inc/options.php:767 inc/options.php:804 inc/options.php:841
+#: inc/options.php:878 inc/options.php:915 inc/options.php:952
+#: inc/options.php:989 inc/options.php:1026 inc/options.php:1063
+#: inc/options.php:1100 inc/options.php:1137
+msgid ""
+"Type in or load additional font sets which you would like to use with your "
+"chosen google font (latin-ext is loaded by default)"
+msgstr ""
+
+#: inc/options.php:216 inc/options.php:253 inc/options.php:290
+#: inc/options.php:327 inc/options.php:364 inc/options.php:401
+#: inc/options.php:438 inc/options.php:475 inc/options.php:512
+#: inc/options.php:549 inc/options.php:586 inc/options.php:623
+#: inc/options.php:660 inc/options.php:697 inc/options.php:734
+#: inc/options.php:771 inc/options.php:808 inc/options.php:845
+#: inc/options.php:882 inc/options.php:919 inc/options.php:956
+#: inc/options.php:993 inc/options.php:1030 inc/options.php:1067
+#: inc/options.php:1104 inc/options.php:1141
+msgid "Font Size"
+msgstr ""
+
+#: inc/options.php:217 inc/options.php:254 inc/options.php:291
+#: inc/options.php:328 inc/options.php:365 inc/options.php:402
+#: inc/options.php:439 inc/options.php:476 inc/options.php:513
+#: inc/options.php:550 inc/options.php:587 inc/options.php:624
+#: inc/options.php:661 inc/options.php:698 inc/options.php:735
+#: inc/options.php:772 inc/options.php:809 inc/options.php:846
+#: inc/options.php:883 inc/options.php:920 inc/options.php:957
+#: inc/options.php:994 inc/options.php:1031 inc/options.php:1068
+#: inc/options.php:1105 inc/options.php:1142
+msgid "Select the font size"
+msgstr ""
+
+#: inc/options.php:224 inc/options.php:261 inc/options.php:298
+#: inc/options.php:335 inc/options.php:372 inc/options.php:409
+#: inc/options.php:446 inc/options.php:483 inc/options.php:520
+#: inc/options.php:557 inc/options.php:594 inc/options.php:631
+#: inc/options.php:668 inc/options.php:705 inc/options.php:742
+#: inc/options.php:779 inc/options.php:816 inc/options.php:853
+#: inc/options.php:890 inc/options.php:927 inc/options.php:964
+#: inc/options.php:1001 inc/options.php:1038 inc/options.php:1075
+#: inc/options.php:1112 inc/options.php:1149
+msgid "Line Height"
+msgstr ""
+
+#: inc/options.php:225 inc/options.php:262 inc/options.php:299
+#: inc/options.php:336 inc/options.php:373 inc/options.php:410
+#: inc/options.php:447 inc/options.php:484 inc/options.php:521
+#: inc/options.php:558 inc/options.php:595 inc/options.php:632
+#: inc/options.php:669 inc/options.php:706 inc/options.php:743
+#: inc/options.php:780 inc/options.php:817 inc/options.php:854
+#: inc/options.php:891 inc/options.php:928 inc/options.php:965
+#: inc/options.php:1002 inc/options.php:1039 inc/options.php:1076
+#: inc/options.php:1113 inc/options.php:1150
+msgid "Select the line height"
+msgstr ""
+
+#: inc/options.php:234
+msgid "Submenu Font"
+msgstr ""
+
+#: inc/options.php:271
+msgid "Styled Subtitle Font"
+msgstr ""
+
+#: inc/options.php:308
+msgid "Default Blog Style Post Title Font"
+msgstr ""
+
+#: inc/options.php:345
+msgid "H1 Font"
+msgstr ""
+
+#: inc/options.php:382
+msgid "H2 Font"
+msgstr ""
+
+#: inc/options.php:419
+msgid "H3 Font"
+msgstr ""
+
+#: inc/options.php:456
+msgid "H4 Font"
+msgstr ""
+
+#: inc/options.php:493
+msgid "H5 Font"
+msgstr ""
+
+#: inc/options.php:530
+msgid "H6 Font"
+msgstr ""
+
+#: inc/options.php:567
+msgid "Body Font"
+msgstr ""
+
+#: inc/options.php:604
+msgid "Widget Title Font"
+msgstr ""
+
+#: inc/options.php:641
+msgid "Button Font"
+msgstr ""
+
+#: inc/options.php:678
+msgid "NivoSlider Title Font"
+msgstr ""
+
+#: inc/options.php:715
+msgid "NivoSlider Description Font"
+msgstr ""
+
+#: inc/options.php:752
+msgid "Portfolio Title Font"
+msgstr ""
+
+#: inc/options.php:789
+msgid "Portfolio Description Font"
+msgstr ""
+
+#: inc/options.php:826
+msgid "Quickfinder Title Font"
+msgstr ""
+
+#: inc/options.php:863
+msgid "Quickfinder Description Font"
+msgstr ""
+
+#: inc/options.php:900
+msgid "Gallery Title Font"
+msgstr ""
+
+#: inc/options.php:937
+msgid "Gallery Description Font"
+msgstr ""
+
+#: inc/options.php:974
+msgid "Pricing Tables Price"
+msgstr ""
+
+#: inc/options.php:1011
+msgid "Testimonials Quoted Text"
+msgstr ""
+
+#: inc/options.php:1048
+msgid "Counter Numbers"
+msgstr ""
+
+#: inc/options.php:1085
+msgid "WooCommerce Product Category Price"
+msgstr ""
+
+#: inc/options.php:1122
+msgid "Highlight Label Font"
+msgstr ""
+
+#: inc/options.php:1162
+msgid "Colors"
+msgstr ""
+
+#: inc/options.php:1165
+msgid "Background And Main Colors"
+msgstr ""
+
+#: inc/options.php:1168
+msgid "Background Color For Boxed Layout"
+msgstr ""
+
+#: inc/options.php:1170
+msgid "Select website's backround color in boxed layout"
+msgstr ""
+
+#: inc/options.php:1173
+msgid "Basic background color for website"
+msgstr ""
+
+#: inc/options.php:1175
+msgid ""
+"Basic background color is the continuous background color underlaying the "
+"whole webpage. By default it is visible for example in slideshow area, "
+"quickfinder area, portfolio-slider"
+msgstr ""
+
+#: inc/options.php:1178
+msgid "Top Background Color"
+msgstr ""
+
+#: inc/options.php:1180
+msgid "Select color for website's top background"
+msgstr ""
+
+#: inc/options.php:1183
+msgid "Main Content Background Color"
+msgstr ""
+
+#: inc/options.php:1185
+msgid "Select color for website's main content background"
+msgstr ""
+
+#: inc/options.php:1188
+msgid "Footer Background Color"
+msgstr ""
+
+#: inc/options.php:1190
+msgid "Select color footer bar at website's bottom"
+msgstr ""
+
+#: inc/options.php:1193
+msgid "Styled Element Default Background Color"
+msgstr ""
+
+#: inc/options.php:1195
+msgid ""
+"Default background color which is used in following elements: text boxes, "
+"alert boxes, tables, news, tabs, galleries, rounded backgrounds in "
+"testimonials, recent posts, author block"
+msgstr ""
+
+#: inc/options.php:1198
+msgid "Styled Element Default Color 1"
+msgstr ""
+
+#: inc/options.php:1200
+msgid ""
+"This color is used in such elements as table headers, teams & accordions "
+"titles, prcining tables, tabs titles & comments etc."
+msgstr ""
+
+#: inc/options.php:1203
+msgid "Styled Element Default Color 2"
+msgstr ""
+
+#: inc/options.php:1205
+msgid ""
+"This color is used for instance for portfolio sharing button, portfolio "
+"filters, titles in woocommerce cart, default prices in pricing tables etc."
+msgstr ""
+
+#: inc/options.php:1208
+msgid "Divider Default Color"
+msgstr ""
+
+#: inc/options.php:1210
+msgid ""
+"Default color for dividers used in theme: content dividers, widget dividers, "
+"blog & news posts dividers etc."
+msgstr ""
+
+#: inc/options.php:1213
+msgid "Box Border Color"
+msgstr ""
+
+#: inc/options.php:1217
+msgid "Box Rounded Corners"
+msgstr ""
+
+#: inc/options.php:1223
+msgid "Box Shadows"
+msgstr ""
+
+#: inc/options.php:1227
+msgid "Highlight Label Color"
+msgstr ""
+
+#: inc/options.php:1233
+msgid "Menu Colors"
+msgstr ""
+
+#: inc/options.php:1236
+msgid "Main Menu Text Color"
+msgstr ""
+
+#: inc/options.php:1240
+msgid "Main Menu Hover Text Color"
+msgstr ""
+
+#: inc/options.php:1244
+msgid "Main Menu Active Text Color"
+msgstr ""
+
+#: inc/options.php:1248
+msgid "Main Menu Active Background Color"
+msgstr ""
+
+#: inc/options.php:1252
+msgid "Submenu Text Color"
+msgstr ""
+
+#: inc/options.php:1256
+msgid "Submenu Hover Text Color"
+msgstr ""
+
+#: inc/options.php:1264
+msgid "Submenu Hover Background Color"
+msgstr ""
+
+#: inc/options.php:1268
+msgid "Mega Menu Icons Color"
+msgstr ""
+
+#: inc/options.php:1272
+msgid "Menu Shadow Color"
+msgstr ""
+
+#: inc/options.php:1278
+msgid "Text Colors"
+msgstr ""
+
+#: inc/options.php:1281
+msgid "Body Color"
+msgstr ""
+
+#: inc/options.php:1285
+msgid "H1 Color"
+msgstr ""
+
+#: inc/options.php:1289
+msgid "H2 Color"
+msgstr ""
+
+#: inc/options.php:1293
+msgid "H3 Color"
+msgstr ""
+
+#: inc/options.php:1297
+msgid "H4 Color"
+msgstr ""
+
+#: inc/options.php:1301
+msgid "H5 Color"
+msgstr ""
+
+#: inc/options.php:1305
+msgid "H6 Color"
+msgstr ""
+
+#: inc/options.php:1309
+msgid "Link Color"
+msgstr ""
+
+#: inc/options.php:1313
+msgid "Hover Link Color"
+msgstr ""
+
+#: inc/options.php:1317
+msgid "Active Link Color"
+msgstr ""
+
+#: inc/options.php:1321
+msgid "Footer Text Color"
+msgstr ""
+
+#: inc/options.php:1325
+msgid "Copyright Text Color"
+msgstr ""
+
+#: inc/options.php:1329
+msgid "Copyright Link Color"
+msgstr ""
+
+#: inc/options.php:1333
+msgid "Title Bar Default Background"
+msgstr ""
+
+#: inc/options.php:1337
+msgid "Title Bar Default Font"
+msgstr ""
+
+#: inc/options.php:1341
+msgid "Top Area Body"
+msgstr ""
+
+#: inc/options.php:1345
+msgid "Date, Filter & Team Subtitle Color"
+msgstr ""
+
+#: inc/options.php:1349
+msgid "System Icons Font"
+msgstr ""
+
+#: inc/options.php:1353
+msgid "System Icons Font 2"
+msgstr ""
+
+#: inc/options.php:1359
+msgid "Button Colors"
+msgstr ""
+
+#: inc/options.php:1362
+msgid "Basic Text Color"
+msgstr ""
+
+#: inc/options.php:1366
+msgid "Hover Text Color"
+msgstr ""
+
+#: inc/options.php:1370
+msgid "Active Text Color"
+msgstr ""
+
+#: inc/options.php:1374
+msgid "Basic Background Color"
+msgstr ""
+
+#: inc/options.php:1378
+msgid "Hover Background Color"
+msgstr ""
+
+#: inc/options.php:1382
+msgid "Active Background Color"
+msgstr ""
+
+#: inc/options.php:1388
+msgid "Widgets Colors"
+msgstr ""
+
+#: inc/options.php:1391
+msgid "Widget Title Color"
+msgstr ""
+
+#: inc/options.php:1393
+msgid "Choose color of widget titles"
+msgstr ""
+
+#: inc/options.php:1396
+msgid "Widget Link Color"
+msgstr ""
+
+#: inc/options.php:1398 inc/options.php:1423
+msgid "Choose color of links in widgets"
+msgstr ""
+
+#: inc/options.php:1401
+msgid "Widget Hover Link Color"
+msgstr ""
+
+#: inc/options.php:1405
+msgid "Widget Active Link Color"
+msgstr ""
+
+#: inc/options.php:1409
+msgid "Footer Widget Area Background Color"
+msgstr ""
+
+#: inc/options.php:1413
+msgid "Footer Widget Title Color"
+msgstr ""
+
+#: inc/options.php:1417
+msgid "Footer Widget Text Color"
+msgstr ""
+
+#: inc/options.php:1421
+msgid "Footer Widget Link Color"
+msgstr ""
+
+#: inc/options.php:1426
+msgid "Footer Widget Hover Link Color"
+msgstr ""
+
+#: inc/options.php:1430
+msgid "Footer Widget Active Link Color"
+msgstr ""
+
+#: inc/options.php:1436
+msgid "Portfolio Colors"
+msgstr ""
+
+#: inc/options.php:1439
+msgid "Portfolio Slider Arrow"
+msgstr ""
+
+#: inc/options.php:1441
+msgid "Select color of slider's arrow"
+msgstr ""
+
+#: inc/options.php:1444
+msgid "Portfolio Overview Title Background"
+msgstr ""
+
+#: inc/options.php:1446
+msgid ""
+"Choose title & description background color for grid-style portfolio "
+"overviews"
+msgstr ""
+
+#: inc/options.php:1449
+msgid "Portfolio Overview Title Text"
+msgstr ""
+
+#: inc/options.php:1451
+msgid "Select portfolio item's title color for grid-style portfolio overviews"
+msgstr ""
+
+#: inc/options.php:1454
+msgid "Portfolio Overview Description Text"
+msgstr ""
+
+#: inc/options.php:1456
+msgid ""
+"Choose portfolio item's description color for grid-style portfolio overviews"
+msgstr ""
+
+#: inc/options.php:1459
+msgid "Sharing Button Background"
+msgstr ""
+
+#: inc/options.php:1461
+msgid "Choose background color for sharing button in portfolio overviews"
+msgstr ""
+
+#: inc/options.php:1464
+msgid "Portfolio Date Color"
+msgstr ""
+
+#: inc/options.php:1466
+msgid "Font color for showing the date in portfolio overviews"
+msgstr ""
+
+#: inc/options.php:1471
+msgid "Slideshow, Gallery And Image Box Colors"
+msgstr ""
+
+#: inc/options.php:1474
+msgid "Gallery Lightbox Caption Background"
+msgstr ""
+
+#: inc/options.php:1476
+msgid "Select background color for image description in gallery"
+msgstr ""
+
+#: inc/options.php:1479
+msgid "Gallery Lightbox Title Text"
+msgstr ""
+
+#: inc/options.php:1481
+msgid "Choose title color for image description in gallery"
+msgstr ""
+
+#: inc/options.php:1484
+msgid "Gallery Lightbox Description Text"
+msgstr ""
+
+#: inc/options.php:1486
+msgid "Select text color for image description in gallery"
+msgstr ""
+
+#: inc/options.php:1489
+msgid "Slideshow Arrow Background"
+msgstr ""
+
+#: inc/options.php:1493
+msgid "Slideshow Arrow Font"
+msgstr ""
+
+#: inc/options.php:1497
+msgid "\"Default\" Hover Color"
+msgstr ""
+
+#: inc/options.php:1501
+msgid "\"Zooming Blur\" Hover Color"
+msgstr ""
+
+#: inc/options.php:1505
+msgid "\"Horizontal Sliding\" Hover Color"
+msgstr ""
+
+#: inc/options.php:1509
+msgid "\"Vertical Sliding\" Hover Color"
+msgstr ""
+
+#: inc/options.php:1515
+msgid "Quickfinder Colors"
+msgstr ""
+
+#: inc/options.php:1518
+msgid "Quickfinder Bar Background"
+msgstr ""
+
+#: inc/options.php:1520
+msgid "Select background color for the bar/panel with quickfinders"
+msgstr ""
+
+#: inc/options.php:1523
+msgid "Quickfinder Bar Title Text"
+msgstr ""
+
+#: inc/options.php:1525
+msgid "Choose title color for the bar/panel with quickfinders"
+msgstr ""
+
+#: inc/options.php:1528
+msgid "Quickfinder Bar Description Text"
+msgstr ""
+
+#: inc/options.php:1530
+msgid "Select text color for the bar/panel with quickfinders"
+msgstr ""
+
+#: inc/options.php:1533
+msgid "Quickfinder Title Text"
+msgstr ""
+
+#: inc/options.php:1537
+msgid "Quickfinder Description Text"
+msgstr ""
+
+#: inc/options.php:1543
+msgid "Bullets, Icons, Dropcaps & Pagination"
+msgstr ""
+
+#: inc/options.php:1546
+msgid "Bullets Symbol"
+msgstr ""
+
+#: inc/options.php:1548
+msgid ""
+"Select font color for bullets. The same color will be used as icon font "
+"color in \"active\" state"
+msgstr ""
+
+#: inc/options.php:1551
+msgid "Icons Font"
+msgstr ""
+
+#: inc/options.php:1553
+msgid "Select icon font color for \"normal\" state"
+msgstr ""
+
+#: inc/options.php:1556
+msgid "Pagination Border"
+msgstr ""
+
+#: inc/options.php:1560
+msgid "Pagination Font"
+msgstr ""
+
+#: inc/options.php:1564
+msgid "Active and Hover Pagination Font"
+msgstr ""
+
+#: inc/options.php:1568
+msgid "Active and Hover Pagination Background"
+msgstr ""
+
+#: inc/options.php:1572
+msgid "Icon Font Color For Slideshows & Hovers"
+msgstr ""
+
+#: inc/options.php:1574
+msgid ""
+"Select icon font color for arrows in slideshow & hovers on portfolio "
+"items/gallery"
+msgstr ""
+
+#: inc/options.php:1577
+msgid "Slider Mini-Pagination (Not Active)"
+msgstr ""
+
+#: inc/options.php:1581
+msgid "Slider Mini-Pagination (Active)"
+msgstr ""
+
+#: inc/options.php:1585
+msgid "Footer Social Icons Font"
+msgstr ""
+
+#: inc/options.php:1589
+msgid "Footer Social Icons Active & Hover"
+msgstr ""
+
+#: inc/options.php:1593
+msgid "Top Area Icons Font"
+msgstr ""
+
+#: inc/options.php:1597
+msgid "Top Area Social Icons Active & Hover"
+msgstr ""
+
+#: inc/options.php:1603
+msgid "Form"
+msgstr ""
+
+#: inc/options.php:1606
+msgid "Background"
+msgstr ""
+
+#: inc/options.php:1610
+msgid "Font"
+msgstr ""
+
+#: inc/options.php:1614
+msgid "Border"
+msgstr ""
+
+#: inc/options.php:1623
+msgid "Backgrounds"
+msgstr ""
+
+#: inc/options.php:1626
+msgid "Background Images"
+msgstr ""
+
+#: inc/options.php:1629
+msgid "Background for Boxed Layout"
+msgstr ""
+
+#: inc/options.php:1631
+msgid "Select or upload image file for website's backround in boxed layout"
+msgstr ""
+
+#: inc/options.php:1634
+msgid "Background Patterns for Boxed Layout"
+msgstr ""
+
+#: inc/options.php:1648
+msgid "Basic background for website"
+msgstr ""
+
+#: inc/options.php:1650
+msgid ""
+"Basic background is the continuous background underlaying the whole webpage. "
+"By default it is visible for example in slideshow area, quickfinder area, "
+"portfolio-slider"
+msgstr ""
+
+#: inc/options.php:1653
+msgid "Top Background"
+msgstr ""
+
+#: inc/options.php:1655
+msgid "Select or upload image file for website's top background"
+msgstr ""
+
+#: inc/options.php:1658
+msgid "Main Content Background"
+msgstr ""
+
+#: inc/options.php:1660
+msgid "Select or upload image file for website's main content background"
+msgstr ""
+
+#: inc/options.php:1663
+msgid "Footer Background"
+msgstr ""
+
+#: inc/options.php:1665
+msgid "Select or upload image file for footer bar at website's bottom"
+msgstr ""
+
+#: inc/options.php:1668
+msgid "Footer Widget Area Background Image"
+msgstr ""
+
+#: inc/options.php:1677 inc/options.php:1680
+msgid "Home Constructor"
+msgstr ""
+
+#: inc/options.php:1683
+msgid "Activate Home Constructor"
+msgstr ""
+
+#: inc/options.php:1689 inc/post-types/init.php:145
+msgid "Lazy loading disabled"
+msgstr ""
+
+#: inc/options.php:1697
+msgid "Slideshow"
+msgstr ""
+
+#: inc/options.php:1698
+msgid "Quickfinder"
+msgstr ""
+
+#: inc/options.php:1699
+msgid "Portfolio"
+msgstr ""
+
+#: inc/options.php:1700
+msgid "Clients"
+msgstr ""
+
+#: inc/options.php:1701 inc/options.php:1703
+msgid "Pages"
+msgstr ""
+
+#: inc/options.php:1702 inc/post-types/init.php:481
+msgid "News"
+msgstr ""
+
+#: inc/options.php:1704
+msgid "Drag-n-drop panels here to setup required order"
+msgstr ""
+
+#: inc/options.php:1712 inc/options.php:1715
+msgid "NivoSlider Options"
+msgstr ""
+
+#: inc/options.php:1718
+msgid "Effect"
+msgstr ""
+
+#: inc/options.php:1741
+msgid "Slices"
+msgstr ""
+
+#: inc/options.php:1748
+msgid "Box Cols"
+msgstr ""
+
+#: inc/options.php:1755
+msgid "Box Rows"
+msgstr ""
+
+#: inc/options.php:1762
+msgid "Animation Speed ( x 100 milliseconds )"
+msgstr ""
+
+#: inc/options.php:1769
+msgid "Pause Time ( x 1000 milliseconds )"
+msgstr ""
+
+#: inc/options.php:1776
+msgid "Direction Navigation"
+msgstr ""
+
+#: inc/options.php:1782
+msgid "Control Navigation"
+msgstr ""
+
+#: inc/options.php:1793
+msgid "Blog & News"
+msgstr ""
+
+#: inc/options.php:1796
+msgid "Blog & News Options"
+msgstr ""
+
+#: inc/options.php:1799
+msgid "Show author"
+msgstr ""
+
+#: inc/options.php:1805
+msgid "Excerpt lenght"
+msgstr ""
+
+#: inc/options.php:1817
+msgid "Footer"
+msgstr ""
+
+#: inc/options.php:1820
+msgid "Footer Options"
+msgstr ""
+
+#: inc/options.php:1823
+msgid "Activate footer"
+msgstr ""
+
+#: inc/options.php:1829
+msgid "Footer Text"
+msgstr ""
+
+#: inc/options.php:1838
+msgid "Contacts & Socials"
+msgstr ""
+
+#: inc/options.php:1841
+msgid "Contacts"
+msgstr ""
+
+#: inc/options.php:1844
+msgid "Address"
+msgstr ""
+
+#: inc/options.php:1849
+msgid "Phone"
+msgstr ""
+
+#: inc/options.php:1854
+msgid "Fax"
+msgstr ""
+
+#: inc/options.php:1859
+msgid "Email"
+msgstr ""
+
+#: inc/options.php:1869
+msgid "Admin E-mail"
+msgstr ""
+
+#: inc/options.php:1871
+msgid ""
+"Define email address of website admin. All feedbacks from contact form will "
+"be forwarded on this email address"
+msgstr ""
+
+#: inc/options.php:1876
+msgid "Socials"
+msgstr ""
+
+#: inc/options.php:1879
+msgid "Activate Twitter Icon"
+msgstr ""
+
+#: inc/options.php:1885
+msgid "Activate Facebook Icon"
+msgstr ""
+
+#: inc/options.php:1891
+msgid "Activate LinkedIn Icon"
+msgstr ""
+
+#: inc/options.php:1897
+msgid "Activate Google Plus Icon"
+msgstr ""
+
+#: inc/options.php:1903
+msgid "Activate StumbleUpon Icon"
+msgstr ""
+
+#: inc/options.php:1908
+msgid "Activate RSS Icon"
+msgstr ""
+
+#: inc/options.php:1914
+msgid "Twitter Profile Link"
+msgstr ""
+
+#: inc/options.php:1917
+msgid "Enter URL to your twitter profile"
+msgstr ""
+
+#: inc/options.php:1920
+msgid "Facebook Profile Link"
+msgstr ""
+
+#: inc/options.php:1923
+msgid "Enter URL to your facebook profile"
+msgstr ""
+
+#: inc/options.php:1926
+msgid "LinkedIn Profile Link"
+msgstr ""
+
+#: inc/options.php:1929
+msgid "Enter URL to your linkedin profile"
+msgstr ""
+
+#: inc/options.php:1932
+msgid "Google Plus Profile Link"
+msgstr ""
+
+#: inc/options.php:1935
+msgid "Enter URL to your google+ profile"
+msgstr ""
+
+#: inc/options.php:1938
+msgid "StumbleUpon Profile Link"
+msgstr ""
+
+#: inc/options.php:1941
+msgid "Enter URL to your stumbleupon profile"
+msgstr ""
+
+#: inc/options.php:1944
+msgid "RSS Link"
+msgstr ""
+
+#: inc/options.php:1949
+msgid "Display Links For Sharing Posts On Social Networks"
+msgstr ""
+
+#: inc/options.php:2175
+msgid "Move content block down to activate it on your Home"
+msgstr ""
+
+#: inc/options.php:2176
+msgid "Selectable Content Blocks"
+msgstr ""
+
+#: inc/options.php:2186
+msgid "Drag & drop blocks to define sort order. Open blocks to choose content."
+msgstr ""
+
+#: inc/options.php:2187
+msgid "Active Home Content"
+msgstr ""
+
+#: inc/options.php:2218
+msgid "Block ID"
+msgstr ""
+
+#: inc/options.php:2221
+msgid "Select Page"
+msgstr ""
+
+#: inc/options.php:2232
+msgid "Select Slideshow Type"
+msgstr ""
+
+#: inc/options.php:2245 inc/post-types/init.php:182
+msgid "Select Slideshow"
+msgstr ""
+
+#: inc/options.php:2267
+msgid "Select Portfolio"
+msgstr ""
+
+#: inc/options.php:2279
+msgid "Select Clients Sets"
+msgstr ""
+
+#: inc/options.php:2291 inc/post-types/init.php:237
+msgid "Select Quickfinder"
+msgstr ""
+
+#: inc/options.php:2307
+msgid "News Count"
+msgstr ""
+
+#: inc/options.php:2312
+msgid "All News Link"
+msgstr ""
+
+#: inc/options.php:3029
+msgid "Scalia theme options"
+msgstr ""
+
+#: inc/options.php:3029
+msgid "Theme options"
+msgstr ""
+
+#: inc/options.php:3045
+msgid "Get all from font."
+msgstr ""
+
+#: inc/options.php:3047
+msgid "et colors, backgrounds and fonts options to default?"
+msgstr ""
+
+#: inc/options.php:3048
+msgid "Update backup data?"
+msgstr ""
+
+#: inc/options.php:3049
+msgid "Restore settings from backup data?"
+msgstr ""
+
+#: inc/options.php:3050
+msgid "Import settings?"
+msgstr ""
+
+#: inc/options.php:3069 inc/options.php:3142
+msgid "Save Changes"
+msgstr ""
+
+#: inc/options.php:3079
+msgid "Backup"
+msgstr ""
+
+#: inc/options.php:3109
+msgid "Backup and Restore Theme Settings"
+msgstr ""
+
+#: inc/options.php:3112
+msgid ""
+"If you would like to experiment with the settings of your theme and don't "
+"want to loose your previous settings, use the \"Backup Settings\"-button to "
+"backup your current theme options. You can restore these options later using "
+"the button \"Restore Settings\"."
+msgstr ""
+
+#: inc/options.php:3114 inc/options.php:3116
+msgid "Last backup"
+msgstr ""
+
+#: inc/options.php:3116
+msgid "No backups yet"
+msgstr ""
+
+#: inc/options.php:3119
+msgid "Backup Settings"
+msgstr ""
+
+#: inc/options.php:3120
+msgid "Restore Settings"
+msgstr ""
+
+#: inc/options.php:3124
+msgid ""
+"In order to apply the settings of another scalia theme used in a different "
+"install just copy and paste the settings in the text box and click on "
+"\"Import Settings\"."
+msgstr ""
+
+#: inc/options.php:3130
+msgid "Import Settings"
+msgstr ""
+
+#: inc/options.php:3142
+msgid "Reset Style Settings"
+msgstr ""
+
+#: inc/post-types/init.php:22 inc/post-types/init.php:35
+#: inc/woocommerce.php:344
+msgid "Page Title"
+msgstr ""
+
+#: inc/post-types/init.php:25
+msgid "Page Blog"
+msgstr ""
+
+#: inc/post-types/init.php:28
+msgid "Page Slideshow"
+msgstr ""
+
+#: inc/post-types/init.php:29
+msgid "Page Quickfinder"
+msgstr ""
+
+#: inc/post-types/init.php:30
+msgid "Page Portfolio"
+msgstr ""
+
+#: inc/post-types/init.php:31
+msgid "Page Gallery"
+msgstr ""
+
+#: inc/post-types/init.php:33
+msgid "Lazy Loading & Bottom Margin Options"
+msgstr ""
+
+#: inc/post-types/init.php:43 inc/post-types/init.php:44
+#: inc/post-types/init.php:45 inc/post-types/init.php:159
+#: inc/post-types/init.php:222 inc/post-types/init.php:266
+#: inc/post-types/init.php:353 inc/post-types/init.php:426
+msgid "None"
+msgstr ""
+
+#: inc/post-types/init.php:43
+msgid "YouTube"
+msgstr ""
+
+#: inc/post-types/init.php:43
+msgid "Vimeo"
+msgstr ""
+
+#: inc/post-types/init.php:43 inc/post-types/init.php:827
+msgid "Self-Hosted Video"
+msgstr ""
+
+#: inc/post-types/init.php:44
+msgid "Style 1"
+msgstr ""
+
+#: inc/post-types/init.php:44
+msgid "Style 2"
+msgstr ""
+
+#: inc/post-types/init.php:45
+msgid "45&deg; Left"
+msgstr ""
+
+#: inc/post-types/init.php:45
+msgid "45&deg; Right"
+msgstr ""
+
+#: inc/post-types/init.php:45
+msgid "90&deg;"
+msgstr ""
+
+#: inc/post-types/init.php:51
+msgid "Title Style"
+msgstr ""
+
+#: inc/post-types/init.php:54
+msgid "Background Image"
+msgstr ""
+
+#: inc/post-types/init.php:62
+msgid "Background Color"
+msgstr ""
+
+#: inc/post-types/init.php:65
+msgid "Video Background Type"
+msgstr ""
+
+#: inc/post-types/init.php:68
+msgid "Link to video or video ID (for YouTube or Vimeo)"
+msgstr ""
+
+#: inc/post-types/init.php:71
+msgid "Video Background Aspect Ratio (16:9, 16:10, 4:3...)"
+msgstr ""
+
+#: inc/post-types/init.php:74
+msgid "Video Overlay Color"
+msgstr ""
+
+#: inc/post-types/init.php:77
+msgid "Video Overlay Opacity (0 - 1)"
+msgstr ""
+
+#: inc/post-types/init.php:81
+msgid "Menu on Video Title"
+msgstr ""
+
+#: inc/post-types/init.php:83
+msgid "Title Text Color"
+msgstr ""
+
+#: inc/post-types/init.php:86
+msgid "Excerpt Color"
+msgstr ""
+
+#: inc/post-types/init.php:89
+msgid "Excerpt"
+msgstr ""
+
+#: inc/post-types/init.php:98
+msgid "Icon Color"
+msgstr ""
+
+#: inc/post-types/init.php:101
+msgid "Icon Color 2"
+msgstr ""
+
+#: inc/post-types/init.php:104
+msgid "Icon Style"
+msgstr ""
+
+#: inc/post-types/init.php:107
+msgid "Icon Background Color"
+msgstr ""
+
+#: inc/post-types/init.php:110
+msgid "Icon Border Color"
+msgstr ""
+
+#: inc/post-types/init.php:113
+msgid "Icon Shape"
+msgstr ""
+
+#: inc/post-types/init.php:116
+msgid "Icon Size"
+msgstr ""
+
+#: inc/post-types/init.php:149
+msgid "Disable bottom margin"
+msgstr ""
+
+#: inc/post-types/init.php:161
+msgid "All Slides"
+msgstr ""
+
+#: inc/post-types/init.php:178
+msgid "Slideshow Type"
+msgstr ""
+
+#: inc/post-types/init.php:188
+msgid "Select LayerSlider"
+msgstr ""
+
+#: inc/post-types/init.php:218 inc/post-types/init.php:258
+#: inc/post-types/init.php:449
+msgid "All Items"
+msgstr ""
+
+#: inc/post-types/init.php:222
+msgid "Quickfinder bar above"
+msgstr ""
+
+#: inc/post-types/init.php:222 inc/post-types/init.php:266
+msgid "Inside content"
+msgstr ""
+
+#: inc/post-types/init.php:222
+msgid "Quickfinder bar below"
+msgstr ""
+
+#: inc/post-types/init.php:223
+msgid "Grid View"
+msgstr ""
+
+#: inc/post-types/init.php:223
+msgid "Vertical Style 1"
+msgstr ""
+
+#: inc/post-types/init.php:223
+msgid "Vertical Style 2"
+msgstr ""
+
+#: inc/post-types/init.php:227
+msgid "Quickfinder position"
+msgstr ""
+
+#: inc/post-types/init.php:230
+msgid "Quickfinder style"
+msgstr ""
+
+#: inc/post-types/init.php:234 inc/post-types/init.php:326
+msgid "Lazy loading enabled"
+msgstr ""
+
+#: inc/post-types/init.php:240
+msgid "Vertical Quickfinder Connector Color"
+msgstr ""
+
+#: inc/post-types/init.php:266
+msgid "Slider-bar above"
+msgstr ""
+
+#: inc/post-types/init.php:266
+msgid "Slider-bar below"
+msgstr ""
+
+#: inc/post-types/init.php:267
+msgid "2x columns"
+msgstr ""
+
+#: inc/post-types/init.php:267 inc/post-types/init.php:356
+msgid "3x columns"
+msgstr ""
+
+#: inc/post-types/init.php:267 inc/post-types/init.php:357
+msgid "4x columns"
+msgstr ""
+
+#: inc/post-types/init.php:267 inc/post-types/init.php:358
+#: inc/post-types/init.php:445
+msgid "100% width"
+msgstr ""
+
+#: inc/post-types/init.php:267
+msgid "1x column list"
+msgstr ""
+
+#: inc/post-types/init.php:268 inc/post-types/init.php:361
+msgid "Justified Grid"
+msgstr ""
+
+#: inc/post-types/init.php:268
+msgid "Masonry Grid "
+msgstr ""
+
+#: inc/post-types/init.php:269
+msgid "On Page"
+msgstr ""
+
+#: inc/post-types/init.php:269
+msgid "On Hover "
+msgstr ""
+
+#: inc/post-types/init.php:270 inc/post-types/init.php:365
+msgid "Zooming Blur"
+msgstr ""
+
+#: inc/post-types/init.php:270
+msgid "Horizontal Sliding"
+msgstr ""
+
+#: inc/post-types/init.php:270
+msgid "Vertical Sliding"
+msgstr ""
+
+#: inc/post-types/init.php:271 inc/post-types/init.php:446
+msgid "Normal"
+msgstr ""
+
+#: inc/post-types/init.php:271
+msgid "Load More "
+msgstr ""
+
+#: inc/post-types/init.php:272
+msgid "4 Columns"
+msgstr ""
+
+#: inc/post-types/init.php:272
+msgid "5 Columns "
+msgstr ""
+
+#: inc/post-types/init.php:276
+msgid "Position"
+msgstr ""
+
+#: inc/post-types/init.php:280 inc/post-types/init.php:396
+msgid "Layout"
+msgstr ""
+
+#: inc/post-types/init.php:284 inc/post-types/init.php:400
+msgid "Style"
+msgstr ""
+
+#: inc/post-types/init.php:288
+msgid "Columns 100% Width (1920x Screen)"
+msgstr ""
+
+#: inc/post-types/init.php:293 inc/post-types/init.php:404
+msgid "No Gaps"
+msgstr ""
+
+#: inc/post-types/init.php:296
+msgid "Display Titles"
+msgstr ""
+
+#: inc/post-types/init.php:300 inc/post-types/init.php:407
+msgid "Hover Type"
+msgstr ""
+
+#: inc/post-types/init.php:304 inc/post-types/init.php:471
+msgid "Pagination"
+msgstr ""
+
+#: inc/post-types/init.php:308
+msgid "Items per page"
+msgstr ""
+
+#: inc/post-types/init.php:312
+msgid "Title"
+msgstr ""
+
+#: inc/post-types/init.php:317
+msgid "Show Date & Sets"
+msgstr ""
+
+#: inc/post-types/init.php:321
+msgid "Disable sharing buttons"
+msgstr ""
+
+#: inc/post-types/init.php:330
+msgid "Select Portfolios"
+msgstr ""
+
+#: inc/post-types/init.php:335
+msgid "Activate Filter"
+msgstr ""
+
+#: inc/post-types/init.php:353
+msgid "Gallery above"
+msgstr ""
+
+#: inc/post-types/init.php:353
+msgid "Gallery below"
+msgstr ""
+
+#: inc/post-types/init.php:354
+msgid "Slider"
+msgstr ""
+
+#: inc/post-types/init.php:354
+msgid "Grid"
+msgstr ""
+
+#: inc/post-types/init.php:362
+msgid "Masonry Grid"
+msgstr ""
+
+#: inc/post-types/init.php:363
+msgid "Metro Style"
+msgstr ""
+
+#: inc/post-types/init.php:369
+msgid "1px & shadow"
+msgstr ""
+
+#: inc/post-types/init.php:370
+msgid "4px"
+msgstr ""
+
+#: inc/post-types/init.php:371
+msgid "10px"
+msgstr ""
+
+#: inc/post-types/init.php:372
+msgid "10px outlined"
+msgstr ""
+
+#: inc/post-types/init.php:373
+msgid "20px outlined & flat shadow"
+msgstr ""
+
+#: inc/post-types/init.php:374
+msgid "20px outlined & soft shadow"
+msgstr ""
+
+#: inc/post-types/init.php:375
+msgid "30px combined & flat shadow"
+msgstr ""
+
+#: inc/post-types/init.php:376
+msgid "30px combined"
+msgstr ""
+
+#: inc/post-types/init.php:377
+msgid "30px combined inverted"
+msgstr ""
+
+#: inc/post-types/init.php:378
+msgid "dashed"
+msgstr ""
+
+#: inc/post-types/init.php:379
+msgid "round image"
+msgstr ""
+
+#: inc/post-types/init.php:380
+msgid "soft corner"
+msgstr ""
+
+#: inc/post-types/init.php:387
+msgid "Gallery"
+msgstr ""
+
+#: inc/post-types/init.php:390
+msgid "Gallery position"
+msgstr ""
+
+#: inc/post-types/init.php:393
+msgid "Gallery Type"
+msgstr ""
+
+#: inc/post-types/init.php:411
+msgid "Border Style"
+msgstr ""
+
+#: inc/post-types/init.php:430
+msgid "Sidebar Position"
+msgstr ""
+
+#: inc/post-types/init.php:435
+msgid "Sticky sidebar"
+msgstr ""
+
+#: inc/post-types/init.php:445
+msgid "Timeline"
+msgstr ""
+
+#: inc/post-types/init.php:445
+msgid "Masonry 3x"
+msgstr ""
+
+#: inc/post-types/init.php:445
+msgid "Masonry 4x"
+msgstr ""
+
+#: inc/post-types/init.php:445
+msgid "News Grid Carousel"
+msgstr ""
+
+#: inc/post-types/init.php:445
+msgid "Styled List 1"
+msgstr ""
+
+#: inc/post-types/init.php:445
+msgid "Styled List 2"
+msgstr ""
+
+#: inc/post-types/init.php:446
+msgid "Load More"
+msgstr ""
+
+#: inc/post-types/init.php:446
+msgid "Disable pagination "
+msgstr ""
+
+#: inc/post-types/init.php:463
+msgid "Blog style"
+msgstr ""
+
+#: inc/post-types/init.php:467
+msgid "Post per page"
+msgstr ""
+
+#: inc/post-types/init.php:477
+msgid "Select Categories"
+msgstr ""
+
+#: inc/post-types/init.php:480
+msgid "Post types"
+msgstr ""
+
+#: inc/post-types/init.php:481
+msgid "Post"
+msgstr ""
+
+#: inc/post-types/init.php:760
+msgid "Blog Item Settings"
+msgstr ""
+
+#: inc/post-types/init.php:775
+msgid "Type of post item"
+msgstr ""
+
+#: inc/post-types/init.php:780
+msgid "Link to Self-Hosted Video or Video ID (for YouTube or Vimeo)"
+msgstr ""
+
+#: inc/post-types/init.php:786
+msgid "Show Featured Image"
+msgstr ""
+
+#: inc/post-types/init.php:827
+msgid "YouTube Video"
+msgstr ""
+
+#: inc/post-types/init.php:827
+msgid "Vimeo Video"
+msgstr ""
+
+#: inc/template-tags.php:33
+msgid "&larr; Previous"
+msgstr ""
+
+#: inc/template-tags.php:34
+msgid "Next &rarr;"
+msgstr ""
+
+#: inc/template-tags.php:41
+msgid "Posts navigation"
+msgstr ""
+
+#: inc/template-tags.php:62
+msgid "Post navigation"
+msgstr ""
+
+#: inc/template-tags.php:66
+msgid "<span class=\"meta-nav\">Published In</span>%title"
+msgstr ""
+
+#: inc/template-tags.php:68
+msgid "<span class=\"meta-nav\">Previous Post</span>%title"
+msgstr ""
+
+#: inc/template-tags.php:69
+msgid "<span class=\"meta-nav\">Next Post</span>%title"
+msgstr ""
+
+#: inc/woocommerce.php:21
+msgid "Product Description"
+msgstr ""
+
+#: inc/woocommerce.php:188
+#, php-format
+msgid "Show %d On Page"
+msgstr ""
+
+#: inc/woocommerce.php:245
+msgid "Previous product"
+msgstr ""
+
+#: inc/woocommerce.php:246
+msgid "Next product"
+msgstr ""
+
+#: inc/woocommerce.php:307
+#, php-format
+msgid "You Have <span class=\"items-count\">%d Items</span> In Your Cart"
+msgstr ""
+
+#: inc/woocommerce.php:324
+#, php-format
+msgid "%s has been added to your cart."
+msgid_plural "%s have been added to your cart."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/woocommerce.php:331
+msgid "Continue Shopping"
+msgstr ""
+
+#: inc/woocommerce.php:335 woocommerce/cart/mini-cart.php:88
+msgid "View Cart"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:334 plugins/plugins.php:120
+msgid "Install Required Plugins"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:335 plugins/plugins.php:121
+msgid "Install Plugins"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:337 plugins/plugins.php:122
+#, php-format
+msgid "Installing Plugin: %s"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:339
+#, php-format
+msgid "Updating Plugin: %s"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:340 plugins/plugins.php:123
+msgid "Something went wrong with the plugin API."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:343 plugins/plugins.php:124
+#, php-format
+msgid "This theme requires the following plugin: %1$s."
+msgid_plural "This theme requires the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:349 plugins/plugins.php:125
+#, php-format
+msgid "This theme recommends the following plugin: %1$s."
+msgid_plural "This theme recommends the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:355 plugins/plugins.php:130
+#, php-format
+msgid ""
+"The following plugin needs to be updated to its latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgid_plural ""
+"The following plugins need to be updated to their latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:361
+#, php-format
+msgid "There is an update available for: %1$s."
+msgid_plural "There are updates available for the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:367 plugins/plugins.php:127
+#, php-format
+msgid "The following required plugin is currently inactive: %1$s."
+msgid_plural "The following required plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:373 plugins/plugins.php:128
+#, php-format
+msgid "The following recommended plugin is currently inactive: %1$s."
+msgid_plural "The following recommended plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:378 plugins/plugins.php:132
+msgid "Begin installing plugin"
+msgid_plural "Begin installing plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:383
+msgid "Begin updating plugin"
+msgid_plural "Begin updating plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:388
+msgid "Begin activating plugin"
+msgid_plural "Begin activating plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:392 plugins/plugins.php:134
+msgid "Return to Required Plugins Installer"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:393
+#: plugins/class-tgm-plugin-activation.php:912
+#: plugins/class-tgm-plugin-activation.php:2618
+#: plugins/class-tgm-plugin-activation.php:3665
+msgid "Return to the Dashboard"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:394
+#: plugins/class-tgm-plugin-activation.php:3244 plugins/plugins.php:135
+msgid "Plugin activated successfully."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:395
+#: plugins/class-tgm-plugin-activation.php:3037
+msgid "The following plugin was activated successfully:"
+msgid_plural "The following plugins were activated successfully:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:397
+#, php-format
+msgid "No action taken. Plugin %1$s was already active."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:399
+#, php-format
+msgid ""
+"Plugin not activated. A higher version of %s is needed for this theme. "
+"Please update the plugin."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:401
+#, php-format
+msgid "All plugins installed and activated successfully. %1$s"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:402
+msgid "Dismiss this notice"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:403
+msgid ""
+"There are one or more required or recommended plugins to install, update or "
+"activate."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:404
+msgid "Please contact the administrator of this site for help."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:607
+msgid "This plugin needs to be updated to be compatible with your theme."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:608
+msgid "Update Required"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:1019
+msgid ""
+"The remote plugin package does not contain a folder with the desired slug "
+"and renaming did not work."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:1019
+#: plugins/class-tgm-plugin-activation.php:1022
+msgid ""
+"Please contact the plugin provider and ask them to package their plugin "
+"according to the WordPress guidelines."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:1022
+msgid ""
+"The remote plugin package consists of more than one file, but the files are "
+"not packaged in a folder."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:1206
+#: plugins/class-tgm-plugin-activation.php:3033
+msgctxt "plugin A *and* plugin B"
+msgid "and"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2067
+#, php-format
+msgid "TGMPA v%s"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2358
+msgid "Required"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2361
+msgid "Recommended"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2377
+msgid "WordPress Repository"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2380
+msgid "External Source"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2383
+msgid "Pre-Packaged"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2400
+msgid "Not Installed"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2404
+msgid "Installed But Not Activated"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2406
+msgid "Active"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2412
+msgid "Required Update not Available"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2415
+msgid "Requires Update"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2418
+msgid "Update recommended"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2427
+#, php-format
+msgctxt "Install/Update Status"
+msgid "%1$s, %2$s"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2473
+#, php-format
+msgctxt "plugins"
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:2477
+#, php-format
+msgid "To Install <span class=\"count\">(%s)</span>"
+msgid_plural "To Install <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:2481
+#, php-format
+msgid "Update Available <span class=\"count\">(%s)</span>"
+msgid_plural "Update Available <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:2485
+#, php-format
+msgid "To Activate <span class=\"count\">(%s)</span>"
+msgid_plural "To Activate <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/class-tgm-plugin-activation.php:2567
+msgctxt "as in: \"version nr unknown\""
+msgid "unknown"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2575
+msgid "Installed version:"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2583
+msgid "Minimum required version:"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2595
+msgid "Available version:"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2618
+msgid "No plugins to install, update or activate."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2632
+msgid "Plugin"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2633
+msgid "Source"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2634
+msgid "Type"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2638
+msgid "Version"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2639
+#: woocommerce/myaccount/my-orders.php:42
+#: woocommerce/myaccount/my-orders.php:63
+msgid "Status"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2688
+#, php-format
+msgid "Install %2$s"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2693
+#, php-format
+msgid "Update %2$s"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2699
+#, php-format
+msgid "Activate %2$s"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2769
+msgid "Upgrade message from the plugin author:"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2802
+msgid "Install"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2808
+msgid "Update"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2811
+msgid "Activate"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2842
+msgid "No plugins were selected to be installed. No action taken."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2844
+msgid "No plugins were selected to be updated. No action taken."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2885
+msgid "No plugins are available to be installed at this time."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2887
+msgid "No plugins are available to be updated at this time."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:2993
+msgid "No plugins were selected to be activated. No action taken."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3019
+msgid "No plugins are available to be activated at this time."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3243
+msgid "Plugin activation failed."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3583
+#, php-format
+msgid "Updating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3586
+#, php-format
+msgid "An error occurred while installing %1$s: <strong>%2$s</strong>."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3588
+#, php-format
+msgid "The installation of %1$s failed."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3592
+msgid ""
+"The installation and activation process is starting. This process may take a "
+"while on some hosts, so please be patient."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3594
+#, php-format
+msgid "%1$s installed and activated successfully."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3594
+#: plugins/class-tgm-plugin-activation.php:3602
+msgid "Show Details"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3594
+#: plugins/class-tgm-plugin-activation.php:3602
+msgid "Hide Details"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3595
+msgid "All installations and activations have been completed."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3597
+#, php-format
+msgid "Installing and Activating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3600
+msgid ""
+"The installation process is starting. This process may take a while on some "
+"hosts, so please be patient."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3602
+#, php-format
+msgid "%1$s installed successfully."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3603
+msgid "All installations have been completed."
+msgstr ""
+
+#: plugins/class-tgm-plugin-activation.php:3605
+#, php-format
+msgid "Installing Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: plugins/plugins.php:126
+#, php-format
+msgid ""
+"Sorry, but you do not have the correct permissions to install the %s plugin. "
+"Contact the administrator of this site for help on getting the plugin "
+"installed."
+msgid_plural ""
+"Sorry, but you do not have the correct permissions to install the %s "
+"plugins. Contact the administrator of this site for help on getting the "
+"plugins installed."
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/plugins.php:129
+#, php-format
+msgid ""
+"Sorry, but you do not have the correct permissions to activate the %s "
+"plugin. Contact the administrator of this site for help on getting the "
+"plugin activated."
+msgid_plural ""
+"Sorry, but you do not have the correct permissions to activate the %s "
+"plugins. Contact the administrator of this site for help on getting the "
+"plugins activated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/plugins.php:131
+#, php-format
+msgid ""
+"Sorry, but you do not have the correct permissions to update the %s plugin. "
+"Contact the administrator of this site for help on getting the plugin "
+"updated."
+msgid_plural ""
+"Sorry, but you do not have the correct permissions to update the %s plugins. "
+"Contact the administrator of this site for help on getting the plugins "
+"updated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/plugins.php:133
+msgid "Activate installed plugin"
+msgid_plural "Activate installed plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/plugins.php:136
+#, php-format
+msgid "All plugins installed and activated successfully. %s"
+msgstr ""
+
+#: vc_templates/post_block/_item.php:22 vc_templates/vc_posts_slider.php:149
+#, php-format
+msgid "Permalink to %s"
+msgstr ""
+
+#: vc_templates/post_block/_item.php:22
+msgid "Read more..."
+msgstr ""
+
+#: vc_templates/vc_accordion_tab.php:5
+msgid "Section"
+msgstr ""
+
+#: vc_templates/vc_accordion_tab.php:15 vc_templates/vc_accordion_tab.php:23
+#: vc_templates/vc_tab.php:12 vc_templates/vc_tab.php:17
+msgid "Empty section. Edit page to add content here."
+msgstr ""
+
+#: vc_templates/vc_posts_grid.php:153
+msgid "All"
+msgstr ""
+
+#: vc_templates/vc_posts_grid.php:189 vc_templates/vc_posts_slider.php:189
+msgid "Nothing found."
+msgstr ""
+
+#: vc_templates/vc_tabs.php:49
+msgid "Previous tab"
+msgstr ""
+
+#: vc_templates/vc_tabs.php:49
+msgid "Next tab"
+msgstr ""
+
+#: woocommerce/cart/cart-shipping.php:26
+#, php-format
+msgid "Shipping #%d"
+msgstr ""
+
+#: woocommerce/cart/cart-shipping.php:28
+msgid "Shipping and Handling"
+msgstr ""
+
+#: woocommerce/cart/cart-shipping.php:65
+msgid "Please use the shipping calculator to see available shipping methods."
+msgstr ""
+
+#: woocommerce/cart/cart-shipping.php:69
+msgid ""
+"Please continue to the checkout and enter your full address to see if there "
+"are any available shipping methods."
+msgstr ""
+
+#: woocommerce/cart/cart-shipping.php:73
+msgid "Please fill in your details to see available shipping methods."
+msgstr ""
+
+#: woocommerce/cart/cart-shipping.php:82 woocommerce/cart/cart-shipping.php:88
+msgid ""
+"There are no shipping methods available. Please double check your address, "
+"or contact us if you need any help."
+msgstr ""
+
+#: woocommerce/cart/cart-shipping.php:103
+msgid "Shipping"
+msgstr ""
+
+#: woocommerce/cart/cart-totals.php:19
+msgid "Cart Totals"
+msgstr ""
+
+#: woocommerce/cart/cart-totals.php:24 woocommerce/checkout/review-order.php:30
+msgid "Cart Subtotal"
+msgstr ""
+
+#: woocommerce/cart/cart-totals.php:71 woocommerce/checkout/review-order.php:84
+msgid "Order Total"
+msgstr ""
+
+#: woocommerce/cart/cart-totals.php:83
+#, php-format
+msgid " (taxes estimated for %s)"
+msgstr ""
+
+#: woocommerce/cart/cart-totals.php:86
+#, php-format
+msgid ""
+"Note: Shipping and taxes are estimated%s and will be updated during checkout "
+"based on your billing and shipping information."
+msgstr ""
+
+#: woocommerce/cart/cart.php:28 woocommerce/checkout/form-pay.php:28
+#: woocommerce/checkout/review-order.php:21
+#: woocommerce/order/order-details.php:35
+msgid "Product"
+msgstr ""
+
+#: woocommerce/cart/cart.php:29 woocommerce/cart/cart.php:189
+msgid "Price"
+msgstr ""
+
+#: woocommerce/cart/cart.php:30 woocommerce/cart/cart.php:190
+#: woocommerce/order/order-details.php:36
+msgid "Quantity"
+msgstr ""
+
+#: woocommerce/cart/cart.php:31 woocommerce/cart/cart.php:191
+#: woocommerce/checkout/review-order.php:22
+#: woocommerce/myaccount/my-orders.php:43
+#: woocommerce/myaccount/my-orders.php:66
+#: woocommerce/order/order-details.php:37
+msgid "Total"
+msgstr ""
+
+#: woocommerce/cart/cart.php:71 woocommerce/cart/cart.php:182
+msgid "Available on backorder"
+msgstr ""
+
+#: woocommerce/cart/cart.php:106 woocommerce/cart/cart.php:228
+msgid "Remove this item"
+msgstr ""
+
+#: woocommerce/cart/cart.php:123 woocommerce/checkout/form-coupon.php:27
+msgid "Coupon code"
+msgstr ""
+
+#: woocommerce/cart/cart.php:123 woocommerce/cart/cart.php:245
+#: woocommerce/checkout/form-coupon.php:28
+msgid "Apply Coupon"
+msgstr ""
+
+#: woocommerce/cart/cart.php:130 woocommerce/cart/cart.php:252
+msgid "Update Cart"
+msgstr ""
+
+#: woocommerce/cart/cart.php:130 woocommerce/cart/cart.php:252
+msgid "Proceed to Checkout"
+msgstr ""
+
+#: woocommerce/cart/cart.php:130 woocommerce/cart/cart.php:252
+#: woocommerce/cart/mini-cart.php:89
+msgid "Checkout"
+msgstr ""
+
+#: woocommerce/cart/cart.php:245
+msgid "Coupon"
+msgstr ""
+
+#: woocommerce/cart/cross-sells.php:39
+msgid "You may be interested in&hellip;"
+msgstr ""
+
+#: woocommerce/cart/mini-cart.php:73
+msgid "No products in the cart."
+msgstr ""
+
+#: woocommerce/cart/mini-cart.php:83
+msgid "Subtotal"
+msgstr ""
+
+#: woocommerce/cart/shipping-calculator.php:24
+msgid "Calculate Shipping"
+msgstr ""
+
+#: woocommerce/cart/shipping-calculator.php:32
+msgid "Select a country&hellip;"
+msgstr ""
+
+#: woocommerce/cart/shipping-calculator.php:49
+#: woocommerce/cart/shipping-calculator.php:55
+#: woocommerce/cart/shipping-calculator.php:67
+msgid "State / county"
+msgstr ""
+
+#: woocommerce/cart/shipping-calculator.php:56
+msgid "Select a state&hellip;"
+msgstr ""
+
+#: woocommerce/cart/shipping-calculator.php:76
+msgid "City"
+msgstr ""
+
+#: woocommerce/cart/shipping-calculator.php:84
+msgid "Postcode / Zip"
+msgstr ""
+
+#: woocommerce/cart/shipping-calculator.php:91
+msgid "Update Totals"
+msgstr ""
+
+#: woocommerce/checkout/form-billing.php:52
+msgid "Create an account?"
+msgstr ""
+
+#: woocommerce/checkout/form-billing.php:63
+msgid ""
+"Create an account by entering the information below. If you are a returning "
+"customer please login at the top of the page."
+msgstr ""
+
+#: woocommerce/checkout/form-billing.php:84
+#: woocommerce/checkout/form-shipping.php:115
+msgid "Continue"
+msgstr ""
+
+#: woocommerce/checkout/form-checkout.php:23
+msgid "You must be logged in to checkout."
+msgstr ""
+
+#: woocommerce/checkout/form-checkout.php:41
+msgid "Billing &amp; Shipping"
+msgstr ""
+
+#: woocommerce/checkout/form-checkout.php:43
+msgid "Billing Details"
+msgstr ""
+
+#: woocommerce/checkout/form-checkout.php:47
+#: woocommerce/myaccount/form-edit-address.php:25
+#: woocommerce/myaccount/my-address.php:29
+#: woocommerce/order/order-details.php:169
+msgid "Shipping Address"
+msgstr ""
+
+#: woocommerce/checkout/form-checkout.php:50
+msgid "Review & Payment"
+msgstr ""
+
+#: woocommerce/checkout/form-coupon.php:18
+msgid "Have a coupon?"
+msgstr ""
+
+#: woocommerce/checkout/form-coupon.php:18
+msgid "Click here to enter your code"
+msgstr ""
+
+#: woocommerce/checkout/form-coupon.php:24
+msgid "Have A Promotional Code?"
+msgstr ""
+
+#: woocommerce/checkout/form-login.php:18
+msgid "Returning customer?"
+msgstr ""
+
+#: woocommerce/checkout/form-login.php:19
+msgid "Click here to login"
+msgstr ""
+
+#: woocommerce/checkout/form-login.php:28
+msgid ""
+"If you have shopped with us before, please enter your details in the boxes "
+"below. If you are a new customer please proceed to the Billing &amp; "
+"Shipping section."
+msgstr ""
+
+#: woocommerce/checkout/form-pay.php:29
+msgid "Qty"
+msgstr ""
+
+#: woocommerce/checkout/form-pay.php:30
+msgid "Totals"
+msgstr ""
+
+#: woocommerce/checkout/form-pay.php:63
+msgid "Payment"
+msgstr ""
+
+#: woocommerce/checkout/form-pay.php:89
+msgid ""
+"Sorry, it seems that there are no available payment methods for your "
+"location. Please contact us if you require assistance or wish to make "
+"alternate arrangements."
+msgstr ""
+
+#: woocommerce/checkout/form-pay.php:99
+msgid "Pay for order"
+msgstr ""
+
+#: woocommerce/checkout/form-shipping.php:33
+msgid "Ship to a different address?"
+msgstr ""
+
+#: woocommerce/checkout/form-shipping.php:80
+#: woocommerce/single-product/tabs/additional-information.php:16
+msgid "Additional Information"
+msgstr ""
+
+#: woocommerce/checkout/payment.php:35
+msgid "Please fill in your details above to see available payment methods."
+msgstr ""
+
+#: woocommerce/checkout/payment.php:37
+msgid ""
+"Sorry, it seems that there are no available payment methods for your state. "
+"Please contact us if you require assistance or wish to make alternate "
+"arrangements."
+msgstr ""
+
+#: woocommerce/checkout/payment.php:47
+msgid ""
+"Since your browser does not support JavaScript, or it is disabled, please "
+"ensure you click the <em>Update Totals</em> button before placing your "
+"order. You may be charged more than the amount stated above if you fail to "
+"do so."
+msgstr ""
+
+#: woocommerce/checkout/payment.php:47
+msgid "Update totals"
+msgstr ""
+
+#: woocommerce/checkout/payment.php:54
+msgid "Place order"
+msgstr ""
+
+#: woocommerce/checkout/payment.php:62
+#, php-format
+msgid ""
+"I&rsquo;ve read and accept the <a href=\"%s\" target=\"_blank\">terms &amp; "
+"conditions</a>"
+msgstr ""
+
+#: woocommerce/checkout/review-order.php:121
+#, php-format
+msgid "Quantity: %s"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:18
+msgid ""
+"Unfortunately your order cannot be processed as the originating "
+"bank/merchant has declined your transaction."
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:22
+msgid "Please attempt your purchase again or go to your account page."
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:24
+msgid "Please attempt your purchase again."
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:28 woocommerce/myaccount/my-orders.php:76
+msgid "Pay"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:30
+msgid "My Account"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:36 woocommerce/checkout/thankyou.php:69
+msgid "Thank you. Your order has been received."
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:40
+msgid "Order:"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:44
+msgid "Date:"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:48
+msgid "Total:"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:53
+msgid "Payment Method:"
+msgstr ""
+
+#: woocommerce/content-product_cat.php:73
+msgid "item"
+msgstr ""
+
+#: woocommerce/content-product_cat.php:75
+#: woocommerce/content-product_cat.php:77
+msgid "items"
+msgstr ""
+
+#: woocommerce/global/form-login.php:27
+#: woocommerce/myaccount/form-lost-password.php:31
+msgid "Username or email"
+msgstr ""
+
+#: woocommerce/global/form-login.php:31
+#: woocommerce/myaccount/form-login.php:48
+#: woocommerce/myaccount/form-login.php:104
+msgid "Password"
+msgstr ""
+
+#: woocommerce/global/form-login.php:37 woocommerce/myaccount/form-login.php:57
+msgid "Remember me"
+msgstr ""
+
+#: woocommerce/global/form-login.php:38
+#: woocommerce/myaccount/form-login.php:37
+#: woocommerce/myaccount/form-login.php:67
+msgid "Login"
+msgstr ""
+
+#: woocommerce/global/form-login.php:47 woocommerce/myaccount/form-login.php:60
+msgid "Lost your password?"
+msgstr ""
+
+#: woocommerce/loop/result-count.php:30
+msgid "Showing the single result"
+msgstr ""
+
+#: woocommerce/loop/result-count.php:32
+#, php-format
+msgid "Showing all %d results"
+msgstr ""
+
+#: woocommerce/loop/result-count.php:34
+#, php-format
+msgctxt "%1$d = first, %2$d = last, %3$d = total"
+msgid "Showing %1$d&ndash;%2$d of %3$d results"
+msgstr ""
+
+#: woocommerce/myaccount/form-add-payment-method.php:53
+msgid "Add Payment Method"
+msgstr ""
+
+#: woocommerce/myaccount/form-add-payment-method.php:59
+msgid ""
+"Sorry, it seems that there are no payment methods which support adding a new "
+"payment method. Please contact us if you require assistance or wish to make "
+"alternate arrangements."
+msgstr ""
+
+#: woocommerce/myaccount/form-change-password.php:20
+#: woocommerce/myaccount/form-lost-password.php:37
+msgid "New password"
+msgstr ""
+
+#: woocommerce/myaccount/form-change-password.php:24
+#: woocommerce/myaccount/form-lost-password.php:41
+msgid "Re-enter new password"
+msgstr ""
+
+#: woocommerce/myaccount/form-edit-address.php:25
+#: woocommerce/myaccount/my-address.php:28
+#: woocommerce/myaccount/my-address.php:34
+#: woocommerce/order/order-details.php:154
+msgid "Billing Address"
+msgstr ""
+
+#: woocommerce/myaccount/form-edit-address.php:71
+msgid "Save Address"
+msgstr ""
+
+#: woocommerce/myaccount/form-login.php:44
+msgid "Username or email address"
+msgstr ""
+
+#: woocommerce/myaccount/form-login.php:81
+#: woocommerce/myaccount/form-login.php:118
+msgid "Register"
+msgstr ""
+
+#: woocommerce/myaccount/form-login.php:90
+msgid "Username"
+msgstr ""
+
+#: woocommerce/myaccount/form-login.php:97
+msgid "Email address"
+msgstr ""
+
+#: woocommerce/myaccount/form-login.php:111
+msgid "Anti-spam"
+msgstr ""
+
+#: woocommerce/myaccount/form-lost-password.php:29
+msgid ""
+"Lost your password? Please enter your username or email address. You will "
+"receive a link to create a new password via email."
+msgstr ""
+
+#: woocommerce/myaccount/form-lost-password.php:34
+msgid "Enter a new password below."
+msgstr ""
+
+#: woocommerce/myaccount/form-lost-password.php:51
+msgid "Reset Password"
+msgstr ""
+
+#: woocommerce/myaccount/my-address.php:26
+msgid "My Addresses"
+msgstr ""
+
+#: woocommerce/myaccount/my-address.php:32
+msgid "My Address"
+msgstr ""
+
+#: woocommerce/myaccount/my-address.php:45
+msgid "The following addresses will be used on the checkout page by default."
+msgstr ""
+
+#: woocommerce/myaccount/my-address.php:55
+msgid "Edit"
+msgstr ""
+
+#: woocommerce/myaccount/my-address.php:74
+msgid "You have not set up this type of address yet."
+msgstr ""
+
+#: woocommerce/myaccount/my-orders.php:34
+msgid "Recent Orders"
+msgstr ""
+
+#: woocommerce/myaccount/my-orders.php:40
+msgid "Order"
+msgstr ""
+
+#: woocommerce/myaccount/my-orders.php:41
+#: woocommerce/myaccount/my-orders.php:60
+msgid "Date"
+msgstr ""
+
+#: woocommerce/myaccount/my-orders.php:55
+msgid "Order Number"
+msgstr ""
+
+#: woocommerce/myaccount/my-orders.php:57
+msgctxt "hash before order number"
+msgid "#"
+msgstr ""
+
+#: woocommerce/myaccount/my-orders.php:67
+#, php-format
+msgid "%s for %s item"
+msgid_plural "%s for %s items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: woocommerce/myaccount/my-orders.php:89
+msgid "View"
+msgstr ""
+
+#: woocommerce/order/order-details.php:28
+msgid "Order Details"
+msgstr ""
+
+#: woocommerce/order/order-details.php:79
+#, php-format
+msgid "Download file%s"
+msgstr ""
+
+#: woocommerce/order/order-details.php:133
+msgid "Customer details"
+msgstr ""
+
+#: woocommerce/order/order-details.php:138
+msgid "Telephone:"
+msgstr ""
+
+#: woocommerce/order/order-details.php:158
+#: woocommerce/order/order-details.php:173
+#: woocommerce/single-product/meta.php:26
+msgid "N/A"
+msgstr ""
+
+#: woocommerce/product-searchform.php:26
+msgid "Search for:"
+msgstr ""
+
+#: woocommerce/product-searchform.php:27
+msgctxt "placeholder"
+msgid "Search Products&hellip;"
+msgstr ""
+
+#: woocommerce/product-searchform.php:27
+msgctxt "label"
+msgid "Search for:"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:24
+#, php-format
+msgid "%s review for %s"
+msgid_plural "%s reviews for %s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: woocommerce/single-product-reviews.php:26
+msgid "Reviews"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:47
+msgid "There are no reviews yet."
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:60
+msgid "Add a review"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:60
+msgid "Be the first to review"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:61
+#, php-format
+msgid "Leave a Reply to %s"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:69
+msgid "Submit Review"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:74
+msgid "Your Rating"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:75
+msgid "Rate&hellip;"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:76
+msgid "Perfect"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:77
+msgid "Good"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:78
+msgid "Average"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:79
+msgid "Not that bad"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:80
+msgid "Very Poor"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:93
+msgid ""
+"Only logged in customers who have purchased this product may leave a review."
+msgstr ""
+
+#: woocommerce/single-product/add-to-cart/variable.php:31
+msgid "This product is currently out of stock and unavailable."
+msgstr ""
+
+#: woocommerce/single-product/add-to-cart/variable.php:42
+msgid "Clear selection"
+msgstr ""
+
+#: woocommerce/single-product/meta.php:26
+msgid "SKU:"
+msgstr ""
+
+#: woocommerce/single-product/meta.php:30
+msgid "Category:"
+msgid_plural "Categories:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: woocommerce/single-product/meta.php:32
+msgid "Tag:"
+msgid_plural "Tags:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: woocommerce/single-product/rating.php:28
+#, php-format
+msgid "Rated %s out of 5"
+msgstr ""
+
+#: woocommerce/single-product/rating.php:30
+#, php-format
+msgid "out of %s5%s"
+msgstr ""
+
+#: woocommerce/single-product/rating.php:31
+#, php-format
+msgid "based on %s customer rating"
+msgid_plural "based on %s customer ratings"
+msgstr[0] ""
+msgstr[1] ""
+
+#: woocommerce/single-product/rating.php:35
+#, php-format
+msgid "%s customer review"
+msgid_plural "%s customer reviews"
+msgstr[0] ""
+msgstr[1] ""
+
+#: woocommerce/single-product/related.php:42
+msgid "Related Products"
+msgstr ""
+
+#: woocommerce/single-product/review.php:43
+msgid "verified owner"
+msgstr ""
+
+#: woocommerce/single-product/review.php:50
+#, php-format
+msgid "Rated %d out of 5"
+msgstr ""
+
+#: woocommerce/single-product/review.php:51
+msgid "out of 5"
+msgstr ""
+
+#: woocommerce/single-product/review.php:58
+msgid "Your comment is awaiting approval"
+msgstr ""
+
+#. Theme Name of the plugin/theme
+msgid "Scalia"
+msgstr ""
+
+#. Theme URI of the plugin/theme
+#. Author URI of the plugin/theme
+msgid "http://codex-themes.com/scalia/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Multi-Purpose Wordpress Theme"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Codex Themes."
+msgstr ""

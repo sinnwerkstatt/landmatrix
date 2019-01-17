@@ -77,6 +77,14 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         ('Local branch', _("Local branch of parent company")),
         ('Joint venture', _("Joint venture of parent companies")),
     )
+    ROLE_OPERATING_COMPANY = 'OP'
+    ROLE_PARENT_COMPANY = 'ST'
+    ROLE_TERTIARY_INVESTOR = 'IN'
+    ROLE_CHOICES = (
+        (ROLE_OPERATING_COMPANY, _('Operating company')),
+        (ROLE_PARENT_COMPANY, _('Parent company')),
+        (ROLE_TERTIARY_INVESTOR, _('Tertiary investor/lendor')),
+    )
 
     investor_identifier = models.IntegerField(
         _("Investor ID"), db_index=True, default=INVESTOR_IDENTIFIER_DEFAULT)
@@ -254,6 +262,43 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     def get_deal_count(self):
         return self.involvements.filter(fk_activity__fk_status__in=(2, 3)).count()
 
+    def get_roles(self):
+        roles = []
+        # Operating company?
+        if self.involvements.filter(fk_activity__fk_status__in=(2, 3)).count() > 0:
+            roles.append(InvestorBase.ROLE_OPERATING_COMPANY)
+        # Parent company?
+        if self.investors.filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE).count() > 0:
+            roles.append(InvestorBase.ROLE_PARENT_COMPANY)
+        # Tertiary investor/lender?
+        if self.investors.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE).count() > 0:
+            roles.append(InvestorBase.ROLE_TERTIARY_INVESTOR)
+        return roles
+
+    def get_latest(self, user=None):
+        """
+        Returns latest historical activity
+        """
+        queryset = self.get_history(user)
+        return queryset.latest()
+
+    def is_editable(self, user=None):
+        if self.get_latest(user) != self:
+            # Only superuser are allowed to edit old versions
+            if user and user.is_superuser:
+                return True
+            return False
+        if user:
+            # Status: Pending
+            is_editor = user.has_perm('landmatrix.review_activity')
+            is_author = self.history_user_id == user.id
+            # Only Editors and Administrators are allowed to edit pending deals
+            if not is_editor:
+                if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE) \
+                        or (self.fk_status_id == self.STATUS_REJECTED and not is_author):
+                    return False
+        return True
+
 
 class Investor(InvestorBase):
     subinvestors = models.ManyToManyField(
@@ -407,12 +452,19 @@ class InvestorVentureQuerySet(models.QuerySet):
     def active(self):
         return self.filter(fk_status__name__in=self.ACTIVE_STATUS_NAMES)
 
+    # deprecated
     def stakeholders(self):
+        return self.parent_companies()
+
+    # deprecated
+    def investors(self):
+        return self.tertiary_investors()
+
+    def parent_companies(self):
         return self.filter(role=InvestorVentureInvolvement.STAKEHOLDER_ROLE)
 
-    def investors(self):
+    def tertiary_investors(self):
         return self.filter(role=InvestorVentureInvolvement.INVESTOR_ROLE)
-
 
 class InvestorVentureInvolvementBase(models.Model):
     '''

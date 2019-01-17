@@ -124,17 +124,23 @@ def get_spatial_properties():
     return keys
 
 
-def has_perm_approve_reject(user, activity=None):
+def has_perm_approve_reject(user, object=None):
+    """
+    Check if user has permission to approve/reject given activity (or investor)
+    :param user:
+    :param object: activity (or investor)
+    :return:
+    """
     # Superuser or Admin?
     if user.is_superuser or user.has_perm('landmatrix.change_activity'):
         return True
     # Editor
-    elif user.has_perm('landmatrix.review_activity') and activity:
+    elif user.has_perm('landmatrix.review_activity') and object:
         # for editors:
         # only activites that have been added/changed by public users
         # and not been reviewed by another editor yet
-        if not activity.history_user or not activity.history_user.has_perm('landmatrix.review_activity'):
-            for changeset in activity.changesets.exclude(fk_user=user):
+        if not object.history_user or not object.history_user.has_perm('landmatrix.review_activity'):
+            for changeset in object.changesets.exclude(fk_user=user):
                 if changeset.fk_user and changeset.fk_user.has_perm('landmatrix.review_activity'):
                     return False
         return True

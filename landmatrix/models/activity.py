@@ -298,7 +298,7 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
 
     def get_latest(self, user=None):
         """
-        Returns latest historical activity
+        Returns latest historical investor
         """
         queryset = self.get_history(user)
         return queryset.latest()
@@ -315,8 +315,8 @@ class ActivityBase(DefaultStringRepresentation, models.Model):
             is_author = self.history_user_id == user.id
             # Only Editors and Administrators are allowed to edit pending deals
             if not is_editor:
-                if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE)\
-                    or (self.fk_status_id == self.STATUS_REJECTED and not is_author):
+                if self.fk_status_id in (self.STATUS_PENDING, self.STATUS_TO_DELETE) \
+                        or (self.fk_status_id == self.STATUS_REJECTED and not is_author):
                     return False
         return True
 

@@ -11,7 +11,10 @@ function initInvestorForm(form) {
     form.find('.remove-form').click(function () {
         form.find('.formset-remove-form').trigger('click');
     });
-    initInvestorField(form.find(".investorfield"));
+    initInvestorField(form.find(".investorfield"), function () {
+        generateButtons($(this));
+        loadInvestorNetwork($(this).val());
+    });
 }
 
 function generateButtons(field) {

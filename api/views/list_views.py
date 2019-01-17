@@ -23,7 +23,7 @@ from grid.forms.choices import INTENTION_AGRICULTURE_MAP, INTENTION_FORESTRY_MAP
 from map.views import MapSettingsMixin
 from api.filters import Filter, PresetFilter, remove_all_dict_keys_from_mixed_dict, \
     get_list_element_by_key
-from grid.views.filter_widget_mixin import FilterWidgetMixin
+from grid.views.filter import FilterWidgetMixin
 
 User = get_user_model()
 

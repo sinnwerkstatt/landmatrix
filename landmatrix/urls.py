@@ -24,15 +24,12 @@ from wagtail.wagtailcore import urls as wagtail_urls
 from feeds.views import ActivityChangesFeed
 from registration.backends.hmac.views import RegistrationView
 
-from grid.views.change_deal_view import ChangeDealView
-from grid.views.deal_comparison_view import DealComparisonView
-from grid.views.deal_detail_view import DealDetailView
-from grid.views.filter_widget_ajax_view import FilterWidgetAjaxView
-from grid.views.investor import InvestorCreateView, InvestorUpdateView, InvestorDetailView
-from grid.views.investor_comparison_view import InvestorComparisonView
-from grid.views.delete_deal_view import DeleteDealView, RecoverDealView
-from grid.views.export_view import ExportView
-from grid.views.add_deal_view import AddDealView
+from grid.views.deal import *
+from grid.views.deal_comparison import *
+from grid.views.filter import FilterWidgetAjaxView
+from grid.views.investor import *
+from grid.views.investor_comparison import *
+from grid.views.export import ExportView
 from api import urls as api_urls
 from grid import urls as grid_urls
 from map import urls as map_urls
@@ -80,80 +77,20 @@ urlpatterns = [
     # url(r'^country/(?P<country_slug>)/map/', include(map_urls)),
     # url(r'^country/(?P<country_slug>)/charts/', include(charts_urls)),
 
-    url(
-        r'^deal/(?P<deal_id>\d+)/$',
-        DealDetailView.as_view(),
-        name='deal_detail'
-    ),
-    url(
-        r'^deal/(?P<deal_id>\d+)/(?P<history_id>\d+)/$',
-        DealDetailView.as_view(),
-        name='deal_detail'
-    ),
-    url(
-        r'^deal/(?P<deal_id>\d+)\.pdf$',
-        DealDetailView.as_view(),
-        {'format': 'PDF'},
-        name='deal_detail_pdf'
-    ),
-    url(
-        r'^deal/(?P<deal_id>\d+)/(?P<history_id>\d+)\.pdf$',
-        DealDetailView.as_view(),
-        {'format': 'PDF'},
-        name='deal_detail_pdf'
-    ),
-    url(
-        r'^deal/(?P<deal_id>\d+)/changes\.rss$',
-        ActivityChangesFeed(),
-        name='deal_changes_feed'
-    ),
-    url(
-        r'^deal/(?P<deal_id>\d+)\.(?P<format>(csv|xml|xls))/$',
-        ExportView.as_view(),
-        name='export'
-    ),
+    url(r'^deal/(?P<deal_id>\d+)/$', DealDetailView.as_view(), name='deal_detail'),
+    url(r'^deal/(?P<deal_id>\d+)/(?P<history_id>\d+)/$', DealDetailView.as_view(), name='deal_detail'),
+    url(r'^deal/(?P<deal_id>\d+)\.pdf$', DealDetailView.as_view(), {'format': 'PDF'}, name='deal_detail_pdf'),
+    url(r'^deal/(?P<deal_id>\d+)/(?P<history_id>\d+)\.pdf$', DealDetailView.as_view(), {'format': 'PDF'}, name='deal_detail_pdf'),
+    url(r'^deal/(?P<deal_id>\d+)/changes\.rss$', ActivityChangesFeed(), name='deal_changes_feed'),
+    url(r'^deal/(?P<deal_id>\d+)\.(?P<format>(csv|xml|xls))/$', ExportView.as_view(), name='export'),
+    url(r'^deal/edit/(?P<deal_id>\d+)/$', ChangeDealView.as_view(), name='change_deal'),
+    url(r'^deal/edit/(?P<deal_id>\d+)/(?P<history_id>\d+)/$', ChangeDealView.as_view(), name='change_deal'),
+    url(r'^deal/add/$', AddDealView.as_view(), name='add_deal'),
+    url(r'^deal/delete/(?P<deal_id>\d+)/$', DeleteDealView.as_view(), name='delete_deal'),
+    url(r'^deal/recover/(?P<deal_id>\d+)/$', RecoverDealView.as_view(), name='recover_deal'),
 
-    url(
-        r'^deal/edit/(?P<deal_id>\d+)/$',
-        ChangeDealView.as_view(),
-        name='change_deal'
-    ),
-
-    url(
-        r'^deal/edit/(?P<deal_id>\d+)/(?P<history_id>\d+)/$',
-        ChangeDealView.as_view(),
-        name='change_deal'
-    ),
-
-    url(
-        r'^deal/add/$',
-        AddDealView.as_view(),
-        name='add_deal'
-    ),
-
-    url(
-        r'^deal/delete/(?P<deal_id>\d+)/$',
-        DeleteDealView.as_view(),
-        name='delete_deal'
-    ),
-
-    url(
-        r'^deal/recover/(?P<deal_id>\d+)/$',
-        RecoverDealView.as_view(),
-        name='recover_deal'
-    ),
-
-    url(
-        r'^compare/(?P<activity_1>\d+)/(?P<activity_2>\d+)/$',
-        DealComparisonView.as_view(),
-        name='compare_deals'
-    ),
-    url(
-        r'^compare/(?P<activity_1>\d+)/$',
-        DealComparisonView.as_view(),
-        name='compare_deals'
-    ),
-
+    url(r'^compare/(?P<activity_1>\d+)/(?P<activity_2>\d+)/$', DealComparisonView.as_view(), name='compare_deals'),
+    url(r'^compare/(?P<activity_1>\d+)/$', DealComparisonView.as_view(), name='compare_deals'),
 
     url(r'^region/(?P<region_slug>[A-Za-z\-]+)/$', RegionView.as_view(), name='region'),
     url(r'^country/(?P<country_slug>[A-Za-z\-]+)/$', CountryView.as_view(), name='country'),
@@ -163,32 +100,15 @@ urlpatterns = [
     url(r'^investor/(?P<investor_id>\d*)/$', InvestorDetailView.as_view(), name='investor_detail'),
     url(r'^investor/(?P<investor_id>\d*)/(?P<history_id>\d+)/$', InvestorDetailView.as_view(), name='investor_detail'),
     url(r'^investor/add/$', InvestorCreateView.as_view(), name='investor_add'),
-    url(
-        r'^investor/edit/(?P<investor_id>\d+)/$',
-        InvestorUpdateView.as_view(),
-        name='investor_update'
-    ),
-    url(
-        r'^investor/edit/(?P<investor_id>\d*)/(?P<history_id>\d+)/$',
-        InvestorUpdateView.as_view(),
-        name='investor_update'
-    ),
-    url(
-        r'^investors/compare/(?P<investor_1_id>\d+)/(?P<investor_2_id>\d+)/$',
-        InvestorComparisonView.as_view(),
-        name='compare_investors'
-    ),
-    url(
-        r'^investors/compare/(?P<investor_1>\d+)/$',
-        InvestorComparisonView.as_view(),
-        name='compare_investors'
-    ),
-
+    url(r'^investor/delete/(?P<investor_id>\d+)/$', DeleteInvestorView.as_view(), name='delete_investor'),
+    url(r'^investor/recover/(?P<investor_id>\d+)/$', RecoverInvestorView.as_view(), name='recover_investor'),
+    url(r'^investor/edit/(?P<investor_id>\d+)/$', InvestorUpdateView.as_view(), name='investor_update'),
+    url(r'^investor/edit/(?P<investor_id>\d*)/(?P<history_id>\d+)/$', InvestorUpdateView.as_view(), name='investor_update'),
+    url(r'^investors/compare/(?P<investor_1_id>\d+)/(?P<investor_2_id>\d+)/$', InvestorComparisonView.as_view(), name='compare_investors'),
+    url(r'^investors/compare/(?P<investor_1>\d+)/$', InvestorComparisonView.as_view(), name='compare_investors'),
     url(r'^editor/', include(editor_urls)),
-    url(r'^ajax/widget/(?P<doc_type>deal|investor)/',
-        FilterWidgetAjaxView.as_view(),
-        name='ajax_widget'),
-    #url(r'^filters$', FilterView.as_view(), name='filterdebug'),
+    url(r'^ajax/widget/(?P<doc_type>deal|investor)/', FilterWidgetAjaxView.as_view(),name='ajax_widget'),
+
     url(r'', include(wagtail_urls)),
 ]
 # Non i18n patterns

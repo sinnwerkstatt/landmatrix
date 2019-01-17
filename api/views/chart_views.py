@@ -357,7 +357,7 @@ class InvestorCountrySummaryView(BaseChartView):
         for raw_result in self.get_results(response):
             result = self.get_result(raw_result)
             country = countries.get(raw_result['key'])
-            url = reverse("table_list", kwargs={
+            url = reverse("deal_list", kwargs={
                 "group": "by-investor-country",
                 "group_value": country.slug
             })

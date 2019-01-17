@@ -1,4 +1,4 @@
-{% extends "global_base.html" %}
+{% extends "grid/global_base.html" %}
 {% load i18n custom_tags filter_tags humanize %}
 
 {% block page_title %}
@@ -47,7 +47,7 @@
 {% endblock %}
 
 {% block content %}
-{% include "grid/subnav.html" %}
+{% include "grid/includes/subnav.html" %}
 {{ introduction|safe }}
 <p></p>
 {% include "filters.html" %}
@@ -74,12 +74,12 @@
         <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
         {% for column, value in item.items %}
           {% if group_value %}
-              {% include "includes/grid-field.html" %}
+              {% include "grid/includes/grid_field.html" %}
           {% elif forloop.first %}
               {% if column == "target_country" %}
                 <td class="{{ column }}">
                   {% if item.target_country %}
-                    <a href="{% url 'table_list' group='by-target-country' %}{{ item.target_country.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                    <a href="{% url 'deal_list' group='by-target-country' %}{{ item.target_country.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
                         {{ item.target_country.display }}
                     </a><br/>
                   {% else %}
@@ -89,7 +89,7 @@
               {% elif column == "target_region" %}
                 <td class="{{ column }}">
                   {% if item.target_region %}
-                    <a href="{% url 'table_list' group='by-target-region' %}{{ item.target_region.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                    <a href="{% url 'deal_list' group='by-target-region' %}{{ item.target_region.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
                         {{ item.target_region.display }}
                     </a><br/>
                   {% else %}
@@ -99,7 +99,7 @@
               {% elif column == "investor_id" %}
                 <td class="{{ column }}">
                     {% with item.investor_id as id %}
-                    <a href="{% url 'table_list' group='by-investor-name' %}{{ id.value }}/?{% add_or_update_param request.GET 'order_by' '' %}"
+                    <a href="{% url 'deal_list' group='by-investor-name' %}{{ id.value }}/?{% add_or_update_param request.GET 'order_by' '' %}"
                        class="label label-default">
                         {{ id.value }}
                     </a>
@@ -108,7 +108,7 @@
               {% elif "investor_country" == column %}
                 <td class="{{ column }} investor-country">
                   {% if item.investor_country %}
-                    <a href="{% url 'table_list' group='by-investor-country' %}{{ item.investor_country.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                    <a href="{% url 'deal_list' group='by-investor-country' %}{{ item.investor_country.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
                         {{ item.investor_country.display }}</a><br/>
                   {% else %}
                       {% trans "Unknown" %}
@@ -117,7 +117,7 @@
               {% elif "investor_region" == column %}
                 <td class="{{ column }} investor-region">
                   {% if item.investor_region %}
-                    <a href="{% url 'table_list' group='by-investor-region' %}{{ item.investor_region.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                    <a href="{% url 'deal_list' group='by-investor-region' %}{{ item.investor_region.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
                         {{ item.investor_region.display }}</a><br/>
                   {% else %}
                       {% trans "Unknown" %}
@@ -126,7 +126,7 @@
               {% elif column == "type" %}
                 <td class="{{ column }}">
                   {% if item.type %}
-                    <a href="{% url 'table_list' group='by-data-source-type' %}{{ item.type.value|urlize }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                    <a href="{% url 'deal_list' group='by-data-source-type' %}{{ item.type.value|urlize }}/?{% add_or_update_param request.GET 'order_by' '' %}">
                         {{ item.type.display }}
                     </a>
                   {% else %}
@@ -136,7 +136,7 @@
               {% elif column == "intention" %}
                   <td class="{{ column }}">
                     {% if item.intention %}
-                        <a href="{% url 'table_list' group='by-intention' %}{{ item.intention.value|urlize }}/?{% add_or_update_param request.GET 'order_by' '' %}"
+                        <a href="{% url 'deal_list' group='by-intention' %}{{ item.intention.value|urlize }}/?{% add_or_update_param request.GET 'order_by' '' %}"
                            {% if not item.intention.is_parent %} style="padding-left: 20px;"{% endif %}>
                             <span>{{ item.intention.display }}</span></a>
                     {% else %}
@@ -146,16 +146,18 @@
               {% elif column == "crops" %}
                   <td class="{{ column }}" style="width:341px">
                   {% if item.crops %}
-                    <a href="{% url 'table_list' group='by-crop' %}{{ item.crops.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
+                    <a href="{% url 'deal_list' group='by-crop' %}{{ item.crops.display|slugify }}/?{% add_or_update_param request.GET 'order_by' '' %}">
                         {{ item.crops.display }}
                     </a>
                   {% else %}
                       {% trans "Unknown" %}
                   {% endif %}
                   </td>
+              {% else %}
+                  {% include "grid/includes/grid_field.html" %}
               {% endif %}
           {% else %}
-              {% include "includes/grid-field.html" %}
+              {% include "grid/includes/grid_field.html" %}
           {% endif %}
         {% endfor %}
     {% endfor %}

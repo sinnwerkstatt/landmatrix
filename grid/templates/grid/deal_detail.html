@@ -1,0 +1,183 @@
+{% extends "grid/global_base.html" %}
+{% load i18n custom_tags static humanize comments threadedcomments_tags %}
+
+{% block page_title %}{% trans "Deal" %} #{{ activity.activity_identifier }}{% endblock %}
+{% block title %}{% trans "Deal" %} #{{ activity.activity_identifier }}{% endblock %}
+
+{% block head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher-custom.css" %}"/>
+{% endblock %}
+
+
+{% block breadcrumb_inner %}
+    <li><a href="{% url 'data' %}">{% trans 'Data' %}</a></li>
+    <li>{% trans "Deal" %} #{{ activity.activity_identifier }}</li>
+{% endblock %}
+
+{% block subnav_inner %}
+    {% if activity|is_editable:user %}
+        <li role="presentation">
+            {% if activity|get_latest:request.user == activity %}
+            <a href="{% url "change_deal" deal_id=activity.activity_identifier %}" target="_blank"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
+            {% else %}
+            <a class="text-danger" href="{% url "change_deal" deal_id=activity.activity_identifier history_id=activity.id %}" target="_blank"><i class="fa fa-warning"></i> {% trans "Edit old version" %}</a>
+            {% endif %}
+        </li>
+    {% endif %}
+    <li role="presentation"><a href="#history">
+        <i class="fa fa-history"></i> {% trans "History" %}
+    </a></li>
+    <li role="presentation"><a href="#comments">
+        <i class="fa fa-comments"></i> {% trans "Comments" %}
+    </a></li>
+    <li class="divider"></li>
+    <li role="presentation">
+        <a href="{% url "deal_changes_feed" activity.activity_identifier %}" target="_blank"><i class="fa fa-rss"></i> {% trans "RSS Feed" %}</a>
+    </li>
+    <li role="presentation">
+        {% include "export.html" %}
+    </li>
+{% endblock %}
+
+{% block messages %}
+{{ block.super }}
+{% if activity.fk_status_id == 1 or activity.fk_status_id == 6 %}
+<p class="alert alert-danger">{% trans "This deal version is pending." %}</p>
+{% elif activity.fk_status_id == 4 %}
+<p class="alert alert-danger">{% trans "This deal has been deleted. It is not visible for public users." %}</p>
+{% elif activity.fk_status_id == 5 %}
+<p class="alert alert-danger">{% trans "This deal version has been rejected. It is not visible for public users." %}</p>
+{% endif %}
+{% if activity|get_latest:request.user != activity %}
+    <p class="alert alert-danger">{% trans "There's a newer version of this deal." %} <a href="{% url "deal_detail" deal_id=activity.activity_identifier %}">{% trans "Click here to show the latest version." %}</a></p>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+    {% if activity %}
+        <input type="hidden" id="deal-stakeholder" value="{{ activity.operational_stakeholder.id }}">
+        <div class="panel-group" id="accordion">
+            {% if forms %}
+                {% for form in forms %}
+                    {% if form.forms or form|fields_display:user %}
+                        <div class="panel panel-default">
+
+                            <div class="panel-heading">
+
+                                <a id="{{ form.form_title|slugify }}" data-toggle="collapse" data-parent="#accordion"
+                                   href="#collapse_{{ forloop.counter }}" id="{{ form.form_title|slugify }}">
+                                    <h5 class="panel-title">
+                                        {{ form.form_title }}
+                                    <span id="collapsebtn_{{ forloop.counter }}"
+                                          class="lm-chevron-circle-down pull-right mgrey1"></span>
+                                    </h5>
+                                </a>
+                            </div>
+
+                            <div id="collapse_{{ forloop.counter }}"
+                                 class="panel-collapse collapse{% if forloop.first %} in {% endif %}">
+                                <div class="panel-body">
+                                    {% if form.forms %}
+                                        {% for subform in form.forms %}
+                                            {% include "grid/includes/dealpanels_display.html" with form=subform form_count=forloop.counter user=user %}
+                                        {% endfor %}
+                                    {% else %}
+                                        {% include "grid/includes/dealpanels_display.html" with form=form user=user %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            {% include "grid/includes/deal_history.html" %}
+
+            {% if not history_id and public_activity %}
+                {% get_comment_count for public_activity as comment_count %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a id="comments" data-toggle="collapse" data-parent="#accordion" href="#collapse_comments">
+                            <h5 class="panel-title">
+                                {% trans "Comments" %} <small>({{ comment_count }} {% trans "comments" %})</small>
+                                    <span id="collapsebtn_history"
+                                          class="lm-chevron-circle-down pull-right mgrey1"></span>
+                            </h5>
+                        </a>
+                    </div>
+                    <div id="collapse_comments" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="col-sm-12">
+                                {% if comment_count > 0 %}
+                                    {% render_comment_list for public_activity %}
+                                {% else %}
+                                    <p class="alert alert-info">{% trans "There are no comments to this deal yet." %}</p>
+                                {% endif %}
+                            </div>
+                            {% if not is_pdf_export %}
+                            <form method="post" action="{% comment_form_target %}">
+                                <div class="col-sm-12">
+                                    <h3>{% trans "Add a comment" %}</h3>
+                                </div>
+                                {% get_comment_form for public_activity as comment_form %}
+                                {% csrf_token %}
+                                {# TODO: move next into the form logic #}
+                                <input type="hidden" name="next" value="{% url 'deal_detail' activity.activity_identifier %}">
+                                {% include "grid/form.html" with form=comment_form %}
+                                <p>
+                                    <input type="checkbox" required name="terms">
+                                    {% blocktrans %}I've read and agree to the <a href="/data-policy" target="_blank">Data Policy</a>.{% endblocktrans %}
+                                    <br><br>
+                                </p>
+                                <input type="submit" class="btn btn-primary" value="{% trans "Add comment" %}">
+                                <a href="#c0" id="cancel-reply" style="display:none">{% trans "Cancel reply" %}</a>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+
+    {% else %}
+        <p>
+            {% trans "There are currently no deals matching your search criteria." %}
+            <a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.
+        </p>
+    {% endif %}
+
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static "js/ol3-layerswitcher-custom.js" %}"></script>
+    <script src="{% static "js/mapwidget.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var mapWidgets = {};
+        $(document).ready(function () {
+            // Init maps
+            $('.map-serialized-data').each(function(index) {
+                var id = $(this).attr('id');
+                var options = $(this).data('map-widget-options');
+                options['id'] = id;
+                options['mapId'] = id + '-map';
+                // remove bound options
+                var id_options = ['boundLatField', 'boundLonField', 'boundLocationField',
+                    'boundTargetCountryField', 'boundLevelOfAccuracyField', 'boundMapField'];
+                for (var i in id_options) {
+                    if (id_options.hasOwnProperty(i)) {
+                        i = id_options[i];
+                        if (i in options) {
+                            delete options[i];
+                        }
+                    }
+                }
+                mapWidgets[id] = new MapWidget(options);
+            });
+        });
+    </script>
+{% endblock %}

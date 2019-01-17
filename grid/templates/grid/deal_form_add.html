@@ -1,0 +1,54 @@
+{% extends "grid/global_base.html" %}
+{% load static i18n custom_tags humanize %}
+
+{% block head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{% static "css/ol3-layerswitcher-custom.css" %}"/>
+{#     <script src="{% static "js/editor/livesearch.js" %}" type="text/javascript" charset="utf-8"></script> #}
+    <script src="{% static "js/editor/add_change.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static "js/editor/stakeholder.js" %}" type="text/javascript" charset="utf-8"></script>
+    {# TODO: these need to be in head because of how dealpanels inits the widgets, but we should be able to move them #}
+    <script src="{% static "js/locationwidget.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static "js/mapwidget.js" %}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+{% block page_title %}{% trans "Add a deal" %}{% endblock %}
+{% block title %}{% trans "Add a deal" %}{% endblock %}
+
+{% block breadcrumb %}
+    <ul class="breadcrumb">
+        <li><a href="{% url 'editor' %}">{% trans "Editor" %}</a></li>
+        <li><a href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a></li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<form action="." method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="panel-group" id="accordion">
+    {% include "grid/includes/dealpanels.html" %}
+        </div>
+    <p>
+        <input type="checkbox" required name="terms">
+        {% blocktrans %}I've read and agree to the <a href="/data-policy" target="_blank">Data Policy</a>.{% endblocktrans %}
+        <br><br>
+    </p>
+    <button type="submit" name="submit_btn" class="btn btn-primary">
+        {% trans 'Submit' %}
+    </button>
+    {% if user|can_approve_reject %}
+    <button type="submit" name="approve_btn" class="btn btn-primary btn-success">
+        <i class="fa fa-thumbs-up"></i> {% trans 'Approve' %}
+    </button>
+    <button type="submit" name="reject_btn" class="btn btn-primary btn-danger">
+        <i class="fa fa-thumbs-down"></i> {% trans 'Reject' %}
+    </button>
+    {% endif %}
+</form>
+
+{% endblock %}
+
+{% block global_js %}
+    <script type="text/javascript" src="{% static "js/ol3-layerswitcher-custom.js" %}"></script>
+    <script>unlockMaps()</script>
+{% endblock %}

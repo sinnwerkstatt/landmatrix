@@ -68,7 +68,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 1000
 
 
-class  InvestorListView(ElasticSearchMixin,
+class InvestorListView(ElasticSearchMixin,
                        ListAPIView):
     """
     Get all Operating companies, Parent companies and Tertiary investors/lenders.

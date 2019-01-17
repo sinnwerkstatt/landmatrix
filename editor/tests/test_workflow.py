@@ -8,11 +8,8 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from django.http import Http404
 from django.conf import settings
 
-from grid.views.add_deal_view import AddDealView
-from grid.views.change_deal_view import ChangeDealView
-from grid.views.delete_deal_view import DeleteDealView, RecoverDealView
-from grid.views.deal_detail_view import DealDetailView
-from grid.views.export_view import ExportView
+from grid.views.deal import ChangeDealView, DealDetailView, DeleteDealView, RecoverDealView, AddDealView
+from grid.views.export import ExportView
 from editor.views import ManageAddsView, ManageUpdatesView, ManageDeletesView, ManageMyDealsView, \
     ApproveActivityChangeView, ApproveActivityDeleteView, LogAddedView, LogModifiedView, LogDeletedView
 from landmatrix.models import HistoricalActivity

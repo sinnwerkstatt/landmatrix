@@ -12,7 +12,7 @@ class GridConfig(AppConfig):
         self.VARIABLES = self.get_variables()
 
     def get_variables(self):
-        from grid.views.save_deal_view import SaveDealView
+        from grid.views.deal import SaveDealView
         from grid.fields import TitleField
         variables = OrderedDict()
 

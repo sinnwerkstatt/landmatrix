@@ -1,18 +1,19 @@
-from collections import OrderedDict
+from datetime import datetime
 
+from django.db import transaction
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.utils.html import escape
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, DetailView
 
 from api.filters import Filter
-from grid.views.browse_filter_conditions import get_investor_field_label
-from grid.views.table_group_view import TableGroupView
-from grid.views.filter_widget_mixin import get_investor_variable_table
+from grid.views.base import TableGroupView
+from grid.views.filter import get_investor_variable_table
 from grid.forms.investor_form import ParentInvestorForm, ParentStakeholderForm, OperationalCompanyForm
 from grid.forms.parent_investor_formset import ParentCompanyFormSet, ParentInvestorFormSet
 from landmatrix.models.investor import InvestorBase, HistoricalInvestor, HistoricalInvestorVentureInvolvement
@@ -141,7 +142,8 @@ class InvestorFormsMixin:
 
 
 class InvestorUpdateView(InvestorFormsMixin, UpdateView):
-    template_name = 'investor.html'
+
+    template_name = 'grid/investor_form.html'
     context_object_name = 'investor'
     model = HistoricalInvestor
 
@@ -198,9 +200,10 @@ class InvestorUpdateView(InvestorFormsMixin, UpdateView):
 
 
 class InvestorCreateView(InvestorFormsMixin, CreateView):
+
     model = HistoricalInvestor
     form_class = ParentInvestorForm
-    template_name = 'stakeholder.html'
+    template_name = 'investor_form.html'
     context_object_name = 'investor'
 
     @method_decorator(login_required)
@@ -252,39 +255,76 @@ class InvestorCreateView(InvestorFormsMixin, CreateView):
         return response
 
 
-class InvestorDetailView(InvestorUpdateView):
-    pass
+class InvestorDetailView(DetailView):
+
+    model = HistoricalInvestor
+    template_name = "grid/investor_detail.html"
+    context_object_name = "investor"
+
+    def get_object(self):
+        # TODO: Cache result for user
+        investor_id = self.kwargs.get('investor_id')
+        history_id = self.kwargs.get('history_id')
+        queryset = HistoricalInvestor.objects
+        try:
+            if history_id:
+                investor = queryset.get(id=history_id)
+            else:
+                investor = queryset.filter(investor_identifier=investor_id).latest()
+        except ObjectDoesNotExist as e:
+            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
+        # Reporters are allow to change only investors they've created
+        user = self.request.user
+        if user.groups.filter(name='Reporters').count() > 0:
+            if investor.history_user != user:
+                raise Http404('You are not allowed to edit investor %s' % investor_id)
+        return investor
 
 
 class InvestorListView(TableGroupView):
 
     template_name = "grid/investors.html"
     doc_type = "investor"
-    QUERY_LIMITED_GROUPS = ["all",]
+    QUERY_LIMITED_GROUPS = ["all", ]
     DEFAULT_GROUP = "by-role"
     COLUMN_GROUPS = {
-        "by_role": ["role", ],
-        "by_classification": ["classification_display", ],
-        "by_fk_country": ["fk_country_display", ],
+        "role": ["roles", ],
+        "classification": ["classification_display", ],
+        "fk_country": ["fk_country_display", ],
         "all": ["investor_identifier", "name", "fk_country_display", "classification_display", "top_investors",
                 "deal_count"]
     }
     GROUP_COLUMNS_LIST = COLUMN_GROUPS["all"]
     GROUP_NAMES = {
+        "fk_country": _("Country of registration/origin"),
     }
     COLUMN_LABELS_MAP = {
         'investor_identifier': _('ID'),
         'investor_count': _('Investors'),
         'deal_count': _('Deals'),
         'top_investors': _('Top investors'),
+        'roles': _('Role'),
+        'fk_country': _('Country of registration/origin')
     }
     variable_table = get_investor_variable_table()
+    ID_FIELD = 'investor_identifier'
+    DEFAULT_ORDER_BY = ID_FIELD
+    GROUP_COLUMNS = ('investor_count', )
+    ORDER_MAP = {
+        'investor_count': '_count',
+    }
 
     def dispatch(self, request, *args, **kwargs):
-        kwargs["group"] = "all"
+        if not kwargs.get('group'):
+            kwargs["group"] = "all"
         return super(InvestorListView, self).dispatch(request, *args, **kwargs)
 
     def add_status_logic(self, query):
+        """
+        Add status filter logic based upon user
+        :param query:
+        :return:
+        """
         # collect a proper and authorized-for-that-user status list from the requet paramert
         request_status_list = self.request.GET.getlist('status', []) if self.request else []
         if request_status_list and (self.request.user.is_superuser or
@@ -300,49 +340,133 @@ class InvestorListView(TableGroupView):
         return query
 
     def add_public_logic(self, query):
+        """
+        Set public filter logic to none
+        :param query:
+        :return:
+        """
         return query
 
-    def get_columns(self, default=False):
-        columns = []
-        if not default and self.request.GET.get('columns'):
-            columns = self.request.GET.getlist('columns')
-            if 'investor_identifier' not in columns:
-                columns = ['investor_identifier'] + columns
-        elif self.group_value:
-            columns = self.GROUP_COLUMNS_LIST
-        else:
-            try:
-                columns = self.COLUMN_GROUPS[self.group]
-                if self.group != 'all':
-                    columns += ('deal_count', )
-            except KeyError:
-                raise Http404(
-                    _("Unknown group '%(group)s'.") % {'group': self.group})
-        return columns
-
-    def get_columns_dict(self, default=False):
-        """Get column information for template"""
-        # Labels for all custom fields (fields that are not part of any form)
-        columns = OrderedDict()
-        order_by = self.get_order_by_field()[0]
-        for i, name in enumerate(self.get_columns(default=default)):
-            label = None
-            column = name.replace('_display', '')
-            if column in self.COLUMN_LABELS_MAP.keys():
-                label = self.COLUMN_LABELS_MAP[column]
-            else:
-                label = get_investor_field_label(column)
-            columns[column] = {
-                'label': label,
-                'name': column,
-            }
-            if self.group != 'all' and not self.group_value:
-                order_by_columns = ('deal_count', 'deal_size', 'availability')
-                if i == 0 or column in order_by_columns:
-                    columns[column]['order_by'] = '-'+column if column == order_by else column
-            else:
-                columns[column]['order_by'] = '-'+column if column == order_by else column
-        return columns
-
     def get_investor_filter(self, investors):
+        """
+        Get investor filter
+        :param investors:
+        :return:
+        """
         return Filter(variable='_id', operator='in', value=investors)
+
+    def get_group_item(self, result):
+        """
+        Add aggregate columns to group items
+        :param result:
+        :return:
+        """
+        item = super().get_group_item(result)
+        item['investor_count'] = [result['doc_count'], ]
+        return item
+
+    def clean_roles(self, value, result):
+        if value:
+            value['display'] = dict(InvestorBase.ROLE_CHOICES).get(value['value'])
+            return value
+        else:
+            return value
+
+
+class DeleteInvestorView(InvestorUpdateView):
+    
+    success_message = _('The investor #{} has been marked for deletion. It will be reviewed and deleted soon.')
+    success_message_admin = _('The investor #{} has been deleted successfully.')
+
+    def get_object(self):
+        # TODO: Cache result for user
+        investor_id = self.kwargs.get('investor_id')
+        history_id = self.kwargs.get('history_id', None)
+        queryset = HistoricalInvestor.objects
+        if not self.request.user.has_perm('landmatrix.review_activity'):
+            queryset = queryset.public()
+        try:
+            if history_id:
+                investor = queryset.get(id=history_id)
+            else:
+                investor = queryset.filter(investor_identifier=investor_id).latest()
+        except ObjectDoesNotExist as e:
+            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
+        if not self.request.user.has_perm('landmatrix.change_activity'):
+            if investor.fk_status_id == investor.STATUS_DELETED:
+                raise Http404('Investor %s has already been deleted' % investor_id)
+        return investor
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        hinvestor = self.get_object()
+        # Create new historical activity
+        hinvestor.pk = None
+        if self.request.user.has_perm('landmatrix.delete_activity'):
+            hinvestor.fk_status_id = hinvestor.STATUS_DELETED
+        else:
+            hinvestor.fk_status_id = hinvestor.STATUS_TO_DELETE
+        hinvestor.history_user = self.request.user
+        hinvestor.history_date = datetime.now()
+        hinvestor.public_version = None
+        hinvestor.save()
+
+        if self.request.user.has_perm('landmatrix.delete_activity'):
+            hinvestor.update_public_investor()
+
+        # Create success message
+        if self.request.user.has_perm('landmatrix.delete_activity'):
+            messages.success(self.request, self.success_message_admin.format(hinvestor.investor_identifier))
+        else:
+            self.create_investor_changeset(hinvestor)
+            messages.success(self.request, self.success_message.format(hinvestor.investor_identifier))
+
+        return HttpResponseRedirect(reverse('investor_detail', kwargs={'investor_id': hinvestor.investor_identifier}))
+
+
+class RecoverInvestorView(InvestorUpdateView):
+
+    success_message = None
+    success_message_admin = _('The investor #{} has been recovered successfully.')
+
+    def get_object(self):
+        # TODO: Cache result for user
+        investor_id = self.kwargs.get('deal_id')
+        history_id = self.kwargs.get('history_id', None)
+        queryset = HistoricalInvestor.objects
+        if not self.request.user.has_perm('landmatrix.review_activity'):
+            queryset = queryset.public()
+        try:
+            if history_id:
+                investor = queryset.get(id=history_id)
+            else:
+                investor = queryset.filter(investor_identifier=investor_id).latest()
+        except ObjectDoesNotExist as e:
+            raise Http404('Investor %s does not exist (%s)' % (deal_id, str(e)))
+        if not self.request.user.has_perm('landmatrix.change_activity'):
+            if investor.fk_status_id != investor.STATUS_DELETED:
+                raise Http404('Investor %s is already active' % deal_id)
+        return investor
+
+    def get(self, request, *args, **kwargs):
+        hinvestor = self.get_object()
+        return HttpResponseRedirect(reverse('investor_detail', kwargs={'investor_id': hinvestor.investor_identifier}))
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        hinvestor = self.get_object()
+        if not self.request.user.has_perm('landmatrix.change_activity'):
+            return HttpResponseRedirect(reverse('investor_detail', kwargs={'investor_id': hinvestor.investor_identifier}))
+        attributes = hinvestor.attributes.all()
+        # Create new historical activity
+        hinvestor.pk = None
+        hinvestor.fk_status_id = hinvestor.STATUS_OVERWRITTEN
+        hinvestor.history_user = self.request.user
+        hinvestor.history_date = datetime.now()
+        hinvestor.save()
+        hinvestor.update_public_investor()
+
+        # Create success message
+        messages.success(self.request, self.success_message_admin.format(hinvestor.investor_identifier))
+
+        return HttpResponseRedirect(reverse('investor_detail', kwargs={'investor_id': hinvestor.investor_identifier}))

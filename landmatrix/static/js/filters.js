@@ -161,7 +161,7 @@ function get_filter_options(operatorfield, variablefield, key_id) {
 
         // Init investor widget
         variablefield.find('.investorfield').each(function () {
-            initInvestorField($(this), false);
+            initInvestorField($(this));
         });
         // Init country widget
         variablefield.find('.countryfield').each(function () {
@@ -299,4 +299,14 @@ $(document).ready(function () {
     };
     $("#select-default-columns").click(selectDefaultColumns);
 
+
+    $('.search .investorfield').each(function () {
+        initInvestorField($(this), function () {
+            var investorId = $(this).val(),
+                investorIdentifier = $(this).select2('data')[0].investor_identifier;
+            if (investorId && investorIdentifier) {
+                location.href = '/investor/' + investorIdentifier + '/' + investorId + '/';
+            }
+        });
+    });
 });

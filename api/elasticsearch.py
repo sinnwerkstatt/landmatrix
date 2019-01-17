@@ -15,7 +15,7 @@ from django.forms import MultiValueField, ModelChoiceField, ChoiceField, Boolean
 from django.core.paginator import Paginator
 from django.utils.translation import ugettext_lazy as _
 
-from grid.views.change_deal_view import ChangeDealView
+from grid.views.deal import ChangeDealView
 from landmatrix.models.activity import HistoricalActivity, Activity
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
@@ -156,6 +156,7 @@ def get_elasticsearch_properties(doc_type=None):
                 'id': {'type': 'keyword'},
                 'history_date': {'type': 'date'},
                 'deal_count': {'type': 'integer'},
+                'roles': {'type': 'keyword'},
             }
         }
         # Doc types: deal, location, contract and data_source
@@ -724,6 +725,7 @@ class ElasticSearch(object):
             doc.update({
                 'top_investors': investor.format_investors(top_investors),
                 'deal_count': investor.get_deal_count(),
+                'roles': investor.get_roles(),
             })
 
             # Append involvements for quicker queries
