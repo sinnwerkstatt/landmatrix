@@ -226,7 +226,7 @@ $(document).ready(function () {
     });
 
 
-    $("#filterrow form").submit(function (e) {
+    $("#filterrow form,form#search").submit(function (e) {
         e.preventDefault();
         var data = $(this).serialize(),
             value = $(this).find('[name=value]');
@@ -299,14 +299,4 @@ $(document).ready(function () {
     };
     $("#select-default-columns").click(selectDefaultColumns);
 
-
-    $('.search .investorfield').each(function () {
-        initInvestorField($(this), function () {
-            var investorId = $(this).val(),
-                investorIdentifier = $(this).select2('data')[0].investor_identifier;
-            if (investorId && investorIdentifier) {
-                location.href = '/investor/' + investorIdentifier + '/' + investorId + '/';
-            }
-        });
-    });
 });

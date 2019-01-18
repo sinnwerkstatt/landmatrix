@@ -1,7 +1,20 @@
-<div class="row">
-    <div class="col-sm-6">
-        <form action="./" method="POST" class="search controls">
-            <select name="q" class="form-control investorfield"></select>
-        </form>
+{% load i18n %}<form action="./" method="POST" id="search" class="form controls">
+    <div class="row">
+        <div class="col-sm-6">
+            {% csrf_token %}
+            <input type="hidden" name="variable" value="name">
+            <input type="hidden" name="operator" value="contains">
+            <div class="input-group">
+                <input type="text"
+                       name="value"
+                       class="valuefield form-control"
+                       placeholder="{% trans "Search for investor name" %}"
+                       style="width:100%">
+                <span class="input-group-btn">
+                    <button id="filter_submit" type="submit" class="btn btn-primary" name="add"
+                            value="add"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </div>
     </div>
-</div>
+</form>

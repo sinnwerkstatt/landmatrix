@@ -374,7 +374,7 @@ class TableGroupView(FilterWidgetMixin,
             if column in self.COLUMN_LABELS_MAP.keys():
                 label = self.COLUMN_LABELS_MAP[column]
             else:
-                label = get_activity_field_label(column)
+                label = self.get_field_label(column)
             columns[column] = {
                 'label': label,
                 'name': column,
@@ -387,6 +387,9 @@ class TableGroupView(FilterWidgetMixin,
                 columns[column]['order_by'] = '-'+column if column == order_by else column
 
         return columns
+
+    def get_field_label(self, column):
+        return get_activity_field_label(column)
 
     @property
     def columns_dict(self):

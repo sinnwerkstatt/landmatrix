@@ -2,13 +2,13 @@
 {% load i18n custom_tags filter_tags wagtailcore_tags humanize static %}
 
 {% block page_title %}
-    {% if group == "all" %}{% trans "All deals" %}
+    {% if group == "all" %}{% trans "All investors" %}
     {% elif filters.group_value %}{{ group_value|deslugify }}
     {% else %}{% trans "By" %} {{ group|deslugify }}
     {% endif %}
 {% endblock %}
 {% block title %}
-    {% if group == "all" %}{% trans "All deals" %}
+    {% if group == "all" %}{% trans "All investors" %}
     {% elif filters.group_value %}{{ group_value|deslugify }}
     {% else %}{% trans "By" %} {{ group|deslugify }}
     {% endif %}
@@ -123,7 +123,7 @@
     {% endif %}
 {% else %}
     <p>{% trans "There are currently no investors matching your search criteria." %} <a
-            href="{% url 'add_deal' %}">{% trans "Add a deal" %}</a>.</p>
+            href="{% url 'add_investor' %}">{% trans "Add an investor" %}</a>.</p>
 {% endif %}
 {% endblock %}
 

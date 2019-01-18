@@ -12,10 +12,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView, UpdateView, DetailView
 
 from api.filters import Filter
-from grid.views.base import TableGroupView
-from grid.views.filter import get_investor_variable_table
 from grid.forms.investor_form import ParentInvestorForm, ParentStakeholderForm, OperationalCompanyForm
 from grid.forms.parent_investor_formset import ParentCompanyFormSet, ParentInvestorFormSet
+from grid.views.base import TableGroupView
+from grid.views.filter import get_investor_variable_table
+from grid.views.browse_filter_conditions import get_investor_field_label
 from landmatrix.models.investor import InvestorBase, HistoricalInvestor, HistoricalInvestorVentureInvolvement
 
 
@@ -304,7 +305,6 @@ class InvestorListView(TableGroupView):
         'deal_count': _('Deals'),
         'top_investors': _('Top investors'),
         'roles': _('Role'),
-        'fk_country': _('Country of registration/origin')
     }
     variable_table = get_investor_variable_table()
     ID_FIELD = 'investor_identifier'
@@ -371,6 +371,9 @@ class InvestorListView(TableGroupView):
             return value
         else:
             return value
+
+    def get_field_label(self, column):
+        return get_investor_field_label(column)
 
 
 class DeleteInvestorView(InvestorUpdateView):
