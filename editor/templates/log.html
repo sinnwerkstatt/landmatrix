@@ -50,20 +50,31 @@
                         <col width="30%">
                     </colgroup>
                     <thead>
-                        <th class="deal">{% trans "Deal #" %}</th>
+                        <th class="deal">{% trans "ID" %}</th>
                         <th class="user">{% trans "User" %}</th>
                         <th class="comment">{% trans "Comment" %}</th>
                         <th class="comment">{% trans "Time" %}</th>
                     </thead>
                     <tbody>
-                    {% for activity in activities %}
+                    {% for item in items %}
                         <tr>
-                            <td class="deal"><a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
+                            {% if item.type == 'activity' %}
+                            <td class="deal">
+                                <a href="{% url 'deal_detail' deal_id=item.id %}" class="label label-deal">
+                                    {{ item.id }}
+                                </a>
                             </td>
-                            <td class="user">{{ activity.user }}</td>
-                            <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                            {% if activity.timestamp %}
-                                <td class="date">{{ activity.timestamp|naturaltime_from_string }}</td>
+                            {% else %}
+                            <td class="investor">
+                                <a href="{% url 'investor_detail' investor_id=item.id %}" class="label label-investor">
+                                    {{ item.id }}
+                                </a>
+                            </td>
+                            {% endif %}
+                            <td class="user">{{ item.user }}</td>
+                            <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
+                            {% if item.timestamp %}
+                                <td class="date">{{ item.timestamp|naturaltime_from_string }}</td>
                             {% else %}
                                 <td class="date">-</td>
                             {% endif %}
