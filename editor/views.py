@@ -9,21 +9,19 @@ from django.views.generic import (
 )
 from django.db.models import Q
 
-from landmatrix.models import Activity, HistoricalActivity, ActivityFeedback, Country
+from landmatrix.models import Activity, HistoricalActivity, ActivityFeedback, Country, HistoricalInvestor
 from editor.models import UserRegionalInfo
 from editor.forms import ApproveRejectChangeForm
-from editor.utils import activity_to_template, feedback_to_template
+from editor.utils import activity_or_investor_to_template, feedback_to_template
 
 
-class FilteredQuerysetMixin:
+class FilteredQuerySetMixin:
 
-    def get_filtered_activity_queryset(self, queryset=None):
-        '''
-        Support for country and region filters.
-        '''
-        if queryset is None:
-            queryset = HistoricalActivity.objects.all()
-
+    def _get_countries(self):
+        """
+        Get allowed countries for logged in user
+        :return:
+        """
         try:
             user_regional_info = UserRegionalInfo.objects.get(
                 user=self.request.user)
@@ -58,32 +56,66 @@ class FilteredQuerysetMixin:
                 country_ids.extend(
                     [str(country_id.id) for country_id in Country.objects.filter(fk_region=region_id)]
                 )
+        return country_ids
 
-        if country_ids:
+    def get_filtered_activity_queryset(self, queryset=None):
+        """
+        Filter historical activities by country/region of logged in user
+        :param queryset:
+        :return:
+        """
+        if queryset is None:
+            queryset = HistoricalActivity.objects.all()
+
+        countries = self._get_countries()
+        if countries:
             queryset = queryset.filter(
                 attributes__name='target_country',
-                attributes__value__in=country_ids
+                attributes__value__in=countries
+            )
+
+        return queryset
+
+    def get_filtered_investor_queryset(self, queryset=None):
+        """
+        Filter historical investors by country/region of logged in user (using target country of assigned deals)
+        :param queryset:
+        :return:
+        """
+        if queryset is None:
+            queryset = HistoricalInvestor.objects.all()
+
+        countries = self._get_countries()
+        if countries:
+            queryset = queryset.filter(
+                involvements__fk_activity__attributes__name='target_country',
+                involvements__fk_activity__attributes__value__in=countries
             )
 
         return queryset
 
 
-class LatestActivitiesMixin(FilteredQuerysetMixin):
+class LatestQuerySetMixin(FilteredQuerySetMixin):
 
-    def get_latest_added_queryset(self):
-        added = self.get_filtered_activity_queryset().active()
-        return added.filter(id__in=added.latest_only())
+    def _get_activities_and_investors_list(self, filter, limit):
+        activities = getattr(self.get_filtered_activity_queryset(), filter)()
+        result = list(activities.filter(id__in=activities.latest_only())[:limit])
+        investors = getattr(self.get_filtered_investor_queryset(), filter)()
+        result += list(investors.filter(id__in=investors.latest_only())[:limit])
+        result.sort(key=lambda p: p.history_date, reverse=True)
+        return result[:limit]
 
-    def get_latest_modified_queryset(self):
-        modified = self.get_filtered_activity_queryset().overwritten()
-        return modified.filter(id__in=modified.latest_only())
+    def get_latest_added_queryset(self, limit=None):
+        return self._get_activities_and_investors_list('active', limit=limit)
 
-    def get_latest_deleted_queryset(self):
-        deleted = self.get_filtered_activity_queryset().deleted()
-        return deleted.filter(id__in=deleted.latest_only())
+    def get_latest_modified_queryset(self, limit=None):
+        return self._get_activities_and_investors_list('overwritten', limit=limit)
+
+    def get_latest_deleted_queryset(self, limit=None):
+        return self._get_activities_and_investors_list('deleted', limit=limit)
 
 
-class PendingChangesMixin(FilteredQuerysetMixin):
+class PendingChangesMixin(FilteredQuerySetMixin):
 
     def get_permitted_activities(self, queryset=None):
         if queryset is None:
@@ -108,45 +140,89 @@ class PendingChangesMixin(FilteredQuerysetMixin):
 
         return queryset
 
-    def get_pending_adds_queryset(self):
-        inserts = self.get_filtered_activity_queryset(
-            queryset=self.get_permitted_activities())
-        inserts = inserts.without_multiple_revisions()
-        inserts = inserts.pending_only()
-        return inserts.distinct()
+    def get_permitted_investors(self, queryset=None):
+        if queryset is None:
+            queryset = HistoricalInvestor.objects.all()
 
-    def get_pending_updates_queryset(self):
-        updates = self.get_filtered_activity_queryset(
-            queryset=self.get_permitted_activities())
-        updates = updates.with_multiple_revisions()
-        updates = updates.pending_only()
-        return updates.distinct()
+        # for public users:
+        if not self.request.user.has_perm('landmatrix.review_activity'):
+            queryset = queryset.none()
+        # for editors:
+        # show only activites that have been added/changed by public users
+        # and not been reviewed by another editor yet
+        elif not self.request.user.has_perm('landmatrix.change_activity'):
+            queryset = queryset.filter(history_user__groups__name='Reporters')
+            #queryset = queryset.exclude(changesets__fk_user__groups__name='Editors')
+        # for admins:
+        # show activities that have been added/changed or reviewed by editors or reporters
+        # FIXME: Is filtering necessary here at all?
+        else:
+            #queryset = queryset.filter(Q(history_user__groups__name__in=('Reporters', 'Editors')) |
+            #    Q(changesets__fk_user__groups__name__in=('Reporters', 'Editors')))
+            pass # No filter required for admins
 
-    def get_pending_deletes_queryset(self):
-        deletes = self.get_filtered_activity_queryset(
-            queryset=self.get_permitted_activities())
-        deletes = deletes.to_delete()
-        return deletes.filter(id__in=deletes.latest_only())
+        return queryset
 
-    def get_feedback_queryset(self):
-        feedback = ActivityFeedback.objects.filter(fk_user_assigned=self.request.user)
-        return feedback
+    def get_pending_adds_queryset(self, limit=None):
+        activities = self.get_filtered_activity_queryset(queryset=self.get_permitted_activities())
+        activities = activities.without_multiple_revisions()
+        activities = activities.pending_only()
+        items = list(activities.distinct()[:limit])
+        investors = self.get_filtered_investor_queryset(queryset=self.get_permitted_investors())
+        investors = investors.without_multiple_revisions()
+        investors = investors.pending_only()
+        items += list(investors.distinct()[:limit])
+        items.sort(key=lambda i: i.history_date, reverse=True)
+        return items[:limit]
 
-    def get_pending_investor_deletes_queryset(self):
-        raise NotImplementedError  # TODO: implement
+    def get_pending_updates_queryset(self, limit=None):
+        activities = self.get_filtered_activity_queryset(queryset=self.get_permitted_activities())
+        activities = activities.with_multiple_revisions()
+        activities = activities.pending_only()
+        items = list(activities.distinct()[:limit])
+        investors = self.get_filtered_investor_queryset(queryset=self.get_permitted_investors())
+        investors = investors.with_multiple_revisions()
+        investors = investors.pending_only()
+        items += list(investors.distinct()[:limit])
+        items.sort(key=lambda i: i.history_date, reverse=True)
+        return items[:limit]
 
-    def get_rejected_queryset(self):
-        rejected = self.get_filtered_activity_queryset()
-        rejected = rejected.rejected()
-        rejected = rejected.filter(changesets__fk_user=self.request.user)
-        return rejected.filter(id__in=rejected.latest_only())
+    def get_pending_deletes_queryset(self, limit=None):
+        activities = self.get_filtered_activity_queryset(queryset=self.get_permitted_activities())
+        activities = activities.to_delete()
+        items = list(activities.filter(id__in=activities.latest_only())[:limit])
+        investors = self.get_filtered_investor_queryset(queryset=self.get_permitted_investors())
+        investors = investors.to_delete()
+        items += list(investors.filter(id__in=investors.latest_only())[:limit])
+        items.sort(key=lambda i: i.history_date, reverse=True)
+        return items[:limit]
 
-    def get_my_deals_queryset(self):
-        my_deals = HistoricalActivity.objects.get_my_deals(self.request.user.id)
-        return my_deals
+    def get_feedback_queryset(self, limit=None):
+        return ActivityFeedback.objects.filter(fk_user_assigned=self.request.user)
+
+    def get_rejected_queryset(self, limit=None):
+        activities = self.get_filtered_activity_queryset()
+        activities = activities.rejected()
+        activities = activities.filter(changesets__fk_user=self.request.user)
+        items = list(activities.filter(id__in=activities.latest_only())[:limit])
+        investors = self.get_filtered_investor_queryset()
+        investors = investors.rejected()
+        #investors = investors.filter(changesets__fk_user=self.request.user)
+        items += list(investors.filter(id__in=investors.latest_only())[:limit])
+        items.sort(key=lambda i: i.history_date, reverse=True)
+        return items[:limit]
+
+    def get_for_user_queryset(self, limit=None):
+        items = list(HistoricalActivity.objects.get_for_user(self.request.user.id)[:limit])
+        items += list(HistoricalInvestor.objects.get_for_user(self.request.user.id)[:limit])
+        items.sort(key=lambda i: i.history_date, reverse=True)
+        return items[:limit]
 
 
-class DashboardView(LatestActivitiesMixin, PendingChangesMixin, TemplateView):
+class DashboardView(LatestQuerySetMixin,
+                    PendingChangesMixin,
+                    TemplateView):
+
     template_name = 'dashboard.html'
     paginate_by = 10
 
@@ -157,23 +233,23 @@ class DashboardView(LatestActivitiesMixin, PendingChangesMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        deal_count = Activity.objects.overall_activity_count()
-        public_count = Activity.objects.public_activity_count()
-        private_count = deal_count - public_count
+        #deal_count = Activity.objects.overall_activity_count()
+        #public_count = Activity.objects.public_activity_count()
+        #private_count = deal_count - public_count
 
-        latest_added = self.get_latest_added_queryset()
-        latest_modified = self.get_latest_modified_queryset()
-        latest_deleted = self.get_latest_deleted_queryset()
+        latest_added = self.get_latest_added_queryset(limit=self.paginate_by)
+        latest_modified = self.get_latest_modified_queryset(limit=self.paginate_by)
+        latest_deleted = self.get_latest_deleted_queryset(limit=self.paginate_by)
 
         # Merge and reorder pendings
         pendings = []
-        for activity in self.get_pending_adds_queryset():
-            pendings.append({'action': 'add', 'activity': activity_to_template(activity)})
-        for activity in self.get_pending_updates_queryset():
-            pendings.append({'action': 'update', 'activity': activity_to_template(activity)})
-        for activity in self.get_pending_deletes_queryset():
-            pendings.append({'action': 'delete', 'activity': activity_to_template(activity)})
-        pendings.sort(key=lambda p: p['activity']['timestamp'], reverse=True)
+        for act_or_inv in self.get_pending_adds_queryset():
+            pendings.append({'action': 'add', 'act_inv': activity_or_investor_to_template(act_or_inv)})
+        for act_or_inv in self.get_pending_updates_queryset():
+            pendings.append({'action': 'update', 'act_inv': activity_or_investor_to_template(act_or_inv)})
+        for act_or_inv in self.get_pending_deletes_queryset():
+            pendings.append({'action': 'delete', 'act_inv': activity_or_investor_to_template(act_or_inv)})
+        pendings.sort(key=lambda p: p['act_inv']['timestamp'], reverse=True)
         feedback = self.get_feedback_queryset()
 
         context.update({
@@ -183,12 +259,9 @@ class DashboardView(LatestActivitiesMixin, PendingChangesMixin, TemplateView):
             #    'not_public_deal_count': private_count,
             #},
             'view': 'dashboard',
-            'latest_added': map(
-                activity_to_template, latest_added[:self.paginate_by]),
-            'latest_modified': map(
-                activity_to_template, latest_modified[:self.paginate_by]),
-            'latest_deleted': map(
-                activity_to_template, latest_deleted[:self.paginate_by]),
+            'latest_added': map(activity_or_investor_to_template, latest_added),
+            'latest_modified': map(activity_or_investor_to_template, latest_modified),
+            'latest_deleted': map(activity_or_investor_to_template, latest_deleted),
             'manage': pendings[:self.paginate_by],
             'feedbacks': {
                 'feeds': map(feedback_to_template, feedback[:self.paginate_by])
@@ -202,10 +275,12 @@ class DashboardView(LatestActivitiesMixin, PendingChangesMixin, TemplateView):
         return context
 
 
-class BaseLogView(LatestActivitiesMixin, ListView):
+class BaseLogView(LatestQuerySetMixin,
+                  ListView):
+
     template_name = 'log.html'
     paginate_by = 50
-    context_object_name = 'activities'
+    context_object_name = 'items'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -213,11 +288,11 @@ class BaseLogView(LatestActivitiesMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        mapped_activities = map(activity_to_template, context['activities'])
+        mapped_activities = map(activity_or_investor_to_template, context['items'])
         context.update({
             'view': 'log',
             'action': self.action,
-            'activities': mapped_activities,
+            'items': mapped_activities,
         })
 
         return context
@@ -256,7 +331,7 @@ class ManageRootView(RedirectView):
         if self.request.user.has_perm('landmatrix.review_activity'):
             url = reverse('manage_feedback')
         else:
-            url = reverse('manage_my_deals')
+            url = reverse('manage_for_user')
 
         return url
 
@@ -264,31 +339,30 @@ class ManageRootView(RedirectView):
 class BaseManageView(PendingChangesMixin, ListView):
     template_name = 'manage.html'
     paginate_by = 10
-    context_object_name = 'activities'
+    context_object_name = 'items'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
     def process_objects_for_template(self, object_list):
-        return map(activity_to_template, object_list)
+        return map(activity_or_investor_to_template, object_list)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        mapped_objects = self.process_objects_for_template(
-            context['activities'])
+        mapped_objects = self.process_objects_for_template(context['items'])
 
         context.update({
             'view': 'manage',
             'action': self.action,
-            'activities': mapped_objects,
-            'pending_adds_count': self.get_pending_adds_queryset().count(),
-            'pending_updates_count': self.get_pending_updates_queryset().count(),
-            'pending_deletes_count': self.get_pending_deletes_queryset().count(),
-            'feedback_count': self.get_feedback_queryset().count(),
-            'rejected_count': self.get_rejected_queryset().count(),
-            'my_deals_count': self.get_my_deals_queryset().count(),
+            'items': mapped_objects,
+            'pending_adds_count': len(self.get_pending_adds_queryset()),
+            'pending_updates_count': len(self.get_pending_updates_queryset()),
+            'pending_deletes_count': len(self.get_pending_deletes_queryset()),
+            'feedback_count': len(self.get_feedback_queryset()),
+            'rejected_count': len(self.get_rejected_queryset()),
+            'for_user_count': len(self.get_for_user_queryset()),
             # TODO: investor deletes
             # 'investor_deletes_count': 0,
         })
@@ -350,22 +424,11 @@ class ManageDeletesView(BaseManageView):
         return self.get_pending_deletes_queryset()
 
 
-class ManageInvestorDeletesView(BaseManageView):
-    action = 'investor_deletes'
-
-    @method_decorator(permission_required('landmatrix.review_activity'))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+class ManageForUserView(BaseManageView):
+    action = 'for_user'
 
     def get_queryset(self):
-        return self.get_pending_investor_deletes_queryset()
-
-
-class ManageMyDealsView(BaseManageView):
-    action = 'my_deals'
-
-    def get_queryset(self):
-        return self.get_my_deals_queryset()
+        return self.get_for_user_queryset()
 
 
 class BaseManageDealView(FormView, DetailView):
@@ -373,7 +436,7 @@ class BaseManageDealView(FormView, DetailView):
     form_class = ApproveRejectChangeForm
     model = HistoricalActivity
     pk_url_kwarg = 'id'
-    context_object_name = 'activity'
+    context_object_name = 'item'
 
     @method_decorator(permission_required('landmatrix.review_activity'))
     def dispatch(self, *args, **kwargs):
@@ -461,4 +524,69 @@ class RejectActivityDeleteView(BaseManageDealView):
             _("Deal deletion has been successfully rejected."))
 
 
-# TODO: investor approve/reject
+class BaseManageInvestorView(BaseManageDealView):
+    model = HistoricalInvestor
+
+
+class ApproveInvestorChangeView(BaseManageInvestorView):
+    queryset = HistoricalInvestor.objects.pending_only()
+    action = 'approve'
+
+    def form_valid(self, form):
+        activity = self.get_object()
+        activity.approve_change(
+            user=self.request.user,
+            comment=form.cleaned_data['tg_action_comment'])
+
+        return self.redirect_with_message(
+            _("Investor has been successfully approved."))
+
+
+class RejectInvestorChangeView(BaseManageInvestorView):
+    queryset = HistoricalInvestor.objects.pending_only()
+    action = 'reject'
+
+    def form_valid(self, form):
+        activity = self.get_object()
+        activity.reject_change(
+            user=self.request.user,
+            comment=form.cleaned_data['tg_action_comment'])
+
+        return self.redirect_with_message(
+            _("Investor has been successfully rejected."))
+
+
+class ApproveInvestorDeleteView(BaseManageInvestorView):
+    queryset = HistoricalInvestor.objects.to_delete()
+    action = 'approve'
+
+    #@method_decorator(permission_required('landmatrix.delete_investor'))
+    #def dispatch(self, *args, **kwargs):
+    #    return super().dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        activity = self.get_object()
+        activity.approve_delete(
+            user=self.request.user,
+            comment=form.cleaned_data['tg_action_comment'])
+
+        return self.redirect_with_message(
+            _("Investor deletion has been successfully approved."))
+
+
+class RejectInvestorDeleteView(BaseManageInvestorView):
+    queryset = HistoricalInvestor.objects.to_delete()
+    action = 'reject'
+
+    #@method_decorator(permission_required('landmatrix.delete_investor'))
+    #def dispatch(self, *args, **kwargs):
+    #    return super().dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        activity = self.get_object()
+        activity.reject_delete(
+            user=self.request.user,
+            comment=form.cleaned_data['tg_action_comment'])
+
+        return self.redirect_with_message(
+            _("Investor deletion has been successfully rejected."))

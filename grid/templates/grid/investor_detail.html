@@ -510,9 +510,9 @@
                         <ul class="list-unstyled">
                         {% for involvement in investor.involvements.for_current_activities %}
                             <li>
-                                <a class="label label-default"
+                                <a class="label label-deal"
                                    href="{% url "deal_detail" deal_id=involvement.fk_activity.activity_identifier history_id=involvement.fk_activity.id %}"
-                                   target="_blank">#{{ involvement.fk_activity.activity_identifier }}</a>
+                                   target="_blank">{{ involvement.fk_activity.activity_identifier }}</a>
                             </li>
                         {% endfor %}
                         </ul>

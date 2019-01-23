@@ -12,14 +12,69 @@ from landmatrix.models.default_string_representation import \
 
 class InvestorQuerySet(models.QuerySet):
 
-    def public(self):
-        return self.filter(fk_status_id__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN))
+    def public(self, user=None):
+        '''
+        Status public, not to be confused with is_public.
+        '''
+        if user and user.is_authenticated():
+            return self.filter(models.Q(fk_status_id__in=InvestorBase.PUBLIC_STATUSES) |
+                               models.Q(history_user=user))
+        else:
+            return self.filter(fk_status_id__in=InvestorBase.PUBLIC_STATUSES)
 
-    def public_or_deleted(self):
-        return self.filter(fk_status_id__in=(InvestorBase.STATUS_ACTIVE, InvestorBase.STATUS_OVERWRITTEN, InvestorBase.STATUS_DELETED))
+    def public_or_deleted(self, user=None):
+        statuses = InvestorBase.PUBLIC_STATUSES + (
+            InvestorBase.STATUS_DELETED,
+        )
+        if user and user.is_authenticated():
+            return self.filter(models.Q(fk_status_id__in=statuses) |
+                        models.Q(history_user=user))
+        else:
+            return self.filter(fk_status_id__in=statuses)
+
+    def public_or_pending(self):
+        statuses = InvestorBase.PUBLIC_STATUSES + (
+            InvestorBase.STATUS_PENDING,
+        )
+        return self.filter(fk_status_id__in=statuses)
+
+    def public_deleted_or_pending(self):
+        statuses = InvestorBase.PUBLIC_STATUSES + (
+            InvestorBase.STATUS_DELETED,
+            InvestorBase.STATUS_PENDING,
+        )
+        return self.filter(fk_status_id__in=statuses)
 
     def pending(self):
-        return self.filter(fk_status_id__in=(InvestorBase.STATUS_PENDING, InvestorBase.STATUS_TO_DELETE))
+        statuses = (InvestorBase.STATUS_PENDING, InvestorBase.STATUS_TO_DELETE)
+        return self.filter(fk_status_id__in=statuses)
+
+    def pending_only(self):
+        return self.filter(fk_status_id=InvestorBase.STATUS_PENDING)
+
+    def active(self):
+        return self.filter(fk_status_id=InvestorBase.STATUS_ACTIVE)
+
+    def overwritten(self):
+        return self.filter(fk_status_id=InvestorBase.STATUS_OVERWRITTEN)
+
+    def to_delete(self):
+        return self.filter(fk_status_id=InvestorBase.STATUS_TO_DELETE)
+
+    def deleted(self):
+        return self.filter(fk_status_id=InvestorBase.STATUS_DELETED)
+
+    def rejected(self):
+        return self.filter(fk_status_id=InvestorBase.STATUS_REJECTED)
+
+    def investor_identifier_count(self):
+        return self.order_by('-id').values('investor_identifier').distinct().count()
+
+    def overall_investor_count(self):
+        return self.public().investor_identifier_count()
+
+    def public_investor_count(self):
+        return self.public().filter(is_public=False).investor_identifier_count()
 
     def existing_operational_stakeholders(self):
         # TODO: not sure we should be filtering on this instead of
@@ -312,6 +367,44 @@ class Investor(InvestorBase):
 
 
 class HistoricalInvestorQuerySet(InvestorQuerySet):
+
+    def get_for_user(self, user):
+        qs = self.filter(history_user=user).values_list('investor_identifier', flat=True)
+        return self.filter(investor_identifier__in=qs).filter(id__in=self.latest_only())
+
+    def _single_revision_identifiers(self):
+        """
+        Get all investor identifiers (as values) that only have a single
+        revision.
+
+        This query looks a bit strange, but the order of operations is required
+        in order to construct the group by correctly.
+        """
+        queryset = HistoricalInvestor.objects.values('investor_identifier') # don't use 'self' here
+        queryset = queryset.annotate(
+            revisions_count=models.Count('investor_identifier'),
+        )
+        queryset = queryset.order_by('investor_identifier')
+        queryset = queryset.exclude(revisions_count__gt=1)
+        queryset = queryset.values_list('investor_identifier', flat=True)
+
+        return queryset
+
+    def with_multiple_revisions(self):
+        """
+        Get only new investors (without any other historical instances).
+        """
+        subquery = self._single_revision_identifiers()
+        queryset = self.exclude(investor_identifier__in=subquery)
+        return queryset.filter(id__in=self.latest_only())
+
+    def without_multiple_revisions(self):
+        """
+        Get only new investors (without any other historical instances).
+        """
+        subquery = self._single_revision_identifiers()
+        queryset = self.filter(investor_identifier__in=subquery)
+        return queryset.filter(id__in=self.latest_only())
 
     def latest_only(self):
         queryset = HistoricalInvestor.objects.values('investor_identifier').annotate(

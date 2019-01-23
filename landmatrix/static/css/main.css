@@ -1454,6 +1454,12 @@ table th.number,
 table td.number {
   text-align: right; }
 
+.label-deal {
+  background-color: #ed881b; }
+
+.label-investor {
+  background-color: #44b7b6; }
+
 /* ==========================================================================
  *    GRAPHS
  * ========================================================================== */

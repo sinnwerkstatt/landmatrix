@@ -10,7 +10,7 @@ from django.conf import settings
 
 from grid.views.deal import ChangeDealView, DealDetailView, DeleteDealView, RecoverDealView, AddDealView
 from grid.views.export import ExportView
-from editor.views import ManageAddsView, ManageUpdatesView, ManageDeletesView, ManageMyDealsView, \
+from editor.views import ManageAddsView, ManageUpdatesView, ManageDeletesView, ManageForUserView, \
     ApproveActivityChangeView, ApproveActivityDeleteView, LogAddedView, LogModifiedView, LogDeletedView
 from landmatrix.models import HistoricalActivity
 from api.elasticsearch import es_search
@@ -137,17 +137,18 @@ class TestAddDeal(BaseTestDeal):
         activity = HistoricalActivity.objects.pending().latest()
 
         # Check if deal appears in my deals section of reporter
-        request = self.factory.get(reverse('manage_my_deals'))
+        request = self.factory.get(reverse('manage_for_user'))
         # Mock messages framework (not available for unit tests)
         setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
-        response = ManageMyDealsView.as_view()(request)
-        self.assertEqual(response.status_code, 200, msg='Manage My Deals of Reporter does not work')
+        response = ManageForUserView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Manage My Deals/Investors of Reporter does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals of Reporter')
-        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage My Deals of Reporter')
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals/Investors of Reporter')
+        self.assertEqual(activities[0]['id'], activity.id,
+                         msg='Deal does not appear in Manage My Deals/Investors of Reporter')
 
         # Check if deal NOT appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_adds'))
@@ -157,7 +158,7 @@ class TestAddDeal(BaseTestDeal):
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
         response = ManageAddsView.as_view()(request)
-        self.assertEqual(response.status_code, 200, msg='Manage Pending Deals of Administrator does not work')
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Deals/Investors of Administrator does not work')
         activities = list(response.context_data['activities'])
         self.assertEqual(len(activities), 0, msg='Manage Pending Deals of Administrator should be empty')
 
@@ -172,8 +173,10 @@ class TestAddDeal(BaseTestDeal):
         self.assertEqual(response.status_code, 200, msg='Manage Pending Additions of Editor does not work')
         activities = list(response.context_data['activities'])
         self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage Pending Deals of Editor')
-        self.assertEqual(activities[0]['user'], self.users['reporter'].username, msg='Deal has wrong user in Manage Pending Deals of Editor')
+        self.assertEqual(activities[0]['id'], activity.id,
+                         msg='Deal does not appear in Manage Pending Deals/Investors of Editor')
+        self.assertEqual(activities[0]['user'], self.users['reporter'].username,
+                         msg='Deal has wrong user in Manage Pending Deals/Investors of Editor')
 
         # Approve deal as editor
         data = {
@@ -347,17 +350,18 @@ class TestChangeDeal(BaseTestDeal):
         activity = HistoricalActivity.objects.pending().latest()
 
         # Check if deal appears in my deals section of reporter
-        request = self.factory.get(reverse('manage_my_deals'))
+        request = self.factory.get(reverse('manage_for_user'))
         # Mock messages framework (not available for unit tests)
         setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
-        response = ManageMyDealsView.as_view()(request)
-        self.assertEqual(response.status_code, 200, msg='Manage My Deals of Reporter does not work')
+        response = ManageForUserView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Manage My Deals/Investors of Reporter does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals of Reporter')
-        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage My Deals of Reporter')
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals/Investors of Reporter')
+        self.assertEqual(activities[0]['id'], activity.id,
+                         msg='Deal does not appear in Manage My Deals/Investors of Reporter')
 
         # Check if deal NOT appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_updates'))
@@ -570,17 +574,17 @@ class TestDeleteDeal(BaseTestDeal):
         activity = HistoricalActivity.objects.to_delete().latest()
 
         # Check if deal appears in my deals section of reporter
-        request = self.factory.get(reverse('manage_my_deals'))
+        request = self.factory.get(reverse('manage_for_user'))
         # Mock messages framework (not available for unit tests)
         setattr(request, 'session', {})
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
-        response = ManageMyDealsView.as_view()(request)
-        self.assertEqual(response.status_code, 200, msg='Manage My Deals of Reporter does not work')
+        response = ManageForUserView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Manage My Deals/Investors of Reporter does not work')
         activities = list(response.context_data['activities'])
-        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals of Reporter')
-        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage My Deals of Reporter')
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals/Investors of Reporter')
+        self.assertEqual(activities[0]['id'], activity.id, msg='Deal does not appear in Manage My Deals/Investors of Reporter')
 
         # Check if deal NOT appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_deletes'))

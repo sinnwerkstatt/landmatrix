@@ -27,9 +27,9 @@
     <div class="navbar navbar-default navbar-subnav" role="navigation">
         <div class="container-fluid">
             <ul class="manage nav navbar-nav" id="manage-sections">
-                <li{% if action == 'my_deals' %} class="active"{% endif %}><a href="{% url 'manage_my_deals' %}"><i class="icon-chevron-down"></i>
-                    {% trans "My deals" %}{% if my_deals_page %} <small><span class="label label-default">{{ my_deals|length }}</span></small>{% endif %}</a></li>
-                {% if perms.landmatrix.review_activity %}
+                <li{% if action == 'for_user' %} class="active"{% endif %}><a href="{% url 'manage_for_user' %}"><i class="icon-chevron-down"></i>
+                    {% trans "My deals/investors" %}{% if for_user_count %} <small><span class="label label-default">{{ for_user_count }}</span></small>{% endif %}</a></li>
+                {% if perms.landmatrix.review_item %}
                     <li{% if action == 'feedback' %} class="active"{% endif %}><a href="{% url 'manage_feedback' %}"><i class="icon-chevron-down icon-white"></i>
                         {% trans "Feedback" %}{% if feedback_count %} <small><span class="label label-default">{{ feedback_count }}</span></small>{% endif %}</a></li>
                     <li{% if action == 'pending_updates' %} class="active"{% endif %}><a href="{% url 'manage_pending_updates' %}"><i class="icon-chevron-down"></i>
@@ -38,12 +38,6 @@
                         {% trans "Pending deletions" %}{% if pending_deletes_count %} <small><span class="label label-default">{{ pending_deletes_count }}</span></small>{% endif %}</a></li>
                     <li{% if action == 'pending_adds' %} class="active"{% endif %}><a href="{% url 'manage_pending_adds' %}"><i class="icon-chevron-down"></i>
                         {% trans "New deals for approval" %}{% if pending_adds_count %} <small><span class="label label-default">{{ pending_adds_count }}</span></small>{% endif %}</a></li>
-                    {# TODO: make investor deletes work #}
-                    <!--
-                    <li><a href="{% url 'manage_investor_deletes' %}"><i class="icon-chevron-down"></i>
-                        {% trans "Pending investor deletions" %}{% if investor_deletes_count %} <small><span class="label label-default">{{ investor_deletes_count }}</span></small>{% endif %}
-                    </a></li>
-                    -->
                     <li><a href="{% url 'manage_rejected' %}"><i class="icon-chevron-down"></i>
                         {% trans "Rejected by me" %}{% if rejected_count %} <small><span class="label label-default">{{ rejected_count }}</span></small>{% endif %}
                     </a></li>
@@ -55,7 +49,7 @@
     <div class="tab-content">
         {% if action == 'feedback' %}
         <div id="feedbacks" class="tab-pane active">
-            {% if activities %}
+            {% if items %}
                 <table class="table table-striped table-condensed">
                     <colgroup>
                         <col width="10%">
@@ -64,18 +58,30 @@
                         <col width="25%">
                     </colgroup>
                     <thead>
-                    <th class="deal">{% trans "Deal #" %}</th>
-                    <th class="user">{% trans "Request from" %}</th>
-                    <th class="comment">{% trans "Comment" %}</th>
-                    <th class="timestamp">{% trans "Requested" %}</th>
+                        <th class="deal">{% trans "ID" %}</th>
+                        <th class="user">{% trans "Request from" %}</th>
+                        <th class="comment">{% trans "Comment" %}</th>
+                        <th class="timestamp">{% trans "Requested" %}</th>
                     </thead>
                     <tbody>
-                    {% for feedback in activities %}
+                    {% for item in items %}
                         <tr>
-                            <td class="deal"><a href="{% url 'deal_detail' deal_id=feedback.deal_id %}">#{{ feedback.deal_id }}</a></td>
-                            <td class="user">{{ feedback.from_user }}</td>
-                            <td class="comment" title="{{ feedback.comment }}">{{ feedback.comment }}</td>
-                            <td class="timestamp">{{ feedback.timestamp|naturaltime_from_string }}</td>
+                            {% if item.type == 'activity' %}
+                            <td class="deal">
+                                <a href="{% url 'deal_detail' deal_id=item.id %}" class="label label-deal">
+                                    {{ item.id }}
+                                </a>
+                            </td>
+                            {% else %}
+                            <td class="investor">
+                                <a href="{% url 'investor_detail' investor_id=item.id %}" class="label label-investor">
+                                    {{ item.id }}
+                                </a>
+                            </td>
+                            {% endif %}
+                            <td class="user">{{ item.from_user }}</td>
+                            <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
+                            <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -85,9 +91,9 @@
                 <p class="alert bg-info">{% trans "Currently there are no feedback requests." %}</p>
             {% endif %}
         </div>
-        {% elif action == 'my_deals' %}
+        {% elif action == 'for_user' %}
             <div id="my-pending-deals" class="tab-pane active">
-                {% if activities %}
+                {% if items %}
                     <table class="table table-striped table-condensed">
                         <colgroup>
                             <col width="10%">
@@ -96,20 +102,30 @@
                             <col width="25%">
                         </colgroup>
                         <thead>
-                        <th class="deal">{% trans "Deal #" %}</th>
-                        <th class="timestamp">{% trans "Added" %}</th>
-                        <th class="comment">{% trans "Comment" %}</th>
-                        <th class="status">{% trans "Status" %}</th>
+                            <th class="deal">{% trans "ID" %}</th>
+                            <th class="timestamp">{% trans "Added" %}</th>
+                            <th class="comment">{% trans "Comment" %}</th>
+                            <th class="status">{% trans "Status" %}</th>
                         </thead>
                         <tbody>
-                        {% for activity in activities %}
+                        {% for item in items %}
                             <tr>
+                                {% if item.type == 'activity' %}
                                 <td class="deal">
-                                    <a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
+                                    <a href="{% url 'deal_detail' deal_id=item.id %}" class="label label-deal">
+                                        {{ item.id }}
+                                    </a>
                                 </td>
-                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
-                                <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="status" title="{{ activity.status.name|title }}">{{ activity.status.name|title }}</td>
+                                {% else %}
+                                <td class="investor">
+                                    <a href="{% url 'investor_detail' investor_id=item.id %}" class="label label-investor">
+                                        {{ item.id }}
+                                    </a>
+                                </td>
+                                {% endif %}
+                                <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
+                                <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
+                                <td class="status" title="{{ item.status.name|title }}">{{ item.status.name|title }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -121,7 +137,7 @@
             </div>
             {% elif action == 'pending_updates' %}
             <div id="updates" class="tab-pane active">
-                {% if activities %}
+                {% if items %}
                     <table class="table table-striped table-condensed">
                         <colgroup>
                             <col width="10%">
@@ -131,25 +147,36 @@
                             <col width="25%">
                         </colgroup>
                         <thead>
-                        <th class="deal">{% trans "Deal #" %}</th>
-                        <th class="user">{% trans "Last revision" %}</th>
-                        <th class="comment">{% trans "Comment" %}</th>
-                        <th class="timestamp">{% trans "Updated" %}</th>
-                        <th class="action">{% trans "Actions" %}</th>
+                            <th class="deal">{% trans "ID" %}</th>
+                            <th class="user">{% trans "Last revision" %}</th>
+                            <th class="comment">{% trans "Comment" %}</th>
+                            <th class="timestamp">{% trans "Updated" %}</th>
+                            <th class="action">{% trans "Actions" %}</th>
                         </thead>
                         <tbody>
-                        {% for activity in activities %}
+                        {% for item in items %}
                             <tr>
-                                <td class="deal"><a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
+                                {% if item.type == 'activity' %}
+                                <td class="deal">
+                                    <a href="{% url 'deal_detail' deal_id=item.id %}" class="label label-deal">
+                                        {{ item.id }}
+                                    </a>
                                 </td>
-                                <td class="user">{{ activity.user }}</td>
-                                <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
+                                {% else %}
+                                <td class="investor">
+                                    <a href="{% url 'investor_detail' investor_id=item.id %}" class="label label-investor">
+                                        {{ item.id }}
+                                    </a>
+                                </td>
+                                {% endif %}
+                                <td class="user">{{ item.user }}</td>
+                                <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
+                                <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
-                                    <a href="{% url 'manage_approve_change_deal' id=activity.id %}"
+                                    <a href="{% url 'manage_approve_change_deal' id=item.id %}"
                                        class="label label-default approve"><i
                                             class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="{% url 'manage_reject_change_deal' id=activity.id %}"
+                                    <a href="{% url 'manage_reject_change_deal' id=item.id %}"
                                        class="label label-default reject"><i
                                             class="lm lm-thumbs-down"></i> {% trans "Reject" %}</a>
                                 </td>
@@ -164,7 +191,7 @@
             </div>
             {% elif action == 'pending_deletes' %}
             <div id="deletions" class="tab-pane active">
-                {% if activities %}
+                {% if items %}
                     <table class="table table-striped table-condensed">
                         <colgroup>
                             <col width="10%">
@@ -174,24 +201,35 @@
                             <col width="25%">
                         </colgroup>
                         <thead>
-                        <th class="deal">{% trans "Deal #" %}</th>
-                        <th class="user">{% trans "Last revision" %}</th>
-                        <th class="comment">{% trans "Comment" %}</th>
-                        <th class="timestamp">{% trans "Deleted" %}</th>
-                        <th class="action">{% trans "Actions" %}</th>
+                            <th class="deal">{% trans "ID" %}</th>
+                            <th class="user">{% trans "Last revision" %}</th>
+                            <th class="comment">{% trans "Comment" %}</th>
+                            <th class="timestamp">{% trans "Deleted" %}</th>
+                            <th class="action">{% trans "Actions" %}</th>
                         </thead>
                         <tbody>
-                        {% for activity in activities %}
+                        {% for item in items %}
                             <tr>
-                                <td class="deal"><a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
+                                {% if item.type == 'activity' %}
+                                <td class="deal">
+                                    <a href="{% url 'deal_detail' deal_id=item.id %}" class="label label-deal">
+                                        {{ item.id }}
+                                    </a>
                                 </td>
-                                <td class="user">{{ activity.user }}</td>
-                                <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
+                                {% else %}
+                                <td class="investor">
+                                    <a href="{% url 'investor_detail' investor_id=item.id %}" class="label label-investor">
+                                        {{ item.id }}
+                                    </a>
+                                </td>
+                                {% endif %}
+                                <td class="user">{{ item.user }}</td>
+                                <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
+                                <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
-                                    <a href="{% url 'manage_approve_delete_deal' id=activity.id %}"
+                                    <a href="{% url 'manage_approve_delete_deal' id=item.id %}"
                                        class="label label-default approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="{% url 'manage_reject_delete_deal' id=activity.id %}"
+                                    <a href="{% url 'manage_reject_delete_deal' id=item.id %}"
                                        class="label label-default reject"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 </td>
@@ -206,7 +244,7 @@
             </div>
             {% elif action == 'pending_adds' %}
             <div id="inserts" class="tab-pane active">
-                {% if activities %}
+                {% if items %}
                     <table class="table table-striped table-condensed">
                         <colgroup>
                             <col width="10%">
@@ -216,24 +254,35 @@
                             <col width="25%">
                         </colgroup>
                         <thead>
-                        <th class="deal">{% trans "Deal #" %}</th>
-                        <th class="user">{% trans "Last revision" %}</th>
-                        <th class="comment">{% trans "Comment" %}</th>
-                        <th class="timestamp">{% trans "Added" %}</th>
-                        <th class="action">{% trans "Actions" %}</th>
+                            <th class="deal">{% trans "ID" %}</th>
+                            <th class="user">{% trans "Last revision" %}</th>
+                            <th class="comment">{% trans "Comment" %}</th>
+                            <th class="timestamp">{% trans "Added" %}</th>
+                            <th class="action">{% trans "Actions" %}</th>
                         </thead>
                         <tbody>
-                        {% for activity in activities %}
+                        {% for item in items %}
                             <tr>
-                                <td class="deal"><a href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
+                                {% if item.type == 'activity' %}
+                                <td class="deal">
+                                    <a href="{% url 'deal_detail' deal_id=item.id %}" class="label label-deal">
+                                        {{ item.id }}
+                                    </a>
                                 </td>
-                                <td class="user">{{ activity.user }}</td>
-                                <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
+                                {% else %}
+                                <td class="investor">
+                                    <a href="{% url 'investor_detail' investor_id=item.id %}" class="label label-investor">
+                                        {{ item.id }}
+                                    </a>
+                                </td>
+                                {% endif %}
+                                <td class="user">{{ item.user }}</td>
+                                <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
+                                <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                                 <td class="action">
-                                    <a href="{% url 'manage_approve_change_deal' id=activity.id %}"
+                                    <a href="{% url 'manage_approve_change_deal' id=item.id %}"
                                        class="label label-default approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="{% url 'manage_reject_change_deal' id=activity.id %}"
+                                    <a href="{% url 'manage_reject_change_deal' id=item.id %}"
                                        class="label label-default reject"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
                                     </a>
                                 </td>
@@ -247,52 +296,10 @@
                     <p class="alert bg-info">{% trans "Currently there are no new deals for approval." %}</p>
                 {% endif %}
             </div>
-            {% elif action == 'investor_deletes' %}
-            <div id="sh-deletions" class="tab-pane active">
-                {% if activities %}
-                    <table class="table table-striped table-condensed">
-                        <colgroup>
-                            <col width="10%">
-                            <col width="10%">
-                            <col width="40%">
-                            <col width="15%">
-                            <col width="25%">
-                        </colgroup>
-                        <thead>
-                        <th class="Stakeholder">{% trans "Investor #" %}</th>
-                        <th class="user">{% trans "Last revision" %}</th>
-                        <th class="comment">{% trans "Comment" %}</th>
-                        <th class="timestamp">{% trans "Deleted" %}</th>
-                        <th class="action">{% trans "Actions" %}</th>
-                        </thead>
-                        <tbody>
-                        {% for activity in activities %}
-                            <tr class="deletes">
-                                <td class="investor"><a
-                                        href="{% url 'investor_update' investor_id=activity.investor_id %}">#{{ activity.investor_id }}</a>
-                                </td>
-                                <td class="user">{{ activity.user }}</td>
-                                <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
-                                <td class="action">
-                                    <a href="{% url 'manage_deal' type='investor' action='approve' id=activity.id %}"
-                                       class="label label-default approve"><i class="lm lm-thumbs-up"></i> {% trans "Approve" %}</a>
-                                    <a href="{% url 'manage_deal' type='investor' action='reject' id=activity.id %}"
-                                       class="label label-default reject"><i class="lm lm-thumbs-down"></i> {% trans "Reject" %}
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    {% include 'manage_pagination.html' %}
-                {% else %}
-                    <p class="alert bg-info">{% trans "Currently there are no pending investor deletions." %}</p>
-                {% endif %}
             </div>
             {% elif action == 'rejected' %}
             <div id="rejected" class="tab-pane active">
-                {% if activities %}
+                {% if items %}
                     <table class="table table-striped table-condensed">
                         <colgroup>
                             <col width="10%">
@@ -301,20 +308,30 @@
                             <col width="25%">
                         </colgroup>
                         <thead>
-                        <th class="dealid">{% trans "Deal ID #" %}</th>
+                        <th class="deal">{% trans "ID" %}</th>
                         <th class="user">{% trans "User" %}</th>
                         <th class="comment">{% trans "Comment" %}</th>
                         <th class="timestamp">{% trans "Timestamp" %}</th>
                         </thead>
                         <tbody>
-                        {% for activity in activities %}
+                        {% for item in items %}
                             <tr class="deletes">
-                                <td class="dealid"><a
-                                        href="{% url 'deal_detail' deal_id=activity.deal_id %}">#{{ activity.deal_id }}</a>
+                                {% if item.type == 'activity' %}
+                                <td class="deal">
+                                    <a href="{% url 'deal_detail' deal_id=item.id %}" class="label label-deal">
+                                        {{ item.id }}
+                                    </a>
                                 </td>
-                                <td class="user">{{ activity.user }}</td>
-                                <td class="comment" title="{{ activity.comment }}">{{ activity.comment }}</td>
-                                <td class="timestamp">{{ activity.timestamp|naturaltime_from_string }}</td>
+                                {% else %}
+                                <td class="investor">
+                                    <a href="{% url 'investor_detail' investor_id=item.id %}" class="label label-investor">
+                                        {{ item.id }}
+                                    </a>
+                                </td>
+                                {% endif %}
+                                <td class="user">{{ item.user }}</td>
+                                <td class="comment" title="{{ item.comment }}">{{ item.comment }}</td>
+                                <td class="timestamp">{{ item.timestamp|naturaltime_from_string }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

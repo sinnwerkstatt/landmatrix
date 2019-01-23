@@ -753,9 +753,9 @@ class Activity(ActivityBase):
 
 class HistoricalActivityQuerySet(ActivityQuerySet):
 
-    def get_my_deals(self, user):
-        my_deals = self.filter(history_user=user).values_list('activity_identifier', flat=True)
-        return self.filter(activity_identifier__in=my_deals).filter(id__in=self.latest_only())
+    def get_for_user(self, user):
+        qs = self.filter(history_user=user).values_list('activity_identifier', flat=True)
+        return self.filter(activity_identifier__in=qs).filter(id__in=self.latest_only())
 
     def _single_revision_identifiers(self):
         '''

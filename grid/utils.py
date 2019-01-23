@@ -144,5 +144,5 @@ def has_perm_approve_reject(user, object=None):
                 if changeset.fk_user and changeset.fk_user.has_perm('landmatrix.review_activity'):
                     return False
         return True
-    # FIXME: Maybe check for country/region here in the future (FilteredQuerysetMixin.get_filtered_activity_queryset)
+    # FIXME: Maybe check for country/region here in the future (FilteredQuerySetMixin.get_filtered_activity_queryset)
     return False
