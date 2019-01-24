@@ -76,7 +76,7 @@ class DealListView(TableGroupView):
         return item
 
 
-class SaveDealView(TemplateView):
+class DealBaseView(TemplateView):
 
     FORMS = DEAL_FORMS
     deal_id = None
@@ -263,7 +263,7 @@ class SaveDealView(TemplateView):
         return changeset
 
 
-class ChangeDealView(SaveDealView):
+class DealUpdateView(DealBaseView):
 
     FORMS = DEAL_FORMS
 
@@ -278,7 +278,7 @@ class ChangeDealView(SaveDealView):
             if 'history_id' in kwargs:
                 args['history_id'] = kwargs['history_id']
             return HttpResponseRedirect(reverse('deal_detail', kwargs=args))
-        return super(ChangeDealView, self).dispatch(request, *args, **kwargs)
+        return super(DealUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, deal_id, history_id=None):
         context = super().get_context_data(**self.kwargs)
@@ -488,7 +488,7 @@ def deal_from_activity_id_and_timestamp(id_and_timestamp):
     raise RuntimeError('should contain _ separating activity id and timestamp: ' + id_and_timestamp)
 
 
-class DeleteDealView(SaveDealView):
+class DeleteDealView(DealBaseView):
     success_message = _('The deal #{} has been marked for deletion. It will be reviewed and deleted soon.')
     success_message_admin = _('The deal #{} has been deleted successfully.')
 
@@ -543,7 +543,7 @@ class DeleteDealView(SaveDealView):
         return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier}))
 
 
-class RecoverDealView(SaveDealView):
+class RecoverDealView(DealBaseView):
     success_message = None
     success_message_admin = _('The deal #{} has been recovered successfully.')
 
@@ -594,9 +594,9 @@ class RecoverDealView(SaveDealView):
         return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier}))
 
 
-class AddDealView(SaveDealView):
+class DealCreateView(DealBaseView):
+
     template_name = 'grid/deal_form_add.html'
-    success_message = _('Added successfully.')
     success_message = _('The deal has been submitted successfully (#{}). It will be reviewed and published soon.')
     success_message_admin = _('The deal has been added successfully (#{}).')
 
@@ -645,15 +645,11 @@ class AddDealView(SaveDealView):
             redirect_url = reverse('data')
 
         if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
-            messages.success(
-                self.request,
-                self.success_message_admin.format(hactivity.activity_identifier))
+            messages.success(self.request, self.success_message_admin.format(hactivity.activity_identifier))
             hactivity.approve_change(self.request.user, hactivity.comment)
         elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hactivity):
             hactivity.reject_change(self.request.user, hactivity.comment)
         else:
-            messages.success(
-                self.request,
-                self.success_message.format(hactivity.activity_identifier))
+            messages.success(self.request, self.success_message.format(hactivity.activity_identifier))
 
         return HttpResponseRedirect(redirect_url)

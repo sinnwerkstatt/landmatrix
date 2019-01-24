@@ -432,6 +432,7 @@ class ManageForUserView(BaseManageView):
 
 
 class BaseManageDealView(FormView, DetailView):
+
     template_name = 'manage_item.html'
     form_class = ApproveRejectChangeForm
     model = HistoricalActivity
@@ -451,6 +452,16 @@ class BaseManageDealView(FormView, DetailView):
             'action': self.action,
             'form': self.get_form(),
         })
+        if hasattr(self.object, 'activity_identifier'):
+            context.update({
+                'type': 'activity',
+                'id': self.object.activity_identifier,
+            })
+        else:
+            context.update({
+                'type': 'investor',
+                'id': self.object.investor_identifier,
+            })
 
         return context
 
@@ -461,6 +472,7 @@ class BaseManageDealView(FormView, DetailView):
 
 
 class ApproveActivityChangeView(BaseManageDealView):
+
     queryset = HistoricalActivity.objects.pending_only()
     action = 'approve'
 
@@ -475,6 +487,7 @@ class ApproveActivityChangeView(BaseManageDealView):
 
 
 class RejectActivityChangeView(BaseManageDealView):
+
     queryset = HistoricalActivity.objects.pending_only()
     action = 'reject'
 
@@ -489,6 +502,7 @@ class RejectActivityChangeView(BaseManageDealView):
 
 
 class ApproveActivityDeleteView(BaseManageDealView):
+
     queryset = HistoricalActivity.objects.to_delete()
     action = 'approve'
 
@@ -507,6 +521,7 @@ class ApproveActivityDeleteView(BaseManageDealView):
 
 
 class RejectActivityDeleteView(BaseManageDealView):
+
     queryset = HistoricalActivity.objects.to_delete()
     action = 'reject'
 
@@ -525,10 +540,12 @@ class RejectActivityDeleteView(BaseManageDealView):
 
 
 class BaseManageInvestorView(BaseManageDealView):
+
     model = HistoricalInvestor
 
 
 class ApproveInvestorChangeView(BaseManageInvestorView):
+
     queryset = HistoricalInvestor.objects.pending_only()
     action = 'approve'
 
@@ -543,6 +560,7 @@ class ApproveInvestorChangeView(BaseManageInvestorView):
 
 
 class RejectInvestorChangeView(BaseManageInvestorView):
+
     queryset = HistoricalInvestor.objects.pending_only()
     action = 'reject'
 

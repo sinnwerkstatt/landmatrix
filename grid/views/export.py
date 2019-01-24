@@ -14,7 +14,7 @@ from django.http.response import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
 
-from grid.views.deal import DealListView, ChangeDealView, DealDetailView
+from grid.views.deal import DealListView, DealUpdateView, DealDetailView
 from grid.views.filter import FilterWidgetMixin
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
@@ -330,7 +330,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
             str(_('Fully updated')),
             str(_('Top parent companies')),
         ]
-        for form in ChangeDealView.FORMS:
+        for form in DealUpdateView.FORMS:
             formset_name = hasattr(form, "form") and form.Meta.name or None
             form = formset_name and form.form or form
             exclude = []
@@ -386,7 +386,7 @@ class ExportView(FilterWidgetMixin, ElasticSearchMixin, View):
                 item.get('fully_updated_date'),
                 item.get('top_investors'),
             ]
-            for form in ChangeDealView.FORMS:
+            for form in DealUpdateView.FORMS:
                 formset_name = hasattr(form, "form") and form.Meta.name or None
                 form = formset_name and form.form or form
                 exclude = []

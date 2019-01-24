@@ -15,7 +15,7 @@ from django.forms import MultiValueField, ModelChoiceField, ChoiceField, Boolean
 from django.core.paginator import Paginator
 from django.utils.translation import ugettext_lazy as _
 
-from grid.views.deal import ChangeDealView
+from grid.views.deal import DealUpdateView
 from landmatrix.models.activity import HistoricalActivity, Activity
 from grid.forms.investor_form import ExportInvestorForm
 from grid.forms.parent_investor_formset import InvestorVentureInvolvementForm
@@ -160,7 +160,7 @@ def get_elasticsearch_properties(doc_type=None):
             }
         }
         # Doc types: deal, location, contract and data_source
-        for form in ChangeDealView.FORMS:
+        for form in DealUpdateView.FORMS:
             formset_name = hasattr(form, "form") and form.Meta.name or None
             form = formset_name and form.form or form
             for name, field in form.base_fields.items():
@@ -665,7 +665,7 @@ class ElasticSearch(object):
                 'current_negotiation_status_display': str(current_negotiation_status),
                 'current_implementation_status_display': str(current_implementation_status),
             }
-            for form in ChangeDealView.FORMS:
+            for form in DealUpdateView.FORMS:
                 formset_name = hasattr(form, "form") and form.Meta.name or None
                 form = formset_name and form.form or form
                 properties.update(form.get_display_properties(doc, formset=formset_name))

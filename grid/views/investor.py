@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.utils.html import escape
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
@@ -17,6 +17,7 @@ from grid.forms.parent_investor_formset import ParentCompanyFormSet, ParentInves
 from grid.views.base import TableGroupView
 from grid.views.filter import get_investor_variable_table
 from grid.views.browse_filter_conditions import get_investor_field_label
+from grid.utils import has_perm_approve_reject
 from landmatrix.models.investor import InvestorBase, HistoricalInvestor, HistoricalInvestorVentureInvolvement
 
 
@@ -142,11 +143,14 @@ class InvestorFormsMixin:
         return response
 
 
-class InvestorUpdateView(InvestorFormsMixin, UpdateView):
+class InvestorUpdateView(InvestorFormsMixin,
+                         UpdateView):
 
     template_name = 'grid/investor_form.html'
     context_object_name = 'investor'
     model = HistoricalInvestor
+    success_message = _('Your changes to the investor have been submitted successfully. The changes will be reviewed and published soon.')
+    success_message_admin = _('Your changes to the investor have been saved successfully.')
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -172,11 +176,33 @@ class InvestorUpdateView(InvestorFormsMixin, UpdateView):
         return investor
 
     def form_valid(self, investor_form, stakeholders_formset, investors_formset):
-        self.object = investor_form.save(user=self.request.user)
-        stakeholders_formset.save(self.object)
-        investors_formset.save(self.object)
+        old_hinvestor = self.get_object()
+        is_admin = self.request.user.has_perm('landmatrix.change_activity')
+        is_editor = self.request.user.has_perm('landmatrix.review_activity')
+
+        if old_hinvestor.fk_status_id == HistoricalInvestor.STATUS_PENDING:
+            # Only editors and administrators are allowed to edit pending versions
+            if not is_editor and not is_admin:
+                raise HttpResponseForbidden('Deal version is pending')
+
+        # Don't create new version if rejected
+        if 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, old_hinvestor):
+            hinvestor = old_hinvestor
+        else:
+            hinvestor = investor_form.save(user=self.request.user)
+            stakeholders_formset.save(hinvestor)
+            investors_formset.save(hinvestor)
+
+        if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
+            messages.success(self.request, self.success_message_admin.format(hinvestor.investor_identifier))
+            hinvestor.approve_change(self.request.user, hinvestor.comment)
+        elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
+            hinvestor.reject_change(self.request.user, hinvestor.comment)
+        else:
+            messages.success(self.request, self.success_message.format(hinvestor.investor_identifier))
 
         # Is dialog?
+        self.object = hinvestor
         if self.request.GET.get('popup', False):
             response = self.render_popup()
         else:
@@ -200,12 +226,15 @@ class InvestorUpdateView(InvestorFormsMixin, UpdateView):
         return HttpResponse(result)
 
 
-class InvestorCreateView(InvestorFormsMixin, CreateView):
+class InvestorCreateView(InvestorFormsMixin,
+                         CreateView):
 
     model = HistoricalInvestor
     form_class = ParentInvestorForm
-    template_name = 'investor_form.html'
+    template_name = 'grid/investor_form.html'
     context_object_name = 'investor'
+    success_message = _('The investor has been submitted successfully (#{}). It will be reviewed and published soon.')
+    success_message_admin = _('The investor has been added successfully (#{}).')
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -243,11 +272,20 @@ class InvestorCreateView(InvestorFormsMixin, CreateView):
         return HttpResponse(result)
 
     def form_valid(self, investor_form, stakeholders_formset, investors_formset):
-        self.object = investor_form.save(user=self.request.user)
+        hinvestor = investor_form.save(user=self.request.user)
         stakeholders_formset.save(self.object)
         investors_formset.save(self.object)
 
+        if 'approve_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
+            messages.success(self.request, self.success_message_admin.format(hinvestor.investor_identifier))
+            hinvestor.approve_change(self.request.user, hinvestor.comment)
+        elif 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, hinvestor):
+            hinvestor.reject_change(self.request.user, hinvestor.comment)
+        else:
+            messages.success(self.request, self.success_message.format(hinvestor.investor_identifier))
+
         # Is dialog?
+        self.object = hinvestor
         if self.request.GET.get('popup', False):
             response = self.render_popup()
         else:

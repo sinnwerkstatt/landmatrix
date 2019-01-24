@@ -67,7 +67,7 @@ class DealActionCommentForm(BaseForm):
             groups__name__in=("Editors", "Administrators")).order_by("first_name", "last_name")
 
     def get_attributes(self, request=None):
-        # Remove action comment, this field is handled separately in SaveDealView
+        # Remove action comment, this field is handled separately in DealBaseView
         attributes = super(DealActionCommentForm, self).get_attributes(request)
         del attributes['tg_action_comment']
         return attributes

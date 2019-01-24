@@ -9,11 +9,11 @@
 
 {% endblock %}
 
-{% block page_title %}{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} #{{ activity.activity_identifier }}{% endblock %}
-{% block title %}{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} #{{ activity.activity_identifier }}{% endblock %}
+{% block page_title %}{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} {{ type }} {{ id }}{% endblock %}
+{% block title %}{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} {{ type }} {{ id }}{% endblock %}
 
 {% block breadcrumb_inner %}
-<li>{% trans "Add a deal" %}</li>
+<li>{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %} {{ type }} {{ id }}</li>
 {% endblock %}
 
 {% block content %}
@@ -22,20 +22,19 @@
 
 <div class="forms">
 {% if form %}
-  <ul class="form clearfix">
+  <div class="form clearfix">
     {% for hidden in form.hidden_fields %}
       {{ hidden }}
     {% endfor %}
-    <li> <h3>{% trans "Action comment" %}</h3></li>
+    <h3>{% trans "Action comment" %}</h3>
     {{ form.non_field_errors }}
-    <li>
-        {{ form.tg_action_comment }}
-        {{ form.tg_action_comment.errors }}
-    </li>
 
-  </ul>
+    {{ form.tg_action_comment }}
+    {{ form.tg_action_comment.errors }}
+
+  </div>
 {% endif %}
-  <input class="btn btn-default" type="submit" name="{{ action }}" value="{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %}">
+  <input class="btn btn-primary" type="submit" name="{{ action }}" value="{% if action == "approve" %}{% trans "Approve" %}{% else %}{% trans "Reject" %}{% endif %}">
 </div>
 </form>
 {% endblock %}

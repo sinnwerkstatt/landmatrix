@@ -14,6 +14,7 @@
 {% if not request.GET.popup %}{{ block.super }}{% endif %}
 {% endblock %}
 {% block messages %}
+{% if not request.GET.popup %}{{ block.super }}{% endif %}
 {% if investor.fk_status_id == 1 or investor.fk_status_id == 6 %}
 <p class="alert alert-danger">{% trans "This investor version is pending." %}</p>
 {% elif investor.fk_status_id == 4 %}
@@ -30,11 +31,11 @@
 {% endblock %}
 {% block page_title %}
     {% if investor %}{{ investor.name }} (#{{ investor.investor_identifier }})
-    {% else %}{% trans "Add" %}{% endif %}
+    {% else %}{% trans "Add investor" %}{% endif %}
 {% endblock %}
 {% block title %}
     {% if investor %}{{ investor.name }} <small>(#{{ investor.investor_identifier }})</small>
-    {% else %}{% trans "Add" %}{% endif %}
+    {% else %}{% trans "Add investor" %}{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -48,7 +49,7 @@
                        href="#general_info_body"
                        id="general_info">
                         <h5 class="panel-title">
-                            {{ role }}
+                            {% if investor %}{{ role }}{% else %}{% trans "Investor" %}{% endif %}
                             <span id="collapsebtn_genereal_info"
                                   class="lm-chevron-circle-down pull-right mgrey1"></span>
                         </h5>
@@ -58,7 +59,7 @@
                 <div id="general_info_body"
                      class="panel-collapse collapse{% if not request.POST %} in{% endif %}{% if form.errors %} with-error{% endif %}">
                     <div class="panel-body">
-                    {% include "grid/form.html" %}
+                    {% include "grid/form.html" with exclude='action_comment' %}
                     </div>
                 </div>
             </div>
@@ -164,7 +165,7 @@
                         <br><br>
                     </p>
                     <input type="submit" class="btn btn-primary" value="{% trans "Submit" %}">
-                    {% if user|can_approve_reject:investor %}
+                    {% if investor and user|can_approve_reject:investor or user|can_approve_reject %}
                     <button type="submit" name="approve_btn" class="btn btn-primary btn-success">
                         <i class="fa fa-thumbs-up"></i> {% trans 'Approve' %}
                     </button>
@@ -180,7 +181,7 @@
     </form>
     {% if investor.fk_status_id == 4 %}
         {% include "grid/modals/recover_investor_modal.html" %}
-    {% else %}
+    {% elif investor.fk_status_id %}
         {% include "grid/modals/delete_investor_modal.html" %}
     {% endif %}
 </div>

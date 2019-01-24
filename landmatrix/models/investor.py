@@ -416,8 +416,48 @@ class HistoricalInvestorQuerySet(InvestorQuerySet):
 class HistoricalInvestor(InvestorBase):
     history_date = models.DateTimeField(default=timezone.now)
     history_user = models.ForeignKey('auth.User', blank=True, null=True)
+    action_comment = models.TextField(_('Comment'), blank=False, null=True)
 
     objects = HistoricalInvestorQuerySet.as_manager()
+
+    def approve_change(self, user=None, comment=None):
+        assert self.fk_status_id == HistoricalInvestor.STATUS_PENDING
+
+        # Only approvals of administrators should go public
+        if user.has_perm('landmatrix.change_activity'):
+            # TODO: this logic is taken from changeset protocol
+            # but it won't really work properly. We need to determine behaviour
+            # when updates happen out of order. There can easily be many edits,
+            # and not the latest one is approved.
+            latest_public_version = self.__class__.get_latest_active_investor(
+                self.investor_identifier)
+            if latest_public_version:
+                self.fk_status_id = HistoricalInvestor.STATUS_OVERWRITTEN
+            else:
+                self.fk_status_id = HistoricalInvestor.STATUS_ACTIVE
+            self.save(update_fields=['fk_status'])
+
+            self.update_public_investor()
+
+    def reject_change(self, user=None, comment=None):
+        assert self.fk_status_id == HistoricalInvestor.STATUS_PENDING
+        self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
+        self.save(update_fields=['fk_status'])
+        #self.update_public_investor() - don't update public investor
+
+    def approve_delete(self, user=None, comment=None):
+        assert self.fk_status_id == HistoricalInvestor.STATUS_TO_DELETE
+
+        # Only approvals of administrators should be deleted
+        if user.has_perm('landmatrix.delete_activity'):
+            self.fk_status_id = HistoricalInvestor.STATUS_DELETED
+            self.save(update_fields=['fk_status'])
+            self.update_public_investor()
+
+    def reject_delete(self, user=None, comment=None):
+        assert self.fk_status_id == HistoricalInvestor.STATUS_TO_DELETE
+        self.fk_status_id = HistoricalInvestor.STATUS_REJECTED
+        self.save(update_fields=['fk_status'])
 
     def get_top_investors(self):
         """

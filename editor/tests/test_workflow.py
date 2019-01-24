@@ -8,7 +8,7 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from django.http import Http404
 from django.conf import settings
 
-from grid.views.deal import ChangeDealView, DealDetailView, DeleteDealView, RecoverDealView, AddDealView
+from grid.views.deal import DealUpdateView, DealDetailView, DeleteDealView, RecoverDealView, DealCreateView
 from grid.views.export import ExportView
 from editor.views import ManageAddsView, ManageUpdatesView, ManageDeletesView, ManageForUserView, \
     ApproveActivityChangeView, ApproveActivityDeleteView, LogAddedView, LogModifiedView, LogDeletedView
@@ -131,7 +131,7 @@ class TestAddDeal(BaseTestDeal):
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
-        response = AddDealView.as_view()(request)
+        response = DealCreateView.as_view()(request)
         self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
@@ -235,7 +235,7 @@ class TestAddDeal(BaseTestDeal):
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
-        response = AddDealView.as_view()(request)
+        response = DealCreateView.as_view()(request)
         self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
@@ -283,7 +283,7 @@ class TestAddDeal(BaseTestDeal):
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
-        response = AddDealView.as_view()(request)
+        response = DealCreateView.as_view()(request)
         self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
         activity = HistoricalActivity.objects.public().latest()
@@ -344,7 +344,7 @@ class TestChangeDeal(BaseTestDeal):
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['reporter']
-        response = ChangeDealView.as_view()(request, deal_id=activity.activity_identifier)
+        response = DealUpdateView.as_view()(request, deal_id=activity.activity_identifier)
         self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
@@ -447,7 +447,7 @@ class TestChangeDeal(BaseTestDeal):
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['editor']
-        response = ChangeDealView.as_view()(request, deal_id=activity.activity_identifier)
+        response = DealUpdateView.as_view()(request, deal_id=activity.activity_identifier)
         self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
 
         activity = HistoricalActivity.objects.pending().latest()
@@ -500,7 +500,7 @@ class TestChangeDeal(BaseTestDeal):
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
         request.user = self.users['administrator']
-        response = ChangeDealView.as_view()(request, deal_id=activity.activity_identifier)
+        response = DealUpdateView.as_view()(request, deal_id=activity.activity_identifier)
         self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
 
         activity = HistoricalActivity.objects.public().latest()
