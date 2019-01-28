@@ -316,10 +316,10 @@ class ElasticSearchMixin:
         from api.elasticsearch import es_search as es
         es.refresh_index()
 
-        print('Elasticsearch query executed:\n')
-        from pprint import pprint
-        pprint(query)
-        pprint(aggs)
+        #print('Elasticsearch query executed:\n')
+        #from pprint import pprint
+        #pprint(query)
+        #pprint(aggs)
 
         try:
             results = es.search(query, doc_type=doc_type, sort=sort, aggs=aggs)

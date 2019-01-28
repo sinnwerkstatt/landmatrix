@@ -1,0 +1,10 @@
+[
+  {"pk": 10, "model": "landmatrix.investoractivityinvolvement", "fields": {"fk_investor": 10, "fk_activity": 10, "fk_status": 2}},
+  {"pk": 20, "model": "landmatrix.investoractivityinvolvement", "fields": {"fk_investor": 10, "fk_activity": 20, "fk_status": 2}},
+  {"pk": 30, "model": "landmatrix.investoractivityinvolvement", "fields": {"fk_investor": 10, "fk_activity": 30, "fk_status": 2}},
+
+  {"pk": 10, "model": "landmatrix.historicalinvestoractivityinvolvement", "fields": {"fk_investor": 10, "fk_activity": 10, "fk_status": 2}},
+  {"pk": 20, "model": "landmatrix.historicalinvestoractivityinvolvement", "fields": {"fk_investor": 10, "fk_activity": 20, "fk_status": 2}},
+  {"pk": 30, "model": "landmatrix.historicalinvestoractivityinvolvement", "fields": {"fk_investor": 10, "fk_activity": 30, "fk_status": 2}},
+  {"pk": 40, "model": "landmatrix.historicalinvestoractivityinvolvement", "fields": {"fk_investor": 10, "fk_activity": 40, "fk_status": 2}}
+]

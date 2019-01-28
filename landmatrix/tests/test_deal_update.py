@@ -1,0 +1,235 @@
+from io import BytesIO
+
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.urlresolvers import reverse
+from openpyxl import load_workbook
+
+from editor.views import LogModifiedView, ManageForUserView, ManageUpdatesView, ApproveActivityChangeView
+from grid.views.deal import DealDetailView, DealUpdateView
+from grid.views.export import ExportView
+from landmatrix.models import HistoricalActivity
+from landmatrix.tests.base import TestDealBase
+
+
+class TestDealUpdate(TestDealBase):
+
+    fixtures = [
+        'countries_and_regions',
+        'users_and_groups',
+        'status',
+        'investors',
+        'activities',
+        'involvements',
+    ]
+
+    def is_deal_changed(self, activity, user):
+        # Check if deal is public
+        request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
+        request.user = AnonymousUser()
+        response = DealDetailView.as_view()(request, deal_id=activity.activity_identifier)
+        self.assertEqual(response.status_code, 200, msg='Deal is not public after approval of Administrator')
+
+        # Check if deal is in latest changed log
+        request = self.factory.get(reverse('log_modified'))
+        request.user = user
+        response = LogModifiedView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Latest Modified Log does not work')
+        activities = list(response.context_data['items'])
+        self.assertGreaterEqual(len(activities), 1, msg='Wrong list of deals in Latest Modified Log')
+        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Latest Modified Log')
+
+        # Check if deal is in elasticsearch/export
+        self.run_commit_hooks()
+        request = self.factory.get(reverse('export', kwargs={'format': 'xls'}))
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = AnonymousUser()
+        response = ExportView.as_view()(request, format='xls')
+        self.assertEqual(response.status_code, 200, msg='Export does not work')
+        wb = load_workbook(BytesIO(response.content), read_only=True)
+        ws = wb['Deals']
+        activity_identifiers = [row[0].value for row in ws.rows]
+        # FIXME
+        #if '#%s' % str(activity.activity_identifier) not in activity_identifiers:
+        #    self.fail('Deal does not appear in export (checked XLS only)')
+
+    def test_reporter(self):
+        # Change deal as reporter
+        activity = HistoricalActivity.objects.public().latest()
+        data = self.DEAL_DATA.copy()
+        data.update({
+            # Action comment
+            "tg_action_comment": "Test change deal",
+        })
+        request = self.factory.post(reverse('change_deal', kwargs={'deal_id': activity.activity_identifier}), data)
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['reporter']
+        response = DealUpdateView.as_view()(request, deal_id=activity.activity_identifier)
+        self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
+
+        activity = HistoricalActivity.objects.pending().latest()
+
+        # Check if deal appears in my deals section of reporter
+        request = self.factory.get(reverse('manage_for_user'))
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['reporter']
+        response = ManageForUserView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Manage My Deals/Investors of Reporter does not work')
+        activities = list(response.context_data['items'])
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals/Investors of Reporter')
+        self.assertEqual(activities[0]['history_id'], activity.id,
+                         msg='Deal does not appear in Manage My Deals/Investors of Reporter')
+
+        # Check if deal appears in manage section of administrator
+        request = self.factory.get(reverse('manage_pending_updates'))
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['administrator']
+        response = ManageUpdatesView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Administrator does not work')
+        activities = list(response.context_data['items'])
+        self.assertEqual(len(activities), 1, msg='Manage Pending Updates of Administrator should be empty')
+
+        # Check if deal appears in manage section of editor
+        request = self.factory.get(reverse('manage_pending_updates'))
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['editor']
+        response = ManageUpdatesView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Editor does not work')
+        activities = list(response.context_data['items'])
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Updates of Editor')
+        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Manage Pending Updates of Editor')
+        self.assertEqual(activities[0]['user'], self.get_username_and_role('reporter'), msg='Deals has wrong user in Manage Pending Updates of Editor')
+
+        # Approve deal as editor
+        data = {
+            # Action comment
+            "tg_action_comment": "Test approve by Editor",
+        }
+        request = self.factory.post(reverse('manage_approve_change_deal', kwargs={'id': activity.id}), data)
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['editor']
+        response = ApproveActivityChangeView.as_view()(request, id=activity.id)
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Editor does not redirect')
+
+        # Check if deal appears in manage section of administrator
+        request = self.factory.get(reverse('manage_pending_updates'))
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['administrator']
+        response = ManageUpdatesView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Administrator does not work')
+        activities = list(response.context_data['items'])
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Updates of Administrator')
+        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Manage Pending Updates of Administrator')
+        self.assertEqual(activities[0]['user'], self.get_username_and_role('reporter'), msg='Deal has wrong user in Manage Pending Updates of Administrator')
+
+        # Approve deal as administrator
+        data = {
+            # Action comment
+            "tg_action_comment": "Test approve by Administrator",
+        }
+        request = self.factory.post(reverse('manage_approve_change_deal', kwargs={'id': activity.id}), data)
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['administrator']
+        response = ApproveActivityChangeView.as_view()(request, id=activity.id)
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
+
+        self.is_deal_changed(activity, self.users['reporter'])
+
+    def test_editor(self):
+        # Change deal as editor
+        activity = HistoricalActivity.objects.public().latest()
+        data = self.DEAL_DATA.copy()
+        data.update({
+            # Action comment
+            "tg_action_comment": "Test change deal",
+        })
+        request = self.factory.post(reverse('change_deal', kwargs={'deal_id': activity.activity_identifier}), data)
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['editor']
+        response = DealUpdateView.as_view()(request, deal_id=activity.activity_identifier)
+        self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
+
+        activity = HistoricalActivity.objects.pending().latest()
+
+        # Check if deal appears in manage section of administrator
+        request = self.factory.get(reverse('manage_pending_updates'))
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['administrator']
+        response = ManageUpdatesView.as_view()(request)
+        self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Administrator does not work')
+        activities = list(response.context_data['items'])
+        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Updates of Administrator')
+        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Manage Pending Updates of Administrator')
+        self.assertEqual(activities[0]['user'], self.get_username_and_role('editor'), msg='Deal has wrong user in Manage Pending Updates of Administrator')
+
+        # Approve deal as administrator
+        data = {
+            # Action comment
+            "tg_action_comment": "Test approve by Administrator",
+        }
+        request = self.factory.post(reverse('manage_approve_change_deal', kwargs={'id': activity.id}), data)
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['administrator']
+        response = ApproveActivityChangeView.as_view()(request, id=activity.id)
+        #if response.status_code == 200:
+        #    # For debugging purposes
+        #    errors = list(filter(None, [form.errors or None for form in response.context_data['forms']]))
+        #    self.assertEqual(errors, [])
+        self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
+
+        self.is_deal_changed(activity, self.users['editor'])
+
+    def test_administrator(self):
+        # Change deal as administrator
+        activity = HistoricalActivity.objects.public().latest()
+        data = self.DEAL_DATA.copy()
+        data.update({
+            # Action comment
+            "tg_action_comment": "Test change deal",
+            "approve_btn": True
+        })
+        request = self.factory.post(reverse('change_deal', kwargs={'deal_id': activity.activity_identifier}), data)
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['administrator']
+        response = DealUpdateView.as_view()(request, deal_id=activity.activity_identifier)
+        self.assertEqual(response.status_code, 302, msg='Change deal does not redirect')
+
+        activity = HistoricalActivity.objects.public().latest()
+
+        self.is_deal_changed(activity, self.users['administrator'])

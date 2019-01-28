@@ -23,10 +23,8 @@ class InvestorVentureInvolvementForm(forms.ModelForm):
                 output[key] = ''
                 continue
             if not isinstance(values, (list, tuple)):
-                values = [values,]
-            value = get_display_value(field, values)
-            if value:
-                output[key] = value
+                values = [values, ]
+            output[key] = get_display_value(field, values)
         return output
 
     class Meta:

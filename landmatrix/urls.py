@@ -87,7 +87,7 @@ urlpatterns = [
     url(r'^deal/edit/(?P<deal_id>\d+)/(?P<history_id>\d+)/$', DealUpdateView.as_view(), name='change_deal'),
     url(r'^deal/add/$', DealCreateView.as_view(), name='add_deal'),
     url(r'^deal/delete/(?P<deal_id>\d+)/$', DeleteDealView.as_view(), name='delete_deal'),
-    url(r'^deal/recover/(?P<deal_id>\d+)/$', RecoverDealView.as_view(), name='recover_deal'),
+    url(r'^deal/recover/(?P<deal_id>\d+)/$', DealRecoverView.as_view(), name='recover_deal'),
 
     url(r'^compare/(?P<activity_1>\d+)/(?P<activity_2>\d+)/$', DealComparisonView.as_view(), name='compare_deals'),
     url(r'^compare/(?P<activity_1>\d+)/$', DealComparisonView.as_view(), name='compare_deals'),

@@ -543,7 +543,8 @@ class DeleteDealView(DealBaseView):
         return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier}))
 
 
-class RecoverDealView(DealBaseView):
+class DealRecoverView(DealBaseView):
+
     success_message = None
     success_message_admin = _('The deal #{} has been recovered successfully.')
 
@@ -575,6 +576,7 @@ class RecoverDealView(DealBaseView):
         hactivity = self.get_object()
         if not self.request.user.has_perm('landmatrix.change_activity'):
             return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier}))
+        involvement = hactivity.involvements.first()
         attributes = hactivity.attributes.all()
         # Create new historical activity
         hactivity.pk = None
@@ -586,6 +588,10 @@ class RecoverDealView(DealBaseView):
             hattribute.pk = None
             hattribute.fk_activity_id = hactivity.id
             hattribute.save()
+        if involvement:
+            involvement.pk = None
+            involvement.fk_activity = hactivity
+            involvement.save()
         hactivity.update_public_activity()
 
         # Create success message

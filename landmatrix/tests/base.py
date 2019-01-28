@@ -1,0 +1,106 @@
+import mock
+
+from django.db import transaction
+from django.conf import settings
+from django.contrib.auth.models import User, Group, Permission
+from grid.templatetags.custom_tags import get_user_role
+from django.test import TestCase, RequestFactory
+
+from api.elasticsearch import es_search
+
+
+class TestDealBase(TestCase):
+
+    fixtures = [
+        'languages',
+        'countries_and_regions',
+        'users_and_groups',
+        'status',
+        'investors',
+    ]
+
+    DEAL_DATA = {
+        # Location
+        "location-TOTAL_FORMS": 1,
+        "location-INITIAL_FORMS": 0,
+        "location-MIN_NUM_FORMS": 1,
+        "location-MAX_NUM_FORMS": 1,
+        "location-0-level_of_accuracy": "Exact location",
+        "location-0-location": "Rakhaing-Staat, Myanmar (Birma)",
+        "location-0-location-map": "Rakhaing-Staat, Myanmar (Birma)",
+        "location-0-point_lat": 19.810093,
+        "location-0-point_lon": 93.98784269999999,
+        "location-0-target_country": 104,
+        # General info
+        "id_negotiation_status_0": "Contract signed",
+        "id_negotiation_status_1": None,
+        "id_negotiation_status_2": None,
+        # Contract
+        "contract-TOTAL_FORMS": 0,
+        "contract-INITIAL_FORMS": 0,
+        "contract-MIN_NUM_FORMS": 0,
+        "contract-MAX_NUM_FORMS": 0,
+        # Data source
+        "data_source-TOTAL_FORMS": 1,
+        "data_source-INITIAL_FORMS": 0,
+        "data_source-MIN_NUM_FORMS": 1,
+        "data_source-MAX_NUM_FORMS": 1,
+        "data_source-0-type": "Media report",
+        # Investor
+        "operational_stakeholder": 10,
+    }
+
+    def setUp(self):
+        self.users = {
+            'reporter': User.objects.get(username='reporter'),
+            'editor': User.objects.get(username='editor'),
+            'administrator': User.objects.get(username='administrator'),
+        }
+        self.groups = {
+            'reporter': Group.objects.get(name='Reporters'),
+            'editor': Group.objects.get(name='Editors'),
+            'administrator': Group.objects.get(name='Administrators'),
+        }
+        self.factory = RequestFactory()
+
+        # Create group permissions
+        # This not possible in fixtures, because permissions and content types are created on run-time
+        perm_review_activity = Permission.objects.get(codename='review_activity')
+        self.groups['editor'].permissions.add(perm_review_activity)
+        perm_add_activity = Permission.objects.get(codename='add_activity')
+        perm_change_activity = Permission.objects.get(codename='change_activity')
+        perm_delete_activity = Permission.objects.get(codename='delete_activity')
+        self.groups['administrator'].permissions.add(perm_review_activity)
+        self.groups['administrator'].permissions.add(perm_add_activity)
+        self.groups['administrator'].permissions.add(perm_change_activity)
+        self.groups['administrator'].permissions.add(perm_delete_activity)
+
+        settings.CELERY_ALWAYS_EAGER = True
+        settings.ELASTICSEARCH_INDEX_NAME = 'landmatrix_test'
+
+        es_search.create_index()
+
+    def get_username_and_role(self, user):
+        """
+        Get username and role for specified user (for comparison in dashboard/manage section)
+        :return:
+        """
+        user = self.users[user].username
+        role = get_user_role(self.users[user])
+        if role:
+            user += ' (%s)' % role
+        return user
+
+    def run_commit_hooks(self):
+        """
+        Fake transaction commit to run delayed on_commit functions
+        see: https://medium.com/gitux/speed-up-django-transaction-hooks-tests-6de4a558ef96
+        :return:
+        """
+        for db_name in reversed(self._databases_names()):
+            with mock.patch('django.db.backends.base.base.BaseDatabaseWrapper.validate_no_atomic_block', lambda a: False):
+                transaction.get_connection(using=db_name).run_and_clear_commit_hooks()
+
+
+class TestInvestorBase(TestDealBase):
+    pass
