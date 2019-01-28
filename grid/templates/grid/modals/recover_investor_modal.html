@@ -10,7 +10,7 @@
         <p>{% trans "Are you sure you want to recover this investor?" %}</p>
       </div>
       <div class="modal-footer">
-        <form method="POST" action="{% url 'recover_investor' investor_id=investor.investor_identifier %}">{% csrf_token %}
+        <form method="POST" action="{% url 'investor_recover' investor_id=investor.investor_identifier %}">{% csrf_token %}
           <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "No, cancel" %}</button>
           <button type="submit" class="btn btn-primary">{% trans "Yes, recover" %}</button>
         </form>

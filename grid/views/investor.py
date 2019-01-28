@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import Http404, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+from django.shortcuts import redirect
 from django.utils.html import escape
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
@@ -18,23 +19,17 @@ from grid.views.base import TableGroupView
 from grid.views.filter import get_investor_variable_table
 from grid.views.browse_filter_conditions import get_investor_field_label
 from grid.utils import has_perm_approve_reject
-from landmatrix.models.investor import InvestorBase, HistoricalInvestor, HistoricalInvestorVentureInvolvement
+from landmatrix.models.investor import InvestorBase, Investor, HistoricalInvestor, HistoricalInvestorVentureInvolvement
 
 
 class InvestorFormsMixin:
-    '''
+    """
     Handle the shared form behaviour for create and update.
-    '''
-
+    """
     def get_form_class(self):
         hinvestor = self.get_object()
         # Check current role of investor
         role = self.request.GET.get('role', '')
-        if not role:
-            if hinvestor and hinvestor.is_operating_company:
-                role = 'operational_stakeholder'
-            else:
-                role = 'parent_investor'
         if role == 'parent_investor':
             return ParentInvestorForm
         elif role == 'parent_company':
@@ -168,22 +163,22 @@ class InvestorUpdateView(InvestorFormsMixin,
                 investor = queryset.filter(investor_identifier=investor_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
-        # Reporters are allow to change only investors they've created
-        user = self.request.user
-        if user.groups.filter(name='Reporters').count() > 0:
-            if investor.history_user != user:
-                raise Http404('You are not allowed to edit investor %s' % investor_id)
+        # Reporters are allowed to change only investors they've created
+        #user = self.request.user
+        #if user.groups.filter(name='Reporters').count() > 0:
+        #    if investor.history_user != user:
+        #        raise Http404('You are not allowed to edit investor %s' % investor_id)
         return investor
 
     def form_valid(self, investor_form, stakeholders_formset, investors_formset):
         old_hinvestor = self.get_object()
-        is_admin = self.request.user.has_perm('landmatrix.change_activity')
-        is_editor = self.request.user.has_perm('landmatrix.review_activity')
+        is_admin = self.request.user.has_perm('landmatrix.change_investor')
+        is_editor = self.request.user.has_perm('landmatrix.review_investor')
 
         if old_hinvestor.fk_status_id == HistoricalInvestor.STATUS_PENDING:
             # Only editors and administrators are allowed to edit pending versions
             if not is_editor and not is_admin:
-                raise HttpResponseForbidden('Deal version is pending')
+                raise HttpResponseForbidden('Investor version is pending')
 
         # Don't create new version if rejected
         if 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, old_hinvestor):
@@ -204,14 +199,9 @@ class InvestorUpdateView(InvestorFormsMixin,
         # Is dialog?
         self.object = hinvestor
         if self.request.GET.get('popup', False):
-            response = self.render_popup()
-        else:
-            context = self.get_context_data(
-                form=investor_form, parent_companies=stakeholders_formset,
-                parent_investors=investors_formset)
-            response = self.render_to_response(context)
+            return self.render_popup()
 
-        return response
+        return redirect('investor_detail', investor_id=hinvestor.investor_identifier)
 
     def render_popup(self):
         result = """
@@ -230,7 +220,6 @@ class InvestorCreateView(InvestorFormsMixin,
                          CreateView):
 
     model = HistoricalInvestor
-    form_class = ParentInvestorForm
     template_name = 'grid/investor_form.html'
     context_object_name = 'investor'
     success_message = _('The investor has been submitted successfully (#{}). It will be reviewed and published soon.')
@@ -303,21 +292,36 @@ class InvestorDetailView(DetailView):
     def get_object(self):
         # TODO: Cache result for user
         investor_id = self.kwargs.get('investor_id')
-        history_id = self.kwargs.get('history_id')
+        history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalInvestor.objects
+        if not self.request.user.is_authenticated():
+            i = self._get_public_investor()
+            if not i:
+                raise Http404('Investor %s is not public' % investor_id)
+            queryset = queryset.public_or_deleted(self.request.user)
         try:
             if history_id:
                 investor = queryset.get(id=history_id)
             else:
                 investor = queryset.filter(investor_identifier=investor_id).latest()
         except ObjectDoesNotExist as e:
-            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
-        # Reporters are allow to change only investors they've created
-        user = self.request.user
-        if user.groups.filter(name='Reporters').count() > 0:
-            if investor.history_user != user:
-                raise Http404('You are not allowed to edit investor %s' % investor_id)
+            raise Http404('Activity %s does not exist (%s)' % (investor_id, str(e)))
+        # Status: Deleted
+        if investor.fk_status_id == HistoricalInvestor.STATUS_DELETED:
+            # Only Administrators are allowed to edit (recover) deleted deals
+            if not self.request.user.has_perm('landmatrix.change_investor'):
+                raise Http404('Investor %s has been deleted' % investor_id)
+        # Status: Rejected
+        #if investor.fk_status_id == HistoricalInvestor.STATUS_REJECTED:
+        #    # Only Administrators are allowed to edit (recover) deleted investors
+        #    if not self.request.user.has_perm('landmatrix.review_investor') and \
+        #       not investor.history_user == self.request.user:
+        #        raise Http404('Investor %s has been rejected' % investor_id)
         return investor
+
+    def _get_public_investor(self):
+        # TODO: Cache result for user
+        return Investor.objects.filter(investor_identifier=self.kwargs.get('investor_id')).first()
 
 
 class InvestorListView(TableGroupView):
@@ -366,7 +370,7 @@ class InvestorListView(TableGroupView):
         # collect a proper and authorized-for-that-user status list from the requet paramert
         request_status_list = self.request.GET.getlist('status', []) if self.request else []
         if request_status_list and (self.request.user.is_superuser or
-                                    self.request.user.has_perm('landmatrix.review_activity')):
+                                    self.request.user.has_perm('landmatrix.review_investor')):
             status_list_get = [int(status) for status in request_status_list
                                if (status.isnumeric() and int(status) in dict(InvestorBase.STATUS_CHOICES).keys())]
             if status_list_get:
@@ -424,7 +428,7 @@ class DeleteInvestorView(InvestorUpdateView):
         investor_id = self.kwargs.get('investor_id')
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalInvestor.objects
-        if not self.request.user.has_perm('landmatrix.review_activity'):
+        if not self.request.user.has_perm('landmatrix.review_investor'):
             queryset = queryset.public()
         try:
             if history_id:
@@ -433,7 +437,7 @@ class DeleteInvestorView(InvestorUpdateView):
                 investor = queryset.filter(investor_identifier=investor_id).latest()
         except ObjectDoesNotExist as e:
             raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
-        if not self.request.user.has_perm('landmatrix.change_activity'):
+        if not self.request.user.has_perm('landmatrix.change_investor'):
             if investor.fk_status_id == investor.STATUS_DELETED:
                 raise Http404('Investor %s has already been deleted' % investor_id)
         return investor
@@ -443,7 +447,7 @@ class DeleteInvestorView(InvestorUpdateView):
         hinvestor = self.get_object()
         # Create new historical activity
         hinvestor.pk = None
-        if self.request.user.has_perm('landmatrix.delete_activity'):
+        if self.request.user.has_perm('landmatrix.delete_investor'):
             hinvestor.fk_status_id = hinvestor.STATUS_DELETED
         else:
             hinvestor.fk_status_id = hinvestor.STATUS_TO_DELETE
@@ -452,14 +456,14 @@ class DeleteInvestorView(InvestorUpdateView):
         hinvestor.public_version = None
         hinvestor.save()
 
-        if self.request.user.has_perm('landmatrix.delete_activity'):
+        if self.request.user.has_perm('landmatrix.delete_investor'):
             hinvestor.update_public_investor()
 
         # Create success message
-        if self.request.user.has_perm('landmatrix.delete_activity'):
+        if self.request.user.has_perm('landmatrix.delete_investor'):
             messages.success(self.request, self.success_message_admin.format(hinvestor.investor_identifier))
         else:
-            self.create_investor_changeset(hinvestor)
+            #self.create_investor_changeset(hinvestor)
             messages.success(self.request, self.success_message.format(hinvestor.investor_identifier))
 
         return HttpResponseRedirect(reverse('investor_detail', kwargs={'investor_id': hinvestor.investor_identifier}))
@@ -472,10 +476,10 @@ class RecoverInvestorView(InvestorUpdateView):
 
     def get_object(self):
         # TODO: Cache result for user
-        investor_id = self.kwargs.get('deal_id')
+        investor_id = self.kwargs.get('investor_id')
         history_id = self.kwargs.get('history_id', None)
         queryset = HistoricalInvestor.objects
-        if not self.request.user.has_perm('landmatrix.review_activity'):
+        if not self.request.user.has_perm('landmatrix.review_investor'):
             queryset = queryset.public()
         try:
             if history_id:
@@ -483,10 +487,10 @@ class RecoverInvestorView(InvestorUpdateView):
             else:
                 investor = queryset.filter(investor_identifier=investor_id).latest()
         except ObjectDoesNotExist as e:
-            raise Http404('Investor %s does not exist (%s)' % (deal_id, str(e)))
-        if not self.request.user.has_perm('landmatrix.change_activity'):
+            raise Http404('Investor %s does not exist (%s)' % (investor_id, str(e)))
+        if not self.request.user.has_perm('landmatrix.change_investor'):
             if investor.fk_status_id != investor.STATUS_DELETED:
-                raise Http404('Investor %s is already active' % deal_id)
+                raise Http404('Investor %s is already active' % investor_id)
         return investor
 
     def get(self, request, *args, **kwargs):
@@ -496,9 +500,8 @@ class RecoverInvestorView(InvestorUpdateView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         hinvestor = self.get_object()
-        if not self.request.user.has_perm('landmatrix.change_activity'):
+        if not self.request.user.has_perm('landmatrix.change_investor'):
             return HttpResponseRedirect(reverse('investor_detail', kwargs={'investor_id': hinvestor.investor_identifier}))
-        attributes = hinvestor.attributes.all()
         # Create new historical activity
         hinvestor.pk = None
         hinvestor.fk_status_id = hinvestor.STATUS_OVERWRITTEN

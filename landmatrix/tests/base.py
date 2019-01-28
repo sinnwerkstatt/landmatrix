@@ -66,14 +66,23 @@ class TestDealBase(TestCase):
         # Create group permissions
         # This not possible in fixtures, because permissions and content types are created on run-time
         perm_review_activity = Permission.objects.get(codename='review_activity')
+        perm_review_investor = Permission.objects.get(codename='review_investor')
         self.groups['editor'].permissions.add(perm_review_activity)
+        self.groups['editor'].permissions.add(perm_review_investor)
         perm_add_activity = Permission.objects.get(codename='add_activity')
         perm_change_activity = Permission.objects.get(codename='change_activity')
         perm_delete_activity = Permission.objects.get(codename='delete_activity')
+        perm_add_investor = Permission.objects.get(codename='add_investor')
+        perm_change_investor = Permission.objects.get(codename='change_investor')
+        perm_delete_investor = Permission.objects.get(codename='delete_investor')
         self.groups['administrator'].permissions.add(perm_review_activity)
+        self.groups['administrator'].permissions.add(perm_review_investor)
         self.groups['administrator'].permissions.add(perm_add_activity)
         self.groups['administrator'].permissions.add(perm_change_activity)
         self.groups['administrator'].permissions.add(perm_delete_activity)
+        self.groups['administrator'].permissions.add(perm_add_investor)
+        self.groups['administrator'].permissions.add(perm_change_investor)
+        self.groups['administrator'].permissions.add(perm_delete_investor)
 
         settings.CELERY_ALWAYS_EAGER = True
         settings.ELASTICSEARCH_INDEX_NAME = 'landmatrix_test'
@@ -103,4 +112,37 @@ class TestDealBase(TestCase):
 
 
 class TestInvestorBase(TestDealBase):
-    pass
+
+    INVESTOR_DATA = {
+        # Investor
+        "name": "Testinvestor",
+        "fk_country": "104",
+        "classification": "10",
+        "homepage": "https://www.example.com",
+        #"opencorporates_link": None,
+        "comment": "Test comment",
+        # Parent companies
+        "parent-company-form-TOTAL_FORMS": 1,
+        "parent-company-form-INITIAL_FORMS": 0,
+        "parent-company-form-MIN_NUM_FORMS": 0,
+        "parent-company-form-MAX_NUM_FORMS": 1,
+        "parent-company-form-0-fk_investor": "10",
+        "parent-company-form-0-percentage": 100,
+        "parent-company-form-0-loans_amount": 0,
+        "parent-company-form-0-loans_date": None,
+        "parent-company-form-0-comment": "Test comment",
+        "parent-company-form-0-id": "",
+        "parent-company-form-0-DELETE": None,
+        # Tertiary investors/lenders
+        "parent-investor-form-TOTAL_FORMS": 0,
+        "parent-investor-form-INITIAL_FORMS": 0,
+        "parent-investor-form-MIN_NUM_FORMS": 0,
+        "parent-investor-form-MAX_NUM_FORMS": 1,
+        "parent-investor-form-0-fk_investor": None,
+        "parent-investor-form-0-percentage": None,
+        "parent-investor-form-0-loans_amount": None,
+        "parent-investor-form-0-loans_date": None,
+        "parent-investor-form-0-comment": None,
+        "parent-investor-form-0-id": None,
+        "parent-investor-form-0-DELETE": None,
+    }

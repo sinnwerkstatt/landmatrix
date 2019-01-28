@@ -356,6 +356,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
 
 
 class Investor(InvestorBase):
+
     subinvestors = models.ManyToManyField(
         "self", through='InvestorVentureInvolvement', symmetrical=False,
         through_fields=('fk_venture', 'fk_investor'))
@@ -364,6 +365,9 @@ class Investor(InvestorBase):
         ordering = ('name',)
         verbose_name = _("Investor")
         verbose_name_plural = _("Investors")
+        permissions = (
+            ("review_investor", "Can review investor changes"),
+        )
 
 
 class HistoricalInvestorQuerySet(InvestorQuerySet):

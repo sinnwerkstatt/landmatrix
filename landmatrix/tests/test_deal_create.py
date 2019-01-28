@@ -89,7 +89,7 @@ class TestDealCreate(TestDealBase):
         response = ManageAddsView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Deals/Investors of Administrator does not work')
         activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1, msg='Manage Pending Deals of Administrator should be empty')
+        self.assertEqual(len(activities), 1, msg='Manage Pending Deals/Investors of Administrator should be empty')
 
         # Check if deal appears in manage section of editor
         request = self.factory.get(reverse('manage_pending_adds'))
