@@ -755,7 +755,7 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
 
     def get_for_user(self, user):
         qs = self.filter(history_user=user).values_list('activity_identifier', flat=True)
-        return self.filter(activity_identifier__in=qs).filter(id__in=self.latest_only())
+        return self.filter(activity_identifier__in=qs).filter(id__in=self.latest_ids())
 
     def _single_revision_identifiers(self):
         '''
@@ -781,7 +781,7 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         '''
         subquery = self._single_revision_identifiers()
         queryset = self.exclude(activity_identifier__in=subquery)
-        return queryset.filter(id__in=self.latest_only())
+        return queryset.filter(id__in=self.latest_ids())
 
     def without_multiple_revisions(self):
         '''
@@ -789,13 +789,16 @@ class HistoricalActivityQuerySet(ActivityQuerySet):
         '''
         subquery = self._single_revision_identifiers()
         queryset = self.filter(activity_identifier__in=subquery)
-        return queryset.filter(id__in=self.latest_only())
+        return queryset.filter(id__in=self.latest_ids())
 
-    def latest_only(self):
+    def latest_ids(self):
         queryset = HistoricalActivity.objects.values('activity_identifier').annotate(
             max_id=models.Max('id'),
         ).order_by().values_list('max_id', flat=True)
         return queryset
+
+    def latest_only(self):
+        return self.filter(id__in=self.latest_ids())
 
 
 class HistoricalActivity(ActivityBase):

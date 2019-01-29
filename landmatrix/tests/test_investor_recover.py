@@ -16,12 +16,13 @@ class TestInvestorRecover(TestInvestorBase):
         'status',
         'investors',
         'activities',
-        'involvements',
+        'activity_involvements',
+        'venture_involvements',
     ]
 
     def test_editor(self):
         # Recover investor as editor
-        investor = HistoricalInvestor.objects.deleted().latest()
+        investor = HistoricalInvestor.objects.latest_only().deleted().latest()
         data = {
             # Action comment
             "tg_action_comment": "Test recover investor",
@@ -47,7 +48,7 @@ class TestInvestorRecover(TestInvestorBase):
 
     def test_admin(self):
         # Recover investor as editor
-        investor = HistoricalInvestor.objects.deleted().latest()
+        investor = HistoricalInvestor.objects.latest_only().deleted().latest()
         data = {
             # Action comment
             "tg_action_comment": "Test recover investor",

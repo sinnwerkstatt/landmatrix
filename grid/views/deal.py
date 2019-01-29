@@ -116,7 +116,7 @@ class DealBaseView(TemplateView):
         if old_hactivity.fk_status_id == HistoricalActivity.STATUS_PENDING:
             # Only editors and administrators are allowed to edit pending versions
             if not is_editor and not is_admin:
-                raise HttpResponseForbidden('Deal version is pending')
+                return HttpResponseForbidden('Deal version is pending')
 
         # Don't create new version if rejected
         if 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, old_hactivity):
@@ -576,7 +576,7 @@ class DealRecoverView(DealBaseView):
         hactivity = self.get_object()
         if not self.request.user.has_perm('landmatrix.change_activity'):
             return HttpResponseRedirect(reverse('deal_detail', kwargs={'deal_id': hactivity.activity_identifier}))
-        involvement = hactivity.involvements.first()
+        involvements = list(hactivity.involvements.all())
         attributes = hactivity.attributes.all()
         # Create new historical activity
         hactivity.pk = None
@@ -588,7 +588,7 @@ class DealRecoverView(DealBaseView):
             hattribute.pk = None
             hattribute.fk_activity_id = hactivity.id
             hattribute.save()
-        if involvement:
+        for involvement in involvements:
             involvement.pk = None
             involvement.fk_activity = hactivity
             involvement.save()

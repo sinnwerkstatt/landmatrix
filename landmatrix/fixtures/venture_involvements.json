@@ -1,0 +1,8 @@
+[
+  {"pk": 10, "model": "landmatrix.investorventureinvolvement", "fields": {"fk_investor": 50, "fk_venture": 20}},
+  {"pk": 20, "model": "landmatrix.investorventureinvolvement", "fields": {"fk_investor": 60, "fk_venture": 30}},
+
+  {"pk": 10, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 50, "fk_venture": 20}},
+  {"pk": 20, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 60, "fk_venture": 30}},
+  {"pk": 30, "model": "landmatrix.historicalinvestorventureinvolvement", "fields": {"fk_investor": 61, "fk_venture": 31}}
+]

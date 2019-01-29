@@ -14,7 +14,7 @@ from landmatrix.tests.base import TestDealBase
 
 class TestDealCreate(TestDealBase):
 
-    def is_deal_added(self, activity, user):
+    def assert_deal_created(self, activity, user):
         # Check if deal is public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
         request.user = AnonymousUser()
@@ -26,9 +26,7 @@ class TestDealCreate(TestDealBase):
         request.user = user
         response = LogAddedView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Latest Added Log does not work')
-        activities = list(response.context_data['items'])
-        self.assertGreaterEqual(len(activities), 1, msg='Wrong list of deals in Latest Added Log of Reporter')
-        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Latest Added Log')
+        self.assert_deal_in_list(response, activity)
 
         # Check if deal is in elasticsearch/export
         self.run_commit_hooks()
@@ -63,7 +61,7 @@ class TestDealCreate(TestDealBase):
         response = DealCreateView.as_view()(request)
         self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
-        activity = HistoricalActivity.objects.pending().latest()
+        activity = HistoricalActivity.objects.latest_only().pending().latest()
 
         # Check if deal appears in my deals section of reporter
         request = self.factory.get(reverse('manage_for_user'))
@@ -74,10 +72,7 @@ class TestDealCreate(TestDealBase):
         request.user = self.users['reporter']
         response = ManageForUserView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage My Deals/Investors of Reporter does not work')
-        activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals/Investors of Reporter')
-        self.assertEqual(activities[0]['history_id'], activity.id,
-                         msg='Deal does not appear in Manage My Deals/Investors of Reporter')
+        self.assert_deal_in_list(response, activity, role='reporter')
 
         # Check if deal appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_adds'))
@@ -88,8 +83,7 @@ class TestDealCreate(TestDealBase):
         request.user = self.users['administrator']
         response = ManageAddsView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Deals/Investors of Administrator does not work')
-        activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1, msg='Manage Pending Deals/Investors of Administrator should be empty')
+        self.assert_deal_in_list(response, activity)
 
         # Check if deal appears in manage section of editor
         request = self.factory.get(reverse('manage_pending_adds'))
@@ -100,12 +94,7 @@ class TestDealCreate(TestDealBase):
         request.user = self.users['editor']
         response = ManageAddsView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Additions of Editor does not work')
-        activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1)
-        self.assertEqual(activities[0]['history_id'], activity.id,
-                         msg='Deal does not appear in Manage Pending Deals/Investors of Editor')
-        self.assertEqual(activities[0]['user'], self.get_username_and_role('reporter'),
-                         msg='Deal has wrong user in Manage Pending Deals/Investors of Editor')
+        self.assert_deal_in_list(response, activity, role='reporter')
 
         # Approve deal as editor
         data = {
@@ -130,10 +119,7 @@ class TestDealCreate(TestDealBase):
         request.user = self.users['administrator']
         response = ManageAddsView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Additions of Administrator does not work')
-        activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Additions of Administrator')
-        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Manage Pending Additions of Administrator')
-        self.assertEqual(activities[0]['user'], self.get_username_and_role('reporter'), msg='Deal has wrong user in Manage Pending Additions of Administrator')
+        self.assert_deal_in_list(response, activity, role='reporter')
 
         # Approve deal as administrator
         data = {
@@ -149,7 +135,7 @@ class TestDealCreate(TestDealBase):
         response = ApproveActivityChangeView.as_view()(request, id=activity.id)
         self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
-        self.is_deal_added(activity, self.users['reporter'])
+        self.assert_deal_created(activity, self.users['reporter'])
 
     def test_editor(self):
         # Add deal as editor
@@ -167,7 +153,7 @@ class TestDealCreate(TestDealBase):
         response = DealCreateView.as_view()(request)
         self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
-        activity = HistoricalActivity.objects.pending().latest()
+        activity = HistoricalActivity.objects.latest_only().pending().latest()
 
         # Check if deal appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_adds'))
@@ -178,10 +164,7 @@ class TestDealCreate(TestDealBase):
         request.user = self.users['administrator']
         response = ManageAddsView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Additions of Administrator does not work')
-        activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Additions of Administrator')
-        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Manage Pending Additions of Administrator')
-        self.assertEqual(activities[0]['user'], self.get_username_and_role('editor'), msg='Deal has wrong user in Manage Pending Additions of Administrator')
+        self.assert_deal_in_list(response, activity, role='editor')
 
         # Approve deal as administrator
         data = {
@@ -197,13 +180,17 @@ class TestDealCreate(TestDealBase):
         response = ApproveActivityChangeView.as_view()(request, id=activity.id)
         self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
-        self.is_deal_added(activity, self.users['editor'])
+        self.assert_deal_created(activity, self.users['editor'])
 
-    def test_administrator(self):
-        # Add deal as administrator
+    def test_administrator_with_investor_create(self):
+        """
+        Test add deal as administrator
+        with creating investor (1 pending investor version only)
+        :return:
+        """
         data = self.DEAL_DATA.copy()
         data.update({
-            # Action comment
+            "operational_stakeholder": self.INVESTOR_CREATED,
             "tg_action_comment": "Test add deal",
             "approve_btn": True
         })
@@ -216,6 +203,33 @@ class TestDealCreate(TestDealBase):
         response = DealCreateView.as_view()(request)
         self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
 
-        activity = HistoricalActivity.objects.public().latest()
+        activity = HistoricalActivity.objects.latest_only().public().latest()
 
-        self.is_deal_added(activity, self.users['administrator'])
+        self.assert_deal_created(activity, self.users['administrator'])
+        self.assert_investors_approved(activity)
+
+    def test_administrator_with_investor_update(self):
+        """
+        Test add deal as administrator
+        with updating investor (1 pending but also other investor versions)
+        :return:
+        """
+        data = self.DEAL_DATA.copy()
+        data.update({
+            "operational_stakeholder": self.INVESTOR_UPDATED,
+            "tg_action_comment": "Test add deal",
+            "approve_btn": True
+        })
+        request = self.factory.post(reverse('add_deal'), data)
+        # Mock messages framework (not available for unit tests)
+        setattr(request, 'session', {})
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        request.user = self.users['administrator']
+        response = DealCreateView.as_view()(request)
+        self.assertEqual(response.status_code, 302, msg='Add deal does not redirect')
+
+        activity = HistoricalActivity.objects.latest_only().public().latest()
+
+        self.assert_deal_created(activity, self.users['administrator'])
+        self.assert_investors_not_approved(activity)

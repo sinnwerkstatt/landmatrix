@@ -86,7 +86,7 @@ class BaseInvestorForm(BaseModelForm):
         # Prevent duplicate names
         # FIXME: Make model field unique in the future
         name = self.cleaned_data['name']
-        latest_ids = HistoricalInvestor.objects.latest_only()
+        latest_ids = HistoricalInvestor.objects.latest_ids()
         duplicates = HistoricalInvestor.objects.filter(id__in=latest_ids).filter(fk_status__in=(2, 3))
         duplicates = duplicates.filter(name=name)
         investor_identifier = self.instance.investor_identifier

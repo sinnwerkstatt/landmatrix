@@ -9,18 +9,20 @@ from landmatrix.tests.base import TestDealBase
 
 
 class TestDealRecover(TestDealBase):
+
     fixtures = [
         'countries_and_regions',
         'users_and_groups',
         'status',
         'investors',
         'activities',
-        'involvements',
+        'activity_involvements',
+        'venture_involvements',
     ]
 
     def test_editor(self):
         # Recover deal as editor
-        activity = HistoricalActivity.objects.deleted().latest()
+        activity = HistoricalActivity.objects.latest_only().deleted().latest()
         data = {
             # Action comment
             "tg_action_comment": "Test recover deal",
@@ -46,7 +48,7 @@ class TestDealRecover(TestDealBase):
 
     def test_admin(self):
         # Recover deal as editor
-        activity = HistoricalActivity.objects.deleted().latest()
+        activity = HistoricalActivity.objects.latest_only().deleted().latest()
         data = {
             # Action comment
             "tg_action_comment": "Test recover deal",

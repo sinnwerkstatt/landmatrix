@@ -1,10 +1,16 @@
 [
   {"pk": 10, "model": "landmatrix.investor", "fields": {"investor_identifier": 1, "fk_status": 2, "name": "Test Investor #1", "fk_country": 116, "classification": 10}},
-  {"pk": 20, "model": "landmatrix.investor", "fields": {"investor_identifier": 2, "fk_status": 2, "name": "Test Investor #2", "fk_country": 116, "classification": 10}},
+  {"pk": 20, "model": "landmatrix.investor", "fields": {"investor_identifier": 2, "fk_status": 1, "name": "Test Investor #2", "fk_country": 116, "classification": 10}},
   {"pk": 30, "model": "landmatrix.investor", "fields": {"investor_identifier": 3, "fk_status": 2, "name": "Test Investor #3", "fk_country": 116, "classification": 10}},
+  {"pk": 50, "model": "landmatrix.investor", "fields": {"investor_identifier": 5, "fk_status": 1, "name": "Test Investor #5", "fk_country": 116, "classification": 10}},
+  {"pk": 60, "model": "landmatrix.investor", "fields": {"investor_identifier": 6, "fk_status": 2, "name": "Test Investor #6", "fk_country": 116, "classification": 10}},
 
   {"pk": 10, "model": "landmatrix.historicalinvestor", "fields": {"investor_identifier": 1, "fk_status": 2, "name": "Test Investor #1", "fk_country": 116, "classification": 10}},
-  {"pk": 20, "model": "landmatrix.historicalinvestor", "fields": {"investor_identifier": 2, "fk_status": 2, "name": "Test Investor #2", "fk_country": 116, "classification": 10}},
+  {"pk": 20, "model": "landmatrix.historicalinvestor", "fields": {"investor_identifier": 2, "fk_status": 1, "name": "Test Investor #2", "fk_country": 116, "classification": 10}},
   {"pk": 30, "model": "landmatrix.historicalinvestor", "fields": {"investor_identifier": 3, "fk_status": 2, "name": "Test Investor #3", "fk_country": 116, "classification": 10}},
-  {"pk": 40, "model": "landmatrix.historicalinvestor", "fields": {"investor_identifier": 4, "fk_status": 4, "name": "Test Investor #4", "fk_country": 116, "classification": 10}}
+  {"pk": 31, "model": "landmatrix.historicalinvestor", "fields": {"investor_identifier": 3, "fk_status": 1, "name": "Test Investor #3", "fk_country": 116, "classification": 10}},
+  {"pk": 40, "model": "landmatrix.historicalinvestor", "fields": {"investor_identifier": 4, "fk_status": 4, "name": "Test Investor #4", "fk_country": 116, "classification": 10}},
+  {"pk": 50, "model": "landmatrix.historicalinvestor", "fields": {"investor_identifier": 5, "fk_status": 1, "name": "Test Investor #5", "fk_country": 116, "classification": 10}},
+  {"pk": 60, "model": "landmatrix.historicalinvestor", "fields": {"investor_identifier": 6, "fk_status": 2, "name": "Test Investor #6", "fk_country": 116, "classification": 10}},
+  {"pk": 61, "model": "landmatrix.historicalinvestor", "fields": {"investor_identifier": 6, "fk_status": 1, "name": "Test Investor #6", "fk_country": 116, "classification": 10}}
 ]

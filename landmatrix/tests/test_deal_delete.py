@@ -14,16 +14,18 @@ from landmatrix.tests.base import TestDealBase
 
 
 class TestDealDelete(TestDealBase):
+
     fixtures = [
         'countries_and_regions',
         'users_and_groups',
         'status',
         'investors',
         'activities',
-        'involvements',
+        'activity_involvements',
+        'venture_involvements',
     ]
 
-    def is_deal_deleted(self, activity, user=None):
+    def assert_deal_deleted(self, activity, user=None):
         # Check if deal is NOT public
         request = self.factory.get(reverse('deal_detail', kwargs={'deal_id': activity.activity_identifier}))
         request.user = AnonymousUser()
@@ -39,9 +41,7 @@ class TestDealDelete(TestDealBase):
         request.user = user
         response = LogDeletedView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Latest Deleted Log does not work')
-        activities = list(response.context_data['items'])
-        self.assertGreaterEqual(len(activities), 1, msg='Wrong list of deals in Latest Deleted Log')
-        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Latest Deleted Log')
+        self.assert_deal_in_list(response, activity)
 
         # Check if deal is NOT in elasticsearch/export
         self.run_commit_hooks()
@@ -62,7 +62,7 @@ class TestDealDelete(TestDealBase):
 
     def test_reporter(self):
         # Delete deal as reporter
-        activity = HistoricalActivity.objects.public().latest()
+        activity = HistoricalActivity.objects.latest_only().public().latest()
         data = {
             # Action comment
             "tg_action_comment": "Test delete deal",
@@ -80,7 +80,7 @@ class TestDealDelete(TestDealBase):
         #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Delete deal by Reporter does not redirect')
 
-        activity = HistoricalActivity.objects.to_delete().latest()
+        activity = HistoricalActivity.objects.latest_only().to_delete().latest()
 
         # Check if deal appears in my deals section of reporter
         request = self.factory.get(reverse('manage_for_user'))
@@ -91,9 +91,7 @@ class TestDealDelete(TestDealBase):
         request.user = self.users['reporter']
         response = ManageForUserView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage My Deals/Investors of Reporter does not work')
-        activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage My Deals/Investors of Reporter')
-        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Manage My Deals/Investors of Reporter')
+        self.assert_deal_in_list(response, activity)
 
         # Check if deal appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_deletes'))
@@ -104,8 +102,7 @@ class TestDealDelete(TestDealBase):
         request.user = self.users['administrator']
         response = ManageDeletesView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Deletes of Administrator does not work')
-        activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1, msg='Manage Pending Deletes of Administrator should be empty')
+        self.assert_deal_in_list(response, activity)
 
         # Check if deal appears in manage section of editor
         request = self.factory.get(reverse('manage_pending_deletes'))
@@ -116,10 +113,7 @@ class TestDealDelete(TestDealBase):
         request.user = self.users['editor']
         response = ManageDeletesView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Deletes of Editor does not work')
-        activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Deletes of Editor')
-        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Manage Pending Deletes of Editor')
-        self.assertEqual(activities[0]['user'], self.get_username_and_role('reporter'), msg='Deal has wrong user in Manage Pending Deletes of Editor')
+        self.assert_deal_in_list(response, activity, role='reporter')
 
         # Approve deal as editor
         data = {
@@ -148,10 +142,7 @@ class TestDealDelete(TestDealBase):
         request.user = self.users['administrator']
         response = ManageDeletesView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Deletes of Administrator does not work')
-        activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Deletes of Administrator')
-        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Manage Pending Deletes of Administrator')
-        self.assertEqual(activities[0]['user'], self.get_username_and_role('reporter'), msg='Deal has wrong user in Manage Pending Deletes of Administrator')
+        self.assert_deal_in_list(response, activity, role='reporter')
 
         # Approve deal as administrator
         data = {
@@ -171,11 +162,11 @@ class TestDealDelete(TestDealBase):
         #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve deal by Administrator does not redirect')
 
-        self.is_deal_deleted(activity, self.users['reporter'])
+        self.assert_deal_deleted(activity, self.users['reporter'])
 
     def test_editor(self):
         # Delete deal as editor
-        activity = HistoricalActivity.objects.public().latest()
+        activity = HistoricalActivity.objects.latest_only().public().latest()
         data = {
             # Action comment
             "tg_action_comment": "Test delete deal",
@@ -193,7 +184,7 @@ class TestDealDelete(TestDealBase):
         #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Delete deal does not redirect')
 
-        activity = HistoricalActivity.objects.to_delete().latest()
+        activity = HistoricalActivity.objects.latest_only().to_delete().latest()
 
         # Check if deal appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_deletes'))
@@ -204,10 +195,7 @@ class TestDealDelete(TestDealBase):
         request.user = self.users['administrator']
         response = ManageDeletesView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Deletes of Administrator does not work')
-        activities = list(response.context_data['items'])
-        self.assertEqual(len(activities), 1, msg='Wrong list of deals in Manage Pending Deletes of Administrator')
-        self.assertEqual(activities[0]['history_id'], activity.id, msg='Deal does not appear in Manage Pending Deletes of Administrator')
-        self.assertEqual(activities[0]['user'], self.get_username_and_role('editor'), msg='Deal has wrong user in Manage Pending Deletes of Administrator')
+        self.assert_deal_in_list(response, activity, role='editor')
 
         # Approve deal as administrator
         data = {
@@ -227,11 +215,11 @@ class TestDealDelete(TestDealBase):
         #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve deal does not redirect')
 
-        self.is_deal_deleted(activity, self.users['editor'])
+        self.assert_deal_deleted(activity, self.users['editor'])
 
     def test_administrator(self):
         # Delete deal as administrator
-        activity = HistoricalActivity.objects.public().latest()
+        activity = HistoricalActivity.objects.latest_only().public().latest()
         data = {
             # Action comment
             "tg_action_comment": "Test delete deal",
@@ -249,6 +237,6 @@ class TestDealDelete(TestDealBase):
         #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Delete deal does not redirect')
 
-        activity = HistoricalActivity.objects.deleted().latest()
+        activity = HistoricalActivity.objects.latest_only().deleted().latest()
 
-        self.is_deal_deleted(activity, self.users['administrator'])
+        self.assert_deal_deleted(activity, self.users['administrator'])

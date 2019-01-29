@@ -94,7 +94,7 @@ class InvestorListView(ElasticSearchMixin,
 
         term = self.request.GET.get('q', '')
         if term:
-            #latest_ids = HistoricalInvestor.objects.latest_only()
+            #latest_ids = HistoricalInvestor.objects.latest_ids()
             #queryset = HistoricalInvestor.objects.filter(id__in=latest_ids)
             #queryset = queryset.filter(name__icontains=term.lower())
             #results = []

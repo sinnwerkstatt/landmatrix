@@ -99,9 +99,9 @@ class LatestQuerySetMixin(FilteredQuerySetMixin):
 
     def _get_activities_and_investors_list(self, filter, limit):
         activities = getattr(self.get_filtered_activity_queryset(), filter)()
-        result = list(activities.filter(id__in=activities.latest_only())[:limit])
+        result = list(activities.filter(id__in=activities.latest_ids())[:limit])
         investors = getattr(self.get_filtered_investor_queryset(), filter)()
-        result += list(investors.filter(id__in=investors.latest_only())[:limit])
+        result += list(investors.filter(id__in=investors.latest_ids())[:limit])
         result.sort(key=lambda p: p.history_date, reverse=True)
         return result[:limit]
 
@@ -190,10 +190,10 @@ class PendingChangesMixin(FilteredQuerySetMixin):
     def get_pending_deletes_queryset(self, limit=None):
         activities = self.get_filtered_activity_queryset(queryset=self.get_permitted_activities())
         activities = activities.to_delete()
-        items = list(activities.filter(id__in=activities.latest_only())[:limit])
+        items = list(activities.filter(id__in=activities.latest_ids())[:limit])
         investors = self.get_filtered_investor_queryset(queryset=self.get_permitted_investors())
         investors = investors.to_delete()
-        items += list(investors.filter(id__in=investors.latest_only())[:limit])
+        items += list(investors.filter(id__in=investors.latest_ids())[:limit])
         items.sort(key=lambda i: i.history_date, reverse=True)
         return items[:limit]
 
@@ -204,11 +204,11 @@ class PendingChangesMixin(FilteredQuerySetMixin):
         activities = self.get_filtered_activity_queryset()
         activities = activities.rejected()
         activities = activities.filter(changesets__fk_user=self.request.user)
-        items = list(activities.filter(id__in=activities.latest_only())[:limit])
+        items = list(activities.filter(id__in=activities.latest_ids())[:limit])
         investors = self.get_filtered_investor_queryset()
         investors = investors.rejected()
         #investors = investors.filter(changesets__fk_user=self.request.user)
-        items += list(investors.filter(id__in=investors.latest_only())[:limit])
+        items += list(investors.filter(id__in=investors.latest_ids())[:limit])
         items.sort(key=lambda i: i.history_date, reverse=True)
         return items[:limit]
 

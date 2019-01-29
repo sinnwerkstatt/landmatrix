@@ -178,7 +178,7 @@ class InvestorUpdateView(InvestorFormsMixin,
         if old_hinvestor.fk_status_id == HistoricalInvestor.STATUS_PENDING:
             # Only editors and administrators are allowed to edit pending versions
             if not is_editor and not is_admin:
-                raise HttpResponseForbidden('Investor version is pending')
+                return HttpResponseForbidden('Investor version is pending')
 
         # Don't create new version if rejected
         if 'reject_btn' in self.request.POST and has_perm_approve_reject(self.request.user, old_hinvestor):

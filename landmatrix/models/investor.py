@@ -374,7 +374,7 @@ class HistoricalInvestorQuerySet(InvestorQuerySet):
 
     def get_for_user(self, user):
         qs = self.filter(history_user=user).values_list('investor_identifier', flat=True)
-        return self.filter(investor_identifier__in=qs).filter(id__in=self.latest_only())
+        return self.filter(investor_identifier__in=qs).filter(id__in=self.latest_ids())
 
     def _single_revision_identifiers(self):
         """
@@ -400,7 +400,7 @@ class HistoricalInvestorQuerySet(InvestorQuerySet):
         """
         subquery = self._single_revision_identifiers()
         queryset = self.exclude(investor_identifier__in=subquery)
-        return queryset.filter(id__in=self.latest_only())
+        return queryset.filter(id__in=self.latest_ids())
 
     def without_multiple_revisions(self):
         """
@@ -408,13 +408,16 @@ class HistoricalInvestorQuerySet(InvestorQuerySet):
         """
         subquery = self._single_revision_identifiers()
         queryset = self.filter(investor_identifier__in=subquery)
-        return queryset.filter(id__in=self.latest_only())
+        return queryset.filter(id__in=self.latest_ids())
 
-    def latest_only(self):
+    def latest_ids(self):
         queryset = HistoricalInvestor.objects.values('investor_identifier').annotate(
             max_id=models.Max('id'),
         ).order_by().values_list('max_id', flat=True)
         return queryset
+
+    def latest_only(self):
+        return self.filter(id__in=self.latest_ids())
 
 
 class HistoricalInvestor(InvestorBase):
@@ -487,11 +490,18 @@ class HistoricalInvestor(InvestorBase):
         return top_investors
 
     def update_public_investor(self, approve=True):
-        """Recursively update investor chain"""
+        """
+        Recursively update investor chain
+        :param approve: Approve pending investors (only if first version)
+        :return:
+        """
         # Keep track of investor identifiers to prevent infinite loops
         investor_identifiers = []
+
         def update_investor(hinv, approve=True):
-            if approve:
+            versions = HistoricalInvestor.objects.filter(investor_identifier=hinv.investor_identifier)
+            # Only approve if this is the first investor version
+            if approve and versions.count() == 1:
                 # Update status of historical investor
                 if hinv.fk_status_id == hinv.STATUS_PENDING:
                     hinv.fk_status_id = hinv.STATUS_OVERWRITTEN
@@ -696,7 +706,7 @@ class InvestorActivityInvolvementManager(models.Manager):
         :return:
         """
         activity_class = self.model._meta.get_field('fk_activity').rel.model
-        current_activities = activity_class.objects.latest_only()
+        current_activities = activity_class.objects.latest_ids()
         return self.filter(fk_activity_id__in=current_activities)
 
 

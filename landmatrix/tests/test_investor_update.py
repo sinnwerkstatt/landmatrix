@@ -20,10 +20,11 @@ class TestInvestorUpdate(TestInvestorBase):
         'status',
         'investors',
         'activities',
-        'involvements',
+        'activity_involvements',
+        'venture_involvements',
     ]
 
-    def is_investor_changed(self, investor, user):
+    def assert_investor_updated(self, investor, user):
         # Check if investor is public
         request = self.factory.get(reverse('investor_detail', kwargs={'investor_id': investor.investor_identifier}))
         request.user = AnonymousUser()
@@ -35,9 +36,7 @@ class TestInvestorUpdate(TestInvestorBase):
         request.user = user
         response = LogModifiedView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Latest Modified Log does not work')
-        items = list(response.context_data['items'])
-        self.assertGreaterEqual(len(items), 1, msg='Wrong list of investors in Latest Modified Log')
-        self.assertEqual(items[0]['history_id'], investor.id, msg='Investor does not appear in Latest Modified Log')
+        self.assert_investor_in_list(response, investor)
 
         # Check if investor is in elasticsearch/export
         self.run_commit_hooks()
@@ -58,7 +57,7 @@ class TestInvestorUpdate(TestInvestorBase):
 
     def test_reporter(self):
         # Change investor as reporter
-        investor = HistoricalInvestor.objects.public().latest()
+        investor = HistoricalInvestor.objects.latest_only().public().latest()
         data = self.INVESTOR_DATA.copy()
         data.update({
             # Action comment
@@ -73,7 +72,7 @@ class TestInvestorUpdate(TestInvestorBase):
         response = InvestorUpdateView.as_view()(request, investor_id=investor.investor_identifier)
         self.assertEqual(response.status_code, 302, msg='Change investor does not redirect')
 
-        investor = HistoricalInvestor.objects.pending().latest()
+        investor = HistoricalInvestor.objects.latest_only().pending().latest()
 
         # Check if investor appears in my investors section of reporter
         request = self.factory.get(reverse('manage_for_user'))
@@ -84,10 +83,7 @@ class TestInvestorUpdate(TestInvestorBase):
         request.user = self.users['reporter']
         response = ManageForUserView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage My Deals/Investors of Reporter does not work')
-        items = list(response.context_data['items'])
-        self.assertEqual(len(items), 1, msg='Wrong list of investors in Manage My Deals/Investors of Reporter')
-        self.assertEqual(items[0]['history_id'], investor.id,
-                         msg='Investor does not appear in Manage My Deals/Investors of Reporter')
+        self.assert_investor_in_list(response, investor)
 
         # Check if investor appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_updates'))
@@ -98,8 +94,7 @@ class TestInvestorUpdate(TestInvestorBase):
         request.user = self.users['administrator']
         response = ManageUpdatesView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Administrator does not work')
-        items = list(response.context_data['items'])
-        self.assertEqual(len(items), 1, msg='Manage Pending Updates of Administrator should be empty')
+        self.assert_investor_in_list(response, investor)
 
         # Check if investor appears in manage section of editor
         request = self.factory.get(reverse('manage_pending_updates'))
@@ -110,10 +105,7 @@ class TestInvestorUpdate(TestInvestorBase):
         request.user = self.users['editor']
         response = ManageUpdatesView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Editor does not work')
-        items = list(response.context_data['items'])
-        self.assertEqual(len(items), 1, msg='Wrong list of investors in Manage Pending Updates of Editor')
-        self.assertEqual(items[0]['history_id'], investor.id, msg='Investor does not appear in Manage Pending Updates of Editor')
-        self.assertEqual(items[0]['user'], self.get_username_and_role('reporter'), msg='Investor has wrong user in Manage Pending Updates of Editor')
+        self.assert_investor_in_list(response, investor, role='reporter')
 
         # Approve investor as editor
         data = {
@@ -138,10 +130,7 @@ class TestInvestorUpdate(TestInvestorBase):
         request.user = self.users['administrator']
         response = ManageUpdatesView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Administrator does not work')
-        items = list(response.context_data['items'])
-        self.assertEqual(len(items), 1, msg='Wrong list of investors in Manage Pending Updates of Administrator')
-        self.assertEqual(items[0]['history_id'], investor.id, msg='Investor does not appear in Manage Pending Updates of Administrator')
-        self.assertEqual(items[0]['user'], self.get_username_and_role('reporter'), msg='Investor has wrong user in Manage Pending Updates of Administrator')
+        self.assert_investor_in_list(response, investor, role='reporter')
 
         # Approve investor as administrator
         data = {
@@ -157,11 +146,11 @@ class TestInvestorUpdate(TestInvestorBase):
         response = ApproveInvestorChangeView.as_view()(request, id=investor.id)
         self.assertEqual(response.status_code, 302, msg='Approve investor by Administrator does not redirect')
 
-        self.is_investor_changed(investor, self.users['reporter'])
+        self.assert_investor_updated(investor, self.users['reporter'])
 
     def test_editor(self):
         # Change investor as editor
-        investor = HistoricalInvestor.objects.public().latest()
+        investor = HistoricalInvestor.objects.latest_only().public().latest()
         data = self.INVESTOR_DATA.copy()
         data.update({
             # Action comment
@@ -176,7 +165,7 @@ class TestInvestorUpdate(TestInvestorBase):
         response = InvestorUpdateView.as_view()(request, investor_id=investor.investor_identifier)
         self.assertEqual(response.status_code, 302, msg='Change investor does not redirect')
 
-        investor = HistoricalInvestor.objects.pending().latest()
+        investor = HistoricalInvestor.objects.latest_only().pending().latest()
 
         # Check if investor appears in manage section of administrator
         request = self.factory.get(reverse('manage_pending_updates'))
@@ -187,10 +176,7 @@ class TestInvestorUpdate(TestInvestorBase):
         request.user = self.users['administrator']
         response = ManageUpdatesView.as_view()(request)
         self.assertEqual(response.status_code, 200, msg='Manage Pending Updates of Administrator does not work')
-        items = list(response.context_data['items'])
-        self.assertEqual(len(items), 1, msg='Wrong list of investors in Manage Pending Updates of Administrator')
-        self.assertEqual(items[0]['history_id'], investor.id, msg='Investor does not appear in Manage Pending Updates of Administrator')
-        self.assertEqual(items[0]['user'], self.get_username_and_role('editor'), msg='Investor has wrong user in Manage Pending Updates of Administrator')
+        self.assert_investor_in_list(response, investor, role='editor')
 
         # Approve investor as administrator
         data = {
@@ -210,11 +196,11 @@ class TestInvestorUpdate(TestInvestorBase):
         #    self.assertEqual(errors, [])
         self.assertEqual(response.status_code, 302, msg='Approve investor by Administrator does not redirect')
 
-        self.is_investor_changed(investor, self.users['editor'])
+        self.assert_investor_updated(investor, self.users['editor'])
 
     def test_administrator(self):
         # Change investor as administrator
-        investor = HistoricalInvestor.objects.public().latest()
+        investor = HistoricalInvestor.objects.latest_only().public().latest()
         data = self.INVESTOR_DATA.copy()
         data.update({
             # Action comment
@@ -230,6 +216,6 @@ class TestInvestorUpdate(TestInvestorBase):
         response = InvestorUpdateView.as_view()(request, investor_id=investor.investor_identifier)
         self.assertEqual(response.status_code, 302, msg='Change investor does not redirect')
 
-        investor = HistoricalInvestor.objects.public().latest()
+        investor = HistoricalInvestor.objects.latest_only().public().latest()
 
-        self.is_investor_changed(investor, self.users['administrator'])
+        self.assert_investor_updated(investor, self.users['administrator'])
