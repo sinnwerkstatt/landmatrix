@@ -197,8 +197,10 @@ class PendingChangesMixin(FilteredQuerySetMixin):
         items.sort(key=lambda i: i.history_date, reverse=True)
         return items[:limit]
 
-    def get_feedback_queryset(self, limit=None):
-        return ActivityFeedback.objects.filter(fk_user_assigned=self.request.user)
+    def get_feedback_queryset(self):
+        feedback = ActivityFeedback.objects.filter(fk_activity__id__in=HistoricalActivity.objects.latest_only())
+        feedback = feedback.filter(fk_user_assigned=self.request.user)
+        return feedback
 
     def get_rejected_queryset(self, limit=None):
         activities = self.get_filtered_activity_queryset()

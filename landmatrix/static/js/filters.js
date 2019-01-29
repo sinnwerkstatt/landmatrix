@@ -275,8 +275,8 @@ $(document).ready(function () {
         $("#id_columns").trigger("change");
     };
 
-    $("#id_columns").on("change", function(e) {
-        e.preventDefault();
+    $("#id_columns").on("change", function(event) {
+        event.preventDefault();
         var unselectedColumns = $("#id_columns option:not(:selected)");
         var selectLink = $("#select-all-columns");
         if (unselectedColumns.length) {
@@ -289,8 +289,7 @@ $(document).ready(function () {
     });
     $("#select-all-columns").click(selectAllColumns);
 
-    var selectDefaultColumns = function (e) {
-        e.preventDefault();
+    var selectDefaultColumns = function (event) {
         event.preventDefault();
         $("#id_columns option").prop("selected", false);
         $("#id_columns option.default").prop("selected", true);
