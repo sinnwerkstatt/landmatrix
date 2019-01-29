@@ -489,6 +489,7 @@ def deal_from_activity_id_and_timestamp(id_and_timestamp):
 
 
 class DeleteDealView(DealBaseView):
+
     success_message = _('The deal #{} has been marked for deletion. It will be reviewed and deleted soon.')
     success_message_admin = _('The deal #{} has been deleted successfully.')
 
@@ -514,6 +515,7 @@ class DeleteDealView(DealBaseView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         hactivity = self.get_object()
+        involvements = list(hactivity.involvements.all())
         attributes = hactivity.attributes.all()
         # Create new historical activity
         hactivity.pk = None
@@ -529,6 +531,10 @@ class DeleteDealView(DealBaseView):
             hattribute.pk = None
             hattribute.fk_activity_id = hactivity.id
             hattribute.save()
+        for involvement in involvements:
+            involvement.pk = None
+            involvement.fk_activity = hactivity
+            involvement.save()
 
         if self.request.user.has_perm('landmatrix.delete_activity'):
             hactivity.update_public_activity()

@@ -445,6 +445,9 @@ class DeleteInvestorView(InvestorUpdateView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         hinvestor = self.get_object()
+        involvements = list(hinvestor.involvements.all())
+        venture_involvements = list(hinvestor.venture_involvements.all())
+        investor_involvements = list(hinvestor.investors.all())
         # Create new historical activity
         hinvestor.pk = None
         if self.request.user.has_perm('landmatrix.delete_investor'):
@@ -455,6 +458,18 @@ class DeleteInvestorView(InvestorUpdateView):
         hinvestor.history_date = datetime.now()
         hinvestor.public_version = None
         hinvestor.save()
+        for involvement in involvements:
+            involvement.pk = None
+            involvement.fk_investor = hinvestor
+            involvement.save()
+        for involvement in venture_involvements:
+            involvement.pk = None
+            involvement.fk_venture = hinvestor
+            involvement.save()
+        for involvement in investor_involvements:
+            involvement.pk = None
+            involvement.fk_investor = hinvestor
+            involvement.save()
 
         if self.request.user.has_perm('landmatrix.delete_investor'):
             hinvestor.update_public_investor()
@@ -500,6 +515,9 @@ class RecoverInvestorView(InvestorUpdateView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         hinvestor = self.get_object()
+        involvements = list(hinvestor.involvements.all())
+        venture_involvements = list(hinvestor.venture_involvements.all())
+        investor_involvements = list(hinvestor.investors.all())
         if not self.request.user.has_perm('landmatrix.change_investor'):
             return HttpResponseRedirect(reverse('investor_detail', kwargs={'investor_id': hinvestor.investor_identifier}))
         # Create new historical activity
@@ -508,6 +526,18 @@ class RecoverInvestorView(InvestorUpdateView):
         hinvestor.history_user = self.request.user
         hinvestor.history_date = datetime.now()
         hinvestor.save()
+        for involvement in involvements:
+            involvement.pk = None
+            involvement.fk_investor = hinvestor
+            involvement.save()
+        for involvement in venture_involvements:
+            involvement.pk = None
+            involvement.fk_venture = hinvestor
+            involvement.save()
+        for involvement in investor_involvements:
+            involvement.pk = None
+            involvement.fk_investor = hinvestor
+            involvement.save()
         hinvestor.update_public_investor()
 
         # Create success message
