@@ -17,7 +17,7 @@
         <li role="presentation"><a href="{% url 'data' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
             <i class="fa fa-table"></i> {% trans "Data" %}
         </a></li>
-        <li role="presentation"><a href="{% url 'chart_transnational_deals' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
+        <li role="presentation"><a href="{% url 'charts' %}{% if country %}?country={{ country.slug }}{% else %}{% if region %}{{ region.slug }}{% endif %}{% endif %}">
             <i class="fa fa-bar-chart"></i> {% trans "Charts" %}
         </a></li>
     </ul>
