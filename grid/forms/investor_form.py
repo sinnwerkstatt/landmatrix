@@ -9,10 +9,9 @@ from grid.forms.base_model_form import BaseModelForm
 from grid.widgets import CommentInput
 from grid.utils import get_display_value
 
-INVESTOR_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
-    HistoricalInvestor.INVESTOR_CLASSIFICATIONS)
-STAKEHOLDER_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(
-    HistoricalInvestor.STAKEHOLDER_CLASSIFICATIONS)
+INVESTOR_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(HistoricalInvestor.INVESTOR_CLASSIFICATIONS)
+STAKEHOLDER_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(HistoricalInvestor.STAKEHOLDER_CLASSIFICATIONS)
+ALL_CLASSIFICATION_CHOICES = BLANK_CHOICE_DASH + list(HistoricalInvestor.CLASSIFICATION_CHOICES)
 
 
 # TODO: move to fields.
@@ -30,7 +29,7 @@ class BaseInvestorForm(BaseModelForm):
     name = forms.CharField(required=False, label=_("Name"), max_length=255)
     classification = forms.ChoiceField(
         required=False, label=_("Classification"),
-        choices=INVESTOR_CLASSIFICATION_CHOICES + STAKEHOLDER_CLASSIFICATION_CHOICES)
+        choices=ALL_CLASSIFICATION_CHOICES)
     fk_country = forms.ModelChoiceField(
         required=False, label=_("Country of registration/origin"),
         queryset=Country.objects.none(),
@@ -144,9 +143,6 @@ class ExportInvestorForm(BaseInvestorForm):
 
 class ParentInvestorForm(BaseInvestorForm):
     form_title = _('Tertiary investor/lender')
-    classification = forms.ChoiceField(
-        required=False, label=_("Classification"),
-        choices=INVESTOR_CLASSIFICATION_CHOICES)
 
     class Meta:
         model = HistoricalInvestor
@@ -158,13 +154,7 @@ class ParentInvestorForm(BaseInvestorForm):
 
 class ParentStakeholderForm(ParentInvestorForm):
     form_title = _('Parent company')
-    classification = forms.ChoiceField(
-        required=False, label=_("Classification"),
-        choices=STAKEHOLDER_CLASSIFICATION_CHOICES)
 
 
 class OperationalCompanyForm(BaseInvestorForm):
     form_title = _('Operational company')
-    classification = forms.ChoiceField(
-        required=False, label=_("Classification"),
-        choices=STAKEHOLDER_CLASSIFICATION_CHOICES)
