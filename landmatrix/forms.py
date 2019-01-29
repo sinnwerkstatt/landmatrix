@@ -50,6 +50,7 @@ class ActivityFilterForm(forms.ModelForm):
     updated_user = UserModelChoiceField(label=("Last modification by"), queryset=USER_QUERYSET)
     fully_updated_date = forms.DateField(label=("Fully updated date"))
     fully_updated_user = UserModelChoiceField(label=("Fully updated by"), queryset=USER_QUERYSET)
+    top_investors = forms.CharField(label=_("Top investors"))
 
     class Meta:
         model = Activity
