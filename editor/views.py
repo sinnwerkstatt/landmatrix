@@ -129,7 +129,8 @@ class PendingChangesMixin(FilteredQuerysetMixin):
         return deletes.filter(id__in=deletes.latest_only())
 
     def get_feedback_queryset(self):
-        feedback = ActivityFeedback.objects.filter(fk_user_assigned=self.request.user)
+        feedback = ActivityFeedback.objects.filter(fk_activity__id__in=HistoricalActivity.objects.latest_only())
+        feedback = feedback.filter(fk_user_assigned=self.request.user)
         return feedback
 
     def get_pending_investor_deletes_queryset(self):
