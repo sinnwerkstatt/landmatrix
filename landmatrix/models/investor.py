@@ -127,11 +127,15 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     CLASSIFICATION_CHOICES = (
         STAKEHOLDER_CLASSIFICATIONS + INVESTOR_CLASSIFICATIONS
     )
+
+    parent_relation = models.CharField(verbose_name=_('Parent relation'),
+        max_length=255, choices=PARENT_RELATION_CHOICES, blank=True, null=True)
     PARENT_RELATION_CHOICES = (
         ('Subsidiary', _("Subsidiary of parent company")),
         ('Local branch', _("Local branch of parent company")),
         ('Joint venture', _("Joint venture of parent companies")),
     )
+
     ROLE_OPERATING_COMPANY = 'OP'
     ROLE_PARENT_COMPANY = 'ST'
     ROLE_TERTIARY_INVESTOR = 'IN'
@@ -149,8 +153,7 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         blank=True, null=True)
     classification = models.CharField(verbose_name=_('Classification'),
         max_length=3, choices=CLASSIFICATION_CHOICES, blank=True, null=True)
-    parent_relation = models.CharField(verbose_name=_('Parent relation'),
-        max_length=255, choices=PARENT_RELATION_CHOICES, blank=True, null=True)
+
     homepage = models.URLField(_("Investor homepage"), blank=True, null=True)
     opencorporates_link = models.URLField(
         _("Opencorporates link"), blank=True, null=True)
@@ -291,9 +294,15 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         Get list of highest parent companies (all right-hand side parent companies of the network
         visualisation)
         """
+        investors_processed = set()
+
         def get_parent_companies(investors):
             parents = []
             for investor in investors:
+                if investor.id in investors_processed:
+                    continue
+                else:
+                    investors_processed.add(investor.id)
                 # Check if there are parent companies for investor
                 parent_companies = [ivi.fk_investor for ivi in InvestorVentureInvolvement.objects.filter(
                     fk_venture=investor,
@@ -471,9 +480,15 @@ class HistoricalInvestor(InvestorBase):
         Get list of highest parent companies (all right-hand side parent companies of the network
         visualisation)
         """
+        investors_processed = set()
+
         def get_parent_companies(investors):
             parents = []
             for investor in investors:
+                if investor.id in investors_processed:
+                    continue
+                else:
+                    investors_processed.add(investor.id)
                 # Check if there are parent companies for investor
                 parent_companies = [ivi.fk_investor for ivi in
                                     HistoricalInvestorVentureInvolvement.objects.filter(
