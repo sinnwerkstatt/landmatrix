@@ -127,15 +127,11 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
     CLASSIFICATION_CHOICES = (
         STAKEHOLDER_CLASSIFICATIONS + INVESTOR_CLASSIFICATIONS
     )
-
-    parent_relation = models.CharField(verbose_name=_('Parent relation'),
-        max_length=255, choices=PARENT_RELATION_CHOICES, blank=True, null=True)
     PARENT_RELATION_CHOICES = (
         ('Subsidiary', _("Subsidiary of parent company")),
         ('Local branch', _("Local branch of parent company")),
         ('Joint venture', _("Joint venture of parent companies")),
     )
-
     ROLE_OPERATING_COMPANY = 'OP'
     ROLE_PARENT_COMPANY = 'ST'
     ROLE_TERTIARY_INVESTOR = 'IN'
@@ -159,6 +155,9 @@ class InvestorBase(DefaultStringRepresentation, models.Model):
         _("Opencorporates link"), blank=True, null=True)
     fk_status = models.ForeignKey("Status", verbose_name=_("Status"))
     comment = models.TextField(_("Comment"), blank=True, null=True)
+
+    parent_relation = models.CharField(verbose_name=_('Parent relation'),
+        max_length=255, choices=PARENT_RELATION_CHOICES, blank=True, null=True)
 
     objects = InvestorQuerySet.as_manager()
 
